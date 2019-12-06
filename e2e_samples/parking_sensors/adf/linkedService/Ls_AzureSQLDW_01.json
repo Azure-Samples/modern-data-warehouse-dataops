@@ -1,0 +1,17 @@
+{
+	"name": "Ls_AzureSQLDW_01",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSqlDW",
+		"typeProperties": {
+			"connectionString": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "Ls_KeyVault",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "sqldwConnectionString"
+			}
+		}
+	}
+}

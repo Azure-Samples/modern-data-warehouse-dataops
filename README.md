@@ -1,53 +1,38 @@
 ---
 page_type: sample
 languages:
-- csharp
+- python
 products:
-- dotnet
-description: "Add 150 character max description"
-urlFragment: "update-this-to-unique-url-stub"
+- Azure
+- Azure-Data-factory
+- Azure-Databricks
+- Azure-Data-Lake-Gen2
+description: "Code samples showcasing how to applying DevOps concepts to the Modern Data Warehouse Architecture leveraging different Azure Data Technologies."
 ---
 
-# Official Microsoft Sample
+## DataDevOps for the Modern Data Warehouse
 
-<!-- 
-Guidelines on README format: https://review.docs.microsoft.com/help/onboard/admin/samples/concepts/readme-template?branch=master
+This repository contains numerous code samples on how to apply DevOps principles to data pipelines built according to the [Modern Data Warehouse (MDW)](https://azure.microsoft.com/en-au/solutions/architecture/modern-data-warehouse/) architectural pattern on [Microsoft Azure](https://azure.microsoft.com/en-au/). 
 
-Guidance on onboarding samples to docs.microsoft.com/samples: https://review.docs.microsoft.com/help/onboard/admin/samples/process/onboarding?branch=master
-
-Taxonomies for products and languages: https://review.docs.microsoft.com/new-hope/information-architecture/metadata/taxonomies?branch=master
--->
-
-Give a short description for your sample here. What does it do and why is it important?
+The samples are either focused on a single azure service or showcases an end to end data pipeline solution built according to the MDW pattern. Each samples contains code and artifacts relating to:
+- Build and Release Pipelines (CI/CD)
+- Testing
+- Observability / Monitoring
 
 ## Contents
 
-Outline the file contents of the repository. It helps users navigate the codebase, build configuration and any related assets.
+### Single Technology Samples
+   - [Data Factory](single_tech_samples/datafactory/)
+   - [Azure Databricks](single_tech_samples/databricks/)
+   - [Azure SQL](single_tech_samples/azuresql/)
+   - [Stream Analytics](single_tech_samples/streamanalytics/)
+   - [Azure Synapse (formerly SQLDW)](single_tech_samples/synapseanalytics/)
+   - [CosmosDB](single_tech_samples/cosmosdb/)
 
-| File/folder       | Description                                |
-|-------------------|--------------------------------------------|
-| `src`             | Sample source code.                        |
-| `.gitignore`      | Define what to ignore at commit time.      |
-| `CHANGELOG.md`    | List of changes to the sample.             |
-| `CONTRIBUTING.md` | Guidelines for contributing to the sample. |
-| `README.md`       | This README file.                          |
-| `LICENSE`         | The license for the sample.                |
+### End to End samples
+   - [**Parking Sensor Solution**](e2e_samples/parking_sensors/)
+    ![Architecture](docs/images/architecture.PNG?raw=true "Architecture")
 
-## Prerequisites
-
-Outline the required components and tools that a user might need to have on their machine in order to run the sample. This can be anything from frameworks, SDKs, OS versions or IDE releases.
-
-## Setup
-
-Explain how to prepare the sample once the user clones or downloads the repository. The section should outline every step necessary to install dependencies and set up any settings (for example, API keys and output folders).
-
-## Runnning the sample
-
-Outline step-by-step instructions to execute the sample and see its output. Include steps for executing the sample from the IDE, starting specific services in the Azure portal or anything related to the overall launch of the code.
-
-## Key concepts
-
-Provide users with more context on the tools and services used in the sample. Explain some of the code that is being used and how services interact with each other.
 
 ## Contributing
 

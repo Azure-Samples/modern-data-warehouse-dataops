@@ -1,0 +1,24 @@
+{
+	"name": "Ls_adb_01",
+	"properties": {
+		"type": "AzureDatabricks",
+		"typeProperties": {
+			"domain": "https://australiaeast.azuredatabricks.net",
+			"accessToken": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "Ls_KeyVault",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "dbricksToken"
+			},
+			"newClusterNodeType": "Standard_DS3_v2",
+			"newClusterNumOfWorker": "1",
+			"newClusterSparkEnvVars": {
+				"PYSPARK_PYTHON": "/databricks/python3/bin/python3"
+			},
+			"newClusterVersion": "5.4.x-scala2.11"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/linkedservices"
+}
