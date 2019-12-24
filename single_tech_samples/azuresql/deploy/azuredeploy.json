@@ -1,0 +1,89 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "sqlsrvr_name": {
+            "defaultValue": "[concat('sqlsrvr', substring(uniqueString(resourceGroup().id), 0, 6))]",
+            "type": "string",
+            "metadata": {
+                "description": "SQL Server name"
+            }
+        },
+        "sqlsrvr_admin": {
+            "defaultValue": "sqlAdmin",
+            "type": "string",
+            "metadata": {
+                "description": "SQL Server Admin name"
+            }
+        },
+        "sqlsrvr_password": {
+            "type": "securestring",
+            "metadata": {
+                "description": "SQL Server Password"
+            }
+        },
+        "sqldb_name": {
+            "defaultValue": "salesdb",
+            "type": "string"
+        },
+        "sqldb_sku": {
+            "defaultValue": "S0",
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Sql/servers",
+            "kind": "v12.0",
+            "name": "[parameters('sqlsrvr_name')]",
+            "apiVersion": "2015-05-01-preview",
+            "location": "[resourceGroup().location]",
+            "tags": {},
+            "scale": null,
+            "properties": {
+                "administratorLogin": "[parameters('sqlsrvr_admin')]",
+                "administratorLoginPassword": "[parameters('sqlsrvr_password')]",
+                "version": "12.0"
+            },
+            "dependsOn": []
+        },
+        {
+            "type": "Microsoft.Sql/servers/firewallRules",
+            "name": "[concat(parameters('sqlsrvr_name'), '/AllowAllWindowsAzureIps')]",
+            "apiVersion": "2015-05-01-preview",
+            "scale": null,
+            "properties": {
+                "startIpAddress": "0.0.0.0",
+                "endIpAddress": "0.0.0.0"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('sqlsrvr_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases",
+            "sku": {
+                "name": "[parameters('sqldb_sku')]",
+                "tier": "Standard"
+            },
+            "kind": "v12.0,user",
+            "name": "[concat(parameters('sqlsrvr_name'), '/', parameters('sqldb_name'))]",
+            "apiVersion": "2017-03-01-preview",
+            "location": "[resourceGroup().location]",
+            "tags": {},
+            "scale": null,
+            "properties": {
+                "collation": "SQL_Latin1_General_CP1_CI_AS",
+                "maxSizeBytes": 268435456000,
+                "catalogCollation": "SQL_Latin1_General_CP1_CI_AS",
+                "zoneRedundant": false
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('sqlsrvr_name'))]"
+            ]
+        }
+    ],
+    "outputs": {
+    }
+}
