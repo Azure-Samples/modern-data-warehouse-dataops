@@ -27,26 +27,14 @@ steps:
     platform: '$(BUILD_PLATFORM)'
     configuration: '$(BUILD_CONFIGURATION)'
 
-- task: VSTest@2
-  displayName: 'Run tests'
-  inputs:
-    testAssemblyVer2: |
-     $(SLN_DIR)\**\$(BUILD_CONFIGURATION)\*test*.dll
-     !**\obj\**
-    platform: '$(BUILD_PLATFORM)'
-    configuration: '$(BUILD_CONFIGURATION)'
-
-- task: PublishSymbols@2
-  displayName: 'Publish symbols path'
-  inputs:
-    SearchPattern: '$(SLN_DIR)\**\bin\**\*.pdb'
-    PublishSymbols: false
-  continueOnError: true
-
 - task: CopyFiles@2
-  displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+  displayName: 'Copy Files to: $(build.ArtifactStagingDirectory)'
   inputs:
-    SourceFolder: '$(system.defaultworkingdirectory)'
+    SourceFolder: '$(system.DefaultWorkingDirectory)'
     Contents: '$(SLN_DIR)\**\bin\$(BUILD_CONFIGURATION)\**'
-    TargetFolder: '$(build.artifactstagingdirectory)'
-  condition: succeededOrFailed()
+    TargetFolder: '$(build.ArtifactStagingDirectory)'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Build Artifacts'
+  pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+  artifactName: 'sql_dacpac'
