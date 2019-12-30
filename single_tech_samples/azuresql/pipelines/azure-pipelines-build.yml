@@ -36,5 +36,6 @@ steps:
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Build Artifacts'
-  pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-  artifactName: 'sql_dacpac'
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    artifactName: 'sql_dacpac'
