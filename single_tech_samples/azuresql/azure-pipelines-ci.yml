@@ -7,23 +7,33 @@ trigger:
 - master
 
 pool:
-  vmImage: 'vs2017-win2016'
+  vmImage: 'windows-latest'
 
 variables:
-  SLN_DIR: 'samples\azuresql\ddo_samples_azuresql'
+  SLN_DIR: 'single_tech_samples\azuresql\ddo_samples_azuresql'
+  SLN_NAME: 'ddo_samples_azuresql'
+  SLN: '$(SLN_DIR)/$(SLN_NAME).sln'
   BUILD_PLATFORM: 'any cpu'
   BUILD_CONFIGURATION: 'release'
 
 steps:
+- task: NuGetToolInstaller@1
+  displayName: 'Install Nuget'
+
+- task: NuGetCommand@2
+  displayName: 'Restore Nuget packages'
+  inputs:
+    restoreSolution: '$(SLN)'
+
 - task: VSBuild@1
   displayName: 'Build solution sln'
   inputs:
-    solution: '$(SLN_DIR)\ddo_samples_azuresql.sln'
+    solution: '$(SLN)'
     platform: '$(BUILD_PLATFORM)'
     configuration: '$(BUILD_CONFIGURATION)'
 
 - task: VSTest@2
-  displayName: 'VsTest - testAssemblies'
+  displayName: 'Run tests'
   inputs:
     testAssemblyVer2: |
      $(SLN_DIR)\**\$(BUILD_CONFIGURATION)\*test*.dll
