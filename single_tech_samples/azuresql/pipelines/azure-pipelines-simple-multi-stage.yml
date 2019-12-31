@@ -1,0 +1,63 @@
+trigger:
+- master
+
+variables:
+  SLN_DIR: 'single_tech_samples\azuresql\ddo_samples_azuresql'
+  SLN_NAME: 'ddo_samples_azuresql'
+  SLN: '$(SLN_DIR)/$(SLN_NAME).sln'
+  BUILD_PLATFORM: 'any cpu'
+  BUILD_CONFIGURATION: 'release'
+
+stages:
+- stage: 'Build'
+  displayName: 'Build'
+  condition: and(always(), contains(variables['Build.SourceBranch'], 'refs/heads/master'))
+  jobs:
+  - job: 'build_sql_dacpac'
+    displayName: 'Build SQL DACPAC'
+    pool:
+      vmImage: 'windows-latest'
+    steps:
+    - task: NuGetToolInstaller@1
+      displayName: 'Install Nuget'
+    - task: NuGetCommand@2
+      displayName: 'Restore Nuget packages'
+      inputs:
+        restoreSolution: '$(SLN)'
+    - task: VSBuild@1
+      displayName: 'Build solution sln'
+      inputs:
+        solution: '$(SLN)'
+        platform: '$(BUILD_PLATFORM)'
+        configuration: '$(BUILD_CONFIGURATION)'
+    - task: VSTest@2
+      displayName: 'Run tests'
+      inputs:
+        testAssemblyVer2: |
+          $(SLN_DIR)\**\$(BUILD_CONFIGURATION)\*test*.dll
+          !**\obj\**
+        platform: '$(BUILD_PLATFORM)'
+        configuration: '$(BUILD_CONFIGURATION)'
+    - task: PublishSymbols@2
+      displayName: 'Publish symbols path'
+      inputs:
+        SearchPattern: '$(SLN_DIR)\**\bin\**\*.pdb'
+        PublishSymbols: false
+      continueOnError: true
+    - task: CopyFiles@2
+      displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+      condition: succeededOrFailed()
+      inputs:
+        SourceFolder: '$(system.defaultworkingdirectory)'
+        Contents: '$(SLN_DIR)\**\bin\$(BUILD_CONFIGURATION)\**'
+        TargetFolder: '$(build.artifactstagingdirectory)'
+
+- stage: 'Deploy'
+  displayName: 'Deploy'
+  condition: and(always(), contains(variables['Build.SourceBranch'], 'refs/heads/master'))
+  jobs:
+  - job: 'deploy_sql_dacpac'
+    displayName: 'Deploy SQL DACPAC'
+    pool:
+      vmImage: 'windows-latest'
+    steps:
