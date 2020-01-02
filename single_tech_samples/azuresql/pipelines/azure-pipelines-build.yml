@@ -5,9 +5,9 @@ pool:
   vmImage: 'windows-latest'
 
 variables:
-  SLN_DIR: 'single_tech_samples\azuresql\ddo_samples_azuresql'
   SLN_NAME: 'ddo_samples_azuresql'
-  SLN: '$(SLN_DIR)/$(SLN_NAME).sln'
+  SLN_DIR: 'single_tech_samples\azuresql\src\$(SLN_NAME)'
+  SLN: '$(SLN_DIR)\$(SLN_NAME).sln'
   BUILD_PLATFORM: 'any cpu'
   BUILD_CONFIGURATION: 'release'
 
