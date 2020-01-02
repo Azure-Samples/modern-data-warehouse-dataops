@@ -32,7 +32,7 @@ stages:
         configuration: '$(BUILD_CONFIGURATION)'
     - task: PublishPipelineArtifact@1
       inputs:
-        targetPath: '$(Pipeline.Workspace)\$(SLN_DIR)\$(SLN_NAME)\bin\$(BUILD_CONFIGURATION)\$(SLN_NAME).dacpac' # wildcards(*) are not supported
+        targetPath: '$(SLN_DIR)\$(SLN_NAME)\bin\$(BUILD_CONFIGURATION)\$(SLN_NAME).dacpac' # wildcards(*) are not supported
         artifact: 'sql_dacpac'
         publishLocation: 'pipeline'
 
