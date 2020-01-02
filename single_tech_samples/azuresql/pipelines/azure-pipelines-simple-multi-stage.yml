@@ -7,6 +7,11 @@ variables:
   SLN: '$(SLN_DIR)\$(SLN_NAME).sln'
   BUILD_PLATFORM: 'any cpu'
   BUILD_CONFIGURATION: 'release'
+  AZ_SUB_NAME: ''
+  AZURESQL_SERVER_NAME: ''
+  AZURESQL_DB_NAME: ''
+  AZURESQL_SERVER_USERNAME: ''
+  AZURESQL_SERVER_PASSWORD: ''
 
 stages:
 - stage: 'Build'
@@ -47,3 +52,15 @@ stages:
     steps:
     - download: current
       artifact: 'sql_dacpac'
+    - task: SqlAzureDacpacDeployment@1
+      inputs:
+        azureSubscription: '$(AZ_SUB_NAME)'
+        AuthenticationType: 'server'
+        ServerName: '$(AZURESQL_SERVER_NAME)'
+        DatabaseName: '(AZURESQL_DB_NAME)'
+        SqlUsername: '$(AZURESQL_SERVER_USERNAME)'
+        SqlPassword: '$(AZURESQL_SERVER_PASSWORD)'
+        deployType: 'DacpacTask'
+        DeploymentAction: 'Publish'
+        DacpacFile: '$(SLN_NAME).dacpac'
+        IpDetectionMethod: 'AutoDetect'
