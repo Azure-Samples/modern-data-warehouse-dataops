@@ -57,5 +57,5 @@ stages:
         SqlPassword: '$(AZURESQL_SERVER_PASSWORD)'
         deployType: 'DacpacTask'
         DeploymentAction: 'Publish'
-        DacpacFile: '$(SLN_NAME).dacpac'
+        DacpacFile: 'sql_dacpac\$(SLN_NAME).dacpac'
         IpDetectionMethod: 'AutoDetect'
