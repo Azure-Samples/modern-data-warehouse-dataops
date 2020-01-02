@@ -7,11 +7,6 @@ variables:
   SLN: '$(SLN_DIR)\$(SLN_NAME).sln'
   BUILD_PLATFORM: 'any cpu'
   BUILD_CONFIGURATION: 'release'
-  AZ_SUB_NAME: ''
-  AZURESQL_SERVER_NAME: ''
-  AZURESQL_DB_NAME: ''
-  AZURESQL_SERVER_USERNAME: ''
-  AZURESQL_SERVER_PASSWORD: ''
 
 stages:
 - stage: 'Build'
