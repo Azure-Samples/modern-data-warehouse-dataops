@@ -25,6 +25,12 @@ The following are some sample [Azure DevOps](https://docs.microsoft.com/en-us/az
    - It has two stages:
         1. Build - builds the DACPAC and creates a [Pipeline Artifact](https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/pipeline-artifacts?view=azure-devops&tabs=yaml).
         2. Deploy - deploys the DACPAC to a target AzureSQL instance.
+   - Required Pipeline Variables:
+     - AZ_SUB_NAME - Name of the Azure Service Connection in Azure DevOps. The service connection needs to be authorized to deploy resources.
+     - AZURESQL_SERVER_NAME - Name of the AzureSQL server (ei. myserver.database.windows.net)
+     - AZURESQL_DB_NAME - Name of the AzureSQL Database
+     - AZURESQL_SERVER_USERNAME - Username of AzureSQL login
+     - AZURESQL_SERVER_PASSWORD - Password of AzureSQL login
 
 #### Github Actions Pipelines
 TODO
