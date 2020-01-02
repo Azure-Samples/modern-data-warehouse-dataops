@@ -32,7 +32,7 @@ stages:
         configuration: '$(BUILD_CONFIGURATION)'
     - task: PublishPipelineArtifact@1
       inputs:
-        targetPath: '$(SLN_DIR)\**\bin\$(BUILD_CONFIGURATION)\**.dacpac'
+        targetPath: '$(Pipeline.Workspace)\$(SLN_DIR)\**\bin\$(BUILD_CONFIGURATION)\**.dacpac'
         artifact: 'sql_dacpac'
         publishLocation: 'pipeline'
 
