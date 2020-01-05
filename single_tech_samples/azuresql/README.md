@@ -4,7 +4,31 @@
 
 ## Prerequisites
 
+1. Github account.
+2. Azure Account.
+3. Azure DevOps Account.
+
+### Software Prerequisites
+
+1. [Azure CLI 2.0.49+](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
+2. [Azure DevOps CLI](https://marketplace.visualstudio.com/items?itemName=ms-vsts.cli)
+3. 
 ## Setup
+
+1. Ensure the following:
+   1. You are logged in to the az cli. To login, run `az login`
+   2. Az CLI is targeting the Azure Subscription you want to deploy the resources to. To set target Azure Subscription, run `az account set -s <AZURE_SUBSCRIPTION_ID>`
+   3. Az CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to. To set target Azure DevOps project, run `az devops configure --defaults organization=https://dev.azure.com/MY_ORG/ project=MY_PROJECT`
+2. Fork this repository.
+3. Clone the forked repository and cd in to `single_tech_samples/azuresql`.
+4. Set the following environment variables:
+   1. **RG_NAME** - target resource group to deploy to
+   2. **RG_LOCATION** - location of target resource group
+   3. **GITHUB_REPO_URL** - URL of your forked github repo
+   4. **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). This requires "repo" scope.
+   5. **AZURESQL_SRVR_PASSWORD** - Password of the admin account for your AzureSQL server instance. Default usernamen: sqlAdmin.
+5. Run `./deploy.sh`.
+
 
 ## Running the sample
 
@@ -26,11 +50,11 @@ The following are some sample [Azure DevOps](https://docs.microsoft.com/en-us/az
         1. Build - builds the DACPAC and creates a [Pipeline Artifact](https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/pipeline-artifacts?view=azure-devops&tabs=yaml).
         2. Deploy - deploys the DACPAC to a target AzureSQL instance.
    - Required Pipeline Variables:
-     - AZ_SUB_NAME - Name of the Azure Service Connection in Azure DevOps. The service connection needs to be authorized to deploy resources.
-     - AZURESQL_SERVER_NAME - Name of the AzureSQL server (ei. myserver.database.windows.net)
-     - AZURESQL_DB_NAME - Name of the AzureSQL Database
-     - AZURESQL_SERVER_USERNAME - Username of AzureSQL login
-     - AZURESQL_SERVER_PASSWORD - Password of AzureSQL login
+     - **AZURE_SERVICE_CONNECTION_NAME** - Name of the Azure Service Connection in Azure DevOps. The service connection needs to be authorized to deploy resources.
+     - **AZURESQL_SERVER_NAME** - Name of the AzureSQL server (ei. myserver.database.windows.net)
+     - **AZURESQL_DB_NAME** - Name of the AzureSQL Database
+     - **AZURESQL_SERVER_USERNAME** - Username of AzureSQL login
+     - **AZURESQL_SERVER_PASSWORD** - Password of AzureSQL login
 
 #### Github Actions Pipelines
 TODO
