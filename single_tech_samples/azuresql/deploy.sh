@@ -25,7 +25,7 @@
 set -o errexit
 set -o pipefail
 set -o nounset
-set -o xtrace # For debugging
+# set -o xtrace # For debugging
 
 # REQUIRED VARIABLES:
 # RG_NAME - resource group name
@@ -92,7 +92,7 @@ az devops service-endpoint azurerm create \
 # Setup Github service connection
 
 export AZURE_DEVOPS_EXT_GITHUB_PAT=$GITHUB_PAT_TOKEN
-github_service_connection_name=github-mdw-dataops_$(random_str 5)
+github_service_connection_name=github-mdw-dataops
 echo "Creating Github service connection: $github_service_connection_name in Azure DevOps"
 github_service_connection_id=$(az devops service-endpoint github create \
     --name "$github_service_connection_name" \
@@ -145,12 +145,6 @@ simple_multistage_pipeline_id=$(az pipelines create \
     --output json | jq -r '.id')
 
 # Create Variables
-#AZURE_SERVICE_CONNECTION_NAME
-az pipelines variable create \
-    --name AZ_SUB_NAME \
-    --pipeline-id $simple_multistage_pipeline_id \
-    --value $az_service_connection_name
-
 azuresql_srvr_name=$(echo $arm_output | jq -r '.properties.outputs.azuresql_srvr_name.value')
 az pipelines variable create \
     --name AZURESQL_SERVER_NAME \
@@ -177,3 +171,5 @@ az pipelines variable create \
     --value $azuresql_srvr_password
 
 az pipelines run --name $azuresql_simple_multi_stage_pipeline_name
+
+echo "Done!"
