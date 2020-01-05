@@ -456,3 +456,5 @@ MigrationBackup/
 .devcontainer/
 
 .vscode/
+
+.env

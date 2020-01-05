@@ -2,27 +2,27 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "sqlsrvr_name": {
+        "azuresql_srvr_name": {
             "defaultValue": "[concat('sqlsrvr', substring(uniqueString(resourceGroup().id), 0, 6))]",
             "type": "string",
             "metadata": {
                 "description": "SQL Server name"
             }
         },
-        "sqlsrvr_admin": {
+        "azuresql_srvr_admin": {
             "defaultValue": "sqlAdmin",
             "type": "string",
             "metadata": {
                 "description": "SQL Server Admin name"
             }
         },
-        "sqlsrvr_password": {
+        "azuresql_srvr_password": {
             "type": "securestring",
             "metadata": {
                 "description": "SQL Server Password"
             }
         },
-        "sqldb_name": {
+        "azuresql_db_name": {
             "defaultValue": "salesdb",
             "type": "string"
         },
@@ -36,21 +36,21 @@
         {
             "type": "Microsoft.Sql/servers",
             "kind": "v12.0",
-            "name": "[parameters('sqlsrvr_name')]",
+            "name": "[parameters('azuresql_srvr_name')]",
             "apiVersion": "2015-05-01-preview",
             "location": "[resourceGroup().location]",
             "tags": {},
             "scale": null,
             "properties": {
-                "administratorLogin": "[parameters('sqlsrvr_admin')]",
-                "administratorLoginPassword": "[parameters('sqlsrvr_password')]",
+                "administratorLogin": "[parameters('azuresql_srvr_admin')]",
+                "administratorLoginPassword": "[parameters('azuresql_srvr_password')]",
                 "version": "12.0"
             },
             "dependsOn": []
         },
         {
             "type": "Microsoft.Sql/servers/firewallRules",
-            "name": "[concat(parameters('sqlsrvr_name'), '/AllowAllWindowsAzureIps')]",
+            "name": "[concat(parameters('azuresql_srvr_name'), '/AllowAllWindowsAzureIps')]",
             "apiVersion": "2015-05-01-preview",
             "scale": null,
             "properties": {
@@ -58,7 +58,7 @@
                 "endIpAddress": "0.0.0.0"
             },
             "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers', parameters('sqlsrvr_name'))]"
+                "[resourceId('Microsoft.Sql/servers', parameters('azuresql_srvr_name'))]"
             ]
         },
         {
@@ -68,7 +68,7 @@
                 "tier": "Standard"
             },
             "kind": "v12.0,user",
-            "name": "[concat(parameters('sqlsrvr_name'), '/', parameters('sqldb_name'))]",
+            "name": "[concat(parameters('azuresql_srvr_name'), '/', parameters('azuresql_db_name'))]",
             "apiVersion": "2017-03-01-preview",
             "location": "[resourceGroup().location]",
             "tags": {},
@@ -80,10 +80,26 @@
                 "zoneRedundant": false
             },
             "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers', parameters('sqlsrvr_name'))]"
+                "[resourceId('Microsoft.Sql/servers', parameters('azuresql_srvr_name'))]"
             ]
         }
     ],
     "outputs": {
+        "azuresql_srvr_name": {
+            "value": "[parameters('azuresql_srvr_name')]",
+            "type": "string"
+        },
+        "azuresql_db_name": {
+            "value": "[parameters('azuresql_db_name')]",
+            "type": "string"
+        },
+        "azuresql_srvr_admin": {
+            "value": "[parameters('azuresql_srvr_admin')]",
+            "type": "string"
+        },
+        "azuresql_srvr_password": {
+            "value": "[parameters('azuresql_srvr_password')]",
+            "type": "securestring"
+        }
     }
 }
