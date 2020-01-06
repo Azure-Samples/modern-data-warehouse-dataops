@@ -458,3 +458,4 @@ MigrationBackup/
 .vscode/
 
 .env
+**.env

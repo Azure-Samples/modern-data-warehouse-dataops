@@ -1,19 +1,28 @@
 # Azure SQL Database
 
-**WIP**
+Azure SQL Database is a common relational database used in the MDW architecture. The following sample demonstrates how you might build CI/CD pipelines to deploy changes to Azure SQL Database.
 
 ## Prerequisites
 
-1. Github account.
-2. Azure Account.
-3. Azure DevOps Account.
+1. [Github account](https://github.com/)
+2. [Azure Account](https://azure.microsoft.com/en-au/free/search/?&ef_id=Cj0KCQiAr8bwBRD4ARIsAHa4YyLdFKh7JC0jhbxhwPeNa8tmnhXciOHcYsgPfNB7DEFFGpNLTjdTPbwaAh8bEALw_wcB:G:s&OCID=AID2000051_SEM_O2ShDlJP&MarinID=O2ShDlJP_332092752199_azure%20account_e_c__63148277493_aud-390212648371:kwd-295861291340&lnkd=Google_Azure_Brand&dclid=CKjVuKOP7uYCFVapaAoddSkKcA)
+   - *Permissions needed*: ability to create and deploy to an azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
+3. [Azure DevOps Account](https://azure.microsoft.com/en-us/services/devops/)
+   - *Permissions needed*: ability to create [service connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml) and [pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops&tabs=yaml).
 
 ### Software Prerequisites
 
-1. [Azure CLI 2.0.49+](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
-2. [Azure DevOps CLI](https://marketplace.visualstudio.com/items?itemName=ms-vsts.cli)
-3. 
+1. For Windows users, [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+2. [Azure CLI 2.0.49+](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
+3. [Azure DevOps CLI](https://marketplace.visualstudio.com/items?itemName=ms-vsts.cli)
+4. [jq](https://stedolan.github.io/jq/)
+
+To open Visual Studio solution:
+1. Visual Studio 2019. For earlier version of Visual Studio, you may need to install [SQL Server Data Tools](https://docs.microsoft.com/en-us/sql/ssdt/download-sql-server-data-tools-ssdt?view=sql-server-ver15) separately. 
+
 ## Setup
+
+To setup the samples, run the following:
 
 1. Ensure the following:
    1. You are logged in to the az cli. To login, run `az login`
@@ -29,8 +38,63 @@
    5. **AZURESQL_SRVR_PASSWORD** - Password of the admin account for your AzureSQL server instance. Default usernamen: sqlAdmin.
 5. Run `./deploy.sh`.
 
+Notes that in case of any errors midway through the script, in order to rerun the deployment, you may need to perform some cleanup of any deployed resources. See [Cleanup](./README.md#Cleanup
+) below.
+
+
+Once you've setup the sample, you should have the following deployed:
+1. Azure resource group with a AzureSQL server and database called `salesdb`.
+   ![azuresql_azure_resources](./docs/images/azuresql_azure_resources.PNG)
+2. A service principal with collaborator rights over the deployed resource group.
+3. Two Azure DevOps service connections found under `Project Settings > Service Connections`:
+   1. **azure-mdw-dataops** - An AzureRM service connection configured with the Service Principal. This is used to deploy to the AzureSQL database.
+   2. **github-mdw-dataops** - A Github service connection used to pull from the forked repository. It uses the Github PAT token to authenticate.
+![azuresql_devops_service_connections](./docs/images/azuresql_service_connections.PNG)
+4. Three Azure DevOps pipelines found under `Pipelines > Builds`. See [Key concepts/Azure DevOps Pipelines](./README.md#Azure-DevOps-Pipelines) below for explanation of each:
+   1. azuresql-validate-pr
+   2. azuresql-build
+   3. azuresql-simple-multi-stage
+![azuresql_devops_pipelines](./docs/images/azuresql_pipelines.PNG)
+Each of the pipelines should have run (or is currently running) at least once.
+
+
+Configuration information should be printed out in `.TIMESTAMP.env` file in the azuresql folder. Note this contains sensitive information about your deployment.
 
 ## Running the sample
+
+The following shows how to deploy changes to the AzureSQL database.
+
+1. Create a local branch of master and call it `dev/sample_change`. Checkout this branch.
+![azuresql_git_checkout](./docs/images/azuresql_gitbranchcheckout.PNG)
+
+2. Open the Visual Studio solution `src/ddo_samples_azuresql.sln`.
+   
+3. Add a new CompanyAddress column to the `SaleLT.Customer` table, as seen below.
+![azuresql_add_column](./docs/images/azuresql_addcolumn.PNG)
+
+4. Commit and push the change to the remote branch in Github.
+![azuresql_add_column](./docs/images/azuresql_gitcommitpush.PNG)
+
+5. Raise a Pull Request to merge `dev/sample_change` to `master`. This should trigger the the `azuresql-validate-pr` pipeline.
+![azuresql_pr_validation](./docs/images/azuresql_prvalidation.PNG)
+
+6. A code review should take place, then merge changes to `master` by completing the Pull Request. This should trigger the `azuresql-build` and `azuresql-simple-multi-stage`.
+![azuresql_pr_validation](./docs/images/azuresql_builds.PNG)
+
+7. Navigate to the `azuresql-simple-muli-stage`. This second stage of this pipeline will deploy the changes to the AzureSQL Database.
+![azuresql_release](./docs/images/azuresql_release.PNG)
+
+8. Connect to the AzureSQL Database. Notice that the new column has been deployed.
+![azuresql_viewchanges](./docs/images/azuresql_viewchanges.PNG)
+
+## Cleanup
+1. [Delete the Azure resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resources-portal#delete-resources).
+2. Delete Azure DevOps Pipelines.
+   1. To delete via Web Portal, navigate to `Pipelines > Builds`. Delete the pipeline, click on the triple dots, and select delete.
+   2. To delete via CLI, run `az pipelines list` to list ids. Then `az pipelines delete --id PIPELINE_ID`.
+3. Delete Azure DevOps service connections.
+   1. To delete via Web Portal, navigate to `Project Settings > Service Connections`. Select the connection, click on the triple dots, and select delete.
+   2. To delete via CLI, run `az devops service-endpoint list` to list ids. Then `az devops service-endpoint delete --id SERVICE_ENDPOINT_ID`.
 
 ## Key concepts
 
@@ -50,7 +114,6 @@ The following are some sample [Azure DevOps](https://docs.microsoft.com/en-us/az
         1. Build - builds the DACPAC and creates a [Pipeline Artifact](https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/pipeline-artifacts?view=azure-devops&tabs=yaml).
         2. Deploy - deploys the DACPAC to a target AzureSQL instance.
    - Required Pipeline Variables:
-     - **AZURE_SERVICE_CONNECTION_NAME** - Name of the Azure Service Connection in Azure DevOps. The service connection needs to be authorized to deploy resources.
      - **AZURESQL_SERVER_NAME** - Name of the AzureSQL server (ei. myserver.database.windows.net)
      - **AZURESQL_DB_NAME** - Name of the AzureSQL Database
      - **AZURESQL_SERVER_USERNAME** - Username of AzureSQL login
@@ -60,5 +123,7 @@ The following are some sample [Azure DevOps](https://docs.microsoft.com/en-us/az
 TODO
 
 ### Testing
+TODO
 
 ### Observability / Monitoring
+TODO

@@ -1,6 +1,8 @@
 trigger:
 - master
 
+pr: none
+
 variables:
   SLN_NAME: 'ddo_samples_azuresql'
   SLN_DIR: 'single_tech_samples\azuresql\src\$(SLN_NAME)'

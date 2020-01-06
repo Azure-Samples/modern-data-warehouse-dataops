@@ -135,12 +135,12 @@ az pipelines create \
 azuresql_simple_multi_stage_pipeline_name=azuresql-simple-multi-stage
 echo "Creating Pipeline: $azuresql_build_pipeline_name in Azure DevOps"
 simple_multistage_pipeline_id=$(az pipelines create \
-    --name $azuresql_simple_multi_stage_pipeline_name \
+    --name "$azuresql_simple_multi_stage_pipeline_name" \
     --description 'This pipelines is a simpe two stage pipeline which builds the DACPAC and deploy to a target AzureSQLDB instance' \
-    --repository $GITHUB_REPO_URL \
+    --repository "$GITHUB_REPO_URL" \
     --branch master \
     --yaml-path 'single_tech_samples/azuresql/pipelines/azure-pipelines-simple-multi-stage.yml' \
-    --service-connection $github_service_connection_id \
+    --service-connection "$github_service_connection_id" \
     --skip-first-run true \
     --output json | jq -r '.id')
 
@@ -149,7 +149,7 @@ azuresql_srvr_name=$(echo $arm_output | jq -r '.properties.outputs.azuresql_srvr
 az pipelines variable create \
     --name AZURESQL_SERVER_NAME \
     --pipeline-id $simple_multistage_pipeline_id \
-    --value $azuresql_srvr_name
+    --value "$azuresql_srvr_name.database.windows.net"
 
 azuresql_db_name=$(echo $arm_output | jq -r '.properties.outputs.azuresql_db_name.value')
 az pipelines variable create \
@@ -163,13 +163,34 @@ az pipelines variable create \
     --pipeline-id $simple_multistage_pipeline_id \
     --value $azuresql_srvr_admin
 
-azuresql_srvr_password=$(echo $arm_output | jq -r '.properties.outputs.azuresql_srvr_password.value')
 az pipelines variable create \
     --name AZURESQL_SERVER_PASSWORD \
     --pipeline-id $simple_multistage_pipeline_id \
     --secret true \
-    --value $azuresql_srvr_password
+    --value $AZURESQL_SRVR_PASSWORD
 
 az pipelines run --name $azuresql_simple_multi_stage_pipeline_name
 
-echo "Done!"
+
+####################
+# BUILD ENV FILE FROM CONFIG INFORMATION
+
+timestamp=$(date +"%Y%m%d%H%M%S")
+env_file=.$timestamp.env
+
+echo "Appending configuration to .env file: $env_file"
+cat << EOF >> $env_file
+
+# ------ Configuration from deployment on ${timestamp} -----------
+RESOURCE_GROUP=${RG_NAME}
+RESOURCE_GROUP_LOCATION=${RG_LOCATION}
+AZURESQL_SERVER_NAME=${azuresql_srvr_name}
+AZURESQL_SERVER_ADMIN=${azuresql_srvr_admin}
+AZURESQL_SERVER_PASSWORD=${azuresql_srvr_password}
+SERVICE_PRINCIPAL_NAME=${az_sp_name}
+SERVICE_PRINCIPAL_ID=${az_sp_id}
+SERVICE_PRINCIPAL_PASSWORD=${AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY}
+SERVICE_PRINCIPAL_TENANT=${az_sp_tenand_id}
+
+EOF
+echo "Completed deploying AzureSQL DataOps sample!"
