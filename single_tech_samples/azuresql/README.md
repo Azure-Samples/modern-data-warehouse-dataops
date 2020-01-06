@@ -18,16 +18,16 @@ Azure SQL Database is a common relational database used in the MDW architecture.
 4. [jq](https://stedolan.github.io/jq/)
 
 To open Visual Studio solution:
-1. Visual Studio 2019. For earlier version of Visual Studio, you may need to install [SQL Server Data Tools](https://docs.microsoft.com/en-us/sql/ssdt/download-sql-server-data-tools-ssdt?view=sql-server-ver15) separately. 
+1. [Visual Studio 2019](https://visualstudio.microsoft.com/vs/). For earlier version of Visual Studio, you may need to install [SQL Server Data Tools](https://docs.microsoft.com/en-us/sql/ssdt/download-sql-server-data-tools-ssdt?view=sql-server-ver15) separately. 
 
 ## Setup
 
 To setup the samples, run the following:
 
-1. Ensure the following:
-   1. You are logged in to the az cli. To login, run `az login`
-   2. Az CLI is targeting the Azure Subscription you want to deploy the resources to. To set target Azure Subscription, run `az account set -s <AZURE_SUBSCRIPTION_ID>`
-   3. Az CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to. To set target Azure DevOps project, run `az devops configure --defaults organization=https://dev.azure.com/MY_ORG/ project=MY_PROJECT`
+1. Ensure that:
+   1. You are logged in to the Azure CLI. To login, run `az login`.
+   1. Azure CLI is targeting the Azure Subscription you want to deploy the resources to. To set target Azure Subscription, run `az account set -s <AZURE_SUBSCRIPTION_ID>`
+   2. Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to. To set target Azure DevOps project, run `az devops configure --defaults organization=https://dev.azure.com/MY_ORG/ project=MY_PROJECT`
 2. Fork this repository.
 3. Clone the forked repository and cd in to `single_tech_samples/azuresql`.
 4. Set the following environment variables:
@@ -35,21 +35,25 @@ To setup the samples, run the following:
    2. **RG_LOCATION** - location of target resource group
    3. **GITHUB_REPO_URL** - URL of your forked github repo
    4. **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). This requires "repo" scope.
-   5. **AZURESQL_SRVR_PASSWORD** - Password of the admin account for your AzureSQL server instance. Default usernamen: sqlAdmin.
+   5. **AZURESQL_SRVR_PASSWORD** - Password of the admin account for your AzureSQL server instance. Default username: *sqlAdmin*.
 5. Run `./deploy.sh`.
 
-Notes that in case of any errors midway through the script, in order to rerun the deployment, you may need to perform some cleanup of any deployed resources. See [Cleanup](./README.md#Cleanup
+Note that in case of any errors midway through the script, in order to rerun the deployment, you may need to perform some cleanup of any deployed resources. See [Cleanup](./README.md#Cleanup
 ) below.
 
+### Deployed resources
 
 Once you've setup the sample, you should have the following deployed:
 1. Azure resource group with a AzureSQL server and database called `salesdb`.
    ![azuresql_azure_resources](./docs/images/azuresql_azure_resources.PNG)
+
 2. A service principal with collaborator rights over the deployed resource group.
+   
 3. Two Azure DevOps service connections found under `Project Settings > Service Connections`:
    1. **azure-mdw-dataops** - An AzureRM service connection configured with the Service Principal. This is used to deploy to the AzureSQL database.
    2. **github-mdw-dataops** - A Github service connection used to pull from the forked repository. It uses the Github PAT token to authenticate.
 ![azuresql_devops_service_connections](./docs/images/azuresql_service_connections.PNG)
+
 4. Three Azure DevOps pipelines found under `Pipelines > Builds`. See [Key concepts/Azure DevOps Pipelines](./README.md#Azure-DevOps-Pipelines) below for explanation of each:
    1. azuresql-validate-pr
    2. azuresql-build
@@ -62,30 +66,40 @@ Configuration information should be printed out in `.TIMESTAMP.env` file in the 
 
 ## Running the sample
 
-The following shows how to deploy changes to the AzureSQL database.
+The following shows how to deploy changes to the AzureSQL database using the CI/CD pipelines.
 
-1. Create a local branch of master and call it `dev/sample_change`. Checkout this branch.
-![azuresql_git_checkout](./docs/images/azuresql_gitbranchcheckout.PNG)
+1. In local clone of your forked repo, create a local branch of master and call it `dev/sample_change`. Checkout this branch.
+
+     ![azuresql_git_checkout](./docs/images/azuresql_gitbranchcheckout.PNG)
 
 2. Open the Visual Studio solution `src/ddo_samples_azuresql.sln`.
    
 3. Add a new CompanyAddress column to the `SaleLT.Customer` table, as seen below.
-![azuresql_add_column](./docs/images/azuresql_addcolumn.PNG)
+
+     ![azuresql_add_column](./docs/images/azuresql_addcolumn.PNG)
 
 4. Commit and push the change to the remote branch in Github.
-![azuresql_add_column](./docs/images/azuresql_gitcommitpush.PNG)
+
+     ![azuresql_add_column](./docs/images/azuresql_gitcommitpush.PNG)
 
 5. Raise a Pull Request to merge `dev/sample_change` to `master`. This should trigger the the `azuresql-validate-pr` pipeline.
-![azuresql_pr_validation](./docs/images/azuresql_prvalidation.PNG)
+
+     ![azuresql_pr_validation](./docs/images/azuresql_prvalidation.PNG)
 
 6. A code review should take place, then merge changes to `master` by completing the Pull Request. This should trigger the `azuresql-build` and `azuresql-simple-multi-stage`.
-![azuresql_pr_validation](./docs/images/azuresql_builds.PNG)
 
-7. Navigate to the `azuresql-simple-muli-stage`. This second stage of this pipeline will deploy the changes to the AzureSQL Database.
-![azuresql_release](./docs/images/azuresql_release.PNG)
+     ![azuresql_pr_validation](./docs/images/azuresql_builds.PNG)
+
+7. In Azure DevOps, navigate to the `azuresql-simple-muli-stage` pipeline run. The second stage of this pipeline will deploy the changes to the AzureSQL Database.
+
+     ![azuresql_release](./docs/images/azuresql_release.PNG)
 
 8. Connect to the AzureSQL Database. Notice that the new column has been deployed.
-![azuresql_viewchanges](./docs/images/azuresql_viewchanges.PNG)
+
+     ![azuresql_viewchanges](./docs/images/azuresql_viewchanges.PNG)
+
+Congratulations! You've deployed changes via CI/CD process.
+
 
 ## Cleanup
 1. [Delete the Azure resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resources-portal#delete-resources).
@@ -123,7 +137,7 @@ The following are some sample [Azure DevOps](https://docs.microsoft.com/en-us/az
 TODO
 
 ### Testing
-TODO
+- [Create a Test Project for SQL Server Database Unit Testing](https://docs.microsoft.com/en-us/sql/ssdt/how-to-create-a-test-project-for-sql-server-database-unit-testing?view=sql-server-ver15)
 
 ### Observability / Monitoring
-TODO
+- [AzureSQL Database monitoring and tuning](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-monitoring-tuning-index)
