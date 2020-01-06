@@ -22,9 +22,11 @@ The samples are either focused on a single azure service or showcases an end to 
 ## Contents
 
 ### Single Technology Samples
+   - [Azure SQL](single_tech_samples/azuresql/)
+
+   Coming soon..
    - [Data Factory](single_tech_samples/datafactory/)
    - [Azure Databricks](single_tech_samples/databricks/)
-   - [Azure SQL](single_tech_samples/azuresql/)
    - [Stream Analytics](single_tech_samples/streamanalytics/)
    - [Azure Synapse (formerly SQLDW)](single_tech_samples/synapseanalytics/)
    - [CosmosDB](single_tech_samples/cosmosdb/)
