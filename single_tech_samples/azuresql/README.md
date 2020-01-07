@@ -1,6 +1,6 @@
 # Azure SQL Database
 
-Azure SQL Database is a common relational database used in the MDW architecture. The following sample demonstrates how you might build CI/CD pipelines to deploy changes to Azure SQL Database.
+Azure SQL Database is a relational database commonly used in the MDW architecture, typically in the serving layer. The following sample demonstrates how you might build CI/CD pipelines to deploy changes to Azure SQL Database.
 
 ## Prerequisites
 
@@ -52,14 +52,16 @@ Once you've setup the sample, you should have the following deployed:
 3. Two Azure DevOps service connections found under `Project Settings > Service Connections`:
    1. **azure-mdw-dataops** - An AzureRM service connection configured with the Service Principal. This is used to deploy to the AzureSQL database.
    2. **github-mdw-dataops** - A Github service connection used to pull from the forked repository. It uses the Github PAT token to authenticate.
-![azuresql_devops_service_connections](./docs/images/azuresql_service_connections.PNG)
 
-4. Three Azure DevOps pipelines found under `Pipelines > Builds`. See [Key concepts/Azure DevOps Pipelines](./README.md#Azure-DevOps-Pipelines) below for explanation of each:
+     ![azuresql_devops_service_connections](./docs/images/azuresql_service_connections.PNG)
+
+1. Three Azure DevOps pipelines found under `Pipelines > Builds`. See [Key concepts/Azure DevOps Pipelines](./README.md#Azure-DevOps-Pipelines) below for explanation of each:
    1. azuresql-validate-pr
    2. azuresql-build
    3. azuresql-simple-multi-stage
-![azuresql_devops_pipelines](./docs/images/azuresql_pipelines.PNG)
-Each of the pipelines should have run (or is currently running) at least once.
+
+     ![azuresql_devops_pipelines](./docs/images/azuresql_pipelines.PNG). 
+     Each of the pipelines should have run (or is currently running) at least once.
 
 
 Configuration information should be printed out in `.TIMESTAMP.env` file in the azuresql folder. Note this contains sensitive information about your deployment.
@@ -86,7 +88,7 @@ The following shows how to deploy changes to the AzureSQL database using the CI/
 
      ![azuresql_pr_validation](./docs/images/azuresql_prvalidation.PNG)
 
-6. A code review should take place, then merge changes to `master` by completing the Pull Request. This should trigger the `azuresql-build` and `azuresql-simple-multi-stage`.
+6. Typically, a code review would take place. After this, merge changes to `master` by completing the Pull Request. This should trigger the `azuresql-build` and `azuresql-simple-multi-stage`.
 
      ![azuresql_pr_validation](./docs/images/azuresql_builds.PNG)
 
