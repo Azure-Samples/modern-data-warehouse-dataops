@@ -27,7 +27,7 @@
             "type": "string"
         },
         "sqldb_sku": {
-            "defaultValue": "S0",
+            "defaultValue": "S2",
             "type": "string"
         }
     },

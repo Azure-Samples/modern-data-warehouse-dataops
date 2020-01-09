@@ -1,0 +1,100 @@
+trigger:
+- master
+
+pr: none
+
+variables:
+  SLN_NAME: 'ddo_samples_azuresql'
+  SLN_DIR: 'single_tech_samples\azuresql\src\$(SLN_NAME)'
+  SLN: '$(SLN_DIR)\$(SLN_NAME).sln'
+  BUILD_PLATFORM: 'any cpu'
+  BUILD_CONFIGURATION: 'release'
+
+stages:
+- stage: 'Build'
+  displayName: 'Build'
+  condition: and(always(), contains(variables['Build.SourceBranch'], 'refs/heads/master'))
+  jobs:
+  - job: 'build_sql_dacpac'
+    displayName: 'Build SQL DACPAC'
+    pool:
+      vmImage: 'windows-latest'
+    steps:
+    - task: NuGetToolInstaller@1
+      displayName: 'Install Nuget'
+    - task: NuGetCommand@2
+      displayName: 'Restore Nuget packages'
+      inputs:
+        restoreSolution: '$(SLN)'
+    - task: VSBuild@1
+      displayName: 'Build solution sln'
+      inputs:
+        solution: '$(SLN)'
+        platform: '$(BUILD_PLATFORM)'
+        configuration: '$(BUILD_CONFIGURATION)'
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(SLN_DIR)\$(SLN_NAME)\bin\$(BUILD_CONFIGURATION)\$(SLN_NAME).dacpac' # wildcards(*) are not supported
+        artifact: 'sql_dacpac'
+        publishLocation: 'pipeline'
+
+- stage: 'deploy-to-test'
+  displayName: 'Deploy to Test'
+  condition: and(always(), contains(variables['Build.SourceBranch'], 'refs/heads/master'))
+  jobs:
+  - job: 'restore_to_test'
+    displayName: 'Restore to test'
+    pool:
+      vmImage: 'windows-latest'
+    steps:
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'azure-mdw-dataops'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az sql db restore \
+              --dest-name $(AZURESQL_RESTORED_DB_NAME) \
+              --edition GeneralPurpose \
+              --name $(AZURESQL_DB_NAME) \
+              --resource-group $(RESOURCE_GROUP_NAME) \
+              --server $(AZURESQL_SERVER_NAME) \
+              --time "$(AZURESQL_RESTORE_POINT_IN_TIME)"
+    - download: current
+      artifact: 'sql_dacpac'
+    - task: SqlAzureDacpacDeployment@1
+      inputs:
+        azureSubscription: 'azure-mdw-dataops'
+        AuthenticationType: 'server'
+        ServerName: '$(AZURESQL_SERVER_NAME)'
+        DatabaseName: '$(AZURESQL_RESTORED_DB_NAME)'
+        SqlUsername: '$(AZURESQL_SERVER_USERNAME)'
+        SqlPassword: '$(AZURESQL_SERVER_PASSWORD)'
+        deployType: 'DacpacTask'
+        DeploymentAction: 'Publish'
+        DacpacFile: '$(Pipeline.Workspace)\sql_dacpac\$(SLN_NAME).dacpac'
+        IpDetectionMethod: 'AutoDetect'
+
+- stage: 'deploy-to-prod'
+  displayName: 'Deploy to Prod'
+  condition: and(succeeded('deploy-to-test'), contains(variables['Build.SourceBranch'], 'refs/heads/master'))
+  jobs:
+  - job: 'deploy_sql_dacpac'
+    displayName: 'Deploy SQL DACPAC'
+    pool:
+      vmImage: 'windows-latest'
+    steps:
+    - download: current
+      artifact: 'sql_dacpac'
+    - task: SqlAzureDacpacDeployment@1
+      inputs:
+        azureSubscription: 'azure-mdw-dataops'
+        AuthenticationType: 'server'
+        ServerName: '$(AZURESQL_SERVER_NAME)'
+        DatabaseName: '$(AZURESQL_DB_NAME)'
+        SqlUsername: '$(AZURESQL_SERVER_USERNAME)'
+        SqlPassword: '$(AZURESQL_SERVER_PASSWORD)'
+        deployType: 'DacpacTask'
+        DeploymentAction: 'Publish'
+        DacpacFile: '$(Pipeline.Workspace)\sql_dacpac\$(SLN_NAME).dacpac'
+        IpDetectionMethod: 'AutoDetect'
