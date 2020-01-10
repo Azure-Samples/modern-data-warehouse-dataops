@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 # Access granted under MIT Open Source License: https://en.wikipedia.org/wiki/MIT_License
@@ -25,7 +24,7 @@
 set -o errexit
 set -o pipefail
 set -o nounset
-# set -o xtrace # For debugging
+set -o xtrace # For debugging
 
 # REQUIRED VARIABLES:
 # RG_NAME - resource group name
@@ -34,27 +33,11 @@ set -o nounset
 # GITHUB_PAT_TOKEN - Github PAT Token
 # AZURESQL_SRVR_PASSWORD - Password for the sqlAdmin account
 
-# Helper functions
-random_str() {
-    local length=$1
-    cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $length | head -n 1
-    return 0
-}
-
+. ./scripts/common.sh
 
 # Create resource group
 echo "Creating resource group $RG_NAME"
 az group create --name $RG_NAME --location $RG_LOCATION
-
-
-###############
-# Deploy AzureSQL
-echo "Deploying resources into $RG_NAME"
-arm_output=$(az group deployment create \
-    --resource-group "$RG_NAME" \
-    --template-file "./infrastructure/azuredeploy.json" \
-    --parameters "azuresql_srvr_password=${AZURESQL_SRVR_PASSWORD}" \
-    --output json)
 
 
 ###############
@@ -78,10 +61,9 @@ az_sp_tenand_id=$(echo $az_sp | jq -r '.tenant')
 
 # Create Azure Service connection in Azure DevOps
 export AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY=$(echo $az_sp | jq -r '.password')
-az_service_connection_name=azure-mdw-dataops
-echo "Creating Azure service connection: $az_service_connection_name in Azure DevOps"
+echo "Creating Azure service connectionn Azure DevOps"
 az devops service-endpoint azurerm create \
-    --name "$az_service_connection_name" \
+    --name "azure-mdw-dataops" \
     --azure-rm-service-principal-id "$az_sp_id" \
     --azure-rm-subscription-id "$az_sub_id" \
     --azure-rm-subscription-name "$az_sub_name" \
@@ -92,105 +74,44 @@ az devops service-endpoint azurerm create \
 # Setup Github service connection
 
 export AZURE_DEVOPS_EXT_GITHUB_PAT=$GITHUB_PAT_TOKEN
-github_service_connection_name=github-mdw-dataops
-echo "Creating Github service connection: $github_service_connection_name in Azure DevOps"
-github_service_connection_id=$(az devops service-endpoint github create \
-    --name "$github_service_connection_name" \
+echo "Creating Github service connection in Azure DevOps"
+export GITHUB_SERVICE_CONNECTION_ID=$(az devops service-endpoint github create \
+    --name "github-mdw-dataops" \
     --github-url "$GITHUB_REPO_URL" \
     --output json | jq -r '.id')
 
-
 ###############
-# Deploy Pipelines: validate pr
+# Deploy pipelines
 
-azuresql_validate_pr_pipeline_name=azuresql-validate-pr
-echo "Creating Pipeline: $azuresql_validate_pr_pipeline_name in Azure DevOps"
-az pipelines create \
-    --name "$azuresql_validate_pr_pipeline_name" \
-    --description 'This pipelines validates pull requests to master' \
-    --repository "$GITHUB_REPO_URL" \
-    --branch master \
-    --yaml-path 'single_tech_samples/azuresql/pipelines/azure-pipelines-validate-pr.yml' \
-    --service-connection "$github_service_connection_id"
+./scripts/deploy_azure_pipelines_01_validate_pr.sh
+./scripts/deploy_azure_pipelines_02_build.sh
+./scripts/deploy_azure_pipelines_03_simple_multi_stage.sh
+./scripts/deploy_azure_pipelines_04_multi_stage_predeploy_test.sh
 
 
-###############
-# Deploy Pipelines: build
+# ####################
+# # BUILD ENV FILE FROM CONFIG INFORMATION
 
-azuresql_build_pipeline_name=azuresql-build
-echo "Creating Pipeline: $azuresql_build_pipeline_name in Azure DevOps"
-az pipelines create \
-    --name "$azuresql_build_pipeline_name" \
-    --description 'This pipelines build the DACPAC and publishes it as a Build Artifact' \
-    --repository "$GITHUB_REPO_URL" \
-    --branch master \
-    --yaml-path 'single_tech_samples/azuresql/pipelines/azure-pipelines-build.yml' \
-    --service-connection "$github_service_connection_id"
+# timestamp=$(date +"%Y%m%d%H%M%S")
+# env_file=.$timestamp.env
 
+# echo "Appending configuration to .env file: $env_file"
+# cat << EOF >> $env_file
 
-###############
-# Deploy Pipelines: simple multi-stage
+# # ------ Configuration from deployment on ${timestamp} -----------
+# RESOURCE_GROUP=${RG_NAME}
+# RESOURCE_GROUP_LOCATION=${RG_LOCATION}
 
-# Create pipeline
-azuresql_simple_multi_stage_pipeline_name=azuresql-simple-multi-stage
-echo "Creating Pipeline: $azuresql_build_pipeline_name in Azure DevOps"
-simple_multistage_pipeline_id=$(az pipelines create \
-    --name "$azuresql_simple_multi_stage_pipeline_name" \
-    --description 'This pipelines is a simpe two stage pipeline which builds the DACPAC and deploy to a target AzureSQLDB instance' \
-    --repository "$GITHUB_REPO_URL" \
-    --branch master \
-    --yaml-path 'single_tech_samples/azuresql/pipelines/azure-pipelines-simple-multi-stage.yml' \
-    --service-connection "$github_service_connection_id" \
-    --skip-first-run true \
-    --output json | jq -r '.id')
+# AZURESQL_SERVER_NAME_SIMPLE_MULTISTAGE=${simple_multistage_sqlsrvr_name}
+# AZURESQL_SERVER_ADMIN=${azuresql_srvr_admin}
+# AZURESQL_SERVER_PASSWORD=${AZURESQL_SRVR_PASSWORD}
 
-# Create Variables
-azuresql_srvr_name=$(echo $arm_output | jq -r '.properties.outputs.azuresql_srvr_name.value')
-az pipelines variable create \
-    --name AZURESQL_SERVER_NAME \
-    --pipeline-id $simple_multistage_pipeline_id \
-    --value "$azuresql_srvr_name.database.windows.net"
+# AZURESQL_SERVER_NAME_MULTISTAGE_PREDEPLOY=${multistage_predeploy_sqlsrvr_name}
 
-azuresql_db_name=$(echo $arm_output | jq -r '.properties.outputs.azuresql_db_name.value')
-az pipelines variable create \
-    --name AZURESQL_DB_NAME \
-    --pipeline-id $simple_multistage_pipeline_id \
-    --value $azuresql_db_name
+# SERVICE_PRINCIPAL_NAME=${az_sp_name}
+# SERVICE_PRINCIPAL_ID=${az_sp_id}
+# SERVICE_PRINCIPAL_PASSWORD=${AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY}
+# SERVICE_PRINCIPAL_TENANT=${az_sp_tenand_id}
 
-azuresql_srvr_admin=$(echo $arm_output | jq -r '.properties.outputs.azuresql_srvr_admin.value')
-az pipelines variable create \
-    --name AZURESQL_SERVER_USERNAME \
-    --pipeline-id $simple_multistage_pipeline_id \
-    --value $azuresql_srvr_admin
-
-az pipelines variable create \
-    --name AZURESQL_SERVER_PASSWORD \
-    --pipeline-id $simple_multistage_pipeline_id \
-    --secret true \
-    --value $AZURESQL_SRVR_PASSWORD
-
-az pipelines run --name $azuresql_simple_multi_stage_pipeline_name
-
-
-####################
-# BUILD ENV FILE FROM CONFIG INFORMATION
-
-timestamp=$(date +"%Y%m%d%H%M%S")
-env_file=.$timestamp.env
-
-echo "Appending configuration to .env file: $env_file"
-cat << EOF >> $env_file
-
-# ------ Configuration from deployment on ${timestamp} -----------
-RESOURCE_GROUP=${RG_NAME}
-RESOURCE_GROUP_LOCATION=${RG_LOCATION}
-AZURESQL_SERVER_NAME=${azuresql_srvr_name}
-AZURESQL_SERVER_ADMIN=${azuresql_srvr_admin}
-AZURESQL_SERVER_PASSWORD=${AZURESQL_SRVR_PASSWORD}
-SERVICE_PRINCIPAL_NAME=${az_sp_name}
-SERVICE_PRINCIPAL_ID=${az_sp_id}
-SERVICE_PRINCIPAL_PASSWORD=${AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY}
-SERVICE_PRINCIPAL_TENANT=${az_sp_tenand_id}
-
-EOF
-echo "Completed deploying AzureSQL DataOps sample!"
+# EOF
+# echo "Completed deploying AzureSQL DataOps sample!"
