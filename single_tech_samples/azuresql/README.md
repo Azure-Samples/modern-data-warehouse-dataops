@@ -32,11 +32,11 @@ Azure SQL Database.
 
 The following are some sample [Azure DevOps](https://docs.microsoft.com/en-us/azure/devops/?view=azure-devops) pipelines. To deploy these samples, see [How to use the samples](./README.md#how-to-use-the-samples).
 
-1. **Validate Pull Request** [[azure-pipelines-validate-pr](pipelines/azure-pipelines-validate-pr.yml)]
+1. **Validate Pull Request** [[azure-pipelines-01-validate-pr](pipelines/azure-pipelines-01-validate-pr.yml)]
    - This pipeline builds the DACPAC and runs tests (if any). This is triggered only on PRs and is used to validate them before merging into master. This pipeline does not produce any artifacts.
-2. **Build Pipeline** [[azure-pipelines-build](pipelines/azure-pipelines-build.yml)] 
+2. **Build Pipeline** [[azure-pipelines-02-build](pipelines/azure-pipelines-02-build.yml)] 
    - This pipeline builds the DACPAC and publishes it as a [Build Artifact](https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/build-artifacts?view=azure-devops&tabs=yaml). Its purpose is to produce the Build Artifact that may be consumed by a [Release Pipeline (classic)](https://docs.microsoft.com/en-us/azure/devops/pipelines/release/?view=azure-devops). 
-3. **Simple Multi-Stage Pipeline** [[azure-pipelines-simple-multi-stage](pipelines/azure-pipelines-simple-multi-stage.yml)]
+3. **Simple Multi-Stage Pipeline** [[azure-pipelines-03-simple-multi-stage](pipelines/azure-pipelines-03-simple-multi-stage.yml)]
    - This pipeline demonstrates a simple [multi-stage pipeline](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/multi-stage-pipelines-experience?view=azure-devops). 
    - It has two stages:
         1. Build - builds the DACPAC and creates a [Pipeline Artifact](https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/pipeline-artifacts?view=azure-devops&tabs=yaml).
@@ -47,12 +47,18 @@ The following are some sample [Azure DevOps](https://docs.microsoft.com/en-us/az
      - **AZURESQL_SERVER_USERNAME** - Username of AzureSQL login
      - **AZURESQL_SERVER_PASSWORD** - Password of AzureSQL login
 
-4. **Multi-Stage Pipelines with pre-deployment test** [[azure-pipelines-multi-stage-w-test-deploy](pipelines/azure-pipelines-multi-stage-w-test-deploy.yml)]
+4. **Multi-Stage Pipeline with pre-deployment test** [[azure-pipelines-04-multi-stage-predeploy-test](pipelines/azure-pipelines-04-multi-stage-predeploy-test.yml)]
    - This pipeline expands on the simple multi-stage pipeline by introducing a middle pipeline stage which deploys the DACPAC first to a freshly restored copy of the production database prior to deployment to production. It has the ff. stages:
      1. Build
-     2. Deploy to Test (includes a restore of Production to Test)
+     2. Deploy to Test
+        1. Restore Prod Db to Test Db.
+        2. Deploy DACPAC to Test Db.
+        3. Teardown Test Db.
      3. Deploy to Prod
    - This mimics, to a certain extent, a production release, as it is applying the expected changes to a copy of the production database. It also allows for potentially running additional tests run in this environment, along with capturing common schema change errors such as adding a non-nullable column without a default value.
+   - Important considerations:
+     - Depending on the size and pricing tier of your Production AzureSQL database, a restore might take several minutes to several hours. Consider batching changes and running this pipeline on a schedule (such as nightly) instead on every commit to master.
+     - For simplicity purposes, the Test database is deployed in the same logical server as Production, however, in reality these should be completely separate servers.
 
 #### Github Actions Pipelines
 TODO

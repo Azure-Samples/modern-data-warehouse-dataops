@@ -9,6 +9,13 @@
                 "description": "SQL Server name"
             }
         },
+        "azuresql_srvr_display_name": {
+            "defaultValue": "sqlserver",
+            "type": "string",
+            "metadata": {
+                "description": "SQL Server name"
+            }
+        },
         "azuresql_srvr_admin": {
             "defaultValue": "sqlAdmin",
             "type": "string",
@@ -39,7 +46,9 @@
             "name": "[parameters('azuresql_srvr_name')]",
             "apiVersion": "2015-05-01-preview",
             "location": "[resourceGroup().location]",
-            "tags": {},
+            "tags": {
+                "displayName": "[parameters('azuresql_srvr_display_name')]"
+            },
             "scale": null,
             "properties": {
                 "administratorLogin": "[parameters('azuresql_srvr_admin')]",
