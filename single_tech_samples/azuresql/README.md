@@ -1,6 +1,28 @@
 # Azure SQL Database
 
-Azure SQL Database is a relational database commonly used in the MDW architecture, typically in the serving layer. The following sample demonstrates how you might build CI/CD pipelines to deploy changes to Azure SQL Database.
+Azure SQL Database is a relational database commonly used in the MDW architecture, typically in the serving layer. The following samples demonstrates how you might build CI/CD pipelines to deploy changes to 
+Azure SQL Database.
+
+## Contents
+1. [Key Concepts](./README.md#key-concepts)
+   1. [Build and Release](./README.md#build-and-release)
+      1. [Azure DevOps Pipelines](./README.md#azure-devops-pipelines)
+         1. [Validate Pull Request](./README.md#azure-devops-pipelines)
+         2. [Build Pipeline](./README.md#azure-devops-pipelines)
+         3. [Simple Multi-stage Pipeline](./README.md#azure-devops-pipelines)
+         4. [Multi-stage Pipeline with pre-deployment test](./README.md#azure-devops-pipelines)
+      2. [Github Actions Pipelines (coming soon)](./README.md#github-actions-pipelines)
+   2. [Testing](./README.md#testing)
+   3. [Observability and Monitoring](./README.md#observability-and-monitoring)
+2. [How to use the samples](./README.md#how-to-use-the-samples)
+   1. [Prerequisites](./README.md#prerequisites)
+   2. [Setup and Deployment](./README.md#setup-and-deployment)
+   3. [Deployed resources](./README.md#deployed-resources)
+   4. [Running the samples](./README.md#running-the-samples)
+      1. [Releasing a change through the simple multi-stage pipeline](./README.md#releasing-a-change-through-the-simple-multi-stage-pipeline)
+   5. [Cleanup](./README.md#cleanup)
+
+---------------------
 
 ## Key concepts
 
@@ -79,7 +101,7 @@ To setup the samples, run the following:
 *Note that in case of any errors midway through the script, in order to rerun the deployment, you may need to perform some cleanup of any deployed resources. See [Cleanup](./README.md#Cleanup
 ) below.*
 
-#### Deployed resources
+### Deployed resources
 
 Once you've setup the sample, you should have the following deployed:
 1. Azure resource group with a AzureSQL server and database called `salesdb`.
@@ -104,7 +126,9 @@ Once you've setup the sample, you should have the following deployed:
 
 Configuration information should be printed out in `.TIMESTAMP.env` file in the azuresql folder. Note this contains sensitive information about your deployment.
 
-### Running the sample
+### Running the samples
+
+#### Releasing a change through the simple multi-stage pipeline
 
 The following shows how to deploy changes to the AzureSQL database using the CI/CD pipelines.
 
