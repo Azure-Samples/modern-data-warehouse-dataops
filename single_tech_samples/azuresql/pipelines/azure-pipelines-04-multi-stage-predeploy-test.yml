@@ -54,7 +54,10 @@ stages:
         scriptLocation: 'inlineScript'
         inlineScript: |
           restore_timeformat=$(date --rfc-3339=seconds | sed -e 's/ /T/')
+          echo $restore_timeformat
           echo $(AZURESQL_RESTORED_DB_NAME)
+          echo $(AZURESQL_DB_NAME)
+          echo $(AZURESQL_SERVER_NAME)
           az sql db restore \
               --dest-name $(AZURESQL_RESTORED_DB_NAME) \
               --edition GeneralPurpose \
