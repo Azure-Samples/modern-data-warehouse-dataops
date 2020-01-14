@@ -10,7 +10,7 @@ variables:
   BUILD_PLATFORM: 'any cpu'
   BUILD_CONFIGURATION: 'release'
   AZURESQL_FULL_SERVER_NAME: '$(AZURESQL_SERVER_NAME).database.windows.net'
-  AZURESQL_RESTORED_DB_NAME: '$(AZURESQL_SERVER_NAME)_test_$(Build.BuildNumber)'
+  AZURESQL_RESTORED_DB_NAME: 'salesdb_test_$(Build.BuildNumber)'
 
 stages:
 - stage: 'build'
