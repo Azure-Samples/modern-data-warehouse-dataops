@@ -9,6 +9,7 @@ variables:
   SLN: '$(SLN_DIR)\$(SLN_NAME).sln'
   BUILD_PLATFORM: 'any cpu'
   BUILD_CONFIGURATION: 'release'
+  AZURESQL_FULL_SERVER_NAME: '$(AZURESQL_SERVER_NAME).database.windows.net'
 
 stages:
 - stage: 'Build'
@@ -53,7 +54,7 @@ stages:
       inputs:
         azureSubscription: 'azure-mdw-dataops'
         AuthenticationType: 'server'
-        ServerName: '$(AZURESQL_SERVER_NAME)'
+        ServerName: '$(AZURESQL_FULL_SERVER_NAME)'
         DatabaseName: '$(AZURESQL_DB_NAME)'
         SqlUsername: '$(AZURESQL_SERVER_USERNAME)'
         SqlPassword: '$(AZURESQL_SERVER_PASSWORD)'

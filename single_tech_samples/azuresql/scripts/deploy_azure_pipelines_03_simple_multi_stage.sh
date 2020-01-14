@@ -30,7 +30,7 @@ azuresql_srvr_name=$(echo $arm_output | jq -r '.properties.outputs.azuresql_srvr
 az pipelines variable create \
     --name AZURESQL_SERVER_NAME \
     --pipeline-id $pipeline_id \
-    --value "$azuresql_srvr_name.database.windows.net"
+    --value "$azuresql_srvr_name"
 
 azuresql_db_name=$(echo $arm_output | jq -r '.properties.outputs.azuresql_db_name.value')
 az pipelines variable create \

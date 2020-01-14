@@ -27,8 +27,8 @@ set -o nounset
 set -o xtrace # For debugging
 
 # REQUIRED VARIABLES:
-# RG_NAME - resource group name
-# RG_LOCATION - resource group location (ei. australiaeast)
+# RESOURCE_GROUP_NAME - resource group name
+# RESOURCE_GROUP_LOCATION - resource group location (ei. australiaeast)
 # GITHUB_REPO_URL - Github URL
 # GITHUB_PAT_TOKEN - Github PAT Token
 # AZURESQL_SRVR_PASSWORD - Password for the sqlAdmin account
@@ -36,8 +36,8 @@ set -o xtrace # For debugging
 . ./scripts/common.sh
 
 # Create resource group
-echo "Creating resource group $RG_NAME"
-az group create --name $RG_NAME --location $RG_LOCATION
+echo "Creating resource group $RESOURCE_GROUP_NAME"
+az group create --name $RESOURCE_GROUP_NAME --location $RESOURCE_GROUP_LOCATION
 
 
 ###############
@@ -53,7 +53,7 @@ az_sp_name=sp_dataops_$(random_str 5)
 echo "Creating service principal: $az_sp_name for azure service connection"
 az_sp=$(az ad sp create-for-rbac \
     --role contributor \
-    --scopes /subscriptions/$az_sub_id/resourceGroups/$RG_NAME \
+    --scopes /subscriptions/$az_sub_id/resourceGroups/$RESOURCE_GROUP_NAME \
     --name $az_sp_name \
     --output json)
 az_sp_id=$(echo $az_sp | jq -r '.appId')
@@ -99,8 +99,8 @@ export GITHUB_SERVICE_CONNECTION_ID=$(az devops service-endpoint github create \
 # cat << EOF >> $env_file
 
 # # ------ Configuration from deployment on ${timestamp} -----------
-# RESOURCE_GROUP=${RG_NAME}
-# RESOURCE_GROUP_LOCATION=${RG_LOCATION}
+# RESOURCE_GROUP=${RESOURCE_GROUP_NAME}
+# RESOURCE_GROUP_LOCATION=${RESOURCE_GROUP_LOCATION}
 
 # AZURESQL_SERVER_NAME_SIMPLE_MULTISTAGE=${simple_multistage_sqlsrvr_name}
 # AZURESQL_SERVER_ADMIN=${azuresql_srvr_admin}
