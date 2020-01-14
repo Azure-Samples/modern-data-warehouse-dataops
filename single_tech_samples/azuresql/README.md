@@ -130,7 +130,6 @@ Once you've setup the sample, you should have the following deployed:
      Each of the pipelines should have run (or is currently running) at least once.
 
 
-Configuration information should be printed out in `.TIMESTAMP.env` file in the azuresql folder. Note this contains sensitive information about your deployment.
 
 ### Running the samples
 
