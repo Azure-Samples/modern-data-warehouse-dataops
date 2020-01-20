@@ -6,11 +6,23 @@
 ###############
 # Deploy Pipelines: multi-stage predeploy
 
+echo "Deploying resources for multi-stage with predeployment test pipeline into $RESOURCE_GROUP_NAME"
+
+# Deploy Keyvault
+keyvault_name="mdwsamplekeyvault"
+az keyvault create -n $keyvault_name -g $RESOURCE_GROUP_NAME -l $RESOURCE_GROUP_LOCATION
+keyvault_secret_name="AZURESQL-SRVR-KEYVAULT-PASSWORD"
+
+az keyvault secret set --vault-name $keyvault_name --name $keyvault_secret_name --value $AZURESQL_SRVR_PASSWORD
+az keyvault set-policy --name $keyvault_name --object-id $SERVICE_PRINCIPAL_ID --secret-permissions get list
+
 # Deploy AzureSQL
-echo "Deploying resources for multi-stage with predeployment test pipeline into $RG_NAME"
 sqlsrvr_name=sqlsrvr04$(random_str 5)
+
+echo "Deploying Azure SQL server $sqlsrvr_name"
+
 arm_output=$(az group deployment create \
-    --resource-group "$RG_NAME" \
+    --resource-group "$RESOURCE_GROUP_NAME" \
     --template-file "./infrastructure/azuredeploy.json" \
     --parameters azuresql_srvr_password=${AZURESQL_SRVR_PASSWORD} azuresql_srvr_name=${sqlsrvr_name} azuresql_srvr_display_name="SQL Server - Multi-Stage Pipeline with pre-deployment test" \
     --output json)
@@ -50,11 +62,5 @@ az pipelines variable create \
     --name AZURESQL_SERVER_USERNAME \
     --pipeline-id $pipeline_id \
     --value $azuresql_srvr_admin
-
-az pipelines variable create \
-    --name AZURESQL_SERVER_PASSWORD \
-    --pipeline-id $pipeline_id \
-    --secret true \
-    --value $AZURESQL_SRVR_PASSWORD
 
 az pipelines run --name $pipeline_name
