@@ -14,7 +14,7 @@ az keyvault create -n $keyvault_name -g $RESOURCE_GROUP_NAME -l $RESOURCE_GROUP_
 keyvault_secret_name="AZURESQL-SRVR-KEYVAULT-PASSWORD"
 
 az keyvault secret set --vault-name $keyvault_name --name $keyvault_secret_name --value $AZURESQL_SRVR_PASSWORD
-az keyvault set-policy --name $keyvault_name --object-id $SERVICE_PRINCIPAL_ID --secret-permissions get list
+az keyvault set-policy --name $keyvault_name --spn $SERVICE_PRINCIPAL_ID --secret-permissions get list
 
 # Deploy AzureSQL
 sqlsrvr_name=sqlsrvr04$(random_str 5)

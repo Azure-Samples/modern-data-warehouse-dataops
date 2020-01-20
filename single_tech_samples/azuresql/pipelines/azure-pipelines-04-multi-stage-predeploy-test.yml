@@ -101,7 +101,7 @@ stages:
         scriptLocation: 'inlineScript'
         inlineScript: |
           az sql db delete \
-              --name $(AZURESQL_DB_NAME) \
+              --name $(AZURESQL_RESTORED_DB_NAME) \
               --resource-group $(RESOURCE_GROUP_NAME) \
               --server $(AZURESQL_SERVER_NAME) \
               --yes
