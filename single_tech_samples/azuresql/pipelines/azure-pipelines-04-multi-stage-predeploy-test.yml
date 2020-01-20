@@ -72,7 +72,7 @@ stages:
       artifact: 'sql_dacpac'
     - task: AzureKeyVault@1
       inputs:
-        azureSubscription: '$(AZURE_SUBSCRIPTION_ID)'
+        azureSubscription: '$(AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY)'
         KeyVaultName: '$(AZURE_KEYVAULT_NAME)'
         SecretsFilter: '*'
     - task: SqlAzureDacpacDeployment@1
@@ -118,7 +118,7 @@ stages:
       artifact: 'sql_dacpac'
     - task: AzureKeyVault@1
       inputs:
-        azureSubscription: '$(AZURE_SUBSCRIPTION_ID)'
+        azureSubscription: '$(AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY)'
         KeyVaultName: '$(AZURE_KEYVAULT_NAME)'
         SecretsFilter: '*'
     - task: SqlAzureDacpacDeployment@1
