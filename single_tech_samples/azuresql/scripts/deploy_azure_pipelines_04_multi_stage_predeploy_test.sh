@@ -64,11 +64,6 @@ az pipelines variable create \
     --value $azuresql_srvr_admin
 
 az pipelines variable create \
-    --name AZURE_SUBSCRIPTION_ID \
-    --pipeline-id $pipeline_id \
-    --value $AZURE_SUBSCRIPTION_ID
-
-az pipelines variable create \
     --name AZURE_KEYVAULT_NAME \
     --pipeline-id $pipeline_id \
     --value $keyvault_name
