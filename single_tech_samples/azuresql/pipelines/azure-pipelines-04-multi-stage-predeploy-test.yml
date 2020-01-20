@@ -70,6 +70,11 @@ stages:
     steps:
     - download: current
       artifact: 'sql_dacpac'
+    - task: AzureKeyVault@1
+      inputs:
+        azureSubscription: '$(AZURE_SUBSCRIPTION_ID)'
+        KeyVaultName: '$(AZURE_KEYVAULT_NAME)'
+        SecretsFilter: '*'
     - task: SqlAzureDacpacDeployment@1
       inputs:
         azureSubscription: 'azure-mdw-dataops'
@@ -111,6 +116,11 @@ stages:
     steps:
     - download: current
       artifact: 'sql_dacpac'
+    - task: AzureKeyVault@1
+      inputs:
+        azureSubscription: '$(AZURE_SUBSCRIPTION_ID)'
+        KeyVaultName: '$(AZURE_KEYVAULT_NAME)'
+        SecretsFilter: '*'
     - task: SqlAzureDacpacDeployment@1
       inputs:
         azureSubscription: 'azure-mdw-dataops'
