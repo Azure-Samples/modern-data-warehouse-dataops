@@ -4,10 +4,10 @@
 
 
 # Deploy AzureSQL
-echo "Deploying resources into $RG_NAME"
+echo "Deploying resources into $RESOURCE_GROUP_NAME"
 sqlsrvr_name=sqlsrvr03$(random_str 5)
 arm_output=$(az group deployment create \
-    --resource-group "$RG_NAME" \
+    --resource-group "$RESOURCE_GROUP_NAME" \
     --template-file "./infrastructure/azuredeploy.json" \
     --parameters azuresql_srvr_password=${AZURESQL_SRVR_PASSWORD} azuresql_srvr_name=${sqlsrvr_name} azuresql_srvr_display_name="SQL Server - Simple Multi-Stage Pipeline" \
     --output json)

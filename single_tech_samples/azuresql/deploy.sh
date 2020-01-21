@@ -45,7 +45,7 @@ az group create --name $RESOURCE_GROUP_NAME --location $RESOURCE_GROUP_LOCATION
 
 # Retrieve azure sub information
 az_sub=$(az account show --output json)
-az_sub_id=$(echo $az_sub | jq -r '.id')
+export AZURE_SUBSCRIPTION_ID=$(echo $az_sub | jq -r '.id')
 az_sub_name=$(echo $az_sub | jq -r '.name')
 
 # Create Service Account
@@ -53,21 +53,21 @@ az_sp_name=sp_dataops_$(random_str 5)
 echo "Creating service principal: $az_sp_name for azure service connection"
 az_sp=$(az ad sp create-for-rbac \
     --role contributor \
-    --scopes /subscriptions/$az_sub_id/resourceGroups/$RESOURCE_GROUP_NAME \
+    --scopes /subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP_NAME \
     --name $az_sp_name \
     --output json)
-az_sp_id=$(echo $az_sp | jq -r '.appId')
-az_sp_tenand_id=$(echo $az_sp | jq -r '.tenant')
+export SERVICE_PRINCIPAL_ID=$(echo $az_sp | jq -r '.appId')
+az_sp_tenant_id=$(echo $az_sp | jq -r '.tenant')
 
 # Create Azure Service connection in Azure DevOps
 export AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY=$(echo $az_sp | jq -r '.password')
 echo "Creating Azure service connectionn Azure DevOps"
 az devops service-endpoint azurerm create \
     --name "azure-mdw-dataops" \
-    --azure-rm-service-principal-id "$az_sp_id" \
-    --azure-rm-subscription-id "$az_sub_id" \
+    --azure-rm-service-principal-id "$SERVICE_PRINCIPAL_ID" \
+    --azure-rm-subscription-id "$AZURE_SUBSCRIPTION_ID" \
     --azure-rm-subscription-name "$az_sub_name" \
-    --azure-rm-tenant-id "$az_sp_tenand_id"
+    --azure-rm-tenant-id "$az_sp_tenant_id"
 
 
 ###############
@@ -109,9 +109,9 @@ export GITHUB_SERVICE_CONNECTION_ID=$(az devops service-endpoint github create \
 # AZURESQL_SERVER_NAME_MULTISTAGE_PREDEPLOY=${multistage_predeploy_sqlsrvr_name}
 
 # SERVICE_PRINCIPAL_NAME=${az_sp_name}
-# SERVICE_PRINCIPAL_ID=${az_sp_id}
+# SERVICE_PRINCIPAL_ID=${SERVICE_PRINCIPAL_ID}
 # SERVICE_PRINCIPAL_PASSWORD=${AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY}
-# SERVICE_PRINCIPAL_TENANT=${az_sp_tenand_id}
+# SERVICE_PRINCIPAL_TENANT=${az_sp_tenant_id}
 
 # EOF
 # echo "Completed deploying AzureSQL DataOps sample!"

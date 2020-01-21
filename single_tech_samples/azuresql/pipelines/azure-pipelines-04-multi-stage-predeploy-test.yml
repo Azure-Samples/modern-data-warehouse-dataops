@@ -70,6 +70,11 @@ stages:
     steps:
     - download: current
       artifact: 'sql_dacpac'
+    - task: AzureKeyVault@1
+      inputs:
+        azureSubscription: 'azure-mdw-dataops'
+        KeyVaultName: '$(AZURE_KEYVAULT_NAME)'
+        SecretsFilter: '*'
     - task: SqlAzureDacpacDeployment@1
       inputs:
         azureSubscription: 'azure-mdw-dataops'
@@ -77,7 +82,7 @@ stages:
         ServerName: '$(AZURESQL_FULL_SERVER_NAME)'
         DatabaseName: '$(AZURESQL_RESTORED_DB_NAME)'
         SqlUsername: '$(AZURESQL_SERVER_USERNAME)'
-        SqlPassword: '$(AZURESQL_SERVER_PASSWORD)'
+        SqlPassword: '$(AZURESQL-SRVR-KEYVAULT-PASSWORD)'
         deployType: 'DacpacTask'
         DeploymentAction: 'Publish'
         DacpacFile: '$(Pipeline.Workspace)\sql_dacpac\$(SLN_NAME).dacpac'
@@ -96,7 +101,7 @@ stages:
         scriptLocation: 'inlineScript'
         inlineScript: |
           az sql db delete \
-              --name $(AZURESQL_DB_NAME) \
+              --name $(AZURESQL_RESTORED_DB_NAME) \
               --resource-group $(RESOURCE_GROUP_NAME) \
               --server $(AZURESQL_SERVER_NAME) \
               --yes
@@ -111,6 +116,11 @@ stages:
     steps:
     - download: current
       artifact: 'sql_dacpac'
+    - task: AzureKeyVault@1
+      inputs:
+        azureSubscription: 'azure-mdw-dataops'
+        KeyVaultName: '$(AZURE_KEYVAULT_NAME)'
+        SecretsFilter: '*'
     - task: SqlAzureDacpacDeployment@1
       inputs:
         azureSubscription: 'azure-mdw-dataops'
@@ -118,7 +128,7 @@ stages:
         ServerName: '$(AZURESQL_FULL_SERVER_NAME)'
         DatabaseName: '$(AZURESQL_DB_NAME)'
         SqlUsername: '$(AZURESQL_SERVER_USERNAME)'
-        SqlPassword: '$(AZURESQL_SERVER_PASSWORD)'
+        SqlPassword: '$(AZURESQL-SRVR-KEYVAULT-PASSWORD)'
         deployType: 'DacpacTask'
         DeploymentAction: 'Publish'
         DacpacFile: '$(Pipeline.Workspace)\sql_dacpac\$(SLN_NAME).dacpac'
