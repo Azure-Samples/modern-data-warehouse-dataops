@@ -83,10 +83,10 @@ export GITHUB_SERVICE_CONNECTION_ID=$(az devops service-endpoint github create \
 ###############
 # Deploy pipelines
 
-. ./scripts/deploy_azure_pipelines_01_validate_pr.sh
-. ./scripts/deploy_azure_pipelines_02_build.sh
-. ./scripts/deploy_azure_pipelines_03_simple_multi_stage.sh
-. ./scripts/deploy_azure_pipelines_04_multi_stage_predeploy_test.sh
+./scripts/deploy_azure_pipelines_01_validate_pr.sh
+./scripts/deploy_azure_pipelines_02_build.sh
+./scripts/deploy_azure_pipelines_03_simple_multi_stage.sh
+./scripts/deploy_azure_pipelines_04_multi_stage_predeploy_test.sh
 
 
 # ####################
