@@ -23,7 +23,7 @@
                 "description": "SQL Server Admin name"
             }
         },
-        "azuresql_srvr_password": {
+        "AZURESQL_SERVER_PASSWORD": {
             "type": "securestring",
             "metadata": {
                 "description": "SQL Server Password"
@@ -52,7 +52,7 @@
             "scale": null,
             "properties": {
                 "administratorLogin": "[parameters('azuresql_srvr_admin')]",
-                "administratorLoginPassword": "[parameters('azuresql_srvr_password')]",
+                "administratorLoginPassword": "[parameters('AZURESQL_SERVER_PASSWORD')]",
                 "version": "12.0"
             },
             "dependsOn": []
@@ -106,8 +106,8 @@
             "value": "[parameters('azuresql_srvr_admin')]",
             "type": "string"
         },
-        "azuresql_srvr_password": {
-            "value": "[parameters('azuresql_srvr_password')]",
+        "AZURESQL_SERVER_PASSWORD": {
+            "value": "[parameters('AZURESQL_SERVER_PASSWORD')]",
             "type": "securestring"
         }
     }

@@ -49,7 +49,7 @@ stages:
     steps:
     - task: AzureCLI@2
       inputs:
-        azureSubscription: 'azure-mdw-dataops'
+        azureSubscription: 'mdw-dataops-azure'
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
@@ -72,17 +72,17 @@ stages:
       artifact: 'sql_dacpac'
     - task: AzureKeyVault@1
       inputs:
-        azureSubscription: 'azure-mdw-dataops'
+        azureSubscription: 'mdw-dataops-azure'
         KeyVaultName: '$(AZURE_KEYVAULT_NAME)'
         SecretsFilter: '*'
     - task: SqlAzureDacpacDeployment@1
       inputs:
-        azureSubscription: 'azure-mdw-dataops'
+        azureSubscription: 'mdw-dataops-azure'
         AuthenticationType: 'server'
         ServerName: '$(AZURESQL_FULL_SERVER_NAME)'
         DatabaseName: '$(AZURESQL_RESTORED_DB_NAME)'
         SqlUsername: '$(AZURESQL_SERVER_USERNAME)'
-        SqlPassword: '$(AZURESQL-SRVR-KEYVAULT-PASSWORD)'
+        SqlPassword: '$(AZURESQL-SERVER-KEYVAULT-PASSWORD)'
         deployType: 'DacpacTask'
         DeploymentAction: 'Publish'
         DacpacFile: '$(Pipeline.Workspace)\sql_dacpac\$(SLN_NAME).dacpac'
@@ -96,7 +96,7 @@ stages:
     steps:
     - task: AzureCLI@2
       inputs:
-        azureSubscription: 'azure-mdw-dataops'
+        azureSubscription: 'mdw-dataops-azure'
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
@@ -118,17 +118,17 @@ stages:
       artifact: 'sql_dacpac'
     - task: AzureKeyVault@1
       inputs:
-        azureSubscription: 'azure-mdw-dataops'
+        azureSubscription: 'mdw-dataops-azure'
         KeyVaultName: '$(AZURE_KEYVAULT_NAME)'
         SecretsFilter: '*'
     - task: SqlAzureDacpacDeployment@1
       inputs:
-        azureSubscription: 'azure-mdw-dataops'
+        azureSubscription: 'mdw-dataops-azure'
         AuthenticationType: 'server'
         ServerName: '$(AZURESQL_FULL_SERVER_NAME)'
         DatabaseName: '$(AZURESQL_DB_NAME)'
         SqlUsername: '$(AZURESQL_SERVER_USERNAME)'
-        SqlPassword: '$(AZURESQL-SRVR-KEYVAULT-PASSWORD)'
+        SqlPassword: '$(AZURESQL-SERVER-KEYVAULT-PASSWORD)'
         deployType: 'DacpacTask'
         DeploymentAction: 'Publish'
         DacpacFile: '$(Pipeline.Workspace)\sql_dacpac\$(SLN_NAME).dacpac'

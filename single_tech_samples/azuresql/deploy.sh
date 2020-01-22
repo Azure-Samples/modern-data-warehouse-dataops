@@ -23,28 +23,25 @@
 
 set -o errexit
 set -o pipefail
-# set -o nounset
 set -o xtrace # For debugging
 
 # REQUIRED VARIABLES:
-# RESOURCE_GROUP_NAME - resource group name
-# RESOURCE_GROUP_LOCATION - resource group location (ei. australiaeast)
 # GITHUB_REPO_URL - Github URL
 # GITHUB_PAT_TOKEN - Github PAT Token
-# AZURESQL_SRVR_PASSWORD - Password for the sqlAdmin account
+
+# OPTIONAL VARIABLES
+# DEPLOYMENT_ID - Identifier to append to names of resource created for this deployment. Resources will also be tagged with this. Defaults to generated string.
+# BRANCH_NAME - Branch that pipelines will be deployed for. Defaults to Master.
+# AZURESQL_SERVER_PASSWORD - Password for the sqlAdmin account. Defaults to generated value.
+# RESOURCE_GROUP_NAME - resource group name
+# RESOURCE_GROUP_LOCATION - resource group location (ei. australiaeast)
 
 . ./scripts/common.sh
-
-if [ -z $BRANCH_NAME ]
-then 
-    echo "No working branch name specified, defaulting to master"
-    export BRANCH_NAME='master'
-fi
+. ./scripts/init_environment.sh
 
 # Create resource group
 echo "Creating resource group $RESOURCE_GROUP_NAME"
 az group create --name $RESOURCE_GROUP_NAME --location $RESOURCE_GROUP_LOCATION
-
 
 ###############
 # Setup Azure service connection
@@ -55,7 +52,7 @@ export AZURE_SUBSCRIPTION_ID=$(echo $az_sub | jq -r '.id')
 az_sub_name=$(echo $az_sub | jq -r '.name')
 
 # Create Service Account
-az_sp_name=sp_dataops_$(random_str 5)
+az_sp_name=mdw-dataops-${DEPLOYMENT_ID}-sp
 echo "Creating service principal: $az_sp_name for azure service connection"
 az_sp=$(az ad sp create-for-rbac \
     --role contributor \
@@ -69,7 +66,7 @@ az_sp_tenant_id=$(echo $az_sp | jq -r '.tenant')
 export AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY=$(echo $az_sp | jq -r '.password')
 echo "Creating Azure service connection Azure DevOps"
 az devops service-endpoint azurerm create \
-    --name "azure-mdw-dataops" \
+    --name "mdw-dataops-azure" \
     --azure-rm-service-principal-id "$SERVICE_PRINCIPAL_ID" \
     --azure-rm-subscription-id "$AZURE_SUBSCRIPTION_ID" \
     --azure-rm-subscription-name "$az_sub_name" \
@@ -82,7 +79,7 @@ az devops service-endpoint azurerm create \
 export AZURE_DEVOPS_EXT_GITHUB_PAT=$GITHUB_PAT_TOKEN
 echo "Creating Github service connection in Azure DevOps"
 export GITHUB_SERVICE_CONNECTION_ID=$(az devops service-endpoint github create \
-    --name "github-mdw-dataops" \
+    --name "mdw-dataops-github" \
     --github-url "$GITHUB_REPO_URL" \
     --output json | jq -r '.id')
 
@@ -94,6 +91,7 @@ export GITHUB_SERVICE_CONNECTION_ID=$(az devops service-endpoint github create \
 ./scripts/deploy_azure_pipelines_03_simple_multi_stage.sh
 ./scripts/deploy_azure_pipelines_04_multi_stage_predeploy_test.sh
 
+echo "Completed deployment ${DEPLOYMENT_ID}"
 
 # ####################
 # # BUILD ENV FILE FROM CONFIG INFORMATION
@@ -110,7 +108,7 @@ export GITHUB_SERVICE_CONNECTION_ID=$(az devops service-endpoint github create \
 
 # AZURESQL_SERVER_NAME_SIMPLE_MULTISTAGE=${simple_multistage_sqlsrvr_name}
 # AZURESQL_SERVER_ADMIN=${azuresql_srvr_admin}
-# AZURESQL_SERVER_PASSWORD=${AZURESQL_SRVR_PASSWORD}
+# AZURESQL_SERVER_PASSWORD=${AZURESQL_SERVER_PASSWORD}
 
 # AZURESQL_SERVER_NAME_MULTISTAGE_PREDEPLOY=${multistage_predeploy_sqlsrvr_name}
 
