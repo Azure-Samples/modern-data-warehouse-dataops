@@ -96,7 +96,7 @@ To setup the samples, run the following:
    1. Azure CLI is targeting the Azure Subscription you want to deploy the resources to. To set target Azure Subscription, run `az account set -s <AZURE_SUBSCRIPTION_ID>`
    2. Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to. To set target Azure DevOps project, run `az devops configure --defaults organization=https://dev.azure.com/MY_ORG/ project=MY_PROJECT`
 2. Fork and clone this repository. `cd` in to `single_tech_samples/azuresql`.
-3. Set the ff. environment variables:
+3. Set the following environment variables:
    1. **RESOURCE_GROUP_NAME** - target resource group to deploy to
    2. **RESOURCE_GROUP_LOCATION** - location of target resource group
    3. **GITHUB_REPO_URL** - URL of your forked github repo
@@ -106,6 +106,8 @@ To setup the samples, run the following:
 
 *Note that in case of any errors midway through the script, in order to rerun the deployment, you may need to perform some cleanup of any deployed resources. See [Cleanup](./README.md#Cleanup
 ) below.*
+
+*The pipelines are deployed to use the master branch by default. This can be inconvenient when working on the pipelines in a different branch. You can set the BRANCH_NAME environment variable to override this behaviour. This makes it easier to test changes to your pipeline file. Be sure to push the changes in your yaml file to your repo before running the deployment script. Note that it does not change branch triggers.*
 
 ### Deployed resources
 
