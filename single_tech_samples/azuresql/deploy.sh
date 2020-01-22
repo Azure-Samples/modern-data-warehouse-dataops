@@ -23,7 +23,7 @@
 
 set -o errexit
 set -o pipefail
-set -o nounset
+# set -o nounset
 set -o xtrace # For debugging
 
 # REQUIRED VARIABLES:
@@ -34,6 +34,12 @@ set -o xtrace # For debugging
 # AZURESQL_SRVR_PASSWORD - Password for the sqlAdmin account
 
 . ./scripts/common.sh
+
+if [ -z $BRANCH_NAME ]
+then 
+    echo "No working branch name specified, defaulting to master"
+    export BRANCH_NAME='master'
+fi
 
 # Create resource group
 echo "Creating resource group $RESOURCE_GROUP_NAME"
@@ -61,7 +67,7 @@ az_sp_tenant_id=$(echo $az_sp | jq -r '.tenant')
 
 # Create Azure Service connection in Azure DevOps
 export AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY=$(echo $az_sp | jq -r '.password')
-echo "Creating Azure service connectionn Azure DevOps"
+echo "Creating Azure service connection Azure DevOps"
 az devops service-endpoint azurerm create \
     --name "azure-mdw-dataops" \
     --azure-rm-service-principal-id "$SERVICE_PRINCIPAL_ID" \

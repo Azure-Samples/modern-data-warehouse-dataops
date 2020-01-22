@@ -14,7 +14,7 @@ variables:
 stages:
 - stage: 'Build'
   displayName: 'Build'
-  condition: and(always(), contains(variables['Build.SourceBranch'], 'refs/heads/master'))
+  # condition: and(always(), contains(variables['Build.SourceBranch'], 'refs/heads/BRANCH_NAME'))
   jobs:
   - job: 'build_sql_dacpac'
     displayName: 'Build SQL DACPAC'
@@ -41,7 +41,7 @@ stages:
 
 - stage: 'Deploy'
   displayName: 'Deploy'
-  condition: and(always(), contains(variables['Build.SourceBranch'], 'refs/heads/master'))
+  # condition: and(always(), contains(variables['Build.SourceBranch'], 'refs/heads/BRANCH_NAME'))
   jobs:
   - job: 'deploy_sql_dacpac'
     displayName: 'Deploy SQL DACPAC'
