@@ -52,17 +52,17 @@ azuresql_db_name=$(echo $arm_output | jq -r '.properties.outputs.azuresql_db_nam
 az pipelines variable create \
     --name AZURESQL_DB_NAME \
     --pipeline-id $pipeline_id \
-    --value $azuresql_db_name
+    --value "$azuresql_db_name"
 
 azuresql_srvr_admin=$(echo $arm_output | jq -r '.properties.outputs.azuresql_srvr_admin.value')
 az pipelines variable create \
     --name AZURESQL_SERVER_USERNAME \
     --pipeline-id $pipeline_id \
-    --value $azuresql_srvr_admin
+    --value "$azuresql_srvr_admin"
 
 az pipelines variable create \
     --name AZURE_KEYVAULT_NAME \
     --pipeline-id $pipeline_id \
-    --value $keyvault_name
+    --value "$keyvault_name"
 
 az pipelines run --name $pipeline_name
