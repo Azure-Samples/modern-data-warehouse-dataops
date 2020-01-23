@@ -1,8 +1,5 @@
 #!/bin/bash
 
-. ./scripts/common.sh
-
-
 ###############
 # Deploy Pipelines: multi-stage predeploy
 
@@ -10,10 +7,10 @@ echo "Deploying resources for multi-stage with predeployment test pipeline into 
 
 # Deploy Keyvault
 keyvault_name="mdw-dataops-${DEPLOYMENT_ID}-kv"
-az keyvault create -n $keyvault_name -g $RESOURCE_GROUP_NAME -l $RESOURCE_GROUP_LOCATION
+az keyvault create -n $keyvault_name -g $RESOURCE_GROUP_NAME -l $RESOURCE_GROUP_LOCATION --tags "source=mdw-dataops" "deployment=$DEPLOYMENT_ID"
 keyvault_secret_name="AZURESQL-SERVER-KEYVAULT-PASSWORD"
 
-az keyvault secret set --vault-name $keyvault_name --name $keyvault_secret_name --value $AZURESQL_SERVER_PASSWORD
+az keyvault secret set --vault-name $keyvault_name --name $keyvault_secret_name --value $AZURESQL_SERVER_PASSWORD --tags "source=mdw-dataops" "deployment=$DEPLOYMENT_ID"
 az keyvault set-policy --name $keyvault_name --spn $SERVICE_PRINCIPAL_ID --secret-permissions get list
 
 # Deploy AzureSQL

@@ -1,15 +1,12 @@
 #!/bin/bash
 
-. ./scripts/common.sh
-
-
 # Deploy AzureSQL
 echo "Deploying resources into $RESOURCE_GROUP_NAME"
 sqlsrvr_name=mdw-dataops-${DEPLOYMENT_ID}-sqlsrvr-03
 arm_output=$(az group deployment create \
     --resource-group "$RESOURCE_GROUP_NAME" \
     --template-file "./infrastructure/azuredeploy.json" \
-    --parameters AZURESQL_SERVER_PASSWORD=${AZURESQL_SERVER_PASSWORD} azuresql_srvr_name=${sqlsrvr_name} azuresql_srvr_display_name="SQL Server - Simple Multi-Stage Pipeline" \
+    --parameters AZURESQL_SERVER_PASSWORD=${AZURESQL_SERVER_PASSWORD} azuresql_srvr_name=${sqlsrvr_name} azuresql_srvr_display_name="SQL Server - Simple Multi-Stage Pipeline" deployment_id=${DEPLOYMENT_ID} \
     --output json)
 
 # Create pipeline

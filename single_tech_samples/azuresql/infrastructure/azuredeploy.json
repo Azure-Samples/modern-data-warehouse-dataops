@@ -36,6 +36,12 @@
         "sqldb_sku": {
             "defaultValue": "S2",
             "type": "string"
+        },
+        "deployment_id": {
+            "type": "string",
+            "metadata": {
+                "description": "Identifier for this deployment tag"
+            }
         }
     },
     "variables": {},
@@ -47,8 +53,11 @@
             "apiVersion": "2015-05-01-preview",
             "location": "[resourceGroup().location]",
             "tags": {
-                "displayName": "[parameters('azuresql_srvr_display_name')]"
+                "displayName": "[parameters('azuresql_srvr_display_name')]",
+                "source": "mdw-dataops",
+                "deployment": "[parameters('deployment_id')]"
             },
+
             "scale": null,
             "properties": {
                 "administratorLogin": "[parameters('azuresql_srvr_admin')]",
@@ -80,7 +89,10 @@
             "name": "[concat(parameters('azuresql_srvr_name'), '/', parameters('azuresql_db_name'))]",
             "apiVersion": "2017-03-01-preview",
             "location": "[resourceGroup().location]",
-            "tags": {},
+            "tags": {
+                "source": "mdw-dataops",
+                "deployment": "[parameters('deployment_id')]"
+            },
             "scale": null,
             "properties": {
                 "collation": "SQL_Latin1_General_CP1_CI_AS",
