@@ -73,9 +73,7 @@ done
 
 # By default, set all KeyVault permission to deployer
 # Retrieve KeyVault User Id
-userId=$(az account show --output json | jq -r '.user.name')
-kvOwnerObjectId=$(az ad user show --id $userId \
-    --output json | jq -r '.objectId')
+kvOwnerObjectId=$(az ad signed-in-user show --output json | jq -r '.objectId')
 
 
 ###################
