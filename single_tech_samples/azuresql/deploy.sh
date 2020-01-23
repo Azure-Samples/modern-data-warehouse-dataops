@@ -39,6 +39,12 @@ set -o xtrace # For debugging
 . ./scripts/common.sh
 . ./scripts/init_environment.sh
 
+if [ -z $BRANCH_NAME ]
+then 
+    echo "No working branch name specified, defaulting to master"
+    export BRANCH_NAME='master'
+fi
+
 # Create resource group
 echo "Creating resource group $RESOURCE_GROUP_NAME"
 az group create --name $RESOURCE_GROUP_NAME --location $RESOURCE_GROUP_LOCATION
