@@ -98,7 +98,8 @@
                 "collation": "SQL_Latin1_General_CP1_CI_AS",
                 "maxSizeBytes": 268435456000,
                 "catalogCollation": "SQL_Latin1_General_CP1_CI_AS",
-                "zoneRedundant": false
+                "zoneRedundant": false,
+                "sampleName": "AdventureWorksLT"
             },
             "dependsOn": [
                 "[resourceId('Microsoft.Sql/servers', parameters('azuresql_srvr_name'))]"
