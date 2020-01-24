@@ -14,7 +14,7 @@ pipeline_name=mdw-dataops-${DEPLOYMENT_ID}-azuresql-03-simple-multi-stage
 echo "Creating Pipeline: $pipeline_name in Azure DevOps"
 pipeline_id=$(az pipelines create \
     --name "$pipeline_name" \
-    --description 'This pipelines is a simpe two stage pipeline which builds the DACPAC and deploy to a target AzureSQLDB instance' \
+    --description 'This pipelines is a simple two stage pipeline which builds the DACPAC and deploy to a target AzureSQLDB instance' \
     --repository "$GITHUB_REPO_URL" \
     --branch "$BRANCH_NAME" \
     --yaml-path 'single_tech_samples/azuresql/pipelines/azure-pipelines-03-simple-multi-stage.yml' \

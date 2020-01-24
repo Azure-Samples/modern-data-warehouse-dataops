@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Delete pipelines with 'azuresql' in name..."
+echo "Delete pipelines with 'mdw-dataops-' in name..."
 az pipelines list -o tsv | grep "mdw-dataops-" | awk '{print $4}' | xargs -I % az pipelines delete --id % --yes
 
 echo "Delete service connections..."
