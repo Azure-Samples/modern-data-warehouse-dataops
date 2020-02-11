@@ -6,7 +6,7 @@
 ###############
 # Deploy Pipelines: build
 
-pipeline_name=azuresql-02-build
+pipeline_name=mdw-dataops-${DEPLOYMENT_ID}-azuresql-02-build
 echo "Creating Pipeline: $pipeline_name in Azure DevOps"
 az pipelines create \
     --name "$pipeline_name" \

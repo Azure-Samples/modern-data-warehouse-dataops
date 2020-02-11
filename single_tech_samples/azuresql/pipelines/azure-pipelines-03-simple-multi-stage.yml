@@ -52,7 +52,7 @@ stages:
       artifact: 'sql_dacpac'
     - task: SqlAzureDacpacDeployment@1
       inputs:
-        azureSubscription: 'azure-mdw-dataops'
+        azureSubscription: 'mdw-dataops-azure'
         AuthenticationType: 'server'
         ServerName: '$(AZURESQL_FULL_SERVER_NAME)'
         DatabaseName: '$(AZURESQL_DB_NAME)'

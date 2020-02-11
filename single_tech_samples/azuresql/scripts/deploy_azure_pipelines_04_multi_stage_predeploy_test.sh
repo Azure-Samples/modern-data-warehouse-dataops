@@ -1,38 +1,35 @@
 #!/bin/bash
 
-. ./scripts/common.sh
-
-
 ###############
 # Deploy Pipelines: multi-stage predeploy
 
 echo "Deploying resources for multi-stage with predeployment test pipeline into $RESOURCE_GROUP_NAME"
 
 # Deploy Keyvault
-keyvault_name="mdwsamplekeyvault"
-az keyvault create -n $keyvault_name -g $RESOURCE_GROUP_NAME -l $RESOURCE_GROUP_LOCATION
-keyvault_secret_name="AZURESQL-SRVR-KEYVAULT-PASSWORD"
+keyvault_name="mdw-dataops-${DEPLOYMENT_ID}-kv"
+az keyvault create -n $keyvault_name -g $RESOURCE_GROUP_NAME -l $RESOURCE_GROUP_LOCATION --tags "source=mdw-dataops" "deployment=$DEPLOYMENT_ID"
+keyvault_secret_name="AZURESQL-SERVER-KEYVAULT-PASSWORD"
 
-az keyvault secret set --vault-name $keyvault_name --name $keyvault_secret_name --value $AZURESQL_SRVR_PASSWORD
+az keyvault secret set --vault-name $keyvault_name --name $keyvault_secret_name --value $AZURESQL_SERVER_PASSWORD --tags "source=mdw-dataops" "deployment=$DEPLOYMENT_ID"
 az keyvault set-policy --name $keyvault_name --spn $SERVICE_PRINCIPAL_ID --secret-permissions get list
 
 # Deploy AzureSQL
-sqlsrvr_name=sqlsrvr04$(random_str 5)
+sqlsrvr_name=mdw-dataops-${DEPLOYMENT_ID}-sqlsrvr04
 
 echo "Deploying Azure SQL server $sqlsrvr_name"
 
 arm_output=$(az group deployment create \
     --resource-group "$RESOURCE_GROUP_NAME" \
     --template-file "./infrastructure/azuredeploy.json" \
-    --parameters azuresql_srvr_password=${AZURESQL_SRVR_PASSWORD} azuresql_srvr_name=${sqlsrvr_name} azuresql_srvr_display_name="SQL Server - Multi-Stage Pipeline with pre-deployment test" \
+    --parameters AZURESQL_SERVER_PASSWORD=${AZURESQL_SERVER_PASSWORD} azuresql_srvr_name=${sqlsrvr_name} azuresql_srvr_display_name="SQL Server - Multi-Stage Pipeline with pre-deployment test" deployment_id=${DEPLOYMENT_ID} \
     --output json)
 
 # Create pipeline
-pipeline_name=azuresql-04-multi-stage-w-predeploy-test
+pipeline_name=mdw-dataops-${DEPLOYMENT_ID}-azuresql-04-multi-stage-w-predeploy-test
 echo "Creating Pipeline: $pipeline_name in Azure DevOps"
 pipeline_id=$(az pipelines create \
     --name "$pipeline_name" \
-    --description 'This pipelines is a simpe two stage pipeline which builds the DACPAC and deploy to a target AzureSQLDB instance' \
+    --description 'This pipeline is an advanced three stage pipeline which builds the DACPAC, deploys to a test database restored from production, and deploys to a target AzureSQLDB instance.' \
     --repository "$GITHUB_REPO_URL" \
     --branch "$BRANCH_NAME" \
     --yaml-path 'single_tech_samples/azuresql/pipelines/azure-pipelines-04-multi-stage-predeploy-test.yml' \
@@ -66,6 +63,6 @@ az pipelines variable create \
 az pipelines variable create \
     --name AZURE_KEYVAULT_NAME \
     --pipeline-id $pipeline_id \
-    --value $keyvault_name
+    --value "$keyvault_name"
 
 az pipelines run --name $pipeline_name

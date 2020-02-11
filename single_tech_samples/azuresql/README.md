@@ -101,7 +101,7 @@ To setup the samples, run the following:
    2. **RESOURCE_GROUP_LOCATION** - location of target resource group
    3. **GITHUB_REPO_URL** - URL of your forked github repo
    4. **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). This requires "repo" scope.
-   5. **AZURESQL_SRVR_PASSWORD** - Password of the admin account for your AzureSQL server instance. Default username: *sqlAdmin*.
+   5. **AZURESQL_SERVER_PASSWORD** - Password of the admin account for your AzureSQL server instance. Default username: *sqlAdmin*.
 4. Run `./deploy.sh`.
 
 *Note that in case of any errors midway through the script, in order to rerun the deployment, you may need to perform some cleanup of any deployed resources. See [Cleanup](./README.md#Cleanup
@@ -118,7 +118,7 @@ Once you've setup the sample, you should have the following deployed:
 2. A service principal with collaborator rights over the deployed resource group.
    
 3. Two Azure DevOps service connections found under `Project Settings > Service Connections`:
-   1. **azure-mdw-dataops** - An AzureRM service connection configured with the Service Principal. This is used to deploy to the AzureSQL database.
+   1. **mdw-dataops-azure** - An AzureRM service connection configured with the Service Principal. This is used to deploy to the AzureSQL database.
    2. **github-mdw-dataops** - A Github service connection used to pull from the forked repository. It uses the Github PAT token to authenticate.
 
      ![azuresql_devops_service_connections](./docs/images/azuresql_service_connections.PNG)
