@@ -2,11 +2,11 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "deployNs": {
-            "defaultValue": "ddo",
+        "deploy_namespace": {
+            "defaultValue": "mdwdo",
             "type": "string"
         },
-        "env": {
+        "environment": {
             "defaultValue": "dev",
             "type": "string",
             "allowedValues": [
@@ -15,39 +15,43 @@
                 "prod"
             ]
         },
-        "dbricksName": {
-            "defaultValue": "[concat(parameters('deployNs'), 'dbricks', parameters('env'))]",
+        "deployment_id": {
+            "defaultValue": "[substring(uniqueString(resourceGroup().id), 0, 5)]",
             "type": "String"
         },
-        "kvName": {
-            "defaultValue": "[concat(parameters('deployNs'), 'kv', parameters('env'), substring(uniqueString(resourceGroup().id), 0, 8))]",
+        "databricks_workspace_name": {
+            "defaultValue": "[concat(parameters('deploy_namespace'), 'dbricks', parameters('environment'), parameters('deployment_id'))]",
+            "type": "String"
+        },
+        "keyvault_name": {
+            "defaultValue": "[concat(parameters('deploy_namespace'), 'kv', parameters('environment'), parameters('deployment_id'))]",
             "type": "String",
             "metadata": {
                 "description": "Key Vault Name"
             }
         },
-        "kvOwnerObjectId": {
+        "keyvault_owner_object_id": {
             "type": "String",
             "metadata": {
                 "description": "Active Directory ObjectId to be granted full rights to KV"
             }
         },
-        "storName": {
-            "defaultValue": "[concat(parameters('deployNs'), 'stor', parameters('env'), substring(uniqueString(resourceGroup().id), 0, 8))]",
+        "storage_account_name": {
+            "defaultValue": "[concat(parameters('deploy_namespace'), 'stor', parameters('environment'), parameters('deployment_id'))]",
             "type": "String",
             "metadata": {
                 "description": "Storage account - ADLA Gen2"
             }
         },
-        "spStorName": {
-            "defaultValue": "[concat(parameters('deployNs'), 'sp', parameters('env'), substring(uniqueString(resourceGroup().id), 0, 8))]",
+        "service_principal_storage_name": {
+            "defaultValue": "[concat(parameters('deploy_namespace'), 'sp', parameters('environment'), parameters('deployment_id'))]",
             "type": "String",
             "metadata": {
                 "description": "Service Principal to be granted access to Storage Account - ADLA Gen2"
             }
         },
-        "adfName": {
-            "defaultValue": "[concat(parameters('deployNs'), 'adf', parameters('env'), substring(uniqueString(resourceGroup().id), 0, 8))]",
+        "datafactory_name": {
+            "defaultValue": "[concat(parameters('deploy_namespace'), 'adf', parameters('environment'), parameters('deployment_id'))]",
             "type": "string",
             "metadata": {
                 "description": "Data Factory Name"
@@ -56,16 +60,16 @@
     },
     "variables": {
         "managedResourceGroupId": "[concat(subscription().id, '/resourceGroups/', variables('managedResourceGroupName'))]",
-        "managedResourceGroupName": "[concat('databricks-rg-', parameters('dbricksName'), '-', uniqueString(parameters('dbricksName'), resourceGroup().id))]"
+        "managedResourceGroupName": "[concat('databricks-rg-', parameters('databricks_workspace_name'), '-', uniqueString(parameters('databricks_workspace_name'), resourceGroup().id))]"
     },
     "resources": [
         {
             "apiVersion": "2018-04-01",
             "location": "[resourceGroup().location]",
-            "name": "[parameters('dbricksName')]",
+            "name": "[parameters('databricks_workspace_name')]",
             "tags": {
                 "displayName": "Databricks Workspace",
-                "Environment": "[parameters('env')]"
+                "Environment": "[parameters('environment')]"
             },
             "sku": {
                 "name": "premium"
@@ -77,12 +81,12 @@
         },
         {
             "type": "Microsoft.KeyVault/vaults",
-            "name": "[parameters('kvName')]",
+            "name": "[parameters('keyvault_name')]",
             "apiVersion": "2015-06-01",
             "location": "[resourceGroup().location]",
             "tags": {
                 "displayName": "Key Vault",
-                "Environment": "[parameters('env')]"
+                "Environment": "[parameters('environment')]"
             },
             "properties": {
                 "enabledForDeployment": false,
@@ -91,7 +95,7 @@
                 "tenantId": "[subscription().tenantId]",
                 "accessPolicies": [{
                     "tenantId": "[subscription().tenantId]",
-                    "objectId": "[parameters('kvOwnerObjectId')]",
+                    "objectId": "[parameters('keyvault_owner_object_id')]",
                     "permissions": {
                         "keys": [
                             "All"
@@ -102,7 +106,7 @@
                     }
                 }, {
                     "tenantId": "[subscription().tenantId]",
-                    "objectId": "[reference(parameters('adfName'), '2018-06-01', 'Full').identity.principalId]",
+                    "objectId": "[reference(parameters('datafactory_name'), '2018-06-01', 'Full').identity.principalId]",
                     "permissions": {
                         "secrets": [
                             "get", "list"
@@ -122,12 +126,12 @@
                 "tier": "Standard"
             },
             "kind": "StorageV2",
-            "name": "[parameters('storName')]",
+            "name": "[parameters('storage_account_name')]",
             "apiVersion": "2018-07-01",
             "location": "[resourceGroup().location]",
             "tags": {
                 "displayName": "Data Lake",
-                "Environment": "[parameters('env')]"
+                "Environment": "[parameters('environment')]"
             },
             "scale": null,
             "properties": {
@@ -156,11 +160,11 @@
         },
         {
             "apiVersion": "2018-06-01",
-            "name": "[parameters('adfName')]",
+            "name": "[parameters('datafactory_name')]",
             "location": "[resourceGroup().location]",
             "tags": {
                 "displayName": "DataFactory",
-                "Environment": "[parameters('env')]"
+                "Environment": "[parameters('environment')]"
             },
             "type": "Microsoft.DataFactory/factories",
             "identity": {
@@ -170,24 +174,28 @@
         }
     ],
     "outputs": {
-        "dbricksName": {
-            "value": "[parameters('dbricksName')]",
+        "databricks_workspace_name": {
+            "value": "[parameters('databricks_workspace_name')]",
             "type": "string"
         },
-        "dbricksLocation": {
+        "databricks_location": {
             "value": "[resourceGroup().location]",
             "type": "string"
         },
-        "kvName": {
-            "value": "[parameters('kvName')]",
+        "databricks_workspace_id": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.Databricks/workspaces', parameters('databricks_workspace_name'))]"
+        },
+        "keyvault_name": {
+            "value": "[parameters('keyvault_name')]",
             "type": "string"
         },
-        "storName": {
-            "value": "[parameters('storName')]",
+        "storage_account_name": {
+            "value": "[parameters('storage_account_name')]",
             "type": "string"
         },
-        "spStorName": {
-            "value": "[parameters('spStorName')]",
+        "service_principal_storage_name": {
+            "value": "[parameters('service_principal_storage_name')]",
             "type": "string"
         }
     }
