@@ -61,6 +61,21 @@ cluster_exists () {
     fi
 }
 
+# Create secret scope, if not exists
+scope_name="storage_scope"
+if [[ -z $(databricks secrets list-scopes | grep "$scope_name") ]]; then
+    echo "Creating secrets scope: $scope_name"
+    databricks secrets create-scope --scope "$scope_name"
+fi
+
+# Create secrets
+echo "Creating secrets within scope $scope_name..."
+
+databricks secrets write --scope "$scope_name" --key "storage_account" --string-value  "$AZURE_STORAGE_ACCOUNT"
+databricks secrets write --scope "$scope_name" --key "storage_sp_id" --string-value  "$SP_STOR_ID"
+databricks secrets write --scope "$scope_name" --key "storage_sp_key" --string-value  "$SP_STOR_PASS"
+databricks secrets write --scope "$scope_name" --key "storage_sp_tenant" --string-value  "$SP_STOR_TENANT"
+
 # Upload notebooks
 echo "Uploading notebooks..."
 databricks workspace import_dir "./databricks/notebooks" "/notebooks" --overwrite
@@ -80,19 +95,6 @@ else
     databricks clusters create --json-file $cluster_config
 fi
 
-# Create secret scope, if not exists
-scope_name="storage_scope"
-if [[ -z $(databricks secrets list-scopes | grep "$scope_name") ]]; then
-    echo "Creating secrets scope: $scope_name"
-    databricks secrets create-scope --scope "$scope_name"
-fi
 
-# Create secrets
-echo "Creating secrets within scope $scope_name..."
-
-databricks secrets write --scope "$scope_name" --key "storage_account" --string-value  "$AZURE_STORAGE_ACCOUNT"
-databricks secrets write --scope "$scope_name" --key "storage_sp_id" --string-value  "$SP_STOR_ID"
-databricks secrets write --scope "$scope_name" --key "storage_sp_key" --string-value  "$SP_STOR_PASS"
-databricks secrets write --scope "$scope_name" --key "storage_sp_tenant" --string-value  "$SP_STOR_TENANT"
 
 echo "Completed configuring databricks."

@@ -101,11 +101,10 @@ sp_stor_out=$(az ad sp create-for-rbac \
     --role "Storage Blob Data Contributor" \
     --scopes "$stor_id" \
     --name $sp_stor_name \
-    --skip-assignment \
     --output json)
 export SP_STOR_ID=$(echo $sp_stor_out | jq -r '.appId')
-SP_STOR_PASS=$(echo $sp_stor_out | jq -r '.password')
-SP_STOR_TENANT=$(echo $sp_stor_out | jq -r '.tenant')
+export SP_STOR_PASS=$(echo $sp_stor_out | jq -r '.password')
+export SP_STOR_TENANT=$(echo $sp_stor_out | jq -r '.tenant')
 
 
 # ###########################
@@ -128,7 +127,7 @@ databricks_token=$(echo $api_response | jq -r '.token_value')
 export DATABRICKS_TOKEN=$databricks_token
 
 # Configure databricks
-sleep 5m # It takes a while for a databricks workspace to be ready for new clusters. 
+sleep 5m # It takes a while for a databricks workspace to be ready for new clusters.
 . ./scripts/configure_databricks.sh
 
 
@@ -144,8 +143,8 @@ az keyvault secret set --vault-name $kv_name --name "spStorName" --value $sp_sto
 az keyvault secret set --vault-name $kv_name --name "spStorId" --value $SP_STOR_ID
 az keyvault secret set --vault-name $kv_name --name "spStorPass" --value $SP_STOR_PASS
 az keyvault secret set --vault-name $kv_name --name "spStorTenantId" --value $SP_STOR_TENANT
-az keyvault secret set --vault-name $kv_name --name "dbricksDomain" --value https://${databricks_location}.azuredatabricks.net
-az keyvault secret set --vault-name $kv_name --name "dbricksToken" --value $databricks_token
+az keyvault secret set --vault-name $kv_name --name "dbricksDomain" --value $DATABRICKS_HOST
+az keyvault secret set --vault-name $kv_name --name "dbricksToken" --value $DATABRICKS_TOKEN
 
 
 ####################
@@ -169,7 +168,3 @@ DATABRICKS_TOKEN=${DATABRICKS_TOKEN}
 
 EOF
 echo "Completed deploying Azure resources $RESOURCE_GROUP_NAME ($ENV_NAME)"
-
-
-echo "Return to parent script dir: $parent_dir"
-cd "$parent_dir"

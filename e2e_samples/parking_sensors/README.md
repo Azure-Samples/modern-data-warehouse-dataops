@@ -31,9 +31,10 @@ For a detailed walk-through of the solution and key concepts, watch the followin
 ### Software pre-requisites:
 1. For Windows users, [Windows Subsystem For Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
 2. [az cli 2.x](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
-3. [Python 3+](https://www.python.org/)
-4. [databricks-cli](https://docs.azuredatabricks.net/dev-tools/databricks-cli.html)
-5. [jq](https://stedolan.github.io/jq/)
+3. [azu cli - storage-preview extension](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-directory-file-acl-cli)
+4. [Python 3+](https://www.python.org/)
+5. [databricks-cli](https://docs.azuredatabricks.net/dev-tools/databricks-cli.html)
+6. [jq](https://stedolan.github.io/jq/)
 
 NOTE: This deployment was tested using WSL (Ubuntu 16.04) and Debian GNU/Linux 9.9 (stretch)
 
@@ -50,7 +51,6 @@ NOTE: This deployment was tested using WSL (Ubuntu 16.04) and Debian GNU/Linux 9
             - KeyVault with all secrets stored.
         - This will create a local `.env.{environment_name}` files containing essential configuration information.
         - All Azure resources are tagged with correct Environment.
-        - IMPORTANT: Due to a limitation of the inability to generate Databricks PAT tokens automatically, you will be prompted generate and enter this per environment. See [here](https://docs.azuredatabricks.net/dev-tools/databricks-cli.html#set-up-authentication) for more information.
         - The solution is designed such that **all** starting environment deployment configuration should be specified in the arm.parameters files. This is to centralize configuration.
 
 3. **Setup ADF git integration in DEV Data Factory**
@@ -74,11 +74,11 @@ NOTE: This deployment was tested using WSL (Ubuntu 16.04) and Debian GNU/Linux 9
     2. Under "Where is your code?", select Github (YAML).
         - If you have not yet already, you maybe prompted to connect your Github account. See [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/github?view=azure-devops&tabs=yaml#grant-access-to-your-github-repositories) for more information.
     3. Under "Select a repository", select your forked repo.
-    3. Under "Configure your pipeline", select "Existing Azure Pipelines YAML file".
+    4. Under "Configure your pipeline", select "Existing Azure Pipelines YAML file".
         - Branch: master
         - Path: `/src/ddo_transform/azure-pipelines-ci-qa.yaml`
-    4. Select `Run`.
-    5. Repeat steps 1-4, but select as the path `/src/ddo_transform/azure-pipelines-ci-artifacts`.
+    5. Select `Run`.
+    6. Repeat steps 1-4, but select as the path `/src/ddo_transform/azure-pipelines-ci-artifacts`.
 
 5. **Setup Release Pipelines**
     - **WIP**
