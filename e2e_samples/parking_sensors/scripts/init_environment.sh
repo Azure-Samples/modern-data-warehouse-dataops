@@ -9,20 +9,6 @@ then
     echo "No deployment id [DEPLOYMENT_ID] specified, defaulting to $DEPLOYMENT_ID"
 fi
 
-BRANCH_NAME=${BRANCH_NAME:-}
-if [ -z $BRANCH_NAME ]
-then 
-    export BRANCH_NAME='master'
-    echo "No working branch name [BRANCH_NAME] specified, defaulting to $BRANCH_NAME"
-fi
-
-AZURESQL_SERVER_PASSWORD=${AZURESQL_SERVER_PASSWORD:-}
-if [ -z $AZURESQL_SERVER_PASSWORD ]
-then 
-    export AZURESQL_SERVER_PASSWORD="mdw-dataops-parking-SqlP@ss-${DEPLOYMENT_ID}"
-    echo "No password for sql server [AZURESQL_SERVER_PASSWORD] specified, defaulting to $AZURESQL_SERVER_PASSWORD"
-fi
-
 RESOURCE_GROUP_NAME_PREFIX=${RESOURCE_GROUP_NAME_PREFIX:-}
 if [ -z $RESOURCE_GROUP_NAME_PREFIX ]
 then 
