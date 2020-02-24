@@ -2,7 +2,7 @@
 
 # Deploy AzureSQL
 echo "Deploying resources into $RESOURCE_GROUP_NAME"
-sqlsrvr_name=mdw-dataops-azuresql-${DEPLOYMENT_ID}-sqlsrvr-03
+sqlsrvr_name=mdwdo-azsql-${DEPLOYMENT_ID}-sqlsrvr-03
 arm_output=$(az group deployment create \
     --resource-group "$RESOURCE_GROUP_NAME" \
     --template-file "./infrastructure/azuredeploy.json" \
@@ -10,7 +10,7 @@ arm_output=$(az group deployment create \
     --output json)
 
 # Create pipeline
-pipeline_name=mdw-dataops-azuresql-${DEPLOYMENT_ID}-azuresql-03-simple-multi-stage
+pipeline_name=mdwdo-azsql-${DEPLOYMENT_ID}-azuresql-03-simple-multi-stage
 echo "Creating Pipeline: $pipeline_name in Azure DevOps"
 pipeline_id=$(az pipelines create \
     --name "$pipeline_name" \

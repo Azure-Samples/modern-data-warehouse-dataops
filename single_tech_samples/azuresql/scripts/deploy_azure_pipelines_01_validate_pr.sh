@@ -6,7 +6,7 @@
 ###############
 # Deploy Pipelines: validate pr
 
-pipeline_name=mdw-dataops-azuresql-${DEPLOYMENT_ID}-azuresql-01-validate-pr
+pipeline_name=mdwdo-azsql-${DEPLOYMENT_ID}-azuresql-01-validate-pr
 echo "Creating Pipeline: $pipeline_name in Azure DevOps"
 az pipelines create \
     --name "$pipeline_name" \
