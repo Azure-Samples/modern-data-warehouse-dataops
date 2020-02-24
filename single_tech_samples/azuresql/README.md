@@ -95,19 +95,27 @@ To setup the samples, run the following:
    1. You are logged in to the Azure CLI. To login, run `az login`.
    1. Azure CLI is targeting the Azure Subscription you want to deploy the resources to. To set target Azure Subscription, run `az account set -s <AZURE_SUBSCRIPTION_ID>`
    2. Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to. To set target Azure DevOps project, run `az devops configure --defaults organization=https://dev.azure.com/MY_ORG/ project=MY_PROJECT`
-2. Fork and clone this repository. `cd` in to `single_tech_samples/azuresql`.
+2. Fork* and clone this repository. `cd` in to `single_tech_samples/azuresql`.
 3. Set the following environment variables:
-   1. **RESOURCE_GROUP_NAME** - target resource group to deploy to
-   2. **RESOURCE_GROUP_LOCATION** - location of target resource group
-   3. **GITHUB_REPO_URL** - URL of your forked github repo
-   4. **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). This requires "repo" scope.
-   5. **AZURESQL_SERVER_PASSWORD** - Password of the admin account for your AzureSQL server instance. Default username: *sqlAdmin*.
-4. Run `./deploy.sh`.
+   1. **GITHUB_REPO_URL** - URL of your forked github repo
+   2. **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). This requires "repo" scope.
+   Optionally, set the following environment variables: 
+   1. **DEPLOYMENT_ID** - string appended to all resource names. *Default*: random five character string.
+   2. **BRANCH_NAME**** - git branch with Azure DevOps pipelines definitions to deploy. *Default*: master.
+   3. **RESOURCE_GROUP_NAME** - target resource group to deploy to
+   4. **RESOURCE_GROUP_LOCATION** - location of target resource group
+   5. **AZURESQL_SERVER_PASSWORD** - Password of the admin account for your AzureSQL server instance. Default: mdw-dataops-SqlP@ss-${DEPLOYMENT_ID}
+      1. Username is set to *sqlAdmin*.
+4. Run `./deploy.sh`.***
 
-*Note that in case of any errors midway through the script, in order to rerun the deployment, you may need to perform some cleanup of any deployed resources. See [Cleanup](./README.md#Cleanup
+#### Additional notes:
+
+**Your forked repo will serve as the main repository which triggers all pipelines -- allowing you complete control over the sample solution as compared to using the main Azure-Samples repository directly. All pipeline defintions are also pulled from this fork*.
+
+***The pipelines are deployed to use the master branch by default. This can be inconvenient when working on the pipelines in a different branch. You can set the BRANCH_NAME environment variable to override this behaviour. This makes it easier to test changes to your pipeline file. Be sure to push the changes in your yaml file to your repo before running the deployment script. Note that it does not change branch triggers.*
+
+****Note that in case of any errors midway through the script, in order to rerun the deployment, you may need to perform some cleanup of any deployed resources. See [Cleanup](./README.md#Cleanup
 ) below.*
-
-*The pipelines are deployed to use the master branch by default. This can be inconvenient when working on the pipelines in a different branch. You can set the BRANCH_NAME environment variable to override this behaviour. This makes it easier to test changes to your pipeline file. Be sure to push the changes in your yaml file to your repo before running the deployment script. Note that it does not change branch triggers.*
 
 ### Deployed resources
 
