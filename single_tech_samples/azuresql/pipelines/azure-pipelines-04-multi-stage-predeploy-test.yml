@@ -49,7 +49,7 @@ stages:
     steps:
     - task: AzureCLI@2
       inputs:
-        azureSubscription: 'mdw-dataops-azure'
+        azureSubscription: 'mdw-dataops-azuresql'
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
@@ -72,12 +72,12 @@ stages:
       artifact: 'sql_dacpac'
     - task: AzureKeyVault@1
       inputs:
-        azureSubscription: 'mdw-dataops-azure'
+        azureSubscription: 'mdw-dataops-azuresql'
         KeyVaultName: '$(AZURE_KEYVAULT_NAME)'
         SecretsFilter: '*'
     - task: SqlAzureDacpacDeployment@1
       inputs:
-        azureSubscription: 'mdw-dataops-azure'
+        azureSubscription: 'mdw-dataops-azuresql'
         AuthenticationType: 'server'
         ServerName: '$(AZURESQL_FULL_SERVER_NAME)'
         DatabaseName: '$(AZURESQL_RESTORED_DB_NAME)'
@@ -96,7 +96,7 @@ stages:
     steps:
     - task: AzureCLI@2
       inputs:
-        azureSubscription: 'mdw-dataops-azure'
+        azureSubscription: 'mdw-dataops-azuresql'
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
@@ -118,12 +118,12 @@ stages:
       artifact: 'sql_dacpac'
     - task: AzureKeyVault@1
       inputs:
-        azureSubscription: 'mdw-dataops-azure'
+        azureSubscription: 'mdw-dataops-azuresql'
         KeyVaultName: '$(AZURE_KEYVAULT_NAME)'
         SecretsFilter: '*'
     - task: SqlAzureDacpacDeployment@1
       inputs:
-        azureSubscription: 'mdw-dataops-azure'
+        azureSubscription: 'mdw-dataops-azuresql'
         AuthenticationType: 'server'
         ServerName: '$(AZURESQL_FULL_SERVER_NAME)'
         DatabaseName: '$(AZURESQL_DB_NAME)'

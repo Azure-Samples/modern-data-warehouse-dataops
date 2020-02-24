@@ -30,13 +30,13 @@ fi
 
 if [ -z $AZURESQL_SERVER_PASSWORD ]
 then 
-    export AZURESQL_SERVER_PASSWORD="mdw-dataops-SqlP@ss-${DEPLOYMENT_ID}"
+    export AZURESQL_SERVER_PASSWORD="mdw-dataops-azuresql-SqlP@ss-${DEPLOYMENT_ID}"
     echo "No password for sql server specified, defaulting to $AZURESQL_SERVER_PASSWORD"
 fi
 
 if [ -z $RESOURCE_GROUP_NAME ]
 then 
-    export RESOURCE_GROUP_NAME="mdw-dataops-${DEPLOYMENT_ID}-rg"
+    export RESOURCE_GROUP_NAME="mdw-dataops-azuresql-${DEPLOYMENT_ID}-rg"
     echo "No resource group name specified, defaulting to $RESOURCE_GROUP_NAME"
 fi
 
