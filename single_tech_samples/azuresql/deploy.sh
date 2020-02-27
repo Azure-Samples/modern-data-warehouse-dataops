@@ -23,7 +23,7 @@
 
 set -o errexit
 set -o pipefail
-set -o xtrace # For debugging
+# set -o xtrace # For debugging
 
 # REQUIRED VARIABLES:
 # GITHUB_REPO_URL - Github URL
