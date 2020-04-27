@@ -18,7 +18,7 @@ sqlsrvr_name=mdwdo-azsql-${DEPLOYMENT_ID}-sqlsrvr04
 
 echo "Deploying Azure SQL server $sqlsrvr_name"
 
-arm_output=$(az group deployment create \
+arm_output=$(az deployment group create \
     --resource-group "$RESOURCE_GROUP_NAME" \
     --template-file "./infrastructure/azuredeploy.json" \
     --parameters AZURESQL_SERVER_PASSWORD=${AZURESQL_SERVER_PASSWORD} azuresql_srvr_name=${sqlsrvr_name} azuresql_srvr_display_name="SQL Server - Multi-Stage Pipeline with pre-deployment test" deployment_id=${DEPLOYMENT_ID} \
