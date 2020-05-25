@@ -8,8 +8,8 @@ pr:
     - e2e_samples/parking_sensors/sql/ddo_transform/*
 
 variables:
-  sqlDwPath: 'e2e_samples/parking_sensors/sql/pandemic_reporting_dw'
-  sqlDwSolutionName: 'pandemic_reporting_dw'
+  sqlDwPath: 'e2e_samples/parking_sensors/sql/ddo_azuresqldw_dw'
+  sqlDwSolutionName: 'ddo_azuresqldw_dw'
   sqlDwSolution: '$(sqlDwPath)/$(sqlDwSolutionName).sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Debug'
