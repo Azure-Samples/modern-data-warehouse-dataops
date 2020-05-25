@@ -5,11 +5,12 @@ trigger:
     - release/*
 
 variables:
-  pythonWorkingDir: 'src/ddo_transform'
+  basePath: 'e2e_samples/parking_sensors'
+  pythonWorkingDir: '$(basePath)/src/ddo_transform'
   pythonPackageMajorVersion:  1
   pythonPackageMinorVersion:  1
   pythonPackagePatchVersion:  $(Build.BuildId)
-  sqlDwPath: 'sql/ddo_azuresqldw_dw'
+  sqlDwPath: '$(basePath)/sql/ddo_azuresqldw_dw'
   sqlDwSolutionName: 'ddo_azuresqldw_dw'
   sqlDwSolution: '$(sqlDwPath)/$(sqlDwSolutionName).sln'
   buildPlatform: 'Any CPU'
@@ -106,7 +107,7 @@ stages:
 
     - task: PublishBuildArtifacts@1
       inputs:
-        PathtoPublish: 'adf/_scripts/deploymentadf.ps1'
+        PathtoPublish: '$(basePath)/adf/_scripts/deploymentadf.ps1'
         ArtifactName: 'adf_scripts'
       displayName: 'Publish ADF Scripts'
 
