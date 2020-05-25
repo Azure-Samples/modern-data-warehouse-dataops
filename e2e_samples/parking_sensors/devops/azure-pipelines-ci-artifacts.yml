@@ -3,6 +3,9 @@ trigger:
     include:
     - master
     - release/*
+  paths:
+    include:
+    - e2e_samples/parking_sensors/*
 
 variables:
   basePath: 'e2e_samples/parking_sensors'
