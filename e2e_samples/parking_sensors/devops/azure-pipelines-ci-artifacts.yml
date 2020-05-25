@@ -101,7 +101,7 @@ stages:
     steps:
     - task: PublishBuildArtifacts@1
       inputs:
-        PathtoPublish: 'databricks'
+        PathtoPublish: '$(basePath)/databricks'
         ArtifactName: 'databricks'
       displayName: 'Publish Databricks Artifacts'
 
