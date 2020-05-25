@@ -1,0 +1,35 @@
+pr:
+  branches:
+    include:
+    - master
+    - releases/*
+  paths:
+    include:
+    - e2e_samples/parking_sensors/sql/ddo_transform/*
+
+variables:
+  sqlDwPath: 'e2e_samples/parking_sensors/sql/pandemic_reporting_dw'
+  sqlDwSolutionName: 'pandemic_reporting_dw'
+  sqlDwSolution: '$(sqlDwPath)/$(sqlDwSolutionName).sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Debug'
+
+pool:
+  vmImage: 'windows-latest'
+
+steps:
+- task: NuGetToolInstaller@1
+
+- task: NuGetCommand@2
+  inputs:
+    restoreSolution: '$(sqlDwSolution)'
+
+- task: VSBuild@1
+  inputs:
+    solution: '$(sqlDwSolution)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+- task: VSTest@2
+  inputs:
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
