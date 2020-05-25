@@ -20,56 +20,8 @@ variables:
   buildConfiguration: 'Release'
 
 stages:
-# - stage: 'validate_pr'
-#   displayName: 'Validate PR'
-#   condition: and(always(), eq(variables['Build.Reason'], 'PullRequest'))
-#   jobs:
-#   - job: 'validate_python_packages'
-#     displayName: 'Validate Python Packages'
-#     pool:
-#       vmImage: 'Ubuntu-16.04'
-#     steps:
-#     - task: UsePythonVersion@0
-#       inputs:
-#         versionSpec: '3.6'
-#         architecture: 'x64'
-
-#     - script: pip install -r requirements_dev.txt && pip install -r requirements.txt
-#       workingDirectory: $(pythonWorkingDir)
-#       displayName: 'Install requirements'
-
-#     - script: make lint 
-#       workingDirectory: $(pythonWorkingDir)
-#       displayName: 'Run lint'
-
-#     - script: make test
-#       workingDirectory: $(pythonWorkingDir)
-#       displayName: 'Run tests'
-
-#   - job: 'validate_sql_packages'
-#     displayName: 'Validate SQL Packages'
-#     pool:
-#       vmImage: 'windows-latest'
-#     steps:
-#     - task: NuGetToolInstaller@1
-
-#     - task: NuGetCommand@2
-#       inputs:
-#         restoreSolution: '$(sqlDwSolution)'
-
-#     - task: VSBuild@1
-#       inputs:
-#         solution: '$(sqlDwSolution)'
-#         platform: '$(buildPlatform)'
-#         configuration: '$(buildConfiguration)'
-#     - task: VSTest@2
-#       inputs:
-#         platform: '$(buildPlatform)'
-#         configuration: '$(buildConfiguration)'
-
 - stage: 'publish_artifacts'
   displayName: 'Publish Build Artifacts'
-  # condition: and(always(), contains(variables['Build.SourceBranch'], 'refs/heads/master'))
   jobs:
   - job: 'publish_python_packages'
     displayName: 'Publish Python Packages'
