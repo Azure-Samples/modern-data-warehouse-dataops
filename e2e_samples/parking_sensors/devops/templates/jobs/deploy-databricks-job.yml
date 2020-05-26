@@ -41,9 +41,9 @@ jobs:
             echo "Uploading notebooks at ${NOTEBOOKS_PATH} to workspace (${DATABRICKS_NOTEBOOK_PATH})..."
             databricks workspace import_dir --overwrite "${NOTEBOOKS_PATH}" "${DATABRICKS_NOTEBOOK_PATH}"
           env:
-            DATABRICKS_HOST: $(databricks-domain)
-            DATABRICKS_TOKEN: $(databricks-token)
-            DBFS_LIBS_PATH: $(dbfsLibPath)
+            DATABRICKS_HOST: $(databricksDomain)
+            DATABRICKS_TOKEN: $(databricksToken)
+            DBFS_LIBS_PATH: $(databricksDbfsLibPath)
             WHEEL_FILE_PATH: $(Pipeline.Workspace)/ciartifacts/dist
             WHEEL_FILE_NAME: $(setPackageWheelName.packageWheelName)
             NOTEBOOKS_PATH: $(Pipeline.Workspace)/ciartifacts/databricks/notebooks

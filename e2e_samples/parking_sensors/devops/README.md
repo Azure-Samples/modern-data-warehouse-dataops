@@ -1,31 +1,28 @@
-Required Variables:
 
-Data Factory
-devAdfName
-Pipeline Specific Parameters:
+# DevOps Pipelines
 
+## Required Variables:
+The following variables needs to be set in your Release Pipelines.
 
-# Azure
-azureLocation
-rgName
-kvUrl
+### Solution Specific Variables:
+- devAdfName - Name of the of ADF instance which has Git integration enabled.
 
-# Databricks
-databricksClusterId
-databricksNotebookPath
-dbfsLibPath
+### Environment Specific Variables:
+These variables are stored in Variables Groups.
+- azureLocation
+- rgName
+- databricksClusterId
+- databricksNotebookPath
+- databricksDbfsLibPath
+- adfName
+- kvUrl
 
+#### From KeyVault
+- sqlsrvrPassword
+- sqlsrvUsername
+- databricksDomain
+- databricksToken
+- sqlsrvrName
+- datalakeUrl
+- sqlDwDatabaseName
 
-# Datalake
-datalakeUrl
-datalakeAccountName
-
-
-## SQL
-sqlDwDatabaseName
-sqlServerName
-
-sqlsrvrPassword
-sqlsrvUsername
-databricksDomain
-databricksToken
