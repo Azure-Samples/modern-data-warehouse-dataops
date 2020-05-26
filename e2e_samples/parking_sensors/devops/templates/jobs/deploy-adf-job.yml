@@ -1,0 +1,50 @@
+parameters:
+- name: environmentName
+  type: string
+- name: azureSubscription
+  type: string
+
+jobs:
+- deployment: deploy_adf
+  dependsOn: deploy_databricks
+  displayName: 'Deploy to Azure Data Factory'
+  pool:
+    vmImage: 'vs2017-win2016'
+  variables:
+    packageWheelName: $[ dependencies.deploy_databricks.outputs['setPackageWheelName.packageWheelName'] ]
+  environment: ${{ parameters.environmentName }}
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - checkout: mdwdataops_adfpublish
+          path: 'adf_publish' 
+
+        # https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/deploy/azure-powershell
+        - task: AzurePowerShell@4
+          inputs:
+            azureSubscription: ${{ parameters.azureSubscription }}
+            ScriptPath: '$(Pipeline.Workspace)/ciartifacts/adf_scripts/deploymentadf.ps1'
+            ScriptArguments: '-armTemplate "$(Pipeline.Workspace)\adf_publish\$(devAdfName)\ARMTemplateForFactory.json" -ResourceGroupName "$(rgName)" -DataFactoryName "$(adfName)" -predeployment $true'
+            azurePowerShellVersion: LatestVersion
+          displayName: 'Azure PowerShell script: Stop ADF triggers'
+
+        # https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/deploy/azure-resource-group-deployment
+        - task: AzureResourceGroupDeployment@2
+          displayName: 'Azure Deployment:Create Or Update Resource Group action on $(rgName)'
+          inputs:
+            azureSubscription: ${{ parameters.azureSubscription }}
+            resourceGroupName: '$(rgName)'
+            location: '$(azureLocation)'
+            csmFile: '$(Pipeline.Workspace)/adf_publish/$(devAdfName)/ARMTemplateForFactory.json'
+            csmParametersFile: '$(Pipeline.Workspace)/adf_publish/$(devAdfName)/ARMTemplateParametersForFactory.json'
+            overrideParameters: -factoryName "$(adfName)" -ls_databricks_01_properties_typeProperties_existingClusterId "$(databricksClusterId)" -ls_kv_01_properties_typeProperties_baseUrl "$(kvUrl)" -ls_lake_01_properties_typeProperties_url "$(datalakeUrl)" -ls_lake_01_properties_typeProperties_tenant "$(datalake-sp-tenant)" -ls_lake_01_properties_typeProperties_servicePrincipalId "$(datalake-sp-id)" -process_covid_results_cosmos_properties_0_typeProperties_notebookPath "$(databricksNotebookPath)/standardize_cosmos_data" -process_covid_results_cosmos_properties_0_typeProperties_0_whl "$(dbfsLibPath)/$(packageWheelName)" -process_covid_results_csv_properties_1_typeProperties_notebookPath "$(databricksNotebookPath)/standardize_csv_data" -tr_event_auslab_out_properties_typeProperties_scope "$(adfInCsvBlobStorageResourceId)" -tr_event_pwest_out_properties_typeProperties_scope "$(adfInCsvBlobStorageResourceId)" -tr_event_seals_out_properties_typeProperties_scope "$(adfInCsvBlobStorageResourceId)" -tr_event_sswps_out_properties_typeProperties_scope "$(adfInCsvBlobStorageResourceId)" tr_tumwin_cosmos_properties_pipeline_parameters_base_data_path $(databricksCosmosDataBasePath)
+
+        # https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/deploy/azure-powershell
+        - task: AzurePowerShell@4
+          displayName: 'Azure PowerShell script: Start ADF triggers'
+          inputs:
+            azureSubscription: ${{ parameters.azureSubscription }} #'$(AZURE_SUBSCRIPTION)'
+            ScriptPath: '$(Pipeline.Workspace)/ciartifacts/adf_scripts/deploymentadf.ps1'
+            ScriptArguments: '-armTemplate "$(Pipeline.Workspace)\adf_publish\$(devAdfName)\ARMTemplateForFactory.json" -ResourceGroupName "$(rgName)" -DataFactoryName "$(adfName)" -predeployment $false'
+            azurePowerShellVersion: LatestVersion

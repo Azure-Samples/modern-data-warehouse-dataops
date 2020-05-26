@@ -1,0 +1,31 @@
+parameters:
+- name: environmentName
+  type: string
+- name: azureSubscription
+  type: string
+
+jobs:
+- deployment: deploy_azuresqldb
+  displayName: 'Deploy to AzureSQLDB'
+  pool:
+    vmImage: 'windows-latest'  
+  variables:
+    sqlProjName: dwsqldb
+  environment: ${{ parameters.environmentName }} 
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - task: SqlAzureDacpacDeployment@1
+          inputs:
+            azureSubscription: ${{ parameters.azureSubscription }}
+            AuthenticationType: 'server'
+            ServerName: $(sqlServerName)
+            DatabaseName: $(sqlDatabaseName)
+            SqlUsername: '$(sqlsrvr-username)'
+            SqlPassword: '$(sqlsrvr-password)'
+            deployType: 'DacpacTask'
+            DacpacFile: '$(Pipeline.Workspace)/ciartifacts/sql_dacpac/$(sqlProjName).dacpac'
+            # Deploy data for the initial deployment only (not seed data which has been loaded previously)
+            AdditionalArguments: '/Variables:DeployData=false'
+          displayName: 'Azure SQL Dacpac'

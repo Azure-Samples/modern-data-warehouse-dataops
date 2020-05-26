@@ -1,0 +1,52 @@
+trigger: none
+
+resources:
+  pipelines:
+  - pipeline: ciartifacts
+    source: ci-artifacts
+    trigger: 
+      branches:
+      - releases/*
+  repositories:
+  - repository: mdwdataops_adfpublish
+    type: github
+    endpoint: devlace_github
+    name: Azure-Samples/modern-data-warehouse-dataops
+    ref: adf_publish
+
+stages:
+- stage: deploy_to_stg
+  displayName: 'Deploy to Stage'
+  variables:
+  - group: release_stage
+  - group: keyvault_stage
+  jobs: 
+  - template: templates/jobs/deploy-databricks-job.yml
+    parameters:
+      environmentName: 'STG'
+  - template: templates/jobs/deploy-azuresqldb-job.yml
+    parameters:
+      environmentName: 'STG' 
+      serviceConnection: 'TODO FILL ME UP'
+  - template: templates/jobs/deploy-adf-job.yml
+    parameters:
+      environmentName: 'STG' 
+      serviceConnection: 'TODO FILL ME UP'
+
+- stage: deploy_to_prod
+  displayName: 'Deploy to Production'
+  variables:
+  - group: release_prod
+  - group: keyvault_prod
+  jobs: 
+  - template: templates/jobs/deploy-databricks-job.yml
+    parameters:
+      environmentName: 'PROD'
+  - template: templates/jobs/deploy-azuresqldb-job.yml
+    parameters:
+      environmentName: 'PROD' 
+      serviceConnection: 'TODO FILL ME UP'
+  - template: templates/jobs/deploy-adf-job.yml
+    parameters:
+      environmentName: 'PROD' 
+      serviceConnection: 'TODO FILL ME UP'
