@@ -25,6 +25,5 @@ These variables are stored in Variables Groups.
 - sqlsrvUsername
 - databricksDomain
 - databricksToken
-- datalakeUrl
-
-
+- datalakeKey
+- datalakeAccountName

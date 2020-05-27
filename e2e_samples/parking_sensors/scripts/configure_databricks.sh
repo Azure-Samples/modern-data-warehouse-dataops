@@ -72,6 +72,8 @@ fi
 echo "Creating secrets within scope $scope_name..."
 
 # TODO: add application insights key
+
+databricks secrets write --scope "$scope_name" --key "appinsights_key" --string-value  "$AZURE_STORAGE_ACCOUNT"
 databricks secrets write --scope "$scope_name" --key "storage_account" --string-value  "$AZURE_STORAGE_ACCOUNT"
 databricks secrets write --scope "$scope_name" --key "storage_sp_id" --string-value  "$SP_STOR_ID"
 databricks secrets write --scope "$scope_name" --key "storage_sp_key" --string-value  "$SP_STOR_PASS"
