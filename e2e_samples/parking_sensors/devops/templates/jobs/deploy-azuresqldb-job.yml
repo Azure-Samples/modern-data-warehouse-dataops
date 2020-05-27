@@ -26,6 +26,6 @@ jobs:
             SqlUsername: '$(sqlsrvrUsername)'
             SqlPassword: '$(sqlsrvrPassword)'
             deployType: 'DacpacTask'
-            DacpacFile: '$(Pipeline.Workspace)/ciartifacts/sql_dacpac/$(sqlProjName).dacpac'
+            DacpacFile: '$(Pipeline.Workspace)/ciartifacts/sql_dw_dacpac/$(sqlProjName).dacpac'
             AdditionalArguments: '/Variables:ADLSLocation=abfss://datalake@$(datalakeAccountName).dfs.core.windows.net /Variables:ADLSCredentialKey=$(datalakeKey)'
           displayName: 'Azure SQL Dacpac'
