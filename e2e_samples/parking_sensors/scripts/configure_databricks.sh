@@ -71,6 +71,7 @@ fi
 # Create secrets
 echo "Creating secrets within scope $scope_name..."
 
+# TODO: add application insights key
 databricks secrets write --scope "$scope_name" --key "storage_account" --string-value  "$AZURE_STORAGE_ACCOUNT"
 databricks secrets write --scope "$scope_name" --key "storage_sp_id" --string-value  "$SP_STOR_ID"
 databricks secrets write --scope "$scope_name" --key "storage_sp_key" --string-value  "$SP_STOR_PASS"
@@ -95,6 +96,8 @@ else
     databricks clusters create --json-file $cluster_config
 fi
 
+# TODO:
+# Build python package, upload whl file to libs path
 
 
 echo "Completed configuring databricks."
