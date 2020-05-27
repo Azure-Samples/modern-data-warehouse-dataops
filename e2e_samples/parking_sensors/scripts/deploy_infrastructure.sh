@@ -68,6 +68,10 @@ if [[ -z $arm_output ]]; then
     exit 1
 fi
 
+# TODO: Add SQLDW deployment + DACPAC
+# TODO: Add ApplicationInsights and Log Analytics
+# TODO: Add CI/CD pipelines + Variable groups
+
 
 #########################
 # CREATE AND CONFIGURE SERVICE PRINCIPAL FOR ADLA GEN2

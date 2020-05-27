@@ -1,5 +1,6 @@
 trigger: none
 
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/process/resources?view=azure-devops&tabs=schema
 resources:
   pipelines:
   - pipeline: ciartifacts
@@ -10,8 +11,8 @@ resources:
   repositories:
   - repository: mdwdataops_adfpublish
     type: github
-    endpoint: devlace_github
-    name: Azure-Samples/modern-data-warehouse-dataops
+    endpoint: github_service_connection
+    name: devlace/mdw-dataops-clone
     ref: adf_publish
 
 stages:
