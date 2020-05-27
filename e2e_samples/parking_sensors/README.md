@@ -156,9 +156,9 @@ NOTE: This deployment was tested using WSL (Ubuntu 16.04) and Debian GNU/Linux 9
 
 ### Setup and Deployment
 
-1. Fork this repository. Forking is necessary if you want to setup git integration with Azure Data Factory.
+1. Import this repository into a new Github repo. Importing is necessary if you want to setup git integration with Azure Data Factory.
 2. **Deploy Azure resources.** 
-    1. Clone the forked repository and `cd` into the root of the repo
+    1. Clone the imported repository locally and `cd` into the root of the repo
     2. Run `./deploy.sh`.
         - You can customize the solution by setting the following environment variables:
           - DEPLOYMENT_ID - string appended to all resource names. Default: random five character string.
@@ -174,26 +174,28 @@ NOTE: This deployment was tested using WSL (Ubuntu 16.04) and Debian GNU/Linux 9
     3. On the landing page, select "Set up code repository". For more information, see [here](https://docs.microsoft.com/en-us/azure/data-factory/source-control).
     4. Fill in the repository settings with the following:
         - Repository type: **Github**
-        - Github Account: ***your_Github_account***
-        - Git repository name: **forked Github repository**
+        - Github Account: **your_Github_account**
+        - Git repository name: **imported Github repository**
         - Collaboration branch: **master**
-        - Root folder: **/adf**
+        - Root folder: **e2e_samples/parking_sensors/adf**
         - Import Existing Data Factory resource to repository: **Unselected**
     5. Navigating to "Author" tab, you should see all the pipelines deployed.
     6. Select `Connections` > `Ls_KeyVault`. Update the Base Url to the KeyVault Url of your DEV environment.
     7. Select `Connections` > `Ls_AdlsGen2_01`. Update URL to the ADLS Gen2 Url of your DEV environment.
     8. Click `Publish` to publish changes.
 
-4. **Setup Build Pipelines.** You will be creating two build pipelines, one which will trigger for every pull request which will run Unit Testing + Linting, and the second one which will trigger on every commit to master and will create the actual build artifacts for release.
+4. **Setup Build Pipelines.** You will be creating three build pipelines, two which will trigger for every pull request which will run Unit Testing + Linting, and the third one which will trigger on every commit to master and will create the actual build artifacts for release.
     1. In Azure DevOps, navigate to `Pipelines`. Select "Create Pipeline".
     2. Under "Where is your code?", select Github (YAML).
         - If you have not yet already, you maybe prompted to connect your Github account. See [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/github?view=azure-devops&tabs=yaml#grant-access-to-your-github-repositories) for more information.
-    3. Under "Select a repository", select your forked repo.
+    3. Under "Select a repository", select your repo.
     4. Under "Configure your pipeline", select "Existing Azure Pipelines YAML file".
         - Branch: master
-        - Path: `/src/ddo_transform/azure-pipelines-ci-qa.yaml`
+        - Path: `/e2e_samples/parking_sensors/devops/azure-pipelines-ci-qa-python.yaml`
     5. Select `Run`.
-    6. Repeat steps 1-4, but select as the path `/src/ddo_transform/azure-pipelines-ci-artifacts`.
+    6. Repeat steps 1-4 with the following pipelines:
+       1. `azure-pipelines-ci-qa-sql.yaml`
+       2. `azure-pipelines-ci-artifacts.yaml`
 
 5. **Setup Release Pipelines**
     - **WIP**. Release Pipelines set to be converted to YAML format. See this [issue](https://github.com/Azure-Samples/modern-data-warehouse-dataops/issues/48).

@@ -98,6 +98,12 @@ storage_file_system=datalake
 echo "Creating ADLS Gen2 File system: $storage_file_system"
 az storage container create --name $storage_file_system
 
+# Create folders
+az storage fs directory create -n '/data/dw/fact_parking' -f $storage_file_system
+az storage fs directory create -n '/data/dw/dim_st_marker' -f $storage_file_system
+az storage fs directory create -n '/data/dw/dim_parking_bay' -f $storage_file_system
+az storage fs directory create -n '/data/dw/dim_location' -f $storage_file_system
+
 # Create SP and grant correct rights to storage account
 sp_stor_name=$(echo $arm_output | jq -r '.properties.outputs.service_principal_storage_name.value')
 echo "Creating Service Principal (SP) for access to ADLA Gen2: '$sp_stor_name'"
