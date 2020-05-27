@@ -29,3 +29,10 @@ then
     export AZURE_SUBSCRIPTION_ID=$(az account show --output json | jq -r '.id')
     echo "No Azure subscription id [AZURE_SUBSCRIPTION_ID] specified. Using default subscription id."
 fi
+
+AZURESQL_SERVER_PASSWORD=${AZURESQL_SERVER_PASSWORD:-}
+if [ -z $AZURESQL_SERVER_PASSWORD ]
+then 
+    export AZURESQL_SERVER_PASSWORD="mdwdo-azsql-SqlP@ss-${DEPLOYMENT_ID}"
+    echo "No password for sql server specified, defaulting to $AZURESQL_SERVER_PASSWORD"
+fi

@@ -56,11 +56,11 @@ kv_owner_object_id=$(az ad signed-in-user show --output json | jq -r '.objectId'
 
 # Deploy arm template
 echo "Deploying resources into $RESOURCE_GROUP_NAME"
-arm_output=$(az group deployment create \
+arm_output=$(az deployment group create \
     --resource-group "$RESOURCE_GROUP_NAME" \
     --template-file "./infrastructure/azuredeploy.json" \
     --parameters @"./infrastructure/azuredeploy.parameters.${ENV_NAME}.json" \
-    --parameters keyvault_owner_object_id=${kv_owner_object_id} deployment_id=${DEPLOYMENT_ID} \
+    --parameters keyvault_owner_object_id=${kv_owner_object_id} deployment_id=${DEPLOYMENT_ID} sqlServerPassword=${AZURESQL_SERVER_PASSWORD} \
     --output json)
 
 if [[ -z $arm_output ]]; then
@@ -69,7 +69,7 @@ if [[ -z $arm_output ]]; then
 fi
 
 # TODO: Add SQLDW deployment + DACPAC
-# TODO: Add ApplicationInsights and Log Analytics
+# TODO: Add ApplicationInsights and Log Analytics, export AZURE_APPINSIGHTS_KEY
 # TODO: Add CI/CD pipelines + Variable groups
 
 

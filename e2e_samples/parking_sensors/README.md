@@ -165,6 +165,7 @@ NOTE: This deployment was tested using WSL (Ubuntu 16.04) and Debian GNU/Linux 9
           - RESOURCE_GROUP_NAME_PREFIX - name of the resource group. This will be prefixed with environment name. For example: `RESOURCE_GROUP_NAME_PREFIX-dev-rg`. Default: mdw-dataops-parking-${DEPLOYMENT_ID}.
           - RESOURCE_GROUP_LOCATION - Azure location to deploy resources. Default: `westus`.
           - AZURE_SUBSCRIPTION_ID - Azure subscription id to use to deploy resources. Default: default azure subscript. To see your default, run `az account list`.
+          - AZURESQL_SERVER_PASSWORD - Password of the SQL Server instance.
           - To further customize the solution, set parameters in arm.parameters files located in the `infrastructure` folder.
         - After a successful deployment, you will find `.env.{environment_name}` files containing essential configuration information per environment.
 

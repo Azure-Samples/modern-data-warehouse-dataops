@@ -56,6 +56,33 @@
             "metadata": {
                 "description": "Data Factory Name"
             }
+        },
+        "sqlServerName": {
+            "defaultValue": "[concat(parameters('deploy_namespace'), 'sqlsrvr', parameters('environment'), parameters('deployment_id'))]",
+            "type": "string",
+            "metadata": {
+                "description": "SQL Server name"
+            }
+        },
+        "sqlServerUsername": {
+            "defaultValue": "sqlAdmin",
+            "type": "string",
+            "metadata": {
+                "description": "SQL Server Username"
+            }
+        },
+        "sqlServerPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "SQL Server Password"
+            }
+        },
+        "sqlDwDatabaseName": {
+            "defaultValue": "ddo_azuresqldw_dw",
+            "type": "string",
+            "metadata": {
+                "description": "SQL Server Synapse Database name"
+            }
         }
     },
     "variables": {
@@ -93,26 +120,30 @@
                 "enabledForTemplateDeployment": true,
                 "enabledForVolumeEncryption": false,
                 "tenantId": "[subscription().tenantId]",
-                "accessPolicies": [{
-                    "tenantId": "[subscription().tenantId]",
-                    "objectId": "[parameters('keyvault_owner_object_id')]",
-                    "permissions": {
-                        "keys": [
-                            "All"
-                        ],
-                        "secrets": [
-                            "All"
-                        ]
+                "accessPolicies": [
+                    {
+                        "tenantId": "[subscription().tenantId]",
+                        "objectId": "[parameters('keyvault_owner_object_id')]",
+                        "permissions": {
+                            "keys": [
+                                "All"
+                            ],
+                            "secrets": [
+                                "All"
+                            ]
+                        }
+                    },
+                    {
+                        "tenantId": "[subscription().tenantId]",
+                        "objectId": "[reference(parameters('datafactory_name'), '2018-06-01', 'Full').identity.principalId]",
+                        "permissions": {
+                            "secrets": [
+                                "get",
+                                "list"
+                            ]
+                        }
                     }
-                }, {
-                    "tenantId": "[subscription().tenantId]",
-                    "objectId": "[reference(parameters('datafactory_name'), '2018-06-01', 'Full').identity.principalId]",
-                    "permissions": {
-                        "secrets": [
-                            "get", "list"
-                        ]
-                    }
-                }],
+                ],
                 "sku": {
                     "family": "A",
                     "name": "Standard"
@@ -138,8 +169,10 @@
                 "isHnsEnabled": true,
                 "networkAcls": {
                     "bypass": "AzureServices",
-                    "virtualNetworkRules": [],
-                    "ipRules": [],
+                    "virtualNetworkRules": [
+                    ],
+                    "ipRules": [
+                    ],
                     "defaultAction": "Allow"
                 },
                 "supportsHttpsTrafficOnly": true,
@@ -156,7 +189,8 @@
                 },
                 "accessTier": "Hot"
             },
-            "dependsOn": []
+            "dependsOn": [
+            ]
         },
         {
             "apiVersion": "2018-06-01",
@@ -170,7 +204,58 @@
             "identity": {
                 "type": "SystemAssigned"
             },
-            "properties": {}
+            "properties": {
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers",
+            "apiVersion": "2019-06-01-preview",
+            "name": "[parameters('sqlServerName')]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "SQL Server",
+                "Environment": "[parameters('environment')]"
+            },
+            "properties": {
+                "administratorLogin": "[parameters('sqlServerUsername')]",
+                "administratorLoginPassword": "[parameters('sqlServerPassword')]"
+            },
+            "resources": [
+                {
+                    "type": "databases",
+                    "apiVersion": "2017-10-01-preview",
+                    "name": "[parameters('sqlDwDatabaseName')]",
+                    "location": "[resourceGroup().location]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Sql/servers/', parameters('sqlServerName'))]"
+                    ],
+                    "tags": {
+                        "displayName": "SQL DW",
+                        "Environment": "[parameters('environment')]"
+                    },
+                    "sku": {
+                        "name": "DataWarehouse",
+                        "tier": "DataWarehouse",
+                        "capacity": 900
+                    },
+                    "properties": {
+                        "collation": "SQL_Latin1_General_CP1_CI_AS"
+                    }
+                },
+                {
+                    "type": "firewallrules",
+                    "apiVersion": "2014-04-01-preview",
+                    "name": "AllowAllWindowsAzureIps",
+                    "location": "[resourceGroup().location]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Sql/servers/', parameters('sqlServerName'))]"
+                    ],
+                    "properties": {
+                        "endIpAddress": "0.0.0.0",
+                        "startIpAddress": "0.0.0.0"
+                    }
+                }
+            ]
         }
     ],
     "outputs": {
@@ -196,6 +281,22 @@
         },
         "service_principal_storage_name": {
             "value": "[parameters('service_principal_storage_name')]",
+            "type": "string"
+        },
+        "sql_server_name": {
+            "value": "[parameters('sqlServerName')]",
+            "type": "string"
+        },
+        "sql_server_username": {
+            "value": "[parameters('sqlServerUsername')]",
+            "type": "string"
+        },
+        "sql_server_password": {
+            "value": "[parameters('sqlServerPassword')]",
+            "type": "string"
+        },
+        "sql_dw_database_name": {
+            "value": "[parameters('sqlDwDatabaseName')]",
             "type": "string"
         }
     }
