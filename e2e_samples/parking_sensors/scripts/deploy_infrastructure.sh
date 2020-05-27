@@ -141,8 +141,8 @@ sleep 5m # It takes a while for a databricks workspace to be ready for new clust
 # Retrieve KeyVault details
 kv_name=$(echo $arm_output | jq -r '.properties.outputs.keyvault_name.value')
 
-az keyvault secret set --vault-name $kv_name --name "storageAccount" --value $AZURE_STORAGE_ACCOUNT
-az keyvault secret set --vault-name $kv_name --name "storageKey" --value $AZURE_STORAGE_KEY
+az keyvault secret set --vault-name $kv_name --name "datalakeAccountName" --value $AZURE_STORAGE_ACCOUNT
+az keyvault secret set --vault-name $kv_name --name "datalakeKey" --value $AZURE_STORAGE_KEY
 az keyvault secret set --vault-name $kv_name --name "spStorName" --value $sp_stor_name
 az keyvault secret set --vault-name $kv_name --name "spStorId" --value $SP_STOR_ID
 az keyvault secret set --vault-name $kv_name --name "spStorPass" --value $SP_STOR_PASS

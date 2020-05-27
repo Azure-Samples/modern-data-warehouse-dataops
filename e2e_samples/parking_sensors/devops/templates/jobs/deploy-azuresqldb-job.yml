@@ -16,6 +16,7 @@ jobs:
     runOnce:
       deploy:
         steps:
+        # https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/deploy/sql-azure-dacpac-deployment?view=azure-devops
         - task: SqlAzureDacpacDeployment@1
           inputs:
             azureSubscription: ${{ parameters.serviceConnection }}
@@ -26,6 +27,5 @@ jobs:
             SqlPassword: '$(sqlsrvrPassword)'
             deployType: 'DacpacTask'
             DacpacFile: '$(Pipeline.Workspace)/ciartifacts/sql_dacpac/$(sqlProjName).dacpac'
-            # Deploy data for the initial deployment only (not seed data which has been loaded previously)
-            AdditionalArguments: '/Variables:DeployData=false'
+            AdditionalArguments: '/Variables:ADLSLocation=abfss://datalake@$(datalakeAccountName).dfs.core.windows.net /Variables:ADLSCredentialKey=$(datalakeKey)'
           displayName: 'Azure SQL Dacpac'
