@@ -16,7 +16,7 @@ resources:
     ref: adf_publish
 
 variables:
-- devAdfName: mdwdoadfdevlace
+  devAdfName: mdwdoadfdevlace
 
 stages:
 - stage: deploy_to_stg
