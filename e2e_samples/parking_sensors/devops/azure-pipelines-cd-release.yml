@@ -19,8 +19,8 @@ stages:
 - stage: deploy_to_stg
   displayName: 'Deploy to Stage'
   variables:
-  - group: release_stage
-  - group: keyvault_stage
+  - group: release_stg
+  - group: keyvault_stg
   jobs: 
   - template: templates/jobs/deploy-databricks-job.yml
     parameters:
