@@ -26,27 +26,27 @@ stages:
       environmentName: 'STG'
   - template: templates/jobs/deploy-azuresqldb-job.yml
     parameters:
-      environmentName: 'STG' 
-      serviceConnection: 'TODO FILL ME UP'
+      environmentName: 'STG'
+      serviceConnection: 'azure_service_connection_stg'
   - template: templates/jobs/deploy-adf-job.yml
     parameters:
-      environmentName: 'STG' 
-      serviceConnection: 'TODO FILL ME UP'
+      environmentName: 'STG'
+      serviceConnection: 'azure_service_connection_stg'
 
-- stage: deploy_to_prod
-  displayName: 'Deploy to Production'
-  variables:
-  - group: release_prod
-  - group: keyvault_prod
-  jobs: 
-  - template: templates/jobs/deploy-databricks-job.yml
-    parameters:
-      environmentName: 'PROD'
-  - template: templates/jobs/deploy-azuresqldb-job.yml
-    parameters:
-      environmentName: 'PROD' 
-      serviceConnection: 'TODO FILL ME UP'
-  - template: templates/jobs/deploy-adf-job.yml
-    parameters:
-      environmentName: 'PROD' 
-      serviceConnection: 'TODO FILL ME UP'
+# - stage: deploy_to_prod
+#   displayName: 'Deploy to Production'
+#   variables:
+#   - group: release_prod
+#   - group: keyvault_prod
+#   jobs: 
+#   - template: templates/jobs/deploy-databricks-job.yml
+#     parameters:
+#       environmentName: 'PROD'
+#   - template: templates/jobs/deploy-azuresqldb-job.yml
+#     parameters:
+#       environmentName: 'PROD' 
+#       serviceConnection: 'TODO FILL ME UP'
+#   - template: templates/jobs/deploy-adf-job.yml
+#     parameters:
+#       environmentName: 'PROD' 
+#       serviceConnection: 'TODO FILL ME UP'

@@ -16,13 +16,15 @@ These variables are stored in Variables Groups.
 - databricksDbfsLibPath
 - adfName
 - kvUrl
+- sqlDwDatabaseName
+- apiBaseUrl
 
 #### From KeyVault
+- sqlsrvrName
 - sqlsrvrPassword
 - sqlsrvUsername
 - databricksDomain
 - databricksToken
-- sqlsrvrName
 - datalakeUrl
-- sqlDwDatabaseName
+
 

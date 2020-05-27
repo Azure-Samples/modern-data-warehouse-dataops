@@ -143,8 +143,8 @@ az keyvault secret set --vault-name $kv_name --name "spStorName" --value $sp_sto
 az keyvault secret set --vault-name $kv_name --name "spStorId" --value $SP_STOR_ID
 az keyvault secret set --vault-name $kv_name --name "spStorPass" --value $SP_STOR_PASS
 az keyvault secret set --vault-name $kv_name --name "spStorTenantId" --value $SP_STOR_TENANT
-az keyvault secret set --vault-name $kv_name --name "dbricksDomain" --value $DATABRICKS_HOST
-az keyvault secret set --vault-name $kv_name --name "dbricksToken" --value $DATABRICKS_TOKEN
+az keyvault secret set --vault-name $kv_name --name "databricksDomain" --value $DATABRICKS_HOST
+az keyvault secret set --vault-name $kv_name --name "databricksToken" --value $DATABRICKS_TOKEN
 
 
 ####################

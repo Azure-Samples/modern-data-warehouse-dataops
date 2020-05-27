@@ -1,7 +1,7 @@
 parameters:
 - name: environmentName
   type: string
-- name: azureSubscription
+- name: serviceConnection
   type: string
 
 jobs:
@@ -18,7 +18,7 @@ jobs:
         steps:
         - task: SqlAzureDacpacDeployment@1
           inputs:
-            azureSubscription: ${{ parameters.azureSubscription }}
+            azureSubscription: ${{ parameters.serviceConnection }}
             AuthenticationType: 'server'
             ServerName: $(sqlsrvrName)
             DatabaseName: $(sqlDwDatabaseName)

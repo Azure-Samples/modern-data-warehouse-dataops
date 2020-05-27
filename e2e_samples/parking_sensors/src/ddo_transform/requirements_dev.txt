@@ -1,12 +1,12 @@
 pip
-bumpversion
 wheel
 watchdog
 flake8
 tox
 coverage
-Sphinx
 twine
 click
 pytest
 pytest-runner
+databricks-cli
+autopep8

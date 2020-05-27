@@ -6,9 +6,9 @@
 import os
 from setuptools import setup, find_packages
 
-version = os.environ['package_version']
+version = os.environ['PACKAGE_VERSION']
 
-with open('README.rst') as readme_file:
+with open('README.md') as readme_file:
     readme = readme_file.read()
 
 with open('HISTORY.rst') as history_file:

@@ -1,7 +1,7 @@
 parameters:
 - name: environmentName
   type: string
-- name: azureSubscription
+- name: serviceConnection
   type: string
 
 jobs:
@@ -23,7 +23,7 @@ jobs:
         # https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/deploy/azure-powershell
         - task: AzurePowerShell@4
           inputs:
-            azureSubscription: ${{ parameters.azureSubscription }}
+            azureSubscription: ${{ parameters.serviceConnection }}
             ScriptPath: '$(Pipeline.Workspace)/ciartifacts/adf_scripts/deploymentadf.ps1'
             ScriptArguments: '-armTemplate "$(Pipeline.Workspace)\adf_publish\$(devAdfName)\ARMTemplateForFactory.json" -ResourceGroupName "$(rgName)" -DataFactoryName "$(adfName)" -predeployment $true'
             azurePowerShellVersion: LatestVersion
@@ -33,18 +33,19 @@ jobs:
         - task: AzureResourceGroupDeployment@2
           displayName: 'Azure Deployment:Create Or Update Resource Group action on $(rgName)'
           inputs:
-            azureSubscription: ${{ parameters.azureSubscription }}
+            azureSubscription: ${{ parameters.serviceConnection }}
             resourceGroupName: '$(rgName)'
             location: '$(azureLocation)'
             csmFile: '$(Pipeline.Workspace)/adf_publish/$(devAdfName)/ARMTemplateForFactory.json'
             csmParametersFile: '$(Pipeline.Workspace)/adf_publish/$(devAdfName)/ARMTemplateParametersForFactory.json'
-            overrideParameters: -factoryName "$(adfName)" -ls_databricks_01_properties_typeProperties_existingClusterId "$(databricksClusterId)" -ls_kv_01_properties_typeProperties_baseUrl "$(kvUrl)" -ls_lake_01_properties_typeProperties_url "$(datalakeUrl)" -ls_lake_01_properties_typeProperties_tenant "$(datalake-sp-tenant)" -ls_lake_01_properties_typeProperties_servicePrincipalId "$(datalake-sp-id)" -process_covid_results_cosmos_properties_0_typeProperties_notebookPath "$(databricksNotebookPath)/standardize_cosmos_data" -process_covid_results_cosmos_properties_0_typeProperties_0_whl "$(dbfsLibPath)/$(packageWheelName)" -process_covid_results_csv_properties_1_typeProperties_notebookPath "$(databricksNotebookPath)/standardize_csv_data" -tr_event_auslab_out_properties_typeProperties_scope "$(adfInCsvBlobStorageResourceId)" -tr_event_pwest_out_properties_typeProperties_scope "$(adfInCsvBlobStorageResourceId)" -tr_event_seals_out_properties_typeProperties_scope "$(adfInCsvBlobStorageResourceId)" -tr_event_sswps_out_properties_typeProperties_scope "$(adfInCsvBlobStorageResourceId)" tr_tumwin_cosmos_properties_pipeline_parameters_base_data_path $(databricksCosmosDataBasePath)
+            overrideParameters: -factoryName "$(adfName)" -P_Ingest_MelbParkingData_properties_0_typeProperties_notebookPath "$(databricksNotebookPath)/02_standardize" -P_Ingest_MelbParkingData_properties_0_typeProperties_0_egg "$(databricksDbfsLibPath)/$(packageWheelName)" -P_Ingest_MelbParkingData_properties_4_typeProperties_0_egg "$(databricksDbfsLibPath)/$(packageWheelName)" -Ls_AdlsGen2_01_properties_typeProperties_url "$(datalakeUrl)" -Ls_KeyVault_properties_typeProperties_baseUrl "$(kvUrl)" -Ls_Rest_MelParkSensors_01_properties_typeProperties_url "$(apiBaseUrl)" -P_Ingest_MelbParkingData_properties_4_typeProperties_notebookPath "$(databricksNotebookPath)/03_transform" 
+
 
         # https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/deploy/azure-powershell
         - task: AzurePowerShell@4
           displayName: 'Azure PowerShell script: Start ADF triggers'
           inputs:
-            azureSubscription: ${{ parameters.azureSubscription }} #'$(AZURE_SUBSCRIPTION)'
+            azureSubscription: ${{ parameters.serviceConnection }}
             ScriptPath: '$(Pipeline.Workspace)/ciartifacts/adf_scripts/deploymentadf.ps1'
             ScriptArguments: '-armTemplate "$(Pipeline.Workspace)\adf_publish\$(devAdfName)\ARMTemplateForFactory.json" -ResourceGroupName "$(rgName)" -DataFactoryName "$(adfName)" -predeployment $false'
             azurePowerShellVersion: LatestVersion
