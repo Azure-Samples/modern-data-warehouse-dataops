@@ -10,7 +10,7 @@ jobs:
   pool:
     vmImage: 'windows-latest'
   variables:
-    sqlProjName: dwsqldb
+    sqlProjName: ddo_azuresqldw_dw
   environment: ${{ parameters.environmentName }} 
   strategy:
     runOnce:

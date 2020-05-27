@@ -15,6 +15,9 @@ resources:
     name: devlace/mdw-dataops-clone
     ref: adf_publish
 
+variables:
+- devAdfName: mdwdoadfdevlace
+
 stages:
 - stage: deploy_to_stg
   displayName: 'Deploy to Stage'
