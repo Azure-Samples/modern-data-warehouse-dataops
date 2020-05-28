@@ -29,7 +29,7 @@ set -o xtrace # For debugging
 ###################
 # DEPLOY ALL FOR EACH ENVIRONMENT
 
-for env_name in dev stg prod; do
+for env_name in dev; do  # dev stg prod
     export ENV_NAME=$env_name
     export RESOURCE_GROUP_NAME="$RESOURCE_GROUP_NAME_PREFIX-$env_name-rg"
     ./scripts/deploy_infrastructure.sh "$env_name"

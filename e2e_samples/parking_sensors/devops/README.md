@@ -21,7 +21,7 @@ These are best stored within KeyVault, then [exposed via a Variable Group](https
 - **sqlsrvrName** - Target SQL server name
 - **sqlsrvUsername** - Target SQL server username
 - **sqlsrvrPassword** - Target SQL server password
-- **sqlDwDatabaseName** - Target Synapase SQL Pool (formely SQLDW) database name
+- **sqldwDatabaseName** - Target Synapase SQL Pool (formely SQLDW) database name
 - **databricksDomain** - Target Databricks workspace name (ei. https://adb-123456789.1.azuredatabricks.net/)
 - **databricksToken** - PAT token of the target databricks workspace
 - **datalakeAccountName** - Target ADLS Gen2 storage account name

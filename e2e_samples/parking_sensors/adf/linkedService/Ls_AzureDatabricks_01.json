@@ -1,5 +1,5 @@
 {
-	"name": "Ls_adb_01",
+	"name": "Ls_AzureDatabricks_01",
 	"properties": {
 		"annotations": [],
 		"type": "AzureDatabricks",
@@ -8,7 +8,7 @@
 			"accessToken": {
 				"type": "AzureKeyVaultSecret",
 				"store": {
-					"referenceName": "Ls_KeyVault",
+					"referenceName": "Ls_KeyVault_01",
 					"type": "LinkedServiceReference"
 				},
 				"secretName": "databricksToken"

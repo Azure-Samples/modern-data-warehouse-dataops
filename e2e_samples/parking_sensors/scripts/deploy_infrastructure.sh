@@ -173,11 +173,13 @@ sleep 5m # It takes a while for a databricks workspace to be ready for new clust
 
 # Retrieve KeyVault details
 kv_name=$(echo $arm_output | jq -r '.properties.outputs.keyvault_name.value')
+export KV_URL=https://$kv_name.vault.azure.net/
 
 az keyvault secret set --vault-name $kv_name --name "sqlsrvrName" --value $sql_server_name
 az keyvault secret set --vault-name $kv_name --name "sqlsrvUsername" --value $sql_server_username
 az keyvault secret set --vault-name $kv_name --name "sqlsrvrPassword" --value $sql_server_password
-az keyvault secret set --vault-name $kv_name --name "sqlDwDatabaseName" --value $sql_dw_database_name
+az keyvault secret set --vault-name $kv_name --name "sqldwDatabaseName" --value $sql_dw_database_name
+az keyvault secret set --vault-name $kv_name --name "sqldwConnectionString" --value $sql_dw_connstr_uname_pass
 az keyvault secret set --vault-name $kv_name --name "datalakeAccountName" --value $AZURE_STORAGE_ACCOUNT
 az keyvault secret set --vault-name $kv_name --name "datalakeKey" --value $AZURE_STORAGE_KEY
 az keyvault secret set --vault-name $kv_name --name "spStorName" --value $sp_stor_name
@@ -187,7 +189,7 @@ az keyvault secret set --vault-name $kv_name --name "spStorTenantId" --value $SP
 az keyvault secret set --vault-name $kv_name --name "databricksDomain" --value $DATABRICKS_HOST
 az keyvault secret set --vault-name $kv_name --name "databricksToken" --value $DATABRICKS_TOKEN
 az keyvault secret set --vault-name $kv_name --name "applicationInsightsKey" --value $APPINSIGHTS_KEY
-az keyvault secret set --vault-name $kv_name --name "kvUrl" --value https://$kv_name.vault.azure.net/
+az keyvault secret set --vault-name $kv_name --name "kvUrl" --value $KV_URL
 
 
 ####################
@@ -212,7 +214,7 @@ SP_STOR_TENANT=${SP_STOR_TENANT}
 DATABRICKS_HOST=${DATABRICKS_HOST}
 DATABRICKS_TOKEN=${DATABRICKS_TOKEN}
 APPINSIGHTS_KEY=${APPINSIGHTS_KEY}
-KV_NAME=${kv_name}
+KV_URL=${KV_URL}
 
 EOF
 echo "Completed deploying Azure resources $RESOURCE_GROUP_NAME ($ENV_NAME)"

@@ -7,7 +7,7 @@
 			"connectionString": {
 				"type": "AzureKeyVaultSecret",
 				"store": {
-					"referenceName": "Ls_KeyVault",
+					"referenceName": "Ls_KeyVault_01",
 					"type": "LinkedServiceReference"
 				},
 				"secretName": "sqldwConnectionString"

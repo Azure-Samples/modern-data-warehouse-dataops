@@ -53,7 +53,7 @@
 					]
 				},
 				"linkedServiceName": {
-					"referenceName": "Ls_adb_01",
+					"referenceName": "Ls_AzureDatabricks_01",
 					"type": "LinkedServiceReference"
 				}
 			},
@@ -217,7 +217,7 @@
 					]
 				},
 				"linkedServiceName": {
-					"referenceName": "Ls_adb_01",
+					"referenceName": "Ls_AzureDatabricks_01",
 					"type": "LinkedServiceReference"
 				}
 			},

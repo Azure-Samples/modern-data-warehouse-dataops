@@ -182,7 +182,7 @@ NOTE: This deployment was tested using WSL (Ubuntu 16.04) and Debian GNU/Linux 9
         - Root folder: **e2e_samples/parking_sensors/adf**
         - Import Existing Data Factory resource to repository: **Unselected**
     5. Navigating to "Author" tab, you should see all the pipelines deployed.
-    6. Select `Connections` > `Ls_KeyVault`. Update the Base Url to the KeyVault Url of your DEV environment.
+    6. Select `Connections` > `Ls_KeyVault_01`. Update the Base Url to the KeyVault Url of your DEV environment.
     7. Select `Connections` > `Ls_AdlsGen2_01`. Update URL to the ADLS Gen2 Url of your DEV environment.
     8. Click `Publish` to publish changes.
 
