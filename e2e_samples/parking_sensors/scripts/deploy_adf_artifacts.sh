@@ -36,6 +36,7 @@ set -o xtrace # For debugging
 # AZURE_SUBSCRIPTION_ID
 # RESOURCE_GROUP_NAME
 # DATAFACTORY_NAME
+# LOCATION_ID
 #
 # For overwriting ADF LinkedService definitions:
 # AZURE_STORAGE_ACCOUNT
@@ -43,7 +44,8 @@ set -o xtrace # For debugging
 
 # Consts
 apiVersion="2018-06-01"
-adfBaseUrl="https://management.azure.com/subscriptions/${AZURE_SUBSCRIPTION_ID}/resourceGroups/${RESOURCE_GROUP_NAME}/providers/Microsoft.DataFactory/factories/${DATAFACTORY_NAME}"
+baseUrl="https://management.azure.com/subscriptions/${AZURE_SUBSCRIPTION_ID}"
+adfFactoryBaseUrl="$baseUrl/resourceGroups/${RESOURCE_GROUP_NAME}/providers/Microsoft.DataFactory/factories/${DATAFACTORY_NAME}"
 adfDir="adf"
 
 # Overwrite values
@@ -53,39 +55,63 @@ adfLsDir=$adfDir/linkedService
 jq --arg kvurl "$KV_URL" '.properties.typeProperties.baseUrl = $kvurl' $adfLsDir/Ls_KeyVault_01.json > "$tmp" && mv "$tmp" $adfLsDir/Ls_KeyVault_01.json
 jq --arg datalakeUrl "https://$AZURE_STORAGE_ACCOUNT.dfs.core.windows.net" '.properties.typeProperties.url = $datalakeUrl' $adfLsDir/Ls_AdlsGen2_01.json > "$tmp" && mv "$tmp" $adfLsDir/Ls_AdlsGen2_01.json
 
-# Deploy all Linked Services
+
+
 createLinkedService () {
     declare name=$1
-    adfLsUrl="${adfBaseUrl}/linkedservices/${name}?api-version=${apiVersion}"
+    adfLsUrl="${adfFactoryBaseUrl}/linkedservices/${name}?api-version=${apiVersion}"
     az rest --method put --uri $adfLsUrl --body @${adfDir}/linkedService/${name}.json
 }
+createDataset () {
+    declare name=$1
+    adfDsUrl="${adfFactoryBaseUrl}/datasets/${name}?api-version=${apiVersion}"
+    az rest --method put --uri $adfDsUrl --body @${adfDir}/dataset/${name}.json
+}
+createPipeline () {
+    declare name=$1
+    adfPUrl="${adfFactoryBaseUrl}/pipelines/${name}?api-version=${apiVersion}"
+    az rest --method put --uri $adfPUrl --body @${adfDir}/pipeline/${name}.json
+}
+createTrigger () {
+    declare name=$1
+    adfTUrl="${adfFactoryBaseUrl}/triggers/${name}?api-version=${apiVersion}"
+    az rest --method put --uri $adfTUrl --body @${adfDir}/trigger/${name}.json
+}
+
+# Deploy all Linked Services
 createLinkedService "Ls_KeyVault_01"
 createLinkedService "Ls_AdlsGen2_01"
 createLinkedService "Ls_AzureSQLDW_01"
 createLinkedService "Ls_AzureDatabricks_01"
 createLinkedService "Ls_Rest_MelParkSensors_01"
-
 # Deploy all Datasets
-createDataset () {
-    declare name=$1
-    adfDsUrl="${adfBaseUrl}/datasets/${name}?api-version=${apiVersion}"
-    az rest --method put --uri $adfDsUrl --body @${adfDir}/dataset/${name}.json
-}
 createDataset "Ds_AdlsGen2_MelbParkingData"
 createDataset "Ds_REST_MelbParkingData"
-
 # Deploy all Pipelines
-createPipeline () {
-    declare name=$1
-    adfPUrl="${adfBaseUrl}/pipelines/${name}?api-version=${apiVersion}"
-    az rest --method put --uri $adfPUrl --body @${adfDir}/pipeline/${name}.json
-}
 createPipeline "P_Ingest_MelbParkingData"
-
 # Deploy triggers
-createTrigger () {
-    declare name=$1
-    adfTUrl="${adfBaseUrl}/triggers/${name}?api-version=${apiVersion}"
-    az rest --method put --uri $adfTUrl --body @${adfDir}/trigger/${name}.json
-}
 createTrigger "T_Sched"
+
+
+############################
+# Setup git integration
+
+# # Commit changes to the LinkedServices
+# git checkout -b $COLLABORATION_BRANCH
+# git add $adfLsDir/Ls_KeyVault_01.json
+# git add $adfLsDir/Ls_AdlsGen2_01.json
+# git commit -m "fix: [deploy script] update Linked Service URL to point to correct DEV environment."
+# git push
+
+# adfRepoUrl="$baseUrl/providers/Microsoft.DataFactory/locations/${RESOURCE_GROUP_LOCATION}/configureFactoryRepo?api-version=${apiVersion}"
+
+# body=$(jq -n \
+#     --arg frid "/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP_NAME/providers/Microsoft.DataFactory/factories/$DATAFACTORY_NAME" \
+#     --arg an "$GITHUB_ACCOUNT_NAME" \
+#     --arg cb "$COLLABORATION_BRANCH" \
+#     --arg repo "$REPOSITORY_NAME" \
+#     --arg rfolder "/e2e_samples/parking_sensors/adf" \
+#     --arg rtype "FactoryGitHubConfiguration" \
+#     '{"factoryResourceId": $frid, "repoConfiguration": {"accountName": $an, "collaborationBranch": $cb, "repositoryName": $repo, "rootFolder": $rfolder, "type": $rtype }}')
+
+# az rest --method post --uri $adfRepoUrl --body "$body"
