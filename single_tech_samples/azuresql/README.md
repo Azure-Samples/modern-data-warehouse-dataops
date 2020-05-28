@@ -60,9 +60,6 @@ The following are some sample [Azure DevOps](https://docs.microsoft.com/en-us/az
      - Depending on the size and pricing tier of your Production AzureSQL database, a restore might take several minutes to several hours. Consider batching changes and running this pipeline on a schedule (such as nightly) instead on every commit to master.
      - For simplicity purposes, the Test database is deployed in the same logical server as Production, however, in reality these should be completely separate servers.
 
-#### Github Actions Pipelines
-TODO
-
 ### Testing
 - [Create a Test Project for SQL Server Database Unit Testing](https://docs.microsoft.com/en-us/sql/ssdt/how-to-create-a-test-project-for-sql-server-database-unit-testing?view=sql-server-ver15)
 
