@@ -36,6 +36,10 @@ set -o xtrace # For debugging
 # AZURE_SUBSCRIPTION_ID
 # RESOURCE_GROUP_NAME
 # DATAFACTORY_NAME
+#
+# For overwriting ADF LinkedService definitions:
+# AZURE_STORAGE_ACCOUNT
+# KV_URL
 
 # Consts
 apiVersion="2018-06-01"
