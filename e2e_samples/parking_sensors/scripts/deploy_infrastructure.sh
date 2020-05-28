@@ -69,8 +69,6 @@ if [[ -z $arm_output ]]; then
     exit 1
 fi
 
-# TODO: Add CI/CD pipelines + Variable groups
-
 
 #########################
 # CREATE AND CONFIGURE SERVICE PRINCIPAL FOR ADLA GEN2
@@ -120,17 +118,17 @@ export SP_STOR_TENANT=$(echo $sp_stor_out | jq -r '.tenant')
 # SQL
 
 # Retrieve SQL creds
-sql_server_name=$(echo $arm_output | jq -r '.properties.outputs.sql_server_name.value')
-sql_server_username=$(echo $arm_output | jq -r '.properties.outputs.sql_server_username.value')
-sql_server_password=$(echo $arm_output | jq -r '.properties.outputs.sql_server_password.value')
-sql_dw_database_name=$(echo $arm_output | jq -r '.properties.outputs.sql_dw_database_name.value')
+export SQL_SERVER_NAME=$(echo $arm_output | jq -r '.properties.outputs.sql_server_name.value')
+export SQL_SERVER_USERNAME=$(echo $arm_output | jq -r '.properties.outputs.sql_server_username.value')
+export SQL_SERVER_PASSWORD=$(echo $arm_output | jq -r '.properties.outputs.sql_server_password.value')
+export SQL_DW_DATABASE_NAME=$(echo $arm_output | jq -r '.properties.outputs.sql_dw_database_name.value')
 
 # SQL Connection String
 sql_dw_connstr_nocred=$(az sql db show-connection-string --client ado.net \
-    --name $sql_dw_database_name --server $sql_server_name --output json |
+    --name $SQL_DW_DATABASE_NAME --server $SQL_SERVER_NAME --output json |
     jq -r .)
-sql_dw_connstr_uname=${sql_dw_connstr_nocred/<username>/$sql_server_username}
-sql_dw_connstr_uname_pass=${sql_dw_connstr_uname/<password>/$sql_server_password}
+sql_dw_connstr_uname=${sql_dw_connstr_nocred/<username>/$SQL_SERVER_USERNAME}
+sql_dw_connstr_uname_pass=${sql_dw_connstr_uname/<password>/$SQL_SERVER_PASSWORD}
 
 
 ####################
@@ -175,10 +173,10 @@ sleep 5m # It takes a while for a databricks workspace to be ready for new clust
 kv_name=$(echo $arm_output | jq -r '.properties.outputs.keyvault_name.value')
 export KV_URL=https://$kv_name.vault.azure.net/
 
-az keyvault secret set --vault-name $kv_name --name "sqlsrvrName" --value $sql_server_name
-az keyvault secret set --vault-name $kv_name --name "sqlsrvUsername" --value $sql_server_username
-az keyvault secret set --vault-name $kv_name --name "sqlsrvrPassword" --value $sql_server_password
-az keyvault secret set --vault-name $kv_name --name "sqldwDatabaseName" --value $sql_dw_database_name
+az keyvault secret set --vault-name $kv_name --name "sqlsrvrName" --value $SQL_SERVER_NAME
+az keyvault secret set --vault-name $kv_name --name "sqlsrvUsername" --value $SQL_SERVER_USERNAME
+az keyvault secret set --vault-name $kv_name --name "sqlsrvrPassword" --value $SQL_SERVER_PASSWORD
+az keyvault secret set --vault-name $kv_name --name "sqldwDatabaseName" --value $SQL_DW_DATABASE_NAME
 az keyvault secret set --vault-name $kv_name --name "sqldwConnectionString" --value $sql_dw_connstr_uname_pass
 az keyvault secret set --vault-name $kv_name --name "datalakeAccountName" --value $AZURE_STORAGE_ACCOUNT
 az keyvault secret set --vault-name $kv_name --name "datalakeKey" --value $AZURE_STORAGE_KEY
@@ -193,26 +191,40 @@ az keyvault secret set --vault-name $kv_name --name "kvUrl" --value $KV_URL
 
 
 ####################
+# DATA FACTORY
+export DATAFACTORY_NAME=$(echo $arm_output | jq -r '.properties.outputs.datafactory_name.value')
+. ./scripts/deploy_adf_artifacts.sh
+
+
+####################
+# AZDO Azure Service Connection and Variables Groups
+. ./scripts/deploy_azdo_service_connections_azure.sh
+. ./script/deploy_azdo_variables.sh
+
+
+####################
 # BUILD ENV FILE FROM CONFIG INFORMATION
 
-env_file="../.env.${ENV_NAME}"
+env_file=".env.${ENV_NAME}"
 echo "Appending configuration to .env file."
 cat << EOF >> $env_file
 
 # ------ Configuration from deployment on ${TIMESTAMP} -----------
-RESOURCE_GROUP=${RESOURCE_GROUP_NAME}
-SQL_SERVER_NAME=${sql_server_name}
-SQL_SERVER_USERNAME=${sql_server_username}
-SQL_SERVER_PASSWORD=${sql_server_password}
-SQL_DW_DATABASE_NAME=${sql_dw_database_name}
-STORAGE_ACCOUNT=${AZURE_STORAGE_ACCOUNT}
-STORAGE_KEY=${AZURE_STORAGE_KEY}
+RESOURCE_GROUP_NAME=${RESOURCE_GROUP_NAME}
+RESOURCE_GROUP_LOCATION=${RESOURCE_GROUP_LOCATION}
+SQL_SERVER_NAME=${SQL_SERVER_NAME}
+SQL_SERVER_USERNAME=${SQL_SERVER_USERNAME}
+SQL_SERVER_PASSWORD=${SQL_SERVER_PASSWORD}
+SQL_DW_DATABASE_NAME=${SQL_DW_DATABASE_NAME}
+AZURE_STORAGE_ACCOUNT=${AZURE_STORAGE_ACCOUNT}
+AZURE_STORAGE_KEY=${AZURE_STORAGE_KEY}
 SP_STOR_NAME=${sp_stor_name}
 SP_STOR_ID=${SP_STOR_ID}
 SP_STOR_PASS=${SP_STOR_PASS}
 SP_STOR_TENANT=${SP_STOR_TENANT}
 DATABRICKS_HOST=${DATABRICKS_HOST}
 DATABRICKS_TOKEN=${DATABRICKS_TOKEN}
+DATAFACTORY_NAME=${DATAFACTORY_NAME}
 APPINSIGHTS_KEY=${APPINSIGHTS_KEY}
 KV_URL=${KV_URL}
 

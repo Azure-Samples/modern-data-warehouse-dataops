@@ -1,5 +1,19 @@
 #!/bin/bash
 
+# check required variables are specified.
+
+if [ -z $GITHUB_REPO_URL ]
+then 
+    echo "Please specify a github repo using the GITHUB_REPO_URL environment variable."
+    exit 1
+fi
+
+if [ -z $GITHUB_PAT_TOKEN ]
+then 
+    echo "Please specify a github PAT token using the GITHUB_PAT_TOKEN environment variable."
+    exit 1
+fi
+
 # initialise optional variables.
 
 DEPLOYMENT_ID=${DEPLOYMENT_ID:-}
@@ -12,7 +26,7 @@ fi
 RESOURCE_GROUP_NAME_PREFIX=${RESOURCE_GROUP_NAME_PREFIX:-}
 if [ -z $RESOURCE_GROUP_NAME_PREFIX ]
 then 
-    export RESOURCE_GROUP_NAME_PREFIX="mdw-dataops-parking-${DEPLOYMENT_ID}"
+    export RESOURCE_GROUP_NAME_PREFIX="mdwdo-parking-${DEPLOYMENT_ID}"
     echo "No resource group name [RESOURCE_GROUP_NAME] specified, defaulting to $RESOURCE_GROUP_NAME_PREFIX"
 fi
 

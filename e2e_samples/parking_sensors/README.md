@@ -160,26 +160,34 @@ More information [here](./docs/CI_CD.md).
 NOTE: This deployment was tested using WSL (Ubuntu 16.04) and Debian GNU/Linux 9.9 (stretch)
 
 ### Setup and Deployment
-1. Ensure that:
-   - You are logged in to the Azure CLI. To login, run `az login`.
-   - Azure CLI is targeting the Azure Subscription you want to deploy the resources to.
-      - To set target Azure Subscription, run `az account set -s <AZURE_SUBSCRIPTION_ID>`
-   - Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to. 
-      - To set target Azure DevOps project, run `az devops configure --defaults organization=https://dev.azure.com/MY_ORG/ project=MY_PROJECT`
-2. Import this repository into a new Github repo. Importing is necessary if you want to setup git integration with Azure Data Factory.
-3. **Deploy Azure resources.** 
+1. **Initial Setup**
+   1. Ensure that:
+      - You are logged in to the Azure CLI. To login, run `az login`.
+      - Azure CLI is targeting the Azure Subscription you want to deploy the resources to.
+         - To set target Azure Subscription, run `az account set -s <AZURE_SUBSCRIPTION_ID>`
+      - Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to. 
+         - To set target Azure DevOps project, run `az devops configure --defaults organization=https://dev.azure.com/MY_ORG/ project=MY_PROJECT`
+   2. Import this repository into a new Github repo. Importing is necessary if you want to setup git integration with Azure Data Factory.
+2. **Deploy Azure resources** 
     1. Clone the imported repository locally and `cd` into the root of the repo
-    2. Run `./deploy.sh`.
-        - You can customize the solution by setting the following environment variables:
-          - **DEPLOYMENT_ID** - string appended to all resource names. Default: random five character string.
-          - **RESOURCE_GROUP_NAME_PREFIX** - name of the resource group. This will be prefixed with environment name. For example: `RESOURCE_GROUP_NAME_PREFIX-dev-rg`. Default: mdw-dataops-parking-${DEPLOYMENT_ID}.
-          - **RESOURCE_GROUP_LOCATION** - Azure location to deploy resources. Default: `westus`.
-          - **AZURE_SUBSCRIPTION_ID** - Azure subscription id to use to deploy resources. Default: default azure subscript. To see your default, run `az account list`.
-          - **AZURESQL_SERVER_PASSWORD** - Password of the SQL Server instance.
-          - To further customize the solution, set parameters in arm.parameters files located in the `infrastructure` folder.
+    2.  Set the following **required** environment variables:
+          - **GITHUB_REPO_URL** - URL of your imported github repo. (ei. "https://github.com/devlace/mdw-dataops-import")
+          - **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). This requires "repo" scope.
+          
+          Optionally, set the following environment variables:
+          - **DEPLOYMENT_ID** - string appended to all resource names. *Default*: random five character string.
+          - **RESOURCE_GROUP_NAME_PREFIX** - name of the resource group. This will be prefixed with environment name. For example: `RESOURCE_GROUP_NAME_PREFIX-dev-rg`. *Default*: mdwdo-parking-${DEPLOYMENT_ID}.
+          - **AZDO_PIPELINES_BRANCH_NAME**** - git branch with Azure DevOps pipelines definitions to deploy. *Default*: master.
+          - **RESOURCE_GROUP_LOCATION** - Azure location to deploy resources. *Default*: `westus`.
+          - **AZURE_SUBSCRIPTION_ID** - Azure subscription id to use to deploy resources. *Default*: default azure subscript. To see your default, run `az account list`.
+          - **AZURESQL_SERVER_PASSWORD** - Password of the SQL Server instance. *Default*: semi-random string.
+
+         NOTE: To further customize the solution, set parameters in arm.parameters files located in the `infrastructure` folder.
+
+   1. Run `./deploy.sh`.
         - After a successful deployment, you will find `.env.{environment_name}` files containing essential configuration information per environment.
 
-4. **Setup ADF git integration in DEV Data Factory**
+3. **Setup ADF git integration in DEV Data Factory**
     1. In the Azure Portal, navigate to the Data Factory in the **DEV** environment.
     2. Click "Author & Monitor" to launch the Data Factory portal.
     3. On the landing page, select "Set up code repository". For more information, see [here](https://docs.microsoft.com/en-us/azure/data-factory/source-control).
@@ -189,13 +197,12 @@ NOTE: This deployment was tested using WSL (Ubuntu 16.04) and Debian GNU/Linux 9
         - Git repository name: **imported Github repository**
         - Collaboration branch: **master**
         - Root folder: **e2e_samples/parking_sensors/adf**
-        - Import Existing Data Factory resource to repository: **Unselected**
+        - Import Existing Data Factory resource to repository: **Selected**
+        - Branch to import resource into: **Use Collaboration**
     5. Navigating to "Author" tab, you should see all the pipelines deployed.
-    6. Select `Connections` > `Ls_KeyVault_01`. Update the Base Url to the KeyVault Url of your DEV environment.
-    7. Select `Connections` > `Ls_AdlsGen2_01`. Update URL to the ADLS Gen2 Url of your DEV environment.
-    8. Click `Publish` to publish changes.
+    6. Click `Publish` to publish changes.
 
-5. **Setup Build Pipelines.** You will be creating three build pipelines, two which will trigger for every pull request which will run Unit Testing + Linting, and the third one which will trigger on every commit to master and will create the actual build artifacts for release.
+4. **Setup Build and Release Pipelines.** You will be creating three build pipelines, two which will trigger for every pull request which will run Unit Testing + Linting, and the third one which will trigger on every commit to master and will create the actual build artifacts for release.
     1. In Azure DevOps, navigate to `Pipelines`. Select "Create Pipeline".
     2. Under "Where is your code?", select Github (YAML).
         - If you have not yet already, you maybe prompted to connect your Github account. See [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/github?view=azure-devops&tabs=yaml#grant-access-to-your-github-repositories) for more information.
@@ -208,7 +215,7 @@ NOTE: This deployment was tested using WSL (Ubuntu 16.04) and Debian GNU/Linux 9
        1. `azure-pipelines-ci-qa-sql.yaml`
        2. `azure-pipelines-ci-artifacts.yaml`
 
-6. **Setup Release Pipelines**
+5. **Setup Release Pipelines**
     - **WIP**. Release Pipelines set to be converted to YAML format. See this [issue](https://github.com/Azure-Samples/modern-data-warehouse-dataops/issues/48).
 
 ### Deployed resources

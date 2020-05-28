@@ -36,7 +36,6 @@ set -o xtrace # For debugging
 # AZURE_SUBSCRIPTION_ID
 # RESOURCE_GROUP_NAME
 # DATAFACTORY_NAME
-# LOCATION_ID
 #
 # For overwriting ADF LinkedService definitions:
 # AZURE_STORAGE_ACCOUNT

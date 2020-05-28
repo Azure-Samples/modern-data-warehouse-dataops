@@ -38,7 +38,7 @@ set +o allexport
 az group delete -g $RESOURCE_GROUP -y --no-wait
 az ad sp delete --id $SP_STOR_ID
 
-# az group list --query "[?contains(name,'mdw-dataops-parking')].name" -o tsv | xargs -I % az group delete --name % -y --no-wait
+# az group list --query "[?contains(name,'mdwdo-parking')].name" -o tsv | xargs -I % az group delete --name % -y --no-wait
 
 
 echo "Delete service principal..."

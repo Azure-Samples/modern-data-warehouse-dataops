@@ -39,7 +39,7 @@ stages:
 
     - script: make dist
       env:
-        package_version: $(pythonPackageMajorVersion).$(pythonPackageMinorVersion).$(pythonPackagePatchVersion)
+        PACKAGE_VERSION: $(pythonPackageMajorVersion).$(pythonPackageMinorVersion).$(pythonPackagePatchVersion)
       workingDirectory: $(pythonWorkingDir)
       displayName: 'Create wheel package'
 

@@ -277,6 +277,10 @@
         }
     ],
     "outputs": {
+        "datafactory_name": {
+            "value": "[parameters('datafactory_name')]",
+            "type": "string"
+        },
         "databricks_workspace_name": {
             "value": "[parameters('databricks_workspace_name')]",
             "type": "string"

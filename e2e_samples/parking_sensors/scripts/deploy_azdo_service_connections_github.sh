@@ -16,29 +16,34 @@
 # CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 # DEALINGS IN THE SOFTWARE.
 
+
+#######################################################
+# Deploys Azure DevOps Github Service Connections
+#
+# Prerequisites:
+# - User is logged in to the azure cli
+# - Correct Azure subscription is selected
+# - Correct Azure DevOps Project selected
+#######################################################
+
 set -o errexit
 set -o pipefail
 set -o nounset
 set -o xtrace # For debugging
 
-. ./scripts/common.sh
-. ./scripts/verify_prerequisites.sh
-. ./scripts/init_environment.sh
-
-
 ###################
-# DEPLOY ALL FOR EACH ENVIRONMENT
+# REQUIRED ENV VARIABLES:
+#
+# GITHUB_PAT_TOKEN
+# GITHUB_REPO_URL
 
-# AzDo Github Service Connection -- only once for the entire deployment
-./scripts/deploy_azdo_service_connections_github.sh
+###############
+# Setup Github service connection
 
-for env_name in dev stg prod; do  # dev stg prod
-    export ENV_NAME=$env_name
-    export RESOURCE_GROUP_NAME="$RESOURCE_GROUP_NAME_PREFIX-$env_name-rg"
-    ./scripts/deploy_infrastructure.sh
-done
-
-# Deploy AzDevOps Pipelines
-# This requires DEV_DATAFACTORY_NAME set
-export DEV_$(egrep '^DATAFACTORY_NAME' .env.dev | xargs)
-./scripts/deploy_azdo_pipelines.sh
+github_sc_name="mdwdo-park-github"
+export AZURE_DEVOPS_EXT_GITHUB_PAT=$GITHUB_PAT_TOKEN
+echo "Creating Github service connection: $github_sc_name in Azure DevOps"
+az devops service-endpoint github create \
+    --name $github_sc_name \
+    --github-url "$GITHUB_REPO_URL" \
+    --output json
