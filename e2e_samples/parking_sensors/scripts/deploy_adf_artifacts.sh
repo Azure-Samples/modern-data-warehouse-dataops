@@ -45,8 +45,9 @@ adfDir="adf"
 # Overwrite values
 # Create .tmp
 tmp=.tmpfile
-jq --arg kvurl "$KV_URL" '.properties.typeProperties.baseUrl = $kvurl' $adfDir/Ls_KeyVault_01.json > "$tmp" && mv "$tmp" Ls_KeyVault_01.json
-jq --arg datalakeUrl "https://$AZURE_STORAGE_ACCOUNT.dfs.core.windows.net" '.properties.typeProperties.url = $datalakeUrl' $adfDir/Ls_AdlsGen2_01.json > "$tmp" && mv "$tmp" Ls_AdlsGen2_01.json
+adfLsDir=$adfDir/linkedService
+jq --arg kvurl "$KV_URL" '.properties.typeProperties.baseUrl = $kvurl' $adfLsDir/Ls_KeyVault_01.json > "$tmp" && mv "$tmp" $adfLsDir/Ls_KeyVault_01.json
+jq --arg datalakeUrl "https://$AZURE_STORAGE_ACCOUNT.dfs.core.windows.net" '.properties.typeProperties.url = $datalakeUrl' $adfLsDir/Ls_AdlsGen2_01.json > "$tmp" && mv "$tmp" $adfLsDir/Ls_AdlsGen2_01.json
 
 # Deploy all Linked Services
 createLinkedService () {
