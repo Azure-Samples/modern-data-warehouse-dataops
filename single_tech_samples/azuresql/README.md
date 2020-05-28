@@ -89,9 +89,11 @@ The following are some sample [Azure DevOps](https://docs.microsoft.com/en-us/az
 To setup the samples, run the following:
 
 1. Ensure that:
-   1. You are logged in to the Azure CLI. To login, run `az login`.
-   1. Azure CLI is targeting the Azure Subscription you want to deploy the resources to. To set target Azure Subscription, run `az account set -s <AZURE_SUBSCRIPTION_ID>`
-   2. Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to. To set target Azure DevOps project, run `az devops configure --defaults organization=https://dev.azure.com/MY_ORG/ project=MY_PROJECT`
+   - You are logged in to the Azure CLI. To login, run `az login`.
+   - Azure CLI is targeting the Azure Subscription you want to deploy the resources to.
+      - To set target Azure Subscription, run `az account set -s <AZURE_SUBSCRIPTION_ID>`
+   - Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to. 
+      - To set target Azure DevOps project, run `az devops configure --defaults organization=https://dev.azure.com/MY_ORG/ project=MY_PROJECT`
 2. Fork* and clone this repository. `cd` in to `single_tech_samples/azuresql`.
 3. Set the following environment variables:
    1. **GITHUB_REPO_URL** - URL of your forked github repo
