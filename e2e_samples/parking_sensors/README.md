@@ -145,12 +145,13 @@ More information [here](./docs/CI_CD.md).
 3. Azure Account
 
 #### Software pre-requisites <!-- omit in toc -->
-1. For Windows users, [Windows Subsystem For Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
-2. [az cli 2.x](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
-3. [az cli - storage-preview extension](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-directory-file-acl-cli)
-4. [Python 3+](https://www.python.org/)
-5. [databricks-cli](https://docs.azuredatabricks.net/dev-tools/databricks-cli.html)
-6. [jq](https://stedolan.github.io/jq/)
+- For Windows users, [Windows Subsystem For Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+- [az cli 2.6+](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
+- [az cli - application insights extension](https://docs.microsoft.com/en-us/cli/azure/ext/application-insights/monitor/app-insights?view=azure-cli-latest)
+  - To install, run `az extension add --name application-insights`
+- [Python 3+](https://www.python.org/)
+- [databricks-cli](https://docs.azuredatabricks.net/dev-tools/databricks-cli.html)
+- [jq](https://stedolan.github.io/jq/)
 
 NOTE: This deployment was tested using WSL (Ubuntu 16.04) and Debian GNU/Linux 9.9 (stretch)
 

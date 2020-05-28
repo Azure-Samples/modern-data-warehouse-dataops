@@ -19,8 +19,8 @@ These variables typically changes across environments and are best stored in env
 #### Secure Variables
 These are best stored within KeyVault, then [exposed via a Variable Group](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml#link-secrets-from-an-azure-key-vault).
 - **sqlsrvrName** - Target SQL server name
-- **sqlsrvrPassword** - Target SQL server password
 - **sqlsrvUsername** - Target SQL server username
+- **sqlsrvrPassword** - Target SQL server password
 - **sqlDwDatabaseName** - Target Synapase SQL Pool (formely SQLDW) database name
 - **databricksDomain** - Target Databricks workspace name (ei. https://adb-123456789.1.azuredatabricks.net/)
 - **databricksToken** - PAT token of the target databricks workspace

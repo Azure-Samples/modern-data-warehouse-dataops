@@ -83,6 +83,13 @@
             "metadata": {
                 "description": "SQL Server Synapse Database name"
             }
+        },
+        "appinsightsName": {
+            "defaultValue": "[concat(parameters('deploy_namespace'), 'appin', parameters('environment'), parameters('deployment_id'))]",
+            "type": "string",
+            "metadata": {
+                "description": "Application Insights name"
+            }
         }
     },
     "variables": {
@@ -256,6 +263,17 @@
                     }
                 }
             ]
+        },
+        {
+            "name": "[parameters('appinsightsName')]",
+            "type": "microsoft.insights/components",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "Application Insights",
+                "Environment": "[parameters('environment')]"
+            },
+            "apiVersion": "2014-08-01",
+            "properties": {}
         }
     ],
     "outputs": {
@@ -297,6 +315,10 @@
         },
         "sql_dw_database_name": {
             "value": "[parameters('sqlDwDatabaseName')]",
+            "type": "string"
+        },
+        "appinsights_name": {
+            "value": "[parameters('appinsightsName')]",
             "type": "string"
         }
     }

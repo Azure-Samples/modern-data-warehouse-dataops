@@ -37,6 +37,7 @@ set -o xtrace # For debugging
 # RESOURCE_GROUP_NAME
 # RESOURCE_GROUP_LOCATION
 # AZURE_SUBSCRIPTION_ID
+# AZURESQL_SERVER_PASSWORD
 
 
 #####################
@@ -68,8 +69,6 @@ if [[ -z $arm_output ]]; then
     exit 1
 fi
 
-# TODO: Add SQLDW deployment + DACPAC
-# TODO: Add ApplicationInsights and Log Analytics, export AZURE_APPINSIGHTS_KEY
 # TODO: Add CI/CD pipelines + Variable groups
 
 
@@ -98,7 +97,7 @@ storage_file_system=datalake
 echo "Creating ADLS Gen2 File system: $storage_file_system"
 az storage container create --name $storage_file_system
 
-# Create folders
+# Create folders for SQL external tables
 az storage fs directory create -n '/data/dw/fact_parking' -f $storage_file_system
 az storage fs directory create -n '/data/dw/dim_st_marker' -f $storage_file_system
 az storage fs directory create -n '/data/dw/dim_parking_bay' -f $storage_file_system
@@ -115,6 +114,34 @@ sp_stor_out=$(az ad sp create-for-rbac \
 export SP_STOR_ID=$(echo $sp_stor_out | jq -r '.appId')
 export SP_STOR_PASS=$(echo $sp_stor_out | jq -r '.password')
 export SP_STOR_TENANT=$(echo $sp_stor_out | jq -r '.tenant')
+
+
+###################
+# SQL
+
+# Retrieve SQL creds
+sql_server_name=$(echo $arm_output | jq -r '.properties.outputs.sql_server_name.value')
+sql_server_username=$(echo $arm_output | jq -r '.properties.outputs.sql_server_username.value')
+sql_server_password=$(echo $arm_output | jq -r '.properties.outputs.sql_server_password.value')
+sql_dw_database_name=$(echo $arm_output | jq -r '.properties.outputs.sql_dw_database_name.value')
+
+# SQL Connection String
+sql_dw_connstr_nocred=$(az sql db show-connection-string --client ado.net \
+    --name $sql_dw_database_name --server $sql_server_name --output json |
+    jq -r .)
+sql_dw_connstr_uname=${sql_dw_connstr_nocred/<username>/$sql_server_username}
+sql_dw_connstr_uname_pass=${sql_dw_connstr_uname/<password>/$sql_server_password}
+
+
+####################
+# APPLICATION INSIGHTS
+
+appinsights_name=$(echo $arm_output | jq -r '.properties.outputs.appinsights_name.value')
+export APPINSIGHTS_KEY=$(az monitor app-insights component show \
+    --app "$appinsights_name" \
+    --resource-group "$RESOURCE_GROUP_NAME" \
+    --output json |
+    jq -r '.instrumentationKey')
 
 
 # ###########################
@@ -147,6 +174,10 @@ sleep 5m # It takes a while for a databricks workspace to be ready for new clust
 # Retrieve KeyVault details
 kv_name=$(echo $arm_output | jq -r '.properties.outputs.keyvault_name.value')
 
+az keyvault secret set --vault-name $kv_name --name "sqlsrvrName" --value $sql_server_name
+az keyvault secret set --vault-name $kv_name --name "sqlsrvUsername" --value $sql_server_username
+az keyvault secret set --vault-name $kv_name --name "sqlsrvrPassword" --value $sql_server_password
+az keyvault secret set --vault-name $kv_name --name "sqlDwDatabaseName" --value $sql_dw_database_name
 az keyvault secret set --vault-name $kv_name --name "datalakeAccountName" --value $AZURE_STORAGE_ACCOUNT
 az keyvault secret set --vault-name $kv_name --name "datalakeKey" --value $AZURE_STORAGE_KEY
 az keyvault secret set --vault-name $kv_name --name "spStorName" --value $sp_stor_name
@@ -155,6 +186,8 @@ az keyvault secret set --vault-name $kv_name --name "spStorPass" --value $SP_STO
 az keyvault secret set --vault-name $kv_name --name "spStorTenantId" --value $SP_STOR_TENANT
 az keyvault secret set --vault-name $kv_name --name "databricksDomain" --value $DATABRICKS_HOST
 az keyvault secret set --vault-name $kv_name --name "databricksToken" --value $DATABRICKS_TOKEN
+az keyvault secret set --vault-name $kv_name --name "applicationInsightsKey" --value $APPINSIGHTS_KEY
+az keyvault secret set --vault-name $kv_name --name "kvUrl" --value https://$kv_name.vault.azure.net/
 
 
 ####################
@@ -166,15 +199,20 @@ cat << EOF >> $env_file
 
 # ------ Configuration from deployment on ${TIMESTAMP} -----------
 RESOURCE_GROUP=${RESOURCE_GROUP_NAME}
+SQL_SERVER_NAME=${sql_server_name}
+SQL_SERVER_USERNAME=${sql_server_username}
+SQL_SERVER_PASSWORD=${sql_server_password}
+SQL_DW_DATABASE_NAME=${sql_dw_database_name}
 STORAGE_ACCOUNT=${AZURE_STORAGE_ACCOUNT}
 STORAGE_KEY=${AZURE_STORAGE_KEY}
 SP_STOR_NAME=${sp_stor_name}
 SP_STOR_ID=${SP_STOR_ID}
 SP_STOR_PASS=${SP_STOR_PASS}
 SP_STOR_TENANT=${SP_STOR_TENANT}
-KV_NAME=${kv_name}
 DATABRICKS_HOST=${DATABRICKS_HOST}
 DATABRICKS_TOKEN=${DATABRICKS_TOKEN}
+APPINSIGHTS_KEY=${APPINSIGHTS_KEY}
+KV_NAME=${kv_name}
 
 EOF
 echo "Completed deploying Azure resources $RESOURCE_GROUP_NAME ($ENV_NAME)"

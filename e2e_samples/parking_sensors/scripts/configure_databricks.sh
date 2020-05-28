@@ -26,7 +26,7 @@ set -o nounset
 # DATABRICKS_HOST
 # DATABRICKS_TOKEN
 # AZURE_STORAGE_ACCOUNT
-# AZURE_APPINSIGHTS_KEY
+# APPINSIGHTS_KEY
 # SP_STOR_ID
 # SP_STOR_PASS
 # SP_STOR_TENANT
@@ -72,7 +72,7 @@ fi
 # Create secrets
 echo "Creating secrets within scope $scope_name..."
 
-databricks secrets write --scope "$scope_name" --key "appinsights_key" --string-value  "$AZURE_APPINSIGHTS_KEY"
+databricks secrets write --scope "$scope_name" --key "appinsights_key" --string-value  "$APPINSIGHTS_KEY"
 databricks secrets write --scope "$scope_name" --key "storage_account" --string-value  "$AZURE_STORAGE_ACCOUNT"
 databricks secrets write --scope "$scope_name" --key "storage_sp_id" --string-value  "$SP_STOR_ID"
 databricks secrets write --scope "$scope_name" --key "storage_sp_key" --string-value  "$SP_STOR_PASS"
