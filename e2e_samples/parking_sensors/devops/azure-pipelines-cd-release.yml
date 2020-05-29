@@ -7,11 +7,11 @@ resources:
     source: ci-artifacts
     trigger: 
       branches:
-      - releases/*
+      - master
   repositories:
   - repository: mdwdataops_adfpublish
     type: github
-    endpoint: github_service_connection
+    endpoint: mdwdo-park-github
     name: devlace/mdw-dataops-clone
     ref: adf_publish
 

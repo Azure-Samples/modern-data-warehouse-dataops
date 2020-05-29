@@ -173,21 +173,21 @@ sleep 5m # It takes a while for a databricks workspace to be ready for new clust
 kv_name=$(echo $arm_output | jq -r '.properties.outputs.keyvault_name.value')
 export KV_URL=https://$kv_name.vault.azure.net/
 
-az keyvault secret set --vault-name $kv_name --name "sqlsrvrName" --value $SQL_SERVER_NAME
-az keyvault secret set --vault-name $kv_name --name "sqlsrvUsername" --value $SQL_SERVER_USERNAME
-az keyvault secret set --vault-name $kv_name --name "sqlsrvrPassword" --value $SQL_SERVER_PASSWORD
-az keyvault secret set --vault-name $kv_name --name "sqldwDatabaseName" --value $SQL_DW_DATABASE_NAME
-az keyvault secret set --vault-name $kv_name --name "sqldwConnectionString" --value $sql_dw_connstr_uname_pass
-az keyvault secret set --vault-name $kv_name --name "datalakeAccountName" --value $AZURE_STORAGE_ACCOUNT
-az keyvault secret set --vault-name $kv_name --name "datalakeKey" --value $AZURE_STORAGE_KEY
-az keyvault secret set --vault-name $kv_name --name "spStorName" --value $sp_stor_name
-az keyvault secret set --vault-name $kv_name --name "spStorId" --value $SP_STOR_ID
-az keyvault secret set --vault-name $kv_name --name "spStorPass" --value $SP_STOR_PASS
-az keyvault secret set --vault-name $kv_name --name "spStorTenantId" --value $SP_STOR_TENANT
-az keyvault secret set --vault-name $kv_name --name "databricksDomain" --value $DATABRICKS_HOST
-az keyvault secret set --vault-name $kv_name --name "databricksToken" --value $DATABRICKS_TOKEN
-az keyvault secret set --vault-name $kv_name --name "applicationInsightsKey" --value $APPINSIGHTS_KEY
-az keyvault secret set --vault-name $kv_name --name "kvUrl" --value $KV_URL
+az keyvault secret set --vault-name $kv_name --name "sqlsrvrName" --value "$SQL_SERVER_NAME"
+az keyvault secret set --vault-name $kv_name --name "sqlsrvUsername" --value "$SQL_SERVER_USERNAME"
+az keyvault secret set --vault-name $kv_name --name "sqlsrvrPassword" --value "$SQL_SERVER_PASSWORD"
+az keyvault secret set --vault-name $kv_name --name "sqldwDatabaseName" --value "$SQL_DW_DATABASE_NAME"
+az keyvault secret set --vault-name $kv_name --name "sqldwConnectionString" --value "$sql_dw_connstr_uname_pass"
+az keyvault secret set --vault-name $kv_name --name "datalakeAccountName" --value "$AZURE_STORAGE_ACCOUNT"
+az keyvault secret set --vault-name $kv_name --name "datalakeKey" --value "$AZURE_STORAGE_KEY"
+az keyvault secret set --vault-name $kv_name --name "spStorName" --value "$sp_stor_name"
+az keyvault secret set --vault-name $kv_name --name "spStorId" --value "$SP_STOR_ID"
+az keyvault secret set --vault-name $kv_name --name "spStorPass" --value "$SP_STOR_PASS"
+az keyvault secret set --vault-name $kv_name --name "spStorTenantId" --value "$SP_STOR_TENANT"
+az keyvault secret set --vault-name $kv_name --name "databricksDomain" --value "$DATABRICKS_HOST"
+az keyvault secret set --vault-name $kv_name --name "databricksToken" --value "$DATABRICKS_TOKEN"
+az keyvault secret set --vault-name $kv_name --name "applicationInsightsKey" --value "$APPINSIGHTS_KEY"
+az keyvault secret set --vault-name $kv_name --name "kvUrl" --value "$KV_URL"
 
 
 ####################
@@ -199,7 +199,7 @@ export DATAFACTORY_NAME=$(echo $arm_output | jq -r '.properties.outputs.datafact
 ####################
 # AZDO Azure Service Connection and Variables Groups
 . ./scripts/deploy_azdo_service_connections_azure.sh
-. ./script/deploy_azdo_variables.sh
+. ./scripts/deploy_azdo_variables.sh
 
 
 ####################

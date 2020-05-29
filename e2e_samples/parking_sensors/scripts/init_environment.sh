@@ -26,7 +26,7 @@ fi
 RESOURCE_GROUP_NAME_PREFIX=${RESOURCE_GROUP_NAME_PREFIX:-}
 if [ -z $RESOURCE_GROUP_NAME_PREFIX ]
 then 
-    export RESOURCE_GROUP_NAME_PREFIX="mdwdo-parking-${DEPLOYMENT_ID}"
+    export RESOURCE_GROUP_NAME_PREFIX="mdwdo-park-${DEPLOYMENT_ID}"
     echo "No resource group name [RESOURCE_GROUP_NAME] specified, defaulting to $RESOURCE_GROUP_NAME_PREFIX"
 fi
 

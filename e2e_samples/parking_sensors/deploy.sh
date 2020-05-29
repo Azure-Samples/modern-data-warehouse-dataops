@@ -40,5 +40,5 @@ done
 
 # Deploy AzDevOps Pipelines
 # This requires DEV_DATAFACTORY_NAME set
-export DEV_$(egrep '^DATAFACTORY_NAME' .env.dev | xargs)
+export DEV_$(egrep '^DATAFACTORY_NAME' .env.dev | tail -1 | xargs)
 ./scripts/deploy_azdo_pipelines.sh

@@ -19,27 +19,26 @@
 set -o errexit
 set -o pipefail
 set -o nounset
-# set -o xtrace # For debugging
+set -o xtrace # For debugging
 
 ###################
 # PARAMETERS
-
-env_name="${1-}"
-
-# Import correct .env file
-set -o allexport
-env_file=".env.$env_name"
-if [[ -e $env_file ]]
-then
-    source $env_file
-fi
-set +o allexport
-
-az group delete -g $RESOURCE_GROUP -y --no-wait
-az ad sp delete --id $SP_STOR_ID
-
-# az group list --query "[?contains(name,'mdwdo-parking')].name" -o tsv | xargs -I % az group delete --name % -y --no-wait
+#
+# RESOURCE_GROUP_NAME_PREFIX
+prefix="mdwdo-park"
 
 
-echo "Delete service principal..."
-az ad sp list --query "[?contains(appDisplayName,'mdwdo')].appId" -o tsv --show-mine | xargs -I % az ad sp delete --id %
+echo "Delete pipelines with '$prefix' in name..."
+az pipelines list -o tsv | grep "$prefix" | awk '{print $4}' | xargs -r -I % az pipelines delete --id % --yes
+
+echo "Delete variable groups with '$prefix' in name..."
+az pipelines variable-group list -o tsv | grep "$prefix" | awk '{print $2}' | xargs -r -I % az pipelines variable-group delete --id % --yes
+
+echo "Delete service connections with '$prefix' in name..."
+az devops service-endpoint list -o tsv | grep "$prefix" | awk '{print $3}' | xargs -r -I % az devops service-endpoint delete --id % --yes
+
+echo "Delete service principal with '$prefix' in name, created by yourself..."
+az ad sp list --query "[?contains(appDisplayName,'mdwdo-park')].appId" -o tsv --show-mine | xargs -r -I % az ad sp delete --id %
+
+echo "Delete resource group with '$RESOURCE_GROUP_NAME_PREFIX' in name..."
+az group list --query "[?contains(name,'$RESOURCE_GROUP_NAME_PREFIX')].name" -o tsv | xargs -I % az group delete --name % -y --no-wait
