@@ -1,5 +1,6 @@
 {
 	"name": "Ls_AzureDatabricks_01",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
 	"properties": {
 		"annotations": [],
 		"type": "AzureDatabricks",
@@ -20,6 +21,5 @@
 			},
 			"newClusterVersion": "5.5.x-scala2.11"
 		}
-	},
-	"type": "Microsoft.DataFactory/factories/linkedservices"
+	}
 }

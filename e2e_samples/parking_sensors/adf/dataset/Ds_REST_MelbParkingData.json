@@ -19,5 +19,6 @@
 			},
 			"requestMethod": "GET"
 		}
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
 }
