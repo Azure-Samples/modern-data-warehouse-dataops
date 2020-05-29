@@ -1,6 +1,5 @@
 {
 	"name": "Ls_AdlsGen2_01",
-	"type": "Microsoft.DataFactory/factories/linkedservices",
 	"properties": {
 		"annotations": [],
 		"type": "AzureBlobFS",
@@ -12,8 +11,9 @@
 					"referenceName": "Ls_KeyVault_01",
 					"type": "LinkedServiceReference"
 				},
-				"secretName": "storageKey"
+				"secretName": "datalakeKey"
 			}
 		}
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/linkedservices"
 }
