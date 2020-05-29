@@ -1,5 +1,6 @@
 {
 	"name": "Ls_AzureSQLDW_01",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
 	"properties": {
 		"annotations": [],
 		"type": "AzureSqlDW",
