@@ -1,8 +1,6 @@
 parameters:
 - name: devAdfName
   displayName: Name of DEV Azure Data Factory
-- name: githubRepoName
-  displayName: Github Full Repo Name (<my_github_account>/<repo_name>)
 
 trigger: none
 
@@ -17,7 +15,7 @@ resources:
   - repository: mdwdataops_adfpublish
     type: github
     endpoint: mdwdo-park-github
-    name: ${{ parameters.githubRepoName }}
+    name: devlace/mdw-dataops-clone
     ref: adf_publish
 
 stages:
