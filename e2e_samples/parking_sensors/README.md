@@ -171,7 +171,7 @@ NOTE: This deployment was tested using WSL 2 (Ubuntu 18.04) and Debian GNU/Linux
          - To set target Azure DevOps project, run `az devops configure --defaults organization=https://dev.azure.com/<MY_ORG>/ project=<MY_PROJECT>`
    2. Import this repository into a new Github repo. Importing is necessary for setting up git integration with Azure Data Factory.
    3. Set the following **required** environment variables:
-       - **GITHUB_REPO_URL** - URL of your imported github repo. (ei. "https://github.com/devlace/mdw-dataops-import")
+       - **GITHUB_REPO** - Name of your imported github repo in this form `<my_github_handle>/<repo>`. (ei. "devlace/mdw-dataops-import")
        - **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). This requires "repo" scope.
        
        Optionally, set the following environment variables:
@@ -229,17 +229,23 @@ After a successful deployment, you should have the following resources:
    - **Azure Synapse (formerly SQLDW)** - currently, empty. The Release Pipeline will deploy the SQL Database objects.
    - **Application Insights**
    - **KeyVault** with all relevant secrets stored.
-   - All above Azure resources are tagged with correct Environment.
  - In Azure DevOps
    - **Four (4) Azure Pipelines**
-     - mdw-park-cd-release - Release Pipeline
-     - mdw-park-ci-artifacts - Build Pipeline
-     - mdw-park-ci-qa-python - "QA" pipeline runs on PR to master
-     - mdw-park-ci-qa-sql - "QA" pipeline runs on PR to master
+     - mdwdo-park-cd-release - Release Pipeline
+     - mdwdo-park-ci-artifacts - Build Pipeline
+     - mdwdo-park-ci-qa-python - "QA" pipeline runs on PR to master
+     - mdwdo-park-ci-qa-sql - "QA" pipeline runs on PR to master
    - **Three (3) Variables Groups** - one per environment
+     - mdwdo-park-release-dev
+     - mdwdo-park-release-stg
+     - mdwdo-park-release-stg
    - **Four (4) Service Connections**
      - **Three Azure Service Connections** (one per environment) each with a **Service Principal** with Contributor rights to the corresponding Resource Group.
+       - mdwdo-park-serviceconnection-dev
+       - mdwdo-park-serviceconnection-stg
+       - mdwdo-park-serviceconnection-prod
      - **Github Service Connection** for retrieving code from Github
+       - mdwdo-park-github
 <!--TODO: Add Cleanup script-->
 
 ### Data Lake Physical layout

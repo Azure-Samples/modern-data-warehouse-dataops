@@ -36,46 +36,34 @@ set -o xtrace # For debugging
 # AZURE_SUBSCRIPTION_ID
 # RESOURCE_GROUP_NAME
 # DATAFACTORY_NAME
-#
-# For overwriting ADF LinkedService definitions:
-# AZURE_STORAGE_ACCOUNT
-# KV_URL
+# ADF_DIR
+
 
 # Consts
 apiVersion="2018-06-01"
 baseUrl="https://management.azure.com/subscriptions/${AZURE_SUBSCRIPTION_ID}"
 adfFactoryBaseUrl="$baseUrl/resourceGroups/${RESOURCE_GROUP_NAME}/providers/Microsoft.DataFactory/factories/${DATAFACTORY_NAME}"
-adfDir="adf"
-
-# Overwrite values
-# TODO: dont rewrite actual files, copy first to temp dir
-# Create .tmp
-tmp=.tmpfile
-adfLsDir=$adfDir/linkedService
-jq --arg kvurl "$KV_URL" '.properties.typeProperties.baseUrl = $kvurl' $adfLsDir/Ls_KeyVault_01.json > "$tmp" && mv "$tmp" $adfLsDir/Ls_KeyVault_01.json
-jq --arg datalakeUrl "https://$AZURE_STORAGE_ACCOUNT.dfs.core.windows.net" '.properties.typeProperties.url = $datalakeUrl' $adfLsDir/Ls_AdlsGen2_01.json > "$tmp" && mv "$tmp" $adfLsDir/Ls_AdlsGen2_01.json
-
 
 
 createLinkedService () {
     declare name=$1
     adfLsUrl="${adfFactoryBaseUrl}/linkedservices/${name}?api-version=${apiVersion}"
-    az rest --method put --uri $adfLsUrl --body @${adfDir}/linkedService/${name}.json
+    az rest --method put --uri $adfLsUrl --body @${ADF_DIR}/linkedService/${name}.json
 }
 createDataset () {
     declare name=$1
     adfDsUrl="${adfFactoryBaseUrl}/datasets/${name}?api-version=${apiVersion}"
-    az rest --method put --uri $adfDsUrl --body @${adfDir}/dataset/${name}.json
+    az rest --method put --uri $adfDsUrl --body @${ADF_DIR}/dataset/${name}.json
 }
 createPipeline () {
     declare name=$1
     adfPUrl="${adfFactoryBaseUrl}/pipelines/${name}?api-version=${apiVersion}"
-    az rest --method put --uri $adfPUrl --body @${adfDir}/pipeline/${name}.json
+    az rest --method put --uri $adfPUrl --body @${ADF_DIR}/pipeline/${name}.json
 }
 createTrigger () {
     declare name=$1
     adfTUrl="${adfFactoryBaseUrl}/triggers/${name}?api-version=${apiVersion}"
-    az rest --method put --uri $adfTUrl --body @${adfDir}/trigger/${name}.json
+    az rest --method put --uri $adfTUrl --body @${ADF_DIR}/trigger/${name}.json
 }
 
 # Deploy all Linked Services

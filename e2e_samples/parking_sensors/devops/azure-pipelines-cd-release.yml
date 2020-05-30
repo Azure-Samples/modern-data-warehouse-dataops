@@ -13,10 +13,11 @@ resources:
   - repository: mdwdataops_adfpublish
     type: github
     endpoint: mdwdo-park-github
-    name: devlace/mdw-dataops-clone  # TODO: parameterize me
+    name: devlace/mdw-dataops-clone
     ref: adf_publish
 
 # The deployment script sets this as a Pipeline Variable, but you may choose to set it here in the definition
+#
 # variables:
 #   devAdfName: <DEV DATAFACTORY NAME>
 

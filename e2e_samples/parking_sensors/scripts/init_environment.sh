@@ -2,9 +2,9 @@
 
 # check required variables are specified.
 
-if [ -z $GITHUB_REPO_URL ]
+if [ -z $GITHUB_REPO ]
 then 
-    echo "Please specify a github repo using the GITHUB_REPO_URL environment variable."
+    echo "Please specify a github repo using the GITHUB_REPO environment variable in this form '<my_github_handle>/<repo>'. (ei. 'devlace/mdw-dataops-import')"
     exit 1
 fi
 

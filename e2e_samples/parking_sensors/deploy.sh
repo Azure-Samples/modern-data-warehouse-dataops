@@ -29,16 +29,28 @@ set -o xtrace # For debugging
 ###################
 # DEPLOY ALL FOR EACH ENVIRONMENT
 
-# AzDo Github Service Connection -- only once for the entire deployment
-./scripts/deploy_azdo_service_connections_github.sh
-
 for env_name in dev stg prod; do  # dev stg prod
     export ENV_NAME=$env_name
     export RESOURCE_GROUP_NAME="$RESOURCE_GROUP_NAME_PREFIX-$env_name-rg"
-    ./scripts/deploy_infrastructure.sh
+    export GITHUB_REPO_URL="https://github.com/$GITHUB_REPO"
+    ./scripts/deploy_infrastructure.sh  # inclues AzDevOps Azure Service Connections and Variable Groups
 done
 
+
+###################
 # Deploy AzDevOps Pipelines
-# This requires DEV_DATAFACTORY_NAME set
+
+# AzDo Github Service Connection -- required only once for the entire deployment
+./scripts/deploy_azdo_service_connections_github.sh
+
+# Release pipelines require DEV_DATAFACTORY_NAME set, retrieve this value from .env.dev file
 export DEV_$(egrep '^DATAFACTORY_NAME' .env.dev | tail -1 | xargs)
+
+# Replace 'devlace/mdw-dataops-clone' to deployer's github project
+sed -i "s+devlace/mdw-dataops-clone+$GITHUB_REPO+" devops/azure-pipelines-cd-release.yml
+
+# Deploy pipelines
 ./scripts/deploy_azdo_pipelines.sh
+
+
+echo "Deployment complete!!"

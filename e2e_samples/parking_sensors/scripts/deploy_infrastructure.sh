@@ -192,7 +192,20 @@ az keyvault secret set --vault-name $kv_name --name "kvUrl" --value "$KV_URL"
 
 ####################
 # DATA FACTORY
+
+# Create a copy of the ADF dir into a .tmp/ folder.
+adfTempDir=.tmp/adf
+mkdir -p $adfTempDir && cp -a adf/ .tmp/
+
+# Update LinkedServices to point to newly deployed Datalake and KeyVault
+tmpfile=.tmpfile
+adfLsDir=$adfTempDir/linkedService
+jq --arg kvurl "$KV_URL" '.properties.typeProperties.baseUrl = $kvurl' $adfLsDir/Ls_KeyVault_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_KeyVault_01.json
+jq --arg datalakeUrl "https://$AZURE_STORAGE_ACCOUNT.dfs.core.windows.net" '.properties.typeProperties.url = $datalakeUrl' $adfLsDir/Ls_AdlsGen2_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AdlsGen2_01.json
+
+# Deploy ADF artifacts
 export DATAFACTORY_NAME=$(echo $arm_output | jq -r '.properties.outputs.datafactory_name.value')
+export ADF_DIR=$adfTempDir
 . ./scripts/deploy_adf_artifacts.sh
 
 

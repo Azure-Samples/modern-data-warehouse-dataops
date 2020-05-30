@@ -5,8 +5,8 @@ parameters:
   type: string
 
 jobs:
-- deployment: deploy_azuresqldb
-  displayName: 'Deploy to AzureSQLDB'
+- deployment: deploy_azuresqldw
+  displayName: 'Deploy to AzureSQLDW'
   pool:
     vmImage: 'windows-latest'
   variables:
