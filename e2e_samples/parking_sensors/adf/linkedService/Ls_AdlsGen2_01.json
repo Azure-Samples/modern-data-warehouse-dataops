@@ -12,7 +12,7 @@
 					"referenceName": "Ls_KeyVault_01",
 					"type": "LinkedServiceReference"
 				},
-				"secretName": "storageKey"
+				"secretName": "datalakeKey"
 			}
 		}
 	}

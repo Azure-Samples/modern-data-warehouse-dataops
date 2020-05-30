@@ -1,6 +1,11 @@
+parameters:
+- name: devAdfName
+  displayName: Name of DEV Azure Data Factory
+- name: githubRepoName
+  displayName: Github Full Repo Name (<my_github_account>/<repo_name>)
+
 trigger: none
 
-# https://docs.microsoft.com/en-us/azure/devops/pipelines/process/resources?view=azure-devops&tabs=schema
 resources:
   pipelines:
   - pipeline: ciartifacts
@@ -12,19 +17,15 @@ resources:
   - repository: mdwdataops_adfpublish
     type: github
     endpoint: mdwdo-park-github
-    name: devlace/mdw-dataops-clone
+    name: ${{ parameters.githubRepoName }}
     ref: adf_publish
-
-# variables:
-#   devAdfName: <DEV_DATAFACTORY_NAME>  # SET ME
 
 stages:
 - stage: deploy_to_stg
-  displayName: 'Deploy to DEV'
+  displayName: 'Deploy to DEV'  # In DEV, excludes publishing to ADF as this is a manual publish step
   variables:
   - group: mdwdo-park-release-dev
   jobs:
-  # In DEV, excludes ADF as this is a manual publish step
   - template: templates/jobs/deploy-databricks-job.yml
     parameters:
       environmentName: 'DEV'
@@ -49,20 +50,21 @@ stages:
     parameters:
       environmentName: 'STG'
       serviceConnection: 'mdwdo-park-service-connection-stg'
+      devAdfName: ${{ parameters.devAdfName }}
 
-- stage: deploy_to_prod
-  displayName: 'Deploy to Prod'
-  variables:
-  - group: mdwdo-park-release-prod
-  jobs: 
-  - template: templates/jobs/deploy-databricks-job.yml
-    parameters:
-      environmentName: 'PROD'
-  - template: templates/jobs/deploy-azuresqldb-job.yml
-    parameters:
-      environmentName: 'PROD'
-      serviceConnection: 'mdwdo-park-service-connection-prod'
-  - template: templates/jobs/deploy-adf-job.yml
-    parameters:
-      environmentName: 'PROD'
-      serviceConnection: 'mdwdo-park-service-connection-prod'
+# - stage: deploy_to_prod
+#   displayName: 'Deploy to Prod'
+#   variables:
+#   - group: mdwdo-park-release-prod
+#   jobs: 
+#   - template: templates/jobs/deploy-databricks-job.yml
+#     parameters:
+#       environmentName: 'PROD'
+#   - template: templates/jobs/deploy-azuresqldb-job.yml
+#     parameters:
+#       environmentName: 'PROD'
+#       serviceConnection: 'mdwdo-park-service-connection-prod'
+#   - template: templates/jobs/deploy-adf-job.yml
+#     parameters:
+#       environmentName: 'PROD'
+#       serviceConnection: 'mdwdo-park-service-connection-prod'

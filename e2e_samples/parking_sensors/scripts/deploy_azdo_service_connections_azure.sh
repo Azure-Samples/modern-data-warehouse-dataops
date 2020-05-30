@@ -40,7 +40,7 @@ set -o xtrace # For debugging
 
 ###############
 # Setup Azure service connection
-az_service_connection_name="mdwdo-park-service-connection-$ENV_NAME"
+az_service_connection_name="mdwdo-park-serviceconnection-$ENV_NAME"
 
 az_sub=$(az account show --output json)
 az_sub_id=$(echo $az_sub | jq -r '.id')

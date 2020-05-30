@@ -225,7 +225,9 @@ NOTE: This deployment was tested using WSL 2 (Ubuntu 18.04) and Debian GNU/Linux
     5. Navigate to "Author" tab, you should see all the pipelines deployed.
     6. Navigate to "Triggers" below. Select the `T_Sched` trigger and activate it by clicking on the "Play" icon next to it. 
     7. Click `Publish` to publish changes.
-       - NOTE: Do not skip publish a change in Data Factory. This will generate the `adf_publish` branch which is needed in the next step.
+       - NOTE: Publishing a change is required to generate the `adf_publish` branch which is required in the next the Release pipelines.
+   8. Optional. Do a git pull, you will encounter a merge conflict* -- accept all **incoming** changes.
+      - *this is because during the deployment, the Linked Services definitions were updated to point  each newly deployed environment.
 
    **NOTE:** Only the DEV Data Factory should be setup with Git integration.
 

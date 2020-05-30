@@ -46,13 +46,13 @@ github_sc_id=$(az devops service-endpoint list --output json |
 
 createPipeline () {
     declare pipeline_name=$1
-    full_pipeline_name=mdwdo-park-${DEPLOYMENT_ID}-$pipeline_name
+    full_pipeline_name=mdwdo-park-$pipeline_name-${DEPLOYMENT_ID}
     pipeline_id=$(az pipelines create \
         --name "$full_pipeline_name" \
         --description 'This pipeline runs python unit tests and linting.' \
         --repository "$GITHUB_REPO_URL" \
         --branch "$AZDO_PIPELINES_BRANCH_NAME" \
-        --yaml-path "/e2e_samples/parking_sensors/devops/$pipeline_name.yml" \
+        --yaml-path "/e2e_samples/parking_sensors/devops/azure-pipelines-$pipeline_name.yml" \
         --service-connection "$github_sc_id" \
         --skip-first-run true \
         --output json | jq -r '.id')
@@ -60,12 +60,12 @@ createPipeline () {
 }
 
 # Build Pipelines
-createPipeline "azure-pipelines-ci-qa-python"
-createPipeline "azure-pipelines-ci-qa-sql"
-createPipeline "azure-pipelines-ci-artifacts"
+createPipeline "ci-qa-python"
+createPipeline "ci-qa-sql"
+createPipeline "ci-artifacts"
 
 # Release Pipelines
-cd_release_pipeline_id=$(createPipeline "azure-pipelines-cd-release")
+cd_release_pipeline_id=$(createPipeline "cd-release")
 
 az pipelines variable create \
     --name devAdfName \
