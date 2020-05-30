@@ -35,7 +35,6 @@ set -o xtrace # For debugging
 # REQUIRED ENV VARIABLES:
 #
 # GITHUB_REPO_URL
-# DEPLOYMENT_ID
 # AZDO_PIPELINES_BRANCH_NAME
 # DEV_DATAFACTORY_NAME
 
@@ -46,7 +45,7 @@ github_sc_id=$(az devops service-endpoint list --output json |
 
 createPipeline () {
     declare pipeline_name=$1
-    full_pipeline_name=mdwdo-park-$pipeline_name-${DEPLOYMENT_ID}
+    full_pipeline_name=mdwdo-park-$pipeline_name
     pipeline_id=$(az pipelines create \
         --name "$full_pipeline_name" \
         --description 'This pipeline runs python unit tests and linting.' \

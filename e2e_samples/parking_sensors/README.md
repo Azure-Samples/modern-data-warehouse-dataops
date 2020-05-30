@@ -159,6 +159,8 @@ NOTE: This deployment was tested using WSL 2 (Ubuntu 18.04) and Debian GNU/Linux
 
 ### Setup and Deployment
 
+**IMPORTANT:** As with all Azure Deployments, this will incur associated costs. Remember to teardown all related resources after use. See list of deployed resources above, located under "Setup and Deployment > Deploy Azure Resources".
+
 1. **Initial Setup**
    1. Ensure that:
       - You are logged in to the Azure CLI. To login, run `az login`.
@@ -239,9 +241,9 @@ NOTE: This deployment was tested using WSL 2 (Ubuntu 18.04) and Debian GNU/Linux
 
 Congratulations!! 🥳 You have successfully setup the solution. For next steps, we recommend watching [this presentation](https://www.youtube.com/watch?v=Xs1-OU5cmsw) for a detailed walk-through of the running solution. 
 
-**IMPORTANT:** As with all Azure Deployments, this will incur associated costs. Remember to teardown all related resources after use. See list of deployed resources above, located under "Setup and Deployment > Deploy Azure Resources".
-
 If you've encountered any issues, please file a Github issue with the relevant error message and replication steps.
+
+<!--TODO: Add Cleanup script-->
 
 ### Data Lake Physical layout
 

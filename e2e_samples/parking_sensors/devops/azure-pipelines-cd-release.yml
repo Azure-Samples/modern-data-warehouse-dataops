@@ -1,13 +1,9 @@
-parameters:
-- name: devAdfName
-  displayName: Name of DEV Azure Data Factory
-
 trigger: none
 
 resources:
   pipelines:
   - pipeline: ciartifacts
-    source: ci-artifacts
+    source: mdwdo-park-ci-artifacts
     trigger: 
       branches:
       - master
@@ -15,8 +11,12 @@ resources:
   - repository: mdwdataops_adfpublish
     type: github
     endpoint: mdwdo-park-github
-    name: devlace/mdw-dataops-clone
+    name: devlace/mdw-dataops-clone  # TODO: parameterize me
     ref: adf_publish
+
+# The deployment script sets this as a Pipeline Variable, but you may choose to set it here in the definition
+# variables:
+#   devAdfName: <DEV DATAFACTORY NAME>
 
 stages:
 - stage: deploy_to_stg
@@ -48,7 +48,6 @@ stages:
     parameters:
       environmentName: 'STG'
       serviceConnection: 'mdwdo-park-service-connection-stg'
-      devAdfName: ${{ parameters.devAdfName }}
 
 # - stage: deploy_to_prod
 #   displayName: 'Deploy to Prod'

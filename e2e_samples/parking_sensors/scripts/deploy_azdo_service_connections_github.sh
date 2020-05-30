@@ -43,7 +43,12 @@ set -o xtrace # For debugging
 github_sc_name="mdwdo-park-github"
 export AZURE_DEVOPS_EXT_GITHUB_PAT=$GITHUB_PAT_TOKEN
 echo "Creating Github service connection: $github_sc_name in Azure DevOps"
-az devops service-endpoint github create \
+github_sc_id=$(az devops service-endpoint github create \
     --name $github_sc_name \
     --github-url "$GITHUB_REPO_URL" \
-    --output json
+    --output json |
+    jq -r '.id')
+
+az devops service-endpoint update \
+    --id $github_sc_id \
+    --enable-for-all "true"

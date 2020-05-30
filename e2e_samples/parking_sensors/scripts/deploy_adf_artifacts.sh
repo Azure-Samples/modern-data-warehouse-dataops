@@ -48,6 +48,7 @@ adfFactoryBaseUrl="$baseUrl/resourceGroups/${RESOURCE_GROUP_NAME}/providers/Micr
 adfDir="adf"
 
 # Overwrite values
+# TODO: dont rewrite actual files, copy first to temp dir
 # Create .tmp
 tmp=.tmpfile
 adfLsDir=$adfDir/linkedService
