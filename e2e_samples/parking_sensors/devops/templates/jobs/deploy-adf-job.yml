@@ -3,6 +3,8 @@ parameters:
   type: string
 - name: serviceConnection
   type: string
+- name: devAdfName
+  type: string
 
 jobs:
 - deployment: deploy_adf
@@ -12,6 +14,7 @@ jobs:
     vmImage: 'vs2017-win2016'
   variables:
     packageWheelName: $[ dependencies.deploy_databricks.outputs['setPackageWheelName.packageWheelName'] ]
+    devAdfName: ${{ parameters.devAdfName }}
   environment: ${{ parameters.environmentName }}
   strategy:
     runOnce:
