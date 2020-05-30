@@ -49,7 +49,7 @@ set -o xtrace # For debugging
 # DATAFACTORY_NAME
 
 # Const
-apiBaseUrl=https://data.melbourne.vic.gov.au/resource/
+apiBaseUrl="https://data.melbourne.vic.gov.au/resource/"
 
 # Create vargroup
 vargroup_name="mdwdo-park-release-$ENV_NAME"

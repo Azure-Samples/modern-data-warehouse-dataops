@@ -27,6 +27,7 @@ The sample demonstrate how DevOps principles can be applied end to end Data Pipe
 - [How to use the sample](#how-to-use-the-sample)
   - [Prerequisites](#prerequisites)
   - [Setup and Deployment](#setup-and-deployment)
+    - [Deployed Resources](#deployed-resources)
   - [Data Lake Physical layout](#data-lake-physical-layout)
   - [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
 
@@ -159,7 +160,7 @@ NOTE: This deployment was tested using WSL 2 (Ubuntu 18.04) and Debian GNU/Linux
 
 ### Setup and Deployment
 
-**IMPORTANT:** As with all Azure Deployments, this will incur associated costs. Remember to teardown all related resources after use. See list of deployed resources above, located under "Setup and Deployment > Deploy Azure Resources".
+**IMPORTANT NOTE:** As with all Azure Deployments, this will incur associated costs. Remember to teardown all related resources after use. See [here](#deployed-resources) for list of deployed resources.
 
 1. **Initial Setup**
    1. Ensure that:
@@ -169,48 +170,25 @@ NOTE: This deployment was tested using WSL 2 (Ubuntu 18.04) and Debian GNU/Linux
       - Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to. 
          - To set target Azure DevOps project, run `az devops configure --defaults organization=https://dev.azure.com/<MY_ORG>/ project=<MY_PROJECT>`
    2. Import this repository into a new Github repo. Importing is necessary for setting up git integration with Azure Data Factory.
-2. **Deploy Azure resources** 
-    1. Clone the imported repository locally and `cd` into the `e2e_samples/parking_sensors` folder of the repo
-    2. Set the following **required** environment variables:
-          - **GITHUB_REPO_URL** - URL of your imported github repo. (ei. "https://github.com/devlace/mdw-dataops-import")
-          - **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). This requires "repo" scope.
-          
-          Optionally, set the following environment variables:
-          - **DEPLOYMENT_ID** - string appended to all resource names. *Default*: random five character string.
-          - **RESOURCE_GROUP_NAME_PREFIX** - name of the resource group. This will be prefixed with environment name. For example: `RESOURCE_GROUP_NAME_PREFIX-dev-rg`. *Default*: mdwdo-park-${DEPLOYMENT_ID}.
-          - **AZDO_PIPELINES_BRANCH_NAME** - git branch where Azure DevOps pipelines definitions are retrieved from. *Default*: master.
-          - **RESOURCE_GROUP_LOCATION** - Azure location to deploy resources. *Default*: `westus`.
-          - **AZURE_SUBSCRIPTION_ID** - Azure subscription id to use to deploy resources. *Default*: default azure subscription. To see your default, run `az account list`.
-          - **AZURESQL_SERVER_PASSWORD** - Password of the SQL Server instance. *Default*: semi-random string.
+   3. Set the following **required** environment variables:
+       - **GITHUB_REPO_URL** - URL of your imported github repo. (ei. "https://github.com/devlace/mdw-dataops-import")
+       - **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). This requires "repo" scope.
+       
+       Optionally, set the following environment variables:
+       - **RESOURCE_GROUP_LOCATION** - Azure location to deploy resources. *Default*: `westus`.
+       - **AZURE_SUBSCRIPTION_ID** - Azure subscription id to use to deploy resources. *Default*: default azure subscription. To see your default, run `az account list`.
+       - **RESOURCE_GROUP_NAME_PREFIX** - name of the resource group. This will automatically be appended with the environment name. For example: `RESOURCE_GROUP_NAME_PREFIX-dev-rg`. *Default*: mdwdo-park-${DEPLOYMENT_ID}.
+      - **DEPLOYMENT_ID** - string appended to all resource names. This is to ensure uniqueness of azure resource names. *Default*: random five character string.
+       - **AZDO_PIPELINES_BRANCH_NAME** - git branch where Azure DevOps pipelines definitions are retrieved from. *Default*: master.
+       - **AZURESQL_SERVER_PASSWORD** - Password of the SQL Server instance. *Default*: semi-random string.
 
-         NOTE: To further customize the solution, set parameters in arm.parameters files located in the `infrastructure` folder.
+      NOTE: To further customize the solution, set parameters in arm.parameters files located in the `infrastructure` folder.
 
-   3. Run `./deploy.sh`.
+2. **Deploy Azure resources**
+   1. Clone locally the imported Github Repo, then `cd` into the `e2e_samples/parking_sensors` folder of the repo
+   2. Run `./deploy.sh`.
       - **NOTE!** This may take around **~30mins or more** to run end to end. So grab yourself a cup of coffee... ☕
-      - After a successful deployment, you will find `.env.{environment_name}` files containing essential configuration information per environment.
-      - You should have the following resources deployed:
-        - In Azure, **three (3) Resource Groups** (one per environment) each with the following Azure resources.
-           - **Data Factory** - with pipelines, datasets, linked services, triggers deployed and configured correctly per environment.
-           - **Data Lake Store Gen2** and a **Service Principal (SP)** with Storage Contributor rights assigned.
-           - **Databricks workspace** 
-             - notebooks uploaded at `/notebooks` folder in the workspace
-             - SparkSQL tables created
-             - ADLS Gen2 mounted at `dbfs:/mnt/datalake` using the Storage Service Principal.
-           - **Azure Synapse (formerly SQLDW)** - currently, empty. The Release Pipeline will deploy the SQL Database objects.
-           - **Application Insights**
-           - **KeyVault** with all relevant secrets stored.
-           - All above Azure resources are tagged with correct Environment.
-         - In Azure DevOps
-           - **Four (4) Azure Pipelines**
-             - mdw-park-cd-release - Release Pipeline
-             - mdw-park-ci-artifacts - Build Pipeline
-             - mdw-park-ci-qa-python - "QA" pipeline runs on PR to master
-             - mdw-park-ci-qa-sql - "QA" pipeline runs on PR to master
-           - **Three (3) Variables Groups** - one per environment
-           - **Four (4) Service Connections**
-             - **Three Azure Service Connections** (one per environment) each with a **Service Principal** with Contributor rights to the corresponding Resource Group.
-             - **Github Service Connection** for retrieving code from Github
-         
+      - After a successful deployment, you will find `.env.{environment_name}` files containing essential configuration information per environment. See [here](#deployed-resources) for list of deployed resources.
 
 3. **Setup ADF git integration in DEV Data Factory**
     1. In the Azure Portal, navigate to the Data Factory in the **DEV** environment.
@@ -224,25 +202,45 @@ NOTE: This deployment was tested using WSL 2 (Ubuntu 18.04) and Debian GNU/Linux
         - Root folder: **e2e_samples/parking_sensors/adf**
         - Import Existing Data Factory resource to repository: **Selected**
         - Branch to import resource into: **Use Collaboration**
-    5. Navigate to "Author" tab, you should see all the pipelines deployed.
-    6. Navigate to "Triggers" below. Select the `T_Sched` trigger and activate it by clicking on the "Play" icon next to it. 
-    7. Click `Publish` to publish changes.
-       - NOTE: Publishing a change is required to generate the `adf_publish` branch which is required in the next the Release pipelines.
-   8. Optional. Do a git pull, you will encounter a merge conflict* -- accept all **incoming** changes.
-      - *this is because during the deployment, the Linked Services definitions were updated to point  each newly deployed environment.
 
-   **NOTE:** Only the DEV Data Factory should be setup with Git integration.
+   **NOTE:** Only the DEV Data Factory should be setup with Git integration. Do **NOT** setup git integration in the STG and PROD Data Factories.
 
 4. **Trigger a Release**
-   1. In Azure DevOps, create a new a Release by running the Build Pipeline (**mdw-park-ci-artifacts**) of `master`.
+
+   1. In the Data Factory portal, navigate to "Manage > Triggers". Select the `T_Sched` trigger and activate it by clicking on the "Play" icon next to it. Click `Publish` to publish changes.
+      - Publishing a change is **required** to generate the `adf_publish` branch which is required in the next the Release pipelines.
+   2. In Azure DevOps, notice a new run of the Build Pipeline (**mdw-park-ci-artifacts**) off `master`.
       - This will build the Python package and SQL DACPAC, then publish these as Pipeline Artifacts.
-   2. After completion, this should automatically trigger the Release Pipeline (**mdw-park-cd-release**)
-      - This will take the Build artifacts and deploy these across environments.
+   3. After completion, this should automatically trigger the Release Pipeline (**mdw-park-cd-release**)
+      - This will deploy the artifacts across environments.
 
-Congratulations!! 🥳 You have successfully setup the solution. For next steps, we recommend watching [this presentation](https://www.youtube.com/watch?v=Xs1-OU5cmsw) for a detailed walk-through of the running solution. 
+Congratulations!! 🥳 You have successfully setup the solution. For next steps, we recommend watching [this presentation](https://www.youtube.com/watch?v=Xs1-OU5cmsw) for a detailed walk-through of the running solution. If you've encountered any issues, please file a Github issue with the relevant error message and replication steps.
 
-If you've encountered any issues, please file a Github issue with the relevant error message and replication steps.
+#### Deployed Resources
 
+After a successful deployment, you should have the following resources:
+
+- In Azure, **three (3) Resource Groups** (one per environment) each with the following Azure resources.
+   - **Data Factory** - with pipelines, datasets, linked services, triggers deployed and configured correctly per environment.
+   - **Data Lake Store Gen2** and a **Service Principal (SP)** with Storage Contributor rights assigned.
+   - **Databricks workspace** 
+     - notebooks uploaded at `/notebooks` folder in the workspace
+     - SparkSQL tables created
+     - ADLS Gen2 mounted at `dbfs:/mnt/datalake` using the Storage Service Principal.
+   - **Azure Synapse (formerly SQLDW)** - currently, empty. The Release Pipeline will deploy the SQL Database objects.
+   - **Application Insights**
+   - **KeyVault** with all relevant secrets stored.
+   - All above Azure resources are tagged with correct Environment.
+ - In Azure DevOps
+   - **Four (4) Azure Pipelines**
+     - mdw-park-cd-release - Release Pipeline
+     - mdw-park-ci-artifacts - Build Pipeline
+     - mdw-park-ci-qa-python - "QA" pipeline runs on PR to master
+     - mdw-park-ci-qa-sql - "QA" pipeline runs on PR to master
+   - **Three (3) Variables Groups** - one per environment
+   - **Four (4) Service Connections**
+     - **Three Azure Service Connections** (one per environment) each with a **Service Principal** with Contributor rights to the corresponding Resource Group.
+     - **Github Service Connection** for retrieving code from Github
 <!--TODO: Add Cleanup script-->
 
 ### Data Lake Physical layout

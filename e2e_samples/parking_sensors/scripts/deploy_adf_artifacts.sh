@@ -95,6 +95,7 @@ createTrigger "T_Sched"
 
 ############################
 # Setup git integration
+# LACE: unfortunately, there doesn't seem to be a way to trigger "import existing resources into Collaboration branch" when we setup Git integration manually.
 
 # # Commit changes to the LinkedServices
 # git checkout -b $COLLABORATION_BRANCH

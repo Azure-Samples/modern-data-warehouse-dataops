@@ -60,9 +60,14 @@ az_sp_tenant_id=$(echo $az_sp | jq -r '.tenant')
 # Create Azure Service connection in Azure DevOps
 export AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY=$(echo $az_sp | jq -r '.password')
 echo "Creating Azure service connection Azure DevOps"
-az devops service-endpoint azurerm create \
+sc_id=$(az devops service-endpoint azurerm create \
     --name "$az_service_connection_name" \
     --azure-rm-service-principal-id "$SERVICE_PRINCIPAL_ID" \
     --azure-rm-subscription-id "$az_sub_id" \
     --azure-rm-subscription-name "$az_sub_name" \
-    --azure-rm-tenant-id "$az_sp_tenant_id"
+    --azure-rm-tenant-id "$az_sp_tenant_id" |
+    jq -r '.id')
+
+az devops service-endpoint update \
+    --id $sc_id \
+    --enable-for-all "true"

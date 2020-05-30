@@ -7,6 +7,8 @@ trigger:
     include:
     - e2e_samples/parking_sensors/*
 
+pr: none
+
 variables:
   basePath: 'e2e_samples/parking_sensors'
   pythonWorkingDir: '$(basePath)/src/ddo_transform'

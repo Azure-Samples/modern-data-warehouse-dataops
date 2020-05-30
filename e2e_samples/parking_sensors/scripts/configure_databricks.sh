@@ -97,7 +97,4 @@ else
     databricks clusters create --json-file $cluster_config
 fi
 
-# TODO: Build python package, upload whl file to libs path
-
-
 echo "Completed configuring databricks."
