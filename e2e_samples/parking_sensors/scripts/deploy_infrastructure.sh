@@ -101,6 +101,10 @@ az storage fs directory create -n '/data/dw/dim_st_marker' -f $storage_file_syst
 az storage fs directory create -n '/data/dw/dim_parking_bay' -f $storage_file_system
 az storage fs directory create -n '/data/dw/dim_location' -f $storage_file_system
 
+# Upload seed data
+az storage blob upload --container-name $storage_file_system --file data/seed/DimDate.csv
+az storage blob upload --container-name $storage_file_system --file data/seed/DimTime.csv
+
 # Create SP and grant correct rights to storage account
 sp_stor_name=$(echo $arm_output | jq -r '.properties.outputs.service_principal_storage_name.value')
 echo "Creating Service Principal (SP) for access to ADLA Gen2: '$sp_stor_name'"
