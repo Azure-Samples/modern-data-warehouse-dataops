@@ -102,8 +102,10 @@ az storage fs directory create -n '/data/dw/dim_parking_bay' -f $storage_file_sy
 az storage fs directory create -n '/data/dw/dim_location' -f $storage_file_system
 
 # Upload seed data
-az storage blob upload --container-name $storage_file_system --file data/seed/DimDate.csv
-az storage blob upload --container-name $storage_file_system --file data/seed/DimTime.csv
+az storage blob upload --container-name $storage_file_system\
+    --file data/seed/DimDate.csv --name "data/seed/DimDate.csv"
+az storage blob upload --container-name $storage_file_system \
+    --file data/seed/DimTime.csv --name "data/seed/DimTime.csv"
 
 # Create SP and grant correct rights to storage account
 sp_stor_name=$(echo $arm_output | jq -r '.properties.outputs.service_principal_storage_name.value')
@@ -166,7 +168,7 @@ databricks_token=$(echo $api_response | jq -r '.token_value')
 export DATABRICKS_TOKEN=$databricks_token
 
 # Configure databricks
-sleep 5m # It takes a while for a databricks workspace to be ready for new clusters.
+sleep 3m # It takes a while for a databricks workspace to be ready for new clusters.
 . ./scripts/configure_databricks.sh
 
 

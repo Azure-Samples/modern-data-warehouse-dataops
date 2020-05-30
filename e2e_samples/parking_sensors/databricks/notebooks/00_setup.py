@@ -131,19 +131,6 @@ dbutils.fs.refreshMounts()
 # COMMAND ----------
 
 from pyspark.sql.functions import col
-import os
-from urllib.request import urlretrieve
-
-def download_url(url, filename):
-  # Create dir if not exist
-  dir_path = os.path.dirname(filename)
-  if not os.path.exists(dir_path):
-    os.makedirs(dir_path)
-  urlretrieve(url, filename)
-
-# Download data
-download_url("https://lacedemodata.blob.core.windows.net/data/DimDate.csv", "/dbfs/mnt/datalake/data/seed/DimDate.csv")
-download_url("https://lacedemodata.blob.core.windows.net/data/DimTime.csv", "/dbfs/mnt/datalake/data/seed/DimTime.csv")
 
 # DimDate
 dimdate = spark.read.csv("dbfs:/mnt/datalake/data/seed/DimDate.csv", header=True)

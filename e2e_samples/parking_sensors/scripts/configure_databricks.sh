@@ -46,7 +46,7 @@ wait_for_run () {
             exit 1
         else 
             echo "Waiting for run ${mount_run_id} to finish..."
-            sleep 2m
+            sleep 1m
         fi
     done
 }

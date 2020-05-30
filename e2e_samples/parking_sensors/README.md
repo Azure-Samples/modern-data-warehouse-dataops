@@ -78,6 +78,7 @@ It makes use of the following azure services:
 - [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction)
 - [Azure Synapse Analytics (formerly SQLDW)](https://azure.microsoft.com/en-au/services/synapse-analytics/)
 - [Azure DevOps](https://azure.microsoft.com/en-au/services/devops/)
+- [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)
 
 
 For a detailed walk-through of the solution and key concepts, watch the following video recording:
@@ -141,8 +142,8 @@ Both Build and Release Pipelines are built using [AzureDevOps](https://dev.azure
 1. [Github account](https://github.com/)
 2. [Azure Account](https://azure.microsoft.com/en-au/free/search/?&ef_id=Cj0KCQiAr8bwBRD4ARIsAHa4YyLdFKh7JC0jhbxhwPeNa8tmnhXciOHcYsgPfNB7DEFFGpNLTjdTPbwaAh8bEALw_wcB:G:s&OCID=AID2000051_SEM_O2ShDlJP&MarinID=O2ShDlJP_332092752199_azure%20account_e_c__63148277493_aud-390212648371:kwd-295861291340&lnkd=Google_Azure_Brand&dclid=CKjVuKOP7uYCFVapaAoddSkKcA)
    - *Permissions needed*: ability to create and deploy to an azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
-3. [Azure DevOps Account](https://azure.microsoft.com/en-us/services/devops/)
-   - *Permissions needed*: ability to create [service connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml) and [pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops&tabs=yaml).
+3. [Azure DevOps Project](https://azure.microsoft.com/en-us/services/devops/)
+   - *Permissions needed*: ability to create [service connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml), [pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops&tabs=yaml) and [variable groups](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml).
 
 #### Software pre-requisites <!-- omit in toc -->
 - For Windows users, [Windows Subsystem For Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
@@ -160,7 +161,7 @@ NOTE: This deployment was tested using WSL 2 (Ubuntu 18.04) and Debian GNU/Linux
 
 ### Setup and Deployment
 
-**IMPORTANT NOTE:** As with all Azure Deployments, this will incur associated costs. Remember to teardown all related resources after use. See [here](#deployed-resources) for list of deployed resources.
+**IMPORTANT NOTE:** As with all Azure Deployments, this will incur associated costs. Remember to teardown all related resources after use to avoid unnecessary costs. See [here](#deployed-resources) for list of deployed resources.
 
 1. **Initial Setup**
    1. Ensure that:
@@ -213,7 +214,7 @@ NOTE: This deployment was tested using WSL 2 (Ubuntu 18.04) and Debian GNU/Linux
    3. After completion, this should automatically trigger the Release Pipeline (**mdw-park-cd-release**). This will deploy the artifacts across environments.
       - You may need to authorize the Pipelines initially to use the Service Connection for the first time.
 
-Congratulations!! 🥳 You have successfully setup the solution. For next steps, we recommend watching [this presentation](https://www.youtube.com/watch?v=Xs1-OU5cmsw) for a detailed walk-through of the running solution. If you've encountered any issues, please file a Github issue with the relevant error message and replication steps.
+Congratulations!! 🥳 You have successfully deployed the solution and accompanying Build and Release Pipelines. For next steps, we recommend watching [this presentation](https://www.youtube.com/watch?v=Xs1-OU5cmsw) for a detailed walk-through of the running solution. If you've encountered any issues, please file a Github issue with the relevant error message and replication steps.
 
 #### Deployed Resources
 
@@ -266,4 +267,4 @@ ADLS Gen2 is structured as the following:
 - Databricks KeyVault-backed secrets scopes can only be create via the UI, cannot be created programmatically and was not incorporated in the automated deployment of the solution.
   - **Workaround**: Deployment uses normal Databricks secrets with the downside of duplicated information. If you wish, you many manually convert these to KeyVault-back secret scopes.
 - Azure DevOps Variable Groups linked to KeyVault can only be created via the UI, cannot be created programmatically and was not incorporated in the automated deployment of the solution.
-  - **Workaround**: Deployment add sensitive configuration as "secrets" in Variable Groups with the downside of duplicated information. If you wish, you may manually link a second Variable Group to KeyVault to pull out the secrets.
+  - **Workaround**: Deployment add sensitive configuration as "secrets" in Variable Groups with the downside of duplicated information. If you wish, you may manually link a second Variable Group to KeyVault to pull out the secrets. KeyVault secret names should line up with required variables in the Azure DevOps pipelines.
