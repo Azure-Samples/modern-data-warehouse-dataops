@@ -48,6 +48,8 @@ set -o xtrace # For debugging
 # STORAGE_KEY
 # DATAFACTORY_NAME
 
+# Const
+apiBaseUrl=https://data.melbourne.vic.gov.au/resource/
 
 # Create vargroup
 vargroup_name="mdwdo-park-release-$ENV_NAME"
@@ -60,23 +62,23 @@ vargroup_id=$(az pipelines variable-group create \
         adfName="$DATAFACTORY_NAME" \
         databricksNotebookPath='dbfs:/mnt/datalake/sys/databricks/libs/$(Build.BuildId)' \
         databricksDbfsLibPath='/releases/$(Build.BuildId)' \
-        apiBaseUrl="https://data.melbourne.vic.gov.au/resource/" \
+        apiBaseUrl="$apiBaseUrl" \
     --output json |
     jq -r .id)
 
 az pipelines variable-group variable create --group-id $vargroup_id \
-    --secret "true" --name "databricksDomain" --value $DATABRICKS_HOST
+    --secret "true" --name "databricksDomain" --value "$DATABRICKS_HOST"
 az pipelines variable-group variable create --group-id $vargroup_id \
-    --secret "true" --name "databricksToken" --value $DATABRICKS_TOKEN
+    --secret "true" --name "databricksToken" --value "$DATABRICKS_TOKEN"
 az pipelines variable-group variable create --group-id $vargroup_id \
-    --secret "true" --name "sqlsrvrName" --value $SQL_SERVER_NAME
+    --secret "true" --name "sqlsrvrName" --value "$SQL_SERVER_NAME"
 az pipelines variable-group variable create --group-id $vargroup_id \
-    --secret "true" --name "sqlsrvrUsername" --value $SQL_SERVER_USERNAME
+    --secret "true" --name "sqlsrvrUsername" --value "$SQL_SERVER_USERNAME"
 az pipelines variable-group variable create --group-id $vargroup_id \
-    --secret "true" --name "sqlsrvrPassword" --value $SQL_SERVER_PASSWORD
+    --secret "true" --name "sqlsrvrPassword" --value "$SQL_SERVER_PASSWORD"
 az pipelines variable-group variable create --group-id $vargroup_id \
-    --secret "true" --name "sqlDwDatabaseName" --value $SQL_DW_DATABASE_NAME
+    --secret "true" --name "sqlDwDatabaseName" --value "$SQL_DW_DATABASE_NAME"
 az pipelines variable-group variable create --group-id $vargroup_id \
-    --secret "true" --name "datalakeAccountName" --value $AZURE_STORAGE_ACCOUNT
+    --secret "true" --name "datalakeAccountName" --value "$AZURE_STORAGE_ACCOUNT"
 az pipelines variable-group variable create --group-id $vargroup_id \
-    --secret "true" --name "datalakeKey" --value $AZURE_STORAGE_KEY
+    --secret "true" --name "datalakeKey" --value "$AZURE_STORAGE_KEY"

@@ -21,7 +21,7 @@ jobs:
           inputs:
             azureSubscription: ${{ parameters.serviceConnection }}
             AuthenticationType: 'server'
-            ServerName: $(sqlsrvrName)
+            ServerName: $(sqlsrvrName).database.windows.net
             DatabaseName: $(sqlDwDatabaseName)
             SqlUsername: '$(sqlsrvrUsername)'
             SqlPassword: '$(sqlsrvrPassword)'
