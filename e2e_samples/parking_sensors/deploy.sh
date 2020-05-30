@@ -53,4 +53,5 @@ sed -i "s+devlace/mdw-dataops-clone+$GITHUB_REPO+" devops/azure-pipelines-cd-rel
 ./scripts/deploy_azdo_pipelines.sh
 
 
-echo "Deployment complete!!"
+echo "Deployment complete!"
+echo "Now, you need to setup git integration in your DEV Data Factory. Refer to README instructions for detailed next steps."

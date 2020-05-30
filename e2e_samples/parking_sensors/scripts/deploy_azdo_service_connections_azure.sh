@@ -65,8 +65,7 @@ sc_id=$(az devops service-endpoint azurerm create \
     --azure-rm-service-principal-id "$SERVICE_PRINCIPAL_ID" \
     --azure-rm-subscription-id "$az_sub_id" \
     --azure-rm-subscription-name "$az_sub_name" \
-    --azure-rm-tenant-id "$az_sp_tenant_id" |
-    jq -r '.id')
+    --azure-rm-tenant-id "$az_sp_tenant_id" --output json | jq -r '.id')
 
 az devops service-endpoint update \
     --id $sc_id \

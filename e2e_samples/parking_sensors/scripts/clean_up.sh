@@ -34,32 +34,30 @@ RESOURCE_GROUP_NAME_PREFIX="mdwdo-park"
 echo "Delete pipelines the start with '$prefix' in name..."
 [[ ! -z $prefix ]] &&
     az pipelines list -o tsv |
-    grep "^$prefix" |
+    grep "$prefix" |
     awk '{print $4}' |
     xargs -r -I % az pipelines delete --id % --yes
 
 echo "Delete variable groups the start with '$prefix' in name..."
 [[ ! -z $prefix ]] &&
     az pipelines variable-group list -o tsv |
-    grep "^$prefix"
-    | awk '{print $3}'
-    | xargs -r -I % az pipelines variable-group delete --id % --yes
+    grep "$prefix" | 
+    awk '{print $3}' |
+    xargs -r -I % az pipelines variable-group delete --id % --yes
 
 echo "Delete service connections the start with '$prefix' in name..."
 [[ ! -z $prefix ]] &&
     az devops service-endpoint list -o tsv |
-    grep "^$prefix" |
+    grep "$prefix" |
     awk '{print $3}' |
     xargs -r -I % az devops service-endpoint delete --id % --yes
 
 echo "Delete service principal the start with '$prefix' in name, created by yourself..."
 [[ ! -z $prefix ]] &&
     az ad sp list --query "[?contains(appDisplayName,'$prefix')].appId" -o tsv --show-mine | 
-    grep "^$prefix" | 
     xargs -r -I % az ad sp delete --id %
 
 echo "Delete resource group the start with '$RESOURCE_GROUP_NAME_PREFIX' in name..."
 [[ ! -z $RESOURCE_GROUP_NAME_PREFIX ]] &&
     az group list --query "[?contains(name,'$RESOURCE_GROUP_NAME_PREFIX')].name" -o tsv |
-    grep "^$RESOURCE_GROUP_NAME_PREFIX" |
-    xargs -I % az group delete --verbose --name % -y --no-wait
+    xargs -I % az group delete --verbose --name % -y

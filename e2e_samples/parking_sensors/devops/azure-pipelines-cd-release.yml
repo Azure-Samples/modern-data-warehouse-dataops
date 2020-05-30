@@ -33,7 +33,7 @@ stages:
   - template: templates/jobs/deploy-azuresqldb-job.yml
     parameters:
       environmentName: 'DEV'
-      serviceConnection: 'mdwdo-park-service-connection-dev'
+      serviceConnection: 'mdwdo-park-serviceconnection-dev'
 
 - stage: deploy_to_stg
   displayName: 'Deploy to Stage'
@@ -46,11 +46,11 @@ stages:
   - template: templates/jobs/deploy-azuresqldb-job.yml
     parameters:
       environmentName: 'STG'
-      serviceConnection: 'mdwdo-park-service-connection-stg'
+      serviceConnection: 'mdwdo-park-serviceconnection-stg'
   - template: templates/jobs/deploy-adf-job.yml
     parameters:
       environmentName: 'STG'
-      serviceConnection: 'mdwdo-park-service-connection-stg'
+      serviceConnection: 'mdwdo-park-serviceconnection-stg'
 
 - stage: deploy_to_prod
   displayName: 'Deploy to Prod'
@@ -63,8 +63,8 @@ stages:
   - template: templates/jobs/deploy-azuresqldb-job.yml
     parameters:
       environmentName: 'PROD'
-      serviceConnection: 'mdwdo-park-service-connection-prod'
+      serviceConnection: 'mdwdo-park-serviceconnection-prod'
   - template: templates/jobs/deploy-adf-job.yml
     parameters:
       environmentName: 'PROD'
-      serviceConnection: 'mdwdo-park-service-connection-prod'
+      serviceConnection: 'mdwdo-park-serviceconnection-prod'
