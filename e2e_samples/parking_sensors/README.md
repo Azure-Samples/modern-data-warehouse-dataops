@@ -209,10 +209,9 @@ NOTE: This deployment was tested using WSL 2 (Ubuntu 18.04) and Debian GNU/Linux
 
    1. In the Data Factory portal, navigate to "Manage > Triggers". Select the `T_Sched` trigger and activate it by clicking on the "Play" icon next to it. Click `Publish` to publish changes.
       - Publishing a change is **required** to generate the `adf_publish` branch which is required in the next the Release pipelines.
-   2. In Azure DevOps, notice a new run of the Build Pipeline (**mdw-park-ci-artifacts**) off `master`.
-      - This will build the Python package and SQL DACPAC, then publish these as Pipeline Artifacts.
-   3. After completion, this should automatically trigger the Release Pipeline (**mdw-park-cd-release**)
-      - This will deploy the artifacts across environments.
+   2. In Azure DevOps, notice a new run of the Build Pipeline (**mdw-park-ci-artifacts**) off `master`. This will build the Python package and SQL DACPAC, then publish these as Pipeline Artifacts.
+   3. After completion, this should automatically trigger the Release Pipeline (**mdw-park-cd-release**). This will deploy the artifacts across environments.
+      - You may need to authorize the Pipelines initially to use the Service Connection for the first time.
 
 Congratulations!! 🥳 You have successfully setup the solution. For next steps, we recommend watching [this presentation](https://www.youtube.com/watch?v=Xs1-OU5cmsw) for a detailed walk-through of the running solution. If you've encountered any issues, please file a Github issue with the relevant error message and replication steps.
 
