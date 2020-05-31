@@ -95,6 +95,7 @@ storage_file_system=datalake
 echo "Creating ADLS Gen2 File system: $storage_file_system"
 az storage container create --name $storage_file_system
 
+echo "Creating folders within the file system."
 # Create folders for databricks libs
 az storage fs directory create -n '/sys/databricks/libs' -f $storage_file_system
 # Create folders for SQL external tables
@@ -103,7 +104,7 @@ az storage fs directory create -n '/data/dw/dim_st_marker' -f $storage_file_syst
 az storage fs directory create -n '/data/dw/dim_parking_bay' -f $storage_file_system
 az storage fs directory create -n '/data/dw/dim_location' -f $storage_file_system
 
-# Upload seed data
+echo "Uploading seed data to data/seed"
 az storage blob upload --container-name $storage_file_system\
     --file data/seed/DimDate.csv --name "data/seed/DimDate.csv"
 az storage blob upload --container-name $storage_file_system \
@@ -125,6 +126,7 @@ export SP_STOR_TENANT=$(echo $sp_stor_out | jq -r '.tenant')
 ###################
 # SQL
 
+echo "Retrieving SQL Server information from the deployment."
 # Retrieve SQL creds
 export SQL_SERVER_NAME=$(echo $arm_output | jq -r '.properties.outputs.sql_server_name.value')
 export SQL_SERVER_USERNAME=$(echo $arm_output | jq -r '.properties.outputs.sql_server_username.value')
@@ -142,6 +144,7 @@ sql_dw_connstr_uname_pass=${sql_dw_connstr_uname/<password>/$SQL_SERVER_PASSWORD
 ####################
 # APPLICATION INSIGHTS
 
+echo "Retrieving ApplicationInsights information from the deployment."
 appinsights_name=$(echo $arm_output | jq -r '.properties.outputs.appinsights_name.value')
 export APPINSIGHTS_KEY=$(az monitor app-insights component show \
     --app "$appinsights_name" \
@@ -153,12 +156,14 @@ export APPINSIGHTS_KEY=$(az monitor app-insights component show \
 # ###########################
 # # RETRIEVE DATABRICKS INFORMATION AND CONFIGURE WORKSPACE
 # 
+echo "Retrieving Databricks information from the deployment."
 databricks_location=$(echo $arm_output | jq -r '.properties.outputs.databricks_location.value')
 databricks_workspace_name=$(echo $arm_output | jq -r '.properties.outputs.databricks_workspace_name.value')
 databricks_workspace_id=$(echo $arm_output | jq -r '.properties.outputs.databricks_workspace_id.value')
 export DATABRICKS_HOST=https://${databricks_location}.azuredatabricks.net
 
 # Retrieve databricks PAT token
+echo "Generating a Databricks PAT token."
 databricks_global_token=$(az account get-access-token --resource 2ff814a6-3304-4ab8-85cb-cd0e6f879c1d --output json | jq -r .accessToken) # Databricks app global id
 azure_api_token=$(az account get-access-token --resource https://management.core.windows.net/ --output json | jq -r .accessToken)
 api_response=$(curl -sf $DATABRICKS_HOST/api/2.0/token/create \
@@ -169,8 +174,10 @@ api_response=$(curl -sf $DATABRICKS_HOST/api/2.0/token/create \
 databricks_token=$(echo $api_response | jq -r '.token_value')
 export DATABRICKS_TOKEN=$databricks_token
 
-# Configure databricks
+echo "Waiting for Databricks workspace to be ready..."
 sleep 3m # It takes a while for a databricks workspace to be ready for new clusters.
+
+# Configure databricks
 . ./scripts/configure_databricks.sh
 
 
@@ -178,9 +185,11 @@ sleep 3m # It takes a while for a databricks workspace to be ready for new clust
 # SAVE RELEVANT SECRETS IN KEYVAULT
 
 # Retrieve KeyVault details
+echo "Retrieving KeyVault information from the deployment."
 kv_name=$(echo $arm_output | jq -r '.properties.outputs.keyvault_name.value')
 export KV_URL=https://$kv_name.vault.azure.net/
 
+echo "Storing secrets in KeyVault."
 az keyvault secret set --vault-name $kv_name --name "sqlsrvrName" --value "$SQL_SERVER_NAME"
 az keyvault secret set --vault-name $kv_name --name "sqlsrvUsername" --value "$SQL_SERVER_USERNAME"
 az keyvault secret set --vault-name $kv_name --name "sqlsrvrPassword" --value "$SQL_SERVER_PASSWORD"
@@ -201,10 +210,10 @@ az keyvault secret set --vault-name $kv_name --name "kvUrl" --value "$KV_URL"
 ####################
 # DATA FACTORY
 
+echo "Updating Data Factory LinkedService to point to newly deployed resources (KeyVault and DataLake)."
 # Create a copy of the ADF dir into a .tmp/ folder.
 adfTempDir=.tmp/adf
 mkdir -p $adfTempDir && cp -a adf/ .tmp/
-
 # Update LinkedServices to point to newly deployed Datalake and KeyVault
 tmpfile=.tmpfile
 adfLsDir=$adfTempDir/linkedService

@@ -205,6 +205,7 @@ Both Build and Release Pipelines are built using [AzureDevOps](https://dev.azure
         - Root folder: **/e2e_samples/parking_sensors/adf**
         - Import Existing Data Factory resource to repository: **Selected**
         - Branch to import resource into: **Use Collaboration**
+   5. When prompted to select a working branch, select **master**
 
    **IMPORTANT NOTE:** Only the **DEV** Data Factory should be setup with Git integration. Do **NOT** setup git integration in the STG and PROD Data Factories.
 

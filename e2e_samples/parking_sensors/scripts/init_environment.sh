@@ -44,6 +44,13 @@ then
     echo "No Azure subscription id [AZURE_SUBSCRIPTION_ID] specified. Using default subscription id."
 fi
 
+AZDO_PIPELINES_BRANCH_NAME=${AZDO_PIPELINES_BRANCH_NAME:-}
+if [ -z $AZDO_PIPELINES_BRANCH_NAME ]
+then
+    export AZDO_PIPELINES_BRANCH_NAME="master"
+    echo "No branch name in [AZDO_PIPELINES_BRANCH_NAME] specified. defaulting to $AZDO_PIPELINES_BRANCH_NAME."
+fi
+
 AZURESQL_SERVER_PASSWORD=${AZURESQL_SERVER_PASSWORD:-}
 if [ -z $AZURESQL_SERVER_PASSWORD ]
 then 

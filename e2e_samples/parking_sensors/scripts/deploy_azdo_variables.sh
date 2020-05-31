@@ -63,6 +63,7 @@ fi
 
 # Create vargroup
 vargroup_name="mdwdo-park-release-$ENV_NAME"
+echo "Creating variable group: $vargroup_name"
 az pipelines variable-group create \
     --name "$vargroup_name" \
     --authorize "true" \
@@ -77,6 +78,7 @@ az pipelines variable-group create \
 
 # Create vargroup - for secrets
 vargroup_secrets_name="mdwdo-park-release-secrets-$ENV_NAME"
+echo "Creating variable group: $vargroup_secrets_name"
 vargroup_secrets_id=$(az pipelines variable-group create \
     --name "$vargroup_secrets_name" \
     --authorize "true" \

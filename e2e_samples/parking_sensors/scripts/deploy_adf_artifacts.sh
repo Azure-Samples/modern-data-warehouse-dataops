@@ -47,24 +47,30 @@ adfFactoryBaseUrl="$baseUrl/resourceGroups/${RESOURCE_GROUP_NAME}/providers/Micr
 
 createLinkedService () {
     declare name=$1
+    echo "Creating ADF LinkedService: $name"
     adfLsUrl="${adfFactoryBaseUrl}/linkedservices/${name}?api-version=${apiVersion}"
     az rest --method put --uri $adfLsUrl --body @${ADF_DIR}/linkedService/${name}.json
 }
 createDataset () {
     declare name=$1
+    echo "Creating ADF Dataset: $name"
     adfDsUrl="${adfFactoryBaseUrl}/datasets/${name}?api-version=${apiVersion}"
     az rest --method put --uri $adfDsUrl --body @${ADF_DIR}/dataset/${name}.json
 }
 createPipeline () {
     declare name=$1
+    echo "Creating ADF Pipeline: $name"
     adfPUrl="${adfFactoryBaseUrl}/pipelines/${name}?api-version=${apiVersion}"
     az rest --method put --uri $adfPUrl --body @${ADF_DIR}/pipeline/${name}.json
 }
 createTrigger () {
     declare name=$1
+    echo "Creating ADF Trigger: $name"
     adfTUrl="${adfFactoryBaseUrl}/triggers/${name}?api-version=${apiVersion}"
     az rest --method put --uri $adfTUrl --body @${ADF_DIR}/trigger/${name}.json
 }
+
+echo "Deploying Data Factory artifacts."
 
 # Deploy all Linked Services
 createLinkedService "Ls_KeyVault_01"
@@ -80,6 +86,7 @@ createPipeline "P_Ingest_MelbParkingData"
 # Deploy triggers
 createTrigger "T_Sched"
 
+echo "Completed deploying Data Factory artifacts."
 
 ############################
 # Setup git integration
