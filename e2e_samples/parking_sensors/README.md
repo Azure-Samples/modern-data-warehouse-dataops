@@ -70,6 +70,8 @@ The following shows the overall CI/CD process end to end.
 
 ![CI/CD](../../docs/images/CI_CD_process.PNG?raw=true "CI/CD")
 
+Note that for the purpose of demonstration, this is a **simplified** Release pipelines based on Trunk-based development practices.
+
 ### Technologies used
 
 It makes use of the following azure services:
