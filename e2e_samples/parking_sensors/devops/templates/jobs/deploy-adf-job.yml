@@ -21,6 +21,8 @@ jobs:
           path: 'adf_publish' 
 
         - script: echo %packageWheelName%
+          env:
+            packageWheelName: $(packageWheelName)
 
         # https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/deploy/azure-powershell
         - task: AzurePowerShell@4
