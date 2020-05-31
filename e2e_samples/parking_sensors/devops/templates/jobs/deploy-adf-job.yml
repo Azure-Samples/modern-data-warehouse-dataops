@@ -11,7 +11,7 @@ jobs:
   pool:
     vmImage: 'windows-2019'
   variables:
-    packageWheelName: $[ dependencies.deploy_databricks.outputs['setPackageWheelName.packageWheelName'] ]
+    packageWheelName: $[ dependencies.deploy_databricks.outputs['deploy_databricks.setPackageWheelName.packageWheelName'] ]
   environment: ${{ parameters.environmentName }}
   strategy:
     runOnce:
