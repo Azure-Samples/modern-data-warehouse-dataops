@@ -19,7 +19,7 @@
 set -o errexit
 set -o pipefail
 set -o nounset
-set -o xtrace # For debugging
+# set -o xtrace # For debugging
 
 . ./scripts/common.sh
 . ./scripts/verify_prerequisites.sh
