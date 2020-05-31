@@ -102,5 +102,4 @@ az pipelines variable-group variable create --group-id $vargroup_secrets_id \
     --secret "true" --name "kvUrl" --value "$KV_URL"
 
 # Delete dummy vars
-az pipelines variable-group variable delete --group-id $vargroup_secrets_id --name "foo"
-az pipelines variable-group variable delete --group-id $vargroup_secrets_id --name "foo2"
+az pipelines variable-group variable delete --group-id $vargroup_secrets_id --name "foo" -y
