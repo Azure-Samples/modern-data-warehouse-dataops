@@ -19,27 +19,46 @@
 set -o errexit
 set -o pipefail
 set -o nounset
-# set -o xtrace # For debugging
+set -o xtrace # For debugging
+
+# !! WARNING: !!
+## THIS SCRIPT WILL DELETE RESOURCES PREFIXED WITH mdwdo-park !!
+
 
 ###################
 # PARAMETERS
+#
+# RESOURCE_GROUP_NAME_PREFIX
+prefix="mdwdo"
+RESOURCE_GROUP_NAME_PREFIX="mdwdo-park"
 
-env_name="${1-}"
+echo "Delete pipelines the start with '$prefix' in name..."
+[[ ! -z $prefix ]] &&
+    az pipelines list -o tsv |
+    grep "$prefix" |
+    awk '{print $4}' |
+    xargs -r -I % az pipelines delete --id % --yes
 
-# Import correct .env file
-set -o allexport
-env_file=".env.$env_name"
-if [[ -e $env_file ]]
-then
-    source $env_file
-fi
-set +o allexport
+echo "Delete variable groups the start with '$prefix' in name..."
+[[ ! -z $prefix ]] &&
+    az pipelines variable-group list -o tsv |
+    grep "$prefix" | 
+    awk '{print $3}' |
+    xargs -r -I % az pipelines variable-group delete --id % --yes
 
-az group delete -g $RESOURCE_GROUP -y --no-wait
-az ad sp delete --id $SP_STOR_ID
+echo "Delete service connections the start with '$prefix' in name..."
+[[ ! -z $prefix ]] &&
+    az devops service-endpoint list -o tsv |
+    grep "$prefix" |
+    awk '{print $3}' |
+    xargs -r -I % az devops service-endpoint delete --id % --yes
 
-# az group list --query "[?contains(name,'mdw-dataops-parking')].name" -o tsv | xargs -I % az group delete --name % -y --no-wait
+echo "Delete service principal the start with '$prefix' in name, created by yourself..."
+[[ ! -z $prefix ]] &&
+    az ad sp list --query "[?contains(appDisplayName,'$prefix')].appId" -o tsv --show-mine | 
+    xargs -r -I % az ad sp delete --id %
 
-
-echo "Delete service principal..."
-az ad sp list --query "[?contains(appDisplayName,'mdwdo')].appId" -o tsv --show-mine | xargs -I % az ad sp delete --id %
+echo "Delete resource group the start with '$RESOURCE_GROUP_NAME_PREFIX' in name..."
+[[ ! -z $RESOURCE_GROUP_NAME_PREFIX ]] &&
+    az group list --query "[?contains(name,'$RESOURCE_GROUP_NAME_PREFIX')].name" -o tsv |
+    xargs -I % az group delete --verbose --name % -y

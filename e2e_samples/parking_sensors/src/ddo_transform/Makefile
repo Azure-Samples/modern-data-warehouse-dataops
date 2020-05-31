@@ -1,6 +1,8 @@
 .PHONY: clean clean-test clean-pyc clean-build docs help
 .DEFAULT_GOAL := help
 
+PYTHON_PACKAGE := ddo_transform
+
 define BROWSER_PYSCRIPT
 import os, webbrowser, sys
 
@@ -51,36 +53,25 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr .pytest_cache
 
 lint: ## check style with flake8
-	flake8 ddo_transform tests
+	flake8 $(PYTHON_PACKAGE)
 
 test: ## run tests quickly with the default Python
-	PYTHONPATH=`pwd` py.test
+	py.test
 
 test-all: ## run tests on every Python version with tox
 	tox
 
 coverage: ## check code coverage quickly with the default Python
-	coverage run --source ddo_transform -m pytest
+	coverage run --source $(PYTHON_PACKAGE) -m pytest
 	coverage report -m
 	coverage html
 	$(BROWSER) htmlcov/index.html
-
-docs: ## generate Sphinx HTML documentation, including API docs
-	rm -f docs/ddo_transform.rst
-	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ ddo_transform
-	$(MAKE) -C docs clean
-	$(MAKE) -C docs html
-	$(BROWSER) docs/_build/html/index.html
-
-servedocs: docs ## compile the docs watching for changes
-	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
 
 release: dist ## package and upload a release
 	twine upload dist/*
 
 dist: clean ## builds source and wheel package
-	sed -i "s/{{version}}/$(package_version)/g" ddo_transform/__init__.py
+	sed -i "s/{{version}}/$(PACKAGE_VERSION)/g" $(PYTHON_PACKAGE)/__init__.py
 	python setup.py sdist
 	python setup.py bdist_wheel
 	ls -l dist
@@ -91,11 +82,11 @@ install: clean ## install the package to the active Python's site-packages
 installedit: clean ## install the package while dynamically picking up changes to source files
 	pip install --editable .
 
-uploaddatabricks: dist
+uploaddatabricks: dist ## uploads package to databricks to DATABRICKS_DBFS_PACKAGE_UPLOAD_PATH
 	package_name="$$(find dist/*.whl -printf "%f\n")"; \
-	databricks fs cp --overwrite dist/"$$package_name" "$(DATABRICKS_DBFS_UPLOAD_PATH)/libs/$$package_name";\
+	databricks fs cp --overwrite dist/"$$package_name" "$(DATABRICKS_DBFS_PACKAGE_UPLOAD_PATH)/$$package_name";\
 
 installdatabricks: dist uploaddatabricks ## install the package in databricks
 	package_name="$$(find dist/*.whl -printf "%f\n")"; \
-	databricks libraries install --cluster-id $(DATABRICKS_CLUSTER_ID) --whl "$(DATABRICKS_DBFS_UPLOAD_PATH)/libs/$$package_name"
+	databricks libraries install --cluster-id $(DATABRICKS_CLUSTER_ID) --whl "$(DATABRICKS_DBFS_PACKAGE_UPLOAD_PATH)/$$package_name"
 	databricks clusters restart --cluster-id $(DATABRICKS_CLUSTER_ID)

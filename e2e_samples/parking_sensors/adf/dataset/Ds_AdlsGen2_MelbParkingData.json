@@ -17,6 +17,7 @@
 				"defaultValue": "datalake/data/lnd"
 			}
 		},
+		"annotations": [],
 		"type": "AzureBlobFSFile",
 		"typeProperties": {
 			"format": {
@@ -32,5 +33,6 @@
 				"type": "Expression"
 			}
 		}
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
 }

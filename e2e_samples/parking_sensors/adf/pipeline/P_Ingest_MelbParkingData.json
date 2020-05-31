@@ -43,7 +43,7 @@
 					},
 					"libraries": [
 						{
-							"egg": "dbfs:/mnt/datalake/libs/ddo_transform-1.0.0-py2.py3-none-any.whl"
+							"egg": "dbfs:/mnt/datalake/sys/databricks/libs/ddo_transform-localdev-py2.py3-none-any.whl"
 						},
 						{
 							"pypi": {
@@ -53,7 +53,7 @@
 					]
 				},
 				"linkedServiceName": {
-					"referenceName": "Ls_adb_01",
+					"referenceName": "Ls_AzureDatabricks_01",
 					"type": "LinkedServiceReference"
 				}
 			},
@@ -207,7 +207,7 @@
 					},
 					"libraries": [
 						{
-							"egg": "dbfs:/mnt/datalake/libs/ddo_transform-1.0.0-py2.py3-none-any.whl"
+							"egg": "dbfs:/mnt/datalake/sys/databricks/libs/ddo_transform-localdev-py2.py3-none-any.whl"
 						},
 						{
 							"pypi": {
@@ -217,7 +217,7 @@
 					]
 				},
 				"linkedServiceName": {
-					"referenceName": "Ls_adb_01",
+					"referenceName": "Ls_AzureDatabricks_01",
 					"type": "LinkedServiceReference"
 				}
 			},
@@ -265,5 +265,6 @@
 			}
 		},
 		"annotations": []
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
 }

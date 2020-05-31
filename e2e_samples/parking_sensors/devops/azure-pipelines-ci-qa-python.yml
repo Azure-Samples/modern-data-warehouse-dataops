@@ -1,7 +1,4 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+trigger: none
 
 pr:
   branches:
@@ -10,10 +7,10 @@ pr:
     - releases/*
   paths:
     include:
-    - src/ddo_transform/*
+    - e2e_samples/parking_sensors/src/ddo_transform/*
 
 variables:
-  WORKING_DIR: 'src/ddo_transform'
+  pythonWorkingDir: 'e2e_samples/parking_sensors/src/ddo_transform'
 
 pool:
   vmImage: 'Ubuntu-16.04'
@@ -25,9 +22,9 @@ steps:
     architecture: 'x64'
 
 - script: pip install -r requirements_dev.txt && pip install -r requirements.txt
-  workingDirectory: $(WORKING_DIR)
+  workingDirectory: $(pythonWorkingDir)
   displayName: 'Install requirements'
 
 - script: make lint && make tests 
-  workingDirectory: $(WORKING_DIR)
+  workingDirectory: $(pythonWorkingDir)
   displayName: 'Run lint tests'

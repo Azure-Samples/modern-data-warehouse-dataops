@@ -60,9 +60,6 @@ The following are some sample [Azure DevOps](https://docs.microsoft.com/en-us/az
      - Depending on the size and pricing tier of your Production AzureSQL database, a restore might take several minutes to several hours. Consider batching changes and running this pipeline on a schedule (such as nightly) instead on every commit to master.
      - For simplicity purposes, the Test database is deployed in the same logical server as Production, however, in reality these should be completely separate servers.
 
-#### Github Actions Pipelines
-TODO
-
 ### Testing
 - [Create a Test Project for SQL Server Database Unit Testing](https://docs.microsoft.com/en-us/sql/ssdt/how-to-create-a-test-project-for-sql-server-database-unit-testing?view=sql-server-ver15)
 
@@ -92,9 +89,11 @@ TODO
 To setup the samples, run the following:
 
 1. Ensure that:
-   1. You are logged in to the Azure CLI. To login, run `az login`.
-   1. Azure CLI is targeting the Azure Subscription you want to deploy the resources to. To set target Azure Subscription, run `az account set -s <AZURE_SUBSCRIPTION_ID>`
-   2. Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to. To set target Azure DevOps project, run `az devops configure --defaults organization=https://dev.azure.com/MY_ORG/ project=MY_PROJECT`
+   - You are logged in to the Azure CLI. To login, run `az login`.
+   - Azure CLI is targeting the Azure Subscription you want to deploy the resources to.
+      - To set target Azure Subscription, run `az account set -s <AZURE_SUBSCRIPTION_ID>`
+   - Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to. 
+      - To set target Azure DevOps project, run `az devops configure --defaults organization=https://dev.azure.com/MY_ORG/ project=MY_PROJECT`
 2. Fork* and clone this repository. `cd` in to `single_tech_samples/azuresql`.
 3. Set the following environment variables:
    1. **GITHUB_REPO_URL** - URL of your forked github repo

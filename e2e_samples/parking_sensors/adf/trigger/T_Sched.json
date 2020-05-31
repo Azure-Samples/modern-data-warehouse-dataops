@@ -2,7 +2,7 @@
 	"name": "T_Sched",
 	"properties": {
 		"annotations": [],
-		"runtimeState": "Stopped",
+		"runtimeState": "Started",
 		"pipelines": [
 			{
 				"pipelineReference": {
@@ -16,7 +16,7 @@
 			"recurrence": {
 				"frequency": "Hour",
 				"interval": 1,
-				"startTime": "2019-02-01T05:28:00.000Z",
+				"startTime": "2019-02-01T05:28:00Z",
 				"timeZone": "UTC"
 			}
 		}

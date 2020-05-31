@@ -1,0 +1,52 @@
+parameters:
+- name: environmentName
+  type: string
+
+jobs:
+- deployment: deploy_databricks
+  displayName: 'Deploy to Databricks'
+  pool:
+    vmImage: 'ubuntu-latest'
+  variables:
+    pythonVersion: 3.6
+  environment: ${{ parameters.environmentName }}
+  strategy:
+    runOnce:
+      deploy:
+        steps:     
+        - task: UsePythonVersion@0
+          inputs:
+            versionSpec: '$(pythonVersion)'
+            addToPath: true
+            architecture: 'x64'
+          displayName: 'Use Python Version: $(pythonVersion)'
+
+        - script: |
+            python -m pip install --upgrade pip
+            pip install databricks-cli
+          displayName: 'Setup Agent'
+
+        - script: |
+            packageWheelName=$(ls ${WHEEL_FILE_PATH} | grep '^ddo_transform.*.whl$' | head -n 1)
+            echo "Package wheel name is: $packageWheelName"
+            echo "##vso[task.setvariable variable=packageWheelName;isOutput=true]$packageWheelName"
+          env:
+            WHEEL_FILE_PATH: $(Pipeline.Workspace)/ciartifacts/dist
+          name: setPackageWheelName
+          displayName: 'Set packageWheelName variable'
+
+        - script: |
+            echo "Uploading app libraries to DBFS..."
+            echo "Uploading SOURCE whl file: ${WHEEL_FILE_PATH}/${WHEEL_FILE_NAME} to dbfs DESTINATION: ${DBFS_LIBS_PATH}/${WHEEL_FILE_NAME}"
+            databricks fs cp "${WHEEL_FILE_PATH}/${WHEEL_FILE_NAME}" "${DBFS_LIBS_PATH}/${WHEEL_FILE_NAME}"
+            echo "Uploading notebooks at ${NOTEBOOKS_PATH} to workspace (${DATABRICKS_NOTEBOOK_PATH})..."
+            databricks workspace import_dir --overwrite "${NOTEBOOKS_PATH}" "${DATABRICKS_NOTEBOOK_PATH}"
+          env:
+            DATABRICKS_HOST: $(databricksDomain)
+            DATABRICKS_TOKEN: $(databricksToken)
+            DBFS_LIBS_PATH: $(databricksDbfsLibPath)
+            WHEEL_FILE_PATH: $(Pipeline.Workspace)/ciartifacts/dist
+            WHEEL_FILE_NAME: $(setPackageWheelName.packageWheelName)
+            NOTEBOOKS_PATH: $(Pipeline.Workspace)/ciartifacts/databricks/notebooks
+            DATABRICKS_NOTEBOOK_PATH: $(databricksNotebookPath)
+          displayName: 'Deploy notebooks and packages'

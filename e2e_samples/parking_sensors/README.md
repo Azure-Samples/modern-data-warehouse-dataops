@@ -27,8 +27,8 @@ The sample demonstrate how DevOps principles can be applied end to end Data Pipe
 - [How to use the sample](#how-to-use-the-sample)
   - [Prerequisites](#prerequisites)
   - [Setup and Deployment](#setup-and-deployment)
-  - [Deployed resources](#deployed-resources)
-    - [Data Lake Physical layout](#data-lake-physical-layout)
+    - [Deployed Resources](#deployed-resources)
+  - [Data Lake Physical layout](#data-lake-physical-layout)
   - [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
 
 <!-- 
@@ -70,6 +70,8 @@ The following shows the overall CI/CD process end to end.
 
 ![CI/CD](../../docs/images/CI_CD_process.PNG?raw=true "CI/CD")
 
+Note that for the purpose of demonstration, this is a **simplified** Release pipelines based on Trunk-based development practices.
+
 ### Technologies used
 
 It makes use of the following azure services:
@@ -78,6 +80,7 @@ It makes use of the following azure services:
 - [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction)
 - [Azure Synapse Analytics (formerly SQLDW)](https://azure.microsoft.com/en-au/services/synapse-analytics/)
 - [Azure DevOps](https://azure.microsoft.com/en-au/services/devops/)
+- [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)
 
 
 For a detailed walk-through of the solution and key concepts, watch the following video recording:
@@ -115,11 +118,9 @@ The following summarizes key learnings and best practices demonstrated by this s
 
 ### Build and Release Pipeline
 
-Both Build and Release Pipelines are built using [AzureDevOps](https://dev.azure.com/) (Public instance) and can be view using the following links:
+Both Build and Release Pipelines are built using [AzureDevOps](https://dev.azure.com/) (Public instance) and can be viewed using the following links:
 - [Build Pipelines](https://dev.azure.com/devlacepub/DataDevOps/_build)
 - [Release Pipeline](https://dev.azure.com/devlacepub/DataDevOps/_release)
-
-More information [here](./docs/CI_CD.md).
  
 ### Testing
 
@@ -140,33 +141,57 @@ More information [here](./docs/CI_CD.md).
 ## How to use the sample
 
 ### Prerequisites
-1. Github Account
-2. Azure DevOps Account + Project
-3. Azure Account
+1. [Github account](https://github.com/)
+2. [Azure Account](https://azure.microsoft.com/en-au/free/search/?&ef_id=Cj0KCQiAr8bwBRD4ARIsAHa4YyLdFKh7JC0jhbxhwPeNa8tmnhXciOHcYsgPfNB7DEFFGpNLTjdTPbwaAh8bEALw_wcB:G:s&OCID=AID2000051_SEM_O2ShDlJP&MarinID=O2ShDlJP_332092752199_azure%20account_e_c__63148277493_aud-390212648371:kwd-295861291340&lnkd=Google_Azure_Brand&dclid=CKjVuKOP7uYCFVapaAoddSkKcA)
+   - *Permissions needed*: ability to create and deploy to an azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
+3. [Azure DevOps Project](https://azure.microsoft.com/en-us/services/devops/)
+   - *Permissions needed*: ability to create [service connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml), [pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops&tabs=yaml) and [variable groups](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml).
 
 #### Software pre-requisites <!-- omit in toc -->
-1. For Windows users, [Windows Subsystem For Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
-2. [az cli 2.x](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
-3. [az cli - storage-preview extension](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-directory-file-acl-cli)
-4. [Python 3+](https://www.python.org/)
-5. [databricks-cli](https://docs.azuredatabricks.net/dev-tools/databricks-cli.html)
-6. [jq](https://stedolan.github.io/jq/)
+- For Windows users, [Windows Subsystem For Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+- [az cli 2.6+](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
+- [az cli - application insights extension](https://docs.microsoft.com/en-us/cli/azure/ext/application-insights/monitor/app-insights?view=azure-cli-latest)
+  - To install, run `az extension add --name application-insights`
+- [Azure DevOps CLI](https://marketplace.visualstudio.com/items?itemName=ms-vsts.cli)
+  - To install, run `az extension add --name azure-devops`
+- [Python 3+](https://www.python.org/)
+- [databricks-cli](https://docs.azuredatabricks.net/dev-tools/databricks-cli.html)
+- [jq](https://stedolan.github.io/jq/)
 
-NOTE: This deployment was tested using WSL (Ubuntu 16.04) and Debian GNU/Linux 9.9 (stretch)
 
 ### Setup and Deployment
 
-1. Fork this repository. Forking is necessary if you want to setup git integration with Azure Data Factory.
-2. **Deploy Azure resources.** 
-    1. Clone the forked repository and `cd` into the root of the repo
-    2. Run `./deploy.sh`.
-        - You can customize the solution by setting the following environment variables:
-          - DEPLOYMENT_ID - string appended to all resource names. Default: random five character string.
-          - RESOURCE_GROUP_NAME_PREFIX - name of the resource group. This will be prefixed with environment name. For example: `RESOURCE_GROUP_NAME_PREFIX-dev-rg`. Default: mdw-dataops-parking-${DEPLOYMENT_ID}.
-          - RESOURCE_GROUP_LOCATION - Azure location to deploy resources. Default: `westus`.
-          - AZURE_SUBSCRIPTION_ID - Azure subscription id to use to deploy resources. Default: default azure subscript. To see your default, run `az account list`.
-          - To further customize the solution, set parameters in arm.parameters files located in the `infrastructure` folder.
-        - After a successful deployment, you will find `.env.{environment_name}` files containing essential configuration information per environment.
+**IMPORTANT NOTE:** As with all Azure Deployments, this will incur associated costs. Remember to teardown all related resources after use to avoid unnecessary costs. See [here](#deployed-resources) for list of deployed resources.
+
+*NOTE: This deployment was tested using WSL 2 (Ubuntu 18.04) and Debian GNU/Linux 9.9 (stretch)*
+
+1. **Initial Setup**
+   1. Ensure that:
+      - You are logged in to the Azure CLI. To login, run `az login`.
+      - Azure CLI is targeting the Azure Subscription you want to deploy the resources to.
+         - To set target Azure Subscription, run `az account set -s <AZURE_SUBSCRIPTION_ID>`
+      - Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to. 
+         - To set target Azure DevOps project, run `az devops configure --defaults organization=https://dev.azure.com/<MY_ORG>/ project=<MY_PROJECT>`
+   2. Import this repository into a new Github repo. Importing is necessary for setting up git integration with Azure Data Factory.
+   3. Set the following **required** environment variables:
+       - **GITHUB_REPO** - Name of your imported github repo in this form `<my_github_handle>/<repo>`. (ei. "devlace/mdw-dataops-import")
+       - **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). This requires "repo" scope.
+       
+       Optionally, set the following environment variables:
+       - **RESOURCE_GROUP_LOCATION** - Azure location to deploy resources. *Default*: `westus`.
+       - **AZURE_SUBSCRIPTION_ID** - Azure subscription id to use to deploy resources. *Default*: default azure subscription. To see your default, run `az account list`.
+       - **RESOURCE_GROUP_NAME_PREFIX** - name of the resource group. This will automatically be appended with the environment name. For example: `RESOURCE_GROUP_NAME_PREFIX-dev-rg`. *Default*: mdwdo-park-${DEPLOYMENT_ID}.
+      - **DEPLOYMENT_ID** - string appended to all resource names. This is to ensure uniqueness of azure resource names. *Default*: random five character string.
+       - **AZDO_PIPELINES_BRANCH_NAME** - git branch where Azure DevOps pipelines definitions are retrieved from. *Default*: master.
+       - **AZURESQL_SERVER_PASSWORD** - Password of the SQL Server instance. *Default*: semi-random string.
+
+      To further customize the solution, set parameters in `arm.parameters` files located in the `infrastructure` folder.
+
+2. **Deploy Azure resources**
+   1. Clone locally the imported Github Repo, then `cd` into the `e2e_samples/parking_sensors` folder of the repo
+   2. Run `./deploy.sh`.
+      - This may take around **~30mins or more** to run end to end. So grab yourself a cup of coffee... ☕
+      - After a successful deployment, you will find `.env.{environment_name}` files containing essential configuration information per environment. See [here](#deployed-resources) for list of deployed resources.
 
 3. **Setup ADF git integration in DEV Data Factory**
     1. In the Azure Portal, navigate to the Data Factory in the **DEV** environment.
@@ -174,51 +199,84 @@ NOTE: This deployment was tested using WSL (Ubuntu 16.04) and Debian GNU/Linux 9
     3. On the landing page, select "Set up code repository". For more information, see [here](https://docs.microsoft.com/en-us/azure/data-factory/source-control).
     4. Fill in the repository settings with the following:
         - Repository type: **Github**
-        - Github Account: ***your_Github_account***
-        - Git repository name: **forked Github repository**
+        - Github Account: **your_Github_account**
+        - Git repository name: **imported Github repository**
         - Collaboration branch: **master**
-        - Root folder: **/adf**
-        - Import Existing Data Factory resource to repository: **Unselected**
-    5. Navigating to "Author" tab, you should see all the pipelines deployed.
-    6. Select `Connections` > `Ls_KeyVault`. Update the Base Url to the KeyVault Url of your DEV environment.
-    7. Select `Connections` > `Ls_AdlsGen2_01`. Update URL to the ADLS Gen2 Url of your DEV environment.
-    8. Click `Publish` to publish changes.
+        - Root folder: **/e2e_samples/parking_sensors/adf**
+        - Import Existing Data Factory resource to repository: **Selected**
+        - Branch to import resource into: **Use Collaboration**
+   5. When prompted to select a working branch, select **master**
 
-4. **Setup Build Pipelines.** You will be creating two build pipelines, one which will trigger for every pull request which will run Unit Testing + Linting, and the second one which will trigger on every commit to master and will create the actual build artifacts for release.
-    1. In Azure DevOps, navigate to `Pipelines`. Select "Create Pipeline".
-    2. Under "Where is your code?", select Github (YAML).
-        - If you have not yet already, you maybe prompted to connect your Github account. See [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/github?view=azure-devops&tabs=yaml#grant-access-to-your-github-repositories) for more information.
-    3. Under "Select a repository", select your forked repo.
-    4. Under "Configure your pipeline", select "Existing Azure Pipelines YAML file".
-        - Branch: master
-        - Path: `/src/ddo_transform/azure-pipelines-ci-qa.yaml`
-    5. Select `Run`.
-    6. Repeat steps 1-4, but select as the path `/src/ddo_transform/azure-pipelines-ci-artifacts`.
+   **IMPORTANT NOTE:** Only the **DEV** Data Factory should be setup with Git integration. Do **NOT** setup git integration in the STG and PROD Data Factories.
 
-5. **Setup Release Pipelines**
-    - **WIP**. Release Pipelines set to be converted to YAML format. See this [issue](https://github.com/Azure-Samples/modern-data-warehouse-dataops/issues/48).
+4. **Trigger an initial Release**
 
-### Deployed resources
-
-After a successful deployment, you should have the following resources deployed:
-- Three Resource Groups (one per environment) each with the following Azure resources.
-    - Data Factory (empty) - *next steps will deploy actual data pipelines*.
-    - Data Lake Store Gen2 and Service Principal with Storage Contributor rights assigned.
-    - Databricks workspace - notebooks uploaded, SparkSQL tables created, and ADLS Gen2 mounted using SP.
-    - KeyVault with all secrets stored.
-    - Notes: Azure Synapse (formerly SQLDW) is not yet automatically deployed as part of script. See this [issue](https://github.com/Azure-Samples/modern-data-warehouse-dataops/issues/43)
-
-All Azure resources are tagged with correct Environment.
+   1. In the **DEV** Data Factory portal, navigate to "Manage > Triggers". Select the `T_Sched` trigger and activate it by clicking on the "Play" icon next to it. Click `Publish` to publish changes.
+      - Publishing a change is **required** to generate the `adf_publish` branch which is required in the Release pipelines.
+   2. In Azure DevOps, notice a new run of the Build Pipeline (**mdw-park-ci-artifacts**) off `master`. This will build the Python package and SQL DACPAC, then publish these as Pipeline Artifacts.
+   3. After completion, this should automatically trigger the Release Pipeline (**mdw-park-cd-release**). This will deploy the artifacts across environments.
+      - You may need to authorize the Pipelines initially to use the Service Connection for the first time.
+      ![Release Pipeline](../../docs/images/ReleasePipeline.PNG?raw=true "Release Pipelines")
+   4. **Optional**. Trigger the Data Factory Pipelines per environment.
+      1. In the Data Factory portal of each environment, navigate to "Author", then select the `P_Ingest_MelbParkingData`.
+      2. Select "Trigger > Trigger Now".
+      3. To monitor the run, go to "Monitor > Pipeline runs".
+      ![Data Factory Run](../../docs/images/ADFRun.PNG?raw=true "Data Factory Run]")
+      - Currently, the data pipeline is configured to use "on-demand" databricks clusters so it takes a few minutes to spin up. That said, it is not uncommon to change these to point to "existing" running clusters in Development for faster data pipeline runs.
 
 
-#### Data Lake Physical layout
+Congratulations!! 🥳 You have successfully deployed the solution and accompanying Build and Release Pipelines. For next steps, we recommend watching [this presentation](https://www.youtube.com/watch?v=Xs1-OU5cmsw) for a detailed walk-through of the running solution. If you've encountered any issues, please file a Github issue with the relevant error message and replication steps.
+
+#### Deployed Resources
+
+After a successful deployment, you should have the following resources:
+
+- In Azure, **three (3) Resource Groups** (one per environment) each with the following Azure resources.
+   - **Data Factory** - with pipelines, datasets, linked services, triggers deployed and configured correctly per environment.
+   - **Data Lake Store Gen2** and a **Service Principal (SP)** with Storage Contributor rights assigned.
+   - **Databricks workspace** 
+     - notebooks uploaded at `/notebooks` folder in the workspace
+     - SparkSQL tables created
+     - ADLS Gen2 mounted at `dbfs:/mnt/datalake` using the Storage Service Principal.
+     - Databricks secrets created*
+   - **Azure Synapse (formerly SQLDW)** - currently, empty. The Release Pipeline will deploy the SQL Database objects.
+   - **Application Insights**
+   - **KeyVault** with all relevant secrets stored.
+ - In Azure DevOps
+   - **Four (4) Azure Pipelines**
+     - mdwdo-park-cd-release - Release Pipeline
+     - mdwdo-park-ci-artifacts - Build Pipeline
+     - mdwdo-park-ci-qa-python - "QA" pipeline runs on PR to master
+     - mdwdo-park-ci-qa-sql - "QA" pipeline runs on PR to master
+   - **Three (6) Variables Groups** - two per environment
+     - mdwdo-park-release-dev
+     - mdwdo-park-release-secrets-dev**
+     - mdwdo-park-release-stg
+     - mdwdo-park-release-secrets-stg**
+     - mdwdo-park-release-prod
+     - mdwdo-park-release-secrets-prod**
+   - **Four (4) Service Connections**
+     - **Three Azure Service Connections** (one per environment) each with a **Service Principal** with Contributor rights to the corresponding Resource Group.
+       - mdwdo-park-serviceconnection-dev
+       - mdwdo-park-serviceconnection-stg
+       - mdwdo-park-serviceconnection-prod
+     - **Github Service Connection** for retrieving code from Github
+       - mdwdo-park-github
+
+**This secret-scope is currently not deployed as a KeyVault-backed secret scope due to limitations of creating it programmatically.*
+
+***These variable groups are currently not linked to KeyVault due to limitations of creating these programmatically.*
+
+<!--TODO: Add Cleanup script-->
+
+### Data Lake Physical layout
 
 ADLS Gen2 is structured as the following:
 
 ------------
 
     datalake                    <- filesystem
-        /libs                   <- contains all libs, jars, wheels needed for processing
+        /sys/databricks/libs    <- contains all libs, jars, wheels needed for processing
         /data
             /lnd                <- Bronze - landing folder where all data files are ingested into.
             /interim            <- Silver - interim (cleansed) tables
@@ -226,7 +284,7 @@ ADLS Gen2 is structured as the following:
 ------------
 
 ### Known Issues, Limitations and Workarounds
-- Databricks KeyVault-backed secrets scopes can only be create via the UI, and thus cannot be created programmatically and was not incorporated in the automated deployment of the solution.
-  - **Workaround**: Use normal Databricks secrets with the downside of duplicated information.
-- Data Factory Databricks Linked Service does not support dynamic configuration, thus needing a manual step to point to new cluster during deployment of pipeline to a new environment.
-  - **Workaround**: Alternative is to create an on-demand cluster however this may introduce latency issues with cluster spin up time. Optionally, user can manually update Linked Service to point to correct cluster.
+- Databricks KeyVault-backed secrets scopes can only be create via the UI, cannot be created programmatically and was not incorporated in the automated deployment of the solution.
+  - **Workaround**: Deployment uses normal Databricks secrets with the downside of duplicated information. If you wish, you many manually convert these to KeyVault-back secret scopes.
+- Azure DevOps Variable Groups linked to KeyVault can only be created via the UI, cannot be created programmatically and was not incorporated in the automated deployment of the solution.
+  - **Workaround**: Deployment add sensitive configuration as "secrets" in Variable Groups with the downside of duplicated information. If you wish, you may manually link a second Variable Group to KeyVault to pull out the secrets. KeyVault secret names should line up with required variables in the Azure DevOps pipelines.

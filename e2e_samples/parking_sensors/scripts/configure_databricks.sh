@@ -26,6 +26,7 @@ set -o nounset
 # DATABRICKS_HOST
 # DATABRICKS_TOKEN
 # AZURE_STORAGE_ACCOUNT
+# APPINSIGHTS_KEY
 # SP_STOR_ID
 # SP_STOR_PASS
 # SP_STOR_TENANT
@@ -45,7 +46,7 @@ wait_for_run () {
             exit 1
         else 
             echo "Waiting for run ${mount_run_id} to finish..."
-            sleep 2m
+            sleep 1m
         fi
     done
 }
@@ -61,6 +62,8 @@ cluster_exists () {
     fi
 }
 
+echo "Configuring Databricks workspace."
+
 # Create secret scope, if not exists
 scope_name="storage_scope"
 if [[ -z $(databricks secrets list-scopes | grep "$scope_name") ]]; then
@@ -71,6 +74,7 @@ fi
 # Create secrets
 echo "Creating secrets within scope $scope_name..."
 
+databricks secrets write --scope "$scope_name" --key "appinsights_key" --string-value  "$APPINSIGHTS_KEY"
 databricks secrets write --scope "$scope_name" --key "storage_account" --string-value  "$AZURE_STORAGE_ACCOUNT"
 databricks secrets write --scope "$scope_name" --key "storage_sp_id" --string-value  "$SP_STOR_ID"
 databricks secrets write --scope "$scope_name" --key "storage_sp_key" --string-value  "$SP_STOR_PASS"
@@ -84,6 +88,11 @@ databricks workspace import_dir "./databricks/notebooks" "/notebooks" --overwrit
 echo "Setting up workspace and tables. This may take a while as cluster spins up..."
 wait_for_run $(databricks runs submit --json-file "./databricks/config/run.setup.config.json" | jq -r ".run_id" )
 
+# Upload libs -- for initial dev package
+# Needs to run AFTER mounting dbfs:/mnt/datalake in setup workspace
+echo "Uploading libs..."
+databricks fs cp --recursive --overwrite "./databricks/libs/" "dbfs:/mnt/datalake/sys/databricks/libs/"
+
 # Create initial cluster, if not yet exists
 cluster_config="./databricks/config/cluster.config.json"
 echo "Creating an interactive cluster using config in $cluster_config..."
@@ -94,7 +103,5 @@ else
     echo "Creating cluster ${cluster_name}..."
     databricks clusters create --json-file $cluster_config
 fi
-
-
 
 echo "Completed configuring databricks."
