@@ -185,7 +185,7 @@ Both Build and Release Pipelines are built using [AzureDevOps](https://dev.azure
        - **AZDO_PIPELINES_BRANCH_NAME** - git branch where Azure DevOps pipelines definitions are retrieved from. *Default*: master.
        - **AZURESQL_SERVER_PASSWORD** - Password of the SQL Server instance. *Default*: semi-random string.
 
-      To further customize the solution, set parameters in arm.parameters files located in the `infrastructure` folder.
+      To further customize the solution, set parameters in `arm.parameters` files located in the `infrastructure` folder.
 
 2. **Deploy Azure resources**
    1. Clone locally the imported Github Repo, then `cd` into the `e2e_samples/parking_sensors` folder of the repo
@@ -209,13 +209,21 @@ Both Build and Release Pipelines are built using [AzureDevOps](https://dev.azure
 
    **IMPORTANT NOTE:** Only the **DEV** Data Factory should be setup with Git integration. Do **NOT** setup git integration in the STG and PROD Data Factories.
 
-4. **Trigger a Release**
+4. **Trigger an initial Release**
 
    1. In the **DEV** Data Factory portal, navigate to "Manage > Triggers". Select the `T_Sched` trigger and activate it by clicking on the "Play" icon next to it. Click `Publish` to publish changes.
       - Publishing a change is **required** to generate the `adf_publish` branch which is required in the Release pipelines.
    2. In Azure DevOps, notice a new run of the Build Pipeline (**mdw-park-ci-artifacts**) off `master`. This will build the Python package and SQL DACPAC, then publish these as Pipeline Artifacts.
    3. After completion, this should automatically trigger the Release Pipeline (**mdw-park-cd-release**). This will deploy the artifacts across environments.
       - You may need to authorize the Pipelines initially to use the Service Connection for the first time.
+      ![Release Pipeline](../../docs/images/ReleasePipeline.PNG?raw=true "Release Pipelines")
+   4. **Optional**. Trigger the Data Factory Pipelines per environment.
+      1. In the Data Factory portal of each environment, navigate to "Author", then select the `P_Ingest_MelbParkingData`.
+      2. Select "Trigger > Trigger Now".
+      3. To monitor the run, go to "Monitor > Pipeline runs".
+      ![Data Factory Run](../../docs/images/ADFRun.PNG?raw=true "Data Factory Run]")
+      - Currently, the data pipeline is configured to use "on-demand" databricks clusters so it takes a few minutes to spin up. That said, it is not uncommon to change these to point to "existing" running clusters in Development for faster data pipeline runs.
+
 
 Congratulations!! 🥳 You have successfully deployed the solution and accompanying Build and Release Pipelines. For next steps, we recommend watching [this presentation](https://www.youtube.com/watch?v=Xs1-OU5cmsw) for a detailed walk-through of the running solution. If you've encountered any issues, please file a Github issue with the relevant error message and replication steps.
 
