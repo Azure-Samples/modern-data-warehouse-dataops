@@ -78,6 +78,9 @@ databricks secrets write --scope "$scope_name" --key "storage_sp_id" --string-va
 databricks secrets write --scope "$scope_name" --key "storage_sp_key" --string-value  "$SP_STOR_PASS"
 databricks secrets write --scope "$scope_name" --key "storage_sp_tenant" --string-value  "$SP_STOR_TENANT"
 
+# Upload libs -- for initial dev package
+databricks fs cp --recursive --overwrite "./databricks/libs" "dbfs:/mnt/datalake/sys/databricks/libs/"
+
 # Upload notebooks
 echo "Uploading notebooks..."
 databricks workspace import_dir "./databricks/notebooks" "/notebooks" --overwrite

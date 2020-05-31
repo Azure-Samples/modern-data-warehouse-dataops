@@ -236,10 +236,13 @@ After a successful deployment, you should have the following resources:
      - mdwdo-park-ci-artifacts - Build Pipeline
      - mdwdo-park-ci-qa-python - "QA" pipeline runs on PR to master
      - mdwdo-park-ci-qa-sql - "QA" pipeline runs on PR to master
-   - **Three (3) Variables Groups** - one per environment
+   - **Three (6) Variables Groups** - two per environment
      - mdwdo-park-release-dev
+     - mdwdo-park-release-secrets-dev
      - mdwdo-park-release-stg
-     - mdwdo-park-release-stg
+     - mdwdo-park-release-secrets-stg
+     - mdwdo-park-release-prod
+     - mdwdo-park-release-secrets-prod
    - **Four (4) Service Connections**
      - **Three Azure Service Connections** (one per environment) each with a **Service Principal** with Contributor rights to the corresponding Resource Group.
        - mdwdo-park-serviceconnection-dev
@@ -256,7 +259,7 @@ ADLS Gen2 is structured as the following:
 ------------
 
     datalake                    <- filesystem
-        /libs                   <- contains all libs, jars, wheels needed for processing
+        /sys/databricks/libs    <- contains all libs, jars, wheels needed for processing
         /data
             /lnd                <- Bronze - landing folder where all data files are ingested into.
             /interim            <- Silver - interim (cleansed) tables

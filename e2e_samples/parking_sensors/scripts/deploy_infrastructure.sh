@@ -95,6 +95,8 @@ storage_file_system=datalake
 echo "Creating ADLS Gen2 File system: $storage_file_system"
 az storage container create --name $storage_file_system
 
+# Create folders for databricks libs
+az storage fs directory create -n '/sys/databricks/libs' -f $storage_file_system
 # Create folders for SQL external tables
 az storage fs directory create -n '/data/dw/fact_parking' -f $storage_file_system
 az storage fs directory create -n '/data/dw/dim_st_marker' -f $storage_file_system

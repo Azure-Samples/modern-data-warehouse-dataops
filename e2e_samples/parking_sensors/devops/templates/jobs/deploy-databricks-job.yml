@@ -9,7 +9,7 @@ jobs:
     vmImage: 'ubuntu-latest'
   variables:
     pythonVersion: 3.6
-  environment: ${{ parameters.environmentName }}   
+  environment: ${{ parameters.environmentName }}
   strategy:
     runOnce:
       deploy:

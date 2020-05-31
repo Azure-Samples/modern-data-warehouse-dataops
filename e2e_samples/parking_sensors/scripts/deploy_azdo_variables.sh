@@ -50,35 +50,52 @@ set -o xtrace # For debugging
 
 # Const
 apiBaseUrl="https://data.melbourne.vic.gov.au/resource/"
+if [[ ENV_NAME == "DEV"]]
+then 
+    # In DEV, we fix the path to "dev" folder  to simplify as this is manual publish DEV ADF.
+    # In other environments, the ADF release pipeline overwrites these automatically.
+    databricksDbfsLibPath="dbfs:/mnt/datalake/sys/databricks/libs/dev/"
+    databricksNotebookPath='/releases/dev/'
+else
+    databricksDbfsLibPath='dbfs:/mnt/datalake/sys/databricks/libs/$(Build.BuildId)'
+    databricksNotebookPath='/releases/$(Build.BuildId)'
+fi
 
 # Create vargroup
 vargroup_name="mdwdo-park-release-$ENV_NAME"
-vargroup_id=$(az pipelines variable-group create \
+az pipelines variable-group create \
     --name "$vargroup_name" \
     --authorize "true" \
     --variables \
         azureLocation="$RESOURCE_GROUP_LOCATION" \
         rgName="$RESOURCE_GROUP_NAME" \
         adfName="$DATAFACTORY_NAME" \
-        databricksNotebookPath='dbfs:/mnt/datalake/sys/databricks/libs/$(Build.BuildId)' \
-        databricksDbfsLibPath='/releases/$(Build.BuildId)' \
+        databricksDbfsLibPath="$databricksDbfsLibPath" \
+        databricksNotebookPath="$databricksNotebookPath" \
         apiBaseUrl="$apiBaseUrl" \
     --output json |
-    jq -r .id)
+    jq -r .id
 
-az pipelines variable-group variable create --group-id $vargroup_id \
+# Create vargroup - for secrets
+vargroup_secrets_name="mdwdo-park-release-secrets-$ENV_NAME"
+vargroup_secrets_id=$(az pipelines variable-group create \
+    --name "$vargroup_name" \
+    --authorize "true")
+az pipelines variable-group variable create --group-id $vargroup_secrets_id \
     --secret "true" --name "databricksDomain" --value "$DATABRICKS_HOST"
-az pipelines variable-group variable create --group-id $vargroup_id \
+az pipelines variable-group variable create --group-id $vargroup_secrets_id \
     --secret "true" --name "databricksToken" --value "$DATABRICKS_TOKEN"
-az pipelines variable-group variable create --group-id $vargroup_id \
+az pipelines variable-group variable create --group-id $vargroup_secrets_id \
     --secret "true" --name "sqlsrvrName" --value "$SQL_SERVER_NAME"
-az pipelines variable-group variable create --group-id $vargroup_id \
+az pipelines variable-group variable create --group-id $vargroup_secrets_id \
     --secret "true" --name "sqlsrvrUsername" --value "$SQL_SERVER_USERNAME"
-az pipelines variable-group variable create --group-id $vargroup_id \
+az pipelines variable-group variable create --group-id $vargroup_secrets_id \
     --secret "true" --name "sqlsrvrPassword" --value "$SQL_SERVER_PASSWORD"
-az pipelines variable-group variable create --group-id $vargroup_id \
+az pipelines variable-group variable create --group-id $vargroup_secrets_id \
     --secret "true" --name "sqlDwDatabaseName" --value "$SQL_DW_DATABASE_NAME"
-az pipelines variable-group variable create --group-id $vargroup_id \
+az pipelines variable-group variable create --group-id $vargroup_secrets_id \
     --secret "true" --name "datalakeAccountName" --value "$AZURE_STORAGE_ACCOUNT"
-az pipelines variable-group variable create --group-id $vargroup_id \
+az pipelines variable-group variable create --group-id $vargroup_secrets_id \
     --secret "true" --name "datalakeKey" --value "$AZURE_STORAGE_KEY"
+az pipelines variable-group variable create --group-id $vargroup_secrets_id \
+    --secret "true" --name "kvUrl" --value "$KV_URL"
