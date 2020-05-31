@@ -50,7 +50,7 @@ set -o xtrace # For debugging
 
 # Const
 apiBaseUrl="https://data.melbourne.vic.gov.au/resource/"
-if [[ ENV_NAME == "DEV"]]
+if [ $ENV_NAME == "dev" ]
 then 
     # In DEV, we fix the path to "dev" folder  to simplify as this is manual publish DEV ADF.
     # In other environments, the ADF release pipeline overwrites these automatically.
@@ -79,7 +79,7 @@ az pipelines variable-group create \
 # Create vargroup - for secrets
 vargroup_secrets_name="mdwdo-park-release-secrets-$ENV_NAME"
 vargroup_secrets_id=$(az pipelines variable-group create \
-    --name "$vargroup_name" \
+    --name "$vargroup_secrets_name" \
     --authorize "true")
 az pipelines variable-group variable create --group-id $vargroup_secrets_id \
     --secret "true" --name "databricksDomain" --value "$DATABRICKS_HOST"
