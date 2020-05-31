@@ -9,7 +9,7 @@ jobs:
   dependsOn: deploy_databricks
   displayName: 'Deploy to Azure Data Factory'
   pool:
-    vmImage: 'vs2017-win2016'
+    vmImage: 'windows-2019'
   variables:
     packageWheelName: $[ dependencies.deploy_databricks.outputs['setPackageWheelName.packageWheelName'] ]
   environment: ${{ parameters.environmentName }}
@@ -20,7 +20,7 @@ jobs:
         - checkout: mdwdataops_adfpublish
           path: 'adf_publish' 
 
-        - script: echo %packageWheelName%
+        - script: echo $(packageWheelName)
           env:
             packageWheelName: $(packageWheelName)
 
