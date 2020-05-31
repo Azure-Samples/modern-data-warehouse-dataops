@@ -21,13 +21,14 @@ set -o pipefail
 set -o nounset
 set -o xtrace # For debugging
 
-# !! WARNING: THIS SCRIPT WILL DELETE RESOURCES PREFIXED WITH mdwdo-park !!
+# !! WARNING: !!
+## THIS SCRIPT WILL DELETE RESOURCES PREFIXED WITH mdwdo-park !!
+
 
 ###################
 # PARAMETERS
 #
 # RESOURCE_GROUP_NAME_PREFIX
-
 prefix="mdwdo"
 RESOURCE_GROUP_NAME_PREFIX="mdwdo-park"
 
