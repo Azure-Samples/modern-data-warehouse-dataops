@@ -73,14 +73,15 @@ az pipelines variable-group create \
         databricksDbfsLibPath="$databricksDbfsLibPath" \
         databricksNotebookPath="$databricksNotebookPath" \
         apiBaseUrl="$apiBaseUrl" \
-    --output json |
-    jq -r .id
+    --output json
 
 # Create vargroup - for secrets
 vargroup_secrets_name="mdwdo-park-release-secrets-$ENV_NAME"
 vargroup_secrets_id=$(az pipelines variable-group create \
     --name "$vargroup_secrets_name" \
-    --authorize "true")
+    --authorize "true" \
+    --output json \
+    --variables foo="bar" | jq -r .id)
 az pipelines variable-group variable create --group-id $vargroup_secrets_id \
     --secret "true" --name "databricksDomain" --value "$DATABRICKS_HOST"
 az pipelines variable-group variable create --group-id $vargroup_secrets_id \
@@ -99,3 +100,7 @@ az pipelines variable-group variable create --group-id $vargroup_secrets_id \
     --secret "true" --name "datalakeKey" --value "$AZURE_STORAGE_KEY"
 az pipelines variable-group variable create --group-id $vargroup_secrets_id \
     --secret "true" --name "kvUrl" --value "$KV_URL"
+
+# Delete dummy vars
+az pipelines variable-group variable delete --group-id $vargroup_secrets_id --name "foo"
+az pipelines variable-group variable delete --group-id $vargroup_secrets_id --name "foo2"
