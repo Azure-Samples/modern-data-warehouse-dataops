@@ -1,4 +1,4 @@
-# Pandemic Reporting
+# Python Package
 
 
 ## Development setup
@@ -9,7 +9,7 @@
 
 ### Steps to setup Development environment:
 
-1. Open VSCode from the **root of the Python project**. That is, the root of your VSCode workspace needs to be at `pandemic-reporting/src/pandemicreporting`. It should have `.devcontainer` and `.vscode` folders.
+1. Open VSCode from the **root of the Python project**. That is, the root of your VSCode workspace needs to be at `e2e_samples/parking_sensors/src/ddo_transform`. It should have `.devcontainer` and `.vscode` folders.
 2. Create an `.env` file. Optionally, set the following environment variables.
     - If you will be uploading the package to a Databricks workspace as part of the Development cycle, you need to set the following:
       - **DATABRICKS_HOST** - Databricks workspace url (ei. https://australiaeast.azuredatabricks.net)
@@ -23,6 +23,6 @@
 
 ### Debugging unit tests
 
-The Devcontainer should have ms-python extension installed and .vscode all the necessary settings. All you need to do is run `Python: Discover tests`, from the vscode command pallete. Now, all tests (currently located under the `pandemicreporting/tests` folder) should have `Run test | Debug test` annotation:
+The Devcontainer should have ms-python extension installed and .vscode all the necessary settings. All you need to do is run `Python: Discover tests`, from the vscode command pallete. Now, all tests (currently located under the `src/ddo_transform/tests` folder) should have `Run test | Debug test` annotation:
 
   ![Test annotation](./docs/images/test_annotation.PNG)
