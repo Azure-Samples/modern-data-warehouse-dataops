@@ -172,7 +172,7 @@ Both Build and Release Pipelines are built using [AzureDevOps](https://dev.azure
          - To set target Azure Subscription, run `az account set -s <AZURE_SUBSCRIPTION_ID>`
       - Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to. 
          - To set target Azure DevOps project, run `az devops configure --defaults organization=https://dev.azure.com/<MY_ORG>/ project=<MY_PROJECT>`
-   2. Import this repository into a new Github repo. Importing is necessary for setting up git integration with Azure Data Factory.
+   2. **Import** this repository into a new Github repo. See [here](https://help.github.com/en/github/importing-your-projects-to-github/importing-a-repository-with-github-importer) on how to import a github repo. Importing is necessary for setting up git integration with Azure Data Factory.
    3. Set the following **required** environment variables:
        - **GITHUB_REPO** - Name of your imported github repo in this form `<my_github_handle>/<repo>`. (ei. "devlace/mdw-dataops-import")
        - **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). This requires "repo" scope.
@@ -192,6 +192,8 @@ Both Build and Release Pipelines are built using [AzureDevOps](https://dev.azure
    2. Run `./deploy.sh`.
       - This may take around **~30mins or more** to run end to end. So grab yourself a cup of coffee... ☕
       - After a successful deployment, you will find `.env.{environment_name}` files containing essential configuration information per environment. See [here](#deployed-resources) for list of deployed resources.
+   3. As part of the deployment script, this updated the Azure DevOps Release Pipeline YAML definition to point to your Github repository. **Commit and push up these changes.**
+      - This will trigger a Build and Release which will fail due to a lacking `adf_publish` branch -- this is expected. This branch will be created once you've setup git integration with your DEV Data Factory and publish a change.
 
 3. **Setup ADF git integration in DEV Data Factory**
     1. In the Azure Portal, navigate to the Data Factory in the **DEV** environment.
@@ -205,7 +207,7 @@ Both Build and Release Pipelines are built using [AzureDevOps](https://dev.azure
         - Root folder: **/e2e_samples/parking_sensors/adf**
         - Import Existing Data Factory resource to repository: **Selected**
         - Branch to import resource into: **Use Collaboration**
-   5. When prompted to select a working branch, select **master**
+   1. When prompted to select a working branch, select **master**
 
    **IMPORTANT NOTE:** Only the **DEV** Data Factory should be setup with Git integration. Do **NOT** setup git integration in the STG and PROD Data Factories.
 
