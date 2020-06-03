@@ -225,6 +225,10 @@ export DATAFACTORY_NAME=$(echo $arm_output | jq -r '.properties.outputs.datafact
 export ADF_DIR=$adfTempDir
 . ./scripts/deploy_adf_artifacts.sh
 
+# TODO: SP for integration tests
+# az ad sp create-for-rbac --name "$DATAFACTORY_NAME" \
+#     --role "Data Factory contributor" \
+#     --scopes "/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$AZURE_RESOURCE_GROUP/providers/Microsoft.DataFactory/factories/$DATAFACTORY_NAME/"
 
 ####################
 # AZDO Azure Service Connection and Variables Groups

@@ -1,0 +1,18 @@
+parameters:
+- name: environmentName
+  type: string
+
+jobs:
+- job: run_integration_tests
+  displayName: 'Run integration tests'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - script: |
+      sudo su
+      curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+      curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list
+      exit
+      sudo apt-get update
+      sudo ACCEPT_EULA=Y apt-get -y install msodbcsql17 unixodbc-dev
+    displayName: 'Install msodbc'

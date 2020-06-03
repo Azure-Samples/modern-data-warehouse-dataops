@@ -453,9 +453,7 @@ healthchecksdb
 MigrationBackup/
 
 # Devcontainer
-.devcontainer/
-
 .vscode/
-
 .env
 **.env
+*pip.conf
