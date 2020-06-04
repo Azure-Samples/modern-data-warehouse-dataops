@@ -15,6 +15,7 @@ variables:
   - name: pythonVersion
     value: 3.6
   - group: mdwdo-park-release-secrets-dev
+  - group: mdwdo-park-release-dev
 
 steps:
 - script: |
