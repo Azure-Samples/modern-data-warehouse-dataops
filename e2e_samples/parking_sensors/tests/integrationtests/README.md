@@ -12,20 +12,21 @@ Note, this package does **not** deploy the actual integration test environment a
 The following environment variables must be set:
 
 Service principal account details used to connect to Azure:
- - **AZURE_SERVICE_PRINCIPAL_ID**
- - **AZURE_SERVICE_PRINCIPAL_SECRET**
- - **AZURE_SERVICE_PRINCIPAL_TENANT_ID**
-  
-Azure resources details:
-  - **AZURE_SUBSCRIPTION_ID**
-  - **AZURE_RESOURCE_GROUP_NAME**
-  - **AZURE_DATAFACTORY_NAME**
-  - **AZURE_STORAGE_CONNECTION_STRING** - An ADF input. Connection string to storage account where CSV test data gets uploaded.
-  - **AZURE_DATALAKE_STORAGE_CONNECTION_STRING** - An ADF input. Connection string to storage account where AVRO test data gets uploaded.
+ - **AZ_SERVICE_PRINCIPAL_ID**
+ - **AZ_SERVICE_PRINCIPAL_SECRET**
+ - **AZ_SERVICE_PRINCIPAL_TENANT_ID**
+Azure Data Factory details:
+ - **AZ_SUBSCRIPTION_ID**
+ - **AZ_RESOURCE_GROUP_NAME**
+ - **AZ_DATAFACTORY_NAME**
+Azure Data Factory output details:
+ - **AZ_SQL_SERVER_NAME**
+ - **AZ_SQL_SERVER_USERNAME**
+ - **AZ_SQL_SERVER_PASSWORD**
+ - **AZ_SQL_DATABASE_NAME**
 
-Additional optional configuration:
-  - **AZURE_DATAFACTORY_POLL_INTERVAL** - Poll interval in seconds for checking for pipeline status. *Default*: 5.
-  - **AZURE_BLOB_STORAGE_TEST_DATA_CONTAINER** - container where test data gets uploaded. *Default*: integration-test-data.
+Additional *optional* configuration:
+ - **AZURE_DATAFACTORY_POLL_INTERVAL** - Poll interval in seconds for checking for pipeline status. *Default*: 5.
 
 ## Development setup
 
@@ -45,30 +46,7 @@ Additional optional configuration:
 
 The code is organized as follows:
 - `tests/`
-  - `conftest.py` - Common Pytest [Fixtures](https://docs.pytest.org/en/latest/fixture.html), specific related to Azure Data Factory. It also imports modules in `connectors/`
+  - `conftest.py` - Common Pytest [Fixtures](https://docs.pytest.org/en/latest/fixture.html).
   - `dataconnectors/` - Data connector specific fixtures, subdivided into modules.
   - `data/` - all test data used in test cases
   - `test_*.py` - contain all test cases
-
-## Caching pipeline runs
-
-Because ADF pipelines can be expensive to run, the `adf_pipeline_run` fixture allows you to cache `pipeline_runs` by specifying the `cached_run_name` variable. Pipeline runs are identified by a combination of `pipeline_name` and `cached_run_name`. This is helpful is you want to create multiple test cases against the same pipeline_run without the need to (1) rerun the entire pipeline or (2) mixing all assert statements in the same `test_` case function.
-
-To force a rerun with the same pipeline_name and cached_run_name, use `rerun=True`.
-
-For example:
-```python
-# Call adf_pipeline_run specifying cached_run_name variable.
-this_first_run = adf_pipeline_run(pipeline_name="pipeline_foo", run_inputs={}, cached_run_name="run_bar")
-
-# Call adf_pipeline_run again, with same pipeline_name and cached_run_name
-# This will NOT trigger an actual ADF pipeline run, and will instead return this_first_run object.
-# Note: run_inputs are not checked to determine if run is cached.
-this_second_run = adf_pipeline_run(pipeline_name="pipeline_foo", run_inputs={}, cached_run_name="run_bar")
-this_first_run == this_second_run  # True
-
-# To force a rerun, set rerun=True.
-this_third_run = adf_pipeline_run(pipeline_name="pipeline_foo", run_inputs={}, cached_run_name="run_bar", rerun=True)
-this_first_run != this_third_run  # False
-
-```

@@ -7,8 +7,8 @@ Sphinx
 twine
 pytest
 pytest-runner
+pytest-adf
 tox
-databricks-cli
 autopep8
 azure-mgmt-resource
 azure-mgmt-datafactory
