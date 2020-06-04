@@ -12,6 +12,8 @@ resources:
 variables:
   - name: pythonWorkingDir
     value: tests/integrationtests/
+  - name: pythonVersion
+    value: 3.6
   - group: mdwdo-park-release-secrets-dev
 
 steps:
