@@ -30,7 +30,7 @@ steps:
     architecture: 'x64'
   displayName: 'Use Python Version: $(pythonVersion)'
 
-- script: pip install -r requirements_dev.txt && pip install -r requirements.txt
+- script: pip install -r requirements.txt
   workingDirectory: $(pythonWorkingDir)
   displayName: 'Install requirements'
 
