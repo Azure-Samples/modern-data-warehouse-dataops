@@ -72,7 +72,7 @@ The following shows the overall CI/CD process end to end.
 
 ![CI/CD](../../docs/images/CI_CD_process.PNG?raw=true "CI/CD")
 
-
+See [here](#build-and-release-pipeline) for details.
 
 ### Technologies used
 
