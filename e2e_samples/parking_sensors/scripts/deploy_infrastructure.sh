@@ -182,33 +182,12 @@ sleep 3m # It takes a while for a databricks workspace to be ready for new clust
 
 
 ####################
-# SAVE RELEVANT SECRETS IN KEYVAULT
+# DATA FACTORY
 
 # Retrieve KeyVault details
 echo "Retrieving KeyVault information from the deployment."
 kv_name=$(echo $arm_output | jq -r '.properties.outputs.keyvault_name.value')
 export KV_URL=https://$kv_name.vault.azure.net/
-
-echo "Storing secrets in KeyVault."
-az keyvault secret set --vault-name $kv_name --name "sqlsrvrName" --value "$SQL_SERVER_NAME"
-az keyvault secret set --vault-name $kv_name --name "sqlsrvUsername" --value "$SQL_SERVER_USERNAME"
-az keyvault secret set --vault-name $kv_name --name "sqlsrvrPassword" --value "$SQL_SERVER_PASSWORD"
-az keyvault secret set --vault-name $kv_name --name "sqldwDatabaseName" --value "$SQL_DW_DATABASE_NAME"
-az keyvault secret set --vault-name $kv_name --name "sqldwConnectionString" --value "$sql_dw_connstr_uname_pass"
-az keyvault secret set --vault-name $kv_name --name "datalakeAccountName" --value "$AZURE_STORAGE_ACCOUNT"
-az keyvault secret set --vault-name $kv_name --name "datalakeKey" --value "$AZURE_STORAGE_KEY"
-az keyvault secret set --vault-name $kv_name --name "spStorName" --value "$sp_stor_name"
-az keyvault secret set --vault-name $kv_name --name "spStorId" --value "$SP_STOR_ID"
-az keyvault secret set --vault-name $kv_name --name "spStorPass" --value "$SP_STOR_PASS"
-az keyvault secret set --vault-name $kv_name --name "spStorTenantId" --value "$SP_STOR_TENANT"
-az keyvault secret set --vault-name $kv_name --name "databricksDomain" --value "$DATABRICKS_HOST"
-az keyvault secret set --vault-name $kv_name --name "databricksToken" --value "$DATABRICKS_TOKEN"
-az keyvault secret set --vault-name $kv_name --name "applicationInsightsKey" --value "$APPINSIGHTS_KEY"
-az keyvault secret set --vault-name $kv_name --name "kvUrl" --value "$KV_URL"
-
-
-####################
-# DATA FACTORY
 
 echo "Updating Data Factory LinkedService to point to newly deployed resources (KeyVault and DataLake)."
 # Create a copy of the ADF dir into a .tmp/ folder.
@@ -225,6 +204,43 @@ export DATAFACTORY_NAME=$(echo $arm_output | jq -r '.properties.outputs.datafact
 export ADF_DIR=$adfTempDir
 . ./scripts/deploy_adf_artifacts.sh
 
+# SP for integration tests
+sp_adf_name=$(echo $arm_output | jq -r '.properties.outputs.service_principal_datafactory_name.value')
+sp_adf_out=$(az ad sp create-for-rbac \
+    --role "Data Factory contributor" \
+    --scopes "/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP_NAME/providers/Microsoft.DataFactory/factories/$DATAFACTORY_NAME/" \
+    --name "$sp_adf_name" \
+    --output json)
+export SP_ADF_ID=$(echo $sp_adf_out | jq -r '.appId')
+export SP_ADF_PASS=$(echo $sp_adf_out | jq -r '.password')
+export SP_ADF_TENANT=$(echo $sp_adf_out | jq -r '.tenant')
+
+
+####################
+# SAVE RELEVANT SECRETS IN KEYVAULT
+
+echo "Storing secrets in KeyVault."
+az keyvault secret set --vault-name $kv_name --name "subscriptionId" --value "$AZURE_SUBSCRIPTION_ID"
+az keyvault secret set --vault-name $kv_name --name "kvUrl" --value "$KV_URL"
+az keyvault secret set --vault-name $kv_name --name "sqlsrvrName" --value "$SQL_SERVER_NAME"
+az keyvault secret set --vault-name $kv_name --name "sqlsrvUsername" --value "$SQL_SERVER_USERNAME"
+az keyvault secret set --vault-name $kv_name --name "sqlsrvrPassword" --value "$SQL_SERVER_PASSWORD"
+az keyvault secret set --vault-name $kv_name --name "sqldwDatabaseName" --value "$SQL_DW_DATABASE_NAME"
+az keyvault secret set --vault-name $kv_name --name "sqldwConnectionString" --value "$sql_dw_connstr_uname_pass"
+az keyvault secret set --vault-name $kv_name --name "datalakeAccountName" --value "$AZURE_STORAGE_ACCOUNT"
+az keyvault secret set --vault-name $kv_name --name "datalakeKey" --value "$AZURE_STORAGE_KEY"
+az keyvault secret set --vault-name $kv_name --name "spStorName" --value "$sp_stor_name"
+az keyvault secret set --vault-name $kv_name --name "spStorId" --value "$SP_STOR_ID"
+az keyvault secret set --vault-name $kv_name --name "spStorPass" --value "$SP_STOR_PASS"
+az keyvault secret set --vault-name $kv_name --name "spStorTenantId" --value "$SP_STOR_TENANT"
+az keyvault secret set --vault-name $kv_name --name "databricksDomain" --value "$DATABRICKS_HOST"
+az keyvault secret set --vault-name $kv_name --name "databricksToken" --value "$DATABRICKS_TOKEN"
+az keyvault secret set --vault-name $kv_name --name "applicationInsightsKey" --value "$APPINSIGHTS_KEY"
+az keyvault secret set --vault-name $kv_name --name "adfName" --value "$DATAFACTORY_NAME"
+az keyvault secret set --vault-name $kv_name --name "spAdfName" --value "$sp_adf_name"
+az keyvault secret set --vault-name $kv_name --name "spAdfId" --value "$SP_ADF_ID"
+az keyvault secret set --vault-name $kv_name --name "spAdfPass" --value "$SP_ADF_PASS"
+az keyvault secret set --vault-name $kv_name --name "spAdfTenantId" --value "$SP_ADF_TENANT"
 
 ####################
 # AZDO Azure Service Connection and Variables Groups

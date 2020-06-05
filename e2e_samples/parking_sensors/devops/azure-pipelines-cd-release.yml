@@ -53,6 +53,8 @@ stages:
     parameters:
       environmentName: 'STG'
       serviceConnection: 'mdwdo-park-serviceconnection-stg'
+  # Integration tests
+  - template: templates/jobs/integration-tests-job.yml
 
 - stage: deploy_to_prod
   displayName: 'Deploy to Prod'

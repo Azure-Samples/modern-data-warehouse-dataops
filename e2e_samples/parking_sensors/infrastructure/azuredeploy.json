@@ -44,7 +44,7 @@
             }
         },
         "service_principal_storage_name": {
-            "defaultValue": "[concat(parameters('deploy_namespace'), 'sp', parameters('environment'), parameters('deployment_id'))]",
+            "defaultValue": "[concat(parameters('deploy_namespace'), 'spstor', parameters('environment'), parameters('deployment_id'))]",
             "type": "String",
             "metadata": {
                 "description": "Service Principal to be granted access to Storage Account - ADLA Gen2"
@@ -55,6 +55,13 @@
             "type": "string",
             "metadata": {
                 "description": "Data Factory Name"
+            }
+        },
+        "service_principal_datafactory_name": {
+            "defaultValue": "[concat(parameters('deploy_namespace'), 'spadf', parameters('environment'), parameters('deployment_id'))]",
+            "type": "String",
+            "metadata": {
+                "description": "Service Principal to be granted access to Data Factory"
             }
         },
         "sqlServerName": {
@@ -279,6 +286,10 @@
     "outputs": {
         "datafactory_name": {
             "value": "[parameters('datafactory_name')]",
+            "type": "string"
+        },
+        "service_principal_datafactory_name": {
+            "value": "[parameters('service_principal_datafactory_name')]",
             "type": "string"
         },
         "databricks_workspace_name": {

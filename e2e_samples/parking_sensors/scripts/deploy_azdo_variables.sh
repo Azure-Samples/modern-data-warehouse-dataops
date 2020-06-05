@@ -84,10 +84,12 @@ vargroup_secrets_id=$(az pipelines variable-group create \
     --authorize "true" \
     --output json \
     --variables foo="bar" | jq -r .id)
+
 az pipelines variable-group variable create --group-id $vargroup_secrets_id \
-    --secret "true" --name "databricksDomain" --value "$DATABRICKS_HOST"
+    --secret "true" --name "subscriptionId" --value "$AZURE_SUBSCRIPTION_ID"
 az pipelines variable-group variable create --group-id $vargroup_secrets_id \
-    --secret "true" --name "databricksToken" --value "$DATABRICKS_TOKEN"
+    --secret "true" --name "kvUrl" --value "$KV_URL"
+# sql server
 az pipelines variable-group variable create --group-id $vargroup_secrets_id \
     --secret "true" --name "sqlsrvrName" --value "$SQL_SERVER_NAME"
 az pipelines variable-group variable create --group-id $vargroup_secrets_id \
@@ -96,12 +98,24 @@ az pipelines variable-group variable create --group-id $vargroup_secrets_id \
     --secret "true" --name "sqlsrvrPassword" --value "$SQL_SERVER_PASSWORD"
 az pipelines variable-group variable create --group-id $vargroup_secrets_id \
     --secret "true" --name "sqlDwDatabaseName" --value "$SQL_DW_DATABASE_NAME"
+# Databricks
+az pipelines variable-group variable create --group-id $vargroup_secrets_id \
+    --secret "true" --name "databricksDomain" --value "$DATABRICKS_HOST"
+az pipelines variable-group variable create --group-id $vargroup_secrets_id \
+    --secret "true" --name "databricksToken" --value "$DATABRICKS_TOKEN"
+# Datalake
 az pipelines variable-group variable create --group-id $vargroup_secrets_id \
     --secret "true" --name "datalakeAccountName" --value "$AZURE_STORAGE_ACCOUNT"
 az pipelines variable-group variable create --group-id $vargroup_secrets_id \
     --secret "true" --name "datalakeKey" --value "$AZURE_STORAGE_KEY"
+# Adf
 az pipelines variable-group variable create --group-id $vargroup_secrets_id \
-    --secret "true" --name "kvUrl" --value "$KV_URL"
+    --secret "true" --name "spAdfId" --value "$SP_ADF_ID"
+az pipelines variable-group variable create --group-id $vargroup_secrets_id \
+    --secret "true" --name "spAdfPass" --value "$SP_ADF_PASS"
+az pipelines variable-group variable create --group-id $vargroup_secrets_id \
+    --secret "true" --name "spAdfTenantId" --value "$SP_ADF_TENANT"
+
 
 # Delete dummy vars
 az pipelines variable-group variable delete --group-id $vargroup_secrets_id --name "foo" -y
