@@ -31,7 +31,7 @@ jobs:
     env:
       AZ_SERVICE_PRINCIPAL_ID: $(spAdfId)
       AZ_SERVICE_PRINCIPAL_SECRET: $(spAdfPass)
-      AZ_SERVICE_PRINCIPAL_TENANT_ID: $(spAdfTenant)
+      AZ_SERVICE_PRINCIPAL_TENANT_ID: $(spAdfTenantId)
       AZ_SUBSCRIPTION_ID: $(subscriptionId)
       AZ_RESOURCE_GROUP_NAME: $(rgName)
       AZ_DATAFACTORY_NAME: $(adfName)

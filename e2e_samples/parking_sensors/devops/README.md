@@ -29,7 +29,7 @@ These are best stored within KeyVault, then [exposed via a Variable Group](https
 - **kvUrl** - KeyVault URL
 - **spAdfId** - Service Principal Id used to run Data Factory Integration tests
 - **spAdfPass** - Service Principal password used to run Data Factory Integration tests
-- **spAdfTenant** - Service Principal tenant used to run Data Factory Integration tests
+- **spAdfTenantId** - Service Principal tenant Id used to run Data Factory Integration tests
 - **subscriptionId** - Azure Subscription Id 
 
 ## Require Service Connections
