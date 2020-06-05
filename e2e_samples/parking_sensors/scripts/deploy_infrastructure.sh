@@ -242,7 +242,6 @@ az keyvault secret set --vault-name $kv_name --name "spAdfId" --value "$SP_ADF_I
 az keyvault secret set --vault-name $kv_name --name "spAdfPass" --value "$SP_ADF_PASS"
 az keyvault secret set --vault-name $kv_name --name "spAdfTenantId" --value "$SP_ADF_TENANT"
 
-
 ####################
 # AZDO Azure Service Connection and Variables Groups
 . ./scripts/deploy_azdo_service_connections_azure.sh
