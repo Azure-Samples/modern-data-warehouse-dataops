@@ -20,6 +20,8 @@ The sample demonstrate how DevOps principles can be applied end to end Data Pipe
   - [7. Monitor infrastructure, pipelines and data.](#7-monitor-infrastructure-pipelines-and-data)
 - [Key Concepts](#key-concepts)
   - [Build and Release Pipeline](#build-and-release-pipeline)
+    - [Environments](#environments)
+    - [Build and Release Sequence:](#build-and-release-sequence)
   - [Testing](#testing)
   - [Observability / Monitoring](#observability--monitoring)
     - [Databricks](#databricks)
@@ -70,7 +72,7 @@ The following shows the overall CI/CD process end to end.
 
 ![CI/CD](../../docs/images/CI_CD_process.PNG?raw=true "CI/CD")
 
-Note that for the purpose of demonstration, this is a **simplified** Release pipelines based on Trunk-based development practices.
+
 
 ### Technologies used
 
@@ -121,12 +123,46 @@ The following summarizes key learnings and best practices demonstrated by this s
 Both Build and Release Pipelines are built using [AzureDevOps](https://dev.azure.com/) (Public instance) and can be viewed using the following links:
 - [Build Pipelines](https://dev.azure.com/devlacepub/DataDevOps/_build)
 - [Release Pipeline](https://dev.azure.com/devlacepub/DataDevOps/_release)
- 
+
+#### Environments
+1. **Sandbox and Dev**- the DEV resource group is used by developers to build and test their solutions. It contains two logical environments - (1) a Sandbox environment per developer so each developer can make and test their changes in isolation prior committing to `master`, and (2) a shared Dev environment for integrating changes from the entire development team. "Isolated" sandbox environment are accomplish through a number of practices depending on the Azure Service.
+   - Databricks - developers use their dedicated Workspace folder to author and save notebooks. Developers can choose to spin up their own dedicated clusters or share a High-concurrency cluster.
+   - DataLake Gen2 - a "sandbox" file system is created. Each developer creates their own folder within this Sandbox filesystem.
+   - AzureSQL or SQLDW - A transient database (restored from DEV) is spun up per developer on demand. 
+   - Data Factory - git integration allows them to make changes to their own branches and debug runs independently.
+2. **Stage** - the STG resource group is used to test deployments prior to going to production in a production-like environment. Integration tests are run in this environment.
+3. **Production** - the PROD resource group is the final Production environment. 
+
+
+#### Build and Release Sequence:
+
+There are eight numbered orange boxes describing the sequence from sandbox development to target environments:
+
+![CI/CD](../../docs/images/CI_CD_process_sequence.PNG?raw=true "CI/CD")
+
+1. Developers develop in their own Sandbox environments within the DEV resource group and commit changes into their own short-lived git branches. (i.e. <developer_name>/<branch_name>)
+2. When changes are complete, developers raise a PR to master for review. This automatically kicks-off the PR validation pipeline which runs the unit tests, linting and DACPAC builds.
+3. On PR completion, the commit to master will trigger a Build pipeline -- publishing all necessary Build Artifacts.
+4. Successful CI build pipelines will trigger the first stage of the Release pipeline. This deploys the publish build artifacts into the DEV environment, with the exception of ADF.
+5. Developers perform a Manual Publish to the DEV ADF from the collaboration branch (`master`). This updates the ARM templates in in the `adf_publish` branch.
+6. On the successful completion of the first stage, this triggers an Manual Approval Gate*. On Approval, the release pipeline continues with the second stage -- deploying changes to the Staging environment.
+7. Integration tests are run to test changes in the Staging environment.
+8. **On the successful completion of the second stage, this triggers a second Manual Approval Gate. On Approval, the release pipeline continues with the third stage -- deploying changes to the Production environment.
+
+**Important notes:**
+- This is a simplified Build and Release process for demo purposes based on [Trunk-based development practices](https://trunkbaseddevelopment.com/).
+- *The solution deployment script does not configure Approval Gates at the moment. See [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
+- **Many organization use dedicated Release Branches (including Microsoft) instead of deploying from master. See [Release Flow](https://docs.microsoft.com/en-us/azure/devops/learn/devops-at-microsoft/release-flow).
+
+
 ### Testing
 
-- Unit Testing - Standard unit tests which tests small pieces of functionality within your code. Data transformation code should have unit tests.
+- Unit Testing - These tests small pieces of functionality within your code. Data transformation code should have unit tests and can be accomplished by abstracting Data Transformation logic into packages. Unit tests along with linting are automatically run when a PR is raised to `master`.
+  - See here for [unit tests](./src/ddo_transform/tests/) within the solution and the corresponding [QA Pipeline](./devops/azure-pipelines-ci-qa-python.yml) that executes the unit tests on every PR.
 
-- Integration Testing - **WIP**. See this [issue](https://github.com/Azure-Samples/modern-data-warehouse-dataops/issues/49).
+- Integration Testing - These are run to ensure integration points of the solution function as expected. In this demo solution, an actual Data Factory Pipeline run is automatically triggered and its output verified as part of the Release to the Staging Environment. 
+  - See here for the [integration tests](./test/integrationtests/) and the corresponding [Release Pipeline Job Definition](./devops/templates/jobs/integration-tests-job.yml) for running them as part of the Release pipeline.
+
 
 ### Observability / Monitoring
 
@@ -290,3 +326,5 @@ ADLS Gen2 is structured as the following:
   - **Workaround**: Deployment uses normal Databricks secrets with the downside of duplicated information. If you wish, you many manually convert these to KeyVault-back secret scopes.
 - Azure DevOps Variable Groups linked to KeyVault can only be created via the UI, cannot be created programmatically and was not incorporated in the automated deployment of the solution.
   - **Workaround**: Deployment add sensitive configuration as "secrets" in Variable Groups with the downside of duplicated information. If you wish, you may manually link a second Variable Group to KeyVault to pull out the secrets. KeyVault secret names should line up with required variables in the Azure DevOps pipelines.
+- Azure DevOps Environment and Approval Gates can only be managed via the UI, cannot be managed programmatically and was not incorporated in the automated deployment of the solution.
+  - **Workaround**: Approval Gates can be easily configured manually. See [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/environments?view=azure-devops#approvals) for more information.
