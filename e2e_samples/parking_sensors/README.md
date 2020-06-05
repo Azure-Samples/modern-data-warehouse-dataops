@@ -143,26 +143,34 @@ There are eight numbered orange boxes describing the sequence from sandbox devel
 1. Developers develop in their own Sandbox environments within the DEV resource group and commit changes into their own short-lived git branches. (i.e. <developer_name>/<branch_name>)
 2. When changes are complete, developers raise a PR to master for review. This automatically kicks-off the PR validation pipeline which runs the unit tests, linting and DACPAC builds.
 3. On PR completion, the commit to master will trigger a Build pipeline -- publishing all necessary Build Artifacts.
-4. Successful CI build pipelines will trigger the first stage of the Release pipeline. This deploys the publish build artifacts into the DEV environment, with the exception of ADF.
+4. The completion of a successful Build pipeline will trigger the first stage of the Release pipeline. This deploys the publish build artifacts into the DEV environment, with the exception of Azure Data Factory*.
 5. Developers perform a Manual Publish to the DEV ADF from the collaboration branch (`master`). This updates the ARM templates in in the `adf_publish` branch.
-6. On the successful completion of the first stage, this triggers an Manual Approval Gate*. On Approval, the release pipeline continues with the second stage -- deploying changes to the Staging environment.
+6. On the successful completion of the first stage, this triggers an Manual Approval Gate**. On Approval, the release pipeline continues with the second stage -- deploying changes to the Staging environment.
 7. Integration tests are run to test changes in the Staging environment.
-8. **On the successful completion of the second stage, this triggers a second Manual Approval Gate. On Approval, the release pipeline continues with the third stage -- deploying changes to the Production environment.
+8. ***On the successful completion of the second stage, this triggers a second Manual Approval Gate. On Approval, the release pipeline continues with the third stage -- deploying changes to the Production environment.
 
-**Important notes:**
+Notes:
 - This is a simplified Build and Release process for demo purposes based on [Trunk-based development practices](https://trunkbaseddevelopment.com/).
-- *The solution deployment script does not configure Approval Gates at the moment. See [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
-- **Many organization use dedicated Release Branches (including Microsoft) instead of deploying from master. See [Release Flow](https://docs.microsoft.com/en-us/azure/devops/learn/devops-at-microsoft/release-flow).
+- *A manual publish is required -- currently, this cannot be automated.
+- **The solution deployment script does not configure Approval Gates at the moment. See [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
+- ***Many organization use dedicated Release Branches (including Microsoft) instead of deploying from `master`. See [Release Flow](https://docs.microsoft.com/en-us/azure/devops/learn/devops-at-microsoft/release-flow).
 
+More resources:
+- [Continuous Integration & Continuous Delivery with Databricks](https://databricks.com/blog/2017/10/30/continuous-integration-continuous-delivery-databricks.html)
+- [Continuous integration and delivery in Azure Data Factory](https://docs.microsoft.com/en-us/azure/data-factory/continuous-integration-deployment)
+- [Devops for AzureSQL](https://devblogs.microsoft.com/azure-sql/devops-for-azure-sql/)
 
 ### Testing
 
-- Unit Testing - These tests small pieces of functionality within your code. Data transformation code should have unit tests and can be accomplished by abstracting Data Transformation logic into packages. Unit tests along with linting are automatically run when a PR is raised to `master`.
+- Unit Testing - These test small pieces of functionality within your code. Data transformation code should have unit tests and can be accomplished by abstracting Data Transformation logic into packages. Unit tests along with linting are automatically run when a PR is raised to `master`.
   - See here for [unit tests](./src/ddo_transform/tests/) within the solution and the corresponding [QA Pipeline](./devops/azure-pipelines-ci-qa-python.yml) that executes the unit tests on every PR.
 
 - Integration Testing - These are run to ensure integration points of the solution function as expected. In this demo solution, an actual Data Factory Pipeline run is automatically triggered and its output verified as part of the Release to the Staging Environment. 
-  - See here for the [integration tests](./test/integrationtests/) and the corresponding [Release Pipeline Job Definition](./devops/templates/jobs/integration-tests-job.yml) for running them as part of the Release pipeline.
+  - See here for the [integration tests](./tests/integrationtests/) and the corresponding [Release Pipeline Job Definition](./devops/templates/jobs/integration-tests-job.yml) for running them as part of the Release pipeline.
 
+More resources:
+- [pytest-adf](https://aka.ms/pytest-adf) - Pytest helper plugin for integration testing Azure Data Factory
+- [nutter testing framework](https://github.com/microsoft/nutter) - Testing framework for Databricks notebooks.
 
 ### Observability / Monitoring
 
@@ -197,7 +205,7 @@ There are eight numbered orange boxes describing the sequence from sandbox devel
 
 ### Setup and Deployment
 
-**IMPORTANT NOTE:** As with all Azure Deployments, this will incur associated costs. Remember to teardown all related resources after use to avoid unnecessary costs. See [here](#deployed-resources) for list of deployed resources.
+**IMPORTANT NOTE:** As with all Azure Deployments, this will **incur associated costs**. Remember to teardown all related resources after use to avoid unnecessary costs. See [here](#deployed-resources) for list of deployed resources.
 
 *NOTE: This deployment was tested using WSL 2 (Ubuntu 18.04) and Debian GNU/Linux 9.9 (stretch)*
 
@@ -301,9 +309,11 @@ After a successful deployment, you should have the following resources:
      - **Github Service Connection** for retrieving code from Github
        - mdwdo-park-github
 
-**This secret-scope is currently not deployed as a KeyVault-backed secret scope due to limitations of creating it programmatically.*
+Notes:
 
-***These variable groups are currently not linked to KeyVault due to limitations of creating these programmatically.*
+- *This secret-scope is currently not deployed as a KeyVault-backed secret scope due to limitations of creating it programmatically.
+
+- **These variable groups are currently not linked to KeyVault due to limitations of creating these programmatically. See [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
 
 <!--TODO: Add Cleanup script-->
 
@@ -322,9 +332,11 @@ ADLS Gen2 is structured as the following:
 ------------
 
 ### Known Issues, Limitations and Workarounds
+The following lists some limitations of the solution and associated deployment script:
+
 - Databricks KeyVault-backed secrets scopes can only be create via the UI, cannot be created programmatically and was not incorporated in the automated deployment of the solution.
-  - **Workaround**: Deployment uses normal Databricks secrets with the downside of duplicated information. If you wish, you many manually convert these to KeyVault-back secret scopes.
+  - **Workaround**: Deployment uses normal Databricks secrets with the downside of duplicated information. If you wish, you many manually convert these to KeyVault-back secret scopes. See [here](https://docs.microsoft.com/en-us/azure/databricks/security/secrets/secret-scopes#--create-an-azure-key-vault-backed-secret-scope) for more information.
 - Azure DevOps Variable Groups linked to KeyVault can only be created via the UI, cannot be created programmatically and was not incorporated in the automated deployment of the solution.
-  - **Workaround**: Deployment add sensitive configuration as "secrets" in Variable Groups with the downside of duplicated information. If you wish, you may manually link a second Variable Group to KeyVault to pull out the secrets. KeyVault secret names should line up with required variables in the Azure DevOps pipelines.
+  - **Workaround**: Deployment add sensitive configuration as "secrets" in Variable Groups with the downside of duplicated information. If you wish, you may manually link a second Variable Group to KeyVault to pull out the secrets. KeyVault secret names should line up with required variables in the Azure DevOps pipelines. See [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml#link-secrets-from-an-azure-key-vault) for more information.
 - Azure DevOps Environment and Approval Gates can only be managed via the UI, cannot be managed programmatically and was not incorporated in the automated deployment of the solution.
   - **Workaround**: Approval Gates can be easily configured manually. See [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/environments?view=azure-devops#approvals) for more information.

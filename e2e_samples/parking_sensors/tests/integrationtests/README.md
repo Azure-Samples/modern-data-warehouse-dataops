@@ -15,11 +15,13 @@ Service principal account details used to connect to Azure:
  - **AZ_SERVICE_PRINCIPAL_ID**
  - **AZ_SERVICE_PRINCIPAL_SECRET**
  - **AZ_SERVICE_PRINCIPAL_TENANT_ID**
-Azure Data Factory details:
+
+Azure Data Factory:
  - **AZ_SUBSCRIPTION_ID**
  - **AZ_RESOURCE_GROUP_NAME**
  - **AZ_DATAFACTORY_NAME**
-Azure Data Factory output details:
+
+Azure Data Factory output(s) connection information:
  - **AZ_SQL_SERVER_NAME**
  - **AZ_SQL_SERVER_USERNAME**
  - **AZ_SQL_SERVER_PASSWORD**
