@@ -102,6 +102,12 @@ az pipelines variable-group variable create --group-id $vargroup_secrets_id \
     --secret "true" --name "datalakeKey" --value "$AZURE_STORAGE_KEY"
 az pipelines variable-group variable create --group-id $vargroup_secrets_id \
     --secret "true" --name "kvUrl" --value "$KV_URL"
+az pipelines variable-group variable create --group-id $vargroup_secrets_id \
+    --secret "true" --name "spAdfId" --value "$SP_ADF_ID"
+az pipelines variable-group variable create --group-id $vargroup_secrets_id \
+    --secret "true" --name "spAdfPass" --value "$SP_ADF_PASS"
+az pipelines variable-group variable create --group-id $vargroup_secrets_id \
+    --secret "true" --name "spAdfTenantId" --value "$SP_ADF_TENANT"
 
 # Delete dummy vars
 az pipelines variable-group variable delete --group-id $vargroup_secrets_id --name "foo" -y
