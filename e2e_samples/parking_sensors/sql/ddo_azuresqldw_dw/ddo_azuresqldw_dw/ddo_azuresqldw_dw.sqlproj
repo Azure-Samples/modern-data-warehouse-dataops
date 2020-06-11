@@ -87,6 +87,10 @@
     <Build Include="External Resources\AzureDataLakeStorage.sql" />
     <Build Include="Security\ADLSCredentialKey.sql" />
     <Build Include="Security\MasterKeys.sql" />
+    <Build Include="dbo\Stored Procedures\seed_dim_date.sql" />
+    <Build Include="dbo\Tables\dim_date.sql" />
+    <Build Include="dbo\Tables\dim_time.sql" />
+    <Build Include="dbo\Stored Procedures\seed_dim_time.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="ADLSCredentialKey">
@@ -99,5 +103,15 @@
       </DefaultValue>
       <Value>$(SqlCmdVar__1)</Value>
     </SqlCmdVariable>
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="Script.PostDeployment.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureDw\SqlSchemas\master.dacpac">
+      <HintPath>$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureDw\SqlSchemas\master.dacpac</HintPath>
+      <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
+      <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
+    </ArtifactReference>
   </ItemGroup>
 </Project>
