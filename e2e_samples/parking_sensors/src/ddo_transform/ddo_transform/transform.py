@@ -281,7 +281,7 @@ def process_fact_parking(sensordata_sdf: DataFrame,
                          load_id, loaded_on):
     """Transform sensordata into fact_parking"""
 
-    dim_date_id = loaded_on.strftime("%Y%M%d")
+    dim_date_id = loaded_on.strftime("%Y%m%d")
     midnight = loaded_on.replace(hour=0, minute=0, second=0, microsecond=0)
     dim_time_id = (midnight - loaded_on).seconds
 
