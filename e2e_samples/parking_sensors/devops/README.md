@@ -21,15 +21,20 @@ These are best stored within KeyVault, then [exposed via a Variable Group](https
 - **sqlsrvrName** - Target SQL server name
 - **sqlsrvUsername** - Target SQL server username
 - **sqlsrvrPassword** - Target SQL server password
-- **sqldwDatabaseName** - Target Synapase SQL Pool (formely SQLDW) database name
+- **sqldwDatabaseName** - Target Synapse SQL Pool (formerly SQLDW) database name
 - **databricksDomain** - Target Databricks workspace name (ei. https://adb-123456789.1.azuredatabricks.net/)
 - **databricksToken** - PAT token of the target databricks workspace
 - **datalakeAccountName** - Target ADLS Gen2 storage account name
 - **datalakeKey** - Key of target ADLS Gen2 storage
-- **kvUrl** - Keyvault URL
+- **kvUrl** - KeyVault URL
+- **spAdfId** - Service Principal Id used to run Data Factory Integration tests
+- **spAdfPass** - Service Principal password used to run Data Factory Integration tests
+- **spAdfTenantId** - Service Principal tenant Id used to run Data Factory Integration tests
+- **subscriptionId** - Azure Subscription Id 
 
 ## Require Service Connections
 The following are [service connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml) that need to be in place.
 - github_service_connection - used to checkout a pipeline resource (adf_publish).
+- azure_service_connection_dev - used to in the release pipeline to deploy to **dev** azure environment.
 - azure_service_connection_stg - used to in the release pipeline to deploy to **stg** azure environment.
 - azure_service_connection_prod - used to in the release pipeline to deploy to **prod** azure environment.

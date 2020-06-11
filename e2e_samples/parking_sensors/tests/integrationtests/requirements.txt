@@ -1,0 +1,16 @@
+pip
+wheel
+watchdog
+flake8
+coverage
+Sphinx
+twine
+pytest
+pytest-runner
+pytest-adf
+tox
+autopep8
+azure-mgmt-resource
+azure-mgmt-datafactory
+azure-storage-blob
+pyodbc
