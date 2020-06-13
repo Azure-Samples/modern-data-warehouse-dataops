@@ -12,11 +12,11 @@ Post-Deployment Script Template
 IF NOT EXISTS (SELECT 1 FROM dbo.dim_date)
 BEGIN
     PRINT '******Seeding dim_date table******';
-    EXEC dbo.seed_dim_date;
+    EXEC dbo.load_dim_date;
 END
 
 IF NOT EXISTS (SELECT 1 FROM dbo.dim_time)
 BEGIN
     PRINT '******Seeding dim_time table******';
-    EXEC dbo.seed_dim_time;
+    EXEC dbo.load_dim_time;
 END
