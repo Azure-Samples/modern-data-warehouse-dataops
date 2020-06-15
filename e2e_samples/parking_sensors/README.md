@@ -66,6 +66,10 @@ The following shows the overall architecture of the solution.
 
 ![Architecture](../../docs/images/architecture.PNG?raw=true "Architecture")
 
+Sample PowerBI report
+
+![PowerBI report](../../docs/images/PBI_parking_sensors.PNG?raw=true "PowerBI Report")
+
 ### Continuous Integration and Continuous Delivery (CI/CD)
 
 The following shows the overall CI/CD process end to end.
@@ -83,7 +87,7 @@ It makes use of the following azure services:
 - [Azure Synapse Analytics (formerly SQLDW)](https://azure.microsoft.com/en-au/services/synapse-analytics/)
 - [Azure DevOps](https://azure.microsoft.com/en-au/services/devops/)
 - [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)
-
+- [PowerBI](https://powerbi.microsoft.com/en-us/)
 
 For a detailed walk-through of the solution and key concepts, watch the following video recording:
 

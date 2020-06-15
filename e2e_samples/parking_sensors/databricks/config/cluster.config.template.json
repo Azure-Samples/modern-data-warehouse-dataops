@@ -1,7 +1,7 @@
 {
     "cluster_name": "__REPLACE_CLUSTER_NAME__",
     "autoscale": { "min_workers": 1, "max_workers": 2 },
-    "spark_version": "6.2.x-scala2.11",
+    "spark_version": "6.6.x-scala2.11",
     "autotermination_minutes": 120,
     "node_type_id": "Standard_DS3_v2",
     "driver_node_type_id": "Standard_DS3_v2",

@@ -106,9 +106,9 @@ az storage fs directory create -n '/data/dw/dim_location' -f $storage_file_syste
 
 echo "Uploading seed data to data/seed"
 az storage blob upload --container-name $storage_file_system\
-    --file data/seed/DimDate.csv --name "data/seed/DimDate.csv"
+    --file data/seed/dim_date.csv --name "data/seed/dim_date/dim_date.csv"
 az storage blob upload --container-name $storage_file_system \
-    --file data/seed/DimTime.csv --name "data/seed/DimTime.csv"
+    --file data/seed/dim_time.csv --name "data/seed/dim_time/dim_time.csv"
 
 # Create SP and grant correct rights to storage account
 sp_stor_name=$(echo $arm_output | jq -r '.properties.outputs.service_principal_storage_name.value')
