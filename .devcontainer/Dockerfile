@@ -15,6 +15,18 @@ RUN apt-get -y install git procps lsb-release
 # Install any missing dependencies for enhanced language service
 RUN apt-get install -y libicu[0-9][0-9]
 
+# Install Azure CLI and application insights and azure devops extension
+RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+RUN az extension add --name application-insights
+RUN az extension add --name azure-devops
+
+# Install Databricks CLI
+RUN pip install databricks-cli
+
+# Install jq
+RUN apt-get update \
+    && apt-get -y install jq
+
 # Install java
 RUN apt-get install -y openjdk-8-jdk
 ENV JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
@@ -22,12 +34,7 @@ ENV JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
 RUN mkdir /workspace
 WORKDIR /workspace
 
-# Install Python dependencies from requirements.txt and requirements_dev.txt
-COPY requirements.txt* requirements_dev.txt* /workspace/
-RUN pip install -r requirements_dev.txt \
-    && rm requirements_dev.txt* \
-    && pip install -r requirements.txt \ 
-    && rm requirements.txt*
+
 
 # Clean up
 RUN apt-get autoremove -y \

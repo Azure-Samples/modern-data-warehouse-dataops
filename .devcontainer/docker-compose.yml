@@ -6,6 +6,7 @@
 version: '3'
 services:
   pyspark:
+    env_file: devcontainer.env
     build:
       context: ../
       dockerfile: .devcontainer/Dockerfile
@@ -21,5 +22,3 @@ services:
     
     # Overrides default command so things don't shut down after the process ends - useful for debugging
     command: sleep infinity
-    env_file:
-    - ../.env
