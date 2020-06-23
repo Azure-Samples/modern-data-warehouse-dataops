@@ -21,16 +21,6 @@ The samples are either focused on a single azure service or showcases an end to 
 
 ## Contents
 
-### How to use the Repo
-
-Pre-requisites:
-- [Docker](https://www.docker.com/)
-- [VSCode](https://code.visualstudio.com/)
-
-1. Rename `.envtemplate` to `devcontainer.env` and update the values.
-2. Open the project inside the vscode devconatiner
-3. Run `az login` in the vscode terminal and follow the steps to login
-4. To provision the infrastructure required for [**Parking Sensor Solution**](e2e_samples/parking_sensors/), in the vscode terminal, cd to `e2e_samples/parking_sensors/` and run `./deploy.sh`
 
 ### End to End samples
    - [**Parking Sensor Solution**](e2e_samples/parking_sensors/) - This sample solution demonstrates an end-to-end data pipeline following the MDW architecture, along with a corresponding CI/CD process. 

@@ -66,6 +66,10 @@ The following shows the overall architecture of the solution.
 
 ![Architecture](../../docs/images/architecture.PNG?raw=true "Architecture")
 
+Sample PowerBI report
+
+![PowerBI report](../../docs/images/PBI_parking_sensors.PNG?raw=true "PowerBI Report")
+
 ### Continuous Integration and Continuous Delivery (CI/CD)
 
 The following shows the overall CI/CD process end to end.
@@ -83,7 +87,7 @@ It makes use of the following azure services:
 - [Azure Synapse Analytics (formerly SQLDW)](https://azure.microsoft.com/en-au/services/synapse-analytics/)
 - [Azure DevOps](https://azure.microsoft.com/en-au/services/devops/)
 - [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)
-
+- [PowerBI](https://powerbi.microsoft.com/en-us/)
 
 For a detailed walk-through of the solution and key concepts, watch the following video recording:
 
@@ -191,7 +195,7 @@ More resources:
 3. [Azure DevOps Project](https://azure.microsoft.com/en-us/services/devops/)
    - *Permissions needed*: ability to create [service connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml), [pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops&tabs=yaml) and [variable groups](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml).
 
-#### Software pre-requisites <!-- omit in toc -->
+#### Software pre-requisites if you don't use dev container<!-- omit in toc -->
 - For Windows users, [Windows Subsystem For Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
 - [az cli 2.6+](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
 - [az cli - application insights extension](https://docs.microsoft.com/en-us/cli/azure/ext/application-insights/monitor/app-insights?view=azure-cli-latest)
@@ -202,6 +206,14 @@ More resources:
 - [databricks-cli](https://docs.azuredatabricks.net/dev-tools/databricks-cli.html)
 - [jq](https://stedolan.github.io/jq/)
 
+#### Software pre-requisites if you use dev container
+- [Docker](https://www.docker.com/)
+- [VSCode](https://code.visualstudio.com/)
+- [Visual Studio Code Remote Development Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
+
+1. Rename `.envtemplate` to `devcontainer.env` and update the values as explained in **Initial Setup** section.
+2. Open the project inside the vscode dev conatiner
+3. `cd` into the `e2e_samples/parking_sensors` folder and run `./deploy.sh` inside the dev container terminal.
 
 ### Setup and Deployment
 
