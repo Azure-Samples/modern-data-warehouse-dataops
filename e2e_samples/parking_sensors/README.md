@@ -87,6 +87,7 @@ It makes use of the following azure services:
 - [Azure Synapse Analytics (formerly SQLDW)](https://azure.microsoft.com/en-au/services/synapse-analytics/)
 - [Azure DevOps](https://azure.microsoft.com/en-au/services/devops/)
 - [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)
+- [PowerBI](https://powerbi.microsoft.com/en-us/)
 
 For a detailed walk-through of the solution and key concepts, watch the following video recording:
 
@@ -135,6 +136,7 @@ Both Build and Release Pipelines are built using [AzureDevOps](https://dev.azure
    - Data Factory - git integration allows them to make changes to their own branches and debug runs independently.
 2. **Stage** - the STG resource group is used to test deployments prior to going to production in a production-like environment. Integration tests are run in this environment.
 3. **Production** - the PROD resource group is the final Production environment. 
+
 
 #### Build and Release Sequence:
 
@@ -349,3 +351,4 @@ The following lists some limitations of the solution and associated deployment s
 - Azure DevOps Variable Groups linked to KeyVault can only be created via the UI, cannot be created programmatically and was not incorporated in the automated deployment of the solution.
   - **Workaround**: Deployment add sensitive configuration as "secrets" in Variable Groups with the downside of duplicated information. If you wish, you may manually link a second Variable Group to KeyVault to pull out the secrets. KeyVault secret names should line up with required variables in the Azure DevOps pipelines. See [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml#link-secrets-from-an-azure-key-vault) for more information.
 - Azure DevOps Environment and Approval Gates can only be managed via the UI, cannot be managed programmatically and was not incorporated in the automated deployment of the solution.
+  - **Workaround**: Approval Gates can be easily configured manually. See [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/environments?view=azure-devops#approvals) for more information.
