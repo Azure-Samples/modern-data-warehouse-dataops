@@ -133,12 +133,11 @@ dbutils.fs.refreshMounts()
 from pyspark.sql.functions import col
 
 # DimDate
-dimdate = spark.read.csv("dbfs:/mnt/datalake/data/seed/DimDate.csv", header=True)
+dimdate = spark.read.csv("dbfs:/mnt/datalake/data/seed/dim_date/dim_date.csv", header=True)
 dimdate.write.saveAsTable("dw.dim_date")
 
 # DimTime
-dimtime = spark.read.csv("dbfs:/mnt/datalake/data/seed/DimTime.csv", header=True)
-dimtime = dimtime.select(dimtime["second_of_day"].alias("dim_time_id"), col("*"))
+dimtime = spark.read.csv("dbfs:/mnt/datalake/data/seed/dim_time/dim_time.csv", header=True)
 dimtime.write.saveAsTable("dw.dim_time")
 
 # COMMAND ----------

@@ -1,7 +1,7 @@
 {
     "run_name": "Setup workspace",
     "new_cluster": {
-        "spark_version": "6.2.x-scala2.11",
+        "spark_version": "6.6.x-scala2.11",
         "node_type_id": "Standard_DS3_v2",
         "num_workers": 1,
         "spark_env_vars": {

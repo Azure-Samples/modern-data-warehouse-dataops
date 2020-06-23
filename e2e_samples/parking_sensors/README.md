@@ -66,6 +66,10 @@ The following shows the overall architecture of the solution.
 
 ![Architecture](../../docs/images/architecture.PNG?raw=true "Architecture")
 
+Sample PowerBI report
+
+![PowerBI report](../../docs/images/PBI_parking_sensors.PNG?raw=true "PowerBI Report")
+
 ### Continuous Integration and Continuous Delivery (CI/CD)
 
 The following shows the overall CI/CD process end to end.
