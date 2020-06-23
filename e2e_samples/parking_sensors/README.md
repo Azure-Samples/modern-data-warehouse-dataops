@@ -83,7 +83,6 @@ It makes use of the following azure services:
 - [Azure Synapse Analytics (formerly SQLDW)](https://azure.microsoft.com/en-au/services/synapse-analytics/)
 - [Azure DevOps](https://azure.microsoft.com/en-au/services/devops/)
 - [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)
-- [PowerBI](https://powerbi.microsoft.com/en-us/)
 
 For a detailed walk-through of the solution and key concepts, watch the following video recording:
 
@@ -132,7 +131,6 @@ Both Build and Release Pipelines are built using [AzureDevOps](https://dev.azure
    - Data Factory - git integration allows them to make changes to their own branches and debug runs independently.
 2. **Stage** - the STG resource group is used to test deployments prior to going to production in a production-like environment. Integration tests are run in this environment.
 3. **Production** - the PROD resource group is the final Production environment. 
-
 
 #### Build and Release Sequence:
 

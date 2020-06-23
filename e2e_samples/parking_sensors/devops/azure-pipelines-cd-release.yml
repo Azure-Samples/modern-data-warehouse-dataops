@@ -72,4 +72,3 @@ stages:
   - template: templates/jobs/deploy-adf-job.yml
     parameters:
       environmentName: 'PROD'
-      serviceConnection: 'mdwdo-park-serviceconnection-prod'
