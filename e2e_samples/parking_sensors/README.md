@@ -66,10 +66,6 @@ The following shows the overall architecture of the solution.
 
 ![Architecture](../../docs/images/architecture.PNG?raw=true "Architecture")
 
-Sample PowerBI report
-
-![PowerBI report](../../docs/images/PBI_parking_sensors.PNG?raw=true "PowerBI Report")
-
 ### Continuous Integration and Continuous Delivery (CI/CD)
 
 The following shows the overall CI/CD process end to end.
@@ -351,4 +347,3 @@ The following lists some limitations of the solution and associated deployment s
 - Azure DevOps Variable Groups linked to KeyVault can only be created via the UI, cannot be created programmatically and was not incorporated in the automated deployment of the solution.
   - **Workaround**: Deployment add sensitive configuration as "secrets" in Variable Groups with the downside of duplicated information. If you wish, you may manually link a second Variable Group to KeyVault to pull out the secrets. KeyVault secret names should line up with required variables in the Azure DevOps pipelines. See [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml#link-secrets-from-an-azure-key-vault) for more information.
 - Azure DevOps Environment and Approval Gates can only be managed via the UI, cannot be managed programmatically and was not incorporated in the automated deployment of the solution.
-  - **Workaround**: Approval Gates can be easily configured manually. See [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/environments?view=azure-devops#approvals) for more information.

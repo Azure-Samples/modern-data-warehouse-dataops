@@ -5,7 +5,7 @@
 		"annotations": [],
 		"type": "AzureKeyVault",
 		"typeProperties": {
-			"baseUrl": "https://mdwdokvdevtrbbv.vault.azure.net/"
+			"baseUrl": "https://mdwdokvdevkdnam.vault.azure.net/"
 		}
 	}
 }
