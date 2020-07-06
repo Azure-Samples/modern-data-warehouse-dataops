@@ -54,4 +54,5 @@ sed -i "s+devlace/mdw-dataops-clone+$GITHUB_REPO+" devops/azure-pipelines-cd-rel
 
 
 echo "Deployment complete!"
-echo "Now, you need to setup git integration in your DEV Data Factory. Refer to README instructions for detailed next steps."
+echo "IMPORTANT: This script updating the Azure Pipeline YAML definitions to point to your Github repo."
+echo "ACTION REQUIRED: Push up these changes to your Github repo before proceeding. See README > Setup and Deployment for more details."
