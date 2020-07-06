@@ -1,0 +1,6 @@
+GITHUB_REPO=
+GITHUB_PAT_TOKEN=
+RESOURCE_GROUP_LOCATION=australiaeast
+AZDO_PROJECT=
+AZDO_ORGANIZATION_URL=
+DATABRICKS_HOST=https://australiaeast.azuredatabricks.net
