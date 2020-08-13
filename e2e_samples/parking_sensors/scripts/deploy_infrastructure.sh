@@ -208,7 +208,7 @@ export ADF_DIR=$adfTempDir
 sp_adf_name=$(echo $arm_output | jq -r '.properties.outputs.service_principal_datafactory_name.value')
 sp_adf_out=$(az ad sp create-for-rbac \
     --role "Data Factory contributor" \
-    --scopes "/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP_NAME/providers/Microsoft.DataFactory/factories/$DATAFACTORY_NAME/" \
+    --scopes "/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP_NAME/providers/Microsoft.DataFactory/factories/$DATAFACTORY_NAME" \
     --name "$sp_adf_name" \
     --output json)
 export SP_ADF_ID=$(echo $sp_adf_out | jq -r '.appId')
