@@ -206,11 +206,17 @@ export ADF_DIR=$adfTempDir
 
 # SP for integration tests
 sp_adf_name=$(echo $arm_output | jq -r '.properties.outputs.service_principal_datafactory_name.value')
-sp_adf_out=$(az ad sp create-for-rbac \
-    --role "Data Factory contributor" \
-    --scopes "/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP_NAME/providers/Microsoft.DataFactory/factories/$DATAFACTORY_NAME/" \
-    --name "$sp_adf_name" \
-    --output json)
+
+max_retry=36
+counter=1
+until sp_adf_out=$(az ad sp create-for-rbac --role "Data Factory contributor" --scopes "/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP_NAME/providers/Microsoft.DataFactory/factories/$DATAFACTORY_NAME" --name "$sp_adf_name" --output json)
+do
+   sleep 1
+   [[ counter -eq $max_retry ]] && echo "Failed!" && exit 1
+   echo "Command retry $counter/$max_retry"
+   ((counter++))
+done
+
 export SP_ADF_ID=$(echo $sp_adf_out | jq -r '.appId')
 export SP_ADF_PASS=$(echo $sp_adf_out | jq -r '.password')
 export SP_ADF_TENANT=$(echo $sp_adf_out | jq -r '.tenant')
