@@ -4,9 +4,11 @@
 """Tests for `ddo_transform` package."""
 
 import os
+import sys
 import pytest
 import datetime
 
+sys.path.append('../ddo_transform/')
 from ddo_transform import transform
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))

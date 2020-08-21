@@ -4,10 +4,12 @@
 """Tests for `ddo_transform` package."""
 
 import os
+import sys
 import pytest
 import datetime
 from pyspark.sql.functions import isnull
 
+sys.path.append('../ddo_transform/')
 from ddo_transform import standardize
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
