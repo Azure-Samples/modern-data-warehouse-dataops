@@ -25,6 +25,6 @@ steps:
   workingDirectory: $(pythonWorkingDir)
   displayName: 'Install requirements'
 
-- script: make lint && make tests 
+- script: make lint && make test
   workingDirectory: $(pythonWorkingDir)
   displayName: 'Run lint tests'
