@@ -7,7 +7,7 @@ pr:
     - releases/*
   paths:
     include:
-    - e2e_samples/parking_sensors/sql/ddo_transform/*
+    - e2e_samples/parking_sensors/sql/ddo_azuresqldw_dw/*
 
 variables:
   sqlDwPath: 'e2e_samples/parking_sensors/sql/ddo_azuresqldw_dw'
