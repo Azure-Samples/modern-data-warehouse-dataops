@@ -304,7 +304,7 @@
             "type": "string",
             "value": "[resourceId('Microsoft.Databricks/workspaces', parameters('databricks_workspace_name'))]"
         },
-        "workspace": {
+        "databricks_workspace": {
             "type": "object",
             "value": "[reference(resourceId('Microsoft.Databricks/workspaces', parameters('databricks_workspace_name')))]"
         },
