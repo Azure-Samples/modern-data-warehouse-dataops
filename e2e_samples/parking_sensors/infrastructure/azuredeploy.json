@@ -304,6 +304,10 @@
             "type": "string",
             "value": "[resourceId('Microsoft.Databricks/workspaces', parameters('databricks_workspace_name'))]"
         },
+        "databricks_workspace": {
+            "type": "object",
+            "value": "[reference(resourceId('Microsoft.Databricks/workspaces', parameters('databricks_workspace_name')))]"
+        },
         "keyvault_name": {
             "value": "[parameters('keyvault_name')]",
             "type": "string"

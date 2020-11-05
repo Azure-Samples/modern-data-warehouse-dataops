@@ -157,10 +157,9 @@ export APPINSIGHTS_KEY=$(az monitor app-insights component show \
 # # RETRIEVE DATABRICKS INFORMATION AND CONFIGURE WORKSPACE
 # 
 echo "Retrieving Databricks information from the deployment."
-databricks_location=$(echo $arm_output | jq -r '.properties.outputs.databricks_location.value')
-databricks_workspace_name=$(echo $arm_output | jq -r '.properties.outputs.databricks_workspace_name.value')
+# databricks_location=$(echo $arm_output | jq -r '.properties.outputs.databricks_location.value')
 databricks_workspace_id=$(echo $arm_output | jq -r '.properties.outputs.databricks_workspace_id.value')
-export DATABRICKS_HOST=https://${databricks_location}.azuredatabricks.net
+export DATABRICKS_HOST=https://$(echo $arm_output | jq -r '.properties.outputs.databricks_workspace.value.workspaceUrl')
 
 # Retrieve databricks PAT token
 echo "Generating a Databricks PAT token."
@@ -193,10 +192,11 @@ echo "Updating Data Factory LinkedService to point to newly deployed resources (
 # Create a copy of the ADF dir into a .tmp/ folder.
 adfTempDir=.tmp/adf
 mkdir -p $adfTempDir && cp -a adf/ .tmp/
-# Update LinkedServices to point to newly deployed Datalake and KeyVault
+# Update ADF LinkedServices to point to newly deployed Datalake URL, KeyVault URL, and Databricks workspace URL
 tmpfile=.tmpfile
 adfLsDir=$adfTempDir/linkedService
 jq --arg kvurl "$KV_URL" '.properties.typeProperties.baseUrl = $kvurl' $adfLsDir/Ls_KeyVault_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_KeyVault_01.json
+jq --arg databricksWorkspaceUrl "$DATABRICKS_HOST" '.properties.typeProperties.domain = $databricksWorkspaceUrl' $adfLsDir/Ls_AzureDatabricks_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AzureDatabricks_01.json
 jq --arg datalakeUrl "https://$AZURE_STORAGE_ACCOUNT.dfs.core.windows.net" '.properties.typeProperties.url = $datalakeUrl' $adfLsDir/Ls_AdlsGen2_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AdlsGen2_01.json
 
 # Deploy ADF artifacts
