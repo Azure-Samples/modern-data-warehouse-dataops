@@ -1,11 +1,12 @@
 {
-	"name": "modern-data-warehouse-dataops",
+	"name": "Parking Sensors",
 	"dockerComposeFile": "docker-compose.yml",
-	"workspaceFolder": "/workspace",
-	"service": "pyspark",
-	"context": "..",
+	"workspaceFolder": "/workspace/e2e_samples/parking_sensors",
+	"service": "parking_sensor_dc",
 	"extensions": [
-		"ms-python.python"
+		"ms-python.python",
+		"DavidAnson.vscode-markdownlint",
+		"eamodio.gitlens"
 	],
 	"settings": {
 		"python.pythonPath": "/usr/local/bin/python"
