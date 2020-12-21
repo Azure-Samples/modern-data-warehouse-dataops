@@ -2,7 +2,7 @@ name: Yaml Lint
 on:
   push:
     branches:
-    - main
+    - master
   pull_request:
     paths:
     - .github/workflows/yaml.yml
