@@ -1,0 +1,26 @@
+name: Documentation Lint
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    paths:
+    - .github/workflows/documentation.yml
+
+jobs:
+  markdown-link-check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: gaurav-nelson/github-action-markdown-link-check@v1
+      with:
+        use-quiet-mode: 'yes'
+        use-verbose-mode: 'yes'
+        file-extension: '.md'
+  markdown-lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: docker://avtodev/markdown-lint:v1
+      with:
+        args: '**/*.md'
