@@ -1,6 +1,6 @@
 # Azure Synapse Analytics (formerly SQL DW)
 
-**WIP**
+WIP
 
 ## Prerequisites
 

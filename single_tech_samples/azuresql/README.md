@@ -1,9 +1,10 @@
 # Azure SQL Database
 
-[Azure SQL Database](https://azure.microsoft.com/en-au/services/sql-database/) is a relational database commonly used in the MDW architecture, typically in the serving layer. The following samples demonstrates how you might build CI/CD pipelines to deploy changes to 
+[Azure SQL Database](https://azure.microsoft.com/en-au/services/sql-database/) is a relational database commonly used in the MDW architecture, typically in the serving layer. The following samples demonstrates how you might build CI/CD pipelines to deploy changes to
 Azure SQL Database.
 
 ## Contents
+
 1. [Key Concepts](./README.md#key-concepts)
    1. [Build and Release](./README.md#build-and-release)
       1. [Azure DevOps Pipelines](./README.md#azure-devops-pipelines)
@@ -34,10 +35,10 @@ The following are some sample [Azure DevOps](https://docs.microsoft.com/en-us/az
 
 1. **Validate Pull Request** [[azure-pipelines-01-validate-pr](pipelines/azure-pipelines-01-validate-pr.yml)]
    - This pipeline builds the [DACPAC](https://docs.microsoft.com/en-us/sql/relational-databases/data-tier-applications/data-tier-applications?view=sql-server-ver15) and runs tests (if any). This is triggered only on PRs and is used to validate them before merging into master. This pipeline does not produce any artifacts.
-2. **Build Pipeline** [[azure-pipelines-02-build](pipelines/azure-pipelines-02-build.yml)] 
-   - This pipeline builds the DACPAC and publishes it as a [Build Artifact](https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/build-artifacts?view=azure-devops&tabs=yaml). Its purpose is to produce the Build Artifact that may be consumed by a [Release Pipeline (classic)](https://docs.microsoft.com/en-us/azure/devops/pipelines/release/?view=azure-devops). 
+2. **Build Pipeline** [[azure-pipelines-02-build](pipelines/azure-pipelines-02-build.yml)]
+   - This pipeline builds the DACPAC and publishes it as a [Build Artifact](https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/build-artifacts?view=azure-devops&tabs=yaml). Its purpose is to produce the Build Artifact that may be consumed by a[Release Pipeline (classic)](https://docs.microsoft.com/en-us/azure/devops/pipelines/release/?view=azure-devops). 
 3. **Simple Multi-Stage Pipeline** [[azure-pipelines-03-simple-multi-stage](pipelines/azure-pipelines-03-simple-multi-stage.yml)]
-   - This pipeline demonstrates a simple [multi-stage pipeline](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/multi-stage-pipelines-experience?view=azure-devops). 
+   - This pipeline demonstrates a simple [multi-stage pipeline](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/multi-stage-pipelines-experience?view=azure-devops).
    - It has two stages:
         1. Build - builds the DACPAC and creates a [Pipeline Artifact](https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/pipeline-artifacts?view=azure-devops&tabs=yaml).
         2. Deploy - deploys the DACPAC to a target AzureSQL instance.
@@ -61,9 +62,11 @@ The following are some sample [Azure DevOps](https://docs.microsoft.com/en-us/az
      - For simplicity purposes, the Test database is deployed in the same logical server as Production, however, in reality these should be completely separate servers.
 
 ### Testing
+
 - [Create a Test Project for SQL Server Database Unit Testing](https://docs.microsoft.com/en-us/sql/ssdt/how-to-create-a-test-project-for-sql-server-database-unit-testing?view=sql-server-ver15)
 
 ### Observability / Monitoring
+
 - [AzureSQL Database monitoring and tuning](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-monitoring-tuning-index)
 
 ## How to use the samples
@@ -82,7 +85,7 @@ The following are some sample [Azure DevOps](https://docs.microsoft.com/en-us/az
 2. [Azure CLI 2.0.49+](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
 3. [Azure DevOps CLI](https://marketplace.visualstudio.com/items?itemName=ms-vsts.cli)
 4. [jq](https://stedolan.github.io/jq/)
-5. For editing AzureSQL objects, [Visual Studio 2019](https://visualstudio.microsoft.com/vs/). For earlier version of Visual Studio, you may need to install [SQL Server Data Tools](https://docs.microsoft.com/en-us/sql/ssdt/download-sql-server-data-tools-ssdt?view=sql-server-ver15) separately. 
+5. For editing AzureSQL objects, [Visual Studio 2019](https://visualstudio.microsoft.com/vs/). For earlier version of Visual Studio, you may need to install [SQL Server Data Tools](https://docs.microsoft.com/en-us/sql/ssdt/download-sql-server-data-tools-ssdt?view=sql-server-ver15) separately.
 
 ### Setup and deployment
 
@@ -98,16 +101,16 @@ To setup the samples, run the following:
 3. Set the following environment variables:
    1. **GITHUB_REPO_URL** - URL of your forked github repo
    2. **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). This requires "repo" scope.
-   Optionally, set the following environment variables: 
-   1. **DEPLOYMENT_ID** - string appended to all resource names. *Default*: random five character string.
-   2. **BRANCH_NAME**** - git branch with Azure DevOps pipelines definitions to deploy. *Default*: master.
-   3. **RESOURCE_GROUP_NAME** - target resource group to deploy to
-   4. **RESOURCE_GROUP_LOCATION** - location of target resource group
-   5. **AZURESQL_SERVER_PASSWORD** - Password of the admin account for your AzureSQL server instance. Default: mdw-dataops-SqlP@ss-${DEPLOYMENT_ID}
-      1. Username is set to *sqlAdmin*.
+   Optionally, set the following environment variables
+       1. **DEPLOYMENT_ID** - string appended to all resource names. *Default*: random five character string.
+       2. **BRANCH_NAME**** - git branch with Azure DevOps pipelines definitions to deploy. *Default*: master.
+       3. **RESOURCE_GROUP_NAME** - target resource group to deploy to
+       4. **RESOURCE_GROUP_LOCATION** - location of target resource group
+       5. **AZURESQL_SERVER_PASSWORD** - Password of the admin account for your AzureSQL server instance. Default: mdw-dataops-SqlP@ss-${DEPLOYMENT_ID}
+          1. Username is set to *sqlAdmin*.
 4. Run `./deploy.sh`.***
 
-#### Additional notes:
+#### Additional notes
 
 **Your forked repo will serve as the main repository which triggers all pipelines -- allowing you complete control over the sample solution as compared to using the main Azure-Samples repository directly. All pipeline defintions are also pulled from this fork*.
 
@@ -119,26 +122,25 @@ To setup the samples, run the following:
 ### Deployed resources
 
 Once you've setup the sample, you should have the following deployed:
+
 1. Azure resource group with a AzureSQL server and database called `salesdb`.
    ![azuresql_azure_resources](./docs/images/azuresql_azure_resources.PNG)
 
 2. A service principal with collaborator rights over the deployed resource group.
-   
+
 3. Two Azure DevOps service connections found under `Project Settings > Service Connections`:
    1. **mdw-dataops-azure** - An AzureRM service connection configured with the Service Principal. This is used to deploy to the AzureSQL database.
    2. **github-mdw-dataops** - A Github service connection used to pull from the forked repository. It uses the Github PAT token to authenticate.
 
      ![azuresql_devops_service_connections](./docs/images/azuresql_service_connections.PNG)
 
-1. Three Azure DevOps pipelines found under `Pipelines > Builds`. See [Key concepts/Azure DevOps Pipelines](./README.md#Azure-DevOps-Pipelines) below for explanation of each:
+4. Three Azure DevOps pipelines found under `Pipelines > Builds`. See [Key concepts/Azure DevOps Pipelines](./README.md#Azure-DevOps-Pipelines) below for explanation of each:
    1. azuresql-validate-pr
    2. azuresql-build
    3. azuresql-simple-multi-stage
 
-     ![azuresql_devops_pipelines](./docs/images/azuresql_pipelines.PNG). 
+     ![azuresql_devops_pipelines](./docs/images/azuresql_pipelines.PNG).
      Each of the pipelines should have run (or is currently running) at least once.
-
-
 
 ### Running the samples
 
@@ -151,7 +153,7 @@ The following shows how to deploy changes to the AzureSQL database using the CI/
      ![azuresql_git_checkout](./docs/images/azuresql_gitbranchcheckout.PNG)
 
 2. Open the Visual Studio solution `src/ddo_samples_azuresql.sln`.
-   
+
 3. Add a new CompanyAddress column to the `SaleLT.Customer` table, as seen below.
 
      ![azuresql_add_column](./docs/images/azuresql_addcolumn.PNG)
@@ -178,8 +180,8 @@ The following shows how to deploy changes to the AzureSQL database using the CI/
 
 Congratulations! You've deployed changes via CI/CD process.
 
-
 ### Cleanup
+
 1. [Delete the Azure resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resources-portal#delete-resources).
 2. Delete Azure DevOps Pipelines.
    1. To delete via Web Portal, navigate to `Pipelines > Builds`. Delete the pipeline, click on the triple dots, and select delete.
@@ -187,4 +189,3 @@ Congratulations! You've deployed changes via CI/CD process.
 3. Delete Azure DevOps service connections.
    1. To delete via Web Portal, navigate to `Project Settings > Service Connections`. Select the connection, click on the triple dots, and select delete.
    2. To delete via CLI, run `az devops service-endpoint list` to list ids. Then `az devops service-endpoint delete --id SERVICE_ENDPOINT_ID`.
-

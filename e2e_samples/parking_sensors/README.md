@@ -1,5 +1,3 @@
-[![Build Status](https://dev.azure.com/devlacepub/DataDevOps/_apis/build/status/ddo_transform-ci-artifacts?branchName=master)](https://dev.azure.com/devlacepub/DataDevOps/_build/latest?definitionId=3&branchName=master)
-
 # DataOps - Parking Sensor Demo <!-- omit in toc -->
 
 The sample demonstrate how DevOps principles can be applied end to end Data Pipeline Solution built according to the [Modern Data Warehouse (MDW)](https://azure.microsoft.com/en-au/solutions/architecture/modern-data-warehouse/) pattern.
@@ -98,20 +96,20 @@ For a detailed walk-through of the solution and key concepts, watch the followin
 
 The following summarizes key learnings and best practices demonstrated by this sample solution:
 
-### 1. Use Data Tiering in your Data Lake.
+### 1. Use Data Tiering in your Data Lake
 
 - Generally, you want to divide your data lake into three major areas which contain your Bronze, Silver and Gold datasets.
      1. *Bronze* - This is a landing area for your raw datasets with no to minimal data transformations applied, and therefore are optimized for writes / ingestion. Treat these datasets as an immutable, append only store.
      2. *Silver* - These are cleansed, semi-processed datasets. These conform to a known schema and predefined data invariants and might have further data augmentation applied. These are typically used by Data Scientists.
      3. *Gold* - These are highly processed, highly read-optimized datasets primarily for consumption of business users. Typically, these are structured in your standard Fact and Dimension tables.
 
-### 2. Validate data early in your pipeline.
+### 2. Validate data early in your pipeline
 
 - Add data validation between the Bronze and Silver datasets. By validating early in your pipeline, you can ensure all succeeding datasets conform to a specific schema and known data invariants. This also can potentially prevent data pipeline failures in cases of unexpected changes to the input data.
 - Data that does not pass this validation stage can be rerouted to a Malformed Record store for diagnostic purpose.
 - It may be tempting to add validation prior to landing in the Bronze area of your data lake. This is generally not recommended. Bronze datasets are there to ensure you have as close of a copy of the source system data. This can used to replay the data pipeline for both testing (ei. testing data validation logic) and data recovery purposes (ei. data corruption is introduced due to a bug in the data transformation code and thus pipeline needs to be replayed).
 
-### 3. Make your data pipelines replayable and idempotent.
+### 3. Make your data pipelines replayable and idempotent
 
 - Silver and Gold datasets can get corrupted due to a number of reasons such as unintended bugs, unexpected input data changes, and more. By making data pipelines replayable and idempotent, you can recover from this state through deployment of code fix and replaying the data pipelines.
 - Idempotency also ensures data-duplication is mitigated when replaying your data pipelines.
@@ -126,7 +124,7 @@ The following summarizes key learnings and best practices demonstrated by this s
 - This means including all artifacts needed to build the data pipeline from scratch in source control. This includes infrastructure-as-code artifacts, database objects (schema definitions, functions, stored procedures, etc), reference/application data, data pipeline definitions, and data validation and transformation logic.
 - There should also be a safe, repeatable process to move changes through dev, test and finally production.
 
-### 6. Secure and centralize configuration.
+### 6. Secure and centralize configuration
 
 - Maintain a central, secure location for sensitive configuration such as database connection strings that can be access by the appropriate services within the specific environment.
 - Any example of this is securing secrets in KeyVault per environment, then having the relevant services query KeyVault for the configuration.
@@ -192,7 +190,7 @@ More resources:
 
 More resources:
 
-- [pytest-adf](https://aka.ms/pytest-adf) - Pytest helper plugin for integration testing Azure Data Factory
+- [pytest-adf](https://github.com/devlace/pytest-adf) - Pytest helper plugin for integration testing Azure Data Factory
 - [nutter testing framework](https://github.com/microsoft/nutter) - Testing framework for Databricks notebooks.
 
 ### Observability / Monitoring
@@ -242,7 +240,6 @@ More resources:
 ### Setup and Deployment
 
 **IMPORTANT NOTE:** As with all Azure Deployments, this will **incur associated costs**. Remember to teardown all related resources after use to avoid unnecessary costs. See [here](#deployed-resources) for list of deployed resources.
-
 *NOTE: This deployment was tested using WSL 2 (Ubuntu 18.04) and Debian GNU/Linux 9.9 (stretch)*
 
 1. **Initial Setup**
@@ -261,7 +258,7 @@ More resources:
        - **RESOURCE_GROUP_LOCATION** - Azure location to deploy resources. *Default*: `westus`.
        - **AZURE_SUBSCRIPTION_ID** - Azure subscription id to use to deploy resources. *Default*: default azure subscription. To see your default, run `az account list`.
        - **RESOURCE_GROUP_NAME_PREFIX** - name of the resource group. This will automatically be appended with the environment name. For example: `RESOURCE_GROUP_NAME_PREFIX-dev-rg`. *Default*: mdwdo-park-${DEPLOYMENT_ID}.
-      - **DEPLOYMENT_ID** - string appended to all resource names. This is to ensure uniqueness of azure resource names. *Default*: random five character string.
+       - **DEPLOYMENT_ID** - string appended to all resource names. This is to ensure uniqueness of azure resource names. *Default*: random five character string.
        - **AZDO_PIPELINES_BRANCH_NAME** - git branch where Azure DevOps pipelines definitions are retrieved from. *Default*: master.
        - **AZURESQL_SERVER_PASSWORD** - Password of the SQL Server instance. *Default*: semi-random string.
 
@@ -287,7 +284,7 @@ More resources:
         - Root folder: **/e2e_samples/parking_sensors/adf**
         - Import Existing Data Factory resource to repository: **Selected**
         - Branch to import resource into: **Use Collaboration**
-    1. When prompted to select a working branch, select **master**
+    5. When prompted to select a working branch, select **master**
 
    **IMPORTANT NOTE:** Only the **DEV** Data Factory should be setup with Git integration. Do **NOT** setup git integration in the STG and PROD Data Factories.
 
@@ -356,15 +353,14 @@ Notes:
 
 ADLS Gen2 is structured as the following:
 
-------------
-
+---------------------
     datalake                    <- filesystem
         /sys/databricks/libs    <- contains all libs, jars, wheels needed for processing
         /data
             /lnd                <- Bronze - landing folder where all data files are ingested into.
             /interim            <- Silver - interim (cleansed) tables
             /dw                 <- Gold - final tables 
-------------
+---------------------
 
 ### Known Issues, Limitations and Workarounds
 

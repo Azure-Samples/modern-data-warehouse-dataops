@@ -1,0 +1,7 @@
+{
+    "ignorePatterns": [
+        {
+            "pattern": "^https://data.melbourne.vic.gov.au/resource/"
+        }
+    ]
+}
