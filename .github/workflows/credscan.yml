@@ -1,0 +1,18 @@
+name: Custom Cred Scan
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    paths:
+    - .github/workflows/cred_scan.yml
+
+jobs:
+  pattern_match_with_secrets:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - shell: bash
+      env:
+        SECRET: ${{ secrets.ExcludeList }}
+      run: (( $(grep -r -q -i $SECRET . | wc -l) == 0 ))
