@@ -22,7 +22,6 @@ The samples are either focused on a single azure service or showcases an end to 
 
 ## Contents
 
-
 ### End to End samples
 
 - [**Parking Sensor Solution**](e2e_samples/parking_sensors/) - This sample solution demonstrates an end-to-end data pipeline following the MDW architecture, along with a corresponding CI/CD process.

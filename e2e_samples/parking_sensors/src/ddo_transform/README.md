@@ -12,7 +12,7 @@
 1. Open VSCode from the **root of the Python project**. That is, the root of your VSCode workspace needs to be at `e2e_samples/parking_sensors/src/ddo_transform`. It should have `.devcontainer` and `.vscode` folders.
 2. Create an `.env` file. Optionally, set the following environment variables.
     - If you will be uploading the package to a Databricks workspace as part of the Development cycle, you need to set the following:
-      - **DATABRICKS_HOST** - Databricks workspace url (ei. https://australiaeast.azuredatabricks.net)
+      - **DATABRICKS_HOST** - Databricks workspace url (ei. [https://australiaeast.azuredatabricks.net](https://australiaeast.azuredatabricks.net))
       - **DATABRICKS_TOKEN** - PAT token to databricks workspace
       - **DATABRICKS_DBFS_PACKAGE_UPLOAD_PATH** - Path in the DBFS where the python package whl file will be uploaded when calling `make uploaddatabricks`.
       - **DATABRICKS_CLUSTER_ID** - Cluster Id of Databricks cluster where package will be installed when calling `make installdatabricks`

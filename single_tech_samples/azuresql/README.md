@@ -35,8 +35,10 @@ The following are some sample [Azure DevOps](https://docs.microsoft.com/en-us/az
 
 1. **Validate Pull Request** [[azure-pipelines-01-validate-pr](pipelines/azure-pipelines-01-validate-pr.yml)]
    - This pipeline builds the [DACPAC](https://docs.microsoft.com/en-us/sql/relational-databases/data-tier-applications/data-tier-applications?view=sql-server-ver15) and runs tests (if any). This is triggered only on PRs and is used to validate them before merging into master. This pipeline does not produce any artifacts.
+
 2. **Build Pipeline** [[azure-pipelines-02-build](pipelines/azure-pipelines-02-build.yml)]
-   - This pipeline builds the DACPAC and publishes it as a [Build Artifact](https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/build-artifacts?view=azure-devops&tabs=yaml). Its purpose is to produce the Build Artifact that may be consumed by a[Release Pipeline (classic)](https://docs.microsoft.com/en-us/azure/devops/pipelines/release/?view=azure-devops). 
+   - This pipeline builds the DACPAC and publishes it as a [Build Artifact](https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/build-artifacts?view=azure-devops&tabs=yaml). Its purpose is to produce the Build Artifact that may be consumed by a[Release Pipeline (classic)](https://docs.microsoft.com/en-us/azure/devops/pipelines/release/?view=azure-devops).
+
 3. **Simple Multi-Stage Pipeline** [[azure-pipelines-03-simple-multi-stage](pipelines/azure-pipelines-03-simple-multi-stage.yml)]
    - This pipeline demonstrates a simple [multi-stage pipeline](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/multi-stage-pipelines-experience?view=azure-devops).
    - It has two stages:
@@ -95,7 +97,7 @@ To setup the samples, run the following:
    - You are logged in to the Azure CLI. To login, run `az login`.
    - Azure CLI is targeting the Azure Subscription you want to deploy the resources to.
       - To set target Azure Subscription, run `az account set -s <AZURE_SUBSCRIPTION_ID>`
-   - Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to. 
+   - Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to.
       - To set target Azure DevOps project, run `az devops configure --defaults organization=https://dev.azure.com/MY_ORG/ project=MY_PROJECT`
 2. Fork* and clone this repository. `cd` in to `single_tech_samples/azuresql`.
 3. Set the following environment variables:
