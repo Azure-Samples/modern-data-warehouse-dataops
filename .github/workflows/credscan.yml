@@ -5,7 +5,7 @@ on:
     - master
   pull_request:
     paths:
-    - .github/workflows/cred_scan.yml
+    - .github/workflows/credscan.yml
 
 jobs:
   pattern_match_with_secrets:
