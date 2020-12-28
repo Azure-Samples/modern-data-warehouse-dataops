@@ -1,6 +1,6 @@
 # Azure Databricks
 
-**WIP**
+WIP
 
 ## Prerequisites
 

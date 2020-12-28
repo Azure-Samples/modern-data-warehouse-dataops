@@ -1,6 +1,6 @@
 # Cosmos DB
 
-**WIP**
+WIP
 
 ## Prerequisites
 
