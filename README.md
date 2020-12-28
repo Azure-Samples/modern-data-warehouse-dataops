@@ -3,10 +3,13 @@ page_type: sample
 languages:
 - python
 - C#
+- TypeScript
+- bicep
 products:
 - Azure
 - Azure-Data-factory
 - Azure-Databricks
+- Azure-Stream-Analytics
 - Azure-Data-Lake-Gen2
 - Azure-Functions
 description: "Code samples showcasing how to apply DevOps concepts to the Modern Data Warehouse Architecture leveraging different Azure Data Technologies."
@@ -33,6 +36,7 @@ The samples are either focused on a single azure service (**Single Tech Samples*
   - [IaC - Basic Azure Databricks deployment](single_tech_samples/databricks/sample1_basic_azure_databricks_environment/)
   - [IaC - Enterprise Security and Data Exfiltration Protection Deployment](single_tech_samples/databricks/sample2_enterprise_azure_databricks_environment/)
   - [IaC - Cluster Provisioning and Secure Data Access](single_tech_samples/databricks/sample3_cluster_provisioning_and_data_access/)
+- [Stream Analytics](single_tech_samples/streamanalytics/)
 - [Azure Purview](single_tech_samples/purview/)
   - [IaC - Azure Purview](single_tech_samples/purview/)
 
