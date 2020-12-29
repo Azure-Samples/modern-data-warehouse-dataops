@@ -457,3 +457,5 @@ MigrationBackup/
 .env
 **.env
 *pip.conf
+
+**/.terraform/
