@@ -1,0 +1,44 @@
+
+trigger:
+  - none
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  DeviceCount: 2
+  MessageCount: 5
+  Interval: 10
+  ContainerCount: 2
+  evhResourceGroup: 'temperature'
+  evhNamespace: 'temperature-dev'
+  evhName: 'temperature-processing'
+  serviceConnection: iotsimulator
+
+steps:
+# Store your eventhub connection string and subscription id in keyvault.
+- task: AzureKeyVault@1
+  inputs:
+    azureSubscription: $(serviceConnection)
+    KeyVaultName: temperature-keyvault
+    SecretsFilter: 'LoadTestEventHubConnectionString, SubscriptionId'
+    RunAsPreJob: false
+
+- task: AzureCLI@2
+  displayName: 'Run IoTSimulator on ACI'
+  inputs:
+    azureSubscription: $(serviceConnection)
+    scriptType: pscore
+    scriptPath: IoTSimulator.ps1
+    arguments: '-EventHubConnectionString $(LoadTestEventHubConnectionString) 
+    -DeviceCount $(DeviceCount) -MessageCount $(MessageCount) -Interval $(Interval) 
+    -ContainerCount $(ContainerCount)'
+
+- task: AzureCLI@2
+  displayName: 'Check Load Test Result'
+  inputs:
+    azureSubscription: $(serviceConnection)
+    scriptType: pscore
+    scriptPath: LoadTestCheckResult.ps1
+    arguments: '-evhSubscriptionId $(SubscriptionId) -evhResourceGroup $(evhResourceGroup) 
+    -evhNamespace $(evhNamespace) -evhName $(evhName)'
