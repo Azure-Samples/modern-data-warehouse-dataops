@@ -19,8 +19,12 @@ Application Map shows how the components in a system are interacting with each o
 From Application Map, we were able to easily tell that our calls to the database are having some problems which became a bottleneck in our system. By clicking directly on the arrows, you can drill into some metrics and logs for those problematic transactions.
 
 
-### c. End to End Transaction Detail
-As soon as we drilled down into the problematic transactions, we also realized that our outgoing calls(for each event) are waiting for one and another to finish before making the next call, which is not very efficient. As an improvement, we changed the logic to make outgoing calls in parallel which resulted in better performance. Thanks to the visualization, we were able to easily troubleshoot and gain insight on how to further improve our system. 
+### c. End-to-End Transaction Detail
+![correlated_logs](./images/correlated_logs.png)
+
+End-to-End Transaction Detail comes with a visualization of each component's order and duration. You can also check the telemetries(traces, exceptions, etc) of each component from this view, which makes it easy to troubleshoot visually across components within the same transaction when an issue occured.  
+
+As soon as we drilled down into the problematic transactions, we realized that our outgoing calls(for each event) are waiting for one and another to finish before making the next call, which is not very efficient. As an improvement, we changed the logic to make outgoing calls in parallel which resulted in better performance. Thanks to the visualization, we were able to easily troubleshoot and gain insight on how to further improve our system. 
 
 ![e2e_transaction_detail_sequential](./images/e2e_transaction_detail_sequential.png)
 ![e2e_transaction_detail_parallel](./images/e2e_transaction_detail_parallel.png)
@@ -29,7 +33,7 @@ As soon as we drilled down into the problematic transactions, we also realized t
 From Live Metrics, you can see how many instances has Azure Function scaled to in real time. 
 ![function_instances_live_metrics](./images/function_instances_live_metrics.png)
 
-However, this data for the number of function instances are not available from any default metrics at this point besides checking the number in real time. If you are interested in checking the number of scaled instances within a past period, you can query the logs in Log Analytics (within App Insights) by using kusto query. For example:
+However, the number of function instances is not available from any default metrics at this point besides checking the number in real time. If you are interested in checking the number of scaled instances within a past period, you can query the logs in Log Analytics (within App Insights) by using kusto query. For example:
 ```
 traces
 | where ......// your logic to filter the logs
