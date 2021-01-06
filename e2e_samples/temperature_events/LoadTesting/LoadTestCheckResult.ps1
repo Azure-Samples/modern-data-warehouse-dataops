@@ -13,6 +13,7 @@ param (
  )
 
 $EvhNamespaceResourceId="/subscriptions/$SubscriptionId/resourceGroups/$ResourceGroup/providers/Microsoft.EventHub/namespaces/$EvhNamespace"
+$currentTime = Get-Date -Format "o"
 
 Write-Host " az monitor metrics list `
 --resource $EvhNamespaceResourceId `
