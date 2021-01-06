@@ -43,7 +43,7 @@ while($i -lt $ContainerCount)
    $containerName = "iotsimulator-" + $i.ToString()
    az container create -g $ResourceGroup --no-wait --location $Location --restart-policy Never `
    --cpu $Cpu --memory $Memory --name $containerName --image $Image `
-   --environment-variables EventHubConnectionString=$EventHubConnectionString `
+   --environment-variables EventHubConnectionString="$EventHubConnectionString" `
    GoodTemplate=$GoodTemplate BadTemplate=$BadTemplate FilteredTemplate=$FilteredTemplate Variables=$Variables `
    PayloadDistribution='template(50, FilteredTemplate) template(40, GoodTemplate) template(10, BadTemplate)' `
    DeviceCount=$devicesPerContainer MessageCount=$MessageCount DeviceIndex=$deviceIndex `
