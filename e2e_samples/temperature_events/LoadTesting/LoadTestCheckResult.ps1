@@ -32,6 +32,9 @@ $ingress_metric = az monitor metrics list `
 --end-time $currentTime `
 --interval $aggregationUnit | ConvertFrom-Json
 
+Write-Host "result: $ingress_metric"
+Write-Host $ingress_metric.value[0]
+
 $ingress_num = $ingress_metric.value[0].timeseries[0].data[0].total
 
 # Get the total number of outgoing messages.
