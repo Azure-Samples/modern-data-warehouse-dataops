@@ -5,7 +5,7 @@ after the simulators finish sending the load.
 #>
 param (
     [string]$Location = 'japaneast',
-    [string]$ResourceGroup = 'iotsimulator',
+    [Parameter(Mandatory=$true)][string]$ResourceGroup,
     [int]$DeviceCount = 1,
     [int]$ContainerCount = 1,
     [int]$MessageCount = 1,
@@ -32,8 +32,6 @@ $GoodTemplate = '{ \"deviceId\": \"$.DeviceId\", \"temp\": $.Temp, \"time\": \"$
 $BadTemplate = '{ \"deviceId\": \"$.DeviceId\", \"temp\": $.BadTemp, \"time\": \"$.Time\" }' 
 $Variables = '[{name: \"DeviceId\", random: true, max: 1000, min: 0}, {name: \"FilteredDeviceId\", random: true, min: 1000}, {name: \"Temp\", random: true, max: 100, min: 0}, {name: \"BadTemp\", random: true, min: 100}]'
 
-az group create --name $ResourceGroup --location $Location
-
 $i = 0
 $deviceIndex = 1
 $devicesPerContainer = [int]($DeviceCount / $ContainerCount)
@@ -43,7 +41,7 @@ while($i -lt $ContainerCount)
    $containerName = "iotsimulator-" + $i.ToString()
    az container create -g $ResourceGroup --no-wait --location $Location --restart-policy Never `
    --cpu $Cpu --memory $Memory --name $containerName --image $Image `
-   --environment-variables EventHubConnectionString="$EventHubConnectionString" `
+   --environment-variables EventHubConnectionString="`"$EventHubConnectionString`"" `
    GoodTemplate=$GoodTemplate BadTemplate=$BadTemplate FilteredTemplate=$FilteredTemplate Variables=$Variables `
    PayloadDistribution='template(50, FilteredTemplate) template(40, GoodTemplate) template(10, BadTemplate)' `
    DeviceCount=$devicesPerContainer MessageCount=$MessageCount DeviceIndex=$deviceIndex `
@@ -60,7 +58,7 @@ Write-Host "##vso[task.setvariable variable=LoadTestStartTime]$currentTime"
 
 <# 
 Start tracking each container instance's state.
-Tear down all resources after all container instances finish sending the load. 
+Tear down the container instance if it finishes sending the load. 
 #>
 Write-Host "Start checking the state of each container instances: "
 
@@ -75,6 +73,8 @@ for($i = 1; $i -le $ContainerCount; $i++)
       if($containerState -eq "Terminated") {
          Write-Host "   Container" $containerName "is terminated."
          $containerTerminated = $true
+         az container delete --name $containerName --resource-group $ResourceGroup
+         Write-Host "   Container" $containerName "is deleted."
       }
       else {
          # Check the state again after 2 sec
@@ -82,9 +82,5 @@ for($i = 1; $i -le $ContainerCount; $i++)
       }
    }
 }
-
-Write-Host "Deleting" $ResourceGroup "resource group."
-
-az group delete --name $ResourceGroup --yes
 
 Write-Host "All resources are deleted."

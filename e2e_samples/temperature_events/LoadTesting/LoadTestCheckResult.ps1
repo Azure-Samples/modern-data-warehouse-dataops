@@ -5,21 +5,21 @@ we let this automated load test pass. We suggest that you look into the metrics 
 again to confirm or gain more insights about whether the system is behaving as expected.
 #>
 param (
-    [Parameter(Mandatory=$true)][string]$evhSubscriptionId,
-    [Parameter(Mandatory=$true)][string]$evhResourceGroup,
-    [Parameter(Mandatory=$true)][string]$evhNamespace,
-    [Parameter(Mandatory=$true)][string]$evhName,
+    [Parameter(Mandatory=$true)][string]$SubscriptionId,
+    [Parameter(Mandatory=$true)][string]$ResourceGroup,
+    [Parameter(Mandatory=$true)][string]$EvhNamespace,
+    [Parameter(Mandatory=$true)][string]$EvhName,
     [string]$aggregationUnit = "24h"
  )
 
-$evhNamespaceResourceId="/subscriptions/$evhSubscriptionId/resourceGroups/$evhResourceGroup/providers/Microsoft.EventHub/namespaces/$evhNamespace"
+$EvhNamespaceResourceId="/subscriptions/$SubscriptionId/resourceGroups/$ResourceGroup/providers/Microsoft.EventHub/namespaces/$EvhNamespace"
 $currentTime = Get-Date -Format "o"
 
 # Get the total number of incoming messages.
 $ingress_metric = az monitor metrics list `
---resource $evhNamespaceResourceId `
+--resource $EvhNamespaceResourceId `
 --metrics "IncomingMessages" `
---filter "EntityName eq '$evhName' " `
+--filter "EntityName eq '$EvhName' " `
 --start-time $env:LOADTESTSTARTTIME `
 --end-time $currentTime `
 --interval $aggregationUnit | ConvertFrom-Json
@@ -28,9 +28,9 @@ $ingress_num = $ingress_metric.value[0].timeseries[0].data[0].total
 
 # Get the total number of outgoing messages.
 $egress_metric = az monitor metrics list `
---resource $evhNamespaceResourceId `
+--resource $EvhNamespaceResourceId `
 --metrics "OutgoingMessages" `
---filter "EntityName eq '$evhName' " `
+--filter "EntityName eq '$EvhName' " `
 --start-time $env:LOADTESTSTARTTIME `
 --end-time $currentTime `
 --interval $aggregationUnit | ConvertFrom-Json
