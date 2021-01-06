@@ -13,7 +13,14 @@ param (
  )
 
 $EvhNamespaceResourceId="/subscriptions/$SubscriptionId/resourceGroups/$ResourceGroup/providers/Microsoft.EventHub/namespaces/$EvhNamespace"
-$currentTime = Get-Date -Format "o"
+
+Write-Host " az monitor metrics list `
+--resource $EvhNamespaceResourceId `
+--metrics 'IncomingMessages' `
+--filter 'EntityName eq '$EvhName' ' `
+--start-time $env:LOADTESTSTARTTIME `
+--end-time $currentTime `
+--interval $aggregationUnit "
 
 # Get the total number of incoming messages.
 $ingress_metric = az monitor metrics list `

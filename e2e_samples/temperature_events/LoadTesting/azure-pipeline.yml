@@ -35,10 +35,10 @@ steps:
     -DeviceCount $(DeviceCount) -MessageCount $(MessageCount) -Interval $(Interval) 
     -ContainerCount $(ContainerCount) -ResourceGroup $(ResourceGroup)'
 
-# There are some delays until the numbers are reflected in the metrics.
-- powershell: |
-    Start-Sleep -s 180
-  displayName: 'Delay for 3 minutes'
+# # There are some delays until the numbers are reflected in the metrics.
+# - powershell: |
+#     Start-Sleep -s 180
+#   displayName: 'Delay for 3 minutes'
 
 - task: AzureCLI@2
   displayName: 'Check Load Test Result'
