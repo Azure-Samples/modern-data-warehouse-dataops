@@ -73,7 +73,7 @@ for($i = 1; $i -le $ContainerCount; $i++)
       if($containerState -eq "Terminated") {
          Write-Host "   Container" $containerName "is terminated."
          $containerTerminated = $true
-         az container delete --name $containerName --resource-group $ResourceGroup
+         az container delete --name $containerName --resource-group $ResourceGroup --yes
          Write-Host "   Container" $containerName "is deleted."
       }
       else {
