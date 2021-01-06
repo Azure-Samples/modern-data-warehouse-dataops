@@ -11,10 +11,10 @@ variables:
   Interval: 10
   ContainerCount: 2
   evhResourceGroup: 'dataops-temperature-events'
-  evhNamespace: 'temperature-dev'
+  evhNamespace: 'evh-temperature-test'
   evhName: 'temperature-processing'
   serviceConnection: dataops-temperature-events-sn
-  keyVaultName: 'kv-temperature-dev'
+  keyVaultName: 'kv-temperature-test'
 
 steps:
 # Store your eventhub connection string and subscription id in keyvault.
