@@ -8,7 +8,8 @@ param (
     [Parameter(Mandatory=$true)][string]$evhSubscriptionId,
     [Parameter(Mandatory=$true)][string]$evhResourceGroup,
     [Parameter(Mandatory=$true)][string]$evhNamespace,
-    [Parameter(Mandatory=$true)][string]$evhName
+    [Parameter(Mandatory=$true)][string]$evhName,
+    [string]$aggregationUnit = "24h"
  )
 
 $evhNamespaceResourceId="/subscriptions/$evhSubscriptionId/resourceGroups/$evhResourceGroup/providers/Microsoft.EventHub/namespaces/$evhNamespace"
@@ -21,7 +22,7 @@ $ingress_metric = az monitor metrics list `
 --filter "EntityName eq '$evhName' " `
 --start-time $env:LOADTESTSTARTTIME `
 --end-time $currentTime `
---interval 24h | ConvertFrom-Json
+--interval $aggregationUnit | ConvertFrom-Json
 
 $ingress_num = $ingress_metric.value[0].timeseries[0].data[0].total
 
@@ -32,7 +33,7 @@ $egress_metric = az monitor metrics list `
 --filter "EntityName eq '$evhName' " `
 --start-time $env:LOADTESTSTARTTIME `
 --end-time $currentTime `
---interval 24h | ConvertFrom-Json
+--interval $aggregationUnit | ConvertFrom-Json
 
 $egress_num = $egress_metric.value[0].timeseries[0].data[0].total
 

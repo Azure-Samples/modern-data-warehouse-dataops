@@ -10,17 +10,18 @@ variables:
   MessageCount: 5
   Interval: 10
   ContainerCount: 2
-  evhResourceGroup: 'temperature'
+  evhResourceGroup: 'dataops-temperature-events'
   evhNamespace: 'temperature-dev'
   evhName: 'temperature-processing'
-  serviceConnection: iotsimulator
+  serviceConnection: dataops-temperature-events-sn
+  keyVaultName: 'kv-temperature-dev'
 
 steps:
 # Store your eventhub connection string and subscription id in keyvault.
 - task: AzureKeyVault@1
   inputs:
     azureSubscription: $(serviceConnection)
-    KeyVaultName: temperature-keyvault
+    KeyVaultName: $(keyVaultName)
     SecretsFilter: 'LoadTestEventHubConnectionString, SubscriptionId'
     RunAsPreJob: false
 
