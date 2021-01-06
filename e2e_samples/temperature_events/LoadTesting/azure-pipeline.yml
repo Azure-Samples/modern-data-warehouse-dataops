@@ -35,6 +35,11 @@ steps:
     -DeviceCount $(DeviceCount) -MessageCount $(MessageCount) -Interval $(Interval) 
     -ContainerCount $(ContainerCount) -ResourceGroup $(ResourceGroup)'
 
+# There are some delays until the numbers are reflected in the metrics.
+- task: Delay@1
+    inputs:
+      delayForMinutes: '3' 
+
 - task: AzureCLI@2
   displayName: 'Check Load Test Result'
   inputs:
