@@ -31,6 +31,7 @@ steps:
     azureSubscription: $(serviceConnection)
     scriptType: pscore
     scriptPath: IoTSimulator.ps1
+    workingDirectory: 'e2e_samples/temperature_events/LoadTesting'
     arguments: '-EventHubConnectionString $(LoadTestEventHubConnectionString) 
     -DeviceCount $(DeviceCount) -MessageCount $(MessageCount) -Interval $(Interval) 
     -ContainerCount $(ContainerCount)'
@@ -41,5 +42,6 @@ steps:
     azureSubscription: $(serviceConnection)
     scriptType: pscore
     scriptPath: LoadTestCheckResult.ps1
+    workingDirectory: 'e2e_samples/temperature_events/LoadTesting'
     arguments: '-evhSubscriptionId $(SubscriptionId) -evhResourceGroup $(evhResourceGroup) 
     -evhNamespace $(evhNamespace) -evhName $(evhName)'
