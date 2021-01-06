@@ -6,9 +6,9 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  DeviceCount: 2
-  MessageCount: 5
-  Interval: 10
+  DeviceCount: 10
+  MessageCount: 1000
+  Interval: 100
   ContainerCount: 2
   ResourceGroup: 'dataops-temperature-events'
   EvhNamespace: 'evh-temperature-test'
