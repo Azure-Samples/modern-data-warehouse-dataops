@@ -28,7 +28,6 @@ steps:
 - bash: |
     echo $PWD
     ls -l
-    ls ../
   displayName: 'Bash Script'
 
 - task: AzureCLI@2
@@ -36,18 +35,16 @@ steps:
   inputs:
     azureSubscription: $(serviceConnection)
     scriptType: pscore
-    scriptPath: IoTSimulator.ps1
+    scriptPath: e2e_samples/temperature_events/LoadTesting/IoTSimulator.ps1
     arguments: '-EventHubConnectionString $(LoadTestEventHubConnectionString) 
     -DeviceCount $(DeviceCount) -MessageCount $(MessageCount) -Interval $(Interval) 
     -ContainerCount $(ContainerCount)'
-    workingDirectory: 'e2e_samples/temperature_events/LoadTesting'
 
 - task: AzureCLI@2
   displayName: 'Check Load Test Result'
   inputs:
     azureSubscription: $(serviceConnection)
     scriptType: pscore
-    scriptPath: LoadTestCheckResult.ps1
+    scriptPath: e2e_samples/temperature_events/LoadTesting/LoadTestCheckResult.ps1
     arguments: '-evhSubscriptionId $(SubscriptionId) -evhResourceGroup $(evhResourceGroup) 
     -evhNamespace $(evhNamespace) -evhName $(evhName)'
-    workingDirectory: 'e2e_samples/temperature_events/LoadTesting'
