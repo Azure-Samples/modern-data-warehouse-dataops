@@ -33,7 +33,8 @@ $ingress_metric = az monitor metrics list `
 --interval $aggregationUnit | ConvertFrom-Json
 
 Write-Host "result: $ingress_metric"
-Write-Host $ingress_metric.value[0]
+Write-Host "ts: $ingress_metric.value[0].timeseries[0]"
+Write-Host "data: $ingress_metric.value[0].timeseries[0].data[0]"
 
 $ingress_num = $ingress_metric.value[0].timeseries[0].data[0].total
 
