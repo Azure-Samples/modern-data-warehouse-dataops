@@ -24,6 +24,12 @@ steps:
     KeyVaultName: $(keyVaultName)
     SecretsFilter: 'LoadTestEventHubConnectionString, SubscriptionId'
     RunAsPreJob: false
+    
+- bash: |
+    echo $PWD
+    ls -l
+    ls ../
+  displayName: 'Bash Script'
 
 - task: AzureCLI@2
   displayName: 'Run IoTSimulator on ACI'
@@ -31,10 +37,10 @@ steps:
     azureSubscription: $(serviceConnection)
     scriptType: pscore
     scriptPath: IoTSimulator.ps1
-    workingDirectory: 'e2e_samples/temperature_events/LoadTesting'
     arguments: '-EventHubConnectionString $(LoadTestEventHubConnectionString) 
     -DeviceCount $(DeviceCount) -MessageCount $(MessageCount) -Interval $(Interval) 
     -ContainerCount $(ContainerCount)'
+    workingDirectory: 'e2e_samples/temperature_events/LoadTesting'
 
 - task: AzureCLI@2
   displayName: 'Check Load Test Result'
@@ -42,6 +48,6 @@ steps:
     azureSubscription: $(serviceConnection)
     scriptType: pscore
     scriptPath: LoadTestCheckResult.ps1
-    workingDirectory: 'e2e_samples/temperature_events/LoadTesting'
     arguments: '-evhSubscriptionId $(SubscriptionId) -evhResourceGroup $(evhResourceGroup) 
     -evhNamespace $(evhNamespace) -evhName $(evhName)'
+    workingDirectory: 'e2e_samples/temperature_events/LoadTesting'
