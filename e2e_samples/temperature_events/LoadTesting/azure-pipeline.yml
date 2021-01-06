@@ -24,11 +24,6 @@ steps:
     KeyVaultName: $(KeyVaultName)
     SecretsFilter: 'LoadTestEventHubConnectionString, SubscriptionId'
     RunAsPreJob: false
-    
-- bash: |
-    echo $PWD
-    ls -l
-  displayName: 'Bash Script'
 
 - task: AzureCLI@2
   displayName: 'Run IoTSimulator on ACI'
