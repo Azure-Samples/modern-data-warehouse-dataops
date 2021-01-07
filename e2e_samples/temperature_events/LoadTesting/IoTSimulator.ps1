@@ -12,9 +12,7 @@ param (
     [int]$Interval = 1000,
     [string]$FixPayload = '',
     [int]$FixPayloadSize = 0,
-    [string]$Template = '{ \"deviceId\": \"$.DeviceId\", \"temp\": $.Temp, \"Ticks\": $.Ticks, \"Counter\": $.Counter, \"time\": \"$.Time\", \"engine\": \"$.Engine\", \"source\": \"$.MachineName\" }',
     [string]$Header = '',
-    [string]$Variables = '[{name: \"Temp\", random: true, max: 25, min: 23}, {name:\"Counter\", min:100}, {name:\"Engine\", values: [\"on\", \"off\"]}]',
     [Parameter(Mandatory=$true)][string]$EventHubConnectionString,
     [string]$Image = "iottelemetrysimulator/azureiot-telemetrysimulator:latest",
     [double]$Cpu = 1.0,
@@ -23,14 +21,14 @@ param (
 
 <#
 We want the load to generate:
-- 50% of the load where deviceId > 1,000. The system is not interested in this data so these should be filter it out.
+- 50% of the load where deviceId >= 1,000. The system is not interested in this data so these should be filter it out.
 - 40% "good" data where deviceId <1,000 AND temperature <100
 - 10% "bad" data where deviceId <1,000 AND temperature >100
 #>
-$FilteredTemplate = '{ \"deviceId\": \"$.FilteredDeviceId\", \"temp\": $.Temp, \"time\": \"$.Time\" }' 
-$GoodTemplate = '{ \"deviceId\": \"$.DeviceId\", \"temp\": $.Temp, \"time\": \"$.Time\" }'
-$BadTemplate = '{ \"deviceId\": \"$.DeviceId\", \"temp\": $.BadTemp, \"time\": \"$.Time\" }' 
-$Variables = '[{name: \"DeviceId\", random: true, max: 1000, min: 0}, {name: \"FilteredDeviceId\", random: true, min: 1000}, {name: \"Temp\", random: true, max: 100, min: 0}, {name: \"BadTemp\", random: true, min: 100}]'
+$FilteredTemplate = '{ \"deviceId\": \"$.FilteredDeviceId\", \"temperature\": $.Temperature, \"time\": \"$.Time\" }' 
+$GoodTemplate = '{ \"deviceId\": \"$.DeviceId\", \"temperature\": $.Temperature, \"time\": \"$.Time\" }'
+$BadTemplate = '{ \"deviceId\": \"$.DeviceId\", \"temperature\": $.BadTemperature, \"time\": \"$.Time\" }' 
+$Variables = '[{name: \"DeviceId\", random: true, max: 999, min: 0}, {name: \"FilteredDeviceId\", random: true, min: 1000}, {name: \"Temperature\", random: true, max: 99, min: 0}, {name: \"BadTemperature\", random: true, min: 100}]'
 
 $i = 0
 $deviceIndex = 1
