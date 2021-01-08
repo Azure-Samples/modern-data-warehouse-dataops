@@ -1,0 +1,50 @@
+
+trigger:
+  - none
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  DeviceCount: 10
+  MessageCount: 1000
+  Interval: 100
+  ContainerCount: 2
+  ResourceGroup: 'dataops-temperature-events'
+  EvhNamespace: 'evh-temperature-test'
+  EvhName: 'temperature-processing'
+  ServiceConnection: dataops-temperature-events-sn
+  KeyVaultName: 'kv-temperature-test'
+
+steps:
+# Store your eventhub connection string and subscription id in keyvault.
+- task: AzureKeyVault@1
+  inputs:
+    azureSubscription: $(ServiceConnection)
+    KeyVaultName: $(KeyVaultName)
+    SecretsFilter: 'LoadTestEventHubConnectionString, SubscriptionId'
+    RunAsPreJob: false
+
+- task: AzureCLI@2
+  displayName: 'Run IoTSimulator on ACI'
+  inputs:
+    azureSubscription: $(ServiceConnection)
+    scriptType: pscore
+    scriptPath: e2e_samples/temperature_events/LoadTesting/IoTSimulator.ps1
+    arguments: '-EventHubConnectionString "`"$(LoadTestEventHubConnectionString)`"" 
+    -DeviceCount $(DeviceCount) -MessageCount $(MessageCount) -Interval $(Interval) 
+    -ContainerCount $(ContainerCount) -ResourceGroup $(ResourceGroup)'
+
+# There are some delays until the numbers are reflected in the metrics.
+- powershell: |
+    Start-Sleep -s 180
+  displayName: 'Delay for 3 minutes'
+
+- task: AzureCLI@2
+  displayName: 'Check Load Test Result'
+  inputs:
+    azureSubscription: $(ServiceConnection)
+    scriptType: pscore
+    scriptPath: e2e_samples/temperature_events/LoadTesting/LoadTestCheckResult.ps1
+    arguments: '-SubscriptionId $(SubscriptionId) -ResourceGroup $(ResourceGroup) 
+    -EvhNamespace $(EvhNamespace) -EvhName $(EvhName)'
