@@ -16,9 +16,9 @@ pool:
   vmImage: 'ubuntu-latest'
 
 stages:
-- stage: LintCheck
+- stage: 'LintCheck'
   displayName: 'Lint Check'
-  - job: CSharpLintCheck
+  - job: 'CSharpLintCheck'
     steps:
     - script: 'dotnet tool restore'
       workingDirectory: $(azfuncPath)
