@@ -1,0 +1,28 @@
+trigger:
+  branches:
+    include:
+    - master
+    - release/*
+    - e2e/temperature-events-milestone1
+  paths:
+    include:
+    - e2e_samples/temperature_events/*
+
+variables:
+  basePath: 'e2e_samples/temperature_events'
+  azfuncPath: '$(basePath)/Functions'
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+- stage: LintCheck
+  displayName: 'Lint Check'
+  - job: CSharpLintCheck
+    steps:
+    - script: 'dotnet tool restore'
+      workingDirectory: $(azfuncPath)
+      displayName: 'Lint tool restore from nuget'
+    - script: 'dotnet tool run dotnet-format -- --check'
+      workingDirectory: $(azfuncPath)
+      displayName: 'Lint C# code'
