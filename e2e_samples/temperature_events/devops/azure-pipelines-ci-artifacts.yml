@@ -18,6 +18,7 @@ pool:
 stages:
 - stage: 'LintCheck'
   displayName: 'Lint Check'
+  jobs:
   - job: 'CSharpLintCheck'
     steps:
     - script: 'dotnet tool restore'
