@@ -16,10 +16,10 @@ pool:
   vmImage: 'ubuntu-latest'
 
 stages:
-- stage: 'LintCheck'
+- stage: LintCheck
   displayName: 'Lint Check'
   jobs:
-  - job: 'CSharpLintCheck'
+  - job: CSharpLintCheck
     steps:
     - script: 'dotnet tool restore'
       workingDirectory: $(azfuncPath)
@@ -27,3 +27,26 @@ stages:
     - script: 'dotnet tool run dotnet-format -- --check'
       workingDirectory: $(azfuncPath)
       displayName: 'Lint C# code'
+
+- stage: BuildAndPublish
+  displayName: 'Build and publish as artifact in Azure DevOps'
+  jobs:
+  - job: Build
+    steps:
+    - script: 'dotnet restore'
+      workingDirectory: $(azfuncPath)
+    - script: 'dotnet build --output publish_output --configuration Release'
+      workingDirectory: $(azfuncPath)
+    # Need to publish code coverage report
+    - script: 'dotnet test'
+      workingDirectory: $(azfuncPath)
+    - task: ArchiveFiles@2
+      displayName: 'Archive files'
+      inputs:
+        rootFolderOrFile: 'publish_output/'
+        includeRootFolder: false
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: drop'
+      inputs:
+        pathToPublish: $(Build.ArtifactStagingDirectory)
+        artifactName: 'drop'
