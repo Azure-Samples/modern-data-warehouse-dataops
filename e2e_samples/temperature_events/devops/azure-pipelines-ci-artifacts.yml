@@ -34,16 +34,19 @@ stages:
   - job: Build
     steps:
     - script: 'dotnet restore'
+      displayName: 'restore nuget packages'
       workingDirectory: $(azfuncPath)
     - script: 'dotnet build --output publish_output --configuration Release'
+      displayName: 'build artifact'
       workingDirectory: $(azfuncPath)
     # Need to publish code coverage report
     - script: 'dotnet test'
+      displayName: 'test code'
       workingDirectory: $(azfuncPath)
     - task: ArchiveFiles@2
       displayName: 'Archive files'
       inputs:
-        rootFolderOrFile: 'publish_output/'
+        rootFolderOrFile: '$(azfuncPath)/publish_output/'
         includeRootFolder: false
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: drop'
