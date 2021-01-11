@@ -42,13 +42,13 @@ variable "kv_sku" {
 }
 
 variable "event_hub_names" {
-  default     = ["Ingress", "FilteredDevices", "TemperatureOutput", "TemperatureBadOutput"]
+  default     = ["Analytics", "Device", "OutOfBoundsTemperature", "TemperatureDevice"]
   type        = list(string)
   description = "List of string value appended to Eventhubs"
 }
 
 variable "functions_names" {
   type        = list(string)
-  default     = ["listfilter", "tempfilter"]
+  default     = ["TemperatureFilter", "DeviceIdFilter"]
   description = "List of string value appended to Azure Functions"
 }

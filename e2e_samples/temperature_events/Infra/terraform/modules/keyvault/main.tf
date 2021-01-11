@@ -1,13 +1,9 @@
 data "azurerm_client_config" "current" {}
 
-data "azurerm_resource_group" "rg" {
-  name = var.resource_group_name
-}
-
 resource "azurerm_key_vault" "kv" {
-  name                = "kv-${data.azurerm_resource_group.rg.tags.resource_name}"
-  location            = data.azurerm_resource_group.rg.location
-  resource_group_name = data.azurerm_resource_group.rg.name
+  name                = "kv-${var.resource_name}"
+  location            = var.location
+  resource_group_name = var.resource_group_name
   sku_name            = var.kv_sku
   tenant_id           = data.azurerm_client_config.current.tenant_id
 }

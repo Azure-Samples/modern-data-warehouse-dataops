@@ -22,3 +22,18 @@ variable "appsettings" {
   type        = map(string)
   description = "Map of app settings that will be applied across all provisioned function apps"
 }
+
+variable "resource_name" {
+  description = "Name of this service"
+  type        = string
+}
+
+variable "location" {
+  description = "Location where azure function is provisioned to"
+  type        = string
+}
+
+variable "environment" {
+  description = "Environment where we're deploying azure functions to"
+  type        = string
+}

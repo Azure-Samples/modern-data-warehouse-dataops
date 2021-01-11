@@ -13,6 +13,17 @@ variable "kv_sku" {
   description = "SKU of the keyvault to create"
 }
 
+variable "resource_name" {
+  description = "Name of this service"
+  type        = string
+}
+
+variable "location" {
+  description = "Location where keyvault is provisioned to"
+  type        = string
+}
+
+
 # ---------------------------------------------------------------------------------------------------------------------
 # OPTIONAL PARAMETERS
 # These parameters have reasonable defaults.
@@ -20,6 +31,6 @@ variable "kv_sku" {
 
 variable "key_permissions" {
   type        = list(string)
-  default     = ["set", "get"]
+  default     = ["set", "get", ]
   description = "List of key permissions, must be one or more from the following: backup, create, decrypt, delete, encrypt, get, import, list, purge, recover, restore, sign, unwrapKey, update, verify and wrapKey"
 }

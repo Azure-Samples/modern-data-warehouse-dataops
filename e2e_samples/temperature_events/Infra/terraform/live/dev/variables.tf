@@ -62,5 +62,4 @@ variable "kv_sku" {
   type        = string
   default     = "standard"
   description = "SKU of the Keyvault to create"
-
 }
