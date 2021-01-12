@@ -28,16 +28,18 @@ variable "tenant_id" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 variable "environment" {
+  type = string
+
   description = "The name of the environment we're deploying to"
-  type        = string
   default     = "dev"
 }
 
 
 variable "location" {
+  type = string
+
   description = "Azure Location of the service"
   default     = "eastus2"
-  type        = string
 }
 
 variable "eventhub_config" {
@@ -48,6 +50,7 @@ variable "eventhub_config" {
     partition_count   = number
     message_retention = number
   })
+  description = "Configuration for Eventhubs assuming all Eventhubs have exact same configuration"
   default = {
     sku               = "Standard"
     capacity          = 1
@@ -55,11 +58,11 @@ variable "eventhub_config" {
     partition_count   = 2
     message_retention = 1
   }
-  description = "Configuration for Eventhubs assuming all Eventhubs have exact same configuration"
 }
 
 variable "kv_sku" {
   type        = string
-  default     = "standard"
   description = "SKU of the Keyvault to create"
+
+  default = "standard"
 }
