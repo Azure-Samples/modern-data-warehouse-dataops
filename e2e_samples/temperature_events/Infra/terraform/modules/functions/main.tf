@@ -1,5 +1,5 @@
 resource "azurerm_storage_account" "storage" {
-  name                     = lower(replace("st-${var.function_name}-${var.environment}", "-", ""))
+  name                     = lower(replace("st${var.function_name}${var.environment}$", "-", ""))
   location                 = var.location
   resource_group_name      = var.resource_group_name
   account_tier             = "Standard"

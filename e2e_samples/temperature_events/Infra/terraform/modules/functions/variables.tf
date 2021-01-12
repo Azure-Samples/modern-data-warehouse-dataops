@@ -10,6 +10,11 @@ variable "resource_group_name" {
 variable "function_name" {
   type        = string
   description = "String value appended to the name of each function app"
+
+  validation {
+    condition     = length(var.function_name) <= 19
+    error_message = "Functions name cannot be longer than 19 characters."
+  }
 }
 
 variable "appservice_plan" {
