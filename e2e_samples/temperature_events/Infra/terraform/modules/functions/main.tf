@@ -15,13 +15,12 @@ resource "azurerm_function_app" "function_app" {
   storage_account_name       = azurerm_storage_account.storage.name
   storage_account_access_key = azurerm_storage_account.storage.primary_access_key
   os_type                    = "linux"
-
-  version    = "~3"
-  https_only = true
+  version                    = "~3"
+  https_only                 = true
+  app_settings               = var.appsettings
 
   identity {
     type = "SystemAssigned"
   }
 
-  app_settings = var.appsettings
 }

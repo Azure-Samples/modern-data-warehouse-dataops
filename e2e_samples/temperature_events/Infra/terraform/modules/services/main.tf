@@ -23,7 +23,8 @@ resource "azurerm_app_service_plan" "function_app" {
 }
 
 module "functions" {
-  source              = "../functions"
+  source = "../functions"
+
   count               = length(var.functions_names)
   resource_group_name = azurerm_resource_group.rg.name
   resource_name       = local.resource_name
@@ -63,8 +64,7 @@ module "keyvault" {
 }
 
 resource "azurerm_key_vault_access_policy" "keyvault_policy" {
-  count = length(module.functions)
-
+  count              = length(module.functions)
   key_vault_id       = module.keyvault.keyvault_id
   tenant_id          = element(module.functions, count.index)["functions_tenant_id"]
   object_id          = element(module.functions, count.index)["functions_tenant_id"]
@@ -72,11 +72,9 @@ resource "azurerm_key_vault_access_policy" "keyvault_policy" {
 }
 
 resource "azurerm_key_vault_secret" "kv_eventhub_conn_string" {
-  count = length(var.event_hub_names)
-
-  name  = element(var.event_hub_names, count.index)
-  value = element(module.eventhubs, count.index)["eventhub_connection_string"]
-
+  count        = length(var.event_hub_names)
+  name         = element(var.event_hub_names, count.index)
+  value        = element(module.eventhubs, count.index)["eventhub_connection_string"]
   key_vault_id = module.keyvault.keyvault_id
   depends_on   = [azurerm_key_vault_access_policy.keyvault_policy]
 }
