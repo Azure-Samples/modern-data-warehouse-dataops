@@ -19,8 +19,7 @@ variable "resource_group_name" {
 }
 
 variable "eventhub_name" {
-  type = string
-
+  type        = string
   description = "String value appended to the name of each eventhub"
 }
 

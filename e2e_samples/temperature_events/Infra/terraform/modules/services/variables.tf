@@ -2,7 +2,6 @@
 # REQUIRED PARAMETERS
 # You must provide a value for each of these parameters.
 # ---------------------------------------------------------------------------------------------------------------------
-
 variable "environment" {
   type = string
 
@@ -36,10 +35,8 @@ variable "kv_sku" {
 # OPTIONAL PARAMETERS
 # These parameters have reasonable defaults.
 # ---------------------------------------------------------------------------------------------------------------------
-
 variable "name" {
-  type = string
-
+  type        = string
   description = "The name of service"
   default     = "tempevt"
 }
@@ -47,8 +44,7 @@ variable "name" {
 variable "event_hub_names" {
   type        = list(string)
   description = "List of string value appended to Eventhubs"
-
-  default = ["Analytics", "Device", "OutOfBoundsTemperature", "TemperatureDevice"]
+  default     = ["Analytics", "Device", "OutOfBoundsTemperature", "TemperatureDevice"]
 }
 
 variable "functions_names" {
@@ -61,20 +57,17 @@ variable "functions_names" {
 variable "app_insights_name" {
   type        = string
   description = "Name of App Insights"
-
-  default = "appinsights"
+  default     = "appinsights"
 }
 
 variable "key_permissions" {
   type        = list(string)
   description = "List of key permissions, must be one or more from the following: backup, create, decrypt, delete, encrypt, get, import, list, purge, recover, restore, sign, unwrapKey, update, verify and wrapKey."
-
-  default = ["get"]
+  default     = ["get"]
 }
 
 variable "appinsights_application_type" {
-  type = string
-
+  type        = string
   description = "Type of the App Insights Application."
   default     = "web"
 }
@@ -83,5 +76,4 @@ variable "retention" {
   type        = number
   description = "Retention period for App Insights"
   default     = 90
-
 }

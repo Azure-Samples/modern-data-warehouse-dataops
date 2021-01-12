@@ -2,16 +2,13 @@
 # REQUIRED PARAMETERS
 # You must provide a value for each of these parameters.
 # ---------------------------------------------------------------------------------------------------------------------
-
 variable "resource_group_name" {
-  type = string
-
+  type        = string
   description = "Resource group name that the service uses"
 }
 
 variable "function_name" {
-  type = string
-
+  type        = string
   description = "String value appended to the name of each function app"
 }
 
@@ -26,19 +23,16 @@ variable "appsettings" {
 }
 
 variable "resource_name" {
-  type = string
-
+  type        = string
   description = "Name of this service"
 }
 
 variable "location" {
-  type = string
-
+  type        = string
   description = "Location where azure function is provisioned to"
 }
 
 variable "environment" {
-  type = string
-
+  type        = string
   description = "Environment where we're deploying azure functions to"
 }

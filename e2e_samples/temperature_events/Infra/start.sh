@@ -36,7 +36,6 @@ az storage account create -g $RESOURCE_GROUP_NAME -l $LOCATION \
 # Retrieve the storage account key for dev
 ACCOUNT_KEY_DEV=$(az storage account keys list --resource-group $RESOURCE_GROUP_NAME --account-name "${TF_STATE_STORAGE_ACCOUNT_NAME}dev" --query [0].value -o tsv)
 
-
 # Create a storage container (for the Terraform State) for dev
 az storage container create --name $TF_STATE_CONTAINER_NAME --account-name "${TF_STATE_STORAGE_ACCOUNT_NAME}dev" --account-key $ACCOUNT_KEY_DEV
 

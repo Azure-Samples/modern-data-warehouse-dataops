@@ -26,18 +26,15 @@ variable "tenant_id" {
 # OPTIONAL PARAMETERS
 # These parameters have reasonable defaults.
 # ---------------------------------------------------------------------------------------------------------------------
-
 variable "environment" {
-  type = string
-
+  type        = string
   description = "The name of the environment we're deploying to"
   default     = "dev"
 }
 
 
 variable "location" {
-  type = string
-
+  type        = string
   description = "Azure Location of the service"
   default     = "eastus2"
 }
@@ -63,6 +60,5 @@ variable "eventhub_config" {
 variable "kv_sku" {
   type        = string
   description = "SKU of the Keyvault to create"
-
-  default = "standard"
+  default     = "standard"
 }
