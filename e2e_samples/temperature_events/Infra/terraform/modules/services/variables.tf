@@ -14,7 +14,6 @@ variable "location" {
   description = "Azure Location of the service"
 }
 
-
 variable "eventhub_config" {
   type = object({
     sku               = string
