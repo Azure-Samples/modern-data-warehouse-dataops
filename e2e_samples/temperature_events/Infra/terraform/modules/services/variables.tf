@@ -58,3 +58,21 @@ variable "app_insights_name" {
   default     = "appinsights"
   description = "Name of app insights"
 }
+
+variable "key_permissions" {
+  type        = list(string)
+  default     = ["get"]
+  description = "List of key permissions, must be one or more from the following: backup, create, decrypt, delete, encrypt, get, import, list, purge, recover, restore, sign, unwrapKey, update, verify and wrapKey."
+}
+
+variable "appinsights_application_type" {
+  description = "ype of the App Insights Application."
+  default     = "web"
+  type        = string
+}
+
+variable "retention" {
+  type        = number
+  default     = 90
+  description = "Retention period for app insights"
+}

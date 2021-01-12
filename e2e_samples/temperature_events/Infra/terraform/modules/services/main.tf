@@ -34,11 +34,12 @@ module "functions" {
   environment         = var.environment
 }
 
-module "appinsights" {
-  source              = "../app-insights"
-  resource_group_name = azurerm_resource_group.rg.name
-  resource_name       = local.resource_name
+resource "azurerm_application_insights" "app_insights" {
+  name                = "appi-${local.resource_name}"
   location            = var.location
+  resource_group_name = azurerm_resource_group.rg.name
+  application_type    = var.appinsights_application_type
+  retention_in_days   = var.retention
 }
 
 module "eventhubs" {
@@ -61,13 +62,13 @@ module "keyvault" {
   kv_sku              = var.kv_sku
 }
 
-module "keyvault_policy" {
-  count  = length(module.functions)
-  source = "../keyvault-policy"
+resource "azurerm_key_vault_access_policy" "keyvault_policy" {
+  count = length(module.functions)
 
-  keyvault_id = module.keyvault.keyvault_id
-  tenant_id   = element(module.functions, count.index)["functions_tenant_id"]
-  object_id   = element(module.functions, count.index)["functions_object_id"]
+  key_vault_id       = module.keyvault.keyvault_id
+  tenant_id          = element(module.functions, count.index)["functions_tenant_id"]
+  object_id          = element(module.functions, count.index)["functions_tenant_id"]
+  secret_permissions = var.key_permissions
 }
 
 resource "azurerm_key_vault_secret" "kv_eventhub_conn_string" {
@@ -77,12 +78,12 @@ resource "azurerm_key_vault_secret" "kv_eventhub_conn_string" {
   value = element(module.eventhubs, count.index)["eventhub_connection_string"]
 
   key_vault_id = module.keyvault.keyvault_id
-  depends_on   = [module.keyvault_policy]
+  depends_on   = [azurerm_key_vault_access_policy.keyvault_policy]
 }
 
 resource "azurerm_key_vault_secret" "kv_appinsights_conn_string" {
   name         = var.app_insights_name
-  value        = module.appinsights.instrumentation_key
+  value        = azurerm_application_insights.app_insights.instrumentation_key
   key_vault_id = module.keyvault.keyvault_id
-  depends_on   = [module.keyvault_policy]
+  depends_on   = [azurerm_key_vault_access_policy.keyvault_policy, azurerm_application_insights.app_insights]
 }
