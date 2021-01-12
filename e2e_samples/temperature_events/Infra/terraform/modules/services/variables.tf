@@ -56,7 +56,7 @@ variable "functions_names" {
 variable "app_insights_name" {
   type        = string
   default     = "appinsights"
-  description = "Name of app insights"
+  description = "Name of App Insights"
 }
 
 variable "key_permissions" {
@@ -66,7 +66,7 @@ variable "key_permissions" {
 }
 
 variable "appinsights_application_type" {
-  description = "ype of the App Insights Application."
+  description = "Type of the App Insights Application."
   default     = "web"
   type        = string
 }
@@ -74,5 +74,5 @@ variable "appinsights_application_type" {
 variable "retention" {
   type        = number
   default     = 90
-  description = "Retention period for app insights"
+  description = "Retention period for App Insights"
 }
