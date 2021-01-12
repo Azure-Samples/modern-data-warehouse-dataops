@@ -61,7 +61,7 @@ module "keyvault" {
   kv_sku              = var.kv_sku
 }
 
-module "keyvault-policy" {
+module "keyvault_policy" {
   count  = length(module.functions)
   source = "../keyvault-policy"
 
@@ -70,22 +70,19 @@ module "keyvault-policy" {
   object_id   = element(module.functions, count.index)["functions_object_id"]
 }
 
-module "keyvault-secret-app-insight" {
-  source                    = "../keyvault-secret-app-insights"
-  instrumentation_key_name  = var.app_insights_name
-  instrumentation_key_value = module.appinsights.instrumentation_key
-  keyvault_id               = module.keyvault.keyvault_id
+resource "azurerm_key_vault_secret" "kv_eventhub_conn_string" {
+  count = length(var.event_hub_names)
 
-  depends_on = [module.keyvault-policy, module.appinsights]
+  name  = element(var.event_hub_names, count.index)
+  value = element(module.eventhubs, count.index)["eventhub_connection_string"]
+
+  key_vault_id = module.keyvault.keyvault_id
+  depends_on   = [module.keyvault_policy]
 }
 
-module "keyvault-secret-event-hubs" {
-  source = "../keyvault-secret-event-hubs"
-  count  = length(var.event_hub_names)
-
-  keyvault_id                = module.keyvault.keyvault_id
-  eventhub_name              = element(var.event_hub_names, count.index)
-  eventhub_connection_string = element(module.eventhubs, count.index)["eventhub_connection_string"]
-
-  depends_on = [module.keyvault-policy]
+resource "azurerm_key_vault_secret" "kv_appinsights_conn_string" {
+  name         = var.app_insights_name
+  value        = module.appinsights.instrumentation_key
+  key_vault_id = module.keyvault.keyvault_id
+  depends_on   = [module.keyvault_policy]
 }
