@@ -4,13 +4,15 @@
 # ---------------------------------------------------------------------------------------------------------------------
 
 variable "resource_group_name" {
+  type = string
+
   description = "Resource group name that the service uses"
-  type        = string
 }
 
 variable "function_name" {
+  type = string
+
   description = "String value appended to the name of each function app"
-  type        = string
 }
 
 variable "appservice_plan" {
@@ -24,16 +26,19 @@ variable "appsettings" {
 }
 
 variable "resource_name" {
+  type = string
+
   description = "Name of this service"
-  type        = string
 }
 
 variable "location" {
+  type = string
+
   description = "Location where azure function is provisioned to"
-  type        = string
 }
 
 variable "environment" {
+  type = string
+
   description = "Environment where we're deploying azure functions to"
-  type        = string
 }

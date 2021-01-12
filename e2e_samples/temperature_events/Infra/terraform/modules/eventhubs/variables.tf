@@ -14,21 +14,22 @@ variable "eventhub_config" {
 }
 
 variable "resource_group_name" {
-  description = "Resource group name that the service uses"
   type        = string
+  description = "Resource group name that the service uses"
 }
 
 variable "eventhub_name" {
+  type = string
+
   description = "String value appended to the name of each eventhub"
-  type        = string
 }
 
 variable "resource_name" {
-  description = "Name of this service"
   type        = string
+  description = "Name of this service"
 }
 
 variable "location" {
-  description = "Location where eventhub is provisioned to"
   type        = string
+  description = "Location where eventhub is provisioned to"
 }

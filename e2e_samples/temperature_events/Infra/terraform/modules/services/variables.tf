@@ -4,13 +4,15 @@
 # ---------------------------------------------------------------------------------------------------------------------
 
 variable "environment" {
+  type = string
+
   description = "The name of the environment we're deploying to"
-  type        = string
 }
 
 variable "location" {
+  type = string
+
   description = "Azure Location of the service"
-  type        = string
 }
 
 
@@ -25,54 +27,61 @@ variable "eventhub_config" {
   description = "Configuration for Eventhubs assuming all Eventhubs have exact same configuration"
 }
 
+variable "kv_sku" {
+  type        = string
+  description = "SKU of the Keyvault to create"
+}
+
 # ---------------------------------------------------------------------------------------------------------------------
 # OPTIONAL PARAMETERS
 # These parameters have reasonable defaults.
 # ---------------------------------------------------------------------------------------------------------------------
 
 variable "name" {
+  type = string
+
   description = "The name of service"
   default     = "tempevt"
-  type        = string
-}
-
-variable "kv_sku" {
-  type        = string
-  description = "SKU of the Keyvault to create"
 }
 
 variable "event_hub_names" {
-  default     = ["Analytics", "Device", "OutOfBoundsTemperature", "TemperatureDevice"]
   type        = list(string)
   description = "List of string value appended to Eventhubs"
+
+  default = ["Analytics", "Device", "OutOfBoundsTemperature", "TemperatureDevice"]
 }
 
 variable "functions_names" {
   type        = list(string)
-  default     = ["TemperatureFilter", "DeviceIdFilter"]
   description = "List of string value appended to Azure Functions"
+  default     = ["TemperatureFilter", "DeviceIdFilter"]
+
 }
 
 variable "app_insights_name" {
   type        = string
-  default     = "appinsights"
   description = "Name of App Insights"
+
+  default = "appinsights"
 }
 
 variable "key_permissions" {
   type        = list(string)
-  default     = ["get"]
   description = "List of key permissions, must be one or more from the following: backup, create, decrypt, delete, encrypt, get, import, list, purge, recover, restore, sign, unwrapKey, update, verify and wrapKey."
+
+  default = ["get"]
 }
 
 variable "appinsights_application_type" {
+  type = string
+
   description = "Type of the App Insights Application."
   default     = "web"
-  type        = string
 }
 
 variable "retention" {
   type        = number
-  default     = 90
   description = "Retention period for App Insights"
+  default     = 90
+
 }
