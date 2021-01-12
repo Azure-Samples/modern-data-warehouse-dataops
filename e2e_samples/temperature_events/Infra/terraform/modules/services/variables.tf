@@ -52,3 +52,9 @@ variable "functions_names" {
   default     = ["TemperatureFilter", "DeviceIdFilter"]
   description = "List of string value appended to Azure Functions"
 }
+
+variable "app_insights_name" {
+  type        = string
+  default     = "appinsights"
+  description = "Name of app insights"
+}

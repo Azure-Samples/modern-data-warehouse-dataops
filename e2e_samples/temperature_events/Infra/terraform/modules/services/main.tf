@@ -32,7 +32,13 @@ module "functions" {
   appservice_plan     = azurerm_app_service_plan.function_app.id
   appsettings         = local.appsettings
   environment         = var.environment
+}
 
+module "appinsights" {
+  source              = "../app-insights"
+  resource_group_name = azurerm_resource_group.rg.name
+  resource_name       = local.resource_name
+  location            = var.location
 }
 
 module "eventhubs" {
@@ -64,8 +70,17 @@ module "keyvault-policy" {
   object_id   = element(module.functions, count.index)["functions_object_id"]
 }
 
-module "keyvault-secret" {
-  source = "../keyvault-secret"
+module "keyvault-secret-app-insight" {
+  source                    = "../keyvault-secret-app-insights"
+  instrumentation_key_name  = var.app_insights_name
+  instrumentation_key_value = module.appinsights.instrumentation_key
+  keyvault_id               = module.keyvault.keyvault_id
+
+  depends_on = [module.keyvault-policy, module.appinsights]
+}
+
+module "keyvault-secret-event-hubs" {
+  source = "../keyvault-secret-event-hubs"
   count  = length(var.event_hub_names)
 
   keyvault_id                = module.keyvault.keyvault_id
