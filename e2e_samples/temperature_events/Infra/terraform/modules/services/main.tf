@@ -80,7 +80,7 @@ resource "azurerm_key_vault_access_policy" "keyvault_policy" {
 
 resource "azurerm_key_vault_secret" "kv_eventhub_conn_string" {
   count        = length(var.event_hub_names)
-  name         = element(var.event_hub_names, count.index)
+  name         = "${element(var.event_hub_names, count.index)}-conn"
   value        = element(module.eventhubs, count.index)["eventhub_connection_string"]
   key_vault_id = azurerm_key_vault.kv.id
   depends_on   = [azurerm_key_vault_access_policy.keyvault_policy]
