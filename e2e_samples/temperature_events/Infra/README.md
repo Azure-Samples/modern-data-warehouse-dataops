@@ -23,7 +23,6 @@ $tree -d
     └── modules
         ├── eventhubs
         ├── functions
-        ├── keyvault
         └── services
 ```
 
@@ -59,9 +58,9 @@ $ terraform state list
     module.service.module.functions[0].azurerm_storage_account.storage
     module.service.module.functions[1].azurerm_function_app.function_app
     module.service.module.functions[1].azurerm_storage_account.storage
-    module.service.module.keyvault.data.azurerm_client_config.current
-    module.service.module.keyvault.azurerm_key_vault.kv
-    module.service.module.keyvault.azurerm_key_vault_access_policy.keyvault_set_get_policy
+    module.service.data.azurerm_client_config.current
+    module.service.azurerm_key_vault.kv
+    module.service.azurerm_key_vault_access_policy.keyvault_set_get_policy
 ```
 
 ### Live
