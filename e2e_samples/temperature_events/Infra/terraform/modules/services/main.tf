@@ -47,7 +47,7 @@ module "functions" {
   location            = var.location
   function_name       = var.functions_names[count.index]
   appservice_plan     = azurerm_app_service_plan.function_app.id
-  appsettings         = local.appsettings
+  appsettings         = merge(local.appsettings, tomap({ "AzureWebJobs.FilterData.Disabled" = count.index == 0, "AzureWebJobs.DetectSpike.Disabled" = count.index == 1}))
   environment         = var.environment
 }
 
@@ -85,6 +85,15 @@ resource "azurerm_key_vault_secret" "kv_eventhub_conn_string" {
   key_vault_id = azurerm_key_vault.kv.id
   depends_on   = [azurerm_key_vault_access_policy.keyvault_policy]
 }
+
+resource "azurerm_key_vault_secret" "kv_eventhub_name" {
+  count        = length(var.event_hub_names)
+  name         = "${element(var.event_hub_names, count.index)}-name"
+  value        = element(module.eventhubs, count.index)["eventhub_name"]
+  key_vault_id = azurerm_key_vault.kv.id
+  depends_on   = [azurerm_key_vault_access_policy.keyvault_policy]
+}
+
 
 resource "azurerm_key_vault_secret" "kv_appinsights_conn_string" {
   name         = var.app_insights_name

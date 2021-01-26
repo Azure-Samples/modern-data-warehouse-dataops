@@ -4,6 +4,7 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
+resources:
 stages:
 - stage: IaC
   displayName: 'IaC plan (no terraform apply)'
@@ -21,6 +22,7 @@ stages:
         yamllint Infra/*.yml -d "{extends: default, rules: {document-start: disable, line-length: disable, indentation: {spaces: 2, indent-sequences: false}}}"
       displayName: 'Run yaml lint check'
 
-  - template: infra-pipeline-template.yml
+  - template: infra-ado-pipeline-template.yml
     parameters:
+      buildValidation: true
       IaCRepo: self
