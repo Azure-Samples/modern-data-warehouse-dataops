@@ -1,0 +1,49 @@
+parameters:
+- name: buildValidation
+  type: boolean
+  default: false
+- name: IaCRepo
+  type: string
+  default: InfraAsCode
+
+jobs:
+- deployment: IaC
+  displayName: IaC
+  pool:
+    vmImage: 'Ubuntu-latest'
+  variables:
+  - group: terraform-secret
+  environment: 'Dev'
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - checkout: ${{ parameters.IaCRepo }}
+
+        - task: TerraformInstaller@0
+          displayName: 'Terraform install'
+          inputs:
+            terraformVersion: '0.13.0'
+
+        - script: |
+            terraform fmt -check -recursive
+          workingDirectory: '$(System.DefaultWorkingDirectory)/Infra/terraform'
+          displayName: 'Terraform Lint'
+
+        - script: |
+              export TF_VAR_subscription_id=$(tf-subscription-id)
+              export TF_VAR_client_id=$(tf-sp-id)
+              export TF_VAR_client_secret=$(tf-sp-secret)
+              export TF_VAR_tenant_id=$(tf-tenant-id)
+              echo '#######Terraform Init########'
+              terraform init -backend-config="storage_account_name=$(tf-storage-name)" -backend-config="container_name=terraform-state" -backend-config="access_key=$(tfstate-storage-key-dev)" -backend-config="key=terraform.tfstate"
+              echo '#######Terraform Plan########'
+              terraform plan -var="client_id=$(tf-sp-id)" -var="client_secret=$(tf-sp-secret)" -var="tenant_id=$(tf-tenant-id)" -var="subscription_id=$(tf-subscription-id)" -out="out.plan"
+          workingDirectory: '$(System.DefaultWorkingDirectory)/Infra/terraform/live/dev'
+          displayName: 'Terraform Init && Terraform Plan'
+
+        - script: |
+            terraform apply out.plan
+          workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/live/dev'
+          displayName: 'Terraform Apply'
+          condition: and(succeeded(), eq(${{ parameters.buildValidation }}, false))
