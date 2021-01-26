@@ -44,6 +44,6 @@ jobs:
 
         - script: |
             terraform apply out.plan
-          workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/live/dev'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/Infra/terraform/live/dev'
           displayName: 'Terraform Apply'
           condition: and(succeeded(), eq(${{ parameters.buildValidation }}, false))
