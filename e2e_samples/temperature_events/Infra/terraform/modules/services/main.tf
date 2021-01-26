@@ -65,8 +65,9 @@ resource "azurerm_key_vault_access_policy" "keyvault_policy" {
   count              = length(module.functions)
   key_vault_id       = module.keyvault.keyvault_id
   tenant_id          = element(module.functions, count.index)["functions_tenant_id"]
-  object_id          = element(module.functions, count.index)["functions_tenant_id"]
+  object_id          = element(module.functions, count.index)["functions_object_id"]
   secret_permissions = var.key_permissions
+  depends_on         = [module.functions]
 }
 
 resource "azurerm_key_vault_secret" "kv_eventhub_conn_string" {
