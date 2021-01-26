@@ -1,3 +1,4 @@
+# Azure Devops pipeline to validate what resources would be provisioned
 trigger:
 - none
 

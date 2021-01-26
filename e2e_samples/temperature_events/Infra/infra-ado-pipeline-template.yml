@@ -1,3 +1,4 @@
+# Azure Devops pipeline template used in infra-ado-ci-pipeline-test.yml and infra-ado-ci-pipeline.yml
 parameters:
 - name: buildValidation
   type: boolean

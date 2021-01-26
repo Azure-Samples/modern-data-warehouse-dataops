@@ -1,5 +1,10 @@
+# Azure Devops pipeline to provision Azure resources when Infra code is modified
 trigger:
-- none
+  branches:
+  - main
+  paths:
+    include:
+    - Infra/*
 
 pool:
   vmImage: ubuntu-latest
