@@ -5,10 +5,6 @@ terraform {
 }
 
 provider "azurerm" {
-  client_id                   = var.client_id
-  client_secret               = var.client_secret
-  subscription_id             = var.subscription_id
-  tenant_id                   = var.tenant_id
   skip_credentials_validation = true
   features {}
 }
@@ -20,4 +16,5 @@ module "service" {
   environment     = var.environment
   eventhub_config = var.eventhub_config
   kv_sku          = var.kv_sku
+  name            = var.name
 }

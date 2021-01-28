@@ -32,14 +32,14 @@ jobs:
           displayName: 'Terraform Lint'
 
         - script: |
-              export TF_VAR_subscription_id=$(tf-subscription-id)
-              export TF_VAR_client_id=$(tf-sp-id)
-              export TF_VAR_client_secret=$(tf-sp-secret)
-              export TF_VAR_tenant_id=$(tf-tenant-id)
+              export ARM_SUBSCRIPTION_ID=$(tf-subscription-id)
+              export ARM_CLIENT_ID=$(tf-sp-id)
+              export ARM_CLIENT_SECRET=$(tf-sp-secret)
+              export ARM_TENANT_ID=$(tf-tenant-id)
               echo '#######Terraform Init########'
               terraform init -backend-config="storage_account_name=$(tf-storage-name)" -backend-config="container_name=terraform-state" -backend-config="access_key=$(tfstate-storage-key-dev)" -backend-config="key=terraform.tfstate"
               echo '#######Terraform Plan########'
-              terraform plan -var="client_id=$(tf-sp-id)" -var="client_secret=$(tf-sp-secret)" -var="tenant_id=$(tf-tenant-id)" -var="subscription_id=$(tf-subscription-id)" -out="out.plan"
+              terraform plan -out="out.plan"
           workingDirectory: '$(System.DefaultWorkingDirectory)/Infra/terraform/live/dev'
           displayName: 'Terraform Init && Terraform Plan'
 
