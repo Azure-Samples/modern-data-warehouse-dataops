@@ -9,23 +9,24 @@ The sample demonstrate how DevOps principles can be applied end to end Data Pipe
   - [Continuous Integration and Continuous Delivery (CI/CD)](#continuous-integration-and-continuous-delivery-cicd)
   - [Technologies used](#technologies-used)
 - [Key Learnings](#key-learnings)
-  - [1. Use Data Tiering in your Data Lake.](#1-use-data-tiering-in-your-data-lake)
-  - [2. Validate data early in your pipeline.](#2-validate-data-early-in-your-pipeline)
-  - [3. Make your data pipelines replayable and idempotent.](#3-make-your-data-pipelines-replayable-and-idempotent)
-  - [4. Ensure data transformation code is testable.](#4-ensure-data-transformation-code-is-testable)
-  - [5. Have a CI/CD pipeline.](#5-have-a-cicd-pipeline)
-  - [6. Secure and centralize configuration.](#6-secure-and-centralize-configuration)
-  - [7. Monitor infrastructure, pipelines and data.](#7-monitor-infrastructure-pipelines-and-data)
+  - [1. Use Data Tiering in your Data Lake](#1-use-data-tiering-in-your-data-lake)
+  - [2. Validate data early in your pipeline](#2-validate-data-early-in-your-pipeline)
+  - [3. Make your data pipelines replayable and idempotent](#3-make-your-data-pipelines-replayable-and-idempotent)
+  - [4. Ensure data transformation code is testable](#4-ensure-data-transformation-code-is-testable)
+  - [5. Have a CI/CD pipeline](#5-have-a-cicd-pipeline)
+  - [6. Secure and centralize configuration](#6-secure-and-centralize-configuration)
+  - [7. Monitor infrastructure, pipelines and data](#7-monitor-infrastructure-pipelines-and-data)
 - [Key Concepts](#key-concepts)
   - [Build and Release Pipeline](#build-and-release-pipeline)
     - [Environments](#environments)
-    - [Build and Release Sequence:](#build-and-release-sequence)
+    - [Build and Release Sequence](#build-and-release-sequence)
   - [Testing](#testing)
   - [Observability / Monitoring](#observability--monitoring)
     - [Databricks](#databricks)
     - [Data Factory](#data-factory)
 - [How to use the sample](#how-to-use-the-sample)
   - [Prerequisites](#prerequisites)
+    - [Software pre-requisites if you use dev container](#software-pre-requisites-if-you-use-dev-container)
   - [Setup and Deployment](#setup-and-deployment)
     - [Deployed Resources](#deployed-resources)
   - [Data Lake Physical layout](#data-lake-physical-layout)
@@ -137,10 +138,7 @@ The following summarizes key learnings and best practices demonstrated by this s
 
 ### Build and Release Pipeline
 
-Both Build and Release Pipelines are built using [AzureDevOps](https://dev.azure.com/) (Public instance) and can be viewed using the following links:
-
-- [Build Pipelines](https://dev.azure.com/devlacepub/DataDevOps/_build)
-- [Release Pipeline](https://dev.azure.com/devlacepub/DataDevOps/_release)
+The Build and Release Pipelines definitions can be found [here](devops/README.md).
 
 #### Environments
 
