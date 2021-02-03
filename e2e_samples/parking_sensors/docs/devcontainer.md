@@ -14,3 +14,4 @@ and update the values like described [here](../README.md#software-pre-requisites
 If you encounter below error `Could not find env file` on build, please check if you completed [Step 3](../README.md#software-pre-requisites-if-you-use-dev-container)
 
 ![ContainerBuildError](images/devcontainer_build_error.png)
+cd..
