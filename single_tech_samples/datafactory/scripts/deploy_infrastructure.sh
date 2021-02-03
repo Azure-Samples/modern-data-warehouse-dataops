@@ -107,7 +107,8 @@ export DATAFACTORY_NAME=$(echo $arm_output | jq -r '.properties.outputs.datafact
 adf_msi=$(az resource show \
          --name $DATAFACTORY_NAME \
          --resource-group $RESOURCE_GROUP_NAME \
-         --resource-type "Microsoft.DataFactory/factories" |
+         --resource-type "Microsoft.DataFactory/factories" \
+         --output json |
          jq -r '.identity.principalId')
 
 # Grant storage rights to ADF MSI
