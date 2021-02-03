@@ -37,7 +37,7 @@ steps:
     azureSubscription: $(ServiceConnection)
     scriptType: pscore
     scriptPath: e2e_samples/temperature_events/LoadTesting/IoTSimulator.ps1
-    arguments: '-EventHubConnectionString "`"$(TemperatureDevice)`"" 
+    arguments: '-EventHubConnectionString "`"$(TemperatureDevice-conn)`"" 
     -DeviceCount $(DeviceCount) -MessageCount $(MessageCount) -Interval $(Interval) 
     -ContainerCount $(ContainerCount) -ResourceGroup $(ResourceGroup)'
 
