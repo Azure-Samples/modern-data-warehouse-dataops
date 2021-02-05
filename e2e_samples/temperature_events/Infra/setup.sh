@@ -63,5 +63,25 @@ az keyvault secret set --name tf-tenant-id --value $TENANT_ID --vault-name $KEYV
 az keyvault secret set --name tf-storage-name --value "${TF_STATE_STORAGE_ACCOUNT_NAME}dev" --vault-name $KEYVAULT_NAME
 
 # Display information
-echo "Run the following command to initialize Terraform to store its state into Azure Storage:"
-echo "terraform init -backend-config=\"storage_account_name=${TF_STATE_STORAGE_ACCOUNT_NAME}dev\" -backend-config=\"container_name=$TF_STATE_CONTAINER_NAME\" -backend-config=\"access_key=\$(az keyvault secret show --name tfstate-storage-key-dev --vault-name $KEYVAULT_NAME --query value -o tsv)\" -backend-config=\"key=terraform.tfstate\""
+cat << EOF 
+
+# Use the Azure cli to login and allow access to Azure Key Vault from the cli
+
+az login 
+
+# When initializing your local environment
+
+cd terraform/live/dev
+
+terraform init -backend-config="storage_account_name=${TF_STATE_STORAGE_ACCOUNT_NAME}dev" -backend-config="container_name=$TF_STATE_CONTAINER_NAME" -backend-config="access_key=\$(az keyvault secret show --name tfstate-storage-key-dev --vault-name $KEYVAULT_NAME --query value -o tsv)" -backend-config="key=terraform.tfstate"
+
+# When running "apply", "destroy", etc. commands:
+
+cd terraform/live/dev
+
+export ARM_CLIENT_ID="\$(az keyvault secret show --name tf-sp-id --vault-name $KEYVAULT_NAME --query value -o tsv)"
+export ARM_CLIENT_SECRET="\$(az keyvault secret show --name tf-sp-secret --vault-name $KEYVAULT_NAME --query value -o tsv)"
+export ARM_SUBSCRIPTION_ID="\$(az keyvault secret show --name tf-subscription-id --vault-name $KEYVAULT_NAME --query value -o tsv)"
+export ARM_TENANT_ID="\$(az keyvault secret show --name tf-tenant-id --vault-name $KEYVAULT_NAME --query value -o tsv)"
+
+EOF

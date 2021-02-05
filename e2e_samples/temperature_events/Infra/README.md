@@ -1,11 +1,58 @@
 # Infrastructure as Code
 
-## Getting Started (Local)
+## Getting Started
 
 1. az login
 1. ./setup.sh
 1. Run terraform init with the output from step 2
 1. terraform validate && terraform plan && terraform apply
+
+### Example: Run the following commands to setup `Terraform` state
+
+```bash
+# Setup Terrafrom infrastructure
+az login
+./setup.sh rg-my-terraform stmyterraform kv-myterraform japaneast
+```
+
+> ### Use the output from the above command to setup credentials for the next command (`terraform apply`)
+> 
+> __example output__
+> ```bash
+> # Use the Azure cli to login and allow access to Azure Key Vault from the cli
+> 
+> az login 
+> 
+> # When initializing your local environment
+> 
+> cd terraform/live/dev
+> 
+> terraform init -backend-config="storage_account_name=stmyterraformdev" -backend-config="container_name=terraform-state" -backend-config="access_key=$(az keyvault secret show --name tfstate-storage-key-dev --vault-name kv-myterraform --query value -o tsv)" -backend-config="key=terraform.tfstate"
+> 
+> # When running "apply", "destroy", etc. commands:
+> 
+> cd terraform/live/dev
+> 
+> export ARM_CLIENT_ID="$(az keyvault secret show --name tf-sp-id --vault-name kv-myterraform --query value -o tsv)"
+> export ARM_CLIENT_SECRET="$(az keyvault secret show --name tf-sp-secret --vault-name kv-myterraform --query value -o tsv)"
+> export ARM_SUBSCRIPTION_ID="$(az keyvault secret show --name tf-subscription-id --vault-name kv-myterraform --query value -o tsv)"
+> export ARM_TENANT_ID="$(az keyvault secret show --name tf-tenant-id --vault-name kv-myterraform --query value -o tsv)"
+> ```
+
+### Example: Run the following commands to create the `myapp` infrastructure.
+
+```bash
+cd terraform/live/dev
+
+export ARM_CLIENT_ID="$(az keyvault secret show --name tf-sp-id --vault-name kv-myterraform --query value -o tsv)"
+export ARM_CLIENT_SECRET="$(az keyvault secret show --name tf-sp-secret --vault-name kv-myterraform --query value -o tsv)"
+export ARM_SUBSCRIPTION_ID="$(az keyvault secret show --name tf-subscription-id --vault-name kv-myterraform --query value -o tsv)"
+export ARM_TENANT_ID="$(az keyvault secret show --name tf-tenant-id --vault-name kv-myterraform --query value -o tsv)"
+
+terraform plan -var "name=myapp" -out=/tmp/myapp
+terraform apply /tmp/myapp
+```
+
 
 ## Before sending PR
 

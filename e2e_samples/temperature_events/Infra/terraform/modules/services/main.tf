@@ -16,12 +16,11 @@ resource "azurerm_key_vault" "kv" {
   tenant_id           = data.azurerm_client_config.current.tenant_id
 }
 
-resource "azurerm_key_vault_access_policy" "keyvault_set_get_policy" {
+resource "azurerm_key_vault_access_policy" "azurerm_client_keyvault_policy" {
   key_vault_id       = azurerm_key_vault.kv.id
   tenant_id          = data.azurerm_client_config.current.tenant_id
   object_id          = data.azurerm_client_config.current.object_id
   secret_permissions = var.set_key_permissions
-  depends_on         = [azurerm_key_vault.kv]
 }
 
 
@@ -43,11 +42,11 @@ module "functions" {
 
   count               = length(var.functions_names)
   resource_group_name = azurerm_resource_group.rg.name
-  resource_name       = local.resource_name
+  name                = var.name
   location            = var.location
   function_name       = var.functions_names[count.index]
   appservice_plan     = azurerm_app_service_plan.function_app.id
-  appsettings         = merge(local.appsettings, tomap({ "AzureWebJobs.FilterData.Disabled" = count.index == 0, "AzureWebJobs.DetectSpike.Disabled" = count.index == 1}))
+  appsettings         = merge(local.appsettings, tomap({ "AzureWebJobs.${var.functions_names[0]}.Disabled" = count.index != 0, "AzureWebJobs.${var.functions_names[1]}.Disabled" = count.index != 1 }))
   environment         = var.environment
 }
 
@@ -83,7 +82,7 @@ resource "azurerm_key_vault_secret" "kv_eventhub_conn_string" {
   name         = "${element(var.event_hub_names, count.index)}-conn"
   value        = element(module.eventhubs, count.index)["eventhub_connection_string"]
   key_vault_id = azurerm_key_vault.kv.id
-  depends_on   = [azurerm_key_vault_access_policy.keyvault_policy]
+  depends_on   = [azurerm_key_vault_access_policy.keyvault_policy, azurerm_key_vault_access_policy.azurerm_client_keyvault_policy]
 }
 
 resource "azurerm_key_vault_secret" "kv_eventhub_name" {
@@ -91,7 +90,7 @@ resource "azurerm_key_vault_secret" "kv_eventhub_name" {
   name         = "${element(var.event_hub_names, count.index)}-name"
   value        = element(module.eventhubs, count.index)["eventhub_name"]
   key_vault_id = azurerm_key_vault.kv.id
-  depends_on   = [azurerm_key_vault_access_policy.keyvault_policy]
+  depends_on   = [azurerm_key_vault_access_policy.keyvault_policy, azurerm_key_vault_access_policy.azurerm_client_keyvault_policy]
 }
 
 
@@ -99,5 +98,5 @@ resource "azurerm_key_vault_secret" "kv_appinsights_conn_string" {
   name         = var.app_insights_name
   value        = azurerm_application_insights.app_insights.instrumentation_key
   key_vault_id = azurerm_key_vault.kv.id
-  depends_on   = [azurerm_key_vault_access_policy.keyvault_policy, azurerm_application_insights.app_insights]
+  depends_on   = [azurerm_key_vault_access_policy.keyvault_policy, azurerm_application_insights.app_insights, azurerm_key_vault_access_policy.azurerm_client_keyvault_policy]
 }

@@ -1,7 +1,9 @@
 # Azure Devops pipeline to provision Azure resources when Infra code is modified
 trigger:
   branches:
-  - main
+    include:
+    - e2e/temperature-events-milestone1
+    - master
   paths:
     include:
     - Infra/*
