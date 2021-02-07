@@ -2,44 +2,45 @@
 
 ## Getting Started
 
-1. az login
-1. ./setup.sh
+Execute these 4 steps to create the infrastructure
+1. `az login`
+1. `./setup.sh`
 1. Run terraform init with the output from step 2
-1. terraform validate && terraform plan && terraform apply
+1. `terraform validate && terraform plan && terraform apply`
 
-### Example: Run the following commands to setup `Terraform` state
-
+### #1 `az login`
 ```bash
-# Setup Terrafrom infrastructure
-az login
-./setup.sh rg-my-terraform stmyterraform kv-myterraform japaneast
+> az login
 ```
 
-> ### Use the output from the above command to setup credentials for the next command (`terraform apply`)
-> 
-> __example output__
-> ```bash
-> # Use the Azure cli to login and allow access to Azure Key Vault from the cli
-> 
-> az login 
-> 
-> # When initializing your local environment
-> 
-> cd terraform/live/dev
-> 
-> terraform init -backend-config="storage_account_name=stmyterraformdev" -backend-config="container_name=terraform-state" -backend-config="access_key=$(az keyvault secret show --name tfstate-storage-key-dev --vault-name kv-myterraform --query value -o tsv)" -backend-config="key=terraform.tfstate"
-> 
-> # When running "apply", "destroy", etc. commands:
-> 
-> cd terraform/live/dev
-> 
-> export ARM_CLIENT_ID="$(az keyvault secret show --name tf-sp-id --vault-name kv-myterraform --query value -o tsv)"
-> export ARM_CLIENT_SECRET="$(az keyvault secret show --name tf-sp-secret --vault-name kv-myterraform --query value -o tsv)"
-> export ARM_SUBSCRIPTION_ID="$(az keyvault secret show --name tf-subscription-id --vault-name kv-myterraform --query value -o tsv)"
-> export ARM_TENANT_ID="$(az keyvault secret show --name tf-tenant-id --vault-name kv-myterraform --query value -o tsv)"
-> ```
+Authenticate with the Azure CLI, to ensure you are able interact with your Azure account.
+<https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli>
 
-### Example: Run the following commands to create the `myapp` infrastructure.
+### #2 `./setup.sh`
+Run the following commands to setup `Terraform` state. This will create a resource group, with 2 resources (keyvault and storage) to track the secrets and state of your infrastructure.
+
+```bash
+# Setup infrastructure for Terrafrom state & secrets.
+# NOTE: Change the values to a unique name for your account.
+# ./setup.sh <resource group> <storage account> <terraform> <region>
+az login
+./setup.sh rg-my-terraform stmyterraform kv-myterraform eastus2
+```
+Keep note of the output from `./setup.sh`. The output will be used in the next command
+
+### #3 Run terraform init with the output from step 2
+Use the output from the last command, to initialise the Terraform state files and store them in the Azure storage & keyvault resources created in step 2.
+
+```bash
+# Note: This is an example, use the exact output given to you in step 2.
+cd terraform/live/dev
+
+terraform init -backend-config="storage_account_name=stmyterraformdev" -backend-config="container_name=terraform-state" -backend-config="access_key=$(az keyvault secret show --name tfstate-storage-key-dev --vault-name kv-myterraform --query value -o tsv)" -backend-config="key=terraform.tfstate"
+```
+
+### #4 `terraform validate && terraform plan && terraform apply`
+Run the following commands to create the `myapp` infrastructure.  
+**Note:** Pick a unique name, do not use the value `myapp`.  e.g. `"name=bob2"`
 
 ```bash
 cd terraform/live/dev
@@ -49,6 +50,7 @@ export ARM_CLIENT_SECRET="$(az keyvault secret show --name tf-sp-secret --vault-
 export ARM_SUBSCRIPTION_ID="$(az keyvault secret show --name tf-subscription-id --vault-name kv-myterraform --query value -o tsv)"
 export ARM_TENANT_ID="$(az keyvault secret show --name tf-tenant-id --vault-name kv-myterraform --query value -o tsv)"
 
+# enter your own unique value instead of `myapp`
 terraform plan -var "name=myapp" -out=/tmp/myapp
 terraform apply /tmp/myapp
 ```
