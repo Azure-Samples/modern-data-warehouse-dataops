@@ -83,10 +83,10 @@ It makes use of the following azure services:
 
 ### Setup and Deployment
 
-There are 3 major steps to running the sample:
-1. Deploy the infrastructure with Terraform
-2. Deploy the Azure Function logic
-3. Run the load testing script
+There are 3 major steps to running the sample. Follow each sub-page in order:
+1. [Deploy the infrastructure with Terraform](infra/README.md)
+2. [Deploy the Azure Function logic](functions/README.md)
+3. [Run the load testing script](loadtesting/README.md)
 
 #### Deployed Resources
 
