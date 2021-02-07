@@ -50,9 +50,7 @@ The solution receives a stream of readings from IoT devices within buildings. Th
 
 The following shows the overall architecture of the solution.
 
-![](https://codimd.s3.shivering-isles.com/demo/uploads/upload_cbec7a5c886ef82376da39a5ff572761.png)
-
-<!-- ![Architecture](../../docs/images/architecture.PNG?raw=true "Architecture") -->
+![Architecture](images/temperature-events-architecture.png?raw=true "Architecture")
 
 
 ### Technologies used
@@ -231,40 +229,34 @@ Azure Event Hubs & Azure functions offer built-in integration with [Application 
 
 Distributed Tracing is one of the key reasons that Application Insights is able to offer useful features such as application map. In our system, events flow through several Azure Functions that are connected by Event Hubs. Nevertheless, Application Insights is able to collect this correlation automatically. The correlation context are carried in the event payload and passed to downstream services. You can easily see this correlation being visualized in either Application Maps or End-to-End Transaction Details:
 
-![](https://codimd.s3.shivering-isles.com/demo/uploads/upload_7ea252d539511b276c1184ea52e2a1fb.png)
-<!-- <img src="images/correlated_logs.png" width="750" height="350"> -->
-
+![Correlated logs](images/correlated_logs.png?raw=true "Correlated logs")
 
 Here is an article that explains in detail how distributed tracing works for Eventhub-triggered Azure Functions: [Distributed Tracing Deep Dive for Event Hub Triggered Azure Function in Application Insights](https://medium.com/swlh/correlated-logs-deep-dive-for-eventhub-triggered-azure-function-in-app-insights-ac69c7c70285)
 
 ##### b) Application Map
 
-![](https://codimd.s3.shivering-isles.com/demo/uploads/upload_cb15587b8f69f6712eb1bc4cc3964cc1.png)
-<!-- <img src="images/application_map.png" width="750" height="250"> -->
+![Application map](images/application_map.png?raw=true "Application map")
 
 Application Map shows how the components in a system are interacting with each other. In addition, it shows some useful information such as the average of each transaction duration, number of scaled instances and so on. 
 From Application Map, we were able to easily tell that our calls to the database are having some problems which became a bottleneck in our system. By clicking directly on the arrows, you can drill into some metrics and logs for those problematic transactions.
 
 ##### c) End-to-End Transaction Detail
 
-![](https://codimd.s3.shivering-isles.com/demo/uploads/upload_608cf930efdf90bdc11627f4db38562e.png)
-<!-- <img src="images/correlated_logs.png" width="700" height="300"> -->
+![Correlated logs](images/correlated_logs.png?raw=true "Correlated logs")
 
 End-to-End Transaction Detail comes with a visualization of each component's order and duration. You can also check the telemetries(traces, exceptions, etc) of each component from this view, which makes it easy to troubleshoot visually across components within the same transaction when an issue occured.  
 
 As soon as we drilled down into the problematic transactions, we realized that our outgoing calls(for each event) are waiting for one and another to finish before making the next call, which is not very efficient. As an improvement, we changed the logic to make outgoing calls in parallel which resulted in better performance. Thanks to the visualization, we were able to easily troubleshoot and gain insight on how to further improve our system. 
 
-![](https://codimd.s3.shivering-isles.com/demo/uploads/upload_76a6f802350094a09401a9c63e904bdb.png)
-<!-- <img src="images/e2e_transaction_detail_sequential.png" width="600" height="300"> -->
 
-![](https://codimd.s3.shivering-isles.com/demo/uploads/upload_4634523d2d382e5bf1ed3a34bffcb407.png)
-<!-- <img src="images/e2e_transaction_detail_parallel.png" width="600" height="300"> -->
+![Transaction detail - sequential](images/e2e_transaction_detail_sequential.png?raw=true "Transaction detail - sequential")
+
+![Transaction detail - parallel](images/e2e_transaction_detail_parallel.png?raw=true "Transaction detail - parallel")
 
 ##### d) Azure Function Scaling
 From Live Metrics, you can see how many instances has Azure Function scaled to in real time. 
 
-![](https://codimd.s3.shivering-isles.com/demo/uploads/upload_4fc99a9991b11967f128ad5ed71a7f30.png)
-<!-- <img src="images/function_instances_live_metrics.png" width="600" height="400"> -->
+![Live metrics](images/function_instances_live_metrics.png?raw=true "Live metrics")
 
 However, the number of function instances is not available from any default metrics at this point besides checking the number in real time. If you are interested in checking the number of scaled instances within a past period, you can query the logs in Log Analytics (within Application Insights) by using kusto query. For example:
 
@@ -275,8 +267,7 @@ traces
 | render columnchart
 ```
 
-![](https://codimd.s3.shivering-isles.com/demo/uploads/upload_59a41657ac8dabfe8fd4547f45b0f4e6.png)
-<!-- <img src="images/function_instances_from_logs.png" width="750" height="350"> -->
+![from logs](images/function_instances_from_logs.png?raw=true "from logs")
 
 #### How to show metrics on dashboard?
 _TODO: <Do the cool Azure Portal dashboard that Masa had></Do>_
@@ -294,7 +285,7 @@ The logic of the Azure Functions are kept simple to demonstrate the end to end p
 
 #### Device Filter
 
-![](https://codimd.s3.shivering-isles.com/demo/uploads/upload_4c725cf0a1b6cf9e24fccd1ba119526f.png)
+![Device ID filter](images/function-deviceidfilter.png?raw=true "Device ID filter")
 
 All temperature sensors are sending their data to the `evh-Device` Event Hub. Different pipelines can then consume and filter to the subset that they want to focus on. In this pipeline we are filtering out all DeviceIds above 1,000.
 
@@ -308,7 +299,8 @@ else DeviceId >=1000
 
 #### Temperature Filter
 Splits the feed based on the temperature value. Any value of 100ºC and over are too hot and should be actioned.
-![](https://codimd.s3.shivering-isles.com/demo/uploads/upload_67fa59dd588603e7aeefb46e3b634b34.png)
+
+![Temperature filter](images/function-temperaturefilter.png?raw=true "Temperature filter")
 
 ```javascript
 // psuedoscript
