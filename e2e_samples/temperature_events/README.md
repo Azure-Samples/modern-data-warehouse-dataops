@@ -172,10 +172,10 @@ Covers the operations processes that keep an application running in production.
 
 ### Security
 
-- _TODO: Threat Modelling_
-- _TODO: Native Control Usage_
-- _TODO: Identity and Access Control_
-- _TODO: Information Protection_
+- Secrets, connection strings, and other environmental variables are stored in Azure Key Vault. This prevents accidental leaking or committing secrets into a codebase. [Azure docs - About Azure Key Vault secrets](https://docs.microsoft.com/en-us/azure/key-vault/secrets/about-secrets)
+- Access to Event Hubs are restricted via SAS tokens. Only services that hold the Shared Access Signature are able to interact with them. [Azure docs - Authenticate access to Event Hubs resources using shared access signatures (SAS)](https://docs.microsoft.com/en-us/azure/event-hubs/authenticate-shared-access-signature)
+  - The access security can be enhanced further by switching to using managed identities. [Authenticate with a managed identity to access Event Hubs Resources](https://docs.microsoft.com/en-us/azure/event-hubs/authenticate-managed-identity)
+- Access to Azure portal, Application Insights, etc are restricted via native access polices built into Azure.
 
 ## Key Learnings
 
