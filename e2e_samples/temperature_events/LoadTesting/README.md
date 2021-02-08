@@ -16,22 +16,21 @@ scriptPath: e2e_samples/temperature_events/LoadTesting/IoTSimulator.ps1
 ![azure_pipeline_setup](../../../docs/images/azure_pipeline_setup.png)
 
 ### <u>Variables</u>:
-In the pipeline yaml, we would like to store some variables as secrets in keyvault. To use those keyvault secrets in azure pipeline, you can either:
-- Use a [**Azure Keyvault task**](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/deploy/azure-key-vault?view=azure-devops). However, you will need to manually edit the access policy in keyvault to give the service connection of this pipeline the right to access keyvault.
-- Use a **Variable Group**. Go to Azure DevOps -> Pipelines -> Library: ![azure_pipeline_var_group](../../../docs/images/azure_pipeline_var_group.png)
-After selecting your service connection and click "Authorize", you do not need to manually edit the access policy in keyvault. In this load test example we chose to use the variable group instead of azure keyvault task, but whichever approach is fine.
+In the pipeline yaml, we would like to store some variables as secrets in keyvault. One of the approaches to access keyvault secrets in azure pipelines is to use a **Variable Group**. Go to Azure DevOps -> Pipelines -> Library: ![azure_pipeline_var_group](../../../docs/images/azure_pipeline_var_group.png)
+Select your Azure subscription, keyvault, and select the following secrets that are created by terraform:
 
-Then, you can use the keyvault secrets directly in pipeline by specifying the variable group:
+- *Ingest-namespace*: eventhub namespace of the entry eventhub. 
+- *Ingest-name*: name of the entry eventhub. 
+- *Ingest-conn*: connection string of the entry eventhub.
+- *subscription-id*: subscription Id of the project.
+
+ ![var_group_secrets](../../../docs/images/var_group_secrets.png)
+
+Then, you can use these keyvault secrets directly in pipeline by specifying the variable group:
 ```
 variables:
 - group: load-testing-secrets
 ```
-
-In this load test example, we stored the following in keyvault through terraform:
-
-- *TemperatureDevice-name*: name of the eventhub. (Currently, eventhub namespace uses the same name as eventhub in our terraform.)
-- *TemperatureDevice-conn*: connection string of the eventhub.
-- *subscription-id*: subscription Id of the project.
 
 ### <u>Service Connections</u>
 

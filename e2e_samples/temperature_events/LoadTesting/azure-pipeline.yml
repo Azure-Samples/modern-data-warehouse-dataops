@@ -5,13 +5,6 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
-# Store your eventhub connection string, eventhub name, and subscription id in keyvault.
-# In Keyvault:
-# TemperatureDevice-name: name of the eventhub. (Currently, eventhub namespace uses the same name as eventhub in our terraform.)
-# TemperatureDevice-conn: connection string of the eventhub.
-# subscription-id: subscription Id of the project.
-
-# Then, create a variable group to get those secrets from keyvault.
 variables:
 - group: load-testing-secrets
 - name: DeviceCount
@@ -35,7 +28,7 @@ steps:
     azureSubscription: $(ServiceConnection)
     scriptType: pscore
     scriptPath: e2e_samples/temperature_events/LoadTesting/IoTSimulator.ps1
-    arguments: '-EventHubConnectionString "`"$(TemperatureDevice-conn)`"" 
+    arguments: '-EventHubConnectionString "`"$(Ingest-conn)`"" 
     -DeviceCount $(DeviceCount) -MessageCount $(MessageCount) -Interval $(Interval) 
     -ContainerCount $(ContainerCount) -ResourceGroup $(ResourceGroup)'
 
@@ -52,4 +45,4 @@ steps:
     scriptType: pscore
     scriptPath: e2e_samples/temperature_events/LoadTesting/LoadTestCheckResult.ps1
     arguments: '-SubscriptionId $(subscription-id) -ResourceGroup $(ResourceGroup) 
-    -EvhNamespace $(TemperatureDevice-name) -EvhName $(TemperatureDevice-name)'
+    -EvhNamespace $(Ingest-namespace) -EvhName $(Ingest-name)'
