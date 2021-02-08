@@ -45,9 +45,12 @@ done
 
 # Release pipelines require DEV_DATAFACTORY_NAME set, retrieve this value from .env.dev file
 export DEV_"$(grep -E '^DATAFACTORY_NAME' .env.dev | tail -1 | xargs)"
-
 # Replace 'devlace/mdw-dataops-clone' to deployer's github project
-sed -i "s+devlace/mdw-dataops-clone+$GITHUB_REPO+" devops/azure-pipelines-cd-release.yml
+sed -i "s+azure-samples/modern-data-warehouse-dataops+$GITHUB_REPO+" devops/azure-pipelines-cd-release.yml
+# Commit files back to branch so they are pulled from dev ADF
+git add devops/azure-pipelines-cd-release.yml
+git commit -m "Updated azure-pipelines-cd-release.yml"
+git push origin
 
 # Deploy pipelines
 ./scripts/deploy_azdo_pipelines.sh
