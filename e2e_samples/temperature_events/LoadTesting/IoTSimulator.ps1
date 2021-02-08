@@ -8,7 +8,7 @@ param (
     [Parameter(Mandatory=$true)][string]$ResourceGroup,
     [int]$DeviceCount = 1,
     [int]$ContainerCount = 1,
-    [int]$MessageCount = 1,
+    [int]$MessageCount = 1000,
     [int]$Interval = 1000,
     [string]$FixPayload = '',
     [int]$FixPayloadSize = 0,

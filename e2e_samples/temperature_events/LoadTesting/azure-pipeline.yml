@@ -26,8 +26,6 @@ variables:
   value: rg-tempevt-dev
 - name: ServiceConnection
   value: sample-dataops
-- name: KeyVaultName
-  value: 'kv-tempevt-dev'
 
 steps:
 # Remember to modify the script paths. It starts from the root of your project.
