@@ -36,7 +36,7 @@ variable "kv_sku" {
 # ---------------------------------------------------------------------------------------------------------------------
 variable "name" {
   type        = string
-  description = "The name of service"  
+  description = "The name of service"
 }
 
 variable "event_hub_names" {

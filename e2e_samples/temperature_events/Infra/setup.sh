@@ -63,10 +63,10 @@ az keyvault secret set --name tf-tenant-id --value $TENANT_ID --vault-name $KEYV
 az keyvault secret set --name tf-storage-name --value "${TF_STATE_STORAGE_ACCOUNT_NAME}dev" --vault-name $KEYVAULT_NAME
 
 # Display information
-cat << EOF 
+cat << EOF
 
 # Use the Azure cli to login and allow access to Azure Key Vault from the cli
-az login 
+az login
 
 # When initializing your local environment
 cd terraform/live/dev

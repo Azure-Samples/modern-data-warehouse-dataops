@@ -6,8 +6,8 @@
         "AnalyticsEvh": "",
         "AnalyticsEvhConnection": "",
         "IngestEvh": "",
-        "IngestEvhConnection": "",                
-        "OutOfBoundsTemperatureEvh": "",        
+        "IngestEvhConnection": "",
+        "OutOfBoundsTemperatureEvh": "",
         "OutOfBoundsTemperatureEvhConnection": "",
         "FilteredDevicesEvh": "",
         "FilteredDevicesEvhConnection": ""
