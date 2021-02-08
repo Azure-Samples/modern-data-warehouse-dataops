@@ -44,15 +44,10 @@ done
 ./scripts/deploy_azdo_service_connections_github.sh
 
 # Release pipelines require DEV_DATAFACTORY_NAME set, retrieve this value from .env.dev file
-export DEV_$(egrep '^DATAFACTORY_NAME' .env.dev | tail -1 | xargs)
+export DEV_"$(grep -E '^DATAFACTORY_NAME' .env.dev | tail -1 | xargs)"
 
 # Replace 'devlace/mdw-dataops-clone' to deployer's github project
 sed -i "s+devlace/mdw-dataops-clone+$GITHUB_REPO+" devops/azure-pipelines-cd-release.yml
 
 # Deploy pipelines
 ./scripts/deploy_azdo_pipelines.sh
-
-
-echo "Deployment complete!"
-echo "IMPORTANT: This script updating the Azure Pipeline YAML definitions to point to your Github repo."
-echo "ACTION REQUIRED: Push up these changes to your Github repo before proceeding. See README > Setup and Deployment for more details."

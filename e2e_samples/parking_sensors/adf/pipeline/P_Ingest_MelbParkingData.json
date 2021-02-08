@@ -53,7 +53,7 @@
 					]
 				},
 				"linkedServiceName": {
-					"referenceName": "Ls_AzureDatabricks_01",
+					"referenceName": "Ls_AzureDatabricks",
 					"type": "LinkedServiceReference"
 				}
 			},
@@ -217,7 +217,7 @@
 					]
 				},
 				"linkedServiceName": {
-					"referenceName": "Ls_AzureDatabricks_01",
+					"referenceName": "Ls_AzureDatabricks",
 					"type": "LinkedServiceReference"
 				}
 			},
@@ -253,7 +253,7 @@
 					}
 				},
 				"linkedServiceName": {
-					"referenceName": "Ls_AzureSQLDW_01",
+					"referenceName": "Ls_AzureSQLDW",
 					"type": "LinkedServiceReference"
 				}
 			}

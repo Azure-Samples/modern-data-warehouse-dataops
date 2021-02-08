@@ -263,12 +263,10 @@ More resources:
       To further customize the solution, set parameters in `arm.parameters` files located in the `infrastructure` folder.
 
 2. **Deploy Azure resources**
-   1. Clone locally the imported Github Repo, then `cd` into the `e2e_samples/parking_sensors` folder of the repo
+   1. Clone locally the imported Github Repo, then `cd` into the `e2e_samples/parking_sensors` folder of the repo.
    2. Run `./deploy.sh`.
-      - This may take around **~30mins or more** to run end to end. So grab yourself a cup of coffee... ☕
+      - This may take around **~45mins or more** to run end to end. So grab yourself a cup of coffee... ☕
       - After a successful deployment, you will find `.env.{environment_name}` files containing essential configuration information per environment. See [here](#deployed-resources) for list of deployed resources.
-   3. As part of the deployment script, this updated the Azure DevOps Release Pipeline YAML definition to point to your Github repository. **Commit and push up these changes.**
-      - This will trigger a Build and Release which will fail due to a lacking `adf_publish` branch -- this is expected. This branch will be created once you've setup git integration with your DEV Data Factory and publish a change.
 
 3. **Setup ADF git integration in DEV Data Factory**
     1. In the Azure Portal, navigate to the Data Factory in the **DEV** environment.
@@ -280,16 +278,16 @@ More resources:
         - Git repository name: **imported Github repository**
         - Collaboration branch: **master**
         - Root folder: **/e2e_samples/parking_sensors/adf**
-        - Import Existing Data Factory resource to repository: **Selected**
+        - Import Existing Data Factory resource to repository: **Unselected**
         - Branch to import resource into: **Use Collaboration**
     5. When prompted to select a working branch, select **master**
 
-   **IMPORTANT NOTE:** Only the **DEV** Data Factory should be setup with Git integration. Do **NOT** setup git integration in the STG and PROD Data Factories.
+   > **IMPORTANT NOTE:** Only the **DEV** Data Factory should be setup with Git integration. Do **NOT** setup git integration in the STG and PROD Data Factories.
 
 4. **Trigger an initial Release**
 
    1. In the **DEV** Data Factory portal, navigate to "Manage > Triggers". Select the `T_Sched` trigger and activate it by clicking on the "Play" icon next to it. Click `Publish` to publish changes.
-      - Publishing a change is **required** to generate the `adf_publish` branch which is required in the Release pipelines.
+      > Publishing a change is **required** to generate the `adf_publish` branch which is required in the Release pipelines.
    2. In Azure DevOps, notice a new run of the Build Pipeline (**mdw-park-ci-artifacts**) off `master`. This will build the Python package and SQL DACPAC, then publish these as Pipeline Artifacts.
    3. After completion, this should automatically trigger the Release Pipeline (**mdw-park-cd-release**). This will deploy the artifacts across environments.
       - You may need to authorize the Pipelines initially to use the Service Connection for the first time.

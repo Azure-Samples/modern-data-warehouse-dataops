@@ -73,11 +73,11 @@ createTrigger () {
 echo "Deploying Data Factory artifacts."
 
 # Deploy all Linked Services
-createLinkedService "Ls_KeyVault_01"
-createLinkedService "Ls_AdlsGen2_01"
-createLinkedService "Ls_AzureSQLDW_01"
-createLinkedService "Ls_AzureDatabricks_01"
-createLinkedService "Ls_Rest_MelParkSensors_01"
+createLinkedService "Ls_KeyVault"
+createLinkedService "Ls_AdlsGen2"
+createLinkedService "Ls_AzureSQLDW"
+createLinkedService "Ls_AzureDatabricks"
+createLinkedService "Ls_Rest_MelParkSensors"
 # Deploy all Datasets
 createDataset "Ds_AdlsGen2_MelbParkingData"
 createDataset "Ds_REST_MelbParkingData"
@@ -94,8 +94,8 @@ echo "Completed deploying Data Factory artifacts."
 
 # # Commit changes to the LinkedServices
 # git checkout -b $COLLABORATION_BRANCH
-# git add $adfLsDir/Ls_KeyVault_01.json
-# git add $adfLsDir/Ls_AdlsGen2_01.json
+# git add $adfLsDir/Ls_KeyVault.json
+# git add $adfLsDir/Ls_AdlsGen2.json
 # git commit -m "fix: [deploy script] update Linked Service URL to point to correct DEV environment."
 # git push
 

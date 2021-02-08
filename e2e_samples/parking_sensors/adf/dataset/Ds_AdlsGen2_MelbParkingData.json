@@ -2,7 +2,7 @@
 	"name": "Ds_AdlsGen2_MelbParkingData",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "Ls_AdlsGen2_01",
+			"referenceName": "Ls_AdlsGen2",
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {

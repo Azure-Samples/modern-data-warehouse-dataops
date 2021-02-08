@@ -45,11 +45,11 @@ set -o nounset
 
 # Set account to where ARM template will be deployed to
 echo "Deploying to Subscription: $AZURE_SUBSCRIPTION_ID"
-az account set --subscription $AZURE_SUBSCRIPTION_ID
+az account set --subscription "$AZURE_SUBSCRIPTION_ID"
 
 # Create resource group
 echo "Creating resource group: $RESOURCE_GROUP_NAME"
-az group create --name "$RESOURCE_GROUP_NAME" --location "$RESOURCE_GROUP_LOCATION" --tags Environment=$ENV_NAME
+az group create --name "$RESOURCE_GROUP_NAME" --location "$RESOURCE_GROUP_LOCATION" --tags Environment="$ENV_NAME"
 
 # By default, set all KeyVault permission to deployer
 # Retrieve KeyVault User Id
@@ -61,7 +61,7 @@ arm_output=$(az deployment group create \
     --resource-group "$RESOURCE_GROUP_NAME" \
     --template-file "./infrastructure/azuredeploy.json" \
     --parameters @"./infrastructure/azuredeploy.parameters.${ENV_NAME}.json" \
-    --parameters keyvault_owner_object_id=${kv_owner_object_id} deployment_id=${DEPLOYMENT_ID} sqlServerPassword=${AZURESQL_SERVER_PASSWORD} \
+    --parameters keyvault_owner_object_id="${kv_owner_object_id}" deployment_id="${DEPLOYMENT_ID}" sqlServerPassword="${AZURESQL_SERVER_PASSWORD}" \
     --output json)
 
 if [[ -z $arm_output ]]; then
@@ -74,14 +74,16 @@ fi
 # CREATE AND CONFIGURE SERVICE PRINCIPAL FOR ADLA GEN2
 
 # Retrieve storage account name
-export AZURE_STORAGE_ACCOUNT=$(echo $arm_output | jq -r '.properties.outputs.storage_account_name.value')
+azure_storage_account=$(echo "$arm_output" | jq -r '.properties.outputs.storage_account_name.value')
+export AZURE_STORAGE_ACCOUNT=$azure_storage_account
 
 # Retrieve storage account (ADLS Gen2) key
-export AZURE_STORAGE_KEY=$(az storage account keys list \
-    --account-name $AZURE_STORAGE_ACCOUNT \
-    --resource-group $RESOURCE_GROUP_NAME \
+azure_storage_key=$(az storage account keys list \
+    --account-name "$AZURE_STORAGE_ACCOUNT" \
+    --resource-group "$RESOURCE_GROUP_NAME" \
     --output json |
     jq -r '.[0].value')
+export AZURE_STORAGE_KEY=$azure_storage_key
 
 # Retrieve full storage account azure id
 stor_id=$(az storage account show \
@@ -93,7 +95,7 @@ stor_id=$(az storage account show \
 # Add file system storage account
 storage_file_system=datalake
 echo "Creating ADLS Gen2 File system: $storage_file_system"
-az storage container create --name $storage_file_system
+az storage container create --name "$storage_file_system" --account-key "$azure_storage_key" --name "$storage_file_system"
 
 echo "Creating folders within the file system."
 # Create folders for databricks libs
@@ -111,16 +113,19 @@ az storage blob upload --container-name $storage_file_system \
     --file data/seed/dim_time.csv --name "data/seed/dim_time/dim_time.csv"
 
 # Create SP and grant correct rights to storage account
-sp_stor_name=$(echo $arm_output | jq -r '.properties.outputs.service_principal_storage_name.value')
+sp_stor_name=$(echo "$arm_output" | jq -r '.properties.outputs.service_principal_storage_name.value')
 echo "Creating Service Principal (SP) for access to ADLA Gen2: '$sp_stor_name'"
 sp_stor_out=$(az ad sp create-for-rbac \
     --role "Storage Blob Data Contributor" \
     --scopes "$stor_id" \
-    --name $sp_stor_name \
+    --name "$sp_stor_name" \
     --output json)
-export SP_STOR_ID=$(echo $sp_stor_out | jq -r '.appId')
-export SP_STOR_PASS=$(echo $sp_stor_out | jq -r '.password')
-export SP_STOR_TENANT=$(echo $sp_stor_out | jq -r '.tenant')
+sp_stor_id=$(echo "$sp_stor_out" | jq -r '.appId')
+export SP_STOR_ID=$sp_stor_id
+sp_stor_pass=$(echo "$sp_stor_out" | jq -r '.password')
+export SP_STOR_PASS=$sp_stor_pass
+sp_stor_tenant=$(echo "$sp_stor_out" | jq -r '.tenant')
+export SP_STOR_TENANT=$sp_stor_tenant
 
 
 ###################
@@ -128,14 +133,18 @@ export SP_STOR_TENANT=$(echo $sp_stor_out | jq -r '.tenant')
 
 echo "Retrieving SQL Server information from the deployment."
 # Retrieve SQL creds
-export SQL_SERVER_NAME=$(echo $arm_output | jq -r '.properties.outputs.sql_server_name.value')
-export SQL_SERVER_USERNAME=$(echo $arm_output | jq -r '.properties.outputs.sql_server_username.value')
-export SQL_SERVER_PASSWORD=$(echo $arm_output | jq -r '.properties.outputs.sql_server_password.value')
-export SQL_DW_DATABASE_NAME=$(echo $arm_output | jq -r '.properties.outputs.sql_dw_database_name.value')
+sql_server_name=$(echo "$arm_output" | jq -r '.properties.outputs.sql_server_name.value')
+export SQL_SERVER_NAME=$sql_server_name
+sql_server_username=$(echo "$arm_output" | jq -r '.properties.outputs.sql_server_username.value')
+export SQL_SERVER_USERNAME=$sql_server_username
+sql_server_password=$(echo "$arm_output" | jq -r '.properties.outputs.sql_server_password.value')
+export SQL_SERVER_PASSWORD=$sql_server_password
+sql_dw_database_name=$(echo "$arm_output" | jq -r '.properties.outputs.sql_dw_database_name.value')
+export SQL_DW_DATABASE_NAME=$sql_dw_database_name
 
 # SQL Connection String
 sql_dw_connstr_nocred=$(az sql db show-connection-string --client ado.net \
-    --name $SQL_DW_DATABASE_NAME --server $SQL_SERVER_NAME --output json |
+    --name "$SQL_DW_DATABASE_NAME" --server "$SQL_SERVER_NAME" --output json |
     jq -r .)
 sql_dw_connstr_uname=${sql_dw_connstr_nocred/<username>/$SQL_SERVER_USERNAME}
 sql_dw_connstr_uname_pass=${sql_dw_connstr_uname/<password>/$SQL_SERVER_PASSWORD}
@@ -145,35 +154,36 @@ sql_dw_connstr_uname_pass=${sql_dw_connstr_uname/<password>/$SQL_SERVER_PASSWORD
 # APPLICATION INSIGHTS
 
 echo "Retrieving ApplicationInsights information from the deployment."
-appinsights_name=$(echo $arm_output | jq -r '.properties.outputs.appinsights_name.value')
-export APPINSIGHTS_KEY=$(az monitor app-insights component show \
+appinsights_name=$(echo "$arm_output" | jq -r '.properties.outputs.appinsights_name.value')
+appinsights_key=$(az monitor app-insights component show \
     --app "$appinsights_name" \
     --resource-group "$RESOURCE_GROUP_NAME" \
     --output json |
     jq -r '.instrumentationKey')
+export APPINSIGHTS_KEY=$appinsights_key
 
 
 # ###########################
 # # RETRIEVE DATABRICKS INFORMATION AND CONFIGURE WORKSPACE
 # 
 echo "Retrieving Databricks information from the deployment."
-# databricks_location=$(echo $arm_output | jq -r '.properties.outputs.databricks_location.value')
-databricks_workspace_id=$(echo $arm_output | jq -r '.properties.outputs.databricks_workspace_id.value')
-export DATABRICKS_HOST=https://$(echo $arm_output | jq -r '.properties.outputs.databricks_workspace.value.workspaceUrl')
+databricks_workspace_id=$(echo "$arm_output" | jq -r '.properties.outputs.databricks_workspace_id.value')
+databricks_host=https://$(echo "$arm_output" | jq -r '.properties.outputs.databricks_workspace.value.workspaceUrl')
+export DATABRICKS_HOST=$databricks_host
 
 # Retrieve databricks PAT token
 echo "Generating a Databricks PAT token."
 databricks_global_token=$(az account get-access-token --resource 2ff814a6-3304-4ab8-85cb-cd0e6f879c1d --output json | jq -r .accessToken) # Databricks app global id
 azure_api_token=$(az account get-access-token --resource https://management.core.windows.net/ --output json | jq -r .accessToken)
-api_response=$(curl -sf $DATABRICKS_HOST/api/2.0/token/create \
+api_response=$(curl -sf "$DATABRICKS_HOST"/api/2.0/token/create \
   -H "Authorization: Bearer $databricks_global_token" \
   -H "X-Databricks-Azure-SP-Management-Token:$azure_api_token" \
   -H "X-Databricks-Azure-Workspace-Resource-Id:$databricks_workspace_id" \
   -d '{ "comment": "For deployment" }')
-databricks_token=$(echo $api_response | jq -r '.token_value')
+databricks_token=$(echo "$api_response" | jq -r '.token_value')
 export DATABRICKS_TOKEN=$databricks_token
 
-echo "Waiting for Databricks workspace to be ready..."
+echo "Waiting for Databricks workspace to be ready..." # TEMP
 sleep 3m # It takes a while for a databricks workspace to be ready for new clusters.
 
 # Configure databricks
@@ -181,35 +191,26 @@ sleep 3m # It takes a while for a databricks workspace to be ready for new clust
 
 
 ####################
-# DATA FACTORY
+# RETREIVE KEY VAULT DETAILS
 
 # Retrieve KeyVault details
 echo "Retrieving KeyVault information from the deployment."
-kv_name=$(echo $arm_output | jq -r '.properties.outputs.keyvault_name.value')
+kv_name=$(echo "$arm_output" | jq -r '.properties.outputs.keyvault_name.value')
 export KV_URL=https://$kv_name.vault.azure.net/
 
-echo "Updating Data Factory LinkedService to point to newly deployed resources (KeyVault and DataLake)."
-# Create a copy of the ADF dir into a .tmp/ folder.
-adfTempDir=.tmp/adf
-mkdir -p $adfTempDir && cp -a adf/ .tmp/
-# Update ADF LinkedServices to point to newly deployed Datalake URL, KeyVault URL, and Databricks workspace URL
-tmpfile=.tmpfile
-adfLsDir=$adfTempDir/linkedService
-jq --arg kvurl "$KV_URL" '.properties.typeProperties.baseUrl = $kvurl' $adfLsDir/Ls_KeyVault_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_KeyVault_01.json
-jq --arg databricksWorkspaceUrl "$DATABRICKS_HOST" '.properties.typeProperties.domain = $databricksWorkspaceUrl' $adfLsDir/Ls_AzureDatabricks_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AzureDatabricks_01.json
-jq --arg datalakeUrl "https://$AZURE_STORAGE_ACCOUNT.dfs.core.windows.net" '.properties.typeProperties.url = $datalakeUrl' $adfLsDir/Ls_AdlsGen2_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AdlsGen2_01.json
 
-# Deploy ADF artifacts
-export DATAFACTORY_NAME=$(echo $arm_output | jq -r '.properties.outputs.datafactory_name.value')
-export ADF_DIR=$adfTempDir
-. ./scripts/deploy_adf_artifacts.sh
+####################
+# CREATE SERVICE PRINCIPAL FOR ADF INTEGRATION TESTING
 
-# SP for integration tests
-sp_adf_name=$(echo $arm_output | jq -r '.properties.outputs.service_principal_datafactory_name.value')
+datafactory_name=$(echo "$arm_output" | jq -r '.properties.outputs.datafactory_name.value')
+export DATAFACTORY_NAME=$datafactory_name
+sp_adf_name=$(echo "$arm_output" | jq -r '.properties.outputs.service_principal_datafactory_name.value')
+export SP_ADF_NAME=$sp_adf_name
 
+# Grant Data Factory contributor rights to SP
 max_retry=36
 counter=1
-until sp_adf_out=$(az ad sp create-for-rbac --role "Data Factory contributor" --scopes "/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP_NAME/providers/Microsoft.DataFactory/factories/$DATAFACTORY_NAME" --name "$sp_adf_name" --output json)
+until sp_adf_out=$(az ad sp create-for-rbac --role "Data Factory contributor" --scopes "/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP_NAME/providers/Microsoft.DataFactory/factories/$DATAFACTORY_NAME" --name "$SP_ADF_NAME" --output json)
 do
    sleep 1
    [[ counter -eq $max_retry ]] && echo "Failed!" && exit 1
@@ -217,36 +218,62 @@ do
    ((counter++))
 done
 
-export SP_ADF_ID=$(echo $sp_adf_out | jq -r '.appId')
-export SP_ADF_PASS=$(echo $sp_adf_out | jq -r '.password')
-export SP_ADF_TENANT=$(echo $sp_adf_out | jq -r '.tenant')
+sp_adf_id=$(echo "$sp_adf_out" | jq -r '.appId')
+export SP_ADF_ID=$sp_adf_id
+sp_adf_pass=$(echo "$sp_adf_out" | jq -r '.password')
+export SP_ADF_PASS=$sp_adf_pass
+sp_adf_tenant=$(echo "$sp_adf_out" | jq -r '.tenant')
+export SP_ADF_TENANT=$sp_adf_tenant
 
 
 ####################
 # SAVE RELEVANT SECRETS IN KEYVAULT
 
 echo "Storing secrets in KeyVault."
-az keyvault secret set --vault-name $kv_name --name "subscriptionId" --value "$AZURE_SUBSCRIPTION_ID"
-az keyvault secret set --vault-name $kv_name --name "kvUrl" --value "$KV_URL"
-az keyvault secret set --vault-name $kv_name --name "sqlsrvrName" --value "$SQL_SERVER_NAME"
-az keyvault secret set --vault-name $kv_name --name "sqlsrvUsername" --value "$SQL_SERVER_USERNAME"
-az keyvault secret set --vault-name $kv_name --name "sqlsrvrPassword" --value "$SQL_SERVER_PASSWORD"
-az keyvault secret set --vault-name $kv_name --name "sqldwDatabaseName" --value "$SQL_DW_DATABASE_NAME"
-az keyvault secret set --vault-name $kv_name --name "sqldwConnectionString" --value "$sql_dw_connstr_uname_pass"
-az keyvault secret set --vault-name $kv_name --name "datalakeAccountName" --value "$AZURE_STORAGE_ACCOUNT"
-az keyvault secret set --vault-name $kv_name --name "datalakeKey" --value "$AZURE_STORAGE_KEY"
-az keyvault secret set --vault-name $kv_name --name "spStorName" --value "$sp_stor_name"
-az keyvault secret set --vault-name $kv_name --name "spStorId" --value "$SP_STOR_ID"
-az keyvault secret set --vault-name $kv_name --name "spStorPass" --value "$SP_STOR_PASS"
-az keyvault secret set --vault-name $kv_name --name "spStorTenantId" --value "$SP_STOR_TENANT"
-az keyvault secret set --vault-name $kv_name --name "databricksDomain" --value "$DATABRICKS_HOST"
-az keyvault secret set --vault-name $kv_name --name "databricksToken" --value "$DATABRICKS_TOKEN"
-az keyvault secret set --vault-name $kv_name --name "applicationInsightsKey" --value "$APPINSIGHTS_KEY"
-az keyvault secret set --vault-name $kv_name --name "adfName" --value "$DATAFACTORY_NAME"
-az keyvault secret set --vault-name $kv_name --name "spAdfName" --value "$sp_adf_name"
-az keyvault secret set --vault-name $kv_name --name "spAdfId" --value "$SP_ADF_ID"
-az keyvault secret set --vault-name $kv_name --name "spAdfPass" --value "$SP_ADF_PASS"
-az keyvault secret set --vault-name $kv_name --name "spAdfTenantId" --value "$SP_ADF_TENANT"
+az keyvault secret set --vault-name "$kv_name" --name "subscriptionId" --value "$AZURE_SUBSCRIPTION_ID"
+az keyvault secret set --vault-name "$kv_name" --name "kvUrl" --value "$KV_URL"
+az keyvault secret set --vault-name "$kv_name" --name "sqlsrvrName" --value "$SQL_SERVER_NAME"
+az keyvault secret set --vault-name "$kv_name" --name "sqlsrvUsername" --value "$SQL_SERVER_USERNAME"
+az keyvault secret set --vault-name "$kv_name" --name "sqlsrvrPassword" --value "$SQL_SERVER_PASSWORD"
+az keyvault secret set --vault-name "$kv_name" --name "sqldwDatabaseName" --value "$SQL_DW_DATABASE_NAME"
+az keyvault secret set --vault-name "$kv_name" --name "sqldwConnectionString" --value "$sql_dw_connstr_uname_pass"
+az keyvault secret set --vault-name "$kv_name" --name "datalakeAccountName" --value "$AZURE_STORAGE_ACCOUNT"
+az keyvault secret set --vault-name "$kv_name" --name "datalakeKey" --value "$AZURE_STORAGE_KEY"
+az keyvault secret set --vault-name "$kv_name" --name "spStorName" --value "$sp_stor_name"
+az keyvault secret set --vault-name "$kv_name" --name "spStorId" --value "$SP_STOR_ID"
+az keyvault secret set --vault-name "$kv_name" --name "spStorPass" --value "$SP_STOR_PASS"
+az keyvault secret set --vault-name "$kv_name" --name "spStorTenantId" --value "$SP_STOR_TENANT"
+az keyvault secret set --vault-name "$kv_name" --name "databricksDomain" --value "$DATABRICKS_HOST"
+az keyvault secret set --vault-name "$kv_name" --name "databricksToken" --value "$DATABRICKS_TOKEN"
+az keyvault secret set --vault-name "$kv_name" --name "applicationInsightsKey" --value "$APPINSIGHTS_KEY"
+az keyvault secret set --vault-name "$kv_name" --name "adfName" --value "$DATAFACTORY_NAME"
+az keyvault secret set --vault-name "$kv_name" --name "spAdfName" --value "$SP_ADF_NAME"
+az keyvault secret set --vault-name "$kv_name" --name "spAdfId" --value "$SP_ADF_ID"
+az keyvault secret set --vault-name "$kv_name" --name "spAdfPass" --value "$SP_ADF_PASS"
+az keyvault secret set --vault-name "$kv_name" --name "spAdfTenantId" --value "$SP_ADF_TENANT"
+
+
+####################
+# UPDATE DATA FACTORY LINKED SERVICES
+
+# Update ADF LinkedServices to point to newly deployed Datalake URL, DataSource URL and KeyVault URL - only for Dev; Stg and Prod go through CI/CD Deployment
+if [ "$ENV_NAME" = dev ]; then
+    echo "Updating DEV Data Factory LinkedService to point to newly deployed resources (KeyVault and DataLake)."
+    # Update ADF LinkedServices to point to newly deployed Datalake URL, KeyVault URL, and Databricks workspace URL
+    tmpfile=.tmpfile
+    adfLsDir=./adf/linkedService
+    jq --arg kvurl "$KV_URL" '.properties.typeProperties.baseUrl = $kvurl' $adfLsDir/Ls_KeyVault.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_KeyVault.json
+    jq --arg databricksWorkspaceUrl "$DATABRICKS_HOST" '.properties.typeProperties.domain = $databricksWorkspaceUrl' $adfLsDir/Ls_AzureDatabricks.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AzureDatabricks.json
+    jq --arg datalakeUrl "https://$AZURE_STORAGE_ACCOUNT.dfs.core.windows.net" '.properties.typeProperties.url = $datalakeUrl' $adfLsDir/Ls_AdlsGen2.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AdlsGen2.json
+
+    # Commit files back to branch so they are pulled from dev ADF
+    git add $adfLsDir/Ls_KeyVault.json
+    git add $adfLsDir/Ls_AzureDatabricks.json
+    git add $adfLsDir/Ls_AdlsGen2.json
+    git commit -m "Updated Linked Services"
+    git push origin
+fi
+
 
 ####################
 # AZDO Azure Service Connection and Variables Groups
@@ -259,7 +286,7 @@ az keyvault secret set --vault-name $kv_name --name "spAdfTenantId" --value "$SP
 
 env_file=".env.${ENV_NAME}"
 echo "Appending configuration to .env file."
-cat << EOF >> $env_file
+cat << EOF >> "$env_file"
 
 # ------ Configuration from deployment on ${TIMESTAMP} -----------
 RESOURCE_GROUP_NAME=${RESOURCE_GROUP_NAME}
