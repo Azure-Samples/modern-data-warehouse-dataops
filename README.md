@@ -32,8 +32,10 @@ The samples are either focused on a single azure service or showcases an end to 
 ### Single Technology Samples
 
 - [Azure SQL](single_tech_samples/azuresql/)
-Coming soon..
 - [Data Factory](single_tech_samples/datafactory/)
+
+Coming soon..
+
 - [Azure Databricks](single_tech_samples/databricks/)
 - [Stream Analytics](single_tech_samples/streamanalytics/)
 - [Azure Synapse (formerly SQLDW)](single_tech_samples/synapseanalytics/)
