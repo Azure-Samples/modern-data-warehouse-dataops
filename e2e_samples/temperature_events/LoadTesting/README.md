@@ -26,7 +26,7 @@ Select your Azure subscription, keyvault, and select the following secrets that 
 
  ![var_group_secrets](../../../docs/images/var_group_secrets.png)
 
-Then, you can use these keyvault secrets directly in pipeline by specifying the variable group:
+You are able to use these keyvault secrets directly in the pipeline, as the variable group is defined in the `azure-pipeline.yml` file
 ```
 variables:
 - group: load-testing-secrets
