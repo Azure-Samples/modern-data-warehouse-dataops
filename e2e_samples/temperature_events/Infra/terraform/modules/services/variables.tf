@@ -42,7 +42,7 @@ variable "name" {
 variable "event_hub_names" {
   type        = list(string)
   description = "List of string value appended to Eventhubs"
-  default     = ["Analytics", "Device", "OutOfBoundsTemperature", "TemperatureDevice"]
+  default     = ["Analytics", "Ingest", "OutOfBoundsTemperature", "FilteredDevices"]
 }
 
 variable "functions_names" {

@@ -330,12 +330,12 @@ The logic of the Azure Functions are kept simple to demonstrate the end to end p
 
 ![Device ID filter](images/function-deviceidfilter.png?raw=true "Device ID filter")
 
-All temperature sensors are sending their data to the `evh-Device` Event Hub. Different pipelines can then consume and filter to the subset that they want to focus on. In this pipeline we are filtering out all DeviceIds above 1,000.
+All temperature sensors are sending their data to the `evh-ingest` Event Hub. Different pipelines can then consume and filter to the subset that they want to focus on. In this pipeline we are filtering out all DeviceIds above 1,000.
 
 ```javascript
 // psuedoscript
 if DeviceId < 1000
-    forward to evh-TemperatureDevice
+    forward to evh-filteredevices
 else DeviceId >=1000
     ignore
 ```
