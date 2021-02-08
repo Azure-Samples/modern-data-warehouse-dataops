@@ -100,3 +100,9 @@ resource "azurerm_key_vault_secret" "kv_appinsights_conn_string" {
   key_vault_id = azurerm_key_vault.kv.id
   depends_on   = [azurerm_key_vault_access_policy.keyvault_policy, azurerm_application_insights.app_insights, azurerm_key_vault_access_policy.azurerm_client_keyvault_policy]
 }
+
+resource "azurerm_key_vault_secret" "kv_subsciption_id" {
+  name         = "subscription_id"
+  value        = data.azurerm_client_config.current.subscription_id
+  key_vault_id = azurerm_key_vault.kv.id
+}
