@@ -31,7 +31,13 @@ You are able to use these keyvault secrets directly in the pipeline, as the vari
 variables:
 - group: load-testing-secrets
 ```
-
+P.S. Remember to change the resource group and service connection name in the pipeline yaml.
+```
+- name: ResourceGroup
+  value: rg-tempevt-dev
+- name: ServiceConnection
+  value: sample-dataops
+```
 ### <u>Service Connections</u>
 
 You will also need to create a service connection so that your pipeline can access/create resources in your azure subscription. Follow [this documentation](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml) to set up the service connection.
