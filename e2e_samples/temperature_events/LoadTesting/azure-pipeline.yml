@@ -7,7 +7,7 @@ pool:
 
 # Store your eventhub connection string, eventhub name, and subscription id in keyvault.
 # In Keyvault:
-# TemperatureDevice-name: name of the eventhub.
+# TemperatureDevice-name: name of the eventhub. (Currently, eventhub namespace uses the same name as eventhub in our terraform.)
 # TemperatureDevice-conn: connection string of the eventhub.
 # subscription-id: subscription Id of the project.
 
