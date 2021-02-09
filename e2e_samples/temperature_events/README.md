@@ -193,10 +193,10 @@ The following summarizes key learnings and best practices demonstrated by this s
 - If load testing data is not representative, an expensive section may be under tested. Which would falsely indicate that it would perform at production loads.
 - It is important to do capacity planning on each stage of the pipeline. In this sample, it is expected that 50% of the devices will be filtered out in the first Azure Function (due not being the subset that we are interested in). It is expected that 20% of all temperature sensors will have values that need investigating and will go to the "bad temperature" Event Hub.
 
-### 3. Validate test data early.  ??Delete this??
+### 3. Validate test data early
 
-- Same as above?
-- When initially testing, the crafted test data was not created at the correct ratios. We load tested everything at 100% instead of at their ratios. Which lead to an initial over-provisioning into production.
+- When initially testing, the crafted test data was not created at the correct ratios. It resulted in no filtering and everything being hit at 100% instead of smaller ratios deeper in the pipeline. This lead to an initial over-provisioning when testing and planning.
+- Validating our test data earlier would have prevented this oversight.
 
 ### 4. Have a CI/CD pipeline
 
