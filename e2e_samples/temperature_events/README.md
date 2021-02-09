@@ -40,8 +40,8 @@ The sample demonstrates how Events can be processed in a streaming serverless pi
       - [d) Azure Function Scaling](#d-azure-function-scaling)
     - [How to show metrics on dashboard?](#how-to-show-metrics-on-dashboard)
   - [Load testing](#load-testing)
-    - [Defining data definitions to test different pipeline branches](#defining-data-definitions-to-test-different-pipeline-branches)
-    - [Weighting and generating load](#weighting-and-generating-load)
+    - [Load testing architecture](#load-testing-architecture)
+    - [Defining pipeline branches and creating weighted sample data](#defining-pipeline-branches-and-creating-weighted-sample-data)
   - [Azure Function logic](#azure-function-logic)
     - [Device Filter](#device-filter)
     - [Temperature Filter](#temperature-filter)
@@ -172,10 +172,10 @@ Covers the operations processes that keep an application running in production.
 
 ### Security
 
-- _TODO: Threat Modelling_
-- _TODO: Native Control Usage_
-- _TODO: Identity and Access Control_
-- _TODO: Information Protection_
+- Secrets, connection strings, and other environmental variables are stored in Azure Key Vault. This prevents accidental leaking or committing secrets into a codebase. [Azure docs - About Azure Key Vault secrets](https://docs.microsoft.com/en-us/azure/key-vault/secrets/about-secrets)
+- Access to Event Hubs are restricted via SAS tokens. Only services that hold the Shared Access Signature are able to interact with them. [Azure docs - Authenticate access to Event Hubs resources using shared access signatures (SAS)](https://docs.microsoft.com/en-us/azure/event-hubs/authenticate-shared-access-signature)
+  - The access security can be enhanced further by switching to using managed identities. [Authenticate with a managed identity to access Event Hubs Resources](https://docs.microsoft.com/en-us/azure/event-hubs/authenticate-managed-identity)
+- Access to Azure portal, Application Insights, etc are restricted via native access polices built into Azure.
 
 ## Key Learnings
 
@@ -193,10 +193,10 @@ The following summarizes key learnings and best practices demonstrated by this s
 - If load testing data is not representative, an expensive section may be under tested. Which would falsely indicate that it would perform at production loads.
 - It is important to do capacity planning on each stage of the pipeline. In this sample, it is expected that 50% of the devices will be filtered out in the first Azure Function (due not being the subset that we are interested in). It is expected that 20% of all temperature sensors will have values that need investigating and will go to the "bad temperature" Event Hub.
 
-### 3. Validate test data early.  ??Delete this??
+### 3. Validate test data early
 
-- Same as above?
-- When initially testing, the crafted test data was not created at the correct ratios. We load tested everything at 100% instead of at their ratios. Which lead to an initial over-provisioning into production.
+- When initially testing, the crafted test data was not created at the correct ratios. It resulted in no filtering and everything being hit at 100% instead of smaller ratios deeper in the pipeline. This lead to an initial over-provisioning when testing and planning.
+- Validating our test data earlier would have prevented this oversight.
 
 ### 4. Have a CI/CD pipeline
 
@@ -299,15 +299,28 @@ _TODO: <Do the cool Azure Portal dashboard that Masa had></Do>_
 
 ### Load testing
 
-Resources:
+The load testing script allows you to quickly generate load against your infrastructure. You can then use the observability aspects to drill in and see how the architecture responds. Azure functions scaling up, Event Hub queue lengths getting longer, and stabilising, etc. It will assist in finding bottlenecks in any business logic you have added to the Azure Functions, and if your Azure Architecture is scaling as expected.
+
+Getting started resources:
 
 - [Azure IoT Device Telemetry Simulator](https://github.com/Azure-Samples/Iot-Telemetry-Simulator/)
 - [Azure Well Architected Framework - Performance testing](https://docs.microsoft.com/en-us/azure/architecture/framework/scalability/performance-test)
 - [Load test for real time data processing | by Masayuki Ota](https://masayukiota.medium.com/load-test-for-real-time-data-processing-30a256a994ce)
 
-#### Defining data definitions to test different pipeline branches
+#### Load testing architecture
 
-#### Weighting and generating load
+The load testing can be invoked by the [IoTSimulator.ps1](loadtesting/IoTSimulator.ps1) script. This can be run locally via an authenticated Azure CLI session, or in an Azure DevOps pipeline using the load testing [azure-pipeline.yml](loadtesting/azure-pipeline.yml) pipeline definition.
+
+The script will orchestrate the test by automating these steps:
+
+- Create or use an existing Resource Group
+- Create an [Azure Container Instances](https://azure.microsoft.com/en-us/services/container-instances/) resource.
+- Deploy the [Azure IoT Device Telemetry Simulator](https://github.com/Azure-Samples/Iot-Telemetry-Simulator/) container, and scale it to the number of instances passed in as a parameter.
+- Coordinate them to simulate the specified number of devices, and send a certain number of messages.
+- Wait for it to complete.
+- Remove the Azure Container Instances resource.
+
+#### Defining pipeline branches and creating weighted sample data
 
 ### Azure Function logic
 
