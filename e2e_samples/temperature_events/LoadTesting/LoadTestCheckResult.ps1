@@ -41,7 +41,7 @@ $egress_num = $egress_metric.value[0].timeseries[0].data[0].total
 Write-Host "Incoming Messages during load test: $ingress_num messages"
 Write-Host "Outgoing Messages during load test: $egress_num messages"
 
-# If ingress > egress, test fails (just an example condition.)
+# If ingress <= egress, test passes (just an example condition.)
 if ($ingress_num -le $egress_num){
   Write-Host "Load test passed."
 } else {
