@@ -15,8 +15,6 @@ variables:
   value: 100
 - name: ContainerCount
   value: 2
-- name: ResourceGroup
-  value: rg-tempevt-dev
 - name: ServiceConnection
   value: sample-dataops
 
@@ -30,7 +28,7 @@ steps:
     scriptPath: e2e_samples/temperature_events/LoadTesting/IoTSimulator.ps1
     arguments: '-EventHubConnectionString "`"$(Ingest-conn)`"" 
     -DeviceCount $(DeviceCount) -MessageCount $(MessageCount) -Interval $(Interval) 
-    -ContainerCount $(ContainerCount) -ResourceGroup $(ResourceGroup)'
+    -ContainerCount $(ContainerCount) -ResourceGroup $(rg-name)'
 
 # There are some delays until the numbers are reflected in the metrics.
 - powershell: |
@@ -44,5 +42,5 @@ steps:
     azureSubscription: $(ServiceConnection)
     scriptType: pscore
     scriptPath: e2e_samples/temperature_events/LoadTesting/LoadTestCheckResult.ps1
-    arguments: '-SubscriptionId $(subscription-id) -ResourceGroup $(ResourceGroup) 
+    arguments: '-SubscriptionId $(subscription-id) -ResourceGroup $(rg-name) 
     -EvhNamespace $(Ingest-namespace) -EvhName $(Ingest-name)'

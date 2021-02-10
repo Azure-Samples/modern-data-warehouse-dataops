@@ -3,11 +3,11 @@
 ## Files:
 - **IoTSimulator.ps1**: This powershell script spins up Azure Container Instances by using the [IoT Simulator](https://github.com/Azure-Samples/Iot-Telemetry-Simulator). It tears down all container instances after sending the load as well.
 - **LoadTestCheckResult.ps1**: This powershell script gets the ingress and egress metrics for eventhub, and fails the load testing task if the total egress is smaller that the number of ingress. 
-- **azure-pipeline.yml**: This azure pipeline runs the two powershell scripts above. You can adjust the load that you want to pass into the IoTSimulator.ps1 script by changing the variables.
+- **loadtest-pipeline.yml**: This azure pipeline runs the two powershell scripts above. You can adjust the load that you want to pass into the IoTSimulator.ps1 script by changing the variables.
 
 ## Setup:
 ### <u>Azure Pipelines</u>
-Go to Azure DevOps -> Pipelines -> Select where your pipeline yaml and scripts exists. Remember to change the scriptPath configuration in the pipeline yaml to the path relative to your project root.
+Go to Azure DevOps -> Pipelines -> Create pipelines -> Put in ```e2e_samples/temperature_events/LoadTesting/loadtest-pipeline.yml``` or select wherever your pipeline yaml and scripts exists. If you are only using a part of this repository, remember to change the scriptPath configuration in the pipeline yaml to the path relative to your project root.
 ```
 ...
 scriptPath: e2e_samples/temperature_events/LoadTesting/IoTSimulator.ps1
@@ -23,18 +23,17 @@ Select your Azure subscription, keyvault, and select the following secrets that 
 - *Ingest-name*: name of the entry eventhub. 
 - *Ingest-conn*: connection string of the entry eventhub.
 - *subscription-id*: subscription Id of the project.
+- *rg-name*: name of the resource group.
 
  ![var_group_secrets](../../../docs/images/var_group_secrets.png)
 
-You are able to use these keyvault secrets directly in the pipeline, as the variable group is defined in the `azure-pipeline.yml` file
+You are able to use these keyvault secrets directly in the pipeline, as the variable group is defined in the `loadtest-pipeline.yml` file
 ```
 variables:
 - group: load-testing-secrets
 ```
-P.S. Remember to change the resource group and service connection name in the pipeline yaml.
+P.S. Remember to change the service connection name in the pipeline yaml if you created the service connection in a different name.
 ```
-- name: ResourceGroup
-  value: rg-tempevt-dev
 - name: ServiceConnection
   value: sample-dataops
 ```
