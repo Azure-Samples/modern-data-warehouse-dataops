@@ -27,7 +27,7 @@ variable "appsettings" {
   description = "Map of app settings that will be applied across all provisioned function apps"
 }
 
-variable "resource_name" {
+variable "name" {
   type        = string
   description = "Name of this service"
 }

@@ -458,4 +458,7 @@ MigrationBackup/
 **.env
 *pip.conf
 
-**/.terraform/
+# Terraform
+
+.terraform
+.terraform.lock.hcl

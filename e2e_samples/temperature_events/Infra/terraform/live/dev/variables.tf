@@ -1,28 +1,4 @@
 # ---------------------------------------------------------------------------------------------------------------------
-# REQUIRED PARAMETERS
-# You must provide a value for each of these parameters.
-# ---------------------------------------------------------------------------------------------------------------------
-variable "client_id" {
-  type        = string
-  description = "Client id (application id) of your service service principal"
-}
-
-variable "client_secret" {
-  type        = string
-  description = "Secret of service principal"
-}
-
-variable "subscription_id" {
-  type        = string
-  description = "Your Azure subscription id"
-}
-
-variable "tenant_id" {
-  type        = string
-  description = "Your Azure tenant id"
-}
-
-# ---------------------------------------------------------------------------------------------------------------------
 # OPTIONAL PARAMETERS
 # These parameters have reasonable defaults.
 # ---------------------------------------------------------------------------------------------------------------------
@@ -55,6 +31,12 @@ variable "eventhub_config" {
     partition_count   = 2
     message_retention = 1
   }
+}
+
+variable "name" {
+  type        = string
+  description = "The name of service"
+  default     = "tempevt"
 }
 
 variable "kv_sku" {
