@@ -113,3 +113,9 @@ resource "azurerm_key_vault_secret" "kv_subscription_id" {
   value        = data.azurerm_client_config.current.subscription_id
   key_vault_id = azurerm_key_vault.kv.id
 }
+
+resource "azurerm_key_vault_secret" "kv_rg" {
+  name         = "rg-name"
+  value        = azurerm_resource_group.rg.name
+  key_vault_id = azurerm_key_vault.kv.id
+}
