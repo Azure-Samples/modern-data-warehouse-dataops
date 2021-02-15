@@ -95,8 +95,8 @@ It makes use of the following azure services:
 There are 3 major steps to running the sample. Follow each sub-page in order:
 
 1. [Deploy the infrastructure with Terraform](infra/README.md)
-2. [Deploy the Azure Function logic](functions/README.md)
-3. [Run the load testing script](loadtesting/README.md)
+1. [Deploy the Azure Function logic](functions/README.md)
+1. [Run the load testing script](loadtesting/README.md)
 
 #### Deployed Resources
 
@@ -162,6 +162,7 @@ Covers the operations processes that keep an application running in production.
   - _TODO: Peak loads for the platform?_
 
 ### Reliability
+
 - Resiliancy in Architecture
   - The key resiliency aspects are created through a queue based architecture.  For queues the architecture is leveraging Azure Event Hubs which is highly reliable, with high availability and [geo-redundancy](https://docs.microsoft.com/en-us/azure/event-hubs/event-hubs-geo-dr).
 - Reliability allowance for scalability and performance
@@ -330,12 +331,12 @@ The logic of the Azure Functions are kept simple to demonstrate the end to end p
 
 ![Device ID filter](images/function-deviceidfilter.png?raw=true "Device ID filter")
 
-All temperature sensors are sending their data to the `evh-Device` Event Hub. Different pipelines can then consume and filter to the subset that they want to focus on. In this pipeline we are filtering out all DeviceIds above 1,000.
+All temperature sensors are sending their data to the `evh-ingest` Event Hub. Different pipelines can then consume and filter to the subset that they want to focus on. In this pipeline we are filtering out all DeviceIds above 1,000.
 
 ```javascript
 // psuedoscript
 if DeviceId < 1000
-    forward to evh-TemperatureDevice
+    forward to evh-filteredevices
 else DeviceId >=1000
     ignore
 ```
@@ -348,7 +349,7 @@ Splits the feed based on the temperature value. Any value of 100ºC and over are
 
 ```javascript
 // psuedoscript
-if DeviceId < 100 
+if DeviceId < 100
     forward to evh-analytics
 else DeviceId >=100 // it is too hot!
     forward to evh-outofboundstemperature

@@ -5,11 +5,11 @@
         "FUNCTIONS_WORKER_RUNTIME": "dotnet",
         "AnalyticsEvh": "",
         "AnalyticsEvhConnection": "",
-        "DeviceEvh": "",
-        "DeviceEvhConnection": "",                
-        "OutOfBoundsTemperatureEvh": "",        
+        "IngestEvh": "",
+        "IngestEvhConnection": "",
+        "OutOfBoundsTemperatureEvh": "",
         "OutOfBoundsTemperatureEvhConnection": "",
-        "TemperatureDeviceEvh": "",
-        "TemperatureDeviceEvhConnection": ""
+        "FilteredDevicesEvh": "",
+        "FilteredDevicesEvhConnection": ""
     }
 }

@@ -36,13 +36,13 @@ variable "kv_sku" {
 # ---------------------------------------------------------------------------------------------------------------------
 variable "name" {
   type        = string
-  description = "The name of service"  
+  description = "The name of service"
 }
 
 variable "event_hub_names" {
   type        = list(string)
   description = "List of string value appended to Eventhubs"
-  default     = ["Analytics", "Device", "OutOfBoundsTemperature", "TemperatureDevice"]
+  default     = ["Analytics", "Ingest", "OutOfBoundsTemperature", "FilteredDevices"]
 }
 
 variable "functions_names" {

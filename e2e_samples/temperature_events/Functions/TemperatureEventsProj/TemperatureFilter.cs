@@ -14,7 +14,7 @@ namespace TemperatureEventsProj
     public static class TemperatureFilter
     {
         [FunctionName("TemperatureFilter")]
-        public static async Task Run([EventHubTrigger("%TemperatureDeviceEvh%", Connection = "TemperatureDeviceEvhConnection")] EventData[] events,
+        public static async Task Run([EventHubTrigger("%FilteredDevicesEvh%", Connection = "FilteredDevicesEvhConnection")] EventData[] events,
             [EventHub("%AnalyticsEvh%", Connection = "AnalyticsEvhConnection")] IAsyncCollector<DeviceEvent> analyticsEvh,
             [EventHub("%OutOfBoundsTemperatureEvh%", Connection = "OutOfBoundsTemperatureEvhConnection")] IAsyncCollector<DeviceEvent> outOfBoundsEvh,
             ILogger log)

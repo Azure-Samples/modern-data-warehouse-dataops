@@ -39,7 +39,7 @@ terraform init -backend-config="storage_account_name=stmyterraformdev" -backend-
 ```
 
 ### #4 `terraform validate && terraform plan && terraform apply`
-Run the following commands to create the `myapp` infrastructure.  
+Run the following commands to create the `myapp` infrastructure.
 **Note:** Pick a unique name, do not use the value `myapp`.  e.g. `"name=bob2"`
 
 ```bash

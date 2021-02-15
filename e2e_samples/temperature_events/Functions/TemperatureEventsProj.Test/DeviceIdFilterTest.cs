@@ -15,11 +15,11 @@ namespace TemperatureEventsProj.Test
     [TestClass]
     public class DeviceIdFilterTest
     {
-        private Mock<IAsyncCollector<DeviceEvent>> temperatureDeviceEvh = new Mock<IAsyncCollector<DeviceEvent>>();
+        private Mock<IAsyncCollector<DeviceEvent>> filteredDevicesEvh = new Mock<IAsyncCollector<DeviceEvent>>();
         private Mock<ILogger> log = new Mock<ILogger>();
 
         [TestMethod]
-        public async Task TestTestTemperatureDeviceId()
+        public async Task TestTestFilteredDevicesId()
         {
             var deviceEvent = new DeviceEvent(999, default);
 
@@ -27,11 +27,11 @@ namespace TemperatureEventsProj.Test
 
             await Run(deviceEvent);
 
-            temperatureDeviceEvh.Verify(o => o.AddAsync(It.Is<DeviceEvent>(o => o.DeviceId == 999), default), Times.Once());
+            filteredDevicesEvh.Verify(o => o.AddAsync(It.Is<DeviceEvent>(o => o.DeviceId == 999), default), Times.Once());
         }
 
         [TestMethod]
-        public async Task TestTestNonTemperatureDeviceId()
+        public async Task TestTestNonFilteredDevicesId()
         {
             var deviceEvent = new DeviceEvent(1000, default);
 
@@ -39,12 +39,12 @@ namespace TemperatureEventsProj.Test
 
             await Run(deviceEvent);
 
-            temperatureDeviceEvh.Verify(o => o.AddAsync(It.IsAny<DeviceEvent>(), default), Times.Never());
+            filteredDevicesEvh.Verify(o => o.AddAsync(It.IsAny<DeviceEvent>(), default), Times.Never());
         }
 
         private async Task Run(DeviceEvent payload)
         {
-            await DeviceIdFilter.Run(new[] { convertEventData(payload) }, temperatureDeviceEvh.Object, log.Object);
+            await DeviceIdFilter.Run(new[] { convertEventData(payload) }, filteredDevicesEvh.Object, log.Object);
         }
 
         private EventData convertEventData(DeviceEvent payload)

@@ -14,8 +14,8 @@ namespace TemperatureEventsProj
     public static class DeviceIdFilter
     {
         [FunctionName("DeviceIdFilter")]
-        public static async Task Run([EventHubTrigger("%DeviceEvh%", Connection = "DeviceEvhConnection")] EventData[] events,
-            [EventHub("%TemperatureDeviceEvh%", Connection = "TemperatureDeviceEvhConnection")] IAsyncCollector<DeviceEvent> temperatureDeviceEvh,
+        public static async Task Run([EventHubTrigger("%IngestEvh%", Connection = "IngestEvhConnection")] EventData[] events,
+            [EventHub("%FilteredDevicesEvh%", Connection = "FilteredDevicesEvhConnection")] IAsyncCollector<DeviceEvent> filteredDevicesEvh,
             ILogger log)
         {
             var exceptions = new List<Exception>();
@@ -28,7 +28,7 @@ namespace TemperatureEventsProj
                     var deviceEvent = JsonConvert.DeserializeObject<DeviceEvent>(messageBody);
                     if (deviceEvent.DeviceId < 1000)
                     {
-                        await temperatureDeviceEvh.AddAsync(deviceEvent);
+                        await filteredDevicesEvh.AddAsync(deviceEvent);
                     }
                 }
                 catch (Exception e)

@@ -1,6 +1,6 @@
 <#
 This script creates several Azure Container Instances that runs the IoT Simulator.
-All resources, including the resource group, will be torn down automatically 
+All resources, including the resource group, will be torn down automatically
 after the simulators finish sending the load.
 #>
 param (
@@ -25,9 +25,9 @@ We want the load to generate:
 - 40% "good" data where deviceId <1,000 AND temperature <100
 - 10% "bad" data where deviceId <1,000 AND temperature >100
 #>
-$FilteredTemplate = '{ \"deviceId\": \"$.FilteredDeviceId\", \"temperature\": $.Temperature, \"time\": \"$.Time\" }' 
+$FilteredTemplate = '{ \"deviceId\": \"$.FilteredDeviceId\", \"temperature\": $.Temperature, \"time\": \"$.Time\" }'
 $GoodTemplate = '{ \"deviceId\": \"$.DeviceId\", \"temperature\": $.Temperature, \"time\": \"$.Time\" }'
-$BadTemplate = '{ \"deviceId\": \"$.DeviceId\", \"temperature\": $.BadTemperature, \"time\": \"$.Time\" }' 
+$BadTemplate = '{ \"deviceId\": \"$.DeviceId\", \"temperature\": $.BadTemperature, \"time\": \"$.Time\" }'
 $Variables = '[{name: \"DeviceId\", random: true, max: 999, min: 0}, {name: \"FilteredDeviceId\", random: true, min: 1000}, {name: \"Temperature\", random: true, max: 99, min: 0}, {name: \"BadTemperature\", random: true, min: 100}]'
 
 $i = 0
@@ -54,9 +54,9 @@ Write-Host "Creation of" $ContainerCount "container instances has started. Telem
 $currentTime = Get-Date -Format "o"
 Write-Host "##vso[task.setvariable variable=LoadTestStartTime]$currentTime"
 
-<# 
+<#
 Start tracking each container instance's state.
-Tear down the container instance if it finishes sending the load. 
+Tear down the container instance if it finishes sending the load.
 #>
 Write-Host "Start checking the state of each container instances: "
 

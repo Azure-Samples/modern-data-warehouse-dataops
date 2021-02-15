@@ -1,7 +1,7 @@
 <#
 This script fetches the Incoming Messages and Outgoing Messages Metrics for the eventhub
-where the IoT Simulator sends the load to. If the total num of Incoming Messages <= Outgoing Messages, 
-we let this automated load test pass. We suggest that you look into the metrics through portal manually 
+where the IoT Simulator sends the load to. If the total num of Incoming Messages <= Outgoing Messages,
+we let this automated load test pass. We suggest that you look into the metrics through portal manually
 again to confirm or gain more insights about whether the system is behaving as expected.
 #>
 param (

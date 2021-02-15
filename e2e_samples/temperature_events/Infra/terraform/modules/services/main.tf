@@ -93,10 +93,29 @@ resource "azurerm_key_vault_secret" "kv_eventhub_name" {
   depends_on   = [azurerm_key_vault_access_policy.keyvault_policy, azurerm_key_vault_access_policy.azurerm_client_keyvault_policy]
 }
 
+resource "azurerm_key_vault_secret" "kv_eventhub_name_space" {
+  count        = length(var.event_hub_names)
+  name         = "${element(var.event_hub_names, count.index)}-namespace"
+  value        = element(module.eventhubs, count.index)["eventhub_namespace"]
+  key_vault_id = azurerm_key_vault.kv.id
+  depends_on   = [azurerm_key_vault_access_policy.keyvault_policy, azurerm_key_vault_access_policy.azurerm_client_keyvault_policy]
+}
 
 resource "azurerm_key_vault_secret" "kv_appinsights_conn_string" {
   name         = var.app_insights_name
   value        = azurerm_application_insights.app_insights.instrumentation_key
   key_vault_id = azurerm_key_vault.kv.id
   depends_on   = [azurerm_key_vault_access_policy.keyvault_policy, azurerm_application_insights.app_insights, azurerm_key_vault_access_policy.azurerm_client_keyvault_policy]
+}
+
+resource "azurerm_key_vault_secret" "kv_subscription_id" {
+  name         = "subscription-id"
+  value        = data.azurerm_client_config.current.subscription_id
+  key_vault_id = azurerm_key_vault.kv.id
+}
+
+resource "azurerm_key_vault_secret" "kv_rg" {
+  name         = "rg-name"
+  value        = azurerm_resource_group.rg.name
+  key_vault_id = azurerm_key_vault.kv.id
 }
