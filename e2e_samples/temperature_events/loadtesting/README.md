@@ -7,10 +7,10 @@
 
 ## Setup:
 ### <u>Azure Pipelines</u>
-Go to Azure DevOps -> Pipelines -> Create pipelines -> Put in ```e2e_samples/temperature_events/LoadTesting/loadtest-pipeline.yml``` or select wherever your pipeline yaml and scripts exists. If you are only using a part of this repository, remember to change the scriptPath configuration in the pipeline yaml to the path relative to your project root.
+Go to Azure DevOps -> Pipelines -> Create pipelines -> Put in ```e2e_samples/temperature_events/loadtesting/loadtest-pipeline.yml``` or select wherever your pipeline yaml and scripts exists. If you are only using a part of this repository, remember to change the scriptPath configuration in the pipeline yaml to the path relative to your project root.
 ```
 ...
-scriptPath: e2e_samples/temperature_events/LoadTesting/IoTSimulator.ps1
+scriptPath: e2e_samples/temperature_events/loadtesting/IoTSimulator.ps1
 ...
 ```
 ![azure_pipeline_setup](../../../docs/images/azure_pipeline_setup.png)
