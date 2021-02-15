@@ -25,7 +25,7 @@ steps:
   inputs:
     azureSubscription: $(ServiceConnection)
     scriptType: pscore
-    scriptPath: e2e_samples/temperature_events/LoadTesting/IoTSimulator.ps1
+    scriptPath: e2e_samples/temperature_events/loadtesting/IoTSimulator.ps1
     arguments: '-EventHubConnectionString "`"$(Ingest-conn)`"" 
     -DeviceCount $(DeviceCount) -MessageCount $(MessageCount) -Interval $(Interval) 
     -ContainerCount $(ContainerCount) -ResourceGroup $(rg-name)'
@@ -41,6 +41,6 @@ steps:
   inputs:
     azureSubscription: $(ServiceConnection)
     scriptType: pscore
-    scriptPath: e2e_samples/temperature_events/LoadTesting/LoadTestCheckResult.ps1
+    scriptPath: e2e_samples/temperature_events/loadtesting/LoadTestCheckResult.ps1
     arguments: '-SubscriptionId $(subscription-id) -ResourceGroup $(rg-name) 
     -EvhNamespace $(Ingest-namespace) -EvhName $(Ingest-name)'
