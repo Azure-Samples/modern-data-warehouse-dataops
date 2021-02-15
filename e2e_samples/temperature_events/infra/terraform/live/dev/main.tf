@@ -5,7 +5,6 @@ terraform {
 }
 
 provider "azurerm" {
-  skip_credentials_validation = true
   features {}
 }
 
