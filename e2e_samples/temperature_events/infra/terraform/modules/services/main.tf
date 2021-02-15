@@ -112,10 +112,12 @@ resource "azurerm_key_vault_secret" "kv_subscription_id" {
   name         = "subscription-id"
   value        = data.azurerm_client_config.current.subscription_id
   key_vault_id = azurerm_key_vault.kv.id
+  depends_on   = [azurerm_key_vault_access_policy.azurerm_client_keyvault_policy]
 }
 
 resource "azurerm_key_vault_secret" "kv_rg" {
   name         = "rg-name"
   value        = azurerm_resource_group.rg.name
   key_vault_id = azurerm_key_vault.kv.id
+  depends_on   = [azurerm_key_vault_access_policy.azurerm_client_keyvault_policy]
 }
