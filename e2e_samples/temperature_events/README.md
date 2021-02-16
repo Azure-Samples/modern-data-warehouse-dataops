@@ -55,6 +55,13 @@ The following shows the overall architecture of the solution.
 
 ![Architecture](images/temperature-events-architecture.png?raw=true "Architecture")
 
+Message payload
+Field name | Description
+-- | --
+deviceId | Device ID
+temperature | temperature reading sensor
+time | timestamp of value
+
 ### Technologies used
 
 It makes use of the following azure services:
@@ -328,6 +335,13 @@ The script will orchestrate the test by automating these steps:
 - Coordinate them to simulate the specified number of devices, and send a certain number of messages.
 - Wait for it to complete.
 - Remove the Azure Container Instances resource.
+
+Test message payload
+Field name | Description
+-- | --
+deviceId | simulated deviceID
+temperature | random temperature, in a ratio of good/bad readings
+time | timestamp of value
 
 #### Defining pipeline branches and creating weighted sample data
 
