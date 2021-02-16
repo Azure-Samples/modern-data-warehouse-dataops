@@ -77,22 +77,6 @@ It makes use of the following azure services:
 
 > **IMPORTANT NOTE:** As with all Azure Deployments, this will **incur associated costs**. Remember to teardown all related resources after use to avoid unnecessary costs. See [here](#deployed-resources) for list of deployed resources.
 
-### Prerequisites
-
-#### Accounts
-
-- [Github account](https://github.com/) [Optional]
-- [Azure Account](https://azure.microsoft.com/en-au/free/)
-  - *Permissions needed*: ability to create and deploy to an azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
-- [Azure DevOps Project](https://azure.microsoft.com/en-us/services/devops/)
-  - *Permissions needed*: ability to create [service connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml), [pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops&tabs=yaml) and [variable groups](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml).
-
-#### Software
-
-- [Azure CLI 2.18+](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
-- [Terraform 0.14+](https://learn.hashicorp.com/tutorials/terraform/install-cli)
-- [Azure Functions core tools](https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local) [Optional]
-
 ### Setup and Deployment
 
 There are 3 major steps to running the sample. Follow each sub-page in order:
@@ -101,7 +85,20 @@ There are 3 major steps to running the sample. Follow each sub-page in order:
 1. [Deploy the Azure Function logic](functions/README.md)
 1. [Run the load testing script](loadtesting/README.md)
 
-#### Deployed Resources
+### Prerequisites
+
+- Accounts
+  - [Github account](https://github.com/) [Optional]
+  - [Azure Account](https://azure.microsoft.com/en-au/free/)
+    - *Permissions needed*: ability to create and deploy to an azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
+  - [Azure DevOps Project](https://azure.microsoft.com/en-us/services/devops/)
+    - *Permissions needed*: ability to create [service connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml), [pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops&tabs=yaml) and [variable groups](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml).
+- Software
+  - [Azure CLI 2.18+](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
+  - [Terraform 0.14+](https://learn.hashicorp.com/tutorials/terraform/install-cli)
+  - [Azure Functions core tools](https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local) [Optional]
+
+### Deployed Resources
 
 After a successful deployment, you should have the following resources:
 
