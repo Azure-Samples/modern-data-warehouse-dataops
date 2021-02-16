@@ -8,11 +8,9 @@ The sample demonstrates how Events can be processed in a streaming serverless pi
   - [Architecture](#architecture)
   - [Technologies used](#technologies-used)
 - [How to use the sample](#how-to-use-the-sample)
-  - [Prerequisites](#prerequisites)
-    - [Accounts](#accounts)
-    - [Software](#software)
   - [Setup and Deployment](#setup-and-deployment)
-    - [Deployed Resources](#deployed-resources)
+  - [Prerequisites](#prerequisites)
+  - [Deployed Resources](#deployed-resources)
 - [Well Architected Framework (WAF)](#well-architected-framework-waf)
   - [Cost Optimisation](#cost-optimisation)
   - [Operational Excellence](#operational-excellence)
@@ -20,9 +18,9 @@ The sample demonstrates how Events can be processed in a streaming serverless pi
   - [Reliability](#reliability)
   - [Security](#security)
 - [Key Learnings](#key-learnings)
-  - [1. Observability is a critical prerequisite, to achieving performance.](#1-observability-is-a-critical-prerequisite-to-achieving-performance)
+  - [1. Observability is a critical prerequisite, to achieving performance](#1-observability-is-a-critical-prerequisite-to-achieving-performance)
   - [2. Load testing needs representative ratios to test pipeline processing](#2-load-testing-needs-representative-ratios-to-test-pipeline-processing)
-  - [3. Validate test data early.  ??Delete this??](#3-validate-test-data-early--delete-this)
+  - [3. Validate test data early](#3-validate-test-data-early)
   - [4. Have a CI/CD pipeline](#4-have-a-cicd-pipeline)
   - [5. Secure and centralize configuration](#5-secure-and-centralize-configuration)
   - [6. Make your streaming pipelines replayable and idempotent](#6-make-your-streaming-pipelines-replayable-and-idempotent)
@@ -34,11 +32,7 @@ The sample demonstrates how Events can be processed in a streaming serverless pi
     - [Isolation of Environment](#isolation-of-environment)
   - [Observability](#observability)
     - [Application Insights](#application-insights)
-      - [a) Distributed Tracing](#a-distributed-tracing)
-      - [b) Application Map](#b-application-map)
-      - [c) End-to-End Transaction Detail](#c-end-to-end-transaction-detail)
-      - [d) Azure Function Scaling](#d-azure-function-scaling)
-    - [How to show metrics on dashboard?](#how-to-show-metrics-on-dashboard)
+    - [Showing metrics on Azure dashboard](#showing-metrics-on-azure-dashboard)
   - [Load testing](#load-testing)
     - [Load testing architecture](#load-testing-architecture)
     - [Defining pipeline branches and creating weighted sample data](#defining-pipeline-branches-and-creating-weighted-sample-data)
@@ -59,6 +53,13 @@ The following shows the overall architecture of the solution.
 
 ![Architecture](images/temperature-events-architecture.png?raw=true "Architecture")
 
+Message payload
+Field name | Description
+-- | --
+deviceId | Device ID
+temperature | temperature reading sensor
+time | timestamp of value
+
 ### Technologies used
 
 It makes use of the following azure services:
@@ -74,22 +75,6 @@ It makes use of the following azure services:
 
 > **IMPORTANT NOTE:** As with all Azure Deployments, this will **incur associated costs**. Remember to teardown all related resources after use to avoid unnecessary costs. See [here](#deployed-resources) for list of deployed resources.
 
-### Prerequisites
-
-#### Accounts
-
-- [Github account](https://github.com/) [Optional]
-- [Azure Account](https://azure.microsoft.com/en-au/free/)
-  - *Permissions needed*: ability to create and deploy to an azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
-- [Azure DevOps Project](https://azure.microsoft.com/en-us/services/devops/)
-  - *Permissions needed*: ability to create [service connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml), [pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops&tabs=yaml) and [variable groups](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml).
-
-#### Software
-
-- [Azure CLI 2.18+](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
-- [Terraform 0.14+](https://learn.hashicorp.com/tutorials/terraform/install-cli)
-- [Azure Functions core tools](https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local) [Optional]
-
 ### Setup and Deployment
 
 There are 3 major steps to running the sample. Follow each sub-page in order:
@@ -98,7 +83,20 @@ There are 3 major steps to running the sample. Follow each sub-page in order:
 1. [Deploy the Azure Function logic](functions/README.md)
 1. [Run the load testing script](loadtesting/README.md)
 
-#### Deployed Resources
+### Prerequisites
+
+- Accounts
+  - [Github account](https://github.com/) [Optional]
+  - [Azure Account](https://azure.microsoft.com/en-au/free/)
+    - *Permissions needed*: ability to create and deploy to an azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
+  - [Azure DevOps Project](https://azure.microsoft.com/en-us/services/devops/)
+    - *Permissions needed*: ability to create [service connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml), [pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops&tabs=yaml) and [variable groups](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml).
+- Software
+  - [Azure CLI 2.18+](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
+  - [Terraform 0.14+](https://learn.hashicorp.com/tutorials/terraform/install-cli)
+  - [Azure Functions core tools](https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local) [Optional]
+
+### Deployed Resources
 
 After a successful deployment, you should have the following resources:
 
@@ -168,8 +166,6 @@ Covers the operations processes that keep an application running in production.
 - Reliability allowance for scalability and performance
   - Azure Event Hubs and Azure Functions scale well.  However for optimal performance they can (and should) be tuned for your platform behaviours.
   - [Event Hubs Scaling](https://docs.microsoft.com/en-us/azure/event-hubs/event-hubs-scalability#partitions)
-- Fault tolerance Testing
-  - _TODO: Options for fault tolerant testing_
 
 ### Security
 
@@ -182,7 +178,7 @@ Covers the operations processes that keep an application running in production.
 
 The following summarizes key learnings and best practices demonstrated by this sample solution:
 
-### 1. Observability is a critical prerequisite, to achieving performance.
+### 1. Observability is a critical prerequisite, to achieving performance
 
 - A system that cannot be measured, cannot be tuned for performance.
 - A prerequisite for any system that prioritises performance, is a working observability system that can show key performance indicators.
@@ -250,7 +246,7 @@ Additional articles:
 
 Azure Event Hubs & Azure functions offer built-in integration with [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview). With Application insights, we were able to gain insights to further improve our system by using various features/metrics that are available without extra configuration. Such as Application Map, and End-to-End Transaction details.
 
-##### a) Distributed Tracing
+**a)** Distributed Tracing
 
 Distributed Tracing is one of the key reasons that Application Insights is able to offer useful features such as application map. In our system, events flow through several Azure Functions that are connected by Event Hubs. Nevertheless, Application Insights is able to collect this correlation automatically. The correlation context are carried in the event payload and passed to downstream services. You can easily see this correlation being visualized in either Application Maps or End-to-End Transaction Details:
 
@@ -258,14 +254,14 @@ Distributed Tracing is one of the key reasons that Application Insights is able 
 
 Here is an article that explains in detail how distributed tracing works for Eventhub-triggered Azure Functions: [Distributed Tracing Deep Dive for Event Hub Triggered Azure Function in Application Insights](https://medium.com/swlh/correlated-logs-deep-dive-for-eventhub-triggered-azure-function-in-app-insights-ac69c7c70285)
 
-##### b) Application Map
+**b)** Application Map
 
 ![Application map](images/application_map.png?raw=true "Application map")
 
 Application Map shows how the components in a system are interacting with each other. In addition, it shows some useful information such as the average of each transaction duration, number of scaled instances and so on.
 From Application Map, we were able to easily tell that our calls to the database are having some problems which became a bottleneck in our system. By clicking directly on the arrows, you can drill into some metrics and logs for those problematic transactions.
 
-##### c) End-to-End Transaction Detail
+**c)** End-to-End Transaction Detail
 
 ![Correlated logs](images/correlated_logs.png?raw=true "Correlated logs")
 
@@ -277,7 +273,7 @@ As soon as we drilled down into the problematic transactions, we realized that o
 
 ![Transaction detail - parallel](images/e2e_transaction_detail_parallel.png?raw=true "Transaction detail - parallel")
 
-##### d) Azure Function Scaling
+**d)** Azure Function Scaling
 
 From Live Metrics, you can see how many instances has Azure Function scaled to in real time.
 
@@ -294,9 +290,23 @@ traces
 
 ![from logs](images/function_instances_from_logs.png?raw=true "from logs")
 
-#### How to show metrics on dashboard?
+#### Showing metrics on Azure dashboard
 
-_TODO: <Do the cool Azure Portal dashboard that Masa had></Do>_
+Utilizing the Azure dashboard can allow you to lay out the metrics of resources. Allowing you to quickly spot scaling and throughput issues.
+
+![Portal dashboard](images/observability_portaldashboard.png?raw=true "Portal dashboard")
+
+To create your own:
+
+- On the Azure portal, go to the dashboard.
+- Add 4 "Metrics", one for each Event Hub.
+  - For each click `Edit in metrics`. Select the Event Hub name, then add `Incoming messages`, `Outgoing messages` and `Throttled requests`. Set the aggregate for each as `Sum`.
+- Add 2 "Metrics", one for each Azure Function.
+  - Add the metric, and select `Function Execution Count`
+- Add `Application Map Application Insights` to see an end to end map of messages flowing through your infrastructure
+- Add Markdown widgets, to add some explanations to others viewing the dashboard
+
+![Event Hub metrics](images/observability_eventhubmetrics.png?raw=true "Event Hub metrics")
 
 ### Load testing
 
@@ -320,6 +330,13 @@ The script will orchestrate the test by automating these steps:
 - Coordinate them to simulate the specified number of devices, and send a certain number of messages.
 - Wait for it to complete.
 - Remove the Azure Container Instances resource.
+
+Test message payload
+Field name | Description
+-- | --
+deviceId | simulated deviceID
+temperature | random temperature, in a ratio of good/bad readings
+time | timestamp of value
 
 #### Defining pipeline branches and creating weighted sample data
 
