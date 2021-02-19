@@ -215,26 +215,24 @@ The following summarizes key learnings and best practices demonstrated by this s
 - Abstracting away data transformation code from data access code is key to ensuring unit tests can be written against data transformation logic. An example of this is moving transformation code from notebooks into packages.
 - While it is possible to run tests against notebooks, by shifting tests left you increase developer productivity by increasing the speed of the feedback cycle.
 
-## Key Concepts
-
-### EventHub & Azure Function scaling
+## EventHub & Azure Function scaling
 
 - [Scaling Out Azure Functions With Event Hubs Effectively | by Masayuki Ota](https://medium.com/swlh/consideration-scaling-out-azure-functions-with-event-hubs-effectively-5445cc616b01)
 - [Scaling Out Azure Functions With Event Hubs Effectively 2 | by Masayuki Ota](https://masayukiota.medium.com/scaling-out-azure-functions-with-event-hubs-effectively-2-55d143e2b793)
 
-### Infrastructure as Code
+## Infrastructure as Code
 
 We are provisioning Resource Group, Azure KeyVault, Azure Function, Application Insight Azure Event Hubs using Terraform.
 
-#### Modularize Terraform
+### Modularize Terraform
 
 In order to decouple each components of applications, we modularized each components instead of keeping all components in main.tf. We referred [official terraform site](https://www.terraform.io/docs/language/modules/develop/index.html) and artifact from CSE, [cobalt](https://github.com/microsoft/cobalt). By modularizing, we can run test as a unit. For example, to provision azure functions, we need to provision both storage account and azure functions.
 
-#### Isolation of Environment
+### Isolation of Environment
 
 We need different environment managed by terraform but often they have different scope of permission and possibly different resources you are provisioning. For example, you might have TSI in dev but not in staging environment. And thus we separated environment by file layout.
 
-### Observability
+## Observability
 
 Additional articles:
 
@@ -242,7 +240,7 @@ Additional articles:
 - [Distributed Tracing Deep Dive for Eventhub Triggered Azure Function in App Insights | by Shervyna Ruan](https://medium.com/swlh/correlated-logs-deep-dive-for-eventhub-triggered-azure-function-in-app-insights-ac69c7c70285)
 - [Calculating End-to-End Latency for Eventhub Triggered Azure functions with App Insights | by Shervyna Ruan](https://shervyna.medium.com/calculating-end-to-end-latency-for-eventhub-triggered-azure-functions-with-app-insights-e41023c3a292)
 
-#### Showing metrics on Azure dashboard
+### Showing metrics on Azure dashboard
 
 Utilizing the Azure dashboard can allow you to lay out the metrics of resources. Allowing you to quickly spot scaling and throughput issues.
 
@@ -260,11 +258,11 @@ To create your own:
 
 ![Event Hub metrics](images/observability_eventhubmetrics.png?raw=true "Event Hub metrics")
 
-#### Application Insights
+### Application Insights
 
 Azure Event Hubs & Azure functions offer built-in integration with [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview). With Application insights, we were able to gain insights to further improve our system by using various features/metrics that are available without extra configuration. Such as Application Map, and End-to-End Transaction details.
 
-**a)** Distributed Tracing
+#### Distributed Tracing
 
 Distributed Tracing is one of the key reasons that Application Insights is able to offer useful features such as application map. In our system, events flow through several Azure Functions that are connected by Event Hubs. Nevertheless, Application Insights is able to collect this correlation automatically. The correlation context are carried in the event payload and passed to downstream services. You can easily see this correlation being visualized in either Application Maps or End-to-End Transaction Details:
 
@@ -272,14 +270,14 @@ Distributed Tracing is one of the key reasons that Application Insights is able 
 
 Here is an article that explains in detail how distributed tracing works for Eventhub-triggered Azure Functions: [Distributed Tracing Deep Dive for Event Hub Triggered Azure Function in Application Insights](https://medium.com/swlh/correlated-logs-deep-dive-for-eventhub-triggered-azure-function-in-app-insights-ac69c7c70285)
 
-**b)** Application Map
+#### Application Map
 
 ![Application map](images/application_map.png?raw=true "Application map")
 
 Application Map shows how the components in a system are interacting with each other. In addition, it shows some useful information such as the average of each transaction duration, number of scaled instances and so on.
 From Application Map, we were able to easily tell that our calls to the database are having some problems which became a bottleneck in our system. By clicking directly on the arrows, you can drill into some metrics and logs for those problematic transactions.
 
-**c)** End-to-End Transaction Detail
+#### End-to-End Transaction Detail
 
 ![Correlated logs](images/correlated_logs.png?raw=true "Correlated logs")
 
@@ -291,7 +289,7 @@ As soon as we drilled down into the problematic transactions, we realized that o
 
 ![Transaction detail - parallel](images/e2e_transaction_detail_parallel.png?raw=true "Transaction detail - parallel")
 
-**d)** Azure Function Scaling
+#### Azure Function Scaling
 
 From Live Metrics, you can see how many instances has Azure Function scaled to in real time.
 
@@ -308,7 +306,7 @@ traces
 
 ![from logs](images/function_instances_from_logs.png?raw=true "from logs")
 
-### Load testing
+## Load testing
 
 The load testing script allows you to quickly generate load against your infrastructure. You can then use the observability aspects to drill in and see how the architecture responds. Azure functions scaling up, Event Hub queue lengths getting longer, and stabilising, etc. It will assist in finding bottlenecks in any business logic you have added to the Azure Functions, and if your Azure Architecture is scaling as expected.
 
@@ -318,7 +316,7 @@ Getting started resources:
 - [Azure Well Architected Framework - Performance testing](https://docs.microsoft.com/en-us/azure/architecture/framework/scalability/performance-test)
 - [Load test for real time data processing | by Masayuki Ota](https://masayukiota.medium.com/load-test-for-real-time-data-processing-30a256a994ce)
 
-#### Load testing architecture
+### Load testing architecture
 
 The load testing can be invoked by the [IoTSimulator.ps1](loadtesting/IoTSimulator.ps1) script. This can be run locally via an authenticated Azure CLI session, or in an Azure DevOps pipeline using the load testing [azure-pipeline.yml](loadtesting/azure-pipeline.yml) pipeline definition.
 
@@ -338,13 +336,13 @@ deviceId | simulated deviceID
 temperature | random temperature, in a ratio of good/bad readings
 time | timestamp of value
 
-#### Defining pipeline branches and creating weighted sample data
+### Defining pipeline branches and creating weighted sample data
 
-### Azure Function logic
+## Azure Function logic
 
 The logic of the Azure Functions are kept simple to demonstrate the end to end pattern, and not complex logic within a Function.
 
-#### Device Filter
+### Device Filter
 
 ![Device ID filter](images/function-deviceidfilter.png?raw=true "Device ID filter")
 
@@ -358,7 +356,7 @@ else DeviceId >=1000
     ignore
 ```
 
-#### Temperature Filter
+### Temperature Filter
 
 Splits the feed based on the temperature value. Any value of 100ºC and over are too hot and should be actioned.
 
@@ -371,5 +369,3 @@ if DeviceId < 100
 else DeviceId >=100 // it is too hot!
     forward to evh-outofboundstemperature
 ```
-
-### Known Issues, Limitations and Workarounds
