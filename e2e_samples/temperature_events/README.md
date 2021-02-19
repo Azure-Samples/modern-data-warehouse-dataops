@@ -242,6 +242,24 @@ Additional articles:
 - [Distributed Tracing Deep Dive for Eventhub Triggered Azure Function in App Insights | by Shervyna Ruan](https://medium.com/swlh/correlated-logs-deep-dive-for-eventhub-triggered-azure-function-in-app-insights-ac69c7c70285)
 - [Calculating End-to-End Latency for Eventhub Triggered Azure functions with App Insights | by Shervyna Ruan](https://shervyna.medium.com/calculating-end-to-end-latency-for-eventhub-triggered-azure-functions-with-app-insights-e41023c3a292)
 
+#### Showing metrics on Azure dashboard
+
+Utilizing the Azure dashboard can allow you to lay out the metrics of resources. Allowing you to quickly spot scaling and throughput issues.
+
+![Portal dashboard](images/observability_portaldashboard.png?raw=true "Portal dashboard")
+
+To create your own:
+
+- On the Azure portal, go to the dashboard.
+- Add 4 "Metrics", one for each Event Hub.
+  - For each click `Edit in metrics`. Select the Event Hub name, then add `Incoming messages`, `Outgoing messages` and `Throttled requests`. Set the aggregate for each as `Sum`.
+- Add 2 "Metrics", one for each Azure Function.
+  - Add the metric, and select `Function Execution Count`
+- Add `Application Map Application Insights` to see an end to end map of messages flowing through your infrastructure
+- Add Markdown widgets, to add some explanations to others viewing the dashboard
+
+![Event Hub metrics](images/observability_eventhubmetrics.png?raw=true "Event Hub metrics")
+
 #### Application Insights
 
 Azure Event Hubs & Azure functions offer built-in integration with [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview). With Application insights, we were able to gain insights to further improve our system by using various features/metrics that are available without extra configuration. Such as Application Map, and End-to-End Transaction details.
@@ -289,24 +307,6 @@ traces
 ```
 
 ![from logs](images/function_instances_from_logs.png?raw=true "from logs")
-
-#### Showing metrics on Azure dashboard
-
-Utilizing the Azure dashboard can allow you to lay out the metrics of resources. Allowing you to quickly spot scaling and throughput issues.
-
-![Portal dashboard](images/observability_portaldashboard.png?raw=true "Portal dashboard")
-
-To create your own:
-
-- On the Azure portal, go to the dashboard.
-- Add 4 "Metrics", one for each Event Hub.
-  - For each click `Edit in metrics`. Select the Event Hub name, then add `Incoming messages`, `Outgoing messages` and `Throttled requests`. Set the aggregate for each as `Sum`.
-- Add 2 "Metrics", one for each Azure Function.
-  - Add the metric, and select `Function Execution Count`
-- Add `Application Map Application Insights` to see an end to end map of messages flowing through your infrastructure
-- Add Markdown widgets, to add some explanations to others viewing the dashboard
-
-![Event Hub metrics](images/observability_eventhubmetrics.png?raw=true "Event Hub metrics")
 
 ### Load testing
 
