@@ -25,21 +25,19 @@ The sample demonstrates how Events can be processed in a streaming serverless pi
   - [5. Secure and centralize configuration](#5-secure-and-centralize-configuration)
   - [6. Make your streaming pipelines replayable and idempotent](#6-make-your-streaming-pipelines-replayable-and-idempotent)
   - [7. Ensure data transformation code is testable](#7-ensure-data-transformation-code-is-testable)
-- [Key Concepts](#key-concepts)
-  - [EventHub & Azure Function scaling](#eventhub--azure-function-scaling)
-  - [Infrastructure as Code](#infrastructure-as-code)
-    - [Modularize Terraform](#modularize-terraform)
-    - [Isolation of Environment](#isolation-of-environment)
-  - [Observability](#observability)
-    - [Application Insights](#application-insights)
-    - [Showing metrics on Azure dashboard](#showing-metrics-on-azure-dashboard)
-  - [Load testing](#load-testing)
-    - [Load testing architecture](#load-testing-architecture)
-    - [Defining pipeline branches and creating weighted sample data](#defining-pipeline-branches-and-creating-weighted-sample-data)
-  - [Azure Function logic](#azure-function-logic)
-    - [Device Filter](#device-filter)
-    - [Temperature Filter](#temperature-filter)
-  - [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
+- [Azure Function logic](#azure-function-logic)
+  - [Device Filter](#device-filter)
+  - [Temperature Filter](#temperature-filter)
+- [EventHub & Azure Function scaling](#eventhub--azure-function-scaling)
+- [Infrastructure as Code](#infrastructure-as-code)
+  - [Modularize Terraform](#modularize-terraform)
+  - [Isolation of Environment](#isolation-of-environment)
+- [Observability](#observability)
+  - [Application Insights](#application-insights)
+  - [Showing metrics on Azure dashboard](#showing-metrics-on-azure-dashboard)
+- [Load testing](#load-testing)
+  - [Load testing architecture](#load-testing-architecture)
+  - [Defining pipeline branches and creating weighted sample data](#defining-pipeline-branches-and-creating-weighted-sample-data)
 
 ---------------------
 
@@ -215,6 +213,38 @@ The following summarizes key learnings and best practices demonstrated by this s
 - Abstracting away data transformation code from data access code is key to ensuring unit tests can be written against data transformation logic. An example of this is moving transformation code from notebooks into packages.
 - While it is possible to run tests against notebooks, by shifting tests left you increase developer productivity by increasing the speed of the feedback cycle.
 
+## Azure Function logic
+
+The logic of the Azure Functions are kept simple to demonstrate the end to end pattern, and not complex logic within a Function.
+
+### Device Filter
+
+![Device ID filter](images/function-deviceidfilter.png?raw=true "Device ID filter")
+
+All temperature sensors are sending their data to the `evh-ingest` Event Hub. Different pipelines can then consume and filter to the subset that they want to focus on. In this pipeline we are filtering out all DeviceIds above 1,000.
+
+```javascript
+// psuedoscript
+if DeviceId < 1000
+    forward to evh-filteredevices
+else DeviceId >=1000
+    ignore
+```
+
+### Temperature Filter
+
+Splits the feed based on the temperature value. Any value of 100ºC and over are too hot and should be actioned.
+
+![Temperature filter](images/function-temperaturefilter.png?raw=true "Temperature filter")
+
+```javascript
+// psuedoscript
+if DeviceId < 100
+    forward to evh-analytics
+else DeviceId >=100 // it is too hot!
+    forward to evh-outofboundstemperature
+```
+
 ## EventHub & Azure Function scaling
 
 - [Scaling Out Azure Functions With Event Hubs Effectively | by Masayuki Ota](https://medium.com/swlh/consideration-scaling-out-azure-functions-with-event-hubs-effectively-5445cc616b01)
@@ -262,32 +292,12 @@ To create your own:
 
 Azure Event Hubs & Azure functions offer built-in integration with [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview). With Application insights, we were able to gain insights to further improve our system by using various features/metrics that are available without extra configuration. Such as Application Map, and End-to-End Transaction details.
 
-#### Distributed Tracing
-
-Distributed Tracing is one of the key reasons that Application Insights is able to offer useful features such as application map. In our system, events flow through several Azure Functions that are connected by Event Hubs. Nevertheless, Application Insights is able to collect this correlation automatically. The correlation context are carried in the event payload and passed to downstream services. You can easily see this correlation being visualized in either Application Maps or End-to-End Transaction Details:
-
-![Correlated logs](images/correlated_logs.png?raw=true "Correlated logs")
-
-Here is an article that explains in detail how distributed tracing works for Eventhub-triggered Azure Functions: [Distributed Tracing Deep Dive for Event Hub Triggered Azure Function in Application Insights](https://medium.com/swlh/correlated-logs-deep-dive-for-eventhub-triggered-azure-function-in-app-insights-ac69c7c70285)
-
 #### Application Map
 
 ![Application map](images/application_map.png?raw=true "Application map")
 
 Application Map shows how the components in a system are interacting with each other. In addition, it shows some useful information such as the average of each transaction duration, number of scaled instances and so on.
 From Application Map, we were able to easily tell that our calls to the database are having some problems which became a bottleneck in our system. By clicking directly on the arrows, you can drill into some metrics and logs for those problematic transactions.
-
-#### End-to-End Transaction Detail
-
-![Correlated logs](images/correlated_logs.png?raw=true "Correlated logs")
-
-End-to-End Transaction Detail comes with a visualization of each component's order and duration. You can also check the telemetries(traces, exceptions, etc) of each component from this view, which makes it easy to troubleshoot visually across components within the same transaction when an issue occurred.  
-
-As soon as we drilled down into the problematic transactions, we realized that our outgoing calls(for each event) are waiting for one and another to finish before making the next call, which is not very efficient. As an improvement, we changed the logic to make outgoing calls in parallel which resulted in better performance. Thanks to the visualization, we were able to easily troubleshoot and gain insight on how to further improve our system.
-
-![Transaction detail - sequential](images/e2e_transaction_detail_sequential.png?raw=true "Transaction detail - sequential")
-
-![Transaction detail - parallel](images/e2e_transaction_detail_parallel.png?raw=true "Transaction detail - parallel")
 
 #### Azure Function Scaling
 
@@ -305,6 +315,24 @@ traces
 ```
 
 ![from logs](images/function_instances_from_logs.png?raw=true "from logs")
+
+#### Distributed Tracing
+
+Distributed Tracing is one of the key reasons that Application Insights is able to offer useful features such as application map. In our system, events flow through several Azure Functions that are connected by Event Hubs. Nevertheless, Application Insights is able to collect this correlation automatically. The correlation context are carried in the event payload and passed to downstream services. You can easily see this correlation being visualized in either Application Maps or End-to-End Transaction Details:
+
+Here is an article that explains in detail how distributed tracing works for Eventhub-triggered Azure Functions: [Distributed Tracing Deep Dive for Event Hub Triggered Azure Function in Application Insights](https://medium.com/swlh/correlated-logs-deep-dive-for-eventhub-triggered-azure-function-in-app-insights-ac69c7c70285)
+
+![Correlated logs](images/correlated_logs.png?raw=true "Correlated logs")
+
+#### End-to-End Transaction Detail
+
+End-to-End Transaction Detail comes with a visualization of each component's order and duration. You can also check the telemetries(traces, exceptions, etc) of each component from this view, which makes it easy to troubleshoot visually across components within the same transaction when an issue occurred.  
+
+As soon as we drilled down into the problematic transactions, we realized that our outgoing calls(for each event) are waiting for one and another to finish before making the next call, which is not very efficient. As an improvement, we changed the logic to make outgoing calls in parallel which resulted in better performance. Thanks to the visualization, we were able to easily troubleshoot and gain insight on how to further improve our system.
+
+![Transaction detail - sequential](images/e2e_transaction_detail_sequential.png?raw=true "Transaction detail - sequential")
+
+![Transaction detail - parallel](images/e2e_transaction_detail_parallel.png?raw=true "Transaction detail - parallel")
 
 ## Load testing
 
@@ -335,37 +363,3 @@ Field name | Description
 deviceId | simulated deviceID
 temperature | random temperature, in a ratio of good/bad readings
 time | timestamp of value
-
-### Defining pipeline branches and creating weighted sample data
-
-## Azure Function logic
-
-The logic of the Azure Functions are kept simple to demonstrate the end to end pattern, and not complex logic within a Function.
-
-### Device Filter
-
-![Device ID filter](images/function-deviceidfilter.png?raw=true "Device ID filter")
-
-All temperature sensors are sending their data to the `evh-ingest` Event Hub. Different pipelines can then consume and filter to the subset that they want to focus on. In this pipeline we are filtering out all DeviceIds above 1,000.
-
-```javascript
-// psuedoscript
-if DeviceId < 1000
-    forward to evh-filteredevices
-else DeviceId >=1000
-    ignore
-```
-
-### Temperature Filter
-
-Splits the feed based on the temperature value. Any value of 100ºC and over are too hot and should be actioned.
-
-![Temperature filter](images/function-temperaturefilter.png?raw=true "Temperature filter")
-
-```javascript
-// psuedoscript
-if DeviceId < 100
-    forward to evh-analytics
-else DeviceId >=100 // it is too hot!
-    forward to evh-outofboundstemperature
-```
