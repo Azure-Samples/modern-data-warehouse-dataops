@@ -40,7 +40,7 @@ An authenticated service connection to your Azure subscription is required, so t
 
 In the pipeline yaml, we need variables which are stored as secrets in Key Vault. A convenient way is to access the secrets in a pipeline is via a **Variable Group**.
 
-1. Go to Azure DevOps -> Pipelines -> Library: ![azure_pipeline_var_group](../../../docs/images/azure_pipeline_var_group.png)
+1. Go to Azure DevOps -> Pipelines -> Library: ![azure_pipeline_var_group](../images/azure_pipeline_var_group.png?raw=true)
 1. Select your Azure subscription, and the keyvault.
 1. Select the following secrets that were populated by terraform:
 
@@ -50,11 +50,11 @@ In the pipeline yaml, we need variables which are stored as secrets in Key Vault
 - *rg-name*: name of the resource group.
 - *subscription-id*: subscription Id of the project.
 
- ![var_group_secrets](../../../docs/images/var_group_secrets.png)
+ ![var_group_secrets](../images/var_group_secrets.png?raw=true)
 
 ### 4. Azure Pipelines
 
-1. `Pipelines` -> `New pipeline` -> `Existing Azure pipelines YAML file` ![azure_pipeline_setup](../../../docs/images/azure_pipeline_setup.png)
+1. `Pipelines` -> `New pipeline` -> `Existing Azure pipelines YAML file` ![azure_pipeline_setup](../images/azure_pipeline_setup.png?raw=true)
 1. Manually enter `e2e_samples/temperature_events/loadtesting/loadtest-pipeline.yml`.
 1. After creating, click run to run your first load test
 
