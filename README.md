@@ -2,45 +2,46 @@
 page_type: sample
 languages:
 - python
+- C#
 products:
 - Azure
 - Azure-Data-factory
 - Azure-Databricks
 - Azure-Data-Lake-Gen2
+- Azure-Functions
 description: "Code samples showcasing how to apply DevOps concepts to the Modern Data Warehouse Architecture leveraging different Azure Data Technologies."
 ---
 
-## DataOps for the Modern Data Warehouse
+# DataOps for the Modern Data Warehouse
 
 This repository contains numerous code samples and artifacts on how to apply DevOps principles to data pipelines built according to the [Modern Data Warehouse (MDW)](https://azure.microsoft.com/en-au/solutions/architecture/modern-data-warehouse/) architectural pattern on [Microsoft Azure](https://azure.microsoft.com/en-au/). 
 
 The samples are either focused on a single azure service or showcases an end to end data pipeline solution built according to the MDW pattern. Each sample contains code and artifacts relating to:
+
 - Build and Release Pipelines (CI/CD)
 - Testing
 - Observability / Monitoring
 
 ## Contents
 
-
 ### End to End samples
-   - [**Parking Sensor Solution**](e2e_samples/parking_sensors/) - This sample solution demonstrates an end-to-end data pipeline following the MDW architecture, along with a corresponding CI/CD process. 
-     - This was solution was presented at [NDC Sydney 2019](https://ndcsydney.com/). See [here](https://www.youtube.com/watch?v=Xs1-OU5cmsw) for the presentation which includes a detailed walkthrough of the solution.
-     - **Data Pipeline Architecture**
-         ![Architecture](docs/images/architecture.PNG?raw=true "Architecture")
-     - **Build and Release Process**
-         ![CI/CD](docs/images/CI_CD_process.PNG?raw=true "CI/CD")
 
+- [**Parking Sensor Solution**](e2e_samples/parking_sensors/) - This demonstrates batch, end-to-end data pipeline following the MDW architecture, along with a corresponding CI/CD process. See [here](https://www.youtube.com/watch?v=Xs1-OU5cmsw) for the presentation which includes a detailed walk-through of the solution.
+  - *Technology stack*: Azure DevOps, Azure Data Factory, Azure Databricks, Azure Synapse and ADLS Gen2.
+- [**Temperature Events Solution**](e2e_samples/temperature_events) - This demonstrate a high-scale event-driven data pipeline with a focus on how to implement Observability and Load Testing.
+  - *Technology stack*: Azure DevOps, Azure Functions, Terraform, Application Insights, Azure Eventhubs
 
 ### Single Technology Samples
-   - [Azure SQL](single_tech_samples/azuresql/)
 
-   Coming soon..
-   - [Data Factory](single_tech_samples/datafactory/)
-   - [Azure Databricks](single_tech_samples/databricks/)
-   - [Stream Analytics](single_tech_samples/streamanalytics/)
-   - [Azure Synapse (formerly SQLDW)](single_tech_samples/synapseanalytics/)
-   - [CosmosDB](single_tech_samples/cosmosdb/)
+- [Azure SQL](single_tech_samples/azuresql/)
+- [Data Factory](single_tech_samples/datafactory/)
 
+#### Coming soon
+
+- [Azure Databricks](single_tech_samples/databricks/)
+- [Stream Analytics](single_tech_samples/streamanalytics/)
+- [Azure Synapse (formerly SQLDW)](single_tech_samples/synapseanalytics/)
+- [CosmosDB](single_tech_samples/cosmosdb/)
 
 ## Contributing
 

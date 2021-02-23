@@ -2,7 +2,13 @@
 
 ## Getting Started
 
-1. az login
+<!---
+TODO: Include version of .NET required.
+-->
+
+The following deploys the Azure Function Apps. Ensure you are in `e2e_samples/temperature_events/functions/`.
+
+1. `az login`
 1. Deploy `DeviceIdFilter` using `func` cli
 1. Deploy `TemperatureFilter` using `func` cli
 

@@ -2,12 +2,16 @@
 
 ## Getting Started
 
-Execute these 4 steps to create the infrastructure:
+<!---
+TODO: Include version of .NET required.
+-->
+
+The following deploys the Azure base infrastructure for the Temperature Events sample. Ensure you are in `e2e_samples/temperature_events/infra/`.
 
 1. `az login`
-1. `./setup.sh`
-1. Run terraform init with the output from step 2
-1. `terraform validate && terraform plan && terraform apply`
+2. `./setup.sh`
+3. Run terraform init with the output from step 2
+4. `terraform validate && terraform plan && terraform apply`
 
 ### #1 `az login`
 
