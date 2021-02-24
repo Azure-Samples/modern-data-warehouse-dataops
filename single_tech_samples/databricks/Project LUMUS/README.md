@@ -1,7 +1,7 @@
 # Project LUMOS
 
 <span>
-    <table>
+    <table style="border: 0px solid #FFF;border-collapse: collapse;">
     <tr>
         <td width=300>
         <img  src="../Common_Assets/Images/Lumos_logo.png" alt="Italian Trulli">
@@ -15,7 +15,7 @@
 
 # Milestones
 <span>
-    <table>
+    <table style="border: 0px solid #FFF;border-collapse: collapse;">
     <tr>
         <th>
             Session 
