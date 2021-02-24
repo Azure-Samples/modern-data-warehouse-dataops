@@ -1,7 +1,7 @@
 # Project LUMOS
 
 <span>
-    <table style="border: 0px solid #FFF;border-collapse: collapse;">
+    <table style="border: 1px solid #FFF;border-collapse: collapse;">
     <tr>
         <td width=300>
         <img  src="../Common_Assets/Images/Lumos_logo.png" alt="Italian Trulli">
