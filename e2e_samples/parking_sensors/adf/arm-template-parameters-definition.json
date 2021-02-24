@@ -1,17 +1,21 @@
 {
     "Microsoft.DataFactory/factories/pipelines": {
         "properties": {
-            "activities": [{
-                "typeProperties": {
-                    "notebookPath": "=",
-                    "libraries": [{
-                        "egg": "="
-                    }]
+            "activities": [
+                {
+                    "typeProperties": {
+                        "notebookPath": "=",
+                        "libraries": [
+                            {
+                                "egg": "="
+                            }
+                        ]
+                    }
                 }
-            }]
+            ]
         }
     },
-    "Microsoft.DataFactory/factories/integrationRuntimes":{
+    "Microsoft.DataFactory/factories/integrationRuntimes": {
         "properties": {
             "typeProperties": {
                 "ssisProperties": {
@@ -39,11 +43,12 @@
     },
     "Microsoft.DataFactory/factories/triggers": {
         "properties": {
-            "pipelines": [{
+            "pipelines": [
+                {
                     "parameters": {
                         "*": "="
                     }
-                },  
+                },
                 "pipelineReference.referenceName"
             ],
             "pipeline": {
@@ -54,7 +59,6 @@
             "typeProperties": {
                 "scope": "="
             }
-
         }
     },
     "Microsoft.DataFactory/factories/linkedServices": {
@@ -77,13 +81,14 @@
                     "tenant": "=",
                     "dataLakeStoreUri": "=",
                     "baseUrl": "=",
+                    "domain":"=",
                     "database": "=",
                     "serviceEndpoint": "=",
                     "batchUri": "=",
                     "databaseName": "=",
                     "systemNumber": "=",
                     "server": "=",
-                    "url":"=",
+                    "url": "=",
                     "aadResourceId": "=",
                     "connectionString": "|:-connectionString:secureString"
                 }
@@ -108,5 +113,6 @@
                     "fileName": "="
                 }
             }
-        }}
+        }
+    }
 }

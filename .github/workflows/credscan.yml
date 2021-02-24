@@ -1,0 +1,15 @@
+name: Custom Cred Scan
+on:
+  push:
+    branches:
+    - master
+
+jobs:
+  pattern_match_with_secrets:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - shell: bash
+      env:
+        SECRET: ${{ secrets.ExcludeList }}
+      run: (( $(grep -riE $SECRET . | wc -l) == 0 ))

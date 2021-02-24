@@ -1,26 +1,27 @@
-### Build Pipelines
+# Build Pipelines
 
 1. **Build - Quality Assurance**
-  - Purpose: Ensure code quality and integrity
-  - Trigger: Pull Request to Master
-  - Steps:
-     1. Build Python packages
-     2. Run units tests 
-     3. Code Coverage
-     4. Linting
-2. **Build - Artifacts**
-  - Purpose: To produce necessary artifacts for Release
-  - Trigger: Commit to Master
-  - Steps:
-     1. Build and create Python Wheel
-     2. Publish artifacts:
-        - Python Wheel
-        - Databricks Notebooks and cluster configuration
-        - Data Factory pipeline definitions
-        - IaC - ARM templates, Bash scripts
-        - 3rd party library dependencies (JARs, etc)
+    - Purpose: Ensure code quality and integrity
+    - Trigger: Pull Request to Master
+    - Steps:
+         1. Build Python packages
+         2. Run units tests
+         3. Code Coverage
+         4. Linting
+
+1. **Build - Artifacts**
+    - Purpose: To produce necessary artifacts for Release
+    - Trigger: Commit to Master
+    - Steps:
+        1. Build and create Python Wheel
+        2. Publish artifacts:
+            - Python Wheel
+            - Databricks Notebooks and cluster configuration
+            - Data Factory pipeline definitions
+            - IaC - ARM templates, Bash scripts
+            - 3rd party library dependencies (JARs, etc)
   
-### Release Pipelines
+## Release Pipelines
 
 Currently, there is one multi-stage release pipeline with the following stages. Each stage deploys to a different environment.
   

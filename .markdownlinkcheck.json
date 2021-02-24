@@ -1,0 +1,11 @@
+{
+    "ignorePatterns": [
+        {
+            "pattern": "^https://data.melbourne.vic.gov.au/resource/"
+        },
+        {
+            "pattern": "^https://adb-[0-9]+.[0-9].azuredatabricks.net"
+
+        }
+    ]
+}
