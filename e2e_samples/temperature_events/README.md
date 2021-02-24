@@ -99,11 +99,11 @@ There are 3 major steps to running the sample. Follow each sub-page in order:
 After a successful deployment, you should have the following resources:
 
 - Resource group 1 (Terraform state & secrets storage)
-  - Azure Keyvault
+  - Azure Key Vault
   - Storage account
 - Resource group 2 (Temperature Events sample)
   - Application insights
-  - Azure Keyvault
+  - Azure Key Vault
   - Event Hub x4
   - Azure Function x2
 
