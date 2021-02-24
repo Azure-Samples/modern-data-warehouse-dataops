@@ -2,9 +2,12 @@
 
 ## Getting Started
 
-<!---
-TODO: Include version of .NET required.
--->
+**Prerequisites:**
+
+- Terraform > 0.14.7
+- Azure cli > 2.19.1
+
+**Deploy Steps:**
 
 The following deploys the Azure base infrastructure for the Temperature Events sample. Ensure you are in `e2e_samples/temperature_events/infra/`.
 
