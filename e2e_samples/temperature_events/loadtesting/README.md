@@ -8,6 +8,8 @@
 
 ## Setup
 
+<!-- TODO: Users will need to clone the repo first before than can set this up.-->
+
 ### Service Connections
 
 Create a Service Connection named `sample-dataops`. You can another name if desired, if you edit the pipeline in later step.
