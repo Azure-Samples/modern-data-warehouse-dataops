@@ -1,0 +1,87 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+      "name": {
+          "type": "String",
+          "defaultValue": "test-tomomi",
+          "metadata": {
+            "description": "Name of the vault"
+          }
+      },
+      "sku": {
+          "type": "String",
+          "defaultValue": "Standard",
+          "metadata": {
+            "description": "SKU details."
+          }
+      },
+      "accessPolicies": {
+          "type": "Array",
+          "defaultValue": [],
+          "metadata": {
+            "description": "An array of 0 to 1024 identities that have access to the key vault."
+          }
+      },
+      "enabledForDeployment": {
+          "type": "Bool",
+          "defaultValue": true,
+          "metadata": {
+            "description": "Property to specify whether Azure Virtual Machines are permitted to retrieve certificates stored as secrets from the key vault."
+          }
+      },
+      "enabledForTemplateDeployment": {
+          "type": "Bool",
+          "defaultValue": true,
+          "metadata": {
+            "description": "Property to specify whether Azure Resource Manager is permitted to retrieve secrets from the key vault."
+          }
+      },
+      "enabledForDiskEncryption": {
+          "type": "Bool",
+          "defaultValue": false,
+          "metadata": {
+            "description": "Property to specify whether Azure Disk Encryption is permitted to retrieve secrets from the vault and unwrap keys."
+          }
+      },
+      "enableRbacAuthorization": {
+          "type": "Bool",
+          "defaultValue": true,
+          "metadata": {
+            "description": "Property that controls how data actions are authorized."
+          }
+      },
+      "enableSoftDelete": {
+          "type": "Bool",
+          "defaultValue": false,
+          "metadata": {
+            "description": "Property to specify whether the 'soft delete' functionality is enabled for this key vault."
+          }
+      }
+  },
+  "variables": {},
+  "resources": [
+      {
+          "type": "Microsoft.KeyVault/vaults",
+          "apiVersion": "2019-09-01",
+          "name": "[parameters('name')]",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [],
+          "tags": {},
+          "properties": {
+              "enabledForDeployment": "[parameters('enabledForDeployment')]",
+              "enabledForTemplateDeployment": "[parameters('enabledForTemplateDeployment')]",
+              "enabledForDiskEncryption": "[parameters('enabledForDiskEncryption')]",
+              "enableRbacAuthorization": "[parameters('enableRbacAuthorization')]",
+              "accessPolicies": "[parameters('accessPolicies')]",
+              "tenantId": "[subscription().tenantId]",
+              "sku": {
+                  "name": "[parameters('sku')]",
+                  "family": "A"
+              },
+              "enableSoftDelete": "[parameters('enableSoftDelete')]"
+          }
+      }
+  ],
+  "outputs": {}
+}

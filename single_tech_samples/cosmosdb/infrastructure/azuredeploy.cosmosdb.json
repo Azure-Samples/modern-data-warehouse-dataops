@@ -6,7 +6,7 @@
 			"type": "string",
 			"defaultValue": "modern-data-warehouse",
 			"metadata": {
-				"description": "Cosmos DB account name, max length 44 characters"
+				"description": "Cosmos DB account name, max length 44 characters."
 			}
 		},
 		"location": {
@@ -69,14 +69,14 @@
 			"defaultValue": false,
 			"allowedValues": [ true, false ],
 			"metadata": {
-				"description": "Enable automatic failover for regions. Ignored when Multi-Master is enabled"
+				"description": "Enable automatic failover for regions. Ignored when Multi-Master is enabled."
 			}
 		},
 		"databaseName": {
 			"type": "string",
 			"defaultValue": "moderndatawarehouse",
 			"metadata": {
-				"description": "The name for the SQL database"
+				"description": "The name for the SQL database."
 			}
 		},
 		"sharedThroughput": {
@@ -85,49 +85,49 @@
 			"minValue": 400,
 			"maxValue": 1000000,
 			"metadata": {
-				"description": "The throughput for the database to be shared"
+				"description": "The throughput for the database to be shared."
 			}			
 		},
 		"sharedContainer1Name": {
 			"type": "string",
 			"defaultValue": "container1",
 			"metadata": {
-				"description": "The name for the first container with shared throughput"
+				"description": "The name for the first container with shared throughput."
 			}
 		},
 		"sharedContainer1PartitionKey": {
 			"type": "string",
 			"defaultValue": "/Container1Id",
 			"metadata": {
-				"description": "The partition key for the first container with shared throughput"
+				"description": "The partition key for the first container with shared throughput."
 			}
 		},
 		"sharedContainer2Name": {
 			"type": "string",
 			"defaultValue": "container2",
 			"metadata": {
-				"description": "The name for the second container with shared throughput"
+				"description": "The name for the second container with shared throughput."
 			}
 		},
 		"sharedContainer2PartitionKey": {
 			"type": "string",
 			"defaultValue": "/Container2Id",
 			"metadata": {
-				"description": "The partition key for the second container with shared throughput"
+				"description": "The partition key for the second container with shared throughput."
 			}
 		},
 		"sharedContainer3Name": {
 			"type": "string",
 			"defaultValue": "container3",
 			"metadata": {
-				"description": "The name for the third container with shared throughput"
+				"description": "The name for the third container with shared throughput."
 			}
 		},
 		"sharedContainer3PartitionKey": {
 			"type": "string",
 			"defaultValue": "/Container3Id",
 			"metadata": {
-				"description": "The partition key for the third container with shared throughput"
+				"description": "The partition key for the third container with shared throughput."
 			}
 		}
 	},
