@@ -51,13 +51,13 @@
 * Use feature branches for your work
 * Please use the following naming convention for the feature branches:
 <!-- markdownlint-disable MD033-->
-    single-tech/databricks/<Project Issue ID>_<Issue Summary>
-    For e.g. single-tech/databricks/145_IaCBasic
+    single-tech/databricks_<Project Issue ID>_<Issue Summary>
+    For e.g. single-tech/databricks_145_IaCBasic
 <!-- markdownlint-enable MD033-->
 * For every task, associated developers can create task branches using the following naming convention:
 <!-- markdownlint-disable MD033-->
-    single-tech/databricks/<Project Issue ID>_<Issue Summary>_<Task Summary>_<Developer Alias>
-    For e.g. single-tech/databricks/145_IaCBasic/ARM_for_ADB
+    single-tech/databricks_<Project Issue ID>_<Issue Summary>_<Task Summary>_<Developer Alias>
+    For e.g. single-tech/databricks_145_IaCBasic/ARM_for_ADB
 <!-- markdownlint-enable MD033-->
 * All task branches should be merged to the respective feature branches
 
