@@ -56,7 +56,7 @@ steps:
     workingDirectory: '$(System.DefaultWorkingDirectory)/$(basePath)'
 
 - task: PublishBuildArtifacts@1
-  displayName: 'Punlish Artifact'
+  displayName: 'Publish Artifact'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: '$(artifactName)'
