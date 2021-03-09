@@ -17,35 +17,53 @@
 
 ## Milestones
 
+<a href = "https://github.com/Azure-Samples/modern-data-warehouse-dataops/projects/15">Project Board</a>
 <span>
     <table style="border: 0px solid #FFF;border-collapse: collapse;">
     <tr>
         <th>
-            Session
+            Milestone
         </th>
         <th>
-            Date
+            Start Date
+        </th>
+        <th>
+            End Date
         </th>
     </tr>
     <tr>
         <td>
-            <a href = "Meeting_minutes/22nd_Jan_2021.md">Initial Brainstorming</a>
+            Infrastructure as Code fo Azure Databricks
         </td>
         <td>
-            22nd Jan ,2021
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <a href = "Meeting_minutes/23rd_Feb_2021.md">Qualification and Envision session</a>
+            8th Mar ,2021
         </td>
         <td>
-            23rd Feb ,2021
+            12th Mar ,2021
         </td>
     </tr>
     </table>
 </span>
 <!-- markdownlint-enable MD033-->
+
+## Branching strategy
+
+* Use feature branches for your work
+* Please use the following naming convention for the feature branches:
+<!-- markdownlint-disable MD033-->
+    single-tech/databricks/<Project Issue ID>_<Issue Summary>
+    For e.g. single-tech/databricks/145_IaCBasic
+<!-- markdownlint-enable MD033-->
+* For every task, associated developers can create task branches using the following naming convention:
+<!-- markdownlint-disable MD033-->
+    single-tech/databricks/<Project Issue ID>_<Issue Summary>_<Task Summary>_<Developer Alias>
+    For e.g. single-tech/databricks/145_IaCBasic/ARM_for_ADB
+<!-- markdownlint-enable MD033-->
+* All task branches should be merged to the respective feature branches
+
+## Code review
+
+* Align with Modern Data Ware house repository's code review standards
 
 ## Important Links
 
