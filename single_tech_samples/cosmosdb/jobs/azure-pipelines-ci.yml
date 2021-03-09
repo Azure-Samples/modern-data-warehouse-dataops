@@ -1,0 +1,62 @@
+trigger:
+  branches:
+    include:
+    - master
+    - release/*
+  paths:
+    include:
+    - single_tech_samples/cosmosdb/*
+
+variables:
+  basePath: 'single_tech_samples/cosmosdb'
+  armTemplateDirectory: 'infrastructure'
+  azureSubscription: 'MyAzureRMConnection'
+  resourceGp: 'MyResourceGroup'
+  artifactName: 'cosmosdb_artifact'
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+
+- task: Bash@3
+  displayName: 'Install JsonLint'
+  inputs:
+    targetType: 'inline'
+    script: 'sudo npm install jsonlint-mod -g'
+
+- task: Bash@3
+  displayName: 'Run JsonLint'
+  env: 
+    armTemplateDirectory: '$(armTemplateDirectory)'
+  inputs:
+    targetType: 'inline'
+    failOnStderr: true
+    script: |
+      files=$armTemplateDirectory
+      for filepath in $files/*.json; do
+          jsonlint $filepath
+      done
+    workingDirectory: '$(System.DefaultWorkingDirectory)/$(basePath)'
+
+- task: AzureCLI@2
+  displayName: 'Azure CLI'
+  env: 
+    armTemplateDirectory: '$(armTemplateDirectory)'
+    resourceGp: '$(resourceGp)'
+  inputs:
+    azureSubscription: $(azureSubscription)
+    scriptType: bash
+    scriptLocation: inlineScript
+    inlineScript: |
+      files=$armTemplateDirectory
+      for filepath in $files/*.json; do
+          az deployment group validate --resource-group $resourceGp --template-file $filepath
+      done
+    workingDirectory: '$(System.DefaultWorkingDirectory)/$(basePath)'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Punlish Artifact'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: '$(artifactName)'
