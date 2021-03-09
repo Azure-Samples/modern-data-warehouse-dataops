@@ -1,6 +1,0 @@
-az login
-az account list --output table
-az account set --subscription "namts-internalsubscription"
-az group list
-echo "Starting deployment"
-az deployment group create --name "testdeployment1" --resource-group "rg-lumos-test" --template-file "C:\Users\namts\OneDrive - Microsoft\Documents\Code\GitHub\modern-data-warehouse-dataops\Parent-MDW\single_tech_samples\databricks\Cluster_Deployment\storage_account\storageaccount.json" --parameters "C:\Users\namts\OneDrive - Microsoft\Documents\Code\GitHub\modern-data-warehouse-dataops\Parent-MDW\single_tech_samples\databricks\Cluster_Deployment\storage_account\storageaccount.parameters.json" --verbose
