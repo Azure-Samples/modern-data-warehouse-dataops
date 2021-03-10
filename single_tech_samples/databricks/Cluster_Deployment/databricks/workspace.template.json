@@ -9,20 +9,20 @@
         "description": "Specifies whether to deploy Azure Databricks workspace with Secure Cluster Connectivity (No Public IP) enabled or not"
       }
     },
-    "location": {
+    "adbWorkspacelocation": {
       "type": "string",
-      "defaultValue": "[resourceGroup().location]",
+      "defaultValue": "[resourceGroup().adbWorkspacelocation]",
       "metadata": {
-        "description": "Location for all resources."
+        "description": "adbWorkspacelocation for all resources."
       }
     },
-    "workspaceName": {
+    "adpWorkspaceName": {
       "type": "string",
       "metadata": {
         "description": "The name of the Azure Databricks workspace to create."
       }
     },
-    "pricingTier": {
+    "adbWorkspaceSkuTier": {
       "type": "string",
       "defaultValue": "standard",
       "allowedValues": [
@@ -38,16 +38,16 @@
     }
   },
   "variables": {
-    "managedResourceGroupName": "[concat('databricks-rg-', parameters('workspaceName'), '-', uniqueString(parameters('workspaceName'), resourceGroup().id))]",
+    "managedResourceGroupName": "[concat('databricks-rg-', parameters('adpWorkspaceName'), '-', uniqueString(parameters('adpWorkspaceName'), resourceGroup().id))]",
     "managedResourceGroupId": "[concat(subscription().id, '/resourceGroups/', variables('managedResourceGroupName'))]"
   },
   "resources": [
     {
       "apiVersion": "2018-04-01",
-      "location": "[parameters('location')]",
-      "name": "[parameters('workspaceName')]",
+      "adbWorkspacelocation": "[parameters('adbWorkspacelocation')]",
+      "name": "[parameters('adpWorkspaceName')]",
       "sku": {
-        "name": "[parameters('pricingTier')]"
+        "name": "[parameters('adbWorkspaceSkuTier')]"
       },
       "comments": "Please do not use an existing resource group for ManagedResourceGroupId.",
       "properties": {
