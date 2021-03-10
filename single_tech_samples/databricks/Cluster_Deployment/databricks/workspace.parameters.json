@@ -5,7 +5,7 @@
     "adpWorkspaceName": {
       "value": "samplewsname"
     },
-    "adbWorkspacelocation": {
+    "adbWorkspaceLocation": {
       "value": "eastus"
     },
     "adbWorkspaceSkuTier": {

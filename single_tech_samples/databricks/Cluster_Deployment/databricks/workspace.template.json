@@ -9,11 +9,11 @@
         "description": "Specifies whether to deploy Azure Databricks workspace with Secure Cluster Connectivity (No Public IP) enabled or not"
       }
     },
-    "adbWorkspacelocation": {
+    "adbWorkspaceLocation": {
       "type": "string",
-      "defaultValue": "[resourceGroup().adbWorkspacelocation]",
+      "defaultValue": "[resourceGroup().location]",
       "metadata": {
-        "description": "adbWorkspacelocation for all resources."
+        "description": "adbWorkspaceLocation for all resources."
       }
     },
     "adpWorkspaceName": {
@@ -44,7 +44,7 @@
   "resources": [
     {
       "apiVersion": "2018-04-01",
-      "adbWorkspacelocation": "[parameters('adbWorkspacelocation')]",
+      "location": "[parameters('adbWorkspaceLocation')]",
       "name": "[parameters('adpWorkspaceName')]",
       "sku": {
         "name": "[parameters('adbWorkspaceSkuTier')]"
