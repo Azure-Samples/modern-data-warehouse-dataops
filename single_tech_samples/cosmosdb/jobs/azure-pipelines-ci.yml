@@ -54,9 +54,3 @@ steps:
           az deployment group validate --resource-group $resourceGp --template-file $filepath
       done
     workingDirectory: '$(System.DefaultWorkingDirectory)/$(basePath)'
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Punlish Artifact'
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: '$(artifactName)'
