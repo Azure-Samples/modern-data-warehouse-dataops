@@ -93,21 +93,21 @@ stor_id=$(az storage account show \
 # Add file system storage account
 storage_file_system=datalake
 echo "Creating ADLS Gen2 File system: $storage_file_system"
-az storage container create --name $storage_file_system
+az storage container create --name $storage_file_system --account-name "$AZURE_STORAGE_ACCOUNT"
 
 echo "Creating folders within the file system."
 # Create folders for databricks libs
-az storage fs directory create -n '/sys/databricks/libs' -f $storage_file_system
+az storage fs directory create -n '/sys/databricks/libs' -f $storage_file_system --account-name "$AZURE_STORAGE_ACCOUNT"
 # Create folders for SQL external tables
-az storage fs directory create -n '/data/dw/fact_parking' -f $storage_file_system
-az storage fs directory create -n '/data/dw/dim_st_marker' -f $storage_file_system
-az storage fs directory create -n '/data/dw/dim_parking_bay' -f $storage_file_system
-az storage fs directory create -n '/data/dw/dim_location' -f $storage_file_system
+az storage fs directory create -n '/data/dw/fact_parking' -f $storage_file_system --account-name "$AZURE_STORAGE_ACCOUNT"
+az storage fs directory create -n '/data/dw/dim_st_marker' -f $storage_file_system --account-name "$AZURE_STORAGE_ACCOUNT"
+az storage fs directory create -n '/data/dw/dim_parking_bay' -f $storage_file_system --account-name "$AZURE_STORAGE_ACCOUNT"
+az storage fs directory create -n '/data/dw/dim_location' -f $storage_file_system --account-name "$AZURE_STORAGE_ACCOUNT"
 
 echo "Uploading seed data to data/seed"
-az storage blob upload --container-name $storage_file_system\
+az storage blob upload --container-name $storage_file_system --account-name "$AZURE_STORAGE_ACCOUNT" \
     --file data/seed/dim_date.csv --name "data/seed/dim_date/dim_date.csv"
-az storage blob upload --container-name $storage_file_system \
+az storage blob upload --container-name $storage_file_system --account-name "$AZURE_STORAGE_ACCOUNT" \
     --file data/seed/dim_time.csv --name "data/seed/dim_time/dim_time.csv"
 
 # Create SP and grant correct rights to storage account
