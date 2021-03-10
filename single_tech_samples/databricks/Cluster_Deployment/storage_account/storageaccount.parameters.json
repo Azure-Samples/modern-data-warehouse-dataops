@@ -9,7 +9,7 @@
             "value": "Standard_LRS"
         },
         "storageAccountSkuTier": {
-            "value": "Premium"
+            "value": "Standard"
         },
         "location": {
             "value": "australiaeast" 
