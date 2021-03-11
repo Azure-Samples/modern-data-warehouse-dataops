@@ -80,6 +80,11 @@
             "objectId": "[parameters('objectId')]",
             "tenantId": "[parameters('tenantId')]",
             "permissions": {
+              "secrets": [
+                "list",
+                "get",
+                "set"
+              ]
             }
           }
         ],
@@ -94,5 +99,16 @@
       },
       "tags": "[parameters('tagValues')]"
     }
-  ]
+  ],
+  "outputs": {
+    "keyvault_id": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+    },
+    "keyvault_uri": {
+      "type": "string",
+      // "value": "[reference(resourceId('Microsoft.KeyVault/vaults/secrets', parameters('keyVaultName'), parameters('mySecretName'))).secretUri]",
+      "value": "[reference(resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))).vaultUri]"
+    }
+  }
 }
