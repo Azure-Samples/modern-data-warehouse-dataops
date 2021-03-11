@@ -44,3 +44,15 @@ else
         echo "Resource group $AZURE_RESOURCE_GROUP_NAME is located in $RG_LOCATION, not \"$AZURE_RESOURCE_GROUP_LOCATION\""
     fi
 fi
+
+# Validate the ARM templates (Jacob)
+
+# Deploy ARM templates (Jacob)
+
+# Configure Key Vault access policy (Juan)
+
+# Generate token for ADB (Juan)
+
+# Store token in Key Vault (Juan)
+
+# Store Storage Account keys in Key Vault (Juan)
