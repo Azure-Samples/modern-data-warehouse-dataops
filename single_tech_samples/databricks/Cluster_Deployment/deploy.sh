@@ -66,7 +66,9 @@ disablePublicIp=false
 adbWorkspaceLocation="$AZURE_RESOURCE_GROUP_LOCATION"
 adbWorkspaceName="${DEPLOYMENT_PREFIX}adb01"
 adbWorkspaceSkuTier="standard"
-az deployment group validate \
+
+echo "Validating parameters for Azure Databricks..."
+if ! az deployment group validate \
     --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
     --template-file ./databricks/workspace.template.json \
     --parameters \
@@ -74,7 +76,13 @@ az deployment group validate \
         adbWorkspaceLocation="$adbWorkspaceLocation" \
         adbWorkspaceName="$adbWorkspaceName" \
         adbWorkspaceSkuTier="$adbWorkspaceSkuTier" \
-        tagValues="$tagValues"
+        tagValues="$tagValues";
+then
+    echo "Validation error for Azure Databricks, please see the error above."
+    exit 1
+else
+    echo "Azure Databricks parameters are valid."
+fi
 
 keyVaultName="${DEPLOYMENT_PREFIX}akv01"
 keyVaultLocation="$AZURE_RESOURCE_GROUP_LOCATION"
@@ -83,7 +91,9 @@ enabledForTemplateDeployment="false"
 tenantId="$(az account show --query "tenantId" --output tsv)"
 objectId="$(az ad signed-in-user show --query "objectId" --output tsv)"
 keyVaultSkuTier="Standard"
-az deployment group validate \
+
+echo "Validating parameters for Azure Key Vault..."
+if ! az deployment group validate \
     --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
     --template-file ./keyvault/keyvault.template.json \
     --parameters \
@@ -94,14 +104,22 @@ az deployment group validate \
         tenantId="$tenantId" \
         objectId="$objectId" \
         keyVaultSkuTier="$keyVaultSkuTier" \
-        tagValues="$tagValues"
+        tagValues="$tagValues";
+then
+    echo "Validation error for Azure Key Vault, please see the error above."
+    exit 1
+else
+    echo "Azure Key Vault parameters are valid."
+fi
 
 storageAccountName="${DEPLOYMENT_PREFIX}asa01"
 storageAccountSku="Standard_LRS"
 storageAccountSkuTier="Standard"
 storageAccountLocation="$AZURE_RESOURCE_GROUP_LOCATION"
 encryptionEnabled="true"
-az deployment group validate \
+
+echo "Validating parameters for Azure Storage Account..."
+if ! az deployment group validate \
     --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
     --template-file ./storageaccount/storageaccount.template.json \
     --parameters \
@@ -109,10 +127,17 @@ az deployment group validate \
         storageAccountSku="$storageAccountSku" \
         storageAccountSkuTier="$storageAccountSkuTier" \
         storageAccountLocation="$storageAccountLocation" \
-        encryptionEnabled="$encryptionEnabled"
+        encryptionEnabled="$encryptionEnabled";
+then
+    echo "Validation error for Azure Storage Account, please see the error above."
+    exit 1
+else
+    echo "Azure Storage Account parameters are valid."
+fi
 
 # Deploy ARM templates (Jacob)
-az deployment group create \
+echo "Deploying Azure Databricks..."
+if ! az deployment group create \
     --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
     --template-file ./databricks/workspace.template.json \
     --parameters \
@@ -120,9 +145,16 @@ az deployment group create \
         adbWorkspaceLocation="$adbWorkspaceLocation" \
         adbWorkspaceName="$adbWorkspaceName" \
         adbWorkspaceSkuTier="$adbWorkspaceSkuTier" \
-        tagValues="$tagValues"
+        tagValues="$tagValues";
+then
+    echo "Deployment of Azure Databricks failed, please see the error above."
+    exit 1
+else
+    echo "Deployment of Azure Databricks succeeded."
+fi
 
-az deployment group create \
+echo "Deploying Azure Key Vault..."
+if ! az deployment group create \
     --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
     --template-file ./keyvault/keyvault.template.json \
     --parameters \
@@ -133,9 +165,16 @@ az deployment group create \
         tenantId="$tenantId" \
         objectId="$objectId" \
         keyVaultSkuTier="$keyVaultSkuTier" \
-        tagValues="$tagValues"
+        tagValues="$tagValues";
+then
+    echo "Deployment of Azure Key Vault failed, please see the error above."
+    exit 1
+else
+    echo "Deployment of Azure Key Vault succeeded."
+fi
 
-az deployment group create \
+echo "Deploying Azure Storage Account..."
+if ! az deployment group create \
     --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
     --template-file ./storageaccount/storageaccount.template.json \
     --parameters \
@@ -143,7 +182,13 @@ az deployment group create \
         storageAccountSku="$storageAccountSku" \
         storageAccountSkuTier="$storageAccountSkuTier" \
         storageAccountLocation="$storageAccountLocation" \
-        encryptionEnabled="$encryptionEnabled"
+        encryptionEnabled="$encryptionEnabled";
+then
+    echo "Deployment of Azure Storage Account failed, please see the error above."
+    exit 1
+else
+    echo "Deployment of Azure Storage Account succeeded."
+fi
 
 # Configure Key Vault access policy (Juan)
 
