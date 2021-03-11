@@ -5,10 +5,17 @@ FROM mcr.microsoft.com/vscode/devcontainers/base:0-${VARIANT}
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get upgrade \
     && apt-get -y install --no-install-recommends \
-        git \
-        xz-utils \
-        python3 \
-        python3-pip
+    git \
+    xz-utils \
+    python3 \
+    python3-pip \
+    jq
+
+# Install shfmt
+RUN curl -SsL "https://github.com/mvdan/sh/releases/download/v3.2.4/shfmt_v3.2.4_linux_amd64" -o "shfmt" \
+    && mv shfmt /usr/local/bin \
+    && chown vscode /usr/local/bin/shfmt \
+    && chmod a+x /usr/local/bin/shfmt
 
 # Install Azure CLI
 RUN curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
