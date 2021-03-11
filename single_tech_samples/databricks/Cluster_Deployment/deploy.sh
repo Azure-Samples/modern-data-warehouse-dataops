@@ -33,16 +33,17 @@ fi
 if ! AZURE_USERNAME=$(az account show --query user.name); then
     echo "No Azure account logged in, now trying to log in."
     az login
+    az account set --subscription "$AZURE_SUBSCRIPTION_ID"
 else
     echo "Logged in as $AZURE_USERNAME, set the active subscription to \"$AZURE_SUBSCRIPTION_ID\""
-    az account set -s "$AZURE_SUBSCRIPTION_ID"
+    az account set --subscription "$AZURE_SUBSCRIPTION_ID"
 fi
 
 # Check the resource group and region
 RG_EXISTS=$(az group exists --resource-group "$AZURE_RESOURCE_GROUP_NAME")
 if [[ $RG_EXISTS == "false" ]]; then
     echo "Creating resource group $AZURE_RESOURCE_GROUP_NAME in $AZURE_RESOURCE_GROUP_LOCATION."
-    az group create --location "$AZURE_RESOURCE_GROUP_LOCATION" --resource-group "$AZURE_RESOURCE_GROUP_NAME --output none"
+    az group create --location "$AZURE_RESOURCE_GROUP_LOCATION" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
 else
     echo "Resource group $AZURE_RESOURCE_GROUP_NAME exists in $AZURE_RESOURCE_GROUP_LOCATION."
     RG_LOCATION=$(az group show --resource-group "$AZURE_RESOURCE_GROUP_NAME" --query location)
@@ -206,8 +207,9 @@ echo "Waiting for Databricks workspace to be ready..."
 echo "DATABRICKS token generated"
 
 # Store token in Key Vault (Juan)
-echo "Storing DATABRICKS token secret in Key Vault. Secret name: DatabricksDeploymentToken"
+echo "Storing DATABRICKS token secret in Key Vault."
 az keyvault secret set -n "DatabricksDeploymentToken" --vault-name "$keyVaultName" --value "$DATABRICKS_TOKEN" --output none
+echo "Successfully stored secret DatabricksDeploymentToken"
 
 # Store Storage Account keys in Key Vault (Juan)
 echo "Retrieving keys from storage account"
