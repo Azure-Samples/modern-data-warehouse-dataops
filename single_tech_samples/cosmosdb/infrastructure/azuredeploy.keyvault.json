@@ -50,13 +50,6 @@
           "metadata": {
             "description": "Property that controls how data actions are authorized."
           }
-      },
-      "enableSoftDelete": {
-          "type": "Bool",
-          "defaultValue": false,
-          "metadata": {
-            "description": "Property to specify whether the 'soft delete' functionality is enabled for this key vault."
-          }
       }
   },
   "variables": {},
@@ -78,8 +71,7 @@
               "sku": {
                   "name": "[parameters('sku')]",
                   "family": "A"
-              },
-              "enableSoftDelete": "[parameters('enableSoftDelete')]"
+              }
           }
       }
   ],
