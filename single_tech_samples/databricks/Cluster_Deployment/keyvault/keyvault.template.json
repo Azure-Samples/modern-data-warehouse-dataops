@@ -107,7 +107,6 @@
     },
     "keyvault_uri": {
       "type": "string",
-      // "value": "[reference(resourceId('Microsoft.KeyVault/vaults/secrets', parameters('keyVaultName'), parameters('mySecretName'))).secretUri]",
       "value": "[reference(resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))).vaultUri]"
     }
   }
