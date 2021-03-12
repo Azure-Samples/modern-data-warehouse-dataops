@@ -1,20 +1,13 @@
 #!/usr/bin/env bash
 
-random_str() {
-    local length=$1
-    cat /dev/urandom | tr -dc 'a-z' | fold -w "$length" | head -n 1
-    return 0
-}
-
 DEPLOYMENT_PREFIX=${DEPLOYMENT_PREFIX:-}
 AZURE_SUBSCRIPTION_ID=${AZURE_SUBSCRIPTION_ID:-}
 AZURE_RESOURCE_GROUP_NAME=${AZURE_RESOURCE_GROUP_NAME:-}
 AZURE_RESOURCE_GROUP_LOCATION=${AZURE_RESOURCE_GROUP_LOCATION:-}
 
 if [[ -z "$DEPLOYMENT_PREFIX" ]]; then
-    echo "No [DEPLOYMENT_PREFIX] specified, generating one."
-    DEPLOYMENT_PREFIX=$(random_str 3)
-    echo "[DEPLOYMENT_PREFIX] is set to \"$DEPLOYMENT_PREFIX\"."
+    echo "No deployment prefix [DEPLOYMENT_PREFIX] specified."
+    exit 1
 fi
 if [[ -z "$AZURE_SUBSCRIPTION_ID" ]]; then
     echo "No Azure subscription id [AZURE_SUBSCRIPTION_ID] specified."
