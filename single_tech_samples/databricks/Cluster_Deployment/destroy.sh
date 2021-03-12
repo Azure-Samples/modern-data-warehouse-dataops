@@ -26,7 +26,7 @@ fi
 # Login to Azure and select the subscription
 if ! AZURE_USERNAME=$(az account show --query user.name); then
     echo "No Azure account logged in, now trying to log in."
-    az login
+    az login --output none
     az account set --subscription "$AZURE_SUBSCRIPTION_ID"
 else
     echo "Logged in as $AZURE_USERNAME, set the active subscription to \"$AZURE_SUBSCRIPTION_ID\""
