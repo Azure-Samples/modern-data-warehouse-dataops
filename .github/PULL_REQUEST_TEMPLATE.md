@@ -1,6 +1,14 @@
+# Type of PR
+
+- [ ] Documentation changes
+- [ ] Code changes
+- [ ] Test changes
+- [ ] CI-CD changes
+- [ ] GitHub Template changes
+
 ## Purpose
 <!-- Describe the intention of the changes being proposed. What problem does it solve or functionality does it add? -->
-* ...
+- ...
 
 ## Does this introduce a breaking change?
 <!-- Mark one with an "x". -->
@@ -13,3 +21,12 @@
 - [ ] No PII in logs
 - [ ] Made corresponding changes to the documentation
 
+## Validation steps
+<!-- Optional. -->
+- ...
+
+## Issues Closed or Referenced
+<!-- This will automatically close the issue when the PR closes. -->
+- Closes #issue_number
+<!-- this references the issue but does not close with PR. -->
+- References #issue_number
