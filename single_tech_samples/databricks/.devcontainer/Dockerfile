@@ -18,7 +18,8 @@ RUN curl -SsL "https://github.com/mvdan/sh/releases/download/v3.2.4/shfmt_v3.2.4
     && chmod a+x /usr/local/bin/shfmt
 
 # Install Azure CLI
-RUN curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+RUN curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash \
+    && az extension add --name databricks
 
 # Install Databricks CLI
 RUN pip3 install setuptools \
