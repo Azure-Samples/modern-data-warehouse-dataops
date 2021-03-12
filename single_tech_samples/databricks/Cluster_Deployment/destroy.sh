@@ -40,8 +40,6 @@ else
     echo "Resource group $AZURE_RESOURCE_GROUP_NAME exists in $AZURE_RESOURCE_GROUP_LOCATION. Removing created resources"
 fi
 
-# Validate the ARM templates (Jacob)
-
 adbWorkspaceName="${DEPLOYMENT_PREFIX}adb01"
 keyVaultName="${DEPLOYMENT_PREFIX}akv01"
 storageAccountName="${DEPLOYMENT_PREFIX}asa01"
@@ -52,13 +50,14 @@ echo "Key Vault: $keyVaultName"
 echo "Storage Account: $storageAccountName"
 
 echo "Deleting ADB workspace"
-az databricks workspace delete --name $adbWorkspaceName --resource-group $AZURE_RESOURCE_GROUP_NAME --yes
+az databricks workspace delete --name "$adbWorkspaceName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --yes
 echo "Deleted ADB workspace successfully"
+
 echo "Deleting Key Vault"
-az keyvault delete --name $keyVaultName --resource-group $AZURE_RESOURCE_GROUP_NAME
-az keyvault purge --subscription $AZURE_SUBSCRIPTION_ID -n $keyVaultName
+az keyvault delete --name "$keyVaultName" --resource-group "$AZURE_RESOURCE_GROUP_NAME"
+az keyvault purge --subscription "$AZURE_SUBSCRIPTION_ID" -n "$keyVaultName"
 echo "Deleted and purged Key Vault successfully"
 
 echo "Deleting Storage Account"
-az storage account delete -n $storageAccountName -g $AZURE_RESOURCE_GROUP_NAME --yes
+az storage account delete --name "$storageAccountName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --yes
 echo "Successfully deleted storage account"
