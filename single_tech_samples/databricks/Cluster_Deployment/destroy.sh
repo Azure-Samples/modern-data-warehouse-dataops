@@ -4,6 +4,7 @@ DEPLOYMENT_PREFIX=${DEPLOYMENT_PREFIX:-}
 AZURE_SUBSCRIPTION_ID=${AZURE_SUBSCRIPTION_ID:-}
 AZURE_RESOURCE_GROUP_NAME=${AZURE_RESOURCE_GROUP_NAME:-}
 AZURE_RESOURCE_GROUP_LOCATION=${AZURE_RESOURCE_GROUP_LOCATION:-}
+DELETE_RESOURCE_GRUP=${DELETE_RESOURCE_GRUP:-}
 
 if [[ -z "$DEPLOYMENT_PREFIX" ]]; then
     echo "No deployment prefix [DEPLOYMENT_PREFIX] specified."
@@ -40,24 +41,35 @@ else
     echo "Resource group $AZURE_RESOURCE_GROUP_NAME exists in $AZURE_RESOURCE_GROUP_LOCATION. Removing created resources"
 fi
 
+# Name references
 adbWorkspaceName="${DEPLOYMENT_PREFIX}adb01"
 keyVaultName="${DEPLOYMENT_PREFIX}akv01"
 storageAccountName="${DEPLOYMENT_PREFIX}asa01"
 
-echo "The following resources will be deleted:"
-echo "ADB Workspace: $adbWorkspaceName"
-echo "Key Vault: $keyVaultName"
-echo "Storage Account: $storageAccountName"
+echo "Delete Resouce Group? $DELETE_RESOURCE_GRUP"
 
-echo "Deleting ADB workspace"
-az databricks workspace delete --name "$adbWorkspaceName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --yes
-echo "Deleted ADB workspace successfully"
+if [[ $DELETE_RESOURCE_GRUP == true ]]; then
+    echo "Deleting resource group: $AZURE_RESOURCE_GROUP_NAME with all the resources. In 5 seconds..."
+    sleep 5s
+    az group delete --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none --yes
+    echo "Purging key vault..."
+    az keyvault purge --subscription "$AZURE_SUBSCRIPTION_ID" -n "$keyVaultName" --output none
+else
+    echo "The following resources will be deleted:"
+    echo "ADB Workspace: $adbWorkspaceName"
+    echo "Key Vault: $keyVaultName"
+    echo "Storage Account: $storageAccountName"
 
-echo "Deleting Key Vault"
-az keyvault delete --name "$keyVaultName" --resource-group "$AZURE_RESOURCE_GROUP_NAME"
-az keyvault purge --subscription "$AZURE_SUBSCRIPTION_ID" -n "$keyVaultName"
-echo "Deleted and purged Key Vault successfully"
+    echo "Deleting ADB workspace..."
+    az databricks workspace delete --name "$adbWorkspaceName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --yes --output none
+    echo "Deleted ADB workspace successfully"
 
-echo "Deleting Storage Account"
-az storage account delete --name "$storageAccountName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --yes
-echo "Successfully deleted storage account"
+    echo "Deleting Key Vault..."
+    az keyvault delete --name "$keyVaultName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
+    az keyvault purge --subscription "$AZURE_SUBSCRIPTION_ID" -n "$keyVaultName" --output none
+    echo "Deleted and purged Key Vault successfully"
+
+    echo "Deleting Storage Account..."
+    az storage account delete --name "$storageAccountName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --yes --output none
+    echo "Successfully deleted storage account"
+fi
