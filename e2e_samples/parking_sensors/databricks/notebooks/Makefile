@@ -18,5 +18,5 @@ help:
 uploaddatabricks: ## Uploads notebooks to databricks workspace
 	databricks workspace import_dir --overwrite . $(DATABRICKS_WORKSPACE_UPLOAD_PATH)/
 
-downloaddatabricks: ## Uploads notebooks to databricks workspace
+downloaddatabricks: ## Downloads notebooks to databricks workspace
 	databricks workspace export_dir --overwrite $(DATABRICKS_WORKSPACE_UPLOAD_PATH)/ .
