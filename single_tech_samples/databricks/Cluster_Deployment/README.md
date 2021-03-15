@@ -16,8 +16,8 @@
     - [4.3. Deployed Resources](#43-deployed-resources)
     - [4.4. Deployment validation](#44-deployment-validation)
     - [4.5. Clean-up](#45-clean-up)
-  - [5. Well Architected Framework (WAF)](#5-well-architected-framework-waf)
-    - [5.1. Cost Optimisation](#51-cost-optimisation)
+  - [5. Well-Architected Framework (WAF)](#5-well-architected-framework-waf)
+    - [5.1. Cost Optimization](#51-cost-optimization)
     - [5.2. Operational Excellence](#52-operational-excellence)
     - [5.3. Performance Efficiency](#53-performance-efficiency)
     - [5.4. Reliability](#54-reliability)
@@ -76,7 +76,7 @@ The following are the prerequisites for deploying this sample :
 
 1. [Github account](https://github.com/)
 2. [Azure Account](https://azure.microsoft.com/en-au/free/search/?&ef_id=Cj0KCQiAr8bwBRD4ARIsAHa4YyLdFKh7JC0jhbxhwPeNa8tmnhXciOHcYsgPfNB7DEFFGpNLTjdTPbwaAh8bEALw_wcB:G:s&OCID=AID2000051_SEM_O2ShDlJP&MarinID=O2ShDlJP_332092752199_azure%20account_e_c__63148277493_aud-390212648371:kwd-295861291340&lnkd=Google_Azure_Brand&dclid=CKjVuKOP7uYCFVapaAoddSkKcA)
-   - *Permissions needed*: ability to create and deploy to an azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
+   - *Permissions needed*:  The ability to create and deploy to an azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
 
    - Active subscription with the following [resource providers](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/azure-services-resource-providers) enabled:
      - Microsoft.Databricks
@@ -88,31 +88,40 @@ The following are the prerequisites for deploying this sample :
 
 1. [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/) installed on the local machine
    - *Installation instructions* can be found [here](hhttps://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
-1. For Windows users, [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+1. For Windows users,
+   1. Option 1 : [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+   2. Option 2 : Use dev container published [here](../.devcontainer) as a host for the bash shell.
 
 ### 4.2. Setup and deployment
 
-> **IMPORTANT NOTE:** As with all Azure Deployments, this will **incur associated costs**. Remember to teardown all related resources after use to avoid unnecessary costs. See [here](#4.3.-deployed-resources) for list of deployed resources.
+> **IMPORTANT NOTE:** As with all Azure Deployments, this will **incur associated costs**. Remember to teardown all related resources after use to avoid unnecessary costs. See [here](#4.3.-deployed-resources) for a list of deployed resources.
 
 Below listed are the steps to deploy this sample :
 
-1. Ensure that:
-      - You are logged in to the Azure CLI. To login, run `az login`.
-      - Azure CLI is targeting the Azure Subscription you want to deploy the resources to.
-         - To set target Azure Subscription, run `az account set -s <AZURE_SUBSCRIPTION_ID>`
-2. Fork and clone this repository. Navigate to (CD) `single_tech_samples/databricks/cluster_deployment/`.
+1. Fork and clone this repository. Navigate to (CD) `single_tech_samples/databricks/cluster_deployment/`.
 
-3. Run '/deploy.sh'
+1. The sample depends on the following environment variables to be set before the deployment script is run:
+  
+    > - `DEPLOYMENT_PREFIX` - Prefix for the resource names which will be created as a part of this deployment
+    > - `AZURE_SUBSCRIPTION_ID` - Subscription ID of the Azure subscription where the resources should be deployed.
+    > - `AZURE_RESOURCE_GROUP_NAME` - Name of the containing resource group
+    > - `AZURE_RESOURCE_GROUP_LOCATION` - Azure region where the resources will be deployed. (e.g. australiaeast, eastus, etc.)
+    > - `DELETE_RESOURCE_GROUP` - Flag to indicate the cleanup step for the resource group
+
+1. Run '/deploy.sh'
+   > Note: The script will prompt you to log in to the Azure account for authorization to deploy resources.
+
+   The script will validate the ARM templates and the environment variables before deploying the resources. It will also display the status of each stage of the deployment while it executes. The following screenshot displays the log for a successful run:
+
+   > Note: `DEPLOYMENT_PREFIX` for this deployment was set as `lumustest`
+
+    ![alt text](../Common_Assets/Images/IAC_Script_Deploy.png "Logo Title Text 1")
 
 ### 4.3. Deployed Resources
 
 The following resources will be deployed as a part of this sample once the script is executed:
 
-1. Azure resource group - A logical container to host all the services required for the Azure Databricks environment.
-
-    - Following will be the naming convention used for the resource group: rg.TBD
-
-2. Azure Databricks workspace.
+1. Azure Databricks workspace.
 
 ![alt text](../Common_Assets/Images/IAC_Adb.png "Logo Title Text 1")
 
@@ -120,11 +129,9 @@ The following resources will be deployed as a part of this sample once the scrip
 
 ![alt text](../Common_Assets/Images/IAC_Storage.png "Logo Title Text 1")
 
-4. Azure Key vault
+4. Azure Key vault with all the secrets configured.
 
-The following diagram illustrates all the resources in teh provisioned resource group:
-
-**Screenshot here**
+![alt text](../Common_Assets/Images/IAC_Keyvault.png "Logo Title Text 1")
 
 ### 4.4. Deployment validation
 
@@ -133,27 +140,32 @@ The following steps can be performed to validate the correct deployment of this 
 1. Users with appropriate access rights should be able to:
 
    1. launch the workspace from the Azure portal.
-   2. Access the control plane for the storage account and key vault though Azure portal.
-   3. View deployment logs in the Azure resource group
+   2. Access the control plane for the storage account and key vault through the Azure portal.
+   3. View the secrets configured in the Azure Key vault
+   4. View deployment logs in the Azure resource group
    ![alt text](../Common_Assets/Images/IAC_Deployment_Logs.png "Logo Title Text 1")
 
 ### 4.5. Clean-up
 
 Please follow the below steps to clean up your environment :
 
-The clean-up script can be executed to clean up the resources provisioned in this sample. Following are ste steps to execute the script:
+The clean-up script can be executed to clean up the resources provisioned in this sample. Following are the steps to execute the script:
 
 1. Navigate to (CD) `single_tech_samples/databricks/cluster_deployment/`.
 
-2. Run '/cleanup.sh'
+2. Run '/destroy.sh'
 
-## 5. Well Architected Framework (WAF)
+The following screenshot displays the log for successful clean-up run:
 
-This section highlights key pointers to align the services deployed in this sample to Microsoft Azure 'Well Architected Framework'.
+  ![alt text](../Common_Assets/Images/IAC_Script_Teardown.png "Logo Title Text 1")
 
-### 5.1. Cost Optimisation
+## 5. Well-Architected Framework (WAF)
 
-1. Prior to the deployment, use [Azure pricing calculator](https://azure.microsoft.com/en-us/pricing/calculator/) to determine the expected usage cost.
+This section highlights key pointers to align the services deployed in this sample to Microsoft Azure's Well-Architected Framework'.
+
+### 5.1. Cost Optimization
+
+1. Before the deployment, use [Azure pricing calculator](https://azure.microsoft.com/en-us/pricing/calculator/) to determine the expected usage cost.
 
 2. Appropriately select the [Storage redundancy](https://docs.microsoft.com/en-us/azure/storage/common/storage-redundancy) option
 
@@ -161,13 +173,13 @@ This section highlights key pointers to align the services deployed in this samp
 
 4. Use [Azure Advisor](https://azure.microsoft.com/en-us/services/advisor/) to optimize deployments by leveraging the smart insights
 
-5. Use [Azure Policies](https://azure.microsoft.com/en-us/services/azure-policy/) to define guardrails around deployment constrains to regulate cost
+5. Use [Azure Policies](https://azure.microsoft.com/en-us/services/azure-policy/) to define guardrails around deployment constraints to regulate the cost
 
 ### 5.2. Operational Excellence
 
 1. Ensure that the parameters passed to the deployment scripts are validated
 
-1. Leverage parallel resource deployment where ever possible. In the scope of this sample, all the three resources can be deployed in parallel.
+1. Leverage parallel resource deployment where ever possible. In the scope of this sample, all three resources can be deployed in parallel.
 
 1. Validate compensation transactions for the deployment workflow.
 
@@ -179,7 +191,7 @@ This section highlights key pointers to align the services deployed in this samp
 
 ### 5.4. Reliability
 
-1. Define the availability requirements prior to the deployment and configure the storage and databricks service accordingly.
+1. Define the availability requirements before the deployment and configure the storage and databricks service accordingly.
 
 2. Ensure required capacity and services are available in targeted regions
 
@@ -187,11 +199,10 @@ This section highlights key pointers to align the services deployed in this samp
 
 ### 5.5. Security
 
-1. Ensure right privileges are granted to the provisioned resources.
+1. Ensure the right privileges are granted to the provisioned resources.
 
 2. Cater for regular audits to ensure ongoing Vigilance.
 
-3. Automate the execution of the deployment script and restrict the privilages to service accounts.
+3. Automate the execution of the deployment script and restrict the privileges to service accounts.
 
-4. Integrate with secure identity provider (Azure Active Directory)
-
+4. Integrate with the secure identity provider (Azure Active Directory)
