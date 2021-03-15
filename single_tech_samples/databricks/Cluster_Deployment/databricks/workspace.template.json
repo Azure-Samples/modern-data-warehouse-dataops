@@ -6,7 +6,7 @@
       "type": "bool",
       "defaultValue": false,
       "metadata": {
-        "description": "Specifies whether to deploy Azure Databricks workspace with Secure Cluster Connectivity (No Public IP) enabled or not"
+        "description": "Specifies whether to deploy Azure Databricks workspace with Secure Cluster Connectivity (No Public IP) enabled or not."
       }
     },
     "adbWorkspaceLocation": {
@@ -16,7 +16,7 @@
         "description": "adbWorkspaceLocation for all resources."
       }
     },
-    "adpWorkspaceName": {
+    "adbWorkspaceName": {
       "type": "string",
       "metadata": {
         "description": "The name of the Azure Databricks workspace to create."
@@ -38,14 +38,14 @@
     }
   },
   "variables": {
-    "managedResourceGroupName": "[concat('databricks-rg-', parameters('adpWorkspaceName'), '-', uniqueString(parameters('adpWorkspaceName'), resourceGroup().id))]",
+    "managedResourceGroupName": "[concat('databricks-rg-', parameters('adbWorkspaceName'), '-', uniqueString(parameters('adbWorkspaceName'), resourceGroup().id))]",
     "managedResourceGroupId": "[concat(subscription().id, '/resourceGroups/', variables('managedResourceGroupName'))]"
   },
   "resources": [
     {
       "apiVersion": "2018-04-01",
       "location": "[parameters('adbWorkspaceLocation')]",
-      "name": "[parameters('adpWorkspaceName')]",
+      "name": "[parameters('adbWorkspaceName')]",
       "sku": {
         "name": "[parameters('adbWorkspaceSkuTier')]"
       },
@@ -62,5 +62,23 @@
       "dependsOn": [],
       "tags": "[parameters('tagValues')]"
     }
-  ]
+  ],
+  "outputs": {
+    "databricks_workspace_name": {
+      "value": "[parameters('adbWorkspaceName')]",
+      "type": "string"
+    },
+    "databricks_location": {
+      "value": "[resourceGroup().location]",
+      "type": "string"
+    },
+    "databricks_workspace_id": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Databricks/workspaces', parameters('adbWorkspaceName'))]"
+    },
+    "databricks_workspace": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.Databricks/workspaces', parameters('adbWorkspaceName')))]"
+    }
+  }
 }
