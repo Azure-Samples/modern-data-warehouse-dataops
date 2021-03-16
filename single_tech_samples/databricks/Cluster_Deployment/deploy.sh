@@ -122,6 +122,48 @@ else
     echo "Azure Storage Account parameters are valid."
 fi
 
+### The validate for NSG and VNET ###
+# TODO(Tomomi): This validate should be optional
+# NSG
+securityGroupName="${DEPLOYMENT_PREFIX}nsg01"
+securityGroupLocation="$AZURE_RESOURCE_GROUP_LOCATION"
+
+echo "Validating parameters for Network Security Group..."
+if ! az deployment group validate \
+    --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+    --template-file ./securitygroup/securitygroup.template.json \
+    --parameters \
+        securityGroupName="$securityGroupName" \
+        securityGroupLocation="$securityGroupLocation" \
+    --output none; then
+    echo "Validation error for Network Security Group, please see the error above."
+    exit 1
+else
+    echo "Network Security Group parameters are valid."
+fi
+
+# VNET
+securityGroupName="${DEPLOYMENT_PREFIX}nsg01"
+vnetName="${DEPLOYMENT_PREFIX}vnet01"
+vnetLocation="$AZURE_RESOURCE_GROUP_LOCATION"
+
+echo "Validating parameters for Virtual Network..."
+if ! az deployment group validate \
+    --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+    --template-file ./vnet/vnet.template.json \
+    --parameters \
+        securityGroupName="$securityGroupName" \
+        vnetName="$vnetName" \
+        vnetLocation="$vnetLocation" \
+    --output none; then
+    echo "Validation error for Virtual Network, please see the error above."
+    exit 1
+else
+    echo "Virtual Network parameters are valid."
+fi
+
+### END ###
+
 # Deploy ARM templates (Jacob)
 echo "Deploying Azure Databricks Workspace..."
 adbws_arm_output=$(az deployment group create \
