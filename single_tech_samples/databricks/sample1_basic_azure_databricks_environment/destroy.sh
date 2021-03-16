@@ -4,7 +4,7 @@ DEPLOYMENT_PREFIX=${DEPLOYMENT_PREFIX:-}
 AZURE_SUBSCRIPTION_ID=${AZURE_SUBSCRIPTION_ID:-}
 AZURE_RESOURCE_GROUP_NAME=${AZURE_RESOURCE_GROUP_NAME:-}
 AZURE_RESOURCE_GROUP_LOCATION=${AZURE_RESOURCE_GROUP_LOCATION:-}
-DELETE_RESOURCE_GRUP=${DELETE_RESOURCE_GRUP:-}
+DELETE_RESOURCE_GROUP=${DELETE_RESOURCE_GROUP:-}
 
 if [[ -z "$DEPLOYMENT_PREFIX" ]]; then
     echo "No deployment prefix [DEPLOYMENT_PREFIX] specified."
@@ -46,9 +46,9 @@ adbWorkspaceName="${DEPLOYMENT_PREFIX}adb01"
 keyVaultName="${DEPLOYMENT_PREFIX}akv01"
 storageAccountName="${DEPLOYMENT_PREFIX}asa01"
 
-echo "Delete Resouce Group? $DELETE_RESOURCE_GRUP"
+echo "Delete Resouce Group? $DELETE_RESOURCE_GROUP"
 
-if [[ $DELETE_RESOURCE_GRUP == true ]]; then
+if [[ $DELETE_RESOURCE_GROUP == true ]]; then
     echo "Deleting resource group: $AZURE_RESOURCE_GROUP_NAME with all the resources. In 5 seconds..."
     sleep 5s
     az group delete --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none --yes
