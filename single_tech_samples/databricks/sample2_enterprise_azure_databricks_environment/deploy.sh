@@ -47,8 +47,46 @@ fi
 
 # Validate the ARM templates (Jacob)
 
+securityGroupName="${DEPLOYMENT_PREFIX}nsg01"
+securityGroupLocation="$AZURE_RESOURCE_GROUP_LOCATION"
+
+echo "Validating parameters for Network Security Group..."
+if ! az deployment group validate \
+    --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+    --template-file ./securitygroup/securitygroup.template.json \
+    --parameters \
+        securityGroupName="$securityGroupName" \
+        securityGroupLocation="$securityGroupLocation" \
+    --output none; then
+    echo "Validation error for Network Security Group, please see the error above."
+    exit 1
+else
+    echo "Network Security Group parameters are valid."
+fi
+
+securityGroupName="${DEPLOYMENT_PREFIX}nsg01"
+vnetName="${DEPLOYMENT_PREFIX}vnet01"
+vnetLocation="$AZURE_RESOURCE_GROUP_LOCATION"
+
+echo "Validating parameters for Virtual Network..."
+if ! az deployment group validate \
+    --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+    --template-file ./vnet/vnet.template.json \
+    --parameters \
+        securityGroupName="$securityGroupName" \
+        vnetName="$vnetName" \
+        vnetLocation="$vnetLocation" \
+    --output none; then
+    echo "Validation error for Virtual Network, please see the error above."
+    exit 1
+else
+    echo "Virtual Network parameters are valid."
+fi
+
 tagValues="{}"
 
+securityGroupName="${DEPLOYMENT_PREFIX}nsg01"
+vnetName="${DEPLOYMENT_PREFIX}vnet01"
 disablePublicIp=false
 adbWorkspaceLocation="$AZURE_RESOURCE_GROUP_LOCATION"
 adbWorkspaceName="${DEPLOYMENT_PREFIX}adb01"
@@ -59,6 +97,7 @@ if ! az deployment group validate \
     --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
     --template-file ./databricks/workspace.template.json \
     --parameters \
+        vnetName="$vnetName" \
         disablePublicIp="$disablePublicIp" \
         adbWorkspaceLocation="$adbWorkspaceLocation" \
         adbWorkspaceName="$adbWorkspaceName" \
@@ -123,11 +162,41 @@ else
 fi
 
 # Deploy ARM templates (Jacob)
+echo "Deploying Network Security Group..."
+nsg_arm_output=$(az deployment group create \
+    --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+    --template-file ./securitygroup/securitygroup.template.json \
+    --parameters \
+        securityGroupName="$securityGroupName" \
+        securityGroupLocation="$securityGroupLocation" \
+    --output json)
+
+if [[ -z $nsg_arm_output ]]; then
+    echo >&2 "Network Security Group ARM deployment failed."
+    exit 1
+fi
+
+echo "Deploying Virtual Network..."
+nsg_arm_output=$(az deployment group create \
+    --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+    --template-file ./vnet/vnet.template.json \
+    --parameters \
+        securityGroupName="$securityGroupName" \
+        vnetName="$vnetName" \
+        vnetLocation="$vnetLocation" \
+    --output json)
+
+if [[ -z $nsg_arm_output ]]; then
+    echo >&2 "Virtual Network ARM deployment failed."
+    exit 1
+fi
+
 echo "Deploying Azure Databricks Workspace..."
 adbws_arm_output=$(az deployment group create \
     --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
     --template-file ./databricks/workspace.template.json \
     --parameters \
+        vnetName="$vnetName" \
         disablePublicIp="$disablePublicIp" \
         adbWorkspaceLocation="$adbWorkspaceLocation" \
         adbWorkspaceName="$adbWorkspaceName" \
