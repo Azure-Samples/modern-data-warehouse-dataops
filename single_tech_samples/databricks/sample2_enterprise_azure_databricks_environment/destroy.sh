@@ -45,6 +45,8 @@ fi
 adbWorkspaceName="${DEPLOYMENT_PREFIX}adb01"
 keyVaultName="${DEPLOYMENT_PREFIX}akv01"
 storageAccountName="${DEPLOYMENT_PREFIX}asa01"
+securityGroupName="${DEPLOYMENT_PREFIX}nsg01"
+vnetName="${DEPLOYMENT_PREFIX}vnet01"
 
 echo "Delete Resouce Group? $DELETE_RESOURCE_GROUP"
 
@@ -59,17 +61,27 @@ else
     echo "ADB Workspace: $adbWorkspaceName"
     echo "Key Vault: $keyVaultName"
     echo "Storage Account: $storageAccountName"
+    echo "Network Security Group: $securityGroupName"
+    echo "Virtual Network: $vnetName"
 
     echo "Deleting ADB workspace..."
     az databricks workspace delete --name "$adbWorkspaceName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --yes --output none
-    echo "Deleted ADB workspace successfully"
+    echo "Successfully deleted ADB workspace"
 
     echo "Deleting Key Vault..."
     az keyvault delete --name "$keyVaultName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
     az keyvault purge --subscription "$AZURE_SUBSCRIPTION_ID" -n "$keyVaultName" --output none
-    echo "Deleted and purged Key Vault successfully"
+    echo "Successfully deleted and purged Key Vault"
 
     echo "Deleting Storage Account..."
     az storage account delete --name "$storageAccountName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --yes --output none
-    echo "Successfully deleted storage account"
+    echo "Successfully deleted Storage Account"
+
+    echo "Deleting Network Security Group..."
+    az network nsg delete --name "$securityGroupName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
+    echo "Successfully deleted Network Security Group"
+
+    echo "Deleting Virtual Network..."
+    az network vnet delete --name "$vnetName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
+    echo "Successfully deleted Virtual Network"
 fi
