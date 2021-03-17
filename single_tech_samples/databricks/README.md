@@ -16,3 +16,10 @@ This folder captures sample implementations for the following processes around A
 **_NOTE:_**  These samples are built using a selection of programing languages and services which is well adopted by the enterprise customers. Developers can leverage other technologies to achieve the same objective. Please refer to the [documentation]("https://docs.microsoft.com/en-us/azure/databricks/")
  for further details on the supported technologies.
  ----------------------- ------------------------------------
+
+## Contributing
+
+### Markdown linting
+
+Please run `make lint` before submitting the PR to make sure the links in your Markdown files
+are alive.
