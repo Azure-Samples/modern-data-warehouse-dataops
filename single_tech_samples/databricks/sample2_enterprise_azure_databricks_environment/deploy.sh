@@ -65,16 +65,16 @@ else
 fi
 
 securityGroupName="${DEPLOYMENT_PREFIX}nsg01"
-vnetName="${DEPLOYMENT_PREFIX}vnet01"
+spokeVnetName="${DEPLOYMENT_PREFIX}spokeVnet01"
 vnetLocation="$AZURE_RESOURCE_GROUP_LOCATION"
 
-echo "Validating parameters for Virtual Network..."
+echo "Validating parameters for Virtual Networks..."
 if ! az deployment group validate \
     --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
     --template-file ./vnet/vnet.template.json \
     --parameters \
         securityGroupName="$securityGroupName" \
-        vnetName="$vnetName" \
+        vnetName="$spokeVnetName" \
         vnetLocation="$vnetLocation" \
     --output none; then
     echo "Validation error for Virtual Network, please see the error above."
@@ -86,7 +86,7 @@ fi
 tagValues="{}"
 
 securityGroupName="${DEPLOYMENT_PREFIX}nsg01"
-vnetName="${DEPLOYMENT_PREFIX}vnet01"
+spokeVnetName="${DEPLOYMENT_PREFIX}spokeVnet01"
 disablePublicIp=false
 adbWorkspaceLocation="$AZURE_RESOURCE_GROUP_LOCATION"
 adbWorkspaceName="${DEPLOYMENT_PREFIX}adb01"
@@ -97,7 +97,7 @@ if ! az deployment group validate \
     --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
     --template-file ./databricks/workspace.template.json \
     --parameters \
-        vnetName="$vnetName" \
+        vnetName="$spokeVnetName" \
         disablePublicIp="$disablePublicIp" \
         adbWorkspaceLocation="$adbWorkspaceLocation" \
         adbWorkspaceName="$adbWorkspaceName" \
@@ -182,7 +182,7 @@ nsg_arm_output=$(az deployment group create \
     --template-file ./vnet/vnet.template.json \
     --parameters \
         securityGroupName="$securityGroupName" \
-        vnetName="$vnetName" \
+        vnetName="$spokeVnetName" \
         vnetLocation="$vnetLocation" \
     --output json)
 
@@ -190,13 +190,13 @@ if [[ -z $nsg_arm_output ]]; then
     echo >&2 "Virtual Network ARM deployment failed."
     exit 1
 fi
-
+<<comment
 echo "Deploying Azure Databricks Workspace..."
 adbws_arm_output=$(az deployment group create \
     --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
     --template-file ./databricks/workspace.template.json \
     --parameters \
-        vnetName="$vnetName" \
+        vnetName="$spokeVnetName" \
         disablePublicIp="$disablePublicIp" \
         adbWorkspaceLocation="$adbWorkspaceLocation" \
         adbWorkspaceName="$adbWorkspaceName" \
@@ -309,6 +309,9 @@ echo "Creating secrets within scope $scope_name..."
 databricks secrets write --scope "$scope_name" --key "storage_account_key1" --string-value  "$storage_account_key1"
 databricks secrets write --scope "$scope_name" --key "storage_account_key2" --string-value  "$storage_account_key2"
 
+comment 
+
+
 ###############################
 # Summary or resources created:
 printf "\n\n\nRESOURCE GROUP: \t\t %s\n" "$AZURE_RESOURCE_GROUP_NAME"
@@ -316,7 +319,7 @@ printf "STORAGE ACCOUNT: \t\t %s\n" "$storageAccountName"
 printf "DATABRICKS WORKSPACE: \t\t %s\n" "$adbWorkspaceName"
 printf "KEY VAULT NAME: \t\t %s\n" "$keyVaultName"
 printf "Network Security Group: \t\t %s\n" "$securityGroupName"
-printf "Virtual Network: \t\t %s\n" "$vnetName"
+printf "Virtual Network: \t\t %s\n" "$spokeVnetName"
 printf "\nSecret names:\n"
 printf "DATABRICKS TOKEN: \t\t DatabricksDeploymentToken\n"
 printf "STORAGE ACCOUNT KEY 1: \t\t StorageAccountKey1\n"
