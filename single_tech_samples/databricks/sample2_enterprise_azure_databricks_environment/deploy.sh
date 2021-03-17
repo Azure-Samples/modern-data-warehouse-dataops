@@ -63,7 +63,22 @@ else
     echo "Network Security Group parameters are valid."
 fi
 
+reouteTablelocation="$AZURE_RESOURCE_GROUP_LOCATION"
+routeTableName="${DEPLOYMENT_PREFIX}FWRT01"
 
+echo "Validating parameters for the Route Table..."
+if ! az deployment group validate \
+    --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+    --template-file ./routetable/routetable.template.json \
+    --parameters \
+        routeTableName="$routeTableName" \
+        reouteTablelocation="$reouteTablelocation" \
+    --output none; then
+    echo "Validation error for Route Table, please see the error above."
+    exit 1
+else
+    echo "Route Table parameters are valid."
+fi
 
 securityGroupName="${DEPLOYMENT_PREFIX}nsg01"
 spokeVnetName="${DEPLOYMENT_PREFIX}spokeVnet01"
@@ -79,6 +94,7 @@ if ! az deployment group validate \
         spokeVnetName="$spokeVnetName" \
         hubVnetName="$hubVnetName" \
         vnetLocation="$vnetLocation" \
+        routeTableName="$routeTableName" \
     --output none; then
     echo "Validation error for Virtual Network, please see the error above."
     exit 1
@@ -86,17 +102,38 @@ else
     echo "Virtual Network parameters are valid."
 fi
 
+firewallName="${DEPLOYMENT_PREFIX}HubFW01"
+iPAddressName="${DEPLOYMENT_PREFIX}FWIP01"
+firewalllocation="$AZURE_RESOURCE_GROUP_LOCATION"
+
+echo "Validating parameters for the Firewall..."
+if ! az deployment group validate \
+    --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+    --template-file ./firewall/firewall.template.json \
+    --parameters \
+        firewallName="$firewallName" \
+        publicIpAddressName="$iPAddressName" \
+        firewalllocation="$firewalllocation" \
+        vnetName="$hubVnetName" \
+    --output none; then
+    echo "Validation error for Firewall, please see the error above."
+    exit 1
+else
+    echo "Firewall parameters are valid."
+fi
+
+
 tagValues="{}"
 
 
 
 securityGroupName="${DEPLOYMENT_PREFIX}nsg01"
 spokeVnetName="${DEPLOYMENT_PREFIX}spokeVnet01"
-disablePublicIp=false
+disablePublicIp=true
 adbWorkspaceLocation="$AZURE_RESOURCE_GROUP_LOCATION"
 adbWorkspaceName="${DEPLOYMENT_PREFIX}adb01"
 adbWorkspaceSkuTier="standard"
-<<validate
+
 echo "Validating parameters for Azure Databricks..."
 if ! az deployment group validate \
     --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
@@ -166,8 +203,6 @@ else
     echo "Azure Storage Account parameters are valid."
 fi
 
-validate
-
 # Deploy ARM templates (Jacob)
 echo "Deploying Network Security Group..."
 nsg_arm_output=$(az deployment group create \
@@ -183,6 +218,20 @@ if [[ -z $nsg_arm_output ]]; then
     exit 1
 fi
 
+echo "Deploying Route Table..."
+nsg_arm_output=$(az deployment group create \
+    --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+    --template-file ./routetable/routetable.template.json \
+    --parameters \
+        routeTableName="$routeTableName" \
+        reouteTablelocation="$reouteTablelocation" \
+    --output json)
+
+if [[ -z $nsg_arm_output ]]; then
+    echo >&2 "Route Table ARM deployment failed."
+    exit 1
+fi
+
 echo "Deploying Virtual Network..."
 nsg_arm_output=$(az deployment group create \
     --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
@@ -192,13 +241,30 @@ nsg_arm_output=$(az deployment group create \
         spokeVnetName="$spokeVnetName" \
         hubVnetName="$hubVnetName" \
         vnetLocation="$vnetLocation" \
+        routeTableName="$routeTableName" \
     --output json)
 
 if [[ -z $nsg_arm_output ]]; then
     echo >&2 "Virtual Network ARM deployment failed."
     exit 1
 fi
-<<comment
+
+echo "Deploying Firewall..."
+nsg_arm_output=$(az deployment group create \
+    --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+    --template-file ./firewall/firewall.template.json \
+    --parameters \
+        firewallName="$firewallName" \
+        publicIpAddressName="$iPAddressName" \
+        firewalllocation="$firewalllocation" \
+        vnetName="$hubVnetName" \
+    --output json)
+
+if [[ -z $nsg_arm_output ]]; then
+    echo >&2 "Firewall ARM deployment failed."
+    exit 1
+fi
+
 echo "Deploying Azure Databricks Workspace..."
 adbws_arm_output=$(az deployment group create \
     --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
@@ -332,4 +398,3 @@ printf "\nSecret names:\n"
 printf "DATABRICKS TOKEN: \t\t DatabricksDeploymentToken\n"
 printf "STORAGE ACCOUNT KEY 1: \t\t StorageAccountKey1\n"
 printf "STORAGE ACCOUNT KEY 2: \t\t StorageAccountKey2\n"
-comment 

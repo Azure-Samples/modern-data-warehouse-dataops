@@ -36,12 +36,18 @@
       }
     },
     "firewallSubnetName": {
-      "defaultValue": "firewall-subnet",
+      "defaultValue": "AzureFirewallSubnet",
       "type": "string",
       "metadata": {
         "description": "The name of the firewall subnet to create."
       }
     },
+    "routeTableName": {
+      "type": "string",
+      "metadata": {
+          "description": "Name of the Routing Table"
+      }
+     },
     "vnetLocation": {
       "type": "string",
       "defaultValue": "[resourceGroup().location]",
@@ -153,6 +159,9 @@
               "networkSecurityGroup": {
                 "id": "[variables('securityGroupId')]"
               },
+              "routeTable": {
+                "id": "[resourceId('Microsoft.Network/routeTables', parameters('routeTableName'))]"
+              },
               "delegations": [
                 {
                   "name": "databricks-del-public",
@@ -169,6 +178,9 @@
               "addressPrefix": "[parameters('privateSubnetCidr')]",
               "networkSecurityGroup": {
                 "id": "[variables('securityGroupId')]"
+              },
+              "routeTable": {
+                "id": "[resourceId('Microsoft.Network/routeTables', parameters('routeTableName'))]"
               },
               "delegations": [
                 {
