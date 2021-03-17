@@ -22,6 +22,13 @@
         "description": "The name of the private subnet to create."
       }
     },
+    "privatelinkSubnetName": {
+      "defaultValue": "privatelink-subnet",
+      "type": "string",
+      "metadata": {
+        "description": "The name of the private subnet to create."
+      }
+    },
     "publicSubnetName": {
       "defaultValue": "public-subnet",
       "type": "string",
@@ -37,24 +44,31 @@
       }
     },
     "vnetCidr": {
-      "defaultValue": "10.179.0.0/16",
+      "defaultValue": "10.2.1.0/24",
       "type": "string",
       "metadata": {
         "description": "Cidr range for the vnet."
       }
     },
     "privateSubnetCidr": {
-      "defaultValue": "10.179.0.0/18",
+      "defaultValue": "10.2.1.128/26",
       "type": "string",
       "metadata": {
         "description": "Cidr range for the private subnet."
       }
     },
     "publicSubnetCidr": {
-      "defaultValue": "10.179.64.0/18",
+      "defaultValue": "10.2.1.64/26",
       "type": "string",
       "metadata": {
         "description": "Cidr range for the public subnet.."
+      }
+    },
+    "privatelinkSubnetCidr": {
+      "defaultValue": "10.2.1.0/26",
+      "type": "string",
+      "metadata": {
+        "description": "Cidr range for the private link subnet.."
       }
     }
   },
@@ -107,9 +121,28 @@
                 }
               ]
             }
+          },
+          {
+            "name": "[parameters('privatelinkSubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('privatelinkSubnetCidr')]",
+              "delegations": [],
+              "privateEndpointNetworkPolicies": "Disabled",
+              "privateLinkServiceNetworkPolicies": "Enabled"
+            }
           }
         ]
       }
     }
-  ]
+  ],
+  "outputs": {
+    "vnet_id": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+    },
+    "privatelinksubnet_id": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'),parameters('privatelinkSubnetName'))]"
+    }
+  }
 }

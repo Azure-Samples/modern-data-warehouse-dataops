@@ -45,8 +45,6 @@ else
     fi
 fi
 
-# Validate the ARM templates (Jacob)
-
 securityGroupName="${DEPLOYMENT_PREFIX}nsg01"
 securityGroupLocation="$AZURE_RESOURCE_GROUP_LOCATION"
 
@@ -229,7 +227,7 @@ if [[ -z $akv_arm_output ]]; then
 fi
 
 echo "Deploying Azure Storage Account..."
-if ! az deployment group create \
+asa_arm_output=$(az deployment group create \
     --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
     --template-file ./storageaccount/storageaccount.template.json \
     --parameters \
@@ -238,7 +236,27 @@ if ! az deployment group create \
         storageAccountSkuTier="$storageAccountSkuTier" \
         storageAccountLocation="$storageAccountLocation" \
         encryptionEnabled="$encryptionEnabled" \
-    --output none; then
+    --output json)
+
+if [[ -z $asa_arm_output ]]; then
+    echo >&2 "Storage Account ARM deployment failed."
+    exit 1
+fi
+
+echo "Deploying Storage Account Private Link..."
+if
+    ! az deployment group create \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+        --template-file ./storageaccount/privateendpoint.template.json \
+        --parameters \
+            storageAccountPrivateEndpointName="privateendpoint" \
+            storageAccountPrivateLinkResource="$(echo "$asa_arm_output" | jq -r '.properties.outputs.storageaccount_id.value')" \
+            storageAccountName="$storageAccountName" \
+            targetSubResource="dfs" \
+            vnetName="$vnetName" \
+            subnet="$(echo "$vnet_arm_output" | jq -r '.properties.outputs.privatelinksubnet_id.value')" \
+        --output none
+then
     echo "Deployment of Azure Storage Account failed, please see the error above."
     exit 1
 else

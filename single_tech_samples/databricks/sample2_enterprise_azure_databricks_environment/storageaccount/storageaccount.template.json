@@ -85,5 +85,10 @@
             }
         }
     ],
-    "outputs": {}
+    "outputs": {
+        "storageaccount_id": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+        }
+    }
 }

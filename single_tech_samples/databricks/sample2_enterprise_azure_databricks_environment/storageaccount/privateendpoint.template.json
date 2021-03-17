@@ -1,0 +1,79 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "storageAccountPrivateEndpointName": {
+      "type": "string"
+    },
+    "storageAccountPrivateLinkResource": {
+      "type": "string"
+    },
+    "storageAccountName": {
+      "type": "string"
+    },
+    "targetSubResource": {
+      "type": "string"
+    },
+    "vnetName": {
+      "type": "string"
+    },
+    "subnet": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "privateDnsName": "[concat(parameters('storageAccountName'),'.blob.core.windows.net')]"
+  },
+  "resources": [
+    {
+      "apiVersion": "2020-03-01",
+      "name": "[parameters('storageAccountPrivateEndpointName')]",
+      "type": "Microsoft.Network/privateEndpoints",
+      "location": "[resourceGroup().Location]",
+      "properties": {
+        "privateLinkServiceConnections": [
+          {
+            "name": "[parameters('storageAccountPrivateEndpointName')]",
+            "properties": {
+              "privateLinkServiceId": "[parameters('storageAccountPrivateLinkResource')]",
+              "groupIds": [
+                "[parameters('targetSubResource')]"
+              ]
+            }
+          }
+        ],
+        "subnet": {
+          "id": "[parameters('subnet')]"
+        }
+
+      },
+      "tags": {}
+    },
+    {
+      "type": "Microsoft.Network/privateDnsZones",
+      "apiVersion": "2018-09-01",
+      "name": "[variables('privateDnsName')]",
+      "location": "global",
+      "tags": {},
+      "properties": {},
+      "dependsOn": [
+        "[parameters('storageAccountPrivateEndpointName')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+      "apiVersion": "2018-09-01",
+      "name": "[concat(variables('privateDnsName'), '/', parameters('vnetName') )]",
+      "location": "global",
+      "dependsOn": [
+        "[variables('privateDnsName')]"
+      ],
+      "properties": {
+        "virtualNetwork": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+        },
+        "registrationEnabled": false
+      }
+    }
+  ]
+}
