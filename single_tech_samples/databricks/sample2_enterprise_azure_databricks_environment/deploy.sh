@@ -177,7 +177,7 @@ if [[ -z $nsg_arm_output ]]; then
 fi
 
 echo "Deploying Virtual Network..."
-nsg_arm_output=$(az deployment group create \
+vnet_arm_output=$(az deployment group create \
     --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
     --template-file ./vnet/vnet.template.json \
     --parameters \
@@ -186,7 +186,7 @@ nsg_arm_output=$(az deployment group create \
         vnetLocation="$vnetLocation" \
     --output json)
 
-if [[ -z $nsg_arm_output ]]; then
+if [[ -z $vnet_arm_output ]]; then
     echo >&2 "Virtual Network ARM deployment failed."
     exit 1
 fi
@@ -315,8 +315,8 @@ printf "\n\n\nRESOURCE GROUP: \t\t %s\n" "$AZURE_RESOURCE_GROUP_NAME"
 printf "STORAGE ACCOUNT: \t\t %s\n" "$storageAccountName"
 printf "DATABRICKS WORKSPACE: \t\t %s\n" "$adbWorkspaceName"
 printf "KEY VAULT NAME: \t\t %s\n" "$keyVaultName"
-printf "Network Security Group: \t\t %s\n" "$securityGroupName"
-printf "Virtual Network: \t\t %s\n" "$vnetName"
+printf "NETWORK SECURITY GROUP: \t\t %s\n" "$securityGroupName"
+printf "VIRTUAL NETWORK: \t\t %s\n" "$vnetName"
 printf "\nSecret names:\n"
 printf "DATABRICKS TOKEN: \t\t DatabricksDeploymentToken\n"
 printf "STORAGE ACCOUNT KEY 1: \t\t StorageAccountKey1\n"
