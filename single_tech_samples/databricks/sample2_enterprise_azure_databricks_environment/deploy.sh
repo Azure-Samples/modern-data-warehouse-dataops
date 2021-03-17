@@ -46,7 +46,6 @@ else
 fi
 
 # Validate the ARM templates (Jacob)
-
 securityGroupName="${DEPLOYMENT_PREFIX}nsg01"
 securityGroupLocation="$AZURE_RESOURCE_GROUP_LOCATION"
 
@@ -64,8 +63,11 @@ else
     echo "Network Security Group parameters are valid."
 fi
 
+
+
 securityGroupName="${DEPLOYMENT_PREFIX}nsg01"
 spokeVnetName="${DEPLOYMENT_PREFIX}spokeVnet01"
+hubVnetName="${DEPLOYMENT_PREFIX}hubVnet01"
 vnetLocation="$AZURE_RESOURCE_GROUP_LOCATION"
 
 echo "Validating parameters for Virtual Networks..."
@@ -74,7 +76,8 @@ if ! az deployment group validate \
     --template-file ./vnet/vnet.template.json \
     --parameters \
         securityGroupName="$securityGroupName" \
-        vnetName="$spokeVnetName" \
+        spokeVnetName="$spokeVnetName" \
+        hubVnetName="$hubVnetName" \
         vnetLocation="$vnetLocation" \
     --output none; then
     echo "Validation error for Virtual Network, please see the error above."
@@ -85,13 +88,15 @@ fi
 
 tagValues="{}"
 
+
+
 securityGroupName="${DEPLOYMENT_PREFIX}nsg01"
 spokeVnetName="${DEPLOYMENT_PREFIX}spokeVnet01"
 disablePublicIp=false
 adbWorkspaceLocation="$AZURE_RESOURCE_GROUP_LOCATION"
 adbWorkspaceName="${DEPLOYMENT_PREFIX}adb01"
 adbWorkspaceSkuTier="standard"
-
+<<validate
 echo "Validating parameters for Azure Databricks..."
 if ! az deployment group validate \
     --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
@@ -161,6 +166,8 @@ else
     echo "Azure Storage Account parameters are valid."
 fi
 
+validate
+
 # Deploy ARM templates (Jacob)
 echo "Deploying Network Security Group..."
 nsg_arm_output=$(az deployment group create \
@@ -182,7 +189,8 @@ nsg_arm_output=$(az deployment group create \
     --template-file ./vnet/vnet.template.json \
     --parameters \
         securityGroupName="$securityGroupName" \
-        vnetName="$spokeVnetName" \
+        spokeVnetName="$spokeVnetName" \
+        hubVnetName="$hubVnetName" \
         vnetLocation="$vnetLocation" \
     --output json)
 
@@ -309,7 +317,7 @@ echo "Creating secrets within scope $scope_name..."
 databricks secrets write --scope "$scope_name" --key "storage_account_key1" --string-value  "$storage_account_key1"
 databricks secrets write --scope "$scope_name" --key "storage_account_key2" --string-value  "$storage_account_key2"
 
-comment 
+
 
 
 ###############################
@@ -324,3 +332,4 @@ printf "\nSecret names:\n"
 printf "DATABRICKS TOKEN: \t\t DatabricksDeploymentToken\n"
 printf "STORAGE ACCOUNT KEY 1: \t\t StorageAccountKey1\n"
 printf "STORAGE ACCOUNT KEY 2: \t\t StorageAccountKey2\n"
+comment 

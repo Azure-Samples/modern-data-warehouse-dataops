@@ -5,8 +5,11 @@
     "securityGroupName": {
       "value": "lumosnsg01"
     },
-    "vnetName": {
-      "value": "lumosvnet01"
+    "spokeVnetName": {
+      "value": "lumosspokevnet01"
+    },
+    "hubVnetName": {
+      "value": "lumoshubvnet01"
     },
     "vnetLocation": {
       "value": "eastus"
