@@ -22,6 +22,33 @@ if [[ -z "$AZURE_RESOURCE_GROUP_LOCATION" ]]; then
     exit 1
 fi
 
+# Variables for each resource
+securityGroupName="${DEPLOYMENT_PREFIX}nsg01"
+securityGroupLocation="$AZURE_RESOURCE_GROUP_LOCATION"
+
+vnetName="${DEPLOYMENT_PREFIX}vnet01"
+vnetLocation="$AZURE_RESOURCE_GROUP_LOCATION"
+
+tagValues="{}"
+disablePublicIp=false
+adbWorkspaceLocation="$AZURE_RESOURCE_GROUP_LOCATION"
+adbWorkspaceName="${DEPLOYMENT_PREFIX}adb01"
+adbWorkspaceSkuTier="standard"
+
+keyVaultName="${DEPLOYMENT_PREFIX}akv01"
+keyVaultLocation="$AZURE_RESOURCE_GROUP_LOCATION"
+enabledForDeployment="false"
+enabledForTemplateDeployment="false"
+tenantId="$(az account show --query "tenantId" --output tsv)"
+objectId="$(az ad signed-in-user show --query "objectId" --output tsv)"
+keyVaultSkuTier="Standard"
+
+storageAccountName="${DEPLOYMENT_PREFIX}asa01"
+storageAccountSku="Standard_LRS"
+storageAccountSkuTier="Standard"
+storageAccountLocation="$AZURE_RESOURCE_GROUP_LOCATION"
+encryptionEnabled="true"
+
 # Login to Azure and select the subscription
 if ! AZURE_USERNAME=$(az account show --query user.name); then
     echo "No Azure account logged in, now trying to log in."
@@ -124,8 +151,6 @@ fi
 
 
 tagValues="{}"
-
-
 
 securityGroupName="${DEPLOYMENT_PREFIX}nsg01"
 spokeVnetName="${DEPLOYMENT_PREFIX}spokeVnet01"
@@ -233,7 +258,7 @@ if [[ -z $nsg_arm_output ]]; then
 fi
 
 echo "Deploying Virtual Network..."
-nsg_arm_output=$(az deployment group create \
+vnet_arm_output =$(az deployment group create \
     --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
     --template-file ./vnet/vnet.template.json \
     --parameters \
@@ -244,7 +269,7 @@ nsg_arm_output=$(az deployment group create \
         routeTableName="$routeTableName" \
     --output json)
 
-if [[ -z $nsg_arm_output ]]; then
+if [[ -z $vnet_arm_output  ]]; then
     echo >&2 "Virtual Network ARM deployment failed."
     exit 1
 fi
@@ -392,8 +417,8 @@ printf "\n\n\nRESOURCE GROUP: \t\t %s\n" "$AZURE_RESOURCE_GROUP_NAME"
 printf "STORAGE ACCOUNT: \t\t %s\n" "$storageAccountName"
 printf "DATABRICKS WORKSPACE: \t\t %s\n" "$adbWorkspaceName"
 printf "KEY VAULT NAME: \t\t %s\n" "$keyVaultName"
-printf "Network Security Group: \t\t %s\n" "$securityGroupName"
-printf "Virtual Network: \t\t %s\n" "$spokeVnetName"
+printf "NETWORK SECURITY GROUP: \t\t %s\n" "$securityGroupName"
+printf "VIRTUAL NETWORK: \t\t %s\n" "$vnetName"
 printf "\nSecret names:\n"
 printf "DATABRICKS TOKEN: \t\t DatabricksDeploymentToken\n"
 printf "STORAGE ACCOUNT KEY 1: \t\t StorageAccountKey1\n"
