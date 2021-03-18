@@ -215,7 +215,7 @@ if [[ -z $nsg_arm_output ]]; then
 fi
 
 echo "Deploying Route Table..."
-nsg_arm_output=$(az deployment group create \
+art_arm_output=$(az deployment group create \
     --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
     --template-file ./routetable/routetable.template.json \
     --parameters \
@@ -223,7 +223,7 @@ nsg_arm_output=$(az deployment group create \
         reouteTablelocation="$reouteTablelocation" \
     --output json)
 
-if [[ -z $nsg_arm_output ]]; then
+if [[ -z $art_arm_output ]]; then
     echo >&2 "Route Table ARM deployment failed."
     exit 1
 fi
@@ -246,7 +246,7 @@ if [[ -z $vnet_arm_output ]]; then
 fi
 
 echo "Deploying Firewall..."
-nsg_arm_output=$(az deployment group create \
+afw_arm_output=$(az deployment group create \
     --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
     --template-file ./firewall/firewall.template.json \
     --parameters \
@@ -256,7 +256,7 @@ nsg_arm_output=$(az deployment group create \
         vnetName="$hubVnetName" \
     --output json)
 
-if [[ -z $nsg_arm_output ]]; then
+if [[ -z $afw_arm_output ]]; then
     echo >&2 "Firewall ARM deployment failed."
     exit 1
 fi
