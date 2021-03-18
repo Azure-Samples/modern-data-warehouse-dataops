@@ -2,10 +2,10 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "storageAccountPrivateLinkResource": {
+    "keyvaultPrivateLinkResource": {
       "type": "string"
     },
-    "storageAccountName": {
+    "keyvaultName": {
       "type": "string"
     },
     "targetSubResource": {
@@ -19,21 +19,21 @@
     }
   },
   "variables": {
-    "privateDnsName": "privatelink.dfs.core.windows.net",
-    "storageAccountPrivateEndpointName": "[concat(parameters('storageAccountName'),'privateendpoint')]"
+    "privateDnsName": "privatelink.vaultcore.azure.net",
+    "keyvaultPrivateEndpointName": "[concat(parameters('keyVaultName'),'privateendpoint')]"
   },
   "resources": [
     {
       "apiVersion": "2020-03-01",
-      "name": "[variables('storageAccountPrivateEndpointName')]",
+      "name": "[variables('keyvaultPrivateEndpointName')]",
       "type": "Microsoft.Network/privateEndpoints",
       "location": "[resourceGroup().Location]",
       "properties": {
         "privateLinkServiceConnections": [
           {
-            "name": "[variables('storageAccountPrivateEndpointName')]",
+            "name": "[variables('keyvaultPrivateEndpointName')]",
             "properties": {
-              "privateLinkServiceId": "[parameters('storageAccountPrivateLinkResource')]",
+              "privateLinkServiceId": "[parameters('keyvaultPrivateLinkResource')]",
               "groupIds": [
                 "[parameters('targetSubResource')]"
               ]
@@ -55,7 +55,7 @@
       "tags": {},
       "properties": {},
       "dependsOn": [
-        "[variables('storageAccountPrivateEndpointName')]"
+        "[variables('keyvaultPrivateEndpointName')]"
       ]
     },
     {

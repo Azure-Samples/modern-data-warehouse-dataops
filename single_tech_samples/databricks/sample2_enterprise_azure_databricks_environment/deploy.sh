@@ -136,6 +136,25 @@ else
     echo "Azure Key Vault parameters are valid."
 fi
 
+echo "Validating parameters for Azure Key Vault Privatelink..."
+if
+    ! az deployment group validate \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+        --template-file ./keyvault/privateendpoint.template.json \
+        --parameters \
+            keyvaultPrivateLinkResource="somelinkresource" \
+            targetSubResource="vault" \
+            keyvaultName="$keyVaultName" \
+            vnetName="$vnetName" \
+            privateLinkSubnetId="somelinkresource" \
+        --output none
+then
+    echo "Validation error for Azure Key Vault Privatelink, please see the error above."
+    exit 1
+else
+    echo "Azure Key Vault Privatelink parameters are valid."
+fi
+
 storageAccountName="${DEPLOYMENT_PREFIX}asa01"
 storageAccountSku="Standard_LRS"
 storageAccountSkuTier="Standard"
@@ -159,7 +178,26 @@ else
     echo "Azure Storage Account parameters are valid."
 fi
 
-# Deploy ARM templates (Jacob)
+echo "Validating parameters for Azure Storage Account Privatelink..."
+if
+    ! az deployment group validate \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+        --template-file ./storageaccount/privateendpoint.template.json \
+        --parameters \
+            storageAccountPrivateLinkResource="vault" \
+            storageAccountName="$storageAccountName" \
+            targetSubResource="dfs" \
+            vnetName="$vnetName" \
+            privateLinkSubnetId="somelinkresource" \
+        --output none
+then
+    echo "Validation error for Azure Storage Account Privatelink, please see the error above."
+    exit 1
+else
+    echo "Azure Storage Account Privatelink parameters are valid."
+fi
+
+echo "******Starting deployments... ********"
 echo "Deploying Network Security Group..."
 nsg_arm_output=$(az deployment group create \
     --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
@@ -200,6 +238,7 @@ adbws_arm_output=$(az deployment group create \
         adbWorkspaceName="$adbWorkspaceName" \
         adbWorkspaceSkuTier="$adbWorkspaceSkuTier" \
         tagValues="$tagValues" \
+        adbWorkspaceSkuTier=premium \
     --output json)
 
 if [[ -z $adbws_arm_output ]]; then
@@ -226,6 +265,25 @@ if [[ -z $akv_arm_output ]]; then
     exit 1
 fi
 
+echo "Deploying Keyvault Private Link..."
+if
+    ! az deployment group create \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+        --template-file ./keyvault/privateendpoint.template.json \
+        --parameters \
+            keyvaultPrivateLinkResource="$(echo "$akv_arm_output" | jq -r '.properties.outputs.keyvault_id.value')" \
+            targetSubResource="vault" \
+            keyvaultName="$keyVaultName" \
+            vnetName="$vnetName" \
+            privateLinkSubnetId="$(echo "$vnet_arm_output" | jq -r '.properties.outputs.privatelinksubnet_id.value')" \
+        --output none
+then
+    echo "Deployment of Keyvault Private Link failed, please see the error above."
+    exit 1
+else
+    echo "Deployment of Keyvault Private Link succeeded."
+fi
+
 echo "Deploying Azure Storage Account..."
 asa_arm_output=$(az deployment group create \
     --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
@@ -249,12 +307,11 @@ if
         --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
         --template-file ./storageaccount/privateendpoint.template.json \
         --parameters \
-            storageAccountPrivateEndpointName="privateendpoint" \
             storageAccountPrivateLinkResource="$(echo "$asa_arm_output" | jq -r '.properties.outputs.storageaccount_id.value')" \
             storageAccountName="$storageAccountName" \
             targetSubResource="dfs" \
             vnetName="$vnetName" \
-            subnet="$(echo "$vnet_arm_output" | jq -r '.properties.outputs.privatelinksubnet_id.value')" \
+            privateLinkSubnetId="$(echo "$vnet_arm_output" | jq -r '.properties.outputs.privatelinksubnet_id.value')" \
         --output none
 then
     echo "Deployment of Azure Storage Account failed, please see the error above."

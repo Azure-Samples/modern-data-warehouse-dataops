@@ -2,31 +2,20 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "storageAccountPrivateEndpointlocation": {
-      "value": "eastus"
-    },
-    "storageAccountPrivateEndpointName": {
-      "value": "privateendpoint"
-    },
     "storageAccountPrivateLinkResource": {
       "value": "/subscriptions/b543aa2b-f823-4d1d-8188-fed701a61253/resourceGroups/juan-rg-01/providers/Microsoft.Storage/storageAccounts/juanasa01"
     },
-    "targetSubResource": {
-      "value": [
-        "dfs"
-      ]
-    },
-    "subnet": {
-      "value": "/subscriptions/b543aa2b-f823-4d1d-8188-fed701a61253/resourceGroups/juan-rg-01/providers/Microsoft.Network/virtualNetworks/juanvnet01/subnets/privatelink-subnet"
-    },
-    "virtualNetworkId": {
-      "value": "/subscriptions/b543aa2b-f823-4d1d-8188-fed701a61253/resourceGroups/juan-rg-01/providers/Microsoft.Network/virtualNetworks/juanvnet01"
-    },
-    "privateDnsDeploymentName": {
+    "storageAccountName": {
       "value": "somethingtocheck"
     },
-    "vnetResourceGroup": {
-      "value": "juan-rg-01"
+    "targetSubResource": {
+      "value": "dfs"
+    },
+    "vnetName": {
+      "value": "somethingtocheck"
+    },
+    "privateLinkSubnetId": {
+      "value": "/subscriptions/b543aa2b-f823-4d1d-8188-fed701a61253/resourceGroups/juan-rg-01/providers/Microsoft.Network/virtualNetworks/juanvnet01/subnets/privatelink-subnet"
     }
   }
 }
