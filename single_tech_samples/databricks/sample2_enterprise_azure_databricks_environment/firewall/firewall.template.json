@@ -11,14 +11,14 @@
         },
         "publicIpAddressName": {
             "type": "string",
-            "defaultValue": "lumosFWIP",
+            "defaultValue": "adbFWIP",
             "metadata": {
                 "description": "Name of the IP Address"
             }
         },
         "firewallName": {
             "type": "string",
-            "defaultValue": "lumosHubFW",
+            "defaultValue": "adbHubFW",
             "metadata": {
                 "description": "Name of the Azure Firewall"
             }

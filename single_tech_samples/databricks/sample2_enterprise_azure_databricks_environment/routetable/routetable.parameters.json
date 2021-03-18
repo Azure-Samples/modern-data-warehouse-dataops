@@ -6,7 +6,7 @@
             "value": "australiaeast"
         },
         "routeTableName": {
-            "value": "lumosHubRT"
+            "value": "adbHubRT"
         }
     }
 }

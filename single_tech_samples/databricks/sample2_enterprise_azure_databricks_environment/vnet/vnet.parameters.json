@@ -3,13 +3,13 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "securityGroupName": {
-      "value": "lumosnsg01"
+      "value": "adbnsg01"
     },
     "spokeVnetName": {
-      "value": "lumosspokevnet01"
+      "value": "adbspokevnet01"
     },
     "hubVnetName": {
-      "value": "lumoshubvnet01"
+      "value": "adbhubvnet01"
     },
     "vnetLocation": {
       "value": "eastus"

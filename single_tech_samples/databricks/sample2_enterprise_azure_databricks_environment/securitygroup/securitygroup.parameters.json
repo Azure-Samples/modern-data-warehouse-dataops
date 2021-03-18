@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "securityGroupName": {
-      "value": "lumosnsg01"
+      "value": "adbnsg01"
     },
     "securityGroupLocation": {
       "value": "eastus"

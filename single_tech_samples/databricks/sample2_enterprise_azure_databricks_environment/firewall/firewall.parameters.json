@@ -6,13 +6,13 @@
             "value": "australiaeast"
         },
         "publicIpAddressName": {
-            "value": "lumosFWIP"
+            "value": "adbFWIP"
         },
         "firewallName": {
-            "value": "lumosHubFW"
+            "value": "adbHubFW"
         },
         "vnetName": {
-            "value": "lumostestagainhubVnet01"
+            "value": "adbhubVnet01"
         }
     }
 }

@@ -11,7 +11,7 @@
         },
         "routeTableName": {
             "type": "string",
-            "defaultValue": "lumosFWRoutingTable",
+            "defaultValue": "adbFWRoutingTable",
             "metadata": {
                 "description": "Name of the Routing Table"
             }
