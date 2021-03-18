@@ -229,7 +229,7 @@ if [[ -z $nsg_arm_output ]]; then
 fi
 
 echo "Deploying Virtual Network..."
-vnet_arm_output =$(az deployment group create \
+vnet_arm_output=$(az deployment group create \
     --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
     --template-file ./vnet/vnet.template.json \
     --parameters \
@@ -240,7 +240,7 @@ vnet_arm_output =$(az deployment group create \
         routeTableName="$routeTableName" \
     --output json)
 
-if [[ -z $vnet_arm_output  ]]; then
+if [[ -z $vnet_arm_output ]]; then
     echo >&2 "Virtual Network ARM deployment failed."
     exit 1
 fi
