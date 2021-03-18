@@ -25,7 +25,7 @@
 
 ## 1. Solution Overview
 
-It is a recommended pattern for modern cloud-native applications to automate platform provisioning to achieve consistent, repeatable deployments using Infrastructure as Code (IaC). This practice is highly encouraged by organizations that run multiple environments such as Dev, Test, Performance Test, UAT, Blue and Green production environments, etc. IaC is also very effective in managing deployments when the production environments are spread across multiple regions across the globe.
+It is a recommended pattern for enterprise applications to automate platform provisioning to achieve consistent, repeatable deployments using Infrastructure as Code (IaC). This practice is highly encouraged by organizations that run multiple environments such as Dev, Test, Performance Test, UAT, Blue and Green production environments, etc. IaC is also very effective in managing deployments when the production environments are spread across multiple regions across the globe.
 
 Tools like Azure Resource Manager (ARM), Terraform, and the Azure Command Line Interface (CLI) enable you to declaratively script the cloud infrastructure and use software engineering practices such as testing and versioning while implementing IaC.
 
@@ -74,7 +74,7 @@ This section highlights key pointers to align the services deployed in this samp
 
 ### 2.1. Cost Optimization
 
-1. Before the deployment, use [Azure pricing calculator](https://azure.microsoft.com/en-us/pricing/calculator/) to determine the expected usage cost.
+1. Before the deployment, use the [Azure pricing calculator](https://azure.microsoft.com/en-us/pricing/calculator/) to determine the expected usage cost.
 
 2. Appropriately select the [Storage redundancy](https://docs.microsoft.com/en-us/azure/storage/common/storage-redundancy) option
 
@@ -126,7 +126,7 @@ The following are the prerequisites for deploying this sample :
 
 1. [Github account](https://github.com/)
 2. [Azure Account](https://azure.microsoft.com/en-au/free/search/?&ef_id=Cj0KCQiAr8bwBRD4ARIsAHa4YyLdFKh7JC0jhbxhwPeNa8tmnhXciOHcYsgPfNB7DEFFGpNLTjdTPbwaAh8bEALw_wcB:G:s&OCID=AID2000051_SEM_O2ShDlJP&MarinID=O2ShDlJP_332092752199_azure%20account_e_c__63148277493_aud-390212648371:kwd-295861291340&lnkd=Google_Azure_Brand&dclid=CKjVuKOP7uYCFVapaAoddSkKcA)
-   - *Permissions needed*:  The ability to create and deploy to an azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
+   - *Permissions needed*:  The ability to create and deploy to an Azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
 
    - Active subscription with the following [resource providers](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/azure-services-resource-providers) enabled:
      - Microsoft.Databricks
@@ -139,8 +139,8 @@ The following are the prerequisites for deploying this sample :
 1. [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/) installed on the local machine
    - *Installation instructions* can be found [here](hhttps://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 1. For Windows users,
-   1. Option 1 : [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
-   2. Option 2 : Use dev container published [here](../.devcontainer) as a host for the bash shell.
+   1. Option 1: [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+   2. Option 2: Use the dev container published [here](../.devcontainer) as a host for the bash shell.
 
 ### 3.2. Setup and deployment
 
@@ -205,6 +205,6 @@ The clean-up script can be executed to clean up the resources provisioned in thi
 
 2. Run '/destroy.sh'
 
-The following screenshot displays the log for successful clean-up run:
+The following screenshot displays the log for a successful clean-up run:
 
   ![alt text](../Common_Assets/Images/IAC_Script_Teardown.png "Logo Title Text 1")
