@@ -45,8 +45,12 @@ fi
 adbWorkspaceName="${DEPLOYMENT_PREFIX}adb01"
 keyVaultName="${DEPLOYMENT_PREFIX}akv01"
 storageAccountName="${DEPLOYMENT_PREFIX}asa01"
-vnetName="${DEPLOYMENT_PREFIX}vnet01"
+spokeVnetName="${DEPLOYMENT_PREFIX}spokeVnet01"
+hubVnetName="${DEPLOYMENT_PREFIX}hubVnet01"
 securityGroupName="${DEPLOYMENT_PREFIX}nsg01"
+routeTableName="${DEPLOYMENT_PREFIX}FWRT01"
+firewallName="${DEPLOYMENT_PREFIX}HubFW01"
+iPAddressName="${DEPLOYMENT_PREFIX}FWIP01"
 
 echo "Delete Resouce Group? $DELETE_RESOURCE_GROUP"
 
@@ -61,8 +65,12 @@ else
     echo "ADB Workspace: $adbWorkspaceName"
     echo "Key Vault: $keyVaultName"
     echo "Storage Account: $storageAccountName"
-    echo "Virtual Network: $vnetName"
+    echo "Spoke Virtual Network: $spokeVnetName"
+    echo "Hub Virtual Network: $hubVnetName"
     echo "Network Security Group: $securityGroupName"
+    echo "Routing Table: $routeTableName"
+    echo "Firewall: $firewallName"
+    echo "Public IP Address: $iPAddressName"
 
     echo "Deleting ADB workspace..."
     az databricks workspace delete --name "$adbWorkspaceName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --yes --output none
@@ -77,11 +85,31 @@ else
     az storage account delete --name "$storageAccountName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --yes --output none
     echo "Successfully deleted Storage Account"
 
-    echo "Deleting Virtual Network..."
-    az network vnet delete --name "$vnetName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
-    echo "Successfully deleted Virtual Network"
+    echo "Deleting Firewall..."
+    az network firewall delete --name "$firewallName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
+    echo "Successfully deleted Firewall"
+
+    echo "Deleting Public-IP..."
+    az network public-ip delete --name "$iPAddressName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
+    echo "Successfully deleted Public-IP"
+    
+    echo "Deleting Spoke Virtual Network..."
+    az network vnet delete --name "$spokeVnetName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
+    echo "Successfully deleted Spoke Virtual Network"
+
+    echo "Deleting Hub Virtual Network..."
+    az network vnet delete --name "$hubVnetName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
+    echo "Successfully deleted Hub Virtual Network"
 
     echo "Deleting Network Security Group..."
     az network nsg delete --name "$securityGroupName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
     echo "Successfully deleted Network Security Group"
+
+    echo "Deleting Public-IP..."
+    az network public-ip delete --name "$iPAddressName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
+    echo "Successfully deleted Public-IP"
+
+    echo "Deleting Route table..."
+    az network route-table delete --name "$routeTableName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
+    echo "Successfully deleted Route table"
 fi

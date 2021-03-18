@@ -26,7 +26,8 @@ fi
 securityGroupName="${DEPLOYMENT_PREFIX}nsg01"
 securityGroupLocation="$AZURE_RESOURCE_GROUP_LOCATION"
 
-vnetName="${DEPLOYMENT_PREFIX}vnet01"
+spokeVnetName="${DEPLOYMENT_PREFIX}spokeVnet01"
+hubVnetName="${DEPLOYMENT_PREFIX}hubVnet01"
 vnetLocation="$AZURE_RESOURCE_GROUP_LOCATION"
 
 tagValues="{}"
@@ -48,6 +49,13 @@ storageAccountSku="Standard_LRS"
 storageAccountSkuTier="Standard"
 storageAccountLocation="$AZURE_RESOURCE_GROUP_LOCATION"
 encryptionEnabled="true"
+
+reouteTablelocation="$AZURE_RESOURCE_GROUP_LOCATION"
+routeTableName="${DEPLOYMENT_PREFIX}FWRT01"
+
+firewallName="${DEPLOYMENT_PREFIX}HubFW01"
+iPAddressName="${DEPLOYMENT_PREFIX}FWIP01"
+firewalllocation="$AZURE_RESOURCE_GROUP_LOCATION"
 
 # Login to Azure and select the subscription
 if ! AZURE_USERNAME=$(az account show --query user.name); then
@@ -87,14 +95,31 @@ else
     echo "Network Security Group parameters are valid."
 fi
 
-echo "Validating parameters for Virtual Network..."
+echo "Validating parameters for the Route Table..."
+if ! az deployment group validate \
+    --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+    --template-file ./routetable/routetable.template.json \
+    --parameters \
+        routeTableName="$routeTableName" \
+        reouteTablelocation="$reouteTablelocation" \
+    --output none; then
+    echo "Validation error for Route Table, please see the error above."
+    exit 1
+else
+    echo "Route Table parameters are valid."
+fi
+
+
+echo "Validating parameters for Virtual Networks..."
 if ! az deployment group validate \
     --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
     --template-file ./vnet/vnet.template.json \
     --parameters \
         securityGroupName="$securityGroupName" \
-        vnetName="$vnetName" \
+        spokeVnetName="$spokeVnetName" \
+        hubVnetName="$hubVnetName" \
         vnetLocation="$vnetLocation" \
+        routeTableName="$routeTableName" \
     --output none; then
     echo "Validation error for Virtual Network, please see the error above."
     exit 1
@@ -102,12 +127,29 @@ else
     echo "Virtual Network parameters are valid."
 fi
 
+
+echo "Validating parameters for the Firewall..."
+if ! az deployment group validate \
+    --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+    --template-file ./firewall/firewall.template.json \
+    --parameters \
+        firewallName="$firewallName" \
+        publicIpAddressName="$iPAddressName" \
+        firewalllocation="$firewalllocation" \
+        vnetName="$hubVnetName" \
+    --output none; then
+    echo "Validation error for Firewall, please see the error above."
+    exit 1
+else
+    echo "Firewall parameters are valid."
+fi
+
 echo "Validating parameters for Azure Databricks..."
 if ! az deployment group validate \
     --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
     --template-file ./databricks/workspace.template.json \
     --parameters \
-        vnetName="$vnetName" \
+        vnetName="$spokeVnetName" \
         disablePublicIp="$disablePublicIp" \
         adbWorkspaceLocation="$adbWorkspaceLocation" \
         adbWorkspaceName="$adbWorkspaceName" \
@@ -138,7 +180,7 @@ if ! az deployment group validate \
     exit 1
 else
     echo "Azure Key Vault parameters are valid."
-fi
+f
 
 echo "Validating parameters for Azure Storage Account..."
 if ! az deployment group validate \
@@ -172,18 +214,50 @@ if [[ -z $nsg_arm_output ]]; then
     exit 1
 fi
 
+echo "Deploying Route Table..."
+nsg_arm_output=$(az deployment group create \
+    --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+    --template-file ./routetable/routetable.template.json \
+    --parameters \
+        routeTableName="$routeTableName" \
+        reouteTablelocation="$reouteTablelocation" \
+    --output json)
+
+if [[ -z $nsg_arm_output ]]; then
+    echo >&2 "Route Table ARM deployment failed."
+    exit 1
+fi
+
 echo "Deploying Virtual Network..."
-vnet_arm_output=$(az deployment group create \
+vnet_arm_output =$(az deployment group create \
     --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
     --template-file ./vnet/vnet.template.json \
     --parameters \
         securityGroupName="$securityGroupName" \
-        vnetName="$vnetName" \
+        spokeVnetName="$spokeVnetName" \
+        hubVnetName="$hubVnetName" \
         vnetLocation="$vnetLocation" \
+        routeTableName="$routeTableName" \
     --output json)
 
-if [[ -z $vnet_arm_output ]]; then
+if [[ -z $vnet_arm_output  ]]; then
     echo >&2 "Virtual Network ARM deployment failed."
+    exit 1
+fi
+
+echo "Deploying Firewall..."
+nsg_arm_output=$(az deployment group create \
+    --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+    --template-file ./firewall/firewall.template.json \
+    --parameters \
+        firewallName="$firewallName" \
+        publicIpAddressName="$iPAddressName" \
+        firewalllocation="$firewalllocation" \
+        vnetName="$hubVnetName" \
+    --output json)
+
+if [[ -z $nsg_arm_output ]]; then
+    echo >&2 "Firewall ARM deployment failed."
     exit 1
 fi
 
@@ -192,7 +266,7 @@ adbws_arm_output=$(az deployment group create \
     --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
     --template-file ./databricks/workspace.template.json \
     --parameters \
-        vnetName="$vnetName" \
+        vnetName="$spokeVnetName" \
         disablePublicIp="$disablePublicIp" \
         adbWorkspaceLocation="$adbWorkspaceLocation" \
         adbWorkspaceName="$adbWorkspaceName" \
