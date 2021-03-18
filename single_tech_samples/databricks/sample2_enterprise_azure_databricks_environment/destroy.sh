@@ -92,6 +92,10 @@ else
     echo "Deleting Public-IP..."
     az network public-ip delete --name "$iPAddressName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
     echo "Successfully deleted Public-IP"
+    
+    echo "Deleting Network Security Group..."
+    az network nsg delete --name "$securityGroupName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
+    echo "Successfully deleted Network Security Group"
 
     echo "Deleting Spoke Virtual Network..."
     az network vnet delete --name "$spokeVnetName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
@@ -100,10 +104,6 @@ else
     echo "Deleting Hub Virtual Network..."
     az network vnet delete --name "$hubVnetName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
     echo "Successfully deleted Virtual Network"
-
-    echo "Deleting Network Security Group..."
-    az network nsg delete --name "$securityGroupName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
-    echo "Successfully deleted Network Security Group"
 
     echo "Deleting Public-IP..."
     az network public-ip delete --name "$iPAddressName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
