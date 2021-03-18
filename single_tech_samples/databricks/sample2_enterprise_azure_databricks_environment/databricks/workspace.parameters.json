@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "vnetName": {
-      "value": "lumosvnet01"
+      "value": "adbvnet01"
     },
     "adbWorkspaceName": {
       "value": "samplewsname"
@@ -18,7 +18,7 @@
       "value": {}
     },
     "disablePublicIp": {
-      "value": false
+      "value": true
     }
   }
 }

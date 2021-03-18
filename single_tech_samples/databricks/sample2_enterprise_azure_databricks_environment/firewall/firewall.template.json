@@ -1,0 +1,175 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "firewalllocation": {
+            "type": "string",
+            "defaultValue": "australiaeast",
+            "metadata": {
+                "description": "Azure datacentre Location to deploy the Firewall and IP Address"
+            }
+        },
+        "publicIpAddressName": {
+            "type": "string",
+            "defaultValue": "adbFWIP",
+            "metadata": {
+                "description": "Name of the IP Address"
+            }
+        },
+        "firewallName": {
+            "type": "string",
+            "defaultValue": "adbHubFW",
+            "metadata": {
+                "description": "Name of the Azure Firewall"
+            }
+        },
+        "firewallSKU": {
+            "type": "string",
+            "defaultValue": "Standard",
+            "metadata": {
+                "description": "Firewall SKU"
+            }
+        },
+        "vnetName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the vnet associated witht he Firewall"
+            }
+        }
+    },
+    "variables": {
+    },
+    "resources": [
+        {
+            "apiVersion": "2019-02-01",
+            "type": "Microsoft.Network/publicIpAddresses",
+            "name": "[parameters('publicIpAddressName')]",
+            "location": "[parameters('firewalllocation')]",
+            "sku": {
+                "name": "Standard",
+                "tier": "Regional"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Static"
+            },
+            "tags": {}
+        },
+        {
+            "apiVersion": "2020-05-01",
+            "type": "Microsoft.Network/azureFirewalls",
+            "name": "[parameters('firewallName')]",
+            "location": "[parameters('firewalllocation')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIpAddresses', parameters('publicIpAddressName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "[parameters('publicIpAddressName')]",
+                        "properties": {
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), 'AzureFirewallSubnet')]"
+                            },
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIpAddressName'))]"
+                            }
+                        }
+                    }
+                ],
+                "sku": {
+                    "tier": "[parameters('firewallSKU')]"
+                },                
+                "threatIntelMode": "Alert",
+                "additionalProperties": {
+                    "Network.DNS.EnableProxy": "true"
+                },
+                "networkRuleCollections": [
+                    {
+                        "name": "ADBControlplane",
+                        "properties": {
+                            "priority": 200,
+                            "action": {
+                                "type": "Allow"
+                            },
+                            "rules": [
+                                {
+                                    "name": "Webapp ",
+                                    "protocols": [
+                                        "Any"
+                                    ],
+                                    "sourceAddresses": [
+                                        "*"
+                                    ],
+                                    "destinationAddresses": [
+                                        "13.75.218.172/32"
+                                    ],
+                                    "sourceIpGroups": [],
+                                    "destinationIpGroups": [],
+                                    "destinationFqdns": [],
+                                    "destinationPorts": [
+                                        "*"
+                                    ]
+                                },
+                                {
+                                    "name": "Control Plane NAT",
+                                    "protocols": [
+                                        "Any"
+                                    ],
+                                    "sourceAddresses": [
+                                        "*"
+                                    ],
+                                    "destinationAddresses": [
+                                        "13.70.105.50/32"
+                                    ],
+                                    "sourceIpGroups": [],
+                                    "destinationIpGroups": [],
+                                    "destinationFqdns": [],
+                                    "destinationPorts": [
+                                        "*"
+                                    ]
+                                },
+                                {
+                                    "name": "Artifact Blob storage primary",
+                                    "protocols": [
+                                        "Any"
+                                    ],
+                                    "sourceAddresses": [
+                                        "*"
+                                    ],
+                                    "destinationAddresses": [],
+                                    "sourceIpGroups": [],
+                                    "destinationIpGroups": [],
+                                    "destinationFqdns": [
+                                        "blob.core.windows.net"
+                                    ],
+                                    "destinationPorts": [
+                                        "*"
+                                    ]
+                                },
+                                {
+                                    "name": "SCC relay",
+                                    "protocols": [
+                                        "Any"
+                                    ],
+                                    "sourceAddresses": [
+                                        "*"
+                                    ],
+                                    "destinationAddresses": [],
+                                    "sourceIpGroups": [],
+                                    "destinationIpGroups": [],
+                                    "destinationFqdns": [
+                                        "tunnel.australiaeast.azuredatabricks.net"
+                                    ],
+                                    "destinationPorts": [
+                                        "*"
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "tags": {}
+        }
+    ]
+}
