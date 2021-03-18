@@ -3,19 +3,34 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "keyvaultPrivateLinkResource": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "Keyvault Private Link resource."
+      }
     },
     "keyvaultName": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "keyvaylt name."
+      }
     },
     "targetSubResource": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "Privatelink target sub resource."
+      }
     },
     "vnetName": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "Vnet name for private link"
+      }
     },
     "privateLinkSubnetId": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "Privatelink subnet Id"
+      }
     }
   },
   "variables": {

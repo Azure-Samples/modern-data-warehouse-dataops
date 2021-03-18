@@ -63,6 +63,12 @@
     },
     "tagValues": {
       "type": "object"
+    },
+    "spokeVirtualNetworkId": {
+      "type": "string",
+      "metadata": {
+        "description": "Enable or disable Blob encryption at Rest."
+      }
     }
   },
   "resources": [
@@ -93,8 +99,23 @@
           "family": "A"
         },
         "networkAcls": {
-          "defaultAction": "Allow",
-          "bypass": "AzureServices"
+          "defaultAction": "deny",
+          "bypass": "AzureServices",
+          "ipRules": [],
+          "virtualNetworkRules": [
+            {
+              "id": "[concat(parameters('spokeVirtualNetworkId'), '/subnets/private-subnet')]",
+              "ignoreMissingVnetServiceEndpoint": true
+            },
+            {
+              "id": "[concat(parameters('spokeVirtualNetworkId'), '/subnets/private-subnet')]",
+              "ignoreMissingVnetServiceEndpoint": true
+            },
+            {
+              "id": "[concat(parameters('spokeVirtualNetworkId'), '/subnets/private-subnet')]",
+              "ignoreMissingVnetServiceEndpoint": true
+            }
+          ]
         }
       },
       "tags": "[parameters('tagValues')]"

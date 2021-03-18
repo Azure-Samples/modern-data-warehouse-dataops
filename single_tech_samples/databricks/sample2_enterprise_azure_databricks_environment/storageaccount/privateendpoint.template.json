@@ -3,19 +3,34 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "storageAccountPrivateLinkResource": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "Storage Account Privatelink Resource"
+      }
     },
     "storageAccountName": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "Storage Account name"
+      }
     },
     "targetSubResource": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "targetSubResource"
+      }
     },
     "vnetName": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "Vnet name for private link"
+      }
     },
     "privateLinkSubnetId": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "privatelink SubnetId"
+      }
     }
   },
   "variables": {

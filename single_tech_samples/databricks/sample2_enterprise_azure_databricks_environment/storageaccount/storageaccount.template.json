@@ -47,6 +47,10 @@
             "metadata": {
                 "description": "Enable or disable Blob encryption at Rest."
             }
+        },
+        "networkAclsVirtualNetworkRules": {
+            "type": "array",
+            "defaultValue": []
         }
     },
     "functions": [],
@@ -67,6 +71,13 @@
                 "minimumTlsVersion": "TLS1_2",
                 "supportsHttpsTrafficOnly": true,
                 "accessTier": "Hot",
+                "networkAcls": {
+                    "resourceAccessRules": [],
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": "[parameters('networkAclsVirtualNetworkRules')]",
+                    "ipRules": [],
+                    "defaultAction": "Deny"
+                },
                 "encryption": {
                     "keySource": "Microsoft.Storage",
                     "services": {

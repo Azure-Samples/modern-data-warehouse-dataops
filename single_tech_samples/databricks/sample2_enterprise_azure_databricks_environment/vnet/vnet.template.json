@@ -77,14 +77,14 @@
       }
     },
     "privateSubnetCidr": {
-      "defaultValue": "10.2.1.128/26",
+      "defaultValue": "10.179.0.0/18",
       "type": "string",
       "metadata": {
         "description": "Cidr range for the private subnet."
       }
     },
     "publicSubnetCidr": {
-      "defaultValue": "10.2.1.64/26",
+      "defaultValue": "10.179.64.0/18",
       "type": "string",
       "metadata": {
         "description": "Cidr range for the public subnet."
@@ -98,7 +98,7 @@
       }
     },
     "privatelinkSubnetCidr": {
-      "defaultValue": "10.2.1.0/26",
+      "defaultValue": "10.179.128.0/26",
       "type": "string",
       "metadata": {
         "description": "Cidr range for the private link subnet.."
@@ -183,6 +183,21 @@
                     "serviceName": "Microsoft.Databricks/workspaces"
                   }
                 }
+              ],
+              "serviceEndpoints": [
+                {
+                  "service": "Microsoft.Storage",
+                  "locations": [
+                    "eastus",
+                    "westus"
+                  ]
+                },
+                {
+                  "service": "Microsoft.KeyVault",
+                  "locations": [
+                    "*"
+                  ]
+                }
               ]
             }
           },
@@ -203,6 +218,21 @@
                     "serviceName": "Microsoft.Databricks/workspaces"
                   }
                 }
+              ],
+              "serviceEndpoints": [
+                {
+                  "service": "Microsoft.Storage",
+                  "locations": [
+                    "eastus",
+                    "westus"
+                  ]
+                },
+                {
+                  "service": "Microsoft.KeyVault",
+                  "locations": [
+                    "*"
+                  ]
+                }
               ]
             }
           },
@@ -212,7 +242,22 @@
               "addressPrefix": "[parameters('privatelinkSubnetCidr')]",
               "delegations": [],
               "privateEndpointNetworkPolicies": "Disabled",
-              "privateLinkServiceNetworkPolicies": "Enabled"
+              "privateLinkServiceNetworkPolicies": "Enabled",
+              "serviceEndpoints": [
+                {
+                  "service": "Microsoft.Storage",
+                  "locations": [
+                    "eastus",
+                    "westus"
+                  ]
+                },
+                {
+                  "service": "Microsoft.KeyVault",
+                  "locations": [
+                    "*"
+                  ]
+                }
+              ]
             }
           }
         ],
@@ -242,7 +287,7 @@
     }
   ],
   "outputs": {
-    "vnet_id": {
+    "spoke_vnet_id": {
       "type": "string",
       "value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('spokeVnetName'))]"
     },
