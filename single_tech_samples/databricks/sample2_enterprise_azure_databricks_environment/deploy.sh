@@ -26,7 +26,8 @@ fi
 securityGroupName="${DEPLOYMENT_PREFIX}nsg01"
 securityGroupLocation="$AZURE_RESOURCE_GROUP_LOCATION"
 
-vnetName="${DEPLOYMENT_PREFIX}vnet01"
+spokeVnetName="${DEPLOYMENT_PREFIX}spokeVnet01"
+hubVnetName="${DEPLOYMENT_PREFIX}hubVnet01"
 vnetLocation="$AZURE_RESOURCE_GROUP_LOCATION"
 
 tagValues="{}"
@@ -48,6 +49,13 @@ storageAccountSku="Standard_LRS"
 storageAccountSkuTier="Standard"
 storageAccountLocation="$AZURE_RESOURCE_GROUP_LOCATION"
 encryptionEnabled="true"
+
+reouteTablelocation="$AZURE_RESOURCE_GROUP_LOCATION"
+routeTableName="${DEPLOYMENT_PREFIX}FWRT01"
+
+firewallName="${DEPLOYMENT_PREFIX}HubFW01"
+iPAddressName="${DEPLOYMENT_PREFIX}FWIP01"
+firewalllocation="$AZURE_RESOURCE_GROUP_LOCATION"
 
 # Login to Azure and select the subscription
 if ! AZURE_USERNAME=$(az account show --query user.name); then
@@ -73,8 +81,6 @@ else
 fi
 
 # Validate the ARM templates (Jacob)
-securityGroupName="${DEPLOYMENT_PREFIX}nsg01"
-securityGroupLocation="$AZURE_RESOURCE_GROUP_LOCATION"
 
 echo "Validating parameters for Network Security Group..."
 if ! az deployment group validate \
@@ -90,9 +96,6 @@ else
     echo "Network Security Group parameters are valid."
 fi
 
-reouteTablelocation="$AZURE_RESOURCE_GROUP_LOCATION"
-routeTableName="${DEPLOYMENT_PREFIX}FWRT01"
-
 echo "Validating parameters for the Route Table..."
 if ! az deployment group validate \
     --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
@@ -107,10 +110,6 @@ else
     echo "Route Table parameters are valid."
 fi
 
-securityGroupName="${DEPLOYMENT_PREFIX}nsg01"
-spokeVnetName="${DEPLOYMENT_PREFIX}spokeVnet01"
-hubVnetName="${DEPLOYMENT_PREFIX}hubVnet01"
-vnetLocation="$AZURE_RESOURCE_GROUP_LOCATION"
 
 echo "Validating parameters for Virtual Networks..."
 if ! az deployment group validate \
@@ -129,9 +128,6 @@ else
     echo "Virtual Network parameters are valid."
 fi
 
-firewallName="${DEPLOYMENT_PREFIX}HubFW01"
-iPAddressName="${DEPLOYMENT_PREFIX}FWIP01"
-firewalllocation="$AZURE_RESOURCE_GROUP_LOCATION"
 
 echo "Validating parameters for the Firewall..."
 if ! az deployment group validate \
@@ -407,8 +403,6 @@ echo "Creating secrets within scope $scope_name..."
 
 databricks secrets write --scope "$scope_name" --key "storage_account_key1" --string-value  "$storage_account_key1"
 databricks secrets write --scope "$scope_name" --key "storage_account_key2" --string-value  "$storage_account_key2"
-
-
 
 
 ###############################
