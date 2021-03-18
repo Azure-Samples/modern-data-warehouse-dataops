@@ -59,23 +59,23 @@ clusterName=$(jq -r '.cluster_name' < "$CLUSTER_CONFIG")
 echo "Creating cluster \"$clusterName\" in Azure Databricks"
 
 currentClusterCount=$(curl -sS -X GET -H "$authHeader" -H "$adbSPMgmtToken" -H "$adbResourceId" \
-  "https://${adbWorkspaceUrl}/api/2.0/clusters/list" | \
-  jq "[ .clusters | .[]? | select(.cluster_name == \"${clusterName}\") ] | length")
-if [[ "$currentClusterCount" -gt "0" ]]; then
-  echo "Cluster \"$clusterName\" already exists in Azure Databricks, updating..."
-  clusterIdToUpdate=$(curl -sS -X GET -H "$authHeader" -H "$adbSPMgmtToken" -H "$adbResourceId" \
     "https://${adbWorkspaceUrl}/api/2.0/clusters/list" | \
-    jq -r "[ .clusters | .[] | select(.cluster_name == \"${clusterName}\") ][0].cluster_id")
+    jq "[ .clusters | .[]? | select(.cluster_name == \"${clusterName}\") ] | length")
+if [[ "$currentClusterCount" -gt "0" ]]; then
+    echo "Cluster \"$clusterName\" already exists in Azure Databricks, updating..."
+    clusterIdToUpdate=$(curl -sS -X GET -H "$authHeader" -H "$adbSPMgmtToken" -H "$adbResourceId" \
+        "https://${adbWorkspaceUrl}/api/2.0/clusters/list" | \
+        jq -r "[ .clusters | .[] | select(.cluster_name == \"${clusterName}\") ][0].cluster_id")
 
-  echo "Updating cluster \"$clusterIdToUpdate\""
-  jq -r ".cluster_id = \"$clusterIdToUpdate\"" < "$CLUSTER_CONFIG" | \
-  curl -sS -X POST -H "$authHeader" -H "$adbSPMgmtToken" -H "$adbResourceId" \
-    --data-binary "@-" "https://${adbWorkspaceUrl}/api/2.0/clusters/edit" | \
-  jq
-  echo "Cluster \"$clusterName\" is being updated."
+    echo "Updating cluster \"$clusterIdToUpdate\""
+    jq -r ".cluster_id = \"$clusterIdToUpdate\"" < "$CLUSTER_CONFIG" | \
+    curl -sS -X POST -H "$authHeader" -H "$adbSPMgmtToken" -H "$adbResourceId" \
+        --data-binary "@-" "https://${adbWorkspaceUrl}/api/2.0/clusters/edit" | \
+    jq
+    echo "Cluster \"$clusterName\" is being updated."
 else
-  curl -sS -X POST -H -H "$authHeader" -H "$adbSPMgmtToken" -H "$adbResourceId" \
-    --data-binary "@${CLUSTER_CONFIG}" "https://${adbWorkspaceUrl}/api/2.0/clusters/create" | \
-  jq
-  echo "Cluster \"$clusterName\" is being created."
+    curl -sS -X POST -H -H "$authHeader" -H "$adbSPMgmtToken" -H "$adbResourceId" \
+        --data-binary "@${CLUSTER_CONFIG}" "https://${adbWorkspaceUrl}/api/2.0/clusters/create" | \
+    jq
+    echo "Cluster \"$clusterName\" is being created."
 fi
