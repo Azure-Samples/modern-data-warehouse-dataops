@@ -42,9 +42,9 @@ echo "Got adbWorkspaceUrl=${adbWorkspaceUrl}"
 # Generate Azure Databricks PAT token
 
 adbGlobalToken=$(az account get-access-token --resource 2ff814a6-3304-4ab8-85cb-cd0e6f879c1d --output json | jq -r .accessToken)
-echo "Got adbGlobalToken=$(echo "$adbGlobalToken" | cut -c1-20)..."
+echo "Got adbGlobalToken=\"${adbGlobalToken:0:20}...${adbGlobalToken:(-20)}\""
 azureApiToken=$(az account get-access-token --resource https://management.core.windows.net/ --output json | jq -r .accessToken)
-echo "Got azureApiToken=$(echo "$azureApiToken" | cut -c1-20)..."
+echo "Got azureApiToken=\"${azureApiToken:0:20}...${azureApiToken:(-20)}\""
 
 # Generate all headers
 authHeader="Authorization: Bearer $adbGlobalToken"
