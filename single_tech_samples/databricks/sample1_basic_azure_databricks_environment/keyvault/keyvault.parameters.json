@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "keyVaultName": {
-      "value": "lumosakv01"
+      "value": "adbakv01"
     },
     "keyVaultSkuTier": {
       "value": "Standard"
