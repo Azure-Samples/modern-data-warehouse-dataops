@@ -180,6 +180,7 @@ if ! az deployment group validate \
     exit 1
 else
     echo "Azure Key Vault parameters are valid."
+fi 
 
 echo "Validating parameters for Azure Storage Account..."
 if ! az deployment group validate \
