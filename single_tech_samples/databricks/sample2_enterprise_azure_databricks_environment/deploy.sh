@@ -22,6 +22,33 @@ if [[ -z "$AZURE_RESOURCE_GROUP_LOCATION" ]]; then
     exit 1
 fi
 
+# Variables for each resource
+securityGroupName="${DEPLOYMENT_PREFIX}nsg01"
+securityGroupLocation="$AZURE_RESOURCE_GROUP_LOCATION"
+
+vnetName="${DEPLOYMENT_PREFIX}vnet01"
+vnetLocation="$AZURE_RESOURCE_GROUP_LOCATION"
+
+tagValues="{}"
+disablePublicIp=false
+adbWorkspaceLocation="$AZURE_RESOURCE_GROUP_LOCATION"
+adbWorkspaceName="${DEPLOYMENT_PREFIX}adb01"
+adbWorkspaceSkuTier="standard"
+
+keyVaultName="${DEPLOYMENT_PREFIX}akv01"
+keyVaultLocation="$AZURE_RESOURCE_GROUP_LOCATION"
+enabledForDeployment="false"
+enabledForTemplateDeployment="false"
+tenantId="$(az account show --query "tenantId" --output tsv)"
+objectId="$(az ad signed-in-user show --query "objectId" --output tsv)"
+keyVaultSkuTier="Standard"
+
+storageAccountName="${DEPLOYMENT_PREFIX}asa01"
+storageAccountSku="Standard_LRS"
+storageAccountSkuTier="Standard"
+storageAccountLocation="$AZURE_RESOURCE_GROUP_LOCATION"
+encryptionEnabled="true"
+
 # Login to Azure and select the subscription
 if ! AZURE_USERNAME=$(az account show --query user.name); then
     echo "No Azure account logged in, now trying to log in."
@@ -46,10 +73,6 @@ else
 fi
 
 # Validate the ARM templates (Jacob)
-
-securityGroupName="${DEPLOYMENT_PREFIX}nsg01"
-securityGroupLocation="$AZURE_RESOURCE_GROUP_LOCATION"
-
 echo "Validating parameters for Network Security Group..."
 if ! az deployment group validate \
     --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
@@ -63,10 +86,6 @@ if ! az deployment group validate \
 else
     echo "Network Security Group parameters are valid."
 fi
-
-securityGroupName="${DEPLOYMENT_PREFIX}nsg01"
-vnetName="${DEPLOYMENT_PREFIX}vnet01"
-vnetLocation="$AZURE_RESOURCE_GROUP_LOCATION"
 
 echo "Validating parameters for Virtual Network..."
 if ! az deployment group validate \
@@ -82,15 +101,6 @@ if ! az deployment group validate \
 else
     echo "Virtual Network parameters are valid."
 fi
-
-tagValues="{}"
-
-securityGroupName="${DEPLOYMENT_PREFIX}nsg01"
-vnetName="${DEPLOYMENT_PREFIX}vnet01"
-disablePublicIp=false
-adbWorkspaceLocation="$AZURE_RESOURCE_GROUP_LOCATION"
-adbWorkspaceName="${DEPLOYMENT_PREFIX}adb01"
-adbWorkspaceSkuTier="standard"
 
 echo "Validating parameters for Azure Databricks..."
 if ! az deployment group validate \
@@ -109,14 +119,6 @@ if ! az deployment group validate \
 else
     echo "Azure Databricks parameters are valid."
 fi
-
-keyVaultName="${DEPLOYMENT_PREFIX}akv01"
-keyVaultLocation="$AZURE_RESOURCE_GROUP_LOCATION"
-enabledForDeployment="false"
-enabledForTemplateDeployment="false"
-tenantId="$(az account show --query "tenantId" --output tsv)"
-objectId="$(az ad signed-in-user show --query "objectId" --output tsv)"
-keyVaultSkuTier="Standard"
 
 echo "Validating parameters for Azure Key Vault..."
 if ! az deployment group validate \
@@ -137,12 +139,6 @@ if ! az deployment group validate \
 else
     echo "Azure Key Vault parameters are valid."
 fi
-
-storageAccountName="${DEPLOYMENT_PREFIX}asa01"
-storageAccountSku="Standard_LRS"
-storageAccountSkuTier="Standard"
-storageAccountLocation="$AZURE_RESOURCE_GROUP_LOCATION"
-encryptionEnabled="true"
 
 echo "Validating parameters for Azure Storage Account..."
 if ! az deployment group validate \
