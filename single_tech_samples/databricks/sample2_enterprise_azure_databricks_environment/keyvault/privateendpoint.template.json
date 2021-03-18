@@ -72,6 +72,26 @@
         },
         "registrationEnabled": false
       }
+    },
+    {
+      "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+      "apiVersion": "2020-03-01",
+      "name": "[concat(variables('keyvaultPrivateEndpointName'), '/', 'default')]",
+      "location": "[resourceGroup().Location]",
+      "properties": {
+        "privateDnsZoneConfigs": [
+          {
+            "name": "privatelink-vaultcore-azure-net",
+            "properties": {
+              // "privateDnsZoneId": "/subscriptions/b543aa2b-f823-4d1d-8188-fed701a61253/resourceGroups/juan-rg-02/providers/Microsoft.Network/privateDnsZones/privatelink.dfs.core.windows.net"
+              "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', variables('privateDnsName'))]"
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[variables('privateDnsName')]"
+      ]
     }
   ]
 }
