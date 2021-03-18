@@ -1,0 +1,115 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "securityGroupName": {
+      "defaultValue": "databricks-nsg",
+      "type": "string",
+      "metadata": {
+        "description": "The name of the existing network security group to create."
+      }
+    },
+    "vnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the virtual network to create."
+      }
+    },
+    "privateSubnetName": {
+      "defaultValue": "private-subnet",
+      "type": "string",
+      "metadata": {
+        "description": "The name of the private subnet to create."
+      }
+    },
+    "publicSubnetName": {
+      "defaultValue": "public-subnet",
+      "type": "string",
+      "metadata": {
+        "description": "The name of the public subnet to create."
+      }
+    },
+    "vnetLocation": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Location for all resources."
+      }
+    },
+    "vnetCidr": {
+      "defaultValue": "10.179.0.0/16",
+      "type": "string",
+      "metadata": {
+        "description": "Cidr range for the vnet."
+      }
+    },
+    "privateSubnetCidr": {
+      "defaultValue": "10.179.0.0/18",
+      "type": "string",
+      "metadata": {
+        "description": "Cidr range for the private subnet."
+      }
+    },
+    "publicSubnetCidr": {
+      "defaultValue": "10.179.64.0/18",
+      "type": "string",
+      "metadata": {
+        "description": "Cidr range for the public subnet.."
+      }
+    }
+  },
+  "variables": {
+    "securityGroupId": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('securityGroupName'))]"
+  },
+  "resources": [
+    {
+      "apiVersion": "2020-05-01",
+      "type": "Microsoft.Network/virtualNetworks",
+      "location": "[parameters('vnetLocation')]",
+      "name": "[parameters('vnetName')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('vnetCidr')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[parameters('publicSubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('publicSubnetCidr')]",
+              "networkSecurityGroup": {
+                "id": "[variables('securityGroupId')]"
+              },
+              "delegations": [
+                {
+                  "name": "databricks-del-public",
+                  "properties": {
+                    "serviceName": "Microsoft.Databricks/workspaces"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "[parameters('privateSubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('privateSubnetCidr')]",
+              "networkSecurityGroup": {
+                "id": "[variables('securityGroupId')]"
+              },
+              "delegations": [
+                {
+                  "name": "databricks-del-private",
+                  "properties": {
+                    "serviceName": "Microsoft.Databricks/workspaces"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
