@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 DEPLOYMENT_PREFIX=${DEPLOYMENT_PREFIX:-}
 AZURE_SUBSCRIPTION_ID=${AZURE_SUBSCRIPTION_ID:-}
 AZURE_RESOURCE_GROUP_NAME=${AZURE_RESOURCE_GROUP_NAME:-}
@@ -27,39 +29,53 @@ if [[ -z "$CLUSTER_CONFIG" ]]; then
     CLUSTER_CONFIG="./cluster-config.example.json"
 fi
 
-# Get deployment key from Key Vault
-
-keyVaultName="${DEPLOYMENT_PREFIX}akv01"
-adbDeploymentTokenName="DatabricksDeploymentToken"
-
-echo "Getting secret $adbDeploymentTokenName from Azure Key Vault $keyVaultName"
-adbToken=$(az keyvault secret show --name "$adbDeploymentTokenName" --vault-name "$keyVaultName" --query "value" --output tsv)
-
 # Get WorkspaceUrl from Azure Databricks
 
 adbName="${DEPLOYMENT_PREFIX}adb01"
-echo "Getting WorkspaceUrl from Azure Databricks instance $adbName"
+echo "Getting WorkspaceId & Url from Azure Databricks instance $adbName"
+
+adbId=$(az databricks workspace show --resource-group "$AZURE_RESOURCE_GROUP_NAME" --name "$adbName" --query id --output tsv)
+echo "Got adbId=${adbId}"
 adbWorkspaceUrl=$(az databricks workspace show --resource-group "$AZURE_RESOURCE_GROUP_NAME" --name "$adbName" --query workspaceUrl --output tsv)
+echo "Got adbWorkspaceUrl=${adbWorkspaceUrl}"
+
+# Generate Azure Databricks PAT token
+
+adbGlobalToken=$(az account get-access-token --resource 2ff814a6-3304-4ab8-85cb-cd0e6f879c1d --output json | jq -r .accessToken)
+echo "Got adbGlobalToken=$(echo "$adbGlobalToken" | cut -c1-20)..."
+azureApiToken=$(az account get-access-token --resource https://management.core.windows.net/ --output json | jq -r .accessToken)
+echo "Got azureApiToken=$(echo "$azureApiToken" | cut -c1-20)..."
+
+# Generate all headers
+authHeader="Authorization: Bearer $adbGlobalToken"
+adbSPMgmtToken="X-Databricks-Azure-SP-Management-Token:$azureApiToken"
+adbResourceId="X-Databricks-Azure-Workspace-Resource-Id:$adbId"
 
 # Deploy the cluster based on the configuration file
-# Note: you can also use the Databricks CLI to deploy
-adbAuthHeader="Authorization: Bearer $adbToken"
-
 echo "Deploying cluster with configuration $CLUSTER_CONFIG"
 jq < "$CLUSTER_CONFIG"
 clusterName=$(jq -r '.cluster_name' < "$CLUSTER_CONFIG")
 
 echo "Creating cluster \"$clusterName\" in Azure Databricks"
 
-currentClusterCount=$(curl -sS -X GET -H "$adbAuthHeader" "https://${adbWorkspaceUrl}/api/2.0/clusters/list" | jq "[ .clusters | .[]? | select(.cluster_name == \"${clusterName}\") ] | length")
+currentClusterCount=$(curl -sS -X GET -H "$authHeader" -H "$adbSPMgmtToken" -H "$adbResourceId" \
+  "https://${adbWorkspaceUrl}/api/2.0/clusters/list" | \
+  jq "[ .clusters | .[]? | select(.cluster_name == \"${clusterName}\") ] | length")
 if [[ "$currentClusterCount" -gt "0" ]]; then
-    echo "Cluster \"$clusterName\" already exists in Azure Databricks, updating..."
-    clusterIdToUpdate=$(curl -sS -X GET -H "$adbAuthHeader" "https://${adbWorkspaceUrl}/api/2.0/clusters/list" | jq -r "[ .clusters | .[] | select(.cluster_name == \"${clusterName}\") ][0].cluster_id")
-    echo "Updating cluster \"$clusterIdToUpdate\""
-    jq -r ".cluster_id = \"$clusterIdToUpdate\"" < "$CLUSTER_CONFIG" | \
-      curl -sS -X POST -H "$adbAuthHeader" --data-binary "@-" "https://${adbWorkspaceUrl}/api/2.0/clusters/edit" | jq
-    echo "Cluster \"$clusterName\" is being updated."
+  echo "Cluster \"$clusterName\" already exists in Azure Databricks, updating..."
+  clusterIdToUpdate=$(curl -sS -X GET -H "$authHeader" -H "$adbSPMgmtToken" -H "$adbResourceId" \
+    "https://${adbWorkspaceUrl}/api/2.0/clusters/list" | \
+    jq -r "[ .clusters | .[] | select(.cluster_name == \"${clusterName}\") ][0].cluster_id")
+
+  echo "Updating cluster \"$clusterIdToUpdate\""
+  jq -r ".cluster_id = \"$clusterIdToUpdate\"" < "$CLUSTER_CONFIG" | \
+  curl -sS -X POST -H "$authHeader" -H "$adbSPMgmtToken" -H "$adbResourceId" \
+    --data-binary "@-" "https://${adbWorkspaceUrl}/api/2.0/clusters/edit" | \
+  jq
+  echo "Cluster \"$clusterName\" is being updated."
 else
-    curl -sS -X POST -H "$adbAuthHeader" --data-binary "@${CLUSTER_CONFIG}" "https://${adbWorkspaceUrl}/api/2.0/clusters/create" | jq
-    echo "Cluster \"$clusterName\" is being created."
+  curl -sS -X POST -H -H "$authHeader" -H "$adbSPMgmtToken" -H "$adbResourceId" \
+    --data-binary "@${CLUSTER_CONFIG}" "https://${adbWorkspaceUrl}/api/2.0/clusters/create" | \
+  jq
+  echo "Cluster \"$clusterName\" is being created."
 fi
