@@ -65,23 +65,63 @@ else
     echo "Network Security Group: $securityGroupName"
 
     echo "Deleting ADB workspace..."
-    az databricks workspace delete --name "$adbWorkspaceName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --yes --output none
-    echo "Successfully deleted ADB workspace"
+    if ! az databricks workspace delete \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+        --name "$adbWorkspaceName" \
+        --yes  \
+        --debug 2>&1 >/dev/null | grep "Response status: 200"; then
+        echo "Deleting of ADB workspace failed."
+        exit 1
+    else
+        echo "Successfully deleted ADB workspace."
+    fi
 
     echo "Deleting Key Vault..."
-    az keyvault delete --name "$keyVaultName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
-    az keyvault purge --subscription "$AZURE_SUBSCRIPTION_ID" -n "$keyVaultName" --output none
-    echo "Successfully deleted and purged Key Vault"
+    if ! az keyvault delete \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+        --name "$keyVaultName" \
+        --debug 2>&1 >/dev/null | grep "Response status: 200" \
+    ||
+       ! az keyvault purge \
+        --subscription "$AZURE_SUBSCRIPTION_ID" \
+        --name "$keyVaultName"; then
+        echo "Deleting of Key Vault failed."
+        exit 1
+    else
+        echo "Successfully deleted and purged Key Vault"
+    fi
 
     echo "Deleting Storage Account..."
-    az storage account delete --name "$storageAccountName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --yes --output none
-    echo "Successfully deleted Storage Account"
+    if ! az storage account delete \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+        --name "$storageAccountName" \
+        --yes \
+        --debug 2>&1 >/dev/null | grep "Response status: 200"; then
+        echo "Deleting of Azure Storage Account failed."
+        exit 1
+    else 
+        echo "Successfully deleted Storage Account."
+    fi
 
     echo "Deleting Virtual Network..."
-    az network vnet delete --name "$vnetName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
-    echo "Successfully deleted Virtual Network"
+    if ! az network vnet delete \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+        --name "$vnetName" \
+        --debug 2>&1 >/dev/null | grep "Response status: 200"; then
+        echo "Deleting of Virtual Network failed."
+        exit 1
+    else
+        echo "Successfully deleted Virtual Network."
+    fi
 
     echo "Deleting Network Security Group..."
-    az network nsg delete --name "$securityGroupName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
-    echo "Successfully deleted Network Security Group"
+    if ! az network nsg delete \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+        --name "$securityGroupName" \
+        --debug 2>&1 >/dev/null | grep "Response status: 200"; then
+        echo "Deleting of Network Security Group failed."
+        exit 1
+    else
+        echo "Successfully deleted Network Security Group."
+    fi
 fi
