@@ -50,7 +50,11 @@ hubVnetName="${DEPLOYMENT_PREFIX}hubVnet01"
 securityGroupName="${DEPLOYMENT_PREFIX}nsg01"
 routeTableName="${DEPLOYMENT_PREFIX}FWRT01"
 firewallName="${DEPLOYMENT_PREFIX}HubFW01"
-iPAddressName="${DEPLOYMENT_PREFIX}FWIP01"
+ipAddressName="${DEPLOYMENT_PREFIX}FWIP01"
+keyVaultPrivateEndpoint=$(az network private-endpoint list -g "$AZURE_RESOURCE_GROUP_NAME" --query "[?contains(@.name,'akv')].id" --output tsv)
+storageAccountPrivateEndpoint=$(az network private-endpoint list -g "$AZURE_RESOURCE_GROUP_NAME" --query "[?contains(@.name,'asa')].id" --output tsv)
+keyVaultPrivateEndpointNicName=$(az network nic list -g "$AZURE_RESOURCE_GROUP_NAME" --query "[?contains(@.name,'akv')].name")
+storageAccountPrivateEndpointNicName=$(az network nic list -g "$AZURE_RESOURCE_GROUP_NAME" --query "[?contains(@.name,'asa')].name")
 
 echo "Delete Resouce Group? $DELETE_RESOURCE_GROUP"
 
@@ -59,7 +63,7 @@ if [[ $DELETE_RESOURCE_GROUP == true ]]; then
     sleep 5s
     az group delete --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none --yes
     echo "Purging key vault..."
-    az keyvault purge --subscription "$AZURE_SUBSCRIPTION_ID" -n "$keyVaultName" --output none
+    az keyvault purge --subscription "$AZURE_SUBSCRIPTION_ID" --name "$keyVaultName" --output none
 else
     echo "The following resources will be deleted:"
     echo "ADB Workspace: $adbWorkspaceName"
@@ -70,7 +74,7 @@ else
     echo "Network Security Group: $securityGroupName"
     echo "Routing Table: $routeTableName"
     echo "Firewall: $firewallName"
-    echo "Public IP Address: $iPAddressName"
+    echo "Public IP Address: $ipAddressName"
 
     echo "Deleting ADB workspace..."
     az databricks workspace delete --name "$adbWorkspaceName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --yes --output none
@@ -78,21 +82,37 @@ else
 
     echo "Deleting Key Vault..."
     az keyvault delete --name "$keyVaultName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
-    az keyvault purge --subscription "$AZURE_SUBSCRIPTION_ID" -n "$keyVaultName" --output none
+    az keyvault purge --subscription "$AZURE_SUBSCRIPTION_ID" --name "$keyVaultName" --output none
     echo "Successfully deleted and purged Key Vault"
 
     echo "Deleting Storage Account..."
     az storage account delete --name "$storageAccountName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --yes --output none
     echo "Successfully deleted Storage Account"
 
+    echo "Deleting Private Endpoint for Key Vault"
+    az network private-endpoint delete --id "$keyVaultPrivateEndpoint" --output none
+    echo "Successfully deleted Private Endpoint for Key Vault"
+
+    echo "Deleting Private Endpoint for Storage Account"
+    az network private-endpoint delete --id "$storageAccountPrivateEndpoint" --output none
+    echo "Successfully deleted Private Endpoint for Storage Account"
+
+    echo "Deleting Private Link NIC for Key Vault"
+    az network nic delete --name "$keyVaultPrivateEndpointNicName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
+    echo "Successfully deleted Private Link NIC for Key Vault"
+
+    echo "Deleting Private Link NIC for Storage Account"
+    az network nic delete --name "$storageAccountPrivateEndpointNicName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" #--output none
+    echo "Successfully deleted Private Link NIC for Storage Account"
+
     echo "Deleting Firewall..."
     az network firewall delete --name "$firewallName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
     echo "Successfully deleted Firewall"
 
     echo "Deleting Public-IP..."
-    az network public-ip delete --name "$iPAddressName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
+    az network public-ip delete --name "$ipAddressName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
     echo "Successfully deleted Public-IP"
-    
+
     echo "Deleting Spoke Virtual Network..."
     az network vnet delete --name "$spokeVnetName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
     echo "Successfully deleted Spoke Virtual Network"
@@ -105,11 +125,16 @@ else
     az network nsg delete --name "$securityGroupName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
     echo "Successfully deleted Network Security Group"
 
-    echo "Deleting Public-IP..."
-    az network public-ip delete --name "$iPAddressName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
-    echo "Successfully deleted Public-IP"
-
     echo "Deleting Route table..."
     az network route-table delete --name "$routeTableName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
     echo "Successfully deleted Route table"
+
+    echo "Deleting Private DNS Zone for Key Vault"
+    az network private-dns zone delete --name "privatelink.vaultcore.azure.net" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --yes --output none --no-wait
+    echo "Successfully deleted DNS Zone for Key Vault"
+
+    echo "Deleting Private DNS Zone Storage Account"
+    az network private-dns zone delete --name "privatelink.dfs.core.windows.net" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --yes --output none --no-wait
+    echo "Successfully deleted Private DNS Zone for Storage Account"
+
 fi

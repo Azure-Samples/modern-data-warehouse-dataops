@@ -122,10 +122,10 @@ if ! az deployment group validate \
         vnetLocation="$vnetLocation" \
         routeTableName="$routeTableName" \
     --output none; then
-    echo "Validation error for Virtual Network, please see the error above."
+    echo "Validation error for Virtual Networks, please see the error above."
     exit 1
 else
-    echo "Virtual Network parameters are valid."
+    echo "Virtual Networks parameters are valid."
 fi
 
 echo "Validating parameters for the Firewall..."
