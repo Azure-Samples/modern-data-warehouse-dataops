@@ -113,15 +113,8 @@ else
     fi
 
     echo "Deleting Firewall..."
-    if ! az network firewall delete \
-         --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
-         --name "$firewallName" \
-         --debug 2>&1 >/dev/null | grep "Response status: 200"; then
-        echo "Deleting of Firewall failed."
-        exit 1
-    else
-        echo "Successfully deleted Firewall"
-    fi
+    az network firewall delete --name "$firewallName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
+    echo "Successfully deleted Firewall"
 
     echo "Deleting Public-IP..."
     if ! az network public-ip delete \
