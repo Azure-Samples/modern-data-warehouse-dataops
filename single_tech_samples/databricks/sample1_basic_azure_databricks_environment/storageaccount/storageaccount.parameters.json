@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "storageAccountName": {
-            "value": "lumostest1" 
+            "value": "adbstoragetest1" 
         },
         "storageAccountSku": {
             "value": "Standard_LRS"

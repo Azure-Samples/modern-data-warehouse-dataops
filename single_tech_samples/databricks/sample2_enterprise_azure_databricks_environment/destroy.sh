@@ -45,8 +45,12 @@ fi
 adbWorkspaceName="${DEPLOYMENT_PREFIX}adb01"
 keyVaultName="${DEPLOYMENT_PREFIX}akv01"
 storageAccountName="${DEPLOYMENT_PREFIX}asa01"
-vnetName="${DEPLOYMENT_PREFIX}vnet01"
+spokeVnetName="${DEPLOYMENT_PREFIX}spokeVnet01"
+hubVnetName="${DEPLOYMENT_PREFIX}hubVnet01"
 securityGroupName="${DEPLOYMENT_PREFIX}nsg01"
+routeTableName="${DEPLOYMENT_PREFIX}FWRT01"
+firewallName="${DEPLOYMENT_PREFIX}HubFW01"
+iPAddressName="${DEPLOYMENT_PREFIX}FWIP01"
 
 echo "Delete Resouce Group? $DELETE_RESOURCE_GROUP"
 
@@ -61,8 +65,12 @@ else
     echo "ADB Workspace: $adbWorkspaceName"
     echo "Key Vault: $keyVaultName"
     echo "Storage Account: $storageAccountName"
-    echo "Virtual Network: $vnetName"
+    echo "Spoke Virtual Network: $spokeVnetName"
+    echo "Hub Virtual Network: $hubVnetName"
     echo "Network Security Group: $securityGroupName"
+    echo "Routing Table: $routeTableName"
+    echo "Firewall: $firewallName"
+    echo "Public IP Address: $iPAddressName"
 
     echo "Deleting ADB workspace..."
     if ! az databricks workspace delete \
@@ -84,7 +92,8 @@ else
     ||
        ! az keyvault purge \
         --subscription "$AZURE_SUBSCRIPTION_ID" \
-        --name "$keyVaultName"; then
+        --name "$keyVaultName" \
+        --output none; then
         echo "Deleting of Key Vault failed."
         exit 1
     else
@@ -103,15 +112,48 @@ else
         echo "Successfully deleted Storage Account."
     fi
 
-    echo "Deleting Virtual Network..."
-    if ! az network vnet delete \
-        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
-        --name "$vnetName" \
-        --debug 2>&1 >/dev/null | grep "Response status: 200"; then
-        echo "Deleting of Virtual Network failed."
+    echo "Deleting Firewall..."
+    if ! az network firewall delete \
+         --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+         --name "$firewallName" \
+         --debug 2>&1 >/dev/null | grep "Response status: 200"; then
+        echo "Deleting of Firewall failed."
         exit 1
     else
-        echo "Successfully deleted Virtual Network."
+        echo "Successfully deleted Firewall"
+    fi
+
+    echo "Deleting Public-IP..."
+    if ! az network public-ip delete \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+        --name "$iPAddressName" \
+        --debug 2>&1 >/dev/null | grep "Response status: 200"; then
+        echo "Deleting of Public-IP failed."
+        exit 1
+    else
+        echo "Successfully deleted Public-IP"
+    fi
+
+    echo "Deleting Spoke Virtual Network..."
+    if ! az network vnet delete \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+        --name "$spokeVnetName" \
+        --debug 2>&1 >/dev/null | grep "Response status: 200"; then
+        echo "Deleting of Spoke Virtual Network failed."
+        exit 1
+    else
+        echo "Successfully deleted Spoke Virtual Network"
+    fi
+
+    echo "Deleting Hub Virtual Network..."
+    if ! az network vnet delete \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+        --name "$hubVnetName" \
+        --debug 2>&1 >/dev/null | grep "Response status: 200"; then
+        echo "Deleting of Hub Virtual Network failed."
+        exit 1
+    else
+        echo "Successfully deleted Hub Virtual Network"
     fi
 
     echo "Deleting Network Security Group..."
@@ -123,5 +165,16 @@ else
         exit 1
     else
         echo "Successfully deleted Network Security Group."
+    fi
+
+    echo "Deleting Route table..."
+    if ! az network route-table delete \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+        --name "$routeTableName" \
+        --debug 2>&1 >/dev/null | grep "Response status: 200"; then
+        echo "Deleting of Route table failed."
+        exit 1
+    else
+        echo "Successfully deleted Route table"
     fi
 fi
