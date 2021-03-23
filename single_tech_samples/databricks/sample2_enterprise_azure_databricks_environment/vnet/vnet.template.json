@@ -28,6 +28,13 @@
         "description": "The name of the private subnet to create."
       }
     },
+    "privatelinkSubnetName": {
+      "defaultValue": "privatelink-subnet",
+      "type": "string",
+      "metadata": {
+        "description": "The name of the private subnet to create."
+      }
+    },
     "publicSubnetName": {
       "defaultValue": "public-subnet",
       "type": "string",
@@ -45,9 +52,9 @@
     "routeTableName": {
       "type": "string",
       "metadata": {
-          "description": "Name of the Routing Table"
+        "description": "Name of the Routing Table"
       }
-     },
+    },
     "vnetLocation": {
       "type": "string",
       "defaultValue": "[resourceGroup().location]",
@@ -89,56 +96,63 @@
       "metadata": {
         "description": "Cidr range for the firewall subnet."
       }
+    },
+    "privatelinkSubnetCidr": {
+      "defaultValue": "10.179.128.0/26",
+      "type": "string",
+      "metadata": {
+        "description": "Cidr range for the private link subnet.."
+      }
     }
   },
   "variables": {
     "securityGroupId": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('securityGroupName'))]"
   },
   "resources": [
-      {
-        "type": "Microsoft.Network/virtualNetworks",
-        "apiVersion": "2020-08-01",
-        "name": "[parameters('hubVnetName')]",
-        "location": "[parameters('vnetLocation')]",
-        "properties": {
-            "addressSpace": {
-                "addressPrefixes": [
-                  "[parameters('hubVnetCidr')]"
-                ]
-            },
-            "subnets": [
-                {
-                    "name": "[parameters('firewallSubnetName')]",
-                    "properties": {
-                        "addressPrefix": "[parameters('firewallSubnetCidr')]",
-                        "privateEndpointNetworkPolicies": "Enabled",
-                        "privateLinkServiceNetworkPolicies": "Enabled"
-                    }
-                }
-            ],
-            "enableDdosProtection": false
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2020-08-01",
+      "name": "[parameters('hubVnetName')]",
+      "location": "[parameters('vnetLocation')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('hubVnetCidr')]"
+          ]
         },
-        "resources": [
+        "subnets": [
           {
-              "apiVersion": "2020-08-01",
-              "type": "virtualNetworkPeerings",
-              "name": "Peer-HubSpoke",
-              "location": "[parameters('vnetLocation')]",
-              "dependsOn": [
-                  "[resourceId('Microsoft.Network/virtualNetworks/', parameters('hubVnetName'))]",
-                  "[resourceId('Microsoft.Network/virtualNetworks/', parameters('spokeVnetName'))]"
-              ],
-              "properties": {
-                  "allowVirtualNetworkAccess": true,
-                  "allowForwardedTraffic": true,
-                  "allowGatewayTransit": false,
-                  "useRemoteGateways": false,
-                  "remoteVirtualNetwork": {
-                      "id": "[resourceId('Microsoft.Network/virtualNetworks',parameters('spokeVnetName'))]"
-                  }
-              }
+            "name": "[parameters('firewallSubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('firewallSubnetCidr')]",
+              "privateEndpointNetworkPolicies": "Enabled",
+              "privateLinkServiceNetworkPolicies": "Enabled"
+            }
           }
-        ]
+        ],
+        "enableDdosProtection": false
+      },
+      "resources": [
+        {
+          "apiVersion": "2020-08-01",
+          "type": "virtualNetworkPeerings",
+          "name": "Peer-HubSpoke",
+          "location": "[parameters('vnetLocation')]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Network/virtualNetworks/', parameters('hubVnetName'))]",
+            "[resourceId('Microsoft.Network/virtualNetworks/', parameters('spokeVnetName'))]"
+          ],
+          "properties": {
+            "allowVirtualNetworkAccess": true,
+            "allowForwardedTraffic": true,
+            "allowGatewayTransit": false,
+            "useRemoteGateways": false,
+            "remoteVirtualNetwork": {
+              "id": "[resourceId('Microsoft.Network/virtualNetworks',parameters('spokeVnetName'))]"
+            }
+          }
+        }
+      ]
     },
     {
       "apiVersion": "2020-08-01",
@@ -169,6 +183,21 @@
                     "serviceName": "Microsoft.Databricks/workspaces"
                   }
                 }
+              ],
+              "serviceEndpoints": [
+                {
+                  "service": "Microsoft.Storage",
+                  "locations": [
+                    "eastus",
+                    "westus"
+                  ]
+                },
+                {
+                  "service": "Microsoft.KeyVault",
+                  "locations": [
+                    "*"
+                  ]
+                }
               ]
             }
           },
@@ -189,33 +218,82 @@
                     "serviceName": "Microsoft.Databricks/workspaces"
                   }
                 }
+              ],
+              "serviceEndpoints": [
+                {
+                  "service": "Microsoft.Storage",
+                  "locations": [
+                    "eastus",
+                    "westus"
+                  ]
+                },
+                {
+                  "service": "Microsoft.KeyVault",
+                  "locations": [
+                    "*"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "name": "[parameters('privatelinkSubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('privatelinkSubnetCidr')]",
+              "delegations": [],
+              "privateEndpointNetworkPolicies": "Disabled",
+              "privateLinkServiceNetworkPolicies": "Enabled",
+              "serviceEndpoints": [
+                {
+                  "service": "Microsoft.Storage",
+                  "locations": [
+                    "eastus",
+                    "westus"
+                  ]
+                },
+                {
+                  "service": "Microsoft.KeyVault",
+                  "locations": [
+                    "*"
+                  ]
+                }
               ]
             }
           }
         ],
-      "enableDdosProtection": false
+        "enableDdosProtection": false
       },
       "resources": [
         {
-            "apiVersion": "2020-08-01",
-            "type": "virtualNetworkPeerings",
-            "name": "Peer-SpokeHub",
-            "location": "[parameters('vnetLocation')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/virtualNetworks/', parameters('hubVnetName'))]",
-                "[resourceId('Microsoft.Network/virtualNetworks/', parameters('spokeVnetName'))]"
-            ],
-            "properties": {
-                "allowVirtualNetworkAccess": true,
-                "allowForwardedTraffic": true,
-                "allowGatewayTransit": false,
-                "useRemoteGateways": false,
-                "remoteVirtualNetwork": {
-                    "id": "[resourceId('Microsoft.Network/virtualNetworks',parameters('hubVnetName'))]"
-                }
+          "apiVersion": "2020-08-01",
+          "type": "virtualNetworkPeerings",
+          "name": "Peer-SpokeHub",
+          "location": "[parameters('vnetLocation')]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Network/virtualNetworks/', parameters('hubVnetName'))]",
+            "[resourceId('Microsoft.Network/virtualNetworks/', parameters('spokeVnetName'))]"
+          ],
+          "properties": {
+            "allowVirtualNetworkAccess": true,
+            "allowForwardedTraffic": true,
+            "allowGatewayTransit": false,
+            "useRemoteGateways": false,
+            "remoteVirtualNetwork": {
+              "id": "[resourceId('Microsoft.Network/virtualNetworks',parameters('hubVnetName'))]"
             }
+          }
         }
       ]
     }
-  ]
+  ],
+  "outputs": {
+    "spoke_vnet_id": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('spokeVnetName'))]"
+    },
+    "privatelinksubnet_id": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('spokeVnetName'),parameters('privatelinkSubnetName'))]"
+    }
+  }
 }
