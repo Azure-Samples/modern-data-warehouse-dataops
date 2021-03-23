@@ -7,6 +7,7 @@ AZURE_SUBSCRIPTION_ID=${AZURE_SUBSCRIPTION_ID:-}
 AZURE_RESOURCE_GROUP_NAME=${AZURE_RESOURCE_GROUP_NAME:-}
 AZURE_RESOURCE_GROUP_LOCATION=${AZURE_RESOURCE_GROUP_LOCATION:-}
 CLUSTER_CONFIG=${CLUSTER_CONFIG:-}
+CLUSTER_CONFIG_HC=${CLUSTER_CONFIG_HC:-}
 
 if [[ -z "$DEPLOYMENT_PREFIX" ]]; then
     echo "No deployment prefix [DEPLOYMENT_PREFIX] specified."
@@ -26,7 +27,11 @@ if [[ -z "$AZURE_RESOURCE_GROUP_LOCATION" ]]; then
 fi
 if [[ -z "$CLUSTER_CONFIG" ]]; then
     echo "No Azure resource group [CLUSTER_CONFIG] specified, use default ./cluster-config.example.json"
-    CLUSTER_CONFIG="./cluster-config.example.json"
+    CLUSTER_CONFIG="./cluster-config.default.json"
+fi
+if [[ -z "$CLUSTER_CONFIG_HC" ]]; then
+    echo "No Azure resource group [CLUSTER_CONFIG_HC] specified, use default ./cluster-config.example.json"
+    CLUSTER_CONFIG_HC="./cluster-config.high-concurrency.json"
 fi
 
 # Get WorkspaceUrl from Azure Databricks
@@ -52,30 +57,34 @@ adbSPMgmtToken="X-Databricks-Azure-SP-Management-Token:$azureApiToken"
 adbResourceId="X-Databricks-Azure-Workspace-Resource-Id:$adbId"
 
 # Deploy the cluster based on the configuration file
-echo "Deploying cluster with configuration $CLUSTER_CONFIG"
-jq < "$CLUSTER_CONFIG"
-clusterName=$(jq -r '.cluster_name' < "$CLUSTER_CONFIG")
+configs=( "$CLUSTER_CONFIG" "$CLUSTER_CONFIG_HC" )
+for config in "${configs[@]}"
+do
+    echo "Deploying cluster with configuration $config"
+    jq < "$config"
+    clusterName=$(jq -r '.cluster_name' < "$config")
 
-echo "Creating cluster \"$clusterName\" in Azure Databricks"
+    echo "Creating cluster \"$clusterName\" in Azure Databricks"
 
-currentClusterCount=$(curl -sS -X GET -H "$authHeader" -H "$adbSPMgmtToken" -H "$adbResourceId" \
-    "https://${adbWorkspaceUrl}/api/2.0/clusters/list" | \
-    jq "[ .clusters | .[]? | select(.cluster_name == \"${clusterName}\") ] | length")
-if [[ "$currentClusterCount" -gt "0" ]]; then
-    echo "Cluster \"$clusterName\" already exists in Azure Databricks, updating..."
-    clusterIdToUpdate=$(curl -sS -X GET -H "$authHeader" -H "$adbSPMgmtToken" -H "$adbResourceId" \
+    currentClusterCount=$(curl -sS -X GET -H "$authHeader" -H "$adbSPMgmtToken" -H "$adbResourceId" \
         "https://${adbWorkspaceUrl}/api/2.0/clusters/list" | \
-        jq -r "[ .clusters | .[] | select(.cluster_name == \"${clusterName}\") ][0].cluster_id")
+        jq "[ .clusters | .[]? | select(.cluster_name == \"${clusterName}\") ] | length")
+    if [[ "$currentClusterCount" -gt "0" ]]; then
+        echo "Cluster \"$clusterName\" already exists in Azure Databricks, updating..."
+        clusterIdToUpdate=$(curl -sS -X GET -H "$authHeader" -H "$adbSPMgmtToken" -H "$adbResourceId" \
+            "https://${adbWorkspaceUrl}/api/2.0/clusters/list" | \
+            jq -r "[ .clusters | .[] | select(.cluster_name == \"${clusterName}\") ][0].cluster_id")
 
-    echo "Updating cluster \"$clusterIdToUpdate\""
-    jq -r ".cluster_id = \"$clusterIdToUpdate\"" < "$CLUSTER_CONFIG" | \
-    curl -sS -X POST -H "$authHeader" -H "$adbSPMgmtToken" -H "$adbResourceId" \
-        --data-binary "@-" "https://${adbWorkspaceUrl}/api/2.0/clusters/edit" | \
-    jq
-    echo "Cluster \"$clusterName\" is being updated."
-else
-    curl -sS -X POST -H -H "$authHeader" -H "$adbSPMgmtToken" -H "$adbResourceId" \
-        --data-binary "@${CLUSTER_CONFIG}" "https://${adbWorkspaceUrl}/api/2.0/clusters/create" | \
-    jq
-    echo "Cluster \"$clusterName\" is being created."
-fi
+        echo "Updating cluster \"$clusterIdToUpdate\""
+        jq -r ".cluster_id = \"$clusterIdToUpdate\"" < "$config" | \
+        curl -sS -X POST -H "$authHeader" -H "$adbSPMgmtToken" -H "$adbResourceId" \
+            --data-binary "@-" "https://${adbWorkspaceUrl}/api/2.0/clusters/edit" | \
+        jq
+        echo "Cluster \"$clusterName\" is being updated."
+    else
+        curl -sS -X POST -H "$authHeader" -H "$adbSPMgmtToken" -H "$adbResourceId" \
+            --data-binary "@${config}" "https://${adbWorkspaceUrl}/api/2.0/clusters/create" | \
+        jq
+        echo "Cluster \"$clusterName\" is being created."
+    fi
+done
