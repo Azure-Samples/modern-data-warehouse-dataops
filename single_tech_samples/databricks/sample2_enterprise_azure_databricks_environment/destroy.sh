@@ -53,8 +53,6 @@ firewallName="${DEPLOYMENT_PREFIX}HubFW01"
 ipAddressName="${DEPLOYMENT_PREFIX}FWIP01"
 keyVaultPrivateEndpoint=$(az network private-endpoint list -g "$AZURE_RESOURCE_GROUP_NAME" --query "[?contains(@.name,'akv')].id" --output tsv)
 storageAccountPrivateEndpoint=$(az network private-endpoint list -g "$AZURE_RESOURCE_GROUP_NAME" --query "[?contains(@.name,'asa')].id" --output tsv)
-keyVaultPrivateEndpointNicName=$(az network nic list -g "$AZURE_RESOURCE_GROUP_NAME" --query "[?contains(@.name,'akv')].name")
-storageAccountPrivateEndpointNicName=$(az network nic list -g "$AZURE_RESOURCE_GROUP_NAME" --query "[?contains(@.name,'asa')].name")
 
 echo "Delete Resouce Group? $DELETE_RESOURCE_GROUP"
 
@@ -97,14 +95,6 @@ else
     az network private-endpoint delete --id "$storageAccountPrivateEndpoint" --output none
     echo "Successfully deleted Private Endpoint for Storage Account"
 
-    echo "Deleting Private Link NIC for Key Vault"
-    az network nic delete --name "$keyVaultPrivateEndpointNicName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
-    echo "Successfully deleted Private Link NIC for Key Vault"
-
-    echo "Deleting Private Link NIC for Storage Account"
-    az network nic delete --name "$storageAccountPrivateEndpointNicName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" #--output none
-    echo "Successfully deleted Private Link NIC for Storage Account"
-
     echo "Deleting Firewall..."
     az network firewall delete --name "$firewallName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
     echo "Successfully deleted Firewall"
@@ -129,12 +119,28 @@ else
     az network route-table delete --name "$routeTableName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
     echo "Successfully deleted Route table"
 
-    echo "Deleting Private DNS Zone for Key Vault"
-    az network private-dns zone delete --name "privatelink.vaultcore.azure.net" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --yes --output none --no-wait
-    echo "Successfully deleted DNS Zone for Key Vault"
+    echo "Deleting Private DNS Zone for Key Vault..."
+    counter=0
+    while :; do
+        az network private-dns zone delete --name "privatelink.vaultcore.azure.net" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --yes --output none &&
+            echo "Successfully deleted Private DNS Zone for Key Vault" && break ||
+            echo "Delete failed retrying ..."  && ((counter++)) && sleep 10
+        if [[ "$counter" == '3' ]]; then
+            echo "Failed deleting Private DNS Zone for Key Vault"
+            exit 1
+        fi
+    done
 
-    echo "Deleting Private DNS Zone Storage Account"
-    az network private-dns zone delete --name "privatelink.dfs.core.windows.net" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --yes --output none --no-wait
-    echo "Successfully deleted Private DNS Zone for Storage Account"
+    echo "Deleting Private DNS Zone for Storage Account..."
+    counter=0
+    while :; do
+        az network private-dns zone delete --name "privatelink.dfs.core.windows.net" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --yes --output none &&
+            echo "Successfully deleted Private DNS Zone for Storage Account" && break ||
+            echo "Delete failed retrying ..."  && ((counter++)) && sleep 10
+        if [[ "$counter" == '3' ]]; then
+            echo "Failed deleting Private DNS Zone for Storage Account"
+            exit 1
+        fi
+    done
 
 fi
