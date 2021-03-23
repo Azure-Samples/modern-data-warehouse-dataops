@@ -72,102 +72,153 @@ else
     echo "Firewall: $firewallName"
     echo "Public IP Address: $iPAddressName"
 
-    echo "Deleting ADB workspace..."
-    if ! az databricks workspace delete \
-        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+    echo "Validating ADB workspace..."
+    { az databricks workspace show \
         --name "$adbWorkspaceName" \
-        --yes  \
-        --debug 2>&1 >/dev/null | grep "Response status: 200"; then
-        echo "Deleting of ADB workspace failed."
-        exit 1
-    else
-        echo "Successfully deleted ADB workspace."
-    fi
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+        --output none \
+    && echo "$adbWorkspaceName was found."; } \
+    ||  { echo "$adbWorkspaceName was not found."; exit; }
+
+    echo "Deleting ADB workspace..."
+    { az databricks workspace delete \
+        --name "$adbWorkspaceName" \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+        --yes \
+    && echo "Successfully deleted ADB workspace."; } \
+    || { echo "Failed deleting ADB workspace."; exit 1; }
+
+
+    echo "Validating Key Vault..."
+    { az keyvault show \
+        --name "$keyVaultName" \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+        --output none \
+    && echo "$keyVaultName was found."; } \
+    || { echo "$keyVaultName was not found."; exit 1; }
 
     echo "Deleting Key Vault..."
-    if ! az keyvault delete \
-        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+    { az keyvault delete \
         --name "$keyVaultName" \
-        --debug 2>&1 >/dev/null | grep "Response status: 200" \
-    ||
-       ! az keyvault purge \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+    && \
+        az keyvault purge \
         --subscription "$AZURE_SUBSCRIPTION_ID" \
         --name "$keyVaultName" \
-        --output none; then
-        echo "Deleting of Key Vault failed."
-        exit 1
-    else
-        echo "Successfully deleted and purged Key Vault"
-    fi
+    && echo "Successfully deleted Storage Account."; } \
+    || { echo "Failed deleting Storage Account."; exit 1; }
+
+
+    echo "Validating Storage Account..."
+    { az storage account show \
+        --name "$storageAccountName" \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+        --output none \
+    && echo "$storageAccountName was found."; } \
+    || { echo "$storageAccountName was not found."; exit 1; }
 
     echo "Deleting Storage Account..."
-    if ! az storage account delete \
-        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+    { az storage account delete \
         --name "$storageAccountName" \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
         --yes \
-        --debug 2>&1 >/dev/null | grep "Response status: 200"; then
-        echo "Deleting of Azure Storage Account failed."
-        exit 1
-    else 
-        echo "Successfully deleted Storage Account."
-    fi
+    && echo "Successfully deleted Storage Account."; } \
+    || { echo "Failed deleting Storage Account."; exit 1; }
+
+
+    echo "Validating Firewall..."
+    { az network firewall show \
+        --name "$firewallName" \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+        --output none \
+    && echo "$firewallName was found."; } \
+    || { echo "$firewallName was not found."; exit 1; }
 
     echo "Deleting Firewall..."
-    az network firewall delete --name "$firewallName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
-    echo "Successfully deleted Firewall"
+    { az network firewall delete \
+        --name "$firewallName" \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+    && echo "Successfully deleted Firewall."; } \
+    || { echo "Failed deleting Firewall."; exit 1; }
+
+
+    echo "Validating Public-IP..."
+    { az network public-ip show \
+        --name "$iPAddressName" \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+        --output none \
+    && echo "$iPAddressName was found."; } \
+    || { echo "$iPAddressName was not found."; exit 1; }
 
     echo "Deleting Public-IP..."
-    if ! az network public-ip delete \
-        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+    { az network public-ip delete \
         --name "$iPAddressName" \
-        --debug 2>&1 >/dev/null | grep "Response status: 200"; then
-        echo "Deleting of Public-IP failed."
-        exit 1
-    else
-        echo "Successfully deleted Public-IP"
-    fi
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+    && echo "Successfully deleted Public-IP."; } \
+    || { echo "Failed deleting Public-IP."; exit 1; }
+
+
+    echo "Validating Spoke Virtual Network..."
+    { az network vnet show \
+        --name "$spokeVnetName" \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+        --output none \
+    && echo "$spokeVnetName was found."; } \
+    || { echo "$spokeVnetName was not found."; exit 1; }
 
     echo "Deleting Spoke Virtual Network..."
-    if ! az network vnet delete \
-        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+    { az network vnet delete \
         --name "$spokeVnetName" \
-        --debug 2>&1 >/dev/null | grep "Response status: 200"; then
-        echo "Deleting of Spoke Virtual Network failed."
-        exit 1
-    else
-        echo "Successfully deleted Spoke Virtual Network"
-    fi
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+    && echo "Successfully deleted Spoke Virtual Network."; } \
+    || { echo "Failed deleting Spoke Virtual Network."; exit 1; }
+
+
+    echo "Validating Hub Virtual Network..."
+    { az network vnet show \
+        --name "$hubVnetName" \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+        --output none \
+    && echo "$hubVnetName was found."; } \
+    || { echo "$hubVnetName was not found."; exit 1; }
 
     echo "Deleting Hub Virtual Network..."
-    if ! az network vnet delete \
-        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+    { az network vnet delete \
         --name "$hubVnetName" \
-        --debug 2>&1 >/dev/null | grep "Response status: 200"; then
-        echo "Deleting of Hub Virtual Network failed."
-        exit 1
-    else
-        echo "Successfully deleted Hub Virtual Network"
-    fi
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+    && echo "Successfully deleted Hub Virtual Network."; } \
+    || { echo "Failed deleting Hub Virtual Network."; exit 1; }
+
+
+    echo "Validating Network Security Group..."
+    { az network nsg show \
+        --name "$securityGroupName" \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+        --output none \
+    && echo "$securityGroupName was found."; } \
+    || { echo "$securityGroupName was not found."; exit 1; }
 
     echo "Deleting Network Security Group..."
-    if ! az network nsg delete \
-        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+    { az network nsg delete \
         --name "$securityGroupName" \
-        --debug 2>&1 >/dev/null | grep "Response status: 200"; then
-        echo "Deleting of Network Security Group failed."
-        exit 1
-    else
-        echo "Successfully deleted Network Security Group."
-    fi
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+    && echo "Successfully deleted Network Security Group."; } \
+    || { echo "Failed deleting Network Security Group."; exit 1; }
+
+    
+    echo "Validating Route table..."
+    { az network route-table show \
+        --name "$routeTableName" \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+        --output none \
+    && echo "$routeTableName was found."; } \
+    || { echo "$routeTableName was not found."; exit 1; }
 
     echo "Deleting Route table..."
-    if ! az network route-table delete \
-        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+    { az network route-table delete \
         --name "$routeTableName" \
-        --debug 2>&1 >/dev/null | grep "Response status: 200"; then
-        echo "Deleting of Route table failed."
-        exit 1
-    else
-        echo "Successfully deleted Route table"
-    fi
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+    && echo "Successfully deleted Route table."; } \
+    || { echo "Failed deleting Route table."; exit 1; }
+
 fi
