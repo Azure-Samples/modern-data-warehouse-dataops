@@ -88,7 +88,7 @@ else
         --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
         --yes \
     && echo "Successfully deleted ADB workspace."; } \
-    || { echo "Failed deleting ADB workspace."; exit 1; }
+    || { echo "Failed to delete ADB workspace."; exit 1; }
 
 
     echo "Validating Key Vault..."
@@ -125,7 +125,7 @@ else
         --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
         --yes \
     && echo "Successfully deleted Storage Account."; } \
-    || { echo "Failed deleting Storage Account."; exit 1; }
+    || { echo "Failed to delete Storage Account."; exit 1; }
 
 
     echo "Validating Firewall..."
@@ -149,7 +149,7 @@ else
         --name "$firewallName" \
         --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
     && echo "Successfully deleted Firewall."; } \
-    || { echo "Failed deleting Firewall."; exit 1; }
+    || { echo "Failed to delete Firewall."; exit 1; }
 
 
     echo "Validating Public-IP..."
@@ -165,7 +165,7 @@ else
         --name "$ipAddressName" \
         --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
     && echo "Successfully deleted Public-IP."; } \
-    || { echo "Failed deleting Public-IP."; exit 1; }
+    || { echo "Failed to delete Public-IP."; exit 1; }
 
 
     echo "Validating Spoke Virtual Network..."
@@ -181,7 +181,7 @@ else
         --name "$spokeVnetName" \
         --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
     && echo "Successfully deleted Spoke Virtual Network."; } \
-    || { echo "Failed deleting Spoke Virtual Network."; exit 1; }
+    || { echo "Failed to delete Spoke Virtual Network."; exit 1; }
 
 
     echo "Validating Hub Virtual Network..."
@@ -197,7 +197,7 @@ else
         --name "$hubVnetName" \
         --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
     && echo "Successfully deleted Hub Virtual Network."; } \
-    || { echo "Failed deleting Hub Virtual Network."; exit 1; }
+    || { echo "Failed to delete Hub Virtual Network."; exit 1; }
 
 
     echo "Validating Network Security Group..."
@@ -213,7 +213,7 @@ else
         --name "$securityGroupName" \
         --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
     && echo "Successfully deleted Network Security Group."; } \
-    || { echo "Failed deleting Network Security Group."; exit 1; }
+    || { echo "Failed to delete Network Security Group."; exit 1; }
 
     
     echo "Validating Route table..."
@@ -229,9 +229,17 @@ else
         --name "$routeTableName" \
         --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
     && echo "Successfully deleted Route table."; } \
-    || { echo "Failed deleting Route table."; exit 1; }
+    || { echo "Failed to delete Route table."; exit 1; }
 
-    
+
+    echo "Validating Private DNS Zone for Key Vault..."
+    { az network private-dns zone show \
+        --name "privatelink.vaultcore.azure.net" \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+        --output none \
+    && echo "privatelink.vaultcore.azure.net was found."; } \
+    || { echo "privatelink.vaultcore.azure.net was not found."; exit 1; }
+
     echo "Deleting Private DNS Zone for Key Vault..."
     counter=0
     while :; do
@@ -239,10 +247,19 @@ else
             echo "Successfully deleted Private DNS Zone for Key Vault" && break ||
             echo "Delete failed retrying ..."  && ((counter++)) && sleep 10
         if [[ "$counter" == '3' ]]; then
-            echo "Failed deleting Private DNS Zone for Key Vault"
+            echo "Failed to delete Private DNS Zone for Key Vault"
             exit 1
         fi
     done
+
+
+    echo "Validating Private DNS Zone for Storage Account..."
+    { az network private-dns zone show \
+        --name "privatelink.dfs.core.windows.net" \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+        --output none \
+    && echo "privatelink.dfs.core.windows.net was found."; } \
+    || { echo "privatelink.dfs.core.windows.net was not found."; exit 1; }
 
     echo "Deleting Private DNS Zone for Storage Account..."
     counter=0
@@ -251,7 +268,7 @@ else
             echo "Successfully deleted Private DNS Zone for Storage Account" && break ||
             echo "Delete failed retrying ..."  && ((counter++)) && sleep 10
         if [[ "$counter" == '3' ]]; then
-            echo "Failed deleting Private DNS Zone for Storage Account"
+            echo "Failed to delete Private DNS Zone for Storage Account"
             exit 1
         fi
     done
