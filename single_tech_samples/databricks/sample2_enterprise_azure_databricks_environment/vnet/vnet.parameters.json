@@ -13,6 +13,9 @@
     },
     "vnetLocation": {
       "value": "eastus"
+    },
+    "routeTableName": {
+      "value": "routeTableName"
     }
   }
 }

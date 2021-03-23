@@ -23,7 +23,7 @@
 		"foxundermoon.shell-format",
 		"ms-azuretools.vscode-docker"
 	],
-	"postCreateCommand": "az extension add --name databricks --yes --output none",
+	"postCreateCommand": "az extension add --name databricks --yes --output none && az extension add --name azure-firewall --yes --output none",
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 	// Uncomment to use the Docker CLI from inside the container. See https://aka.ms/vscode-remote/samples/docker-from-docker.
