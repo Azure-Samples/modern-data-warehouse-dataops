@@ -7,5 +7,5 @@ configs = {
 
 # COMMAND ----------
 
-df = spark.read.json("abfss://sample-container@${DEPLOYMENT_PREFIX}asa01.dfs.core.windows.net/MyData.csv")
+df = spark.read.json("abfss://sample-container@${DEPLOYMENT_PREFIX}asa01.dfs.core.windows.net/sample-data.us-population.json")
 display(df)
