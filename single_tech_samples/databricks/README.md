@@ -26,7 +26,7 @@ The latest documentation on this services can be found [here](https://docs.micro
 Following is the list of samples associated with automating the deployment of Azure Databricks Service:
 
 1. [Basic deployment of an Azure Databricks environment using ARM templates](sample1_basic_azure_databricks_environment/README.md)
-2. [Enterprise grade deployment of Azure DAtabricks environment aligning to Data Exfiltration Protection Reference Architecture](sample2_enterprise_azure_databricks_environment/README.md)
+2. [Enterprise grade deployment of Azure Databricks environment aligning to Data Exfiltration Protection Reference Architecture](sample2_enterprise_azure_databricks_environment/README.md)
 3. [Cluster provisioning and enabling data access on a pre-provisioned Azure Databricks Workspace](sample3_cluster_provisioning_and_data_access/README.md)
 
 ----------------------- ------------------------------------
