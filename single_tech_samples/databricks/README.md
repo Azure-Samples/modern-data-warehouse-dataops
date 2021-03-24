@@ -20,7 +20,3 @@ Following is the list of samples associated with automating the deployment of Az
 ----------------------- ------------------------------------
 **_NOTE:_**  These samples are built using a selection of programing languages and services which is well adopted by the enterprise customers. Developers can leverage other technologies to achieve the same objective. Please refer to the [documentation]("https://docs.microsoft.com/en-us/azure/databricks/") for further details on the supported technologies.
 ----------------------- ------------------------------------
-
-## Contributing
-
-Please refer to the [contribution guide](https://github.com/Azure-Samples/modern-data-warehouse-dataops) published at the root level of this repository.
