@@ -126,9 +126,10 @@ else
     fi
 
     echo "Validating Private Endpoint for Key Vault"
-    if az network private-endpoint show \
+    keyVaultPrivateEndpointValidation=$(az network private-endpoint show \
         --id "$keyVaultPrivateEndpoint" \
-        --output none; then
+        --output none)
+    if [ -n "$keyVaultPrivateEndpoint" ] && [ "$keyVaultPrivateEndpointValidation" ]; then
         echo "Deleting Private Endpoint for Key Vault"
         { az network private-endpoint delete \
             --id "$keyVaultPrivateEndpoint" \
@@ -140,9 +141,10 @@ else
     fi
 
     echo "Validating Private Endpoint for Storage Account"
-    if az network private-endpoint show \
+    storageAccountPrivateEndpointValidation=$(az network private-endpoint show \
         --id "$storageAccountPrivateEndpoint" \
-        --output none; then
+        --output none)
+    if [ -n "$storageAccountPrivateEndpoint" ] && [ "$storageAccountPrivateEndpointValidation" ]; then
         echo "Deleting Private Endpoint for Storage Account"
         { az network private-endpoint delete \
             --id "$storageAccountPrivateEndpoint" \
