@@ -19,7 +19,8 @@ if [[ -z "$AZURE_RESOURCE_GROUP_NAME" ]]; then
 fi
 if [[ -z "$AZURE_RESOURCE_GROUP_LOCATION" ]]; then
     echo "No Azure resource group [AZURE_RESOURCE_GROUP_LOCATION] specified."
-    exit 1
+    echo "Default location will be set to -> westus"
+    AZURE_RESOURCE_GROUP_LOCATION="westus"
 fi
 
 # Variables for each resource
@@ -56,6 +57,18 @@ routeTableName="${DEPLOYMENT_PREFIX}FWRT01"
 firewallName="${DEPLOYMENT_PREFIX}HubFW01"
 iPAddressName="${DEPLOYMENT_PREFIX}FWIP01"
 firewalllocation="$AZURE_RESOURCE_GROUP_LOCATION"
+# default IPs for westus region
+firewallWebappDestinationAddresses="[
+    \"40.118.174.12/32\",
+    \"20.42.129.160/32\"
+]"
+firewallControlPlaneDestinationAddresses="[
+    \"40.83.178.242/32\",
+    \"20.42.129.161/32\"
+]"
+firewallSccRelayDestinationFqdns="[
+    \"tunnel.westus.azuredatabricks.net\"
+]"
 
 scopeName="storage_scope"
 
@@ -137,6 +150,9 @@ if ! az deployment group validate \
         publicIpAddressName="$iPAddressName" \
         firewalllocation="$firewalllocation" \
         vnetName="$hubVnetName" \
+        firewallWebappDestinationAddresses="$firewallWebappDestinationAddresses" \
+        firewallControlPlaneDestinationAddresses="$firewallControlPlaneDestinationAddresses" \
+        firewallSccRelayDestinationFqdns="$firewallSccRelayDestinationFqdns" \
     --output none; then
     echo "Validation error for Firewall, please see the error above."
     exit 1
@@ -194,6 +210,7 @@ if
             keyvaultName="$keyVaultName" \
             vnetName="$spokeVnetName" \
             privateLinkSubnetId="somelinkresource" \
+            privateLinkLocation="$AZURE_RESOURCE_GROUP_LOCATION" \
         --output none
 then
     echo "Validation error for Azure Key Vault Privatelink, please see the error above."
@@ -230,6 +247,7 @@ if
             targetSubResource="dfs" \
             vnetName="$spokeVnetName" \
             privateLinkSubnetId="somelinkresource" \
+            privateLinkLocation="$AZURE_RESOURCE_GROUP_LOCATION" \
         --output none
 then
     echo "Validation error for Azure Storage Account Privatelink, please see the error above."
@@ -293,6 +311,9 @@ afwArmOutput=$(az deployment group create \
         publicIpAddressName="$iPAddressName" \
         firewalllocation="$firewalllocation" \
         vnetName="$hubVnetName" \
+        firewallWebappDestinationAddresses="$firewallWebappDestinationAddresses" \
+        firewallControlPlaneDestinationAddresses="$firewallControlPlaneDestinationAddresses" \
+        firewallSccRelayDestinationFqdns="$firewallSccRelayDestinationFqdns" \
     --output json)
 
 if [[ -z $afwArmOutput ]]; then
@@ -362,6 +383,7 @@ if
             targetSubResource="dfs" \
             vnetName="$spokeVnetName" \
             privateLinkSubnetId="$(echo "$vnetArmOutput" | jq -r '.properties.outputs.privatelinksubnet_id.value')" \
+            privateLinkLocation="$AZURE_RESOURCE_GROUP_LOCATION" \
         --output none
 then
     echo "Deployment of Azure Storage Account failed, please see the error above."
@@ -417,6 +439,7 @@ if
             keyvaultName="$keyVaultName" \
             vnetName="$spokeVnetName" \
             privateLinkSubnetId="$(echo "$vnetArmOutput" | jq -r '.properties.outputs.privatelinksubnet_id.value')" \
+            privateLinkLocation="$AZURE_RESOURCE_GROUP_LOCATION" \
         --output none
 then
     echo "Deployment of Keyvault Private Link failed, please see the error above."

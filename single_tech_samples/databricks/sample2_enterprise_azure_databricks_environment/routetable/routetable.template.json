@@ -4,7 +4,7 @@
     "parameters": {
         "reouteTablelocation": {
             "type": "string",
-            "defaultValue": "australiaeast",
+            "defaultValue": "[resourceGroup().location]",
             "metadata": {
                 "description": "Azure datacentre Location to deploy the Firewall and IP Address"
             }

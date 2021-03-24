@@ -4,7 +4,7 @@
     "parameters": {
         "firewalllocation": {
             "type": "string",
-            "defaultValue": "australiaeast",
+            "defaultValue": "[resourceGroup().location]",
             "metadata": {
                 "description": "Azure datacentre Location to deploy the Firewall and IP Address"
             }
@@ -35,6 +35,18 @@
             "metadata": {
                 "description": "Name of the vnet associated witht he Firewall"
             }
+        },
+        "firewallWebappDestinationAddresses": {
+            "type": "array",
+            "defaultValue": []
+        },
+        "firewallControlPlaneDestinationAddresses": {
+            "type": "array",
+            "defaultValue": []
+        },
+        "firewallSccRelayDestinationFqdns": {
+            "type": "array",
+            "defaultValue": []
         }
     },
     "variables": {
@@ -78,7 +90,7 @@
                 ],
                 "sku": {
                     "tier": "[parameters('firewallSKU')]"
-                },                
+                },
                 "threatIntelMode": "Alert",
                 "additionalProperties": {
                     "Network.DNS.EnableProxy": "true"
@@ -100,9 +112,7 @@
                                     "sourceAddresses": [
                                         "*"
                                     ],
-                                    "destinationAddresses": [
-                                        "13.75.218.172/32"
-                                    ],
+                                    "destinationAddresses": "[parameters('firewallWebappDestinationAddresses')]",
                                     "sourceIpGroups": [],
                                     "destinationIpGroups": [],
                                     "destinationFqdns": [],
@@ -118,9 +128,7 @@
                                     "sourceAddresses": [
                                         "*"
                                     ],
-                                    "destinationAddresses": [
-                                        "13.70.105.50/32"
-                                    ],
+                                    "destinationAddresses": "[parameters('firewallControlPlaneDestinationAddresses')]",
                                     "sourceIpGroups": [],
                                     "destinationIpGroups": [],
                                     "destinationFqdns": [],
@@ -157,9 +165,7 @@
                                     "destinationAddresses": [],
                                     "sourceIpGroups": [],
                                     "destinationIpGroups": [],
-                                    "destinationFqdns": [
-                                        "tunnel.australiaeast.azuredatabricks.net"
-                                    ],
+                                    "destinationFqdns": "[parameters('firewallSccRelayDestinationFqdns')]",
                                     "destinationPorts": [
                                         "*"
                                     ]

@@ -12,7 +12,7 @@
             "value": "Standard"
         },
         "storageAccountLocation": {
-            "value": "australiaeast"
+            "value": "westus"
         },
         "encryptionEnabled": {
             "value": true

@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "storageAccountName": {
-            "value": "adbstoragetest1" 
+            "value": "adbstoragetest1"
         },
         "storageAccountSku": {
             "value": "Standard_LRS"
@@ -12,7 +12,7 @@
             "value": "Standard"
         },
         "storageAccountLocation": {
-            "value": "australiaeast" 
+            "value": "westus"
         },
         "encryptionEnabled": {
             "value": true
