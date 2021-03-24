@@ -1,12 +1,16 @@
 # Databricks notebook source
+dbutils.fs.refreshMounts()
 dbutils.fs.mounts()
 
 # COMMAND ----------
 
-dbutils.fs.mount(
-  source = "wasbs://sample-container@${DEPLOYMENT_PREFIX}asa01.blob.core.windows.net",
-  mount_point = "/mnt/sample-container",
-  extra_configs = {"fs.azure.account.key.${DEPLOYMENT_PREFIX}asa01.blob.core.windows.net":dbutils.secrets.get(scope = "storage_scope", key = "storage_account_key1")})
+if "/mnt/sample-container" not in list(map(lambda mnt: mnt.mountPoint, dbutils.fs.mounts())):
+  dbutils.fs.mount(
+    source = "wasbs://sample-container@${DEPLOYMENT_PREFIX}asa01.blob.core.windows.net",
+    mount_point = "/mnt/sample-container",
+    extra_configs = {"fs.azure.account.key.${DEPLOYMENT_PREFIX}asa01.blob.core.windows.net":dbutils.secrets.get(scope = "storage_scope", key = "StorageAccountKey1")})
+dbutils.fs.refreshMounts()
+dbutils.fs.mounts()
 
 # COMMAND ----------
 
