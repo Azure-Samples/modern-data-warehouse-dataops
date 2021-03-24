@@ -3,12 +3,12 @@
   "spark_version": "7.3.x-scala2.12",
   "node_type_id": "Standard_D3_v2",
   "spark_conf": {
-    "spark.speculation": true,
     "spark.databricks.cluster.profile": "serverless",
-    "spark.databricks.repl.allowedLanguages": "sql,python,r"
-  },
-  "custom_tags": {
-    "ResourceClass": "Serverless"
+    "spark.speculation": "true",
+    "spark.databricks.delta.preview.enabled": "true",
+    "spark.databricks.repl.allowedLanguages": "python,sql",
+    "spark.databricks.passthrough.enabled": "true",
+    "spark.databricks.pyspark.enableProcessIsolation": "true"
   },
   "autotermination_minutes": 60,
   "num_workers": 2

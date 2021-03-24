@@ -1,0 +1,27 @@
+# Databricks notebook source
+mount_point = "/mnt/sample-container-via-account-key"
+
+configs = {
+  "fs.azure.account.key.${DEPLOYMENT_PREFIX}asa01.blob.core.windows.net": dbutils.secrets.get(scope = "storage_scope", key = "StorageAccountKey1")
+}
+
+dbutils.fs.refreshMounts()
+dbutils.fs.mounts()
+
+# COMMAND ----------
+
+if mount_point in list(map(lambda mnt: mnt.mountPoint, dbutils.fs.mounts())):
+  dbutils.fs.unmount(mount_point)
+
+dbutils.fs.mount(
+  source = "wasbs://sample-container@${DEPLOYMENT_PREFIX}asa01.blob.core.windows.net",
+  mount_point = mount_point,
+  extra_configs = configs)
+
+dbutils.fs.refreshMounts()
+dbutils.fs.mounts()
+
+# COMMAND ----------
+
+df = spark.read.json(mount_point + "/sample-data.us-population.json")
+display(df)
