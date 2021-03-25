@@ -40,7 +40,7 @@ if [[ "$containerExists" == "false" ]]; then
 fi
 echo "Uploading file ./$sampleDataFile"
 az storage blob upload --account-name "$storageAccountName" --account-key "$storageAccountKey" --container-name "$storageAccountContainerName" \
-    --file "./$sampleDataFile" --name "$sampleDataFile"
+    --file "./$sampleDataFile" --name "$sampleDataFile" --output none
 
 # Assign Storage Blob Data Contributor role to the current account
 storageAccountID=$(az storage account show --name "$storageAccountName" --query id --output tsv)
