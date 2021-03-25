@@ -60,16 +60,54 @@ else
     echo "Key Vault: $keyVaultName"
     echo "Storage Account: $storageAccountName"
 
-    echo "Deleting ADB workspace..."
-    az databricks workspace delete --name "$adbWorkspaceName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --yes --output none
-    echo "Deleted ADB workspace successfully"
+    echo "Validating ADB workspace..."
+    if az databricks workspace show \
+        --name "$adbWorkspaceName" \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+        --output none; then
+        echo "Deleting ADB workspace..."
+        { az databricks workspace delete \
+            --name "$adbWorkspaceName" \
+            --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+            --yes \
+        && echo "Successfully deleted ADB workspace."; } \
+        || { echo "Failed to delete ADB workspace."; exit 1; }
+    else
+        echo "$adbWorkspaceName was not found."
+    fi
 
-    echo "Deleting Key Vault..."
-    az keyvault delete --name "$keyVaultName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
-    az keyvault purge --subscription "$AZURE_SUBSCRIPTION_ID" -n "$keyVaultName" --output none
-    echo "Deleted and purged Key Vault successfully"
+    echo "Validating Key Vault..."
+    if az keyvault show \
+        --name "$keyVaultName" \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+        --output none; then
+        echo "Deleting Key Vault..."
+        { az keyvault delete \
+            --name "$keyVaultName" \
+            --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+        && \
+            az keyvault purge \
+                --subscription "$AZURE_SUBSCRIPTION_ID" \
+                --name "$keyVaultName" \
+        && echo "Successfully deleted and purged Key Vault."; } \
+        || { echo "Failed to delete and purge Key Vault."; exit 1; }
+    else
+        echo "$keyVaultName was not found."
+    fi
 
-    echo "Deleting Storage Account..."
-    az storage account delete --name "$storageAccountName" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --yes --output none
-    echo "Successfully deleted storage account"
+    echo "Validating Storage Account..."
+    if az storage account show \
+        --name "$storageAccountName" \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+        --output none; then
+        echo "Deleting Storage Account..."
+        { az storage account delete \
+            --name "$storageAccountName" \
+            --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+            --yes \
+        && echo "Successfully deleted Storage Account."; } \
+        || { echo "Failed to delete Storage Account."; exit 1; }
+    else
+        echo "$storageAccountName was not found."
+    fi
 fi
