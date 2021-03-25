@@ -34,13 +34,11 @@ az login
 
 And follow the prompts to complete your login process.
 
-### 01.upload-sample-data.sh
+### deploy.sh
 
-Run:
+You can run ./deploy.sh to start the deployment process in the below steps.
 
-```
-./01.upload-sample-data.sh
-```
+#### upload-sample-data.sh
 
 This step will create a new container `$storageAccountContainerName` in your storage account,
 and upload the sample data file `sample-data.us-population.json` into the container.
@@ -49,39 +47,21 @@ It will then add your current account as a "Storage Blob Data Contributor" to th
 account, which will allow you to access storage account later using AD credential passthrough.
 Without this step you will get an unauthorized error when trying to read the mount point.
 
-### 05.deploy-default-and-hc-clusters.sh
-
-Run:
-
-```
-./05.deploy-default-and-hc-clusters.sh
-```
+#### deploy-default-and-hc-clusters.sh
 
 This step will create two clusters using the Azure Databricks RESTful API and the JSON files
 located in the sample directory. One of the cluster is a basic cluster, while the other one
 is a high-concurrency cluster. You would need the high-concurrency cluster for AD passthrough
 configuration, and you also need a Premium Databricks workspace.
 
-### 10.configure-databricks-cli.sh
-
-Run:
-
-```
-./10.configure-databricks-cli.sh
-```
+#### configure-databricks-cli.sh
 
 This step will create a file `~/.databirckscfg` with a newly fetched AD Token and the hostname
 of your Databricks workspace. This will allow you to start to use the command `databricks` in the
 future steps. Note that this token expires very quickly (probably around 30 minutes), so you
 may want to run this step again if you are around for longer.
 
-### 15.import-data-access-notebooks.sh
-
-Run:
-
-```
-./15.import-data-access-notebooks.sh
-```
+#### import-data-access-notebooks.sh
 
 This step will upload the two `.ipy` files into the root level of your Databricks workspace.
 Note that there's a search-replace performed in the template before it is uploaded, which will
