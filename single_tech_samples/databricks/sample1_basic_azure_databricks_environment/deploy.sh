@@ -19,7 +19,8 @@ if [[ -z "$AZURE_RESOURCE_GROUP_NAME" ]]; then
 fi
 if [[ -z "$AZURE_RESOURCE_GROUP_LOCATION" ]]; then
     echo "No Azure resource group [AZURE_RESOURCE_GROUP_LOCATION] specified."
-    exit 1
+    echo "Default location will be set to -> westus"
+    AZURE_RESOURCE_GROUP_LOCATION="westus"
 fi
 
 # Login to Azure and select the subscription

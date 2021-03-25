@@ -6,7 +6,7 @@
       "value": "samplewsname"
     },
     "adbWorkspaceLocation": {
-      "value": "eastus"
+      "value": "westus"
     },
     "adbWorkspaceSkuTier": {
       "value": "standard"

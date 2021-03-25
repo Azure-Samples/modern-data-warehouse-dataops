@@ -16,6 +16,9 @@
     },
     "vnetName": {
       "value": "juan2vnet01"
+    },
+    "privateLinkLocation": {
+      "value": "westus"
     }
   }
 }

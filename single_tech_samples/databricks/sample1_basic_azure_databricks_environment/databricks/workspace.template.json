@@ -69,7 +69,7 @@
       "type": "string"
     },
     "databricks_location": {
-      "value": "[resourceGroup().location]",
+      "value": "[parameters('adbWorkspaceLocation')]",
       "type": "string"
     },
     "databricks_workspace_id": {
