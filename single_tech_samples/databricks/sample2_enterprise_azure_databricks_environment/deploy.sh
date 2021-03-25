@@ -425,7 +425,7 @@ az keyvault secret set -n "StorageAccountKey1" --vault-name "$keyVaultName" --va
 az keyvault secret set -n "StorageAccountKey2" --vault-name "$keyVaultName" --value "$storageAccountKey2" --output none
 echo "Successfully stored secrets StorageAccountKey1 and StorageAccountKey2"
 echo "Removing local IP into ACL while storing secrets ...."
-az keyvault network-rule remove --resource-group "$AZURE_RESOURCE_GROUP_NAME" --name "$keyVaultName" --ip-address "$(curl ifconfig.me)" --output none
+az keyvault network-rule remove --resource-group "$AZURE_RESOURCE_GROUP_NAME" --name "$keyVaultName" --ip-address "$(curl ifconfig.me)/32" --output none
 echo "Removed"
 
 echo "Deploying Keyvault Private Link..."
