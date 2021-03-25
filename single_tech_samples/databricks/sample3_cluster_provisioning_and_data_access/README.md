@@ -75,3 +75,11 @@ you will get an error saying you cannot mount the storage account.
 ## Clean-up
 
 To clean up the resources, go back to the sample1 and run `./destroy.sh`.
+
+## Run sample with Sample 2 (enterprise Azure Databricks environment)
+
+If you want to run this sample with a more restrictive network settings like in the Sample 2,
+you would need to add your IP address to the Storage Account firewall prior to the deployment.
+
+You can do it in the Azure Portal by going to "Networking" -> "Firewalls and virtual networks"
+and tick "Add your client IP address", or use the command `az storage account network-rule add ...`.
