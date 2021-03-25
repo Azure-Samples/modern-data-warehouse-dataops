@@ -36,7 +36,7 @@ storageAccountKey=$(echo "$storageKeys" | jq -r '.[0].value')
 containerExists=$(az storage container exists --account-name "$storageAccountName" --account-key "$storageAccountKey" --name "$storageAccountContainerName" | jq -r '.exists')
 if [[ "$containerExists" == "false" ]]; then
     echo "Container $storageAccountContainerName does not existing and will be created."
-    az storage container create --account-name "$storageAccountName" --account-key "$storageAccountKey" --name "$storageAccountContainerName" 
+    az storage container create --account-name "$storageAccountName" --account-key "$storageAccountKey" --name "$storageAccountContainerName" --output none
 fi
 echo "Uploading file ./$sampleDataFile"
 az storage blob upload --account-name "$storageAccountName" --account-key "$storageAccountKey" --container-name "$storageAccountContainerName" \
