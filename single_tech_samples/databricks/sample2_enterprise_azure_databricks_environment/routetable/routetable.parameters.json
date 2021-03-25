@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "reouteTablelocation": {
-            "value": "australiaeast"
+            "value": "westus"
         },
         "routeTableName": {
             "value": "adbHubRT"

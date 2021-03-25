@@ -9,7 +9,7 @@
       "value": "Standard"
     },
     "keyVaultLocation": {
-      "value": "eastus"
+      "value": "westus"
     },
     "enabledForDeployment": {
       "value": false
