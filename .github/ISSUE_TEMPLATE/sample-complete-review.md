@@ -38,8 +38,6 @@ Add user story or References #issue
 - [ ] CD completes successfully
 - [ ] Smoke test deployed for 48 hours
 
-Engineering Playbook [Definition of Done](https://github.com/microsoft/code-with-engineering-playbook/blob/master/agile-development/team-agreements/definition-of-done/readme.md)
-
 ## Next Steps
 
 - [ ] Release template created

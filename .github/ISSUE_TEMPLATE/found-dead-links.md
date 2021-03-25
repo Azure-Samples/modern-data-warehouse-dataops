@@ -7,4 +7,4 @@ assignees: ''
 
 ---
 
-To find the dead links, please review the [GitHub Actions logs](https://github.com/jsburckhardt/github-rocks-with-adrian/actions/workflows/documentation.yml)
+To find the dead links, please review the [GitHub Actions logs](https://github.com/Azure-Samples/modern-data-warehouse-dataops/actions/workflows/documentation.yml)
