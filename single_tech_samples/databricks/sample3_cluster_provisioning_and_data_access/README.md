@@ -2,15 +2,16 @@
 
 In this sample we are doing a few things:
 
-1. Upload some sample data into a newly created container
-1. Adding the logged in account as a Storage Blob Data Contributor to enable passthrough access
-1. Deploy a default Databricks cluster and a High-Concurrency Databricks cluster
-1. Accessing data using the default cluster by mounting the Data Lake using the Account Key
-1. Accessing data using the high-concurrency cluster by mounting the Data Lake using AD Credential Passthrough
+- Upload some sample data into a newly created container
+- Adding the logged in account as a Storage Blob Data Contributor to enable passthrough access
+- Deploy a default Databricks cluster and a High-Concurrency Databricks cluster
+- Accessing data using the default cluster by mounting the Data Lake using the Account Key
+- Accessing data using the high-concurrency cluster by mounting the Data Lake using AD Credential Passthrough
 
 ## Prerequisites
 
 * You need to have already deployed the Databricks workspace using sample1
+* You need to have rights to assign account roles to the storage account
 
 ## Step-by-step Deployment
 
