@@ -29,7 +29,7 @@ In [sample 1](../sample1_basic_azure_databricks_environment), we focused on depl
 
 In this sample we focus on hardening the security around the Azure Databricks environment by implementing the following:
 
-1. [Azure Virtual Network](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview) - To achieve network isolation  
+1. [Azure Virtual Network](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview) - To achieve network isolation . 
 
 2. [Hub and Spoke Network topology](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/hybrid-networking/hub-spoke?tabs=cli)  - To implement [Perimeter networks](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/perimeter-networks).
 
@@ -37,7 +37,7 @@ In this sample we focus on hardening the security around the Azure Databricks en
 
 This sample is also aligned to the implementation pattern published by Databricks around [Data Exfiltration Protection with Azure Databricks](https://databricks.com/blog/2020/03/27/data-exfiltration-protection-with-azure-databricks.html).
 
-The sample implements automating the provisioning of the required services and configurations using the [Infrastructure as Code](https://docs.microsoft.com/en-us/dotnet/architecture/cloud-native/infrastructure-as-code) pattern
+The sample implements automating the provisioning of the required services and configurations using the [Infrastructure as Code](https://docs.microsoft.com/en-us/dotnet/architecture/cloud-native/infrastructure-as-code) pattern.
 
 ### 1.1. Scope
 
@@ -45,13 +45,13 @@ The following list captures the scope of this sample:
 
 1. Provision an enterprise-grade, secure, Azure Databricks environment using ARM templates orchestrated by a shell script.
 1. The following services will be provisioned as a part of this setup:
-   1. Azure Databricks Workspace configured to have no public IPs ([NPIP](https://docs.microsoft.com/en-us/azure/databricks/security/secure-cluster-connectivity)) deployed within an Azure Spoke Vnet.
+   1. Azure Databricks Data Plane configured to have no public IPs ([NPIP](https://docs.microsoft.com/en-us/azure/databricks/security/secure-cluster-connectivity)) deployed within an Azure Spoke Vnet.
    2. Azure Hub Vnet peered with the spoke Vnet.
    3. Azure firewall deployed into the hub Vnet configured to allow traffic only from the Azure Databricks Control plane as per IP routes published [here](https://docs.microsoft.com/en-us/azure/databricks/administration-guide/cloud-configurations/azure/udr).
    4. Azure Public Ip for the Firewall.
-   5. Azure Routing tables with routes configured to enforce regulation of traffic through the firewall.
-   6. Azure Storage account with hierarchical namespace enabled to support ABFS accessible via Azure private link
-   7. Azure key vault to store secrets and access tokens accessible via Azure private link
+   5. Azure Routing tables with UDR (User Defined Routes) configured to enforce regulation of traffic through the firewall.
+   6. Azure Data Lake Gen2 storage ABFS endpoint accessible only via Azure Private Link.
+   7. Azure key vault to store secrets and access tokens accessible via Azure private link.
 
 Details about [how to use this sample](#3-how-to-use-this-sample) can be found in the later sections of this document.
 
@@ -97,21 +97,21 @@ This section highlights key pointers to align the services deployed in this samp
 
 1. Before the deployment, use the [Azure pricing calculator](https://azure.microsoft.com/en-us/pricing/calculator/) to determine the expected usage cost.
 
-2. Appropriately select the [Storage redundancy](https://docs.microsoft.com/en-us/azure/storage/common/storage-redundancy) option
+2. Appropriately select the [Storage redundancy](https://docs.microsoft.com/en-us/azure/storage/common/storage-redundancy) option.
 
-3. Leverage [Azure Cost Management and Billing](https://azure.microsoft.com/en-us/services/cost-management/) to track usage cost of the Azure Databricks and Storage services
+3. Leverage [Azure Cost Management and Billing](https://azure.microsoft.com/en-us/services/cost-management/) to track usage cost of the Azure Databricks and Storage services.
 
-4. Use [Azure Advisor](https://azure.microsoft.com/en-us/services/advisor/) to optimize deployments by leveraging the smart insights
+4. Use [Azure Advisor](https://azure.microsoft.com/en-us/services/advisor/) to optimize deployments by leveraging the smart insights.
 
-5. Use [Azure Policies](https://azure.microsoft.com/en-us/services/azure-policy/) to define guardrails around deployment constraints to regulate the cost
+5. Use [Azure Policies](https://azure.microsoft.com/en-us/services/azure-policy/) to define guardrails around deployment constraints to regulate the cost.
 
 ### 2.2. Operational Excellence
 
-1. Ensure that the parameters passed to the deployment scripts are validated
+1. Ensure that the parameters passed to the deployment scripts are validated.
 
 1. Leverage parallel resource deployment where ever possible. In the scope of this sample, all three resources can be deployed in parallel.
 
-1. Validate compensation transactions for the deployment workflow.
+1. Validate compensation transactions for the deployment workflow to reverse partially provisioned resources if the provisioning fails.
 
 ### 2.3. Performance Efficiency
 
@@ -123,9 +123,9 @@ This section highlights key pointers to align the services deployed in this samp
 
 1. Define the availability requirements before the deployment and configure the storage and databricks service accordingly.
 
-2. Ensure required capacity and services are available in targeted regions
+2. Ensure required capacity and services are available in targeted regions.
 
-3. Test the compensation transaction logic by explicitly failing a service deployment
+3. Test the compensation transaction logic by explicitly failing a service deployment.
 
 ### 2.5. Security
 
@@ -135,7 +135,7 @@ This section highlights key pointers to align the services deployed in this samp
 
 3. Automate the execution of the deployment script and restrict the privileges to service accounts.
 
-4. Integrate with the secure identity provider (Azure Active Directory)
+4. Integrate with the secure identity provider (Azure Active Directory).
 
 ## 3. How to use this sample
 
@@ -174,11 +174,11 @@ Below listed are the steps to deploy this sample :
 
 1. The sample depends on the following environment variables to be set before the deployment script is run:
   
-    > - `DEPLOYMENT_PREFIX` - Prefix for the resource names which will be created as a part of this deployment
+    > - `DEPLOYMENT_PREFIX` - Prefix for the resource names which will be created as a part of this deployment.
     > - `AZURE_SUBSCRIPTION_ID` - Subscription ID of the Azure subscription where the resources should be deployed.
-    > - `AZURE_RESOURCE_GROUP_NAME` - Name of the containing resource group
-    > - `AZURE_RESOURCE_GROUP_LOCATION` - Azure region where the resources will be deployed. (e.g. australiaeast, eastus, etc.)
-    > - `DELETE_RESOURCE_GROUP` - Flag to indicate the cleanup step for the resource group
+    > - `AZURE_RESOURCE_GROUP_NAME` - Name of the containing resource group.
+    > - `AZURE_RESOURCE_GROUP_LOCATION` - Azure region where the resources will be deployed. (e.g. australiaeast, eastus, etc.).
+    > - `DELETE_RESOURCE_GROUP` - Flag to indicate the cleanup step for the resource group.
 
 1. Run '/deploy.sh'
    > Note: The script will prompt you to log in to the Azure account for authorization to deploy resources.
@@ -245,18 +245,16 @@ The following steps can be performed to validate the correct deployment of this 
 
 1. Users with appropriate access rights should be able to:
 
-   1. launch the workspace from the Azure portal.
+   1. Launch the workspace from the Azure portal.
    2. Access the control plane for the storage account and key vault through the Azure portal.
-   3. View the secrets configured in the Azure Key vault
+   3. View the secrets configured in the Azure Key vault.
    4. View deployment logs in the Azure resource group
-   ![alt text](../Common_Assets/Images/ADE_Deployment_Logs.png "Logo Title Text 1")
-   5. Key vault and storage is not accessible outside Azure Databricks workspace
+   ![alt text](../Common_Assets/Images/ADE_Deployment_Logs.png "Logo Title Text 1").
+   5. Key vault and storage is not accessible outside Azure Databricks workspace.
    6. Changing the firewall rules to deny traffic from the control plane will prevent the Azure Databricks cluster from functioning.
-   ![alt text](../Common_Assets/Images/ADE_Firewall_Deny.png "Logo Title Text 1")
+   ![alt text](../Common_Assets/Images/ADE_Firewall_Deny.png "Logo Title Text 1").
 
 ### 3.5. Clean-up
-
-Please follow the below steps to clean up your environment :
 
 The clean-up script can be executed to clean up the resources provisioned in this sample. Following are the steps to execute the script:
 
