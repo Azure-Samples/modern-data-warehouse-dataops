@@ -22,6 +22,10 @@ In this sample we are doing a few things:
 1. You need to have already deployed the Databricks workspace using `sample1_basic_azure_databricks_environment`
 2. You need to have rights to assign account roles to the storage account
 
+If you would like to run this sample with sample 2, please follow
+[this](#2-run-sample-with-sample-2-enterprise-azure-databricks-environment)
+for a few extra setup steps.
+
 ### 1.2. Setup and deployment
 
 1. First you need to configure your environment variable file `.env`, which should look same
@@ -106,7 +110,7 @@ To clean up the resources, go back to the sample1 and run `./destroy.sh`
 ./destroy.sh
 ```
 
-## 2 Run sample with Sample 2 (enterprise Azure Databricks environment)
+## 2. Run sample with Sample 2 (enterprise Azure Databricks environment)
 
 If you want to run this sample with a more restrictive network settings like in the Sample 2,
 you would need to add your IP address to the Storage Account firewall prior to the deployment.
