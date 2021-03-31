@@ -27,25 +27,27 @@ If you would like to run this sample with sample 2, please follow
 for a few extra setup steps.
 
 ### 1.2. Setup and deployment
+ 
+#### Source Environment File
 
-1. First you need to configure your environment variable file `.env`, which should look same
-    or similar to the one you are using in `sample1`. Then run:
+First you need to configure your environment variable file `.env`, which should look same
+or similar to the one you are using in `sample1`. Then run:
 
-    ```bash
-    source .env
-    ```
+```bash
+source .env
+```
 
-    This will give you the configuration you need to start the following process.
+This will give you the configuration you need to start the following process.
 
-    Then make sure you are logged in to your Azure account via:
+Then make sure you are logged in to your Azure account via:
 
-    ```bash
-    az login
-    ```
+```bash
+az login
+```
 
-    And follow the prompts to complete your login process.
+And follow the prompts to complete your login process.
 
-1. Run `deploy.sh`
+#### Run `deploy.sh`
 
     You can run ./deploy.sh to start the deployment process in the below steps.
 
@@ -53,54 +55,44 @@ for a few extra setup steps.
     ./deploy.sh
     ```
 
-1. upload-sample-data.sh
+This will execute a few scripts:
 
-    This step will create a new container `$storageAccountContainerName` in your storage account,
-    and upload the sample data file `sample-data.us-population.json` into the container.
+##### upload-sample-data.sh
 
-    It will then add your current account as a "Storage Blob Data Contributor" to the storage
-    account, which will allow you to access storage account later using AD credential passthrough.
-    Without this step you will get an unauthorized error when trying to read the mount point.
+This step will create a new container `$storageAccountContainerName` in your storage account,
+and upload the sample data file `sample-data.us-population.json` into the container.
 
-    ```bash
-    ./scripts/upload-sample-data.sh
-    ```
+It will then add your current account as a "Storage Blob Data Contributor" to the storage
+account, which will allow you to access storage account later using AD credential passthrough.
+Without this step you will get an unauthorized error when trying to read the mount point.
 
-1. deploy-default-and-hc-clusters.sh
+##### deploy-default-and-hc-clusters.sh
 
-    This step will create two clusters using the Azure Databricks RESTful API and the JSON files
-    located in the sample directory. One of the cluster is a basic cluster, while the other one
-    is a high-concurrency cluster. You would need the high-concurrency cluster for AD passthrough
-    configuration, and you also need a Premium Databricks workspace.
+This step will create two clusters using the Azure Databricks RESTful API and the JSON files
+located in the sample directory. One of the cluster is a basic cluster, while the other one
+is a high-concurrency cluster. You would need the high-concurrency cluster for AD passthrough
+configuration, and you also need a Premium Databricks workspace.
 
-    ```bash
-    ./scripts/deploy-default-and-hc-clusters.sh
-    ```
+##### configure-databricks-cli.sh
 
-1. configure-databricks-cli.sh
+This step will create a file `~/.databirckscfg` with a newly fetched AD Token and the hostname
+of your Databricks workspace. This will allow you to start to use the command `databricks` in the
+future steps. Note that this token expires very quickly (probably around 30 minutes), so you
+may want to run this step again if you are around for longer.
 
-    This step will create a file `~/.databirckscfg` with a newly fetched AD Token and the hostname
-    of your Databricks workspace. This will allow you to start to use the command `databricks` in the
-    future steps. Note that this token expires very quickly (probably around 30 minutes), so you
-    may want to run this step again if you are around for longer.
+##### import-data-access-notebooks.sh
 
-    ```bash
-    ./scripts/configure-databricks-cli.sh
-    ```
+This step will upload the following scripts into the root level of your Databricks workspace:
+- `access-data-mount-via-account-key.ipy`
+- `access-data-mount-via-ad-passthrough.ipy`
 
-1. import-data-access-notebooks.sh
+Note that there's a search-replace performed in the template before it is uploaded, which will
+replace the storage account name with the correct prefix.
 
-    This step will upload the following scripts into the root level of your Databricks workspace:
-    - `access-data-mount-via-account-key.ipy`
-    - `access-data-mount-via-ad-passthrough.ipy`
+After you run this script, you should then login to your Databricks and run the notebooks.
 
-    Note that there's a search-replace performed in the template before it is uploaded, which will
-    replace the storage account name with the correct prefix.
-
-    After you run this script, you should then login to your Databricks and run the notebooks.
-
-    Note that you need to run the AD Passthrough example in the High-Concurrency cluster, otherwise
-    you will get an error saying you cannot mount the storage account.
+Note that you need to run the AD Passthrough example in the High-Concurrency cluster, otherwise
+you will get an error saying you cannot mount the storage account.
 
 ### 1.3. Cleanup
 
