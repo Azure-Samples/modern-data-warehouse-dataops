@@ -31,7 +31,7 @@ tagValues="{}"
 disablePublicIp=false
 adbWorkspaceLocation="$AZURE_RESOURCE_GROUP_LOCATION"
 adbWorkspaceName="${DEPLOYMENT_PREFIX}adb01"
-adbWorkspaceSkuTier="standard"
+adbWorkspaceSkuTier="premium"
 
 keyVaultName="${DEPLOYMENT_PREFIX}akv01"
 keyVaultLocation="$AZURE_RESOURCE_GROUP_LOCATION"
