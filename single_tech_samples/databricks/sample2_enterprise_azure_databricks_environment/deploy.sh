@@ -94,11 +94,13 @@ artifactBlobStoragePrimaryDomains="[
     \"arprodwestusa14.blob.core.windows.net\",
     \"arprodwestusa15.blob.core.windows.net\"
 ]"
+dbfsBlobStrageDomain="[
+    \"dbstorage************.blob.core.windows.net\"
+]"
 sourceAddresses="[
     \"10.2.1.64/26\",
     \"10.2.1.128/26\"
 ]"
-
 scopeName="storage_scope"
 
 # Login to Azure and select the subscription
@@ -170,28 +172,6 @@ else
     echo "Virtual Networks parameters are valid."
 fi
 
-echo "Validating parameters for the Firewall..."
-if ! az deployment group validate \
-    --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
-    --template-file ./firewall/firewall.template.json \
-    --parameters \
-        firewallName="$firewallName" \
-        publicIpAddressName="$iPAddressName" \
-        firewalllocation="$firewalllocation" \
-        vnetName="$hubVnetName" \
-        firewallWebappDestinationAddresses="$firewallWebappDestinationAddresses" \
-        logBlobstorageDomains="$logBlobstorageDomains" \
-        eventHubEndpointDomains="$eventHubEndpointDomains" \
-        metastoreDomains="$metastoreDomains" \
-        artifactBlobStoragePrimaryDomains="$artifactBlobStoragePrimaryDomains" \
-        sourceAddresses="$sourceAddresses" \
-    --output none; then
-    echo "Validation error for Firewall, please see the error above."
-    exit 1
-else
-    echo "Firewall parameters are valid."
-fi
-
 echo "Validating parameters for Azure Databricks..."
 if ! az deployment group validate \
     --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
@@ -208,6 +188,29 @@ if ! az deployment group validate \
     exit 1
 else
     echo "Azure Databricks parameters are valid."
+fi
+
+echo "Validating parameters for the Firewall..."
+if ! az deployment group validate \
+    --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+    --template-file ./firewall/firewall.template.json \
+    --parameters \
+        firewallName="$firewallName" \
+        publicIpAddressName="$iPAddressName" \
+        firewalllocation="$firewalllocation" \
+        vnetName="$hubVnetName" \
+        firewallWebappDestinationAddresses="$firewallWebappDestinationAddresses" \
+        logBlobstorageDomains="$logBlobstorageDomains" \
+        eventHubEndpointDomains="$eventHubEndpointDomains" \
+        metastoreDomains="$metastoreDomains" \
+        artifactBlobStoragePrimaryDomains="$artifactBlobStoragePrimaryDomains" \
+        dbfsBlobStrageDomain="$dbfsBlobStrageDomain" \
+        sourceAddresses="$sourceAddresses" \
+    --output none; then
+    echo "Validation error for Firewall, please see the error above."
+    exit 1
+else
+    echo "Firewall parameters are valid."
 fi
 
 echo "Validating parameters for Azure Key Vault..."
@@ -334,28 +337,6 @@ if [[ -z $vnetArmOutput ]]; then
     exit 1
 fi
 
-echo "Deploying Firewall..."
-afwArmOutput=$(az deployment group create \
-    --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
-    --template-file ./firewall/firewall.template.json \
-    --parameters \
-        firewallName="$firewallName" \
-        publicIpAddressName="$iPAddressName" \
-        firewalllocation="$firewalllocation" \
-        vnetName="$hubVnetName" \
-        firewallWebappDestinationAddresses="$firewallWebappDestinationAddresses" \
-        logBlobstorageDomains="$logBlobstorageDomains" \
-        eventHubEndpointDomains="$eventHubEndpointDomains" \
-        metastoreDomains="$metastoreDomains" \
-        artifactBlobStoragePrimaryDomains="$artifactBlobStoragePrimaryDomains" \
-        sourceAddresses="$sourceAddresses" \
-    --output json)
-
-if [[ -z $afwArmOutput ]]; then
-    echo >&2 "Firewall ARM deployment failed."
-    exit 1
-fi
-
 echo "Deploying Azure Databricks Workspace..."
 adbwsArmOutput=$(az deployment group create \
     --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
@@ -372,6 +353,34 @@ adbwsArmOutput=$(az deployment group create \
 
 if [[ -z $adbwsArmOutput ]]; then
     echo >&2 "Databricks ARM deployment failed."
+    exit 1
+fi
+
+dbfsBlobStrageAccountName=$(az databricks workspace show -n "$adbWorkspaceName" -g "$AZURE_RESOURCE_GROUP_NAME" --query "parameters.storageAccountName.value" -o tsv)
+dbfsBlobStrageDomain="[
+    \"$dbfsBlobStrageAccountName.blob.core.windows.net\"
+]"
+
+echo "Deploying Firewall..."
+afwArmOutput=$(az deployment group create \
+    --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+    --template-file ./firewall/firewall.template.json \
+    --parameters \
+        firewallName="$firewallName" \
+        publicIpAddressName="$iPAddressName" \
+        firewalllocation="$firewalllocation" \
+        vnetName="$hubVnetName" \
+        firewallWebappDestinationAddresses="$firewallWebappDestinationAddresses" \
+        logBlobstorageDomains="$logBlobstorageDomains" \
+        eventHubEndpointDomains="$eventHubEndpointDomains" \
+        metastoreDomains="$metastoreDomains" \
+        artifactBlobStoragePrimaryDomains="$artifactBlobStoragePrimaryDomains" \
+        dbfsBlobStrageDomain="$dbfsBlobStrageDomain" \
+        sourceAddresses="$sourceAddresses" \
+    --output json)
+
+if [[ -z $afwArmOutput ]]; then
+    echo >&2 "Firewall ARM deployment failed."
     exit 1
 fi
 

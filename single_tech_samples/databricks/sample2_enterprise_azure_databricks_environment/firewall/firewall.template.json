@@ -71,6 +71,13 @@
                 "description": "List of Artifact Blob storage primary domain name"
             }
         },
+        "dbfsBlobStrageDomain": {
+            "type": "array",
+            "defaultValue": [],
+            "metadata": {
+                "description": "the domain name of DBFS root Blob storage"
+            }
+        },
         "sourceAddresses": {
             "type": "array",
             "defaultValue": [],
@@ -254,9 +261,7 @@
                                         }
                                     ],
                                     "fqdnTags": [],
-                                    "targetFqdns": [
-                                        "dbstorage4ibbymxqmnweo.blob.core.windows.net"
-                                    ],
+                                    "targetFqdns": "[parameters('dbfsBlobStrageDomain')]",
                                     "sourceAddresses": "[parameters('sourceAddresses')]",
                                     "sourceIpGroups": []
                                 }

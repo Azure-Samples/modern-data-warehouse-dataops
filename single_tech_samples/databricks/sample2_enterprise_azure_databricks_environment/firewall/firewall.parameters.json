@@ -60,6 +60,11 @@
                 "arprodwestusa15.blob.core.windows.net"
             ]
         },
+        "dbfsBlobStrageDomain": {
+            "value": [
+                "dbstorage************.blob.core.windows.net"
+            ]
+        },
         "sourceAddresses": {
             "value": [
                 "10.2.1.64/26",
