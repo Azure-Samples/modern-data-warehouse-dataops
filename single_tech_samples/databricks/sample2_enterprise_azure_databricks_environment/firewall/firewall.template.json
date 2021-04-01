@@ -38,15 +38,45 @@
         },
         "firewallWebappDestinationAddresses": {
             "type": "array",
-            "defaultValue": []
+            "defaultValue": [],
+            "metadata": {
+                "description":"List of destination IP addresses. Supports IP ranges, prefixes, and service tags"
+            }
         },
-        "firewallControlPlaneDestinationAddresses": {
+        "logBlobstorageDomains": {
             "type": "array",
-            "defaultValue": []
+            "defaultValue": [],
+             "metadata": {
+                "description": "List of Log Blob storage domain name"
+            }
         },
-        "firewallSccRelayDestinationFqdns": {
+        "eventHubEndpointDomains": {
             "type": "array",
-            "defaultValue": []
+            "defaultValue": [],
+            "metadata": {
+                "description": "List of Event Hub endpoint domain name"
+            }
+        },
+        "metastoreDomains": {
+            "type": "array",
+            "defaultValue": [],
+            "metadata": {
+                "description": "List of Metastore domain name"
+            }
+        },
+        "artifactBlobStoragePrimaryDomains": {
+            "type": "array",
+            "defaultValue": [],
+            "metadata": {
+                "description": "List of Artifact Blob storage primary domain name"
+            }
+        },
+        "sourceAddresses": {
+            "type": "array",
+            "defaultValue": [],
+            "metadata": {
+                "description": "List of source IP addresses. Should be same as public/private spoke vnet ip address"
+            }
         }
     },
     "variables": {
@@ -107,68 +137,128 @@
                                 {
                                     "name": "Webapp ",
                                     "protocols": [
-                                        "Any"
+                                        "TCP"
                                     ],
-                                    "sourceAddresses": [
-                                        "*"
-                                    ],
+                                    "sourceAddresses": "[parameters('sourceAddresses')]",
                                     "destinationAddresses": "[parameters('firewallWebappDestinationAddresses')]",
                                     "sourceIpGroups": [],
                                     "destinationIpGroups": [],
                                     "destinationFqdns": [],
                                     "destinationPorts": [
-                                        "*"
+                                        "443"
                                     ]
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "applicationRuleCollections": [
+                    {
+                        "name": "databricks-control-plane-services",
+                        "properties": {
+                            "priority": 200,
+                            "action": {
+                                "type": "Allow"
+                            },
+                            "rules": [
+                                {
+                                    "name": "databricks-logblobstorage",
+                                    "protocols": [
+                                        {
+                                            "protocolType": "Https",
+                                            "port": 443
+                                        }
+                                    ],
+                                    "fqdnTags": [],
+                                    "targetFqdns": "[parameters('logBlobstorageDomains')]",
+                                    "sourceAddresses": "[parameters('sourceAddresses')]",
+                                    "sourceIpGroups": []
                                 },
                                 {
-                                    "name": "Control Plane NAT",
+                                    "name": "databricks-eventhub-endpoint",
                                     "protocols": [
-                                        "Any"
+                                        {
+                                            "protocolType": "Https",
+                                            "port": 443
+                                        }
                                     ],
-                                    "sourceAddresses": [
-                                        "*"
-                                    ],
-                                    "destinationAddresses": "[parameters('firewallControlPlaneDestinationAddresses')]",
-                                    "sourceIpGroups": [],
-                                    "destinationIpGroups": [],
-                                    "destinationFqdns": [],
-                                    "destinationPorts": [
-                                        "*"
-                                    ]
+                                    "fqdnTags": [],
+                                    "targetFqdns": "[parameters('eventHubEndpointDomains')]",
+                                    "sourceAddresses": "[parameters('sourceAddresses')]",
+                                    "sourceIpGroups": []
                                 },
                                 {
-                                    "name": "Artifact Blob storage primary",
+                                    "name": "databricks-metastore",
                                     "protocols": [
-                                        "Any"
+                                        {
+                                            "protocolType": "Https",
+                                            "port": 443
+                                        }
                                     ],
-                                    "sourceAddresses": [
-                                        "*"
-                                    ],
-                                    "destinationAddresses": [],
-                                    "sourceIpGroups": [],
-                                    "destinationIpGroups": [],
-                                    "destinationFqdns": [
-                                        "blob.core.windows.net"
-                                    ],
-                                    "destinationPorts": [
-                                        "*"
-                                    ]
+                                    "fqdnTags": [],
+                                    "targetFqdns": "[parameters('metastoreDomains')]",
+                                    "sourceAddresses": "[parameters('sourceAddresses')]",
+                                    "sourceIpGroups": []
                                 },
                                 {
-                                    "name": "SCC relay",
+                                    "name": "databricks-artifactblobstorage",
                                     "protocols": [
-                                        "Any"
+                                        {
+                                            "protocolType": "Https",
+                                            "port": 443
+                                        }
                                     ],
-                                    "sourceAddresses": [
-                                        "*"
+                                    "fqdnTags": [],
+                                    "targetFqdns": "[parameters('artifactBlobStoragePrimaryDomains')]",
+                                    "sourceAddresses": "[parameters('sourceAddresses')]",
+                                    "sourceIpGroups": []
+                                },
+                                {
+                                    "name": "Public Repositories for Python and R Libraries",
+                                    "protocols": [
+                                        {
+                                            "protocolType": "Https",
+                                            "port": 443
+                                        }
                                     ],
-                                    "destinationAddresses": [],
-                                    "sourceIpGroups": [],
-                                    "destinationIpGroups": [],
-                                    "destinationFqdns": "[parameters('firewallSccRelayDestinationFqdns')]",
-                                    "destinationPorts": [
-                                        "*"
-                                    ]
+                                    "fqdnTags": [],
+                                    "targetFqdns": [
+                                        "*pypi.org",
+                                        "*pythonhosted.org",
+                                        "cran.r-project.org"
+                                    ],
+                                    "sourceAddresses": "[parameters('sourceAddresses')]",
+                                    "sourceIpGroups": []
+                                },
+                                {
+                                    "name": "Used by Ganglia UI",
+                                    "protocols": [
+                                        {
+                                            "protocolType": "Https",
+                                            "port": 443
+                                        }
+                                    ],
+                                    "fqdnTags": [],
+                                    "targetFqdns": [
+                                        "cdnjs.com"
+                                    ],
+                                    "sourceAddresses": "[parameters('sourceAddresses')]",
+                                    "sourceIpGroups": []
+                                },
+                                {
+                                    "name": "databricks-dbfs",
+                                    "protocols": [
+                                        {
+                                            "protocolType": "Https",
+                                            "port": 443
+                                        }
+                                    ],
+                                    "fqdnTags": [],
+                                    "targetFqdns": [
+                                        "dbstorage4ibbymxqmnweo.blob.core.windows.net"
+                                    ],
+                                    "sourceAddresses": "[parameters('sourceAddresses')]",
+                                    "sourceIpGroups": []
                                 }
                             ]
                         }

@@ -57,17 +57,46 @@ routeTableName="${DEPLOYMENT_PREFIX}FWRT01"
 firewallName="${DEPLOYMENT_PREFIX}HubFW01"
 iPAddressName="${DEPLOYMENT_PREFIX}FWIP01"
 firewalllocation="$AZURE_RESOURCE_GROUP_LOCATION"
-# default IPs for westus region
+# default IPs and Domains for westus region
 firewallWebappDestinationAddresses="[
     \"40.118.174.12/32\",
     \"20.42.129.160/32\"
 ]"
-firewallControlPlaneDestinationAddresses="[
-    \"40.83.178.242/32\",
-    \"20.42.129.161/32\"
+logBlobstorageDomains="[
+    \"dblogprodwestus.blob.core.windows.net\"
 ]"
-firewallSccRelayDestinationFqdns="[
-    \"tunnel.westus.azuredatabricks.net\"
+eventHubEndpointDomains="[
+    \"prod-westus-observabilityEventHubs.servicebus.windows.net\",
+    \"prod-westus2c2-observabilityeventhubs.servicebus.windows.net\"
+]"
+metastoreDomains="[
+    \"consolidated-westus-prod-metastore.mysql.database.azure.com\",
+    \"consolidated-westus-prod-metastore-addl-1.mysql.database.azure.com\",
+    \"consolidated-westus-prod-metastore-addl-2.mysql.database.azure.com\",
+    \"consolidated-westus-prod-metastore-addl-3.mysql.database.azure.com\",
+    \"consolidated-westus2c2-prod-metastore-addl-1.mysql.database.azure.com\"
+]"
+artifactBlobStoragePrimaryDomains="[
+    \"dbartifactsprodwestus.blob.core.windows.net\",
+    \"arprodwestusa1.blob.core.windows.net\",
+    \"arprodwestusa2.blob.core.windows.net\",
+    \"arprodwestusa3.blob.core.windows.net\",
+    \"arprodwestusa4.blob.core.windows.net\",
+    \"arprodwestusa5.blob.core.windows.net\",
+    \"arprodwestusa6.blob.core.windows.net\",
+    \"arprodwestusa7.blob.core.windows.net\",
+    \"arprodwestusa8.blob.core.windows.net\",
+    \"arprodwestusa9.blob.core.windows.net\",
+    \"arprodwestusa10.blob.core.windows.net\",
+    \"arprodwestusa11.blob.core.windows.net\",
+    \"arprodwestusa12.blob.core.windows.net\",
+    \"arprodwestusa13.blob.core.windows.net\",
+    \"arprodwestusa14.blob.core.windows.net\",
+    \"arprodwestusa15.blob.core.windows.net\"
+]"
+sourceAddresses="[
+    \"10.2.1.64/26\",
+    \"10.2.1.128/26\"
 ]"
 
 scopeName="storage_scope"
@@ -151,8 +180,11 @@ if ! az deployment group validate \
         firewalllocation="$firewalllocation" \
         vnetName="$hubVnetName" \
         firewallWebappDestinationAddresses="$firewallWebappDestinationAddresses" \
-        firewallControlPlaneDestinationAddresses="$firewallControlPlaneDestinationAddresses" \
-        firewallSccRelayDestinationFqdns="$firewallSccRelayDestinationFqdns" \
+        logBlobstorageDomains="$logBlobstorageDomains" \
+        eventHubEndpointDomains="$eventHubEndpointDomains" \
+        metastoreDomains="$metastoreDomains" \
+        artifactBlobStoragePrimaryDomains="$artifactBlobStoragePrimaryDomains" \
+        sourceAddresses="$sourceAddresses" \
     --output none; then
     echo "Validation error for Firewall, please see the error above."
     exit 1
@@ -312,8 +344,11 @@ afwArmOutput=$(az deployment group create \
         firewalllocation="$firewalllocation" \
         vnetName="$hubVnetName" \
         firewallWebappDestinationAddresses="$firewallWebappDestinationAddresses" \
-        firewallControlPlaneDestinationAddresses="$firewallControlPlaneDestinationAddresses" \
-        firewallSccRelayDestinationFqdns="$firewallSccRelayDestinationFqdns" \
+        logBlobstorageDomains="$logBlobstorageDomains" \
+        eventHubEndpointDomains="$eventHubEndpointDomains" \
+        metastoreDomains="$metastoreDomains" \
+        artifactBlobStoragePrimaryDomains="$artifactBlobStoragePrimaryDomains" \
+        sourceAddresses="$sourceAddresses" \
     --output json)
 
 if [[ -z $afwArmOutput ]]; then
