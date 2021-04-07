@@ -71,6 +71,17 @@ infrastructureDestinationAddresses="[
 sccRelayDomains="[
     \"tunnel.westus.azuredatabricks.net\"
 ]"
+metastoreDomains="[
+    \"consolidated-westus-prod-metastore.mysql.database.azure.com\",
+    \"consolidated-westus-prod-metastore-addl-1.mysql.database.azure.com\",
+    \"consolidated-westus-prod-metastore-addl-2.mysql.database.azure.com\",
+    \"consolidated-westus-prod-metastore-addl-3.mysql.database.azure.com\",
+    \"consolidated-westus2c2-prod-metastore-addl-1.mysql.database.azure.com\"
+]"
+eventHubEndpointDomains="[
+    \"prod-westus-observabilityEventHubs.servicebus.windows.net\",
+    \"prod-westus2c2-observabilityeventhubs.servicebus.windows.net\"
+]"
 artifactBlobStoragePrimaryDomains="[
     \"dbartifactsprodwestus.blob.core.windows.net\",
     \"arprodwestusa1.blob.core.windows.net\",
@@ -194,6 +205,8 @@ if ! az deployment group validate \
         logBlobstorageDomains="$logBlobstorageDomains" \
         infrastructureDestinationAddresses="$infrastructureDestinationAddresses" \
         sccRelayDomains="$sccRelayDomains" \
+        metastoreDomains="$metastoreDomains" \
+        eventHubEndpointDomains="$eventHubEndpointDomains" \
         artifactBlobStoragePrimaryDomains="$artifactBlobStoragePrimaryDomains" \
         dbfsBlobStrageDomain="$dbfsBlobStrageDomain" \
     --output none; then
@@ -364,6 +377,8 @@ afwArmOutput=$(az deployment group create \
         logBlobstorageDomains="$logBlobstorageDomains" \
         infrastructureDestinationAddresses="$infrastructureDestinationAddresses" \
         sccRelayDomains="$sccRelayDomains" \
+        metastoreDomains="$metastoreDomains" \
+        eventHubEndpointDomains="$eventHubEndpointDomains" \
         artifactBlobStoragePrimaryDomains="$artifactBlobStoragePrimaryDomains" \
         dbfsBlobStrageDomain="$dbfsBlobStrageDomain" \
     --output json)

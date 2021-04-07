@@ -35,6 +35,21 @@
                 "tunnel.westus.azuredatabricks.net"
             ]
         },
+        "metastoreDomains": {
+            "value": [
+                "consolidated-westus-prod-metastore.mysql.database.azure.com",
+                "consolidated-westus-prod-metastore-addl-1.mysql.database.azure.com",
+                "consolidated-westus-prod-metastore-addl-2.mysql.database.azure.com",
+                "consolidated-westus-prod-metastore-addl-3.mysql.database.azure.com",
+                "consolidated-westus2c2-prod-metastore-addl-1.mysql.database.azure.com"
+            ]
+        },
+        "eventHubEndpointDomains": {
+            "value": [
+                "prod-westus-observabilityEventHubs.servicebus.windows.net",
+                "prod-westus2c2-observabilityeventhubs.servicebus.windows.net"
+            ]
+        },
         "artifactBlobStoragePrimaryDomains": {
             "value": [
                 "dbartifactsprodwestus.blob.core.windows.net",

@@ -64,6 +64,20 @@
                 "description": "List of SCC relay domain name"
             }
         },
+        "metastoreDomains": {
+            "type": "array",
+            "defaultValue": [],
+            "metadata": {
+                "description": "List of Metastore domain name"
+            }
+        },
+        "eventHubEndpointDomains": {
+            "type": "array",
+            "defaultValue": [],
+            "metadata": {
+                "description": "List of Event Hub endpoint domain name"
+            }
+        },
         "artifactBlobStoragePrimaryDomains": {
             "type": "array",
             "defaultValue": [],
@@ -156,6 +170,30 @@
                                     "sourceIpGroups": [],
                                     "destinationIpGroups": [],
                                     "destinationFqdns": [],
+                                    "destinationPorts": ["*"]
+                                },
+                                {
+                                    "name": "Metastore IP",
+                                    "protocols": [
+                                        "TCP"
+                                    ],
+                                    "sourceAddresses": ["*"],
+                                    "destinationAddresses": [],
+                                    "sourceIpGroups": [],
+                                    "destinationIpGroups": [],
+                                    "destinationFqdns": "[parameters('metastoreDomains')]",
+                                    "destinationPorts": ["*"]
+                                },
+                                {
+                                    "name": "Event Hub endpoint",
+                                    "protocols": [
+                                        "TCP"
+                                    ],
+                                    "sourceAddresses": ["*"],
+                                    "destinationAddresses": [],
+                                    "sourceIpGroups": [],
+                                    "destinationIpGroups": [],
+                                    "destinationFqdns": "[parameters('eventHubEndpointDomains')]",
                                     "destinationPorts": ["*"]
                                 }
                             ]
