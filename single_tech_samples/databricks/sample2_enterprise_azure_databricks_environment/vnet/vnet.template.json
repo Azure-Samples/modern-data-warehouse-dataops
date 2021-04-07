@@ -126,7 +126,16 @@
             "properties": {
               "addressPrefix": "[parameters('firewallSubnetCidr')]",
               "privateEndpointNetworkPolicies": "Enabled",
-              "privateLinkServiceNetworkPolicies": "Enabled"
+              "privateLinkServiceNetworkPolicies": "Enabled",
+              "serviceEndpoints": [
+                {
+                  "service": "Microsoft.Storage",
+                  "locations": [
+                    "eastus",
+                    "westus"
+                  ]
+                }
+              ]
             }
           }
         ],
