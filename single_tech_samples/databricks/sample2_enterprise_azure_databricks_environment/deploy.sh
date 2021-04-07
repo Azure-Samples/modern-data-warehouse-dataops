@@ -58,23 +58,18 @@ firewallName="${DEPLOYMENT_PREFIX}HubFW01"
 iPAddressName="${DEPLOYMENT_PREFIX}FWIP01"
 firewalllocation="$AZURE_RESOURCE_GROUP_LOCATION"
 # default IPs and Domains for westus region
-firewallWebappDestinationAddresses="[
+webappDestinationAddresses="[
     \"40.118.174.12/32\",
     \"20.42.129.160/32\"
 ]"
 logBlobstorageDomains="[
     \"dblogprodwestus.blob.core.windows.net\"
 ]"
-eventHubEndpointDomains="[
-    \"prod-westus-observabilityEventHubs.servicebus.windows.net\",
-    \"prod-westus2c2-observabilityeventhubs.servicebus.windows.net\"
+infrastructureDestinationAddresses="[
+    \"13.91.84.96/28\"
 ]"
-metastoreDomains="[
-    \"consolidated-westus-prod-metastore.mysql.database.azure.com\",
-    \"consolidated-westus-prod-metastore-addl-1.mysql.database.azure.com\",
-    \"consolidated-westus-prod-metastore-addl-2.mysql.database.azure.com\",
-    \"consolidated-westus-prod-metastore-addl-3.mysql.database.azure.com\",
-    \"consolidated-westus2c2-prod-metastore-addl-1.mysql.database.azure.com\"
+sccRelayDomains="[
+    \"tunnel.westus.azuredatabricks.net\"
 ]"
 artifactBlobStoragePrimaryDomains="[
     \"dbartifactsprodwestus.blob.core.windows.net\",
@@ -96,10 +91,6 @@ artifactBlobStoragePrimaryDomains="[
 ]"
 dbfsBlobStrageDomain="[
     \"dbstorage************.blob.core.windows.net\"
-]"
-sourceAddresses="[
-    \"10.2.1.64/26\",
-    \"10.2.1.128/26\"
 ]"
 scopeName="storage_scope"
 
@@ -199,13 +190,12 @@ if ! az deployment group validate \
         publicIpAddressName="$iPAddressName" \
         firewalllocation="$firewalllocation" \
         vnetName="$hubVnetName" \
-        firewallWebappDestinationAddresses="$firewallWebappDestinationAddresses" \
+        webappDestinationAddresses="$webappDestinationAddresses" \
         logBlobstorageDomains="$logBlobstorageDomains" \
-        eventHubEndpointDomains="$eventHubEndpointDomains" \
-        metastoreDomains="$metastoreDomains" \
+        infrastructureDestinationAddresses="$infrastructureDestinationAddresses" \
+        sccRelayDomains="$sccRelayDomains" \
         artifactBlobStoragePrimaryDomains="$artifactBlobStoragePrimaryDomains" \
         dbfsBlobStrageDomain="$dbfsBlobStrageDomain" \
-        sourceAddresses="$sourceAddresses" \
     --output none; then
     echo "Validation error for Firewall, please see the error above."
     exit 1
@@ -370,13 +360,12 @@ afwArmOutput=$(az deployment group create \
         publicIpAddressName="$iPAddressName" \
         firewalllocation="$firewalllocation" \
         vnetName="$hubVnetName" \
-        firewallWebappDestinationAddresses="$firewallWebappDestinationAddresses" \
+        webappDestinationAddresses="$webappDestinationAddresses" \
         logBlobstorageDomains="$logBlobstorageDomains" \
-        eventHubEndpointDomains="$eventHubEndpointDomains" \
-        metastoreDomains="$metastoreDomains" \
+        infrastructureDestinationAddresses="$infrastructureDestinationAddresses" \
+        sccRelayDomains="$sccRelayDomains" \
         artifactBlobStoragePrimaryDomains="$artifactBlobStoragePrimaryDomains" \
         dbfsBlobStrageDomain="$dbfsBlobStrageDomain" \
-        sourceAddresses="$sourceAddresses" \
     --output json)
 
 if [[ -z $afwArmOutput ]]; then
