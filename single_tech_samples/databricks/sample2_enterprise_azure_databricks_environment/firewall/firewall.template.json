@@ -36,17 +36,47 @@
                 "description": "Name of the vnet associated witht he Firewall"
             }
         },
-        "firewallWebappDestinationAddresses": {
+        "webappDestinationAddresses": {
             "type": "array",
-            "defaultValue": []
+            "defaultValue": [],
+            "metadata": {
+                "description":"List of destination IP addresses for Web App"
+            }
         },
-        "firewallControlPlaneDestinationAddresses": {
+        "logBlobstorageDomains": {
             "type": "array",
-            "defaultValue": []
+            "defaultValue": [],
+             "metadata": {
+                "description": "List of Log Blob storage domain name"
+            }
         },
-        "firewallSccRelayDestinationFqdns": {
+        "infrastructureDestinationAddresses": {
             "type": "array",
-            "defaultValue": []
+            "defaultValue": [],
+            "metadata": {
+                "description":"List of destination IP addresses for Extended Infrastructure"
+            }
+        },
+        "sccRelayDomains": {
+            "type": "array",
+            "defaultValue": [],
+            "metadata": {
+                "description": "List of SCC relay domain name"
+            }
+        },
+        "artifactBlobStoragePrimaryDomains": {
+            "type": "array",
+            "defaultValue": [],
+            "metadata": {
+                "description": "List of Artifact Blob storage primary domain name"
+            }
+        },
+        "dbfsBlobStrageDomain": {
+            "type": "array",
+            "defaultValue": [],
+            "metadata": {
+                "description": "the domain name of DBFS root Blob storage"
+            }
         }
     },
     "variables": {
@@ -97,7 +127,123 @@
                 },
                 "networkRuleCollections": [
                     {
-                        "name": "ADBControlplane",
+                        "name": "Allow-Databricks-Services",
+                        "properties": {
+                            "priority": 100,
+                            "action": {
+                                "type": "Allow"
+                            },
+                            "rules": [
+                                {
+                                    "name": "Webapp IP",
+                                    "protocols": [
+                                        "TCP"
+                                    ],
+                                    "sourceAddresses": ["*"],
+                                    "destinationAddresses": "[parameters('webappDestinationAddresses')]",
+                                    "sourceIpGroups": [],
+                                    "destinationIpGroups": [],
+                                    "destinationFqdns": [],
+                                    "destinationPorts": ["*"]
+                                },
+                                {
+                                    "name": "Extended infrastructure IP",
+                                    "protocols": [
+                                        "TCP"
+                                    ],
+                                    "sourceAddresses": ["*"],
+                                    "destinationAddresses": "[parameters('infrastructureDestinationAddresses')]",
+                                    "sourceIpGroups": [],
+                                    "destinationIpGroups": [],
+                                    "destinationFqdns": [],
+                                    "destinationPorts": ["*"]
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "applicationRuleCollections": [
+                    {
+                        "name": "Allow-Databricks-Services",
+                        "properties": {
+                            "priority": 100,
+                            "action": {
+                                "type": "Allow"
+                            },
+                            "rules": [
+                                {
+                                    "name": "Log Blob storage IP",
+                                    "protocols": [
+                                        {
+                                            "protocolType": "Http",
+                                            "port": 80
+                                        },
+                                        {
+                                            "protocolType": "Https",
+                                            "port": 443
+                                        }
+                                    ],
+                                    "fqdnTags": [],
+                                    "targetFqdns": "[parameters('logBlobstorageDomains')]",
+                                    "sourceAddresses": ["*"],
+                                    "sourceIpGroups": []
+                                },
+                                {
+                                    "name": "SCC Relay IP",
+                                    "protocols": [
+                                        {
+                                            "protocolType": "Http",
+                                            "port": 80
+                                        },
+                                        {
+                                            "protocolType": "Https",
+                                            "port": 443
+                                        }
+                                    ],
+                                    "fqdnTags": [],
+                                    "targetFqdns": "[parameters('sccRelayDomains')]",
+                                    "sourceAddresses": ["*"],
+                                    "sourceIpGroups": []
+                                },
+                                {
+                                    "name": "Artifact Blob storage IP",
+                                    "protocols": [
+                                        {
+                                            "protocolType": "Http",
+                                            "port": 80
+                                        },
+                                        {
+                                            "protocolType": "Https",
+                                            "port": 443
+                                        }
+                                    ],
+                                    "fqdnTags": [],
+                                    "targetFqdns": "[parameters('artifactBlobStoragePrimaryDomains')]",
+                                    "sourceAddresses": ["*"],
+                                    "sourceIpGroups": []
+                                },
+                                {
+                                    "name": "DBFS root Blob storage IP",
+                                    "protocols": [
+                                        {
+                                            "protocolType": "Http",
+                                            "port": 80
+                                        },
+                                        {
+                                            "protocolType": "Https",
+                                            "port": 443
+                                        }
+                                    ],
+                                    "fqdnTags": [],
+                                    "targetFqdns": "[parameters('dbfsBlobStrageDomain')]",
+                                    "sourceAddresses": ["*"],
+                                    "sourceIpGroups": []
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Allow-Websites",
                         "properties": {
                             "priority": 200,
                             "action": {
@@ -105,70 +251,21 @@
                             },
                             "rules": [
                                 {
-                                    "name": "Webapp ",
+                                    "name": "Pypi",
                                     "protocols": [
-                                        "Any"
+                                        {
+                                            "protocolType": "Http",
+                                            "port": 80
+                                        },
+                                        {
+                                            "protocolType": "Https",
+                                            "port": 443
+                                        }
                                     ],
-                                    "sourceAddresses": [
-                                        "*"
-                                    ],
-                                    "destinationAddresses": "[parameters('firewallWebappDestinationAddresses')]",
-                                    "sourceIpGroups": [],
-                                    "destinationIpGroups": [],
-                                    "destinationFqdns": [],
-                                    "destinationPorts": [
-                                        "*"
-                                    ]
-                                },
-                                {
-                                    "name": "Control Plane NAT",
-                                    "protocols": [
-                                        "Any"
-                                    ],
-                                    "sourceAddresses": [
-                                        "*"
-                                    ],
-                                    "destinationAddresses": "[parameters('firewallControlPlaneDestinationAddresses')]",
-                                    "sourceIpGroups": [],
-                                    "destinationIpGroups": [],
-                                    "destinationFqdns": [],
-                                    "destinationPorts": [
-                                        "*"
-                                    ]
-                                },
-                                {
-                                    "name": "Artifact Blob storage primary",
-                                    "protocols": [
-                                        "Any"
-                                    ],
-                                    "sourceAddresses": [
-                                        "*"
-                                    ],
-                                    "destinationAddresses": [],
-                                    "sourceIpGroups": [],
-                                    "destinationIpGroups": [],
-                                    "destinationFqdns": [
-                                        "blob.core.windows.net"
-                                    ],
-                                    "destinationPorts": [
-                                        "*"
-                                    ]
-                                },
-                                {
-                                    "name": "SCC relay",
-                                    "protocols": [
-                                        "Any"
-                                    ],
-                                    "sourceAddresses": [
-                                        "*"
-                                    ],
-                                    "destinationAddresses": [],
-                                    "sourceIpGroups": [],
-                                    "destinationIpGroups": [],
-                                    "destinationFqdns": "[parameters('firewallSccRelayDestinationFqdns')]",
-                                    "destinationPorts": [
-                                        "*"
-                                    ]
+                                    "fqdnTags": [],
+                                    "targetFqdns": ["*.pypi.org"],
+                                    "sourceAddresses": ["*"],
+                                    "sourceIpGroups": []
                                 }
                             ]
                         }
