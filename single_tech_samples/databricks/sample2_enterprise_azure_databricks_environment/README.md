@@ -217,6 +217,8 @@ The following resources will be deployed as a part of this sample once the scrip
 
 ![alt text](../Common_Assets/Images/ADE_Firewall.png "Logo Title Text 1")
 
+Please note that the firewall rules configured in this sample are as per Microsoft Azure documentation captured [here](https://docs.microsoft.com/en-us/azure/databricks/administration-guide/cloud-configurations/azure/udr). The routes are configured for West US region. In case you need to deploy this sample in any other Azure region, please alter the [ARM template for the firewall](firewall/firewall.template.json) with the IP addresses for the target region.
+
 6. Azure public IP address associated with the firewall
 
 ![alt text](../Common_Assets/Images/ADE_IP.png "Logo Title Text 1")
