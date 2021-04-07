@@ -57,6 +57,7 @@ az group update --name $RESOURCE_GROUP_NAME --tags "source=mdwdo-azsql" "deploym
 az_sub=$(az account show --output json)
 export AZURE_SUBSCRIPTION_ID=$(echo $az_sub | jq -r '.id')
 az_sub_name=$(echo $az_sub | jq -r '.name')
+echo Azure subscription $az_sub_name
 
 # Create Service Account
 az_sp_name=mdwdo-azsql-${DEPLOYMENT_ID}-sp
@@ -69,12 +70,14 @@ az_sp=$(az ad sp create-for-rbac \
 export SERVICE_PRINCIPAL_ID=$(echo $az_sp | jq -r '.appId')
 az_sp_tenant_id=$(echo $az_sp | jq -r '.tenant')
 
+echo Created service principal ID $SERVICE_PRINCIPAL_ID
 #tags don't seem to work right on service principals at the moment.
-az ad sp update --id $SERVICE_PRINCIPAL_ID --add tags "source=mdwdo-azsql"
-az ad sp update --id $SERVICE_PRINCIPAL_ID --add tags "deployment=$DEPLOYMENT_ID"
+#az ad sp update --id $SERVICE_PRINCIPAL_ID --add tags "source=mdwdo-azsql"
+#az ad sp update --id $SERVICE_PRINCIPAL_ID --add tags "deployment=$DEPLOYMENT_ID"
 
 # Create Azure Service connection in Azure DevOps
 export AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY=$(echo $az_sp | jq -r '.password')
+echo AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY is $AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY
 echo "Creating Azure service connection Azure DevOps"
 az devops service-endpoint azurerm create \
     --name "mdwdo-azsql" \
