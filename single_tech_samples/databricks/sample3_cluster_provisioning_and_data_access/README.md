@@ -81,7 +81,7 @@ may want to run this step again if you are around for longer.
 ##### import-data-access-notebooks.sh
 
 This step will upload the following scripts into the root level of your Databricks workspace:
-- `access-data-mount-via-account-key.ipy`
+- `access-data-directly-via-account-key.ipy`
 - `access-data-mount-via-ad-passthrough.ipy`
 
 Note that there's a search-replace performed in the template before it is uploaded, which will
