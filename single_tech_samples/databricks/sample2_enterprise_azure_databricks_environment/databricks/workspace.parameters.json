@@ -2,6 +2,9 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "vnetName": {
+      "value": "adbvnet01"
+    },
     "adbWorkspaceName": {
       "value": "samplewsname"
     },
@@ -9,13 +12,13 @@
       "value": "westus"
     },
     "adbWorkspaceSkuTier": {
-      "value": "premium"
+      "value": "standard"
     },
     "tagValues": {
       "value": {}
     },
     "disablePublicIp": {
-      "value": false
+      "value": true
     }
   }
 }
