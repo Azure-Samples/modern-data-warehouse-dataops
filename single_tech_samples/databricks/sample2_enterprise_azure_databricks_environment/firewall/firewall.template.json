@@ -40,13 +40,13 @@
             "type": "array",
             "defaultValue": [],
             "metadata": {
-                "description":"List of destination IP addresses for Web App"
+                "description": "List of destination IP addresses for Web App"
             }
         },
         "logBlobstorageDomains": {
             "type": "array",
             "defaultValue": [],
-             "metadata": {
+            "metadata": {
                 "description": "List of Log Blob storage domain name"
             }
         },
@@ -54,7 +54,7 @@
             "type": "array",
             "defaultValue": [],
             "metadata": {
-                "description":"List of destination IP addresses for Extended Infrastructure"
+                "description": "List of destination IP addresses for Extended Infrastructure"
             }
         },
         "sccRelayDomains": {
@@ -153,48 +153,48 @@
                                     "protocols": [
                                         "TCP"
                                     ],
-                                    "sourceAddresses": ["*"],
+                                    "sourceAddresses": [ "*" ],
                                     "destinationAddresses": "[parameters('webappDestinationAddresses')]",
                                     "sourceIpGroups": [],
                                     "destinationIpGroups": [],
                                     "destinationFqdns": [],
-                                    "destinationPorts": ["*"]
+                                    "destinationPorts": [ "*" ]
                                 },
                                 {
                                     "name": "Extended infrastructure IP",
                                     "protocols": [
                                         "TCP"
                                     ],
-                                    "sourceAddresses": ["*"],
+                                    "sourceAddresses": [ "*" ],
                                     "destinationAddresses": "[parameters('infrastructureDestinationAddresses')]",
                                     "sourceIpGroups": [],
                                     "destinationIpGroups": [],
                                     "destinationFqdns": [],
-                                    "destinationPorts": ["*"]
+                                    "destinationPorts": [ "*" ]
                                 },
                                 {
                                     "name": "Metastore IP",
                                     "protocols": [
                                         "TCP"
                                     ],
-                                    "sourceAddresses": ["*"],
+                                    "sourceAddresses": [ "*" ],
                                     "destinationAddresses": [],
                                     "sourceIpGroups": [],
                                     "destinationIpGroups": [],
                                     "destinationFqdns": "[parameters('metastoreDomains')]",
-                                    "destinationPorts": ["*"]
+                                    "destinationPorts": [ "*" ]
                                 },
                                 {
                                     "name": "Event Hub endpoint",
                                     "protocols": [
                                         "TCP"
                                     ],
-                                    "sourceAddresses": ["*"],
+                                    "sourceAddresses": [ "*" ],
                                     "destinationAddresses": [],
                                     "sourceIpGroups": [],
                                     "destinationIpGroups": [],
                                     "destinationFqdns": "[parameters('eventHubEndpointDomains')]",
-                                    "destinationPorts": ["*"]
+                                    "destinationPorts": [ "*" ]
                                 }
                             ]
                         }
@@ -223,7 +223,7 @@
                                     ],
                                     "fqdnTags": [],
                                     "targetFqdns": "[parameters('logBlobstorageDomains')]",
-                                    "sourceAddresses": ["*"],
+                                    "sourceAddresses": [ "*" ],
                                     "sourceIpGroups": []
                                 },
                                 {
@@ -240,7 +240,7 @@
                                     ],
                                     "fqdnTags": [],
                                     "targetFqdns": "[parameters('sccRelayDomains')]",
-                                    "sourceAddresses": ["*"],
+                                    "sourceAddresses": [ "*" ],
                                     "sourceIpGroups": []
                                 },
                                 {
@@ -257,7 +257,7 @@
                                     ],
                                     "fqdnTags": [],
                                     "targetFqdns": "[parameters('artifactBlobStoragePrimaryDomains')]",
-                                    "sourceAddresses": ["*"],
+                                    "sourceAddresses": [ "*" ],
                                     "sourceIpGroups": []
                                 },
                                 {
@@ -274,7 +274,7 @@
                                     ],
                                     "fqdnTags": [],
                                     "targetFqdns": "[parameters('dbfsBlobStrageDomain')]",
-                                    "sourceAddresses": ["*"],
+                                    "sourceAddresses": [ "*" ],
                                     "sourceIpGroups": []
                                 }
                             ]
@@ -301,8 +301,8 @@
                                         }
                                     ],
                                     "fqdnTags": [],
-                                    "targetFqdns": ["*.pypi.org"],
-                                    "sourceAddresses": ["*"],
+                                    "targetFqdns": [ "*.pypi.org" ],
+                                    "sourceAddresses": [ "*" ],
                                     "sourceIpGroups": []
                                 }
                             ]
