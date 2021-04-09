@@ -52,8 +52,8 @@ securityGroupName="${DEPLOYMENT_PREFIX}nsg01"
 routeTableName="${DEPLOYMENT_PREFIX}FWRT01"
 firewallName="${DEPLOYMENT_PREFIX}HubFW01"
 ipAddressName="${DEPLOYMENT_PREFIX}FWIP01"
-keyVaultPrivateEndpoint=$(az network private-endpoint list -g "$AZURE_RESOURCE_GROUP_NAME" --query "[?contains(@.name,'akv')].id" --output tsv)
-storageAccountPrivateEndpoint=$(az network private-endpoint list -g "$AZURE_RESOURCE_GROUP_NAME" --query "[?contains(@.name,'asa')].id" --output tsv)
+keyVaultPrivateEndpoint="${DEPLOYMENT_PREFIX}akv01privateendpoint"
+storageAccountPrivateEndpoint="${DEPLOYMENT_PREFIX}asa01privateendpoint"
 
 echo "Delete Resouce Group? $DELETE_RESOURCE_GROUP"
 
@@ -84,9 +84,12 @@ else
         { az databricks workspace delete \
             --name "$adbWorkspaceName" \
             --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
-            --yes \
-        && echo "Successfully deleted ADB workspace."; } \
-        || { echo "Failed to delete ADB workspace."; exit 1; }
+            --yes &&
+            echo "Successfully deleted ADB workspace."; } ||
+            {
+                echo "Failed to delete ADB workspace."
+                exit 1
+            }
     else
         echo "$adbWorkspaceName was not found."
     fi
@@ -99,13 +102,15 @@ else
         echo "Deleting Key Vault..."
         { az keyvault delete \
             --name "$keyVaultName" \
-            --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
-        && \
+            --resource-group "$AZURE_RESOURCE_GROUP_NAME" &&
             az keyvault purge \
-            --subscription "$AZURE_SUBSCRIPTION_ID" \
-            --name "$keyVaultName" \
-        && echo "Successfully deleted and purged Key Vault."; } \
-        || { echo "Failed to delete and purge Key Vault."; exit 1; }
+                --subscription "$AZURE_SUBSCRIPTION_ID" \
+                --name "$keyVaultName" &&
+            echo "Successfully deleted and purged Key Vault."; } ||
+            {
+                echo "Failed to delete and purge Key Vault."
+                exit 1
+            }
     else
         echo "$keyVaultName was not found."
     fi
@@ -119,39 +124,52 @@ else
         { az storage account delete \
             --name "$storageAccountName" \
             --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
-            --yes \
-        && echo "Successfully deleted Storage Account."; } \
-        || { echo "Failed to delete Storage Account."; exit 1; }
+            --yes &&
+            echo "Successfully deleted Storage Account."; } ||
+            {
+                echo "Failed to delete Storage Account."
+                exit 1
+            }
     else
         echo "$storageAccountName was not found."
     fi
 
     echo "Validating Private Endpoint for Key Vault"
-    keyVaultPrivateEndpointValidation=$(az network private-endpoint show \
-        --id "$keyVaultPrivateEndpoint" \
-        --output none)
-    if [ -n "$keyVaultPrivateEndpoint" ] && [ "$keyVaultPrivateEndpointValidation" ]; then
+    if az network private-endpoint show \
+        --name "$keyVaultPrivateEndpoint" \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+        --output none; then
         echo "Deleting Private Endpoint for Key Vault"
-        { az network private-endpoint delete \
-            --id "$keyVaultPrivateEndpoint" \
-            --output none \
-        && echo "Successfully deleted Private Endpoint for Key Vault."; } \
-        || { echo "Failed to delete Private Endpoint for Key Vault."; exit 1; }
+        {
+            az network private-endpoint delete \
+                --name "$keyVaultPrivateEndpoint" \
+                --resource-group "$AZURE_RESOURCE_GROUP_NAME" &&
+                echo "Successfully deleted Private Endpoint for Key Vault."
+        } ||
+            {
+                echo "Failed to delete Private Endpoint for Key Vault."
+                exit 1
+            }
     else
         echo "$keyVaultPrivateEndpoint was not found."
     fi
 
-    echo "Validating Private Endpoint for Storage Account"
-    storageAccountPrivateEndpointValidation=$(az network private-endpoint show \
-        --id "$storageAccountPrivateEndpoint" \
-        --output none)
-    if [ -n "$storageAccountPrivateEndpoint" ] && [ "$storageAccountPrivateEndpointValidation" ]; then
-        echo "Deleting Private Endpoint for Storage Account"
-        { az network private-endpoint delete \
-            --id "$storageAccountPrivateEndpoint" \
-            --output none \
-        && echo "Successfully deleted Private Endpoint for Storage Account"; } \
-        || { echo "Failed to delete Private Endpoint for Storage Account."; exit 1; }
+    echo "Validating Private Endpoint for Key Vault"
+    if az network private-endpoint show \
+        --name "$storageAccountPrivateEndpoint" \
+        --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
+        --output none; then
+        echo "Deleting Private Endpoint for Key Vault"
+        {
+            az network private-endpoint delete \
+                --name "$storageAccountPrivateEndpoint" \
+                --resource-group "$AZURE_RESOURCE_GROUP_NAME" &&
+                echo "Successfully deleted Private Endpoint for Key Vault."
+        } ||
+            {
+                echo "Failed to delete Private Endpoint for Key Vault."
+                exit 1
+            }
     else
         echo "$storageAccountPrivateEndpoint was not found."
     fi
@@ -164,9 +182,12 @@ else
         echo "Deleting Firewall..."
         { az network firewall delete \
             --name "$firewallName" \
-            --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
-        && echo "Successfully deleted Firewall."; } \
-        || { echo "Failed to delete Firewall."; exit 1; }
+            --resource-group "$AZURE_RESOURCE_GROUP_NAME" &&
+            echo "Successfully deleted Firewall."; } ||
+            {
+                echo "Failed to delete Firewall."
+                exit 1
+            }
     else
         echo "$firewallName was not found."
     fi
@@ -179,9 +200,12 @@ else
         echo "Deleting Public-IP..."
         { az network public-ip delete \
             --name "$ipAddressName" \
-            --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
-        && echo "Successfully deleted Public-IP."; } \
-        || { echo "Failed to delete Public-IP."; exit 1; }
+            --resource-group "$AZURE_RESOURCE_GROUP_NAME" &&
+            echo "Successfully deleted Public-IP."; } ||
+            {
+                echo "Failed to delete Public-IP."
+                exit 1
+            }
     else
         echo "$ipAddressName was not found."
     fi
@@ -194,9 +218,12 @@ else
         echo "Deleting Spoke Virtual Network..."
         { az network vnet delete \
             --name "$spokeVnetName" \
-            --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
-        && echo "Successfully deleted Spoke Virtual Network."; } \
-        || { echo "Failed to delete Spoke Virtual Network."; exit 1; }
+            --resource-group "$AZURE_RESOURCE_GROUP_NAME" &&
+            echo "Successfully deleted Spoke Virtual Network."; } ||
+            {
+                echo "Failed to delete Spoke Virtual Network."
+                exit 1
+            }
     else
         echo "$spokeVnetName was not found."
     fi
@@ -209,9 +236,12 @@ else
         echo "Deleting Hub Virtual Network..."
         { az network vnet delete \
             --name "$hubVnetName" \
-            --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
-        && echo "Successfully deleted Hub Virtual Network."; } \
-        || { echo "Failed to delete Hub Virtual Network."; exit 1; }
+            --resource-group "$AZURE_RESOURCE_GROUP_NAME" &&
+            echo "Successfully deleted Hub Virtual Network."; } ||
+            {
+                echo "Failed to delete Hub Virtual Network."
+                exit 1
+            }
     else
         echo "$hubVnetName was not found."
     fi
@@ -224,13 +254,16 @@ else
         echo "Deleting Network Security Group..."
         { az network nsg delete \
             --name "$securityGroupName" \
-            --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
-        && echo "Successfully deleted Network Security Group."; } \
-        || { echo "Failed to delete Network Security Group."; exit 1; }
+            --resource-group "$AZURE_RESOURCE_GROUP_NAME" &&
+            echo "Successfully deleted Network Security Group."; } ||
+            {
+                echo "Failed to delete Network Security Group."
+                exit 1
+            }
     else
         echo "$securityGroupName was not found."
     fi
-    
+
     echo "Validating Route table..."
     if az network route-table show \
         --name "$routeTableName" \
@@ -239,9 +272,12 @@ else
         echo "Deleting Route table..."
         { az network route-table delete \
             --name "$routeTableName" \
-            --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
-        && echo "Successfully deleted Route table."; } \
-        || { echo "Failed to delete Route table."; exit 1; }
+            --resource-group "$AZURE_RESOURCE_GROUP_NAME" &&
+            echo "Successfully deleted Route table."; } ||
+            {
+                echo "Failed to delete Route table."
+                exit 1
+            }
     else
         echo "$routeTableName was not found."
     fi
