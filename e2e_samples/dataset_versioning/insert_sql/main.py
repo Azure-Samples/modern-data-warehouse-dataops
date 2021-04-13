@@ -35,12 +35,10 @@ def main(KeyvaultWrapper, SqlWrapper, Process, args_input):
     :type Process: Process
     """
     my_parser = argparse.ArgumentParser(description='Make sure to login')
-
     my_parser.add_argument('-c', '--clean', default=False, action='store_true', help='Insert specific version to be inserted in to sql')
     my_parser.add_argument('-v', '--version', action='store', type=int, help='Insert specific version to be inserted in to sql')
     my_parser.add_argument('-p', '--path', action='store', type=str, help='Path for the source csv file')
     my_parser.add_argument('-k', '--keyvault', action='store', type=str, required=True, help='Name of keyvault')
-
     args = my_parser.parse_args(args_input)
 
     if not args.clean:
