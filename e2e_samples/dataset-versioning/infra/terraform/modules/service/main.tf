@@ -5,40 +5,40 @@ data "azurerm_resource_group" "rg" {
 data "azurerm_client_config" "current" {}
 
 module "keyvault" {
-  source                     = "../../modules/keyvault"
-  app_name                   = var.app_name
-  env                        = var.env
-  rg_name                    = var.rg_name
-  location                   = var.location
-  client_config_current      = data.azurerm_client_config.current
+  source                = "../../modules/keyvault"
+  app_name              = var.app_name
+  env                   = var.env
+  rg_name               = var.rg_name
+  location              = var.location
+  client_config_current = data.azurerm_client_config.current
 }
 
 module "azure_data_factory" {
-  source                     = "../../modules/data_factory"
-  location                   = var.location
-  rg_name                    = var.rg_name
-  app_name                   = var.app_name
-  env                        = var.env
-  kv_id                      = module.keyvault.kv_id
-  kv_name                    = module.keyvault.kv_name
+  source   = "../../modules/data_factory"
+  location = var.location
+  rg_name  = var.rg_name
+  app_name = var.app_name
+  env      = var.env
+  kv_id    = module.keyvault.kv_id
+  kv_name  = module.keyvault.kv_name
 }
 
 module "data_lake" {
-  source                     = "../../modules/data_lake"
-  location                   = var.location
-  rg_name                    = var.rg_name
-  app_name                   = var.app_name
-  env                        = var.env
-  kv_id                      = module.keyvault.kv_id
+  source   = "../../modules/data_lake"
+  location = var.location
+  rg_name  = var.rg_name
+  app_name = var.app_name
+  env      = var.env
+  kv_id    = module.keyvault.kv_id
 }
 
 
 module "databricks" {
-  source                     = "../../modules/databricks"
-  location                   = var.location
-  rg_name                    = var.rg_name
-  app_name                   = var.app_name
-  env                        = var.env
+  source   = "../../modules/databricks"
+  location = var.location
+  rg_name  = var.rg_name
+  app_name = var.app_name
+  env      = var.env
 }
 
 module "sql_server" {

@@ -20,13 +20,13 @@ resource "azurerm_storage_data_lake_gen2_filesystem" "data_lake_filesystem" {
 }
 
 resource "azurerm_key_vault_secret" "datalake_secret" {
-  name            = "datalake-connection"
-  value           = azurerm_storage_account.storage_account.primary_connection_string
-  key_vault_id    = var.kv_id
+  name         = "datalake-connection"
+  value        = azurerm_storage_account.storage_account.primary_connection_string
+  key_vault_id = var.kv_id
 }
 
 resource "azurerm_key_vault_secret" "datalake_access_key" {
-  name            = "datalake-access-key"
-  value           = azurerm_storage_account.storage_account.primary_access_key
-  key_vault_id    = var.kv_id
+  name         = "datalake-access-key"
+  value        = azurerm_storage_account.storage_account.primary_access_key
+  key_vault_id = var.kv_id
 }

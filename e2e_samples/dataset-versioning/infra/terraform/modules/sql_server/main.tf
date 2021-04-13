@@ -103,7 +103,7 @@ resource "azurerm_sql_firewall_rule" "sql_firewall_rule" {
 
 
 resource "azurerm_key_vault_secret" "key_vault_secret" {
-  name            = "watermarkdb-connection"
-  value           = "Server=tcp:${azurerm_sql_server.sql_server.fully_qualified_domain_name},1433;Initial Catalog=${azurerm_mssql_database.mssql_database.name};Persist Security Info=False;User ID=${azurerm_sql_server.sql_server.administrator_login};Password=\"${azurerm_sql_server.sql_server.administrator_login_password}\";MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
-  key_vault_id    = var.kv_id
+  name         = "watermarkdb-connection"
+  value        = "Server=tcp:${azurerm_sql_server.sql_server.fully_qualified_domain_name},1433;Initial Catalog=${azurerm_mssql_database.mssql_database.name};Persist Security Info=False;User ID=${azurerm_sql_server.sql_server.administrator_login};Password=\"${azurerm_sql_server.sql_server.administrator_login_password}\";MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+  key_vault_id = var.kv_id
 }
