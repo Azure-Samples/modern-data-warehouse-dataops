@@ -9,7 +9,12 @@ from process import Process
 
 def read_csv(path: str) -> pd.DataFrame:
     """
-    Read csv and filter with specific date
+    Read csv and modify datatype
+
+    :param path: path to csv
+    :type path: str
+    :return: dataframe with required columns
+    :rtype: pd.DataFrame
     """
     df = pd.read_csv(path)
     df = df[["id", "loan_amnt", "annual_inc", "dti", "delinq_2yrs", "total_acc","total_pymnt", "issue_d", "earliest_cr_line", "loan_status"]]
@@ -19,8 +24,18 @@ def read_csv(path: str) -> pd.DataFrame:
 
 
 def main(KeyvaultWrapper, SqlWrapper, Process, args_input):
+    """
+    main function to call argument parser to call the job chosen by the user
+
+    :param KeyvaultWrapper
+    :type Keyvaultwrapper: Keyvaultwrapper
+    :param SqlWrapper
+    :type SqlWrapper: SqlWrapper
+    :param Process
+    :type Process: Process
+    """
     my_parser = argparse.ArgumentParser(description='Make sure to login')
-    
+
     my_parser.add_argument('-c', '--clean', default=False, action='store_true', help='Insert specific version to be inserted in to sql')
     my_parser.add_argument('-v', '--version', action='store', type=int, help='Insert specific version to be inserted in to sql')
     my_parser.add_argument('-p', '--path', action='store', type=str, help='Path for the source csv file')
@@ -45,5 +60,4 @@ def main(KeyvaultWrapper, SqlWrapper, Process, args_input):
 
 
 if __name__ == '__main__':
-    print(sys.argv[1:])
     main(KeyvaultWrapper, SqlWrapper, Process, sys.argv[1:])
