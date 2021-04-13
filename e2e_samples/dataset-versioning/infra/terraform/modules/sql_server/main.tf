@@ -47,7 +47,7 @@ resource "azurerm_sql_server" "sql_server" {
   location                     = var.location
   resource_group_name          = var.rg_name
   version                      = "12.0"
-  administrator_login          = ""
+  administrator_login          = "ForDataOpsDemoAdmin"
   administrator_login_password = random_password.password.result
   extended_auditing_policy {
     storage_endpoint           = azurerm_storage_account.storage_account.primary_blob_endpoint
