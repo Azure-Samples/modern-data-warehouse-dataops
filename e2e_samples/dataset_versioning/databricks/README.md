@@ -12,7 +12,7 @@ The [official doc](https://docs.microsoft.com/en-us/azure/databricks/security/da
 - Will you be accessing your data in a more interactive, ad-hoc way, perhaps developing an ML model or building an operational dashboard? In that case, we recommend that you use Azure Active Directory (Azure AD) credential passthrough.
 - Will you be running automated, scheduled workloads that require one-off access to the containers in your data lake? Then using service principals to access Azure Data Lake Storage is preferred.
 
-## Setup Credential Passthrough
+## Setup Credential Passthrough for Azure Data Lake Storage Gen2
 Check the [Credential Passthrough Documentation](https://docs.microsoft.com/en-us/azure/databricks/security/credential-passthrough/adls-passthrough) for more details and how to setup credential passthrough. Basically, you need to check the "Enable credential passthrough for user-level data access" checkbox when creating the cluster in the advanced settings, and use these lines in your databricks notebook:
 
 ```
