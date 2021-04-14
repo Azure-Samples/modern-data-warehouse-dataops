@@ -1,0 +1,18 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "value": "adf-loan-dev"
+        },
+        "KeyVault_properties_typeProperties_baseUrl": {
+            "value": "https://kv-loan-dev-eastus.vault.azure.net/"
+        },
+        "AzureSqlDatabase_properties_typeProperties_connectionString_secretName": {
+            "value": "watermarkdb-connection"
+        },
+        "AzureBlobFS_properties_typeProperties_serviceEndpoint": {
+            "value": "https://dlsloandev.blob.core.windows.net/"
+        }
+    }
+}

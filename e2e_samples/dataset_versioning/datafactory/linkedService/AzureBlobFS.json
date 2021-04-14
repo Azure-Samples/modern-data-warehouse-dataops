@@ -1,0 +1,11 @@
+{
+	"name": "AzureBlobFS",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobStorage",
+		"typeProperties": {
+			"serviceEndpoint": "https://dlsloandev.blob.core.windows.net/",
+			"accountKind": "StorageV2"
+		}
+	}
+}

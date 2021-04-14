@@ -1,0 +1,10 @@
+{
+	"name": "KeyVault",
+	"properties": {
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://kv-loan-dev-eastus.vault.azure.net/"
+		}
+	}
+}

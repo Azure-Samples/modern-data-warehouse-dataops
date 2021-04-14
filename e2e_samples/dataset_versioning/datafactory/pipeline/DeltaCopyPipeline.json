@@ -1,0 +1,168 @@
+{
+	"name": "DeltaCopyPipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "LookupOldWatermark",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "SELECT WaterMarkVal\nFROM [dbo].[WaterMark]\nWHERE TableName = '@{pipeline().parameters.SourceTableName}'",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "AzureSqlDb",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "LookupNewWatermark",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "Select Max(@{pipeline().parameters.WatermarkColumnName}) AS NewWaterMarkVal from @{pipeline().parameters.SourceTableName}",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "AzureSqlDb",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "UpdateWatermark",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "DeltaCopy",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[usp_UpdateWatermark]",
+					"storedProcedureParameters": {
+						"LastModifiedtime": {
+							"value": {
+								"value": "@activity('LookupNewWatermark').output.firstRow.NewWaterMarkVal",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"TableName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceTableName",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "DeltaCopy",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "LookupOldWatermark",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "LookupNewWatermark",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "CopyWithVersion",
+						"type": "DataFlowReference",
+						"parameters": {
+							"SourceTableName": {
+								"value": "'@{pipeline().parameters.SourceTableName}'",
+								"type": "Expression"
+							},
+							"OldwaterMarkVal": {
+								"value": "'@{activity('LookupOldWatermark').output.firstRow.WaterMarkVal}'",
+								"type": "Expression"
+							},
+							"NewwaterMarkVal": {
+								"value": "'@{activity('LookupNewWatermark').output.firstRow.NewWaterMarkVal}'",
+								"type": "Expression"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"parameters": {
+			"SourceTableName": {
+				"type": "string",
+				"defaultValue": "source"
+			},
+			"WatermarkColumnName": {
+				"type": "string",
+				"defaultValue": "issue_d"
+			}
+		},
+		"annotations": []
+	}
+}
