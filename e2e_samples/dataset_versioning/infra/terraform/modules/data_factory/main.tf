@@ -7,6 +7,11 @@ resource "azurerm_data_factory" "data_factory" {
     type = "SystemAssigned"
   }
 
+  lifecycle {
+    ignore_changes = [
+      vsts_configuration,
+    ]
+  }
   tags = {
     "iac" = "terraform"
   }
