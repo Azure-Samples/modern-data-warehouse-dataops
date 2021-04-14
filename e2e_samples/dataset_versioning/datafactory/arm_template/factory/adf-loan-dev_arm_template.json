@@ -4,12 +4,10 @@
     "parameters": {
         "factoryName": {
             "type": "string",
-            "metadata": "Data Factory name",
-            "defaultValue": "adf-loan-dev"
+            "metadata": "Data Factory name"
         },
         "dataFactory_location": {
-            "type": "string",
-            "defaultValue": "eastus"
+            "type": "string"
         }
     },
     "variables": {

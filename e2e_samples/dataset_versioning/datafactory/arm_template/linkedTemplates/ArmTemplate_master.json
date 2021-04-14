@@ -4,20 +4,17 @@
     "parameters": {
         "factoryName": {
             "type": "string",
-            "metadata": "Data Factory name",
-            "defaultValue": "adf-loan-dev"
+            "metadata": "Data Factory name"
         },
         "KeyVault_properties_typeProperties_baseUrl": {
-            "type": "string",
-            "defaultValue": "https://kv-loan-dev-eastus.vault.azure.net/"
+            "type": "string"
         },
         "AzureSqlDatabase_properties_typeProperties_connectionString_secretName": {
             "type": "string",
             "defaultValue": "watermarkdb-connection"
         },
         "AzureBlobFS_properties_typeProperties_serviceEndpoint": {
-            "type": "string",
-            "defaultValue": "https://dlsloandev.blob.core.windows.net/"
+            "type": "string"
         },
         "containerUri": {
             "type": "string",
