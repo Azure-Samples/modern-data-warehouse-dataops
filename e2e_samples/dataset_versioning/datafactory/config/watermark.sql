@@ -4,7 +4,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[WaterMark](
-	[TableName] [varchar](50) NULL,
+	[TableName] [varchar](50) NULL UNIQUE,
 	[WaterMarkVal] [datetime] NULL
 ) ON [PRIMARY]
 GO
