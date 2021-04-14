@@ -4,8 +4,8 @@ on:
     branches:
     - master
   pull_request:
-    paths:
-    - .github/workflows/yaml.yml
+    branches:
+    - master
 
 jobs:
   yml-lint:
