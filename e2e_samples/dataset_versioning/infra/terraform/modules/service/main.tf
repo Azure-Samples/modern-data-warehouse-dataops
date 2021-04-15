@@ -11,6 +11,7 @@ module "keyvault" {
   rg_name               = var.rg_name
   location              = var.location
   client_config_current = data.azurerm_client_config.current
+  adf_identity_id       = module.azure_data_factory.adf_identity_id
 }
 
 module "azure_data_factory" {

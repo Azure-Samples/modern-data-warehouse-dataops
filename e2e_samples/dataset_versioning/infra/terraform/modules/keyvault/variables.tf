@@ -29,3 +29,8 @@ variable "client_config_current" {
     object_id = string
   })
 }
+
+variable "adf_identity_id" {
+  type        = string
+  description = "ID for ADF managed identity."
+}

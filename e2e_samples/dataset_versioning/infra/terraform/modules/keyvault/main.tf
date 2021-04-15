@@ -11,9 +11,16 @@ resource "azurerm_key_vault" "keyvault" {
   tags = {
     "iac" = "terraform"
   }
+
   access_policy {
     tenant_id          = var.client_config_current.tenant_id
     object_id          = var.client_config_current.object_id
     secret_permissions = local.get_set_delete_purge_list_permissions
+  }
+
+  access_policy {
+    tenant_id          = var.client_config_current.tenant_id
+    object_id          = var.adf_identity_id
+    secret_permissions = local.get_permissions
   }
 }
