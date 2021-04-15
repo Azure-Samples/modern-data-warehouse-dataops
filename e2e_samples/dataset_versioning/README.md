@@ -20,6 +20,22 @@ The solution demonstrates how to achieve the requirements described above by:
 We refer to [LendingClub issued Loans](https://www.kaggle.com/husainsb/lendingclub-issued-loans?select=lc_loan.csv) data hosted by Kaggle.
 
 ## How to use the sample
-1. Sign-up to  [Kaggle](https://www.kaggle.com/)
-1. Download (LendingClub issued Loans)[https://www.kaggle.com/husainsb/lendingclub-issued-loans?select=lc_loan.csv] data
+1. Setup Infra
+    1. **[Need update]** Run terraform
+    1. **[Need update]** Add user permission (Credential passthough)
+    1. Create table and install stored procedure - [detailed steps](./datafactory/config/README.md)
+    1. Deploy application logic (ARM templates) for Data Factory - [detailed steps](./datafactory/README.md)
+1. Download data
+    1. Sign-up to [Kaggle](https://www.kaggle.com/)
+    1. Download [LendingClub issued Loans](https://www.kaggle.com/husainsb/lendingclub-issued-loans?select=lc_loan.csv) data
+1. Load data
+    1. **[Need update]** Use Python script to load "LendingClub issued Loans" data
+1. Functional test
+    1. Run Azure Data Factory pipeline to load Delta Lake
+        1. Go to provisioned Azure Data Factory, then click [Author & Monitor] button to open development portal.
+        1. Click pencil button at left pane, then select [DeltaCopyPipeline].
+        1. Cick [Debug] button to run pipeline.
+    1. **[Need update]** Use Databricks to query Delta versions
+    1. **[Need update]** Run Python script to incrementally load
+1. **[Need update]** 
 <Will update based on demo discussion>
