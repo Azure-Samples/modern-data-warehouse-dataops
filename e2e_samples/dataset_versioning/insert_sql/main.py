@@ -27,7 +27,7 @@ def read_csv(path: str) -> pd.DataFrame:
              'issue_d',
              'earliest_cr_line',
              'loan_status']]
-    df["issue_d"] = pd.to_datetime(df['issue_d'])
+    df['issue_d'] = pd.to_datetime(df['issue_d'])
     df['earliest_cr_line'] = pd.to_datetime(df['earliest_cr_line'])
     return df
 
