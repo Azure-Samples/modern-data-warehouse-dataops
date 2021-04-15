@@ -24,4 +24,4 @@ END
 GO
 
 -- Truncate table when you want to reset data in dbo.WaterMark
-Truncate table dbo.WaterMark
+Truncate table [dbo].[WaterMark]
