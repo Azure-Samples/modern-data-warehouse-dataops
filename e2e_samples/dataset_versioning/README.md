@@ -10,7 +10,7 @@ For achieving it, data scientists (DS) asks data engineers to save multiple-vers
 The solution demonstrates how to achieve the requirements described above by:
 - Data Pipeline (Azure Data Factory) copy **versioned data** from source to sink
 - DS can read versioned data from Data Bricks. They can specify version number when they load data from Delta Lake.
-- Data pipeline utilize watermark to see new/updated data in the data source. It helps to **copy data with shorter duration**.
+- Data pipeline utilizes a watermark to see new/updated data in the data source. It helps to **copy data with shorter duration**.
 - Terraform helps enginners to provision expected infrastructure.
 - Local python script inject data to data source (SQL Database) incrementally, so that you can simulate data source update(ex. you can inject 2020 data at first, then inject 2021 data to data source).
 
@@ -21,5 +21,5 @@ We refer to [LendingClub issued Loans](https://www.kaggle.com/husainsb/lendingcl
 
 ## How to use the sample
 1. Sign-up to  [Kaggle](https://www.kaggle.com/)
-1. If you agree to Kaggle's terms of use, please download (LendingClub issued Loans)[https://www.kaggle.com/husainsb/lendingclub-issued-loans?select=lc_loan.csv] data
+1. Download (LendingClub issued Loans)[https://www.kaggle.com/husainsb/lendingclub-issued-loans?select=lc_loan.csv] data
 <Will update based on demo discussion>
