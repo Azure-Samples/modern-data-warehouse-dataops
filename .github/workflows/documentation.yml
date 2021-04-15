@@ -4,10 +4,8 @@ on:
     branches:
     - master
   pull_request:
-    paths:
-    - .github/workflows/documentation.yml
-    - .markdownlinkcheck.json
-    - .markdownlint.yml
+    branches:
+    - master
 
 jobs:
   markdown-link-check:
