@@ -16,7 +16,7 @@ The solution demonstrates how to achieve the requirements described above by:
 
 ![architecture](./docs/images/architecture.PNG)
 
-## Data we uses
+## Data we use
 We refer to [LendingClub issued Loans](https://www.kaggle.com/husainsb/lendingclub-issued-loans?select=lc_loan.csv) data hosted by Kaggle.
 
 ## How to use the sample
