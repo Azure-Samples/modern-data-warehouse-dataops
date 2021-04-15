@@ -6,7 +6,7 @@ class Process:
     """Process object to filter df with specified version
     """
 
-    def __init__(self, df: pd.DataFrame, version_date='issue_id'):
+    def __init__(self, df: pd.DataFrame, version_date='issue_d'):
         self.VERSION_DATE = version_date
         self.df = df
         self.min = min(self.df[self.VERSION_DATE])
