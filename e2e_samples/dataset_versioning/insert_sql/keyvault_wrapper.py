@@ -16,4 +16,4 @@ class KeyvaultWrapper:
         self.user_name = urllib.parse.quote_plus(client.get_secret("sql-userid").value)
         self.server = urllib.parse.quote_plus(client.get_secret("sqlserver").value)
         self.database = urllib.parse.quote_plus(client.get_secret("sql-db").value)
-        self.table_name = urllib.parse.quote_plus("newsource")
+        self.table_name = urllib.parse.quote_plus(client.get_secret("sql-table").value)
