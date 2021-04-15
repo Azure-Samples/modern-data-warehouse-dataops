@@ -128,4 +128,4 @@ Modules are the building blocks of resources. A module is a wrapper with more th
 
 ## References
 
-* [Cobalt project](https://github.com/microsoft/cobalt)
+- [Cobalt project](https://github.com/microsoft/cobalt)

@@ -54,7 +54,7 @@ Additional *optional* configuration:
 The code is organized as follows:
 
 - `tests/`
-  - `conftest.py` - Common Pytest [Fixtures](https://docs.pytest.org/en/latest/fixture.html).
+  - `conftest.py` - Common Pytest [Fixtures](https://docs.pytest.org/en/stable/fixture.html).
   - `dataconnectors/` - Data connector specific fixtures, subdivided into modules.
   - `data/` - all test data used in test cases
   - `test_*.py` - contain all test cases
