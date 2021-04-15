@@ -17,6 +17,13 @@ resource "azurerm_storage_account" "storage_account" {
 resource "azurerm_storage_data_lake_gen2_filesystem" "data_lake_filesystem" {
   name               = "datalake"
   storage_account_id = azurerm_storage_account.storage_account.id
+
+  ace {
+    id          = var.adf_identity_id
+    permissions = "rwx"
+    scope       = "access"
+    type        = "user"
+  }
 }
 
 resource "azurerm_key_vault_secret" "datalake_secret" {

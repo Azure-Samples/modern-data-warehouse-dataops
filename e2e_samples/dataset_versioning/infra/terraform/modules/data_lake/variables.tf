@@ -27,3 +27,7 @@ variable "kv_id" {
   description = "Key Vault ID For Key Vault linked service."
 }
 
+variable "adf_identity_id" {
+  type        = string
+  description = "ID for ADF managed identity."
+}
