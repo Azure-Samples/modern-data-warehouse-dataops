@@ -24,12 +24,13 @@ module "azure_data_factory" {
 }
 
 module "data_lake" {
-  source   = "../../modules/data_lake"
-  location = var.location
-  rg_name  = var.rg_name
-  app_name = var.app_name
-  env      = var.env
-  kv_id    = module.keyvault.kv_id
+  source          = "../../modules/data_lake"
+  location        = var.location
+  rg_name         = var.rg_name
+  app_name        = var.app_name
+  env             = var.env
+  kv_id           = module.keyvault.kv_id
+  adf_identity_id = module.azure_data_factory.adf_identity_id
 }
 
 
