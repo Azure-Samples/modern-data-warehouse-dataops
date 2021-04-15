@@ -7,17 +7,17 @@ from pandas._testing import assert_frame_equal
 
 
 def test_process_non_datetime_water_mark():
-    data = np.array([['id', 'col1', 'watermark'], ['1', 1, 2], ['2', 3, 4]])
+    data = np.array([['id', 'col1', 'date'], ['1', 1, 2], ['2', 3, 4]])
     df = pd.DataFrame(data=data[1:, ], columns=data[0, 0:])
-    process = Process(df, water_mark='watermark')
+    process = Process(df, version_date='date')
     with pytest.raises(AttributeError):
         process.filter_with_version(0)
 
 
 def test_process_normal_case():
-    data = np.array([['id', 'col1', 'watermark'], ['1', 1, datetime(2020, 1, 1)], ['2', 3, datetime(2020, 2, 1)]])
+    data = np.array([['id', 'col1', 'date'], ['1', 1, datetime(2020, 1, 1)], ['2', 3, datetime(2020, 2, 1)]])
     df = pd.DataFrame(data=data[1:, ], columns=data[0, 0:])
-    process = Process(df, water_mark='watermark')
+    process = Process(df, version_date='date')
     actual_v0 = process.filter_with_version(0)
     expected_v0 = pd.DataFrame(data=data[1:2, ], columns=data[0, 0:])
     actual_v1 = process.filter_with_version(1)

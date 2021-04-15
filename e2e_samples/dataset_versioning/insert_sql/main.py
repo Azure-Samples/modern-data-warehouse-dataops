@@ -17,7 +17,16 @@ def read_csv(path: str) -> pd.DataFrame:
     :rtype: pd.DataFrame
     """
     df = pd.read_csv(path)
-    df = df[["id", "loan_amnt", "annual_inc", "dti", "delinq_2yrs", "total_acc","total_pymnt", "issue_d", "earliest_cr_line", "loan_status"]]
+    df = df[['id',
+             'loan_amnt',
+             'annual_inc',
+             'dti',
+             'delinq_2yrs',
+             'total_acc',
+             'total_pymnt',
+             'issue_d',
+             'earliest_cr_line',
+             'loan_status']]
     df["issue_d"] = pd.to_datetime(df['issue_d'])
     df['earliest_cr_line'] = pd.to_datetime(df['earliest_cr_line'])
     return df
@@ -35,10 +44,31 @@ def main(KeyvaultWrapper, SqlWrapper, Process, args_input):
     :type Process: Process
     """
     my_parser = argparse.ArgumentParser(description='Make sure to login')
-    my_parser.add_argument('-c', '--clean', default=False, action='store_true', help='Insert specific version to be inserted in to sql')
-    my_parser.add_argument('-v', '--version', action='store', type=int, help='Insert specific version to be inserted in to sql')
-    my_parser.add_argument('-p', '--path', action='store', type=str, help='Path for the source csv file')
-    my_parser.add_argument('-k', '--keyvault', action='store', type=str, required=True, help='Name of keyvault')
+    my_parser.add_argument(
+        '-c',
+        '--clean',
+        default=False,
+        action='store_true',
+        help='Insert specific version to be inserted in to sql')
+    my_parser.add_argument(
+        '-v',
+        '--version',
+        action='store',
+        type=int,
+        help='Insert specific version to be inserted in to sql')
+    my_parser.add_argument(
+        '-p',
+        '--path',
+        action='store',
+        type=str,
+        help='Path for the source csv file')
+    my_parser.add_argument(
+        '-k',
+        '--keyvault',
+        action='store',
+        type=str,
+        required=True,
+        help='Name of keyvault')
     args = my_parser.parse_args(args_input)
 
     if not args.clean:

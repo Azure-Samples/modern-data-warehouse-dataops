@@ -5,10 +5,11 @@ from datetime import datetime
 class Process:
     """Process object to filter df with specified version
     """
-    def __init__(self, df: pd.DataFrame, water_mark='issue_id'):
-        self.WATER_MARK = water_mark
+
+    def __init__(self, df: pd.DataFrame, version_date='issue_id'):
+        self.VERSION_DATE = version_date
         self.df = df
-        self.min = min(self.df[self.WATER_MARK])
+        self.min = min(self.df[self.VERSION_DATE])
 
     def _version_converter(self, version: int) -> datetime:
         """
@@ -36,6 +37,7 @@ class Process:
         """
 
         try:
-            return self.df.loc[self.df[self.WATER_MARK] == self._version_converter(version)]
+            return self.df.loc[self.df[self.VERSION_DATE]
+                               == self._version_converter(version)]
         except AttributeError:
             raise
