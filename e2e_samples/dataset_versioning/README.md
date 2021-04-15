@@ -25,11 +25,8 @@ We refer to [LendingClub issued Loans](https://www.kaggle.com/husainsb/lendingcl
     1. **[Need update]** Add user permission (Credential passthough)
     1. Create table and install stored procedure - [detailed steps](./datafactory/config/README.md)
     1. Deploy application logic (ARM templates) for Data Factory - [detailed steps](./datafactory/README.md)
-1. Download data
-    1. Sign-up to [Kaggle](https://www.kaggle.com/)
-    1. Download [LendingClub issued Loans](https://www.kaggle.com/husainsb/lendingclub-issued-loans?select=lc_loan.csv) data
-1. Load data
-    1. **[Need update]** Use Python script to load "LendingClub issued Loans" data
+1. Load data into data source (Azure SQL Database)
+    1. Use Python script to load "LendingClub issued Loans" data - [detailed steps](./insert_sql/README.md)
 1. Functional test
     1. Run Azure Data Factory pipeline to load Delta Lake
         1. Go to provisioned Azure Data Factory, then click [Author & Monitor] button to open development portal.
