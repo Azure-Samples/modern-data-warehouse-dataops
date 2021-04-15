@@ -7,9 +7,9 @@ class Process:
     """
 
     def __init__(self, df: pd.DataFrame, version_date='issue_d'):
-        self.VERSION_DATE = version_date
+        self.version_date = version_date
         self.df = df
-        self.min = min(self.df[self.VERSION_DATE])
+        self.min = min(self.df[self.version_date])
 
     def _version_converter(self, version: int) -> datetime:
         """
@@ -37,7 +37,7 @@ class Process:
         """
 
         try:
-            return self.df.loc[self.df[self.VERSION_DATE]
+            return self.df.loc[self.df[self.version_date]
                                == self._version_converter(version)]
         except AttributeError:
             raise

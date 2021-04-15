@@ -7,11 +7,16 @@ If you are using devcontainer, you can just open in devcontainer and everything 
 ### Local
 If you are not using devcontainer, you need to install required lib with ```pip install requirements.txt```
 
-## Login to azure
+## Run your script
 ```az login```
 
 Now you are good to run python main.py with different flags. You can get more details with -h flag.
 
+### Sample execution to insert
+```python main.py -v 0 -k https://sample.vault.azure.net -p ./lc_load.csv```
+
+### Sample execution to clean up
+```python main.py -c -k https://sample.vault.azure.net```
 
 # How to test
 ```
