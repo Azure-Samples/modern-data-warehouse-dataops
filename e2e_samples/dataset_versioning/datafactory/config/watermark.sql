@@ -34,7 +34,7 @@ CREATE TABLE [dbo].[source](
 	loan_amnt float NULL,
 	annual_inc float NULL,
 	dti float NULL,
-	deling_2yrs float NULL,
+	delinq_2yrs float NULL,
 	total_acc float NULL,
 	total_pymnt float NULL,
 	issue_d date NULL,
