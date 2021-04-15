@@ -4,8 +4,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[WaterMark](
-	[TableName] [varchar](50) NOT NULL UNIQUE,
-	[WaterMarkVal] [datetime] NOT NULL
+	TableName varchar(50) NOT NULL UNIQUE,
+	WaterMarkVal datetime NOT NULL
 ) ON [PRIMARY]
 GO
 
@@ -23,5 +23,21 @@ BEGIN
 END
 GO
 
--- Truncate table when you want to reset data in dbo.WaterMark
-Truncate table [dbo].[WaterMark]
+-- Create Source Table
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[source](
+	id int NOT NULL UNIQUE,
+	loan_amnt float NULL,
+	annual_inc float NULL,
+	dti float NULL,
+	delinq_2yrs float NULL,
+	total_acc float NULL,
+	total_pymnt float NULL,
+	issue_d date NULL,
+	earliest_cr_line date NULL,
+	loan_status nvarchar(max) NULL
+)
