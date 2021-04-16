@@ -29,11 +29,11 @@ In [sample 1](../sample1_basic_azure_databricks_environment), we focused on depl
 
 In this sample we focus on hardening the security around the Azure Databricks environment by implementing the following:
 
-1. [Azure Virtual Network](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview) - To achieve network isolation . 
+1.[Azure Virtual Network](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview) - To achieve network isolation.
 
-2. [Hub and Spoke Network topology](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/hybrid-networking/hub-spoke?tabs=cli)  - To implement [Perimeter networks](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/perimeter-networks).
+2.[Hub and Spoke Network topology](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/hybrid-networking/hub-spoke?tabs=cli)  - To implement [Perimeter networks](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/perimeter-networks).
 
-3. [Azure Private Links](https://docs.microsoft.com/en-us/azure/private-link/private-link-overview) - To secure connectivity with dependent PaaS services.
+3.[Azure Private Links](https://docs.microsoft.com/en-us/azure/private-link/private-link-overview) - To secure connectivity with dependent PaaS services.
 
 This sample is also aligned to the implementation pattern published by Databricks around [Data Exfiltration Protection with Azure Databricks](https://databricks.com/blog/2020/03/27/data-exfiltration-protection-with-azure-databricks.html).
 
@@ -159,7 +159,7 @@ The following are the prerequisites for deploying this sample :
 #### 3.1.1 Software Prerequisites
 
 1. [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/) installed on the local machine
-   - *Installation instructions* can be found [here](hhttps://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+   - *Installation instructions* can be found [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 1. For Windows users,
    1. Option 1: [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
    2. Option 2: Use the dev container published [here](../.devcontainer) as a host for the bash shell.
@@ -193,19 +193,19 @@ Below listed are the steps to deploy this sample :
 
 The following resources will be deployed as a part of this sample once the script is executed:
 
-1. Azure Databricks workspace.
+1.Azure Databricks workspace.
 
 ![alt text](../Common_Assets/Images/ADE_Adb.png "Logo Title Text 1")
 
-2. Azure Storage with hierarchical namespace enabled.
+2.Azure Storage with hierarchical namespace enabled.
 
 ![alt text](../Common_Assets/Images/ADE_Storage.png "Logo Title Text 1")
 
-3. Azure Key vault with all the secrets configured.
+3.Azure Key vault with all the secrets configured.
 
 ![alt text](../Common_Assets/Images/ADE_Keyvault.png "Logo Title Text 1")
 
-4. Azure Virtual Networks with Vnet peering between the hub and spoke Vnets
+4.Azure Virtual Networks with Vnet peering between the hub and spoke Vnets
   
 **Hub Vnet**
 ![alt text](../Common_Assets/Images/ADE_Hub.png "Logo Title Text 1")
@@ -213,7 +213,7 @@ The following resources will be deployed as a part of this sample once the scrip
 **Spoke Vnet**
 ![alt text](../Common_Assets/Images/ADE_Spoke.png "Logo Title Text 1")
 
-5. Azure Firewall with rules configured
+5.Azure Firewall with rules configured
 
 **Network Rules**
 ![alt text](../Common_Assets/Images/ADE_Firewall.png "Logo Title Text 1")
@@ -223,11 +223,11 @@ The following resources will be deployed as a part of this sample once the scrip
 
 Please note that the firewall rules configured in this sample are as per Microsoft Azure documentation captured [here](https://docs.microsoft.com/en-us/azure/databricks/administration-guide/cloud-configurations/azure/udr). The routes are configured for West US region. In case you need to deploy this sample in any other Azure region, please alter the [ARM template for the firewall](firewall/firewall.template.json) with the IP addresses for the target region.
 
-6. Azure public IP address associated with the firewall
+6.Azure public IP address associated with the firewall
 
 ![alt text](../Common_Assets/Images/ADE_IP.png "Logo Title Text 1")
 
-7. Azure Routing table with routes configured
+7.Azure Routing table with routes configured
 
 **Subnets**
 ![alt text](../Common_Assets/Images/ADE_Subnet.png "Logo Title Text 1")
@@ -235,11 +235,11 @@ Please note that the firewall rules configured in this sample are as per Microso
 **Routes**
 ![alt text](../Common_Assets/Images/ADE_Route.png "Logo Title Text 1")
 
-8. Azure Network Security Group
+8.Azure Network Security Group
 
 ![alt text](../Common_Assets/Images/ADE_NSG.png "Logo Title Text 1")
 
-8. Azure Private Link
+8.Azure Private Link
 
 > **NOTE:** Configuring Private links require provisioning of Network Interface cards and Private DNS zones. The following screenshot illustrates the resources configured for two private links. One for the Storage and Another for Key vault.
 >

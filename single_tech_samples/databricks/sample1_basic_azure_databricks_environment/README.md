@@ -137,7 +137,7 @@ The following are the prerequisites for deploying this sample :
 #### 3.1.1 Software Prerequisites
 
 1. [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/) installed on the local machine
-   - *Installation instructions* can be found [here](hhttps://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+   - *Installation instructions* can be found [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 1. For Windows users,
    1. Option 1: [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
    2. Option 2: Use the dev container published [here](../.devcontainer) as a host for the bash shell.
@@ -171,15 +171,15 @@ Below listed are the steps to deploy this sample :
 
 The following resources will be deployed as a part of this sample once the script is executed:
 
-1. Azure Databricks workspace.
+1.Azure Databricks workspace.
 
 ![alt text](../Common_Assets/Images/IAC_Adb.png "Logo Title Text 1")
 
-3. Azure Storage with hierarchical namespace enabled.
+2.Azure Storage with hierarchical namespace enabled.
 
 ![alt text](../Common_Assets/Images/IAC_Storage.png "Logo Title Text 1")
 
-4. Azure Key vault with all the secrets configured.
+3.Azure Key vault with all the secrets configured.
 
 ![alt text](../Common_Assets/Images/IAC_Keyvault.png "Logo Title Text 1")
 

@@ -33,7 +33,7 @@ If you would like to run this sample with sample 2, please follow
 for a few extra setup steps.
 
 ### 1.2. Setup and deployment
- 
+
 #### Source Environment File
 
 First you need to configure your environment variable file `.env`, which should look same
@@ -47,11 +47,11 @@ This will give you the configuration you need to start the following process.
 
 #### Run `deploy.sh`
 
-    You can run ./deploy.sh to start the deployment process in the below steps.
+You can run ./deploy.sh to start the deployment process in the below steps.
 
-    ```bash
-    ./deploy.sh
-    ```
+```bash
+./deploy.sh
+```
 
 This will execute a few scripts:
 
@@ -81,6 +81,7 @@ may want to run this step again if you are around for longer.
 ##### import-data-access-notebooks.sh
 
 This step will upload the following scripts into the root level of your Databricks workspace:
+
 - `access-data-directly-via-account-key.ipy`
 - `access-data-mount-via-ad-passthrough.ipy`
 

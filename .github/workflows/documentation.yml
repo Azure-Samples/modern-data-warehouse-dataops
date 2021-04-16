@@ -3,9 +3,11 @@ on:
   push:
     branches:
     - master
+    - single-tech/databricks
   pull_request:
     branches:
     - master
+    - single-tech/databricks
 
 jobs:
   markdown-link-check:
