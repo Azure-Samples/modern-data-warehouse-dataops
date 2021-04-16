@@ -171,15 +171,15 @@ Below listed are the steps to deploy this sample :
 
 The following resources will be deployed as a part of this sample once the script is executed:
 
-1. Azure Databricks workspace.
+1.Azure Databricks workspace.
 
 ![alt text](../Common_Assets/Images/IAC_Adb.png "Logo Title Text 1")
 
-3. Azure Storage with hierarchical namespace enabled.
+2.Azure Storage with hierarchical namespace enabled.
 
 ![alt text](../Common_Assets/Images/IAC_Storage.png "Logo Title Text 1")
 
-4. Azure Key vault with all the secrets configured.
+3.Azure Key vault with all the secrets configured.
 
 ![alt text](../Common_Assets/Images/IAC_Keyvault.png "Logo Title Text 1")
 
