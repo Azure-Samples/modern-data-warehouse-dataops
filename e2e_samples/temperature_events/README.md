@@ -33,11 +33,14 @@ The sample demonstrates how Events can be processed in a streaming serverless pi
   - [Modularize Terraform](#modularize-terraform)
   - [Isolation of Environment](#isolation-of-environment)
 - [Observability](#observability)
-  - [Application Insights](#application-insights)
   - [Showing metrics on Azure dashboard](#showing-metrics-on-azure-dashboard)
+  - [Application Insights](#application-insights)
+    - [Application Map](#application-map)
+    - [Azure Function Scaling](#azure-function-scaling)
+    - [Distributed Tracing](#distributed-tracing)
+    - [End-to-End Transaction Detail](#end-to-end-transaction-detail)
 - [Load testing](#load-testing)
   - [Load testing architecture](#load-testing-architecture)
-  - [Defining pipeline branches and creating weighted sample data](#defining-pipeline-branches-and-creating-weighted-sample-data)
 
 ---------------------
 
@@ -346,7 +349,7 @@ Getting started resources:
 
 ### Load testing architecture
 
-The load testing can be invoked by the [IoTSimulator.ps1](loadtesting/IoTSimulator.ps1) script. This can be run locally via an authenticated Azure CLI session, or in an Azure DevOps pipeline using the load testing [azure-pipeline.yml](loadtesting/azure-pipeline.yml) pipeline definition.
+The load testing can be invoked by the [IoTSimulator.ps1](./loadtesting/IoTSimulator.ps1) script. This can be run locally via an authenticated Azure CLI session, or in an Azure DevOps pipeline using the load testing [azure-pipeline.yml](./loadtesting/loadtest-pipeline.yml) pipeline definition.
 
 The script will orchestrate the test by automating these steps:
 
