@@ -159,7 +159,7 @@ The following are the prerequisites for deploying this sample :
 #### 3.1.1 Software Prerequisites
 
 1. [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/) installed on the local machine
-   - *Installation instructions* can be found [here](hhttps://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+   - *Installation instructions* can be found [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 1. For Windows users,
    1. Option 1: [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
    2. Option 2: Use the dev container published [here](../.devcontainer) as a host for the bash shell.
