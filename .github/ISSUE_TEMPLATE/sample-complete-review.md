@@ -1,18 +1,17 @@
 ---
-name: Definition of Done Review
-about: Verify User Story meets acceptance criteria, has key features and meets Definition
-  of Done
+name: Sample Complete Review
+about: Final review before merging feature branch into the main branch.
 title: ''
 labels: Release
 assignees: ''
 
 ---
 
-This checklist is for verifying all User Story Acceptance Criteria and Definition of Done (DoD) have been completed in order to move User Story to "Done".
+This checklist is for verifying if a Sample is ready to be merged into the main branch.
 
-## USER STORY TITLE
+## SAMPLE TITLE
 
-Add user story or References #issue
+< Description >
 
 ## Acceptance Criteria
 
@@ -28,16 +27,14 @@ Add user story or References #issue
 
 ## Definition of Done
 
-- [ ] Code Review completed
+- [ ] New or Existing documentation is updated (readme, .md's) with appropriate sections:
+  - [ ] Solution Overview
+  - [ ] Key Concepts
+  - [ ] Key Learnings
+  - [ ] How to Use the Sample, Known Issues and Workarounds.
 - [ ] All existing automated tests (unit and e2e) pass successfully, new tests added as needed
-- [ ] Code changes checked into main
-- [ ] Sync github actions from main template
-- [ ] Existing documentation is updated (readme, .md's)
-- [ ] New documentation needed to support the change is created
-- [ ] CI completes successfully
-- [ ] CD completes successfully
-- [ ] Smoke test deployed for 48 hours
-
-## Next Steps
-
-- [ ] Release template created
+- [ ] Rebase with main to pull in latest.
+- [ ] CI completes successfully, along with CD (if applicable)
+- [ ] Sample includes Devcontainer
+- [ ] Sample includes `./deploy.sh` or `./deploy.ps1`
+- [ ] Sample can be deployed by user outside of main Development team.

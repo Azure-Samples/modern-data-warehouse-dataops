@@ -1,43 +1,40 @@
 ---
-name: Sprint0 Checklist
-about: Pre-Sprint planning checklist
+name: New Sample Setup
+about: New Sample setup checklist
 title: ''
-labels: Process, Pri1
+labels: ''
 assignees: ''
 
 ---
 
+## New Sample Checklist
 
-# Sprint0 Checklist
+Ensure you've read the [Contributing Guide (Microsoft Internal only.)](https://dev.azure.com/csedtd/_git/DataOps?path=%2FCONTRIBUTING.md&_a=preview)
 
 ## Tooling
-- [ ] Setup/Configure Azure Subscriptions  (4.co)
-- [ ] CD Tooling (GitHub Actions) 
-- [ ] Work Item tracking Tooling (GitHub) 
+
+- [ ] Setup/Configure Azure Subscriptions (if applicable)
+- [ ] CI/CD Tooling (Azure DevOps)
+- [ ] Setup Work Item tracking Tooling (GitHub Project)
 - [ ] Collaboration and Communication Tooling  (Teams)
-- [ ] Share user lists for Azure AD 
-- [ ] Share user lists for Source Control
-- [ ] Ensure Resource Groups are locked
+- [ ] Plan to create Devcontainer with appropriate linters and markdown link checkers.
 
 ## Planning
-- [ ] Define success criteria 
-- [ ] Customer requirements
-- [ ] Customer Team identified
-- [ ] Microsoft Team identified 
-- [ ] Architecture Review Process
+
+- [ ] Decide whether you are creating an End-to-End sample or Single-Technology sample
+- [ ] Decide which DataOps Key Concepts (ei. IaC, CI/CD, Testing, Observability, etc.) will you be demonstrating in the sample
+- [ ] Decide which Well-Architected Framework Concepts your sample will be demonstrating
+- [ ] Decide on the name of the sample and located where in the repository structure your sample will sit.
+- [ ] Overall business / industry scenario of the sample identified (ei. City Parking Sensor tracking solution) if applicable.
 
 ## Execution
-- [ ] Sprint 0 plan (all stories and all features)
-- [ ] Sprint Plan (Weekly sprints)
-- [ ] Onsite plan (N/A)
-- [ ] Repo Policies (Main, 1 approver, Team access) 
-- [ ] Branch Management (1 approver, SLA 12hrs)
-- [ ] Scrum ceremonies scheduled (Standups: M, T, W 10-10:30;  Review/Retro: Thurs 9:30-10:30, Sprint: Friday-Wed)
+
+- [ ] Branching - Create feature branch (if not exists already) and ensure branch policies to enforce PR process is applied.
+- [ ] Ceremonies scheduled (ei. Standups, Backlog Grooming, Planning, Retro)
+- [ ] Sprint Plan (if applicable)
+- [ ] Ensure appropriate labelling of Github issues.
 
 ## Next Steps
-- [ ]  Create doc folder 
-- [ ]  Standup. Review/Retro, Planning meetings sent
-- [ ]  Update templates
-- [ ]  Update tags
-- [ ]  Define User Stories in repo
-- [ ]  Working Agreement (document)
+
+- [ ] Reuse [sample project template](https://dev.azure.com/csedtd/_git/DataOps?path=%2Fsample_project_structure).
+- [ ] Define User Stories (Github Issues/Card) in Github Project Board
