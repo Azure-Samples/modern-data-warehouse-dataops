@@ -9,6 +9,7 @@ assignees: ''
 
 ## New Sample Checklist
 
+<!-- markdown-link-check-disable-next-line -->
 Ensure you've read the [Contributing Guide (Microsoft Internal only.)](https://dev.azure.com/csedtd/_git/DataOps?path=%2FCONTRIBUTING.md&_a=preview)
 
 ## Tooling
@@ -36,5 +37,6 @@ Ensure you've read the [Contributing Guide (Microsoft Internal only.)](https://d
 
 ## Next Steps
 
+<!-- markdown-link-check-disable-next-line -->
 - [ ] Reuse [sample project template](https://dev.azure.com/csedtd/_git/DataOps?path=%2Fsample_project_structure).
 - [ ] Define User Stories (Github Issues/Card) in Github Project Board
