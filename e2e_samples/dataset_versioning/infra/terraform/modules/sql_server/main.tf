@@ -137,6 +137,6 @@ resource "azurerm_key_vault_secret" "sql_userid" {
 
 resource "azurerm_key_vault_secret" "sql_server" {
   name         = "sqlserver"
-  value        = "${azurerm_sql_server.sql_server}.database.windows.net"
+  value        = "${azurerm_sql_server.sql_server.name}.database.windows.net"
   key_vault_id = var.kv_id
 }
