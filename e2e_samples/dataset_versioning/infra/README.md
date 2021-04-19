@@ -65,7 +65,7 @@ Run the following commands to deploy the sample infrastructure.
 
 ```bash
 # NOTE: enter your own unique value instead of `myapp`
-terraform plan  -var="rg_name=your_rg_name" -var="app_name=your_app_name"  -out=/tmp/myapp
+terraform plan -var="rg_name=your_rg_name" -var="app_name=your_app_name" -out=/tmp/myapp
 terraform apply /tmp/myapp
 ```
 
