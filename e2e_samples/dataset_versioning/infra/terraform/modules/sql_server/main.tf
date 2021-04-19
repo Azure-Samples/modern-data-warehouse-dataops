@@ -47,7 +47,7 @@ resource "azurerm_sql_server" "sql_server" {
   location                     = var.location
   resource_group_name          = var.rg_name
   version                      = "12.0"
-  administrator_login          = "ForDataOpsDemoAdmin"
+  administrator_login          = var.admin_user
   administrator_login_password = random_password.password.result
   extended_auditing_policy {
     storage_endpoint           = azurerm_storage_account.storage_account.primary_blob_endpoint
@@ -105,5 +105,38 @@ resource "azurerm_sql_firewall_rule" "sql_firewall_rule" {
 resource "azurerm_key_vault_secret" "key_vault_secret" {
   name         = "watermarkdb-connection"
   value        = "Server=tcp:${azurerm_sql_server.sql_server.fully_qualified_domain_name},1433;Initial Catalog=${azurerm_mssql_database.mssql_database.name};Persist Security Info=False;User ID=${azurerm_sql_server.sql_server.administrator_login};Password=\"${azurerm_sql_server.sql_server.administrator_login_password}\";MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+  key_vault_id = var.kv_id
+}
+
+resource "azurerm_key_vault_secret" "sql_db" {
+  name         = "sql-db"
+  value        = azurerm_mssql_database.mssql_database.name
+  key_vault_id = var.kv_id
+}
+
+resource "azurerm_key_vault_secret" "sql_password" {
+  name         = "sql-password"
+  value        = random_password.password.result
+  key_vault_id = var.kv_id
+}
+
+
+resource "azurerm_key_vault_secret" "sql_table" {
+  name         = "sql-table"
+  value        = "source"
+  key_vault_id = var.kv_id
+}
+
+
+resource "azurerm_key_vault_secret" "sql_userid" {
+  name         = "sql-userid"
+  value        = var.admin_user
+  key_vault_id = var.kv_id
+}
+
+
+resource "azurerm_key_vault_secret" "sql_server" {
+  name         = "sqlserver"
+  value        = "${azurerm_sql_server.sql_server.name}.database.windows.net"
   key_vault_id = var.kv_id
 }
