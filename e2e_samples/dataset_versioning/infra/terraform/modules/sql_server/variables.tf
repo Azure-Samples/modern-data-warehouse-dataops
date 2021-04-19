@@ -27,3 +27,12 @@ variable "app_name" {
   description = "Unique identifier of the app"
 }
 
+# ---------------------------------------------------------------------------------------------------------------------
+# OPTIONAL PARAMETERS
+# These parameters have reasonable defaults.
+# ---------------------------------------------------------------------------------------------------------------------
+variable "admin_user" {
+  type        = string
+  description = "admin user"
+  default     = "ForDataOpsDemoAdmin"
+}

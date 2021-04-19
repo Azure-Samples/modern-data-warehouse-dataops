@@ -60,7 +60,7 @@ terraform init -backend-config="storage_account_name=stmyterraformdev" -backend-
 
 ### #4 Use `terraform apply` to create the sample resources
 
-Run the following commands to deploy the sample infrastructure.  
+Run the following commands to deploy the sample infrastructure.
 **Note:** Pick a globally unique name, do not use the value `"name=myapp"`.  e.g. `"name=bob123"`
 
 ```bash
