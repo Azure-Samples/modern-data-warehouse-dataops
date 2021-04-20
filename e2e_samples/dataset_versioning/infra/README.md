@@ -61,18 +61,13 @@ terraform init -backend-config="storage_account_name=stmyterraformdev" -backend-
 ### #4 Use `terraform apply` to create the sample resources
 
 Run the following commands to deploy the sample infrastructure.
-**Note:** Pick a globally unique name, do not use the value `"name=myapp"`.  e.g. `"name=bob123"`
+**Note:** Pick a globally unique name and replace "your_rg_name" and "your_app_name"`
 
 ```bash
 # NOTE: enter your own unique value instead of `myapp`
-terraform plan -var "name=myapp" -out=/tmp/myapp
+terraform plan -var="rg_name=your_rg_name" -var="app_name=your_app_name" -out=/tmp/myapp
 terraform apply /tmp/myapp
 ```
-
-## Before sending PR
-
-1. Run [pre-commit](https://pre-commit.com/#install)
-1. Make sure this README.md is updated
 
 ## Directory Structure/Provisioned resources
 
