@@ -2,6 +2,11 @@
 
 ## Contents <!-- omit in toc -->
 
+- [1. Solution Overview](#1-solution-overview)
+  - [1.1. Scope](#11-scope)
+  - [1.2. Architecture](#12-architecture)
+    - [1.2.1. Patterns](#121-patterns)
+  - [1.3. Technologies used](#13-technologies-used)
 - [2. How to use this sample](#2-how-to-use-this-sample)
   - [2.1. Prerequisites](#21-prerequisites)
     - [2.1.1 Software Prerequisites](#211-software-prerequisites)
@@ -10,6 +15,8 @@
   - [2.4. Deployment validation](#24-deployment-validation)
   - [2.5. Clean-up](#25-clean-up)
 - [3. Next Step](#3-next-step)
+
+## 1. Solution Overview
 
 It is a recommended pattern for enterprise applications to automate platform provisioning to achieve consistent, repeatable deployments using Infrastructure as Code (IaC). This practice is highly encouraged by organizations that run multiple environments such as Dev, Test, Performance Test, UAT, Blue and Green production environments, etc. IaC is also very effective in managing deployments when the production environments are spread across multiple regions across the globe.
 
@@ -78,7 +85,8 @@ The following are the prerequisites for deploying this sample :
    - *Installation instructions* can be found [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 1. For Windows users,
    1. Option 1: [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
-   2. Option 2: Use the dev container published [here](../.devcontainer) as a host for the bash shell.
+   2. Option 2: Use the devcontainer published [here](../.devcontainer) as a host for the bash shell.
+      For more information about Devcontainers, see [here](https://code.visualstudio.com/docs/remote/containers).
 
 ### 2.2. Setup and deployment
 
