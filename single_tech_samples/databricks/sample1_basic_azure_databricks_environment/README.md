@@ -22,6 +22,7 @@
     - [3.3. Deployed Resources](#33-deployed-resources)
     - [3.4. Deployment validation](#34-deployment-validation)
     - [3.5. Clean-up](#35-clean-up)
+    - [3.6. Next Steps](#36-next-steps)
 
 ## 1. Solution Overview
 
@@ -140,7 +141,8 @@ The following are the prerequisites for deploying this sample :
    - *Installation instructions* can be found [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 1. For Windows users,
    1. Option 1: [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
-   2. Option 2: Use the dev container published [here](../.devcontainer) as a host for the bash shell.
+   2. Option 2: Use the devcontainer published [here](../.devcontainer) as a host for the bash shell.
+      For more information about Devcontainers, see [here](https://code.visualstudio.com/docs/remote/containers).
 
 ### 3.2. Setup and deployment
 
@@ -208,3 +210,8 @@ The clean-up script can be executed to clean up the resources provisioned in thi
 The following screenshot displays the log for a successful clean-up run:
 
   ![alt text](../Common_Assets/Images/IAC_Script_Teardown.png "Logo Title Text 1")
+
+### 3.6. Next Steps
+
+You can now check [Sample 2](../sample2_enterprise_azure_databricks_environment/README.md)
+to deploy an enterprise grade Azure Databricks environment.

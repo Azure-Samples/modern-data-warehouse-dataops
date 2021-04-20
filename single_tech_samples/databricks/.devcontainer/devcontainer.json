@@ -22,7 +22,8 @@
 		"msazurermtools.azurerm-vscode-tools",
 		"streetsidesoftware.code-spell-checker",
 		"timonwong.shellcheck",
-		"yzhang.markdown-all-in-one"
+		"yzhang.markdown-all-in-one",
+		"davidanson.vscode-markdownlint"
 	],
 	"postCreateCommand": "az extension add --name databricks --yes --output none && az extension add --name azure-firewall --yes --output none",
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
