@@ -1,27 +1,23 @@
-# Deploying Enterprise-grade Azure Databricks environment using Infrastructure as Code aligned with Anti-Data-Exfiltration Reference architecture
+# Deploying Enterprise-grade Azure Databricks environment using Infrastructure as Code aligned with Anti-Data-Exfiltration Reference architecture <!-- omit in toc -->
 
-## Contents
+## Contents <!-- omit in toc -->
 
-- [Deploying Enterprise-grade Azure Databricks environment using Infrastructure as Code aligned with Anti-Data-Exfiltration Reference architecture](#deploying-enterprise-grade-azure-databricks-environment-using-infrastructure-as-code-aligned-with-anti-data-exfiltration-reference-architecture)
-  - [Contents](#contents)
-  - [1. Solution Overview](#1-solution-overview)
-    - [1.1. Scope](#11-scope)
-    - [1.2. Architecture](#12-architecture)
-      - [1.2.1. Patterns](#121-patterns)
-    - [1.3. Technologies used](#13-technologies-used)
-  - [2. Well-Architected Framework (WAF)](#2-well-architected-framework-waf)
-    - [2.1. Cost Optimization](#21-cost-optimization)
-    - [2.2. Operational Excellence](#22-operational-excellence)
-    - [2.3. Performance Efficiency](#23-performance-efficiency)
-    - [2.4. Reliability](#24-reliability)
-    - [2.5. Security](#25-security)
-  - [3. How to use this sample](#3-how-to-use-this-sample)
-    - [3.1. Prerequisites](#31-prerequisites)
-      - [3.1.1 Software Prerequisites](#311-software-prerequisites)
-    - [3.2. Setup and deployment](#32-setup-and-deployment)
-    - [3.3. Deployed Resources](#33-deployed-resources)
-    - [3.4. Deployment validation](#34-deployment-validation)
-    - [3.5. Clean-up](#35-clean-up)
+- [1. Solution Overview](#1-solution-overview)
+  - [1.1. Scope](#11-scope)
+  - [1.2. Architecture](#12-architecture)
+    - [1.2.1. Patterns](#121-patterns)
+  - [1.3. Technologies used](#13-technologies-used)
+- [2. Well-Architected Framework (WAF)](#2-well-architected-framework-waf)
+  - [2.1. Security](#21-security)
+  - [2.2. Other considerations](#22-other-considerations)
+- [3. How to use this sample](#3-how-to-use-this-sample)
+  - [3.1. Prerequisites](#31-prerequisites)
+    - [3.1.1 Software Prerequisites](#311-software-prerequisites)
+  - [3.2. Setup and deployment](#32-setup-and-deployment)
+  - [3.3. Deployed Resources](#33-deployed-resources)
+  - [3.4. Deployment validation](#34-deployment-validation)
+  - [3.5. Clean-up](#35-clean-up)
+- [4. Next Step](#4-next-step)
 
 ## 1. Solution Overview
 
@@ -91,43 +87,11 @@ The following technologies are used to build this sample:
 
 ## 2. Well-Architected Framework (WAF)
 
-This section highlights key pointers to align the services deployed in this sample to Microsoft Azure's Well-Architected Framework'.
+This section highlights key pointers to align the services deployed in this sample to Microsoft Azure's Well-Architected Framework (WAF).
 
-### 2.1. Cost Optimization
+### 2.1. Security
 
-1. Before the deployment, use the [Azure pricing calculator](https://azure.microsoft.com/en-us/pricing/calculator/) to determine the expected usage cost.
-
-2. Appropriately select the [Storage redundancy](https://docs.microsoft.com/en-us/azure/storage/common/storage-redundancy) option.
-
-3. Leverage [Azure Cost Management and Billing](https://azure.microsoft.com/en-us/services/cost-management/) to track usage cost of the Azure Databricks and Storage services.
-
-4. Use [Azure Advisor](https://azure.microsoft.com/en-us/services/advisor/) to optimize deployments by leveraging the smart insights.
-
-5. Use [Azure Policies](https://azure.microsoft.com/en-us/services/azure-policy/) to define guardrails around deployment constraints to regulate the cost.
-
-### 2.2. Operational Excellence
-
-1. Ensure that the parameters passed to the deployment scripts are validated.
-
-1. Leverage parallel resource deployment where ever possible. In the scope of this sample, all three resources can be deployed in parallel.
-
-1. Validate compensation transactions for the deployment workflow to reverse partially provisioned resources if the provisioning fails.
-
-### 2.3. Performance Efficiency
-
-1. Understand billing for metered resources provisioned as a part of this sample.
-
-1. Track deployment logs to monitor execution time to mine possibilities for optimizations.
-
-### 2.4. Reliability
-
-1. Define the availability requirements before the deployment and configure the storage and databricks service accordingly.
-
-2. Ensure required capacity and services are available in targeted regions.
-
-3. Test the compensation transaction logic by explicitly failing a service deployment.
-
-### 2.5. Security
+This sample implementation focuses on securing the Azure Databricks Environment against Data Exfiltration, aligning it to the best practices defined in the [Security pillar](https://docs.microsoft.com/en-us/azure/architecture/framework/security/overview) of Microsoft Azure's Well-Architected Framework. Following are a few other guidance related to securing the Azure Databricks environment.
 
 1. Ensure the right privileges are granted to the provisioned resources.
 
@@ -136,6 +100,42 @@ This section highlights key pointers to align the services deployed in this samp
 3. Automate the execution of the deployment script and restrict the privileges to service accounts.
 
 4. Integrate with the secure identity provider (Azure Active Directory).
+
+### 2.2. Other considerations
+
+- Cost Optimization
+
+  - Before the deployment, use the [Azure pricing calculator](https://azure.microsoft.com/en-us/pricing/calculator/) to determine the expected usage cost.
+
+  - Appropriately select the [Storage redundancy](https://docs.microsoft.com/en-us/azure/storage/common/storage-redundancy) option.
+
+  - Leverage [Azure Cost Management and Billing](https://azure.microsoft.com/en-us/services/cost-management/) to track usage cost of the Azure Databricks and Storage services.
+
+  - Use [Azure Advisor](https://azure.microsoft.com/en-us/services/advisor/) to optimize deployments by leveraging the smart insights.
+
+  - Use [Azure Policies](https://azure.microsoft.com/en-us/services/azure-policy/) to define guardrails around deployment constraints to regulate the cost.
+
+- Operational Excellence
+
+  - Ensure that the parameters passed to the deployment scripts are validated.
+
+  - Leverage parallel resource deployment where ever possible. In the scope of this sample, all three resources can be deployed in parallel.
+
+  - Validate compensation transactions for the deployment workflow to reverse partially provisioned resources if the provisioning fails.
+
+- Performance Efficiency
+
+  - Understand billing for metered resources provisioned as a part of this sample.
+
+  - Track deployment logs to monitor execution time to mine possibilities for optimizations.
+
+- Reliability
+
+  - Define the availability requirements before the deployment and configure the storage and databricks service accordingly.
+
+  - Ensure required capacity and services are available in targeted regions.
+
+  - Test the compensation transaction logic by explicitly failing a service deployment.
 
 ## 3. How to use this sample
 
@@ -179,7 +179,8 @@ Below listed are the steps to deploy this sample :
     > - `AZURE_RESOURCE_GROUP_NAME` - Name of the containing resource group.
     > - `AZURE_RESOURCE_GROUP_LOCATION` - Azure region where the resources will be deployed. (e.g. australiaeast, eastus, etc.).
     > - `DELETE_RESOURCE_GROUP` - Flag to indicate the cleanup step for the resource group.
-
+    >
+1. **Optional Step**- Please note that the firewall rules configured in this sample are as per Microsoft Azure documentation captured [here](https://docs.microsoft.com/en-us/azure/databricks/administration-guide/cloud-configurations/azure/udr). The routes are configured for West US region. In case you need to deploy this sample in any other Azure region, please alter the [ARM template for the firewall](firewall/firewall.template.json) with the IP addresses for the target region.
 1. Run '/deploy.sh'
    > Note: The script will prompt you to log in to the Azure account for authorization to deploy resources.
 
@@ -220,8 +221,6 @@ The following resources will be deployed as a part of this sample once the scrip
 
 **Application Rules**
 ![alt text](../Common_Assets/Images/ADE_Firewall_AR.png "Logo Title Text 1")
-
-Please note that the firewall rules configured in this sample are as per Microsoft Azure documentation captured [here](https://docs.microsoft.com/en-us/azure/databricks/administration-guide/cloud-configurations/azure/udr). The routes are configured for West US region. In case you need to deploy this sample in any other Azure region, please alter the [ARM template for the firewall](firewall/firewall.template.json) with the IP addresses for the target region.
 
 6.Azure public IP address associated with the firewall
 
@@ -271,3 +270,7 @@ The clean-up script can be executed to clean up the resources provisioned in thi
 The following screenshot displays the log for a successful clean-up run:
 
   ![alt text](../Common_Assets/Images/ADE_Script_Teardown.png "Logo Title Text 1")
+
+## 4. Next Step
+
+[Cluster provisioning and enabling data access on a pre-provisioned Azure Databricks Workspace](../sample3_cluster_provisioning_and_data_access/README.md)
