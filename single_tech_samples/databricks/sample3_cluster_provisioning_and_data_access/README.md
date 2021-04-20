@@ -1,17 +1,18 @@
-# Provisioning Clusters and Access Data
+# Provisioning Clusters and Access Data <!-- omit in toc -->
 
-- [Provisioning Clusters and Access Data](#provisioning-clusters-and-access-data)
-  - [1. How to use this sample](#1-how-to-use-this-sample)
-    - [1.1 Prerequisites](#11-prerequisites)
-    - [1.2. Setup and deployment](#12-setup-and-deployment)
-      - [Source Environment File](#source-environment-file)
-      - [Run `deploy.sh`](#run-deploysh)
-        - [upload-sample-data.sh](#upload-sample-datash)
-        - [deploy-default-and-hc-clusters.sh](#deploy-default-and-hc-clusterssh)
-        - [configure-databricks-cli.sh](#configure-databricks-clish)
-        - [import-data-access-notebooks.sh](#import-data-access-notebookssh)
-    - [1.3. Cleanup](#13-cleanup)
-  - [2. Run sample with Sample 2 (enterprise Azure Databricks environment)](#2-run-sample-with-sample-2-enterprise-azure-databricks-environment)
+## Contents <!-- omit in toc -->
+
+- [1. How to use this sample](#1-how-to-use-this-sample)
+  - [1.1 Prerequisites](#11-prerequisites)
+  - [1.2. Setup and deployment](#12-setup-and-deployment)
+    - [Source Environment File](#source-environment-file)
+    - [Run `deploy.sh`](#run-deploysh)
+      - [upload-sample-data.sh](#upload-sample-datash)
+      - [deploy-default-and-hc-clusters.sh](#deploy-default-and-hc-clusterssh)
+      - [configure-databricks-cli.sh](#configure-databricks-clish)
+      - [import-data-access-notebooks.sh](#import-data-access-notebookssh)
+  - [1.3. Cleanup](#13-cleanup)
+- [2. Run sample with Sample 2 (enterprise Azure Databricks environment)](#2-run-sample-with-sample-2-enterprise-azure-databricks-environment)
 
 ## 1. How to use this sample
 
