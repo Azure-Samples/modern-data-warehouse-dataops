@@ -1,13 +1,17 @@
 # DataOps - Dataset versioning demo
+
 This sample demonstrates how to use a data pipeline to copy versioned data into Data Lake.
 
-# Story
+## Story
+
 Contoso provides ML based loan prediction feature to end users. For keeping end-user experience, they want to keep updating ML model with latest data. It helps Contoso to keep end user satisfaction high and subscription-based contract.
 
 For achieving it, data scientists (DS) asks data engineers to save multiple-version data (ex. v0 data is saved in 2020, v1 data is saved in 2021). It helps DS to manage data and trained model. For saving cost, data engineers want to copy data with shorter duration.
 
-# Solution overview
+## Solution overview
+
 The solution demonstrates how to achieve the requirements described above by:
+
 - Data Pipeline (Azure Data Factory) copy **versioned data** from source to sink
 - DS can read versioned data from Data Bricks. They can specify version number when they load data from Delta Lake.
 - Data pipeline utilizes a watermark to see new/updated data in the data source. It helps to **copy data with shorter duration**.
@@ -16,10 +20,12 @@ The solution demonstrates how to achieve the requirements described above by:
 
 ![architecture](./docs/images/architecture.PNG)
 
-## Data we use
+### Data we use
+
 We refer to [LendingClub issued Loans](https://www.kaggle.com/husainsb/lendingclub-issued-loans?select=lc_loan.csv) data hosted by Kaggle.
 
-## How to use the sample
+### How to use the sample
+
 1. Setup Infra
     1. **[Need update]** Run terraform
     1. **[Need update]** Add user permission (Credential passthough)
@@ -34,5 +40,4 @@ We refer to [LendingClub issued Loans](https://www.kaggle.com/husainsb/lendingcl
         1. Cick [Debug] button to run pipeline.
     1. **[Need update]** Use Databricks to query Delta versions
     1. **[Need update]** Run Python script to incrementally load
-1. **[Need update]** 
-<Will update based on demo discussion>
+1. **[Need update]**
