@@ -27,7 +27,7 @@ We refer to [LendingClub issued Loans](https://www.kaggle.com/husainsb/lendingcl
 ### How to use the sample
 
 1. Setup Infra
-    1. **[Need update]** Run terraform
+    1. Provision infra with terraform - [detailed steps](./infra/README.md)
     1. **[Need update]** Add user permission (Credential passthough)
     1. Create table and install stored procedure - [detailed steps](./datafactory/config/README.md)
     1. Deploy application logic (ARM templates) for Data Factory - [detailed steps](./datafactory/README.md)
