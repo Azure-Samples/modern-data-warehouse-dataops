@@ -31,9 +31,9 @@ We refer to [LendingClub issued Loans](https://www.kaggle.com/husainsb/lendingcl
     1. **[Need update]** Add user permission (Credential passthough)
     1. Create table and install stored procedure - [detailed steps](./datafactory/config/README.md)
     1. Deploy application logic (ARM templates) for Data Factory - [detailed steps](./datafactory/README.md)
-1. Load data into data source (Azure SQL Database)
-    1. Use Python script to load "LendingClub issued Loans" data - [detailed steps](./insert_sql/README.md)
 1. Functional test
+    1. Load data into data source (Azure SQL Database)
+        1. Use Python script to load "LendingClub issued Loans" data - [detailed steps](./insert_sql/README.md)
     1. Run Azure Data Factory pipeline to load Delta Lake
         1. Go to provisioned Azure Data Factory, then click [Author & Monitor] button to open development portal.
         1. Click pencil button at left pane, then select [DeltaCopyPipeline].
@@ -61,5 +61,9 @@ We refer to [LendingClub issued Loans](https://www.kaggle.com/husainsb/lendingcl
             load_data = spark.read.format("delta").option("versionAsOf", 0).load(file_path)
             load_data.show()
             ```
-    1. **[Need update]** Run Python script to incrementally load
-1. **[Need update]**
+    1. Repeat previous steps to see multiple versioned data.
+        1. Insert next version of data (ex. version 1) ```python main.py -v 1 -k https://sample.vault.azure.net -p ./lc_loan.csv```
+        1. Run Azure Data Factory pipeline
+        1. Run Notebook to see version 1 on DataBricks
+1. Clean up
+    1. Run `terraform destroy` to clean up existing resources. You can delete resource group manually on Azure Portal/Azure CLI.
