@@ -16,9 +16,6 @@
         },
         "encryptionEnabled": {
             "value": true
-        },
-        "networkAclsVirtualNetworkRules": {
-            "value": []
         }
     }
 }
