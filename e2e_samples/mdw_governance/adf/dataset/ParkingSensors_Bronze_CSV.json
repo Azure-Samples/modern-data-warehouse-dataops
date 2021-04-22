@@ -16,7 +16,7 @@
 			"location": {
 				"type": "AzureBlobFSLocation",
 				"fileName": "@dataset().fileName",
-				"folderPath": "bronze",
+				"folderPath": "Bronze",
 				"fileSystem": "datalake"
 			},
 			"columnDelimiter": ",",

@@ -16,8 +16,8 @@
 			"location": {
 				"type": "AzureBlobFSLocation",
 				"fileName": "@dataset().fileName",
-				"folderPath": "data/raw_data/On-street_Parking_Bay_Sensors",
-				"fileSystem": "files"
+				"folderPath": "",
+				"fileSystem": "dropzone"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",

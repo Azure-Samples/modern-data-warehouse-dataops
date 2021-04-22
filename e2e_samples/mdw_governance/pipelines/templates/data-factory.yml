@@ -68,6 +68,7 @@ steps:
     env:
       STORAGE_ACCOUNT_NAME: ${{ parameters.storageAccountName }}
       DATA_FACTORY_NAME: ${{ parameters.dataFactoryName }}
+      KEYVAULT_NAME: ${{ parameters.keyVaultName }}
       RESOURCE_GROUP: ${{ parameters.resourceGroupName }}
     displayName: Create link to ADL from ADF
 

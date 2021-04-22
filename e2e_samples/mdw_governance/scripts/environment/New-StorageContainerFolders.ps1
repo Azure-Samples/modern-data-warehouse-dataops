@@ -16,7 +16,13 @@ Param(
     [Parameter(HelpMessage="Storage container name")]
     [ValidateNotNullOrEmpty()]
     [String]
-    $StorageContainerName=$Env:STORAGE_CONTAINER_NAME
+    $StorageContainerName=$Env:STORAGE_CONTAINER_NAME,
+
+    [Parameter(HelpMessage="Dropzone container name")]
+    [ValidateNotNullOrEmpty()]
+    [String]
+    $DropzoneStorageContainerName=$Env:DROPZONE_STORAGE_CONTAINER_NAME
+
 )
 
 if (!($ResourceGroup `
@@ -40,3 +46,6 @@ foreach ($folderName in $folders) {
     }
 
 }
+
+# Copy files from data folder
+az storage blob upload-batch --account-name $StorageAccountName --destination $DropzoneStorageContainerName --source ./data/raw_data/On-street_Parking_Bay_Sensors --pattern *.csv  

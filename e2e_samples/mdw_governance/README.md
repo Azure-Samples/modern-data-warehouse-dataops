@@ -94,16 +94,17 @@ Each environment has an identical set of resources
    3. In your Azure DevOps project, (under project settings) create a new [Service Connection](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml) to the Resource Group created in the previous. Note that you should **NOT** use certificate based authentication, as the pipeline relies on service principal password to authenticate against Purview REST API.
    4. Select the new Service Connection in Azure Dev Ops and click on the Manage Service Principal link to find the full display name of the Service Principal
    5. In the Azure Portal, go to the Azure Resource Group you created, and grant this Service Principal the Owner role of the resource group (use the name found in the previous step to locate the Service Principal).
-   6. Create a new repository in your Azure DevOps project and copy the contents of the `e2e_samples\mdw-governance` folder to the root of this repository.
-   7. Create a new pipeline from existing yml in Azure DevOps by selecting the repository and importing the `create-infrastructure.yml` YAML file (see [this post](https://stackoverflow.com/a/59067271) to learn how).
-   8. Make sure the values of the variables match the desired configuration and run the pipeline to deploy the core infrastructure. Update the dev-environment.yml, test-environment.yml and prod-environment.yml files to match your environment. Update at least:
+   6. With administrative privileges on the subscription, run `az provider register --namespace 'Microsoft.Purview'` to register Purview provider. Alternatively you can use the Azure Portal to search for and select Subscriptions, select the subscription you want to use, and then select Resource providers. Search and register Microsoft.Purview provider.
+   7. Create a new repository in your Azure DevOps project and copy the contents of the `e2e_samples\mdw-governance` folder to the root of this repository.
+   8. Create a new pipeline from existing yml in Azure DevOps by selecting the repository and importing the `create-infrastructure.yml` YAML file (see [this post](https://stackoverflow.com/a/59067271) to learn how).
+   9. Make sure the values of the variables match the desired configuration and run the pipeline to deploy the core infrastructure. Update the dev-environment.yml, test-environment.yml and prod-environment.yml files to match your environment. Update at least:
         - resourceGroup - this is the name of the Resource Group where the resources will be deployed
         - resourcePrefix - this prefix will be appended to all resource names to make them unique (notice: lower-case letters only, no special characters allowed
         - location - location where resources should be deployed
         - locationFormatted - full name of location where resources should be deployed
         - purviewAdmins - an [objectID](https://docs.microsoft.com/en-us/azure/marketplace/find-tenant-object-id) of the user/user group to be assigned admin rights to Purview (e.g. your Azure AD objectID)
         - azureResourceManagerConnection - name of the service connection (by default this is derived from resource group name e.g. "SC-My-Resource-Group")
-   9. Run the `create-infrastructure.yml` pipeline.
+   10. Run the `create-infrastructure.yml` pipeline.
 
 2. **Setup an ADF git integration in DEV Data Factory**
     1. In the Azure Portal, navigate to the Data Factory in the **DEV** environment.

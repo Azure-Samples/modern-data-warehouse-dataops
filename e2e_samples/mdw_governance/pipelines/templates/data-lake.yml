@@ -104,6 +104,7 @@ steps:
       RESOURCE_GROUP: ${{ parameters.resourceGroupName }}
       STORAGE_ACCOUNT_NAME: ${{ parameters.storageAccountName }}
       STORAGE_CONTAINER_NAME: ${{ parameters.storageContainerName }}
+      DROPZONE_STORAGE_CONTAINER_NAME: ${{ parameters.dropzoneStorageContainerName }}
     displayName: Create folders in ADL
 
   - task: AzureCLI@2
