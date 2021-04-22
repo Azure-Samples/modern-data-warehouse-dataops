@@ -31,7 +31,6 @@ You can check by using this command to get the list of subsciptions and see whic
 If you are using a different subscription and need to change it, use this command:
 ```az account set --subscription <your_subscription_id>```
 
-
 ### #2 `./setup.sh` to create Terraform support resources
 
 This script will create a resource group, with 2 resources (Key Vault and Storage) to track the secrets and state of your infrastructure. It will also create a new Service Principal with contributor permissions for the Terraform app to use later.
@@ -136,4 +135,4 @@ Modules are the building blocks of resources. A module is a wrapper with more th
 
 ## References
 
-* [Cobalt project](https://github.com/microsoft/cobalt)
+- [Cobalt project](https://github.com/microsoft/cobalt)

@@ -1,10 +1,13 @@
 # Overview
+
 This folder is for SQL query which creata following required tables and stored procedures.
+
 - `source` table which stores sample data
 - `WaterMark` table storing table name and its watermark value
 - `usp_UpdateWatermark` stored procedure to update watermark value
 
 ## How to create required tables and stored procedure
+
 1. Install [Azure Data Studio](https://docs.microsoft.com/en-us/sql/azure-data-studio/download-azure-data-studio?view=sql-server-ver15)
 1. Get user id and connection string for SQL Database
    1. Sign-in to Azure and go to provisioned resource group.
