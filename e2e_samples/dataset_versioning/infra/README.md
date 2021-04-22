@@ -39,9 +39,11 @@ This script will create a resource group, with 2 resources (Key Vault and Storag
 ```bash
 # Setup infrastructure for Terrafrom state & secrets.
 # NOTE: Change the values to a unique name for your account.
-# ./setup.sh <resource group> <storage name> <Key Vault name> <region>
-az login
-./setup.sh rg-my-terraform stmyterraform kv-myterraform eastus2
+# ./setup.sh 
+# Enter value: <resource group> <storage name> <Key Vault name> <region>
+$ az login
+$ ./setup.sh
+$ "Enter value: " rg-my-terraform stmyterraform kv-myterraform eastus2
 ```
 
 Keep note of the output from `./setup.sh`. The output will be used in the next command
@@ -55,7 +57,7 @@ Use the output from the last command, to initialise the Terraform state files an
 az login
 cd terraform/live/dev
 
-terraform init -backend-config="storage_account_name=stmyterraformdev" -backend-config="container_name=terraform-state" -backend-config="access_key=$(az keyvault secret show --name tfstate-storage-key-dev --vault-name kv-myterraform --query value -o tsv)" -backend-config="key=terraform.tfstate"
+terraform init -backend-config="storage_account_name=stmyterraform" -backend-config="container_name=terraform-state" -backend-config="access_key=$(az keyvault secret show --name tfstate-storage-key --vault-name kv-myterraform --query value -o tsv)" -backend-config="key=terraform.tfstate"
 ```
 
 ### #4 Use `terraform apply` to create the sample resources
@@ -68,6 +70,15 @@ Run the following commands to deploy the sample infrastructure.
 terraform plan -var="rg_name=your_rg_name" -var="app_name=your_app_name" -out=/tmp/myapp
 terraform apply /tmp/myapp
 ```
+
+### Alternative: CI/CD
+
+Alternatively, we can run exact command in CICD pipeline. Since required credentials for terraform needs to be fetched from keyvault, you need to go to azure devops and set up secrets in library.
+
+## Before sending PR
+
+1. Run [pre-commit](https://pre-commit.com/#install)
+1. Make sure this README.md is updated
 
 ## Directory Structure/Provisioned resources
 
@@ -101,6 +112,11 @@ $ terraform state list
     module.service.module.keyvault.azurerm_key_vault.keyvault
     module.service.module.keyvault.azurerm_key_vault_access_policy.service_principal
     module.service.module.sql_server.azurerm_key_vault_secret.key_vault_secret
+    module.service.module.sql_server.azurerm_key_vault_secret.sql_db
+    module.service.module.sql_server.azurerm_key_vault_secret.sql_password
+    module.service.module.sql_server.azurerm_key_vault_secret.sql_server
+    module.service.module.sql_server.azurerm_key_vault_secret.sql_table
+    module.service.module.sql_server.azurerm_key_vault_secret.sql_userid
     module.service.module.sql_server.azurerm_mssql_database.mssql_database
     module.service.module.sql_server.azurerm_mssql_elasticpool.mssql_elasticpool
     module.service.module.sql_server.azurerm_sql_firewall_rule.sql_firewall_rule
