@@ -1,28 +1,36 @@
 # How to setup
 
 ## Prepare data
+
 1. Sign-up to [Kaggle](https://www.kaggle.com/)
 1. Download [LendingClub issued Loans](https://www.kaggle.com/husainsb/lendingclub-issued-loans?select=lc_loan.csv) data. It is named `lc_loan.csv`
 
 ## Install Libraries
+
 ### Devcontainer
+
 If you are using devcontainer, you can just open in devcontainer and everything required should be installed .
 
 ### Local
+
 If you are not using devcontainer, you need to install required lib with ```pip install requirements.txt```
 
 ## Run your script
+
 ```az login```
 
 Now you are good to run python main.py with different flags. You can get more details with -h flag.
 
 ### Sample execution to insert
+
 ```python main.py -v 0 -k https://sample.vault.azure.net -p ./lc_loan.csv```
 
 ### Sample execution to clean up
+
 ```python main.py -c -k https://sample.vault.azure.net```
 
 # How to test
+
 ```
 vscode ➜ /workspaces/modern-data-warehouse-dataops/e2e_samples/dataset_versioning/insert_sql/tests (238_insert_db ✗) $ pytest
 ============================================================= test session starts =============================================================
