@@ -29,9 +29,9 @@ Now you are good to run python main.py with different flags. You can get more de
 
 ```python main.py -c -k https://sample.vault.azure.net```
 
-# How to test
+## Testing
 
-```
+```console
 vscode ➜ /workspaces/modern-data-warehouse-dataops/e2e_samples/dataset_versioning/insert_sql/tests (238_insert_db ✗) $ pytest
 ============================================================= test session starts =============================================================
 platform linux -- Python 3.8.8, pytest-6.2.3, py-1.10.0, pluggy-0.13.1
