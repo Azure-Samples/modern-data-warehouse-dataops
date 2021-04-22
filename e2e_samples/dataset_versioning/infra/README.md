@@ -71,7 +71,7 @@ terraform plan -var="rg_name=your_rg_name" -var="app_name=your_app_name" -out=/t
 terraform apply /tmp/myapp
 ```
 
-### Other options
+### Alternative: CI/CD
 
 Alternatively, we can run exact command in CICD pipeline. Since required credentials for terraform needs to be fetched from keyvault, you need to go to azure devops and set up secrets in library.
 
