@@ -40,7 +40,7 @@ We refer to [LendingClub issued Loans](https://www.kaggle.com/husainsb/lendingcl
         1. Cick [Debug] button to run pipeline.
     1. Use Databricks to query Delta versions
         1. Go to Azure Databricks and create a cluster. Remember to tick the "enable credential passthrough" check under the advanced settings if you plan to use the credential passthrough feature. Make sure you have access to Deltalake either with a RBAC role or Access Control List. [detailed steps](./databricks/README.md)
-        1. Create a notebook and execute these scripts below:
+        1. Create a notebook in Azure Databricks. Select your cluster and execute these scripts below:
             ```
             # For credential passthrough
             configs = {
