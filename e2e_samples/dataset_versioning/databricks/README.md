@@ -18,7 +18,7 @@ The [official doc](https://docs.microsoft.com/en-us/azure/databricks/security/da
 
 Check the [Credential Passthrough Documentation](https://docs.microsoft.com/en-us/azure/databricks/security/credential-passthrough/adls-passthrough) for more details and how to setup credential passthrough. Basically, you need to check the "Enable credential passthrough for user-level data access" checkbox when creating the cluster in the advanced settings, and use these lines in your databricks notebook:
 
-```
+```python
 configs = {
   "fs.azure.account.auth.type": "CustomAccessToken",
   "fs.azure.account.custom.token.provider.class": spark.conf.get("spark.databricks.passthrough.adls.gen2.tokenProviderClassName")
