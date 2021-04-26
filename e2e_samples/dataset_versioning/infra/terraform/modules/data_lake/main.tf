@@ -37,3 +37,9 @@ resource "azurerm_key_vault_secret" "datalake_access_key" {
   value        = azurerm_storage_account.storage_account.primary_access_key
   key_vault_id = var.kv_id
 }
+
+resource "azurerm_role_assignment" "client_config_role_assignment" {
+  scope                = azurerm_storage_account.storage_account.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = var.client_config_current.object_id
+}

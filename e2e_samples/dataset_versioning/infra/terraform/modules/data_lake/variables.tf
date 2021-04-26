@@ -27,6 +27,13 @@ variable "kv_id" {
   description = "Key Vault ID For Key Vault linked service."
 }
 
+variable "client_config_current" {
+  type = object({
+    tenant_id = string
+    object_id = string
+  })
+}
+
 variable "adf_identity_id" {
   type        = string
   description = "ID for ADF managed identity."
