@@ -106,7 +106,7 @@ dbfsBlobStrageDomain="[
 scopeName="storage_scope"
 
 # Login to Azure and select the subscription
-if ! AZURE_USERNAME=$(az account show --query user.name); then
+if ! AZURE_USERNAME=$(az account show --query user.name --output tsv); then
     echo "No Azure account logged in, now trying to log in."
     az login --output none
     az account set --subscription "$AZURE_SUBSCRIPTION_ID"
@@ -116,13 +116,13 @@ else
 fi
 
 # Check the resource group and region
-RG_EXISTS=$(az group exists --resource-group "$AZURE_RESOURCE_GROUP_NAME")
+RG_EXISTS=$(az group exists --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output tsv)
 if [[ $RG_EXISTS == "false" ]]; then
     echo "Creating resource group $AZURE_RESOURCE_GROUP_NAME in $AZURE_RESOURCE_GROUP_LOCATION."
     az group create --location "$AZURE_RESOURCE_GROUP_LOCATION" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
 else
     echo "Resource group $AZURE_RESOURCE_GROUP_NAME exists in $AZURE_RESOURCE_GROUP_LOCATION."
-    RG_LOCATION=$(az group show --resource-group "$AZURE_RESOURCE_GROUP_NAME" --query location)
+    RG_LOCATION=$(az group show --resource-group "$AZURE_RESOURCE_GROUP_NAME" --query location --output tsv)
     if [[ "$RG_LOCATION" != "\"$AZURE_RESOURCE_GROUP_LOCATION\"" ]]; then
         echo "Resource group $AZURE_RESOURCE_GROUP_NAME is located in $RG_LOCATION, not \"$AZURE_RESOURCE_GROUP_LOCATION\""
     fi
@@ -358,7 +358,7 @@ if [[ -z $adbwsArmOutput ]]; then
     exit 1
 fi
 
-dbfsBlobStrageAccountName=$(az databricks workspace show -n "$adbWorkspaceName" -g "$AZURE_RESOURCE_GROUP_NAME" --query "parameters.storageAccountName.value" -o tsv)
+dbfsBlobStrageAccountName=$(az databricks workspace show -n "$adbWorkspaceName" -g "$AZURE_RESOURCE_GROUP_NAME" --query "parameters.storageAccountName.value" --output tsv)
 dbfsBlobStrageDomain="[
     \"$dbfsBlobStrageAccountName.blob.core.windows.net\"
 ]"
@@ -449,7 +449,7 @@ fi
 echo "Adding local IP into ACL while storing SA secrets (before private link config) ...."
 az keyvault network-rule add --resource-group "$AZURE_RESOURCE_GROUP_NAME" --name "$keyVaultName" --ip-address "$(curl -s ifconfig.me)" --output none
 echo "Retrieving keys from storage account"
-storageKeys=$(az storage account keys list --resource-group "$AZURE_RESOURCE_GROUP_NAME" --account-name "$storageAccountName")
+storageKeys=$(az storage account keys list --resource-group "$AZURE_RESOURCE_GROUP_NAME" --account-name "$storageAccountName" --output json)
 storageAccountKey1=$(echo "$storageKeys" | jq -r '.[0].value')
 storageAccountKey2=$(echo "$storageKeys" | jq -r '.[1].value')
 

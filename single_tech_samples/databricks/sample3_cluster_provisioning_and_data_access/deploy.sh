@@ -9,7 +9,7 @@ if [[ -z "$AZURE_SUBSCRIPTION_ID" ]]; then
     exit 1
 fi
 
-if ! AZURE_USERNAME=$(az account show --query user.name); then
+if ! AZURE_USERNAME=$(az account show --query user.name --output tsv); then
     echo "No Azure account logged in, now trying to log in."
     az login --output none
     az account set --subscription "$AZURE_SUBSCRIPTION_ID"
