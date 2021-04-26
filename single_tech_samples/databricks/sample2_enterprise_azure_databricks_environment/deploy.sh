@@ -229,7 +229,6 @@ if ! az deployment group validate \
         objectId="$objectId" \
         keyVaultSkuTier="$keyVaultSkuTier" \
         tagValues="$tagValues" \
-        spokeVirtualNetworkId='value' \
     --output none; then
     echo "Validation error for Azure Key Vault, please see the error above."
     exit 1
@@ -389,18 +388,6 @@ if [[ -z $afwArmOutput ]]; then
 fi
 
 echo "Deploying Azure Storage Account..."
-spokeVirtualNetworkId="$(echo "$vnetArmOutput" | jq -r '.properties.outputs.spoke_vnet_id.value')"
-networkAclsVirtualNetworkRules="[
-    {
-        \"id\": \"$spokeVirtualNetworkId/subnets/private-subnet\"
-    },
-    {
-        \"id\": \"$spokeVirtualNetworkId/subnets/privatelink-subnet\"        
-    },
-    {
-        \"id\": \"$spokeVirtualNetworkId/subnets/public-subnet\"        
-    }
-]"
 asaArmOutput=$(
         az deployment group create \
         --resource-group "$AZURE_RESOURCE_GROUP_NAME" \
@@ -411,7 +398,6 @@ asaArmOutput=$(
             storageAccountSkuTier="$storageAccountSkuTier" \
             storageAccountLocation="$storageAccountLocation" \
             encryptionEnabled="$encryptionEnabled" \
-            networkAclsVirtualNetworkRules="$networkAclsVirtualNetworkRules" \
         --output json
 )
 
@@ -453,7 +439,6 @@ akvArmOutput=$(az deployment group create \
         objectId="$objectId" \
         keyVaultSkuTier="$keyVaultSkuTier" \
         tagValues="$tagValues" \
-        spokeVirtualNetworkId="$(echo "$vnetArmOutput" | jq -r '.properties.outputs.spoke_vnet_id.value')" \
     --output json)
 if [[ -z $akvArmOutput ]]; then
     echo >&2 "Key Vault ARM deployment failed."
@@ -462,7 +447,7 @@ fi
 
 # Store Storage Account keys in Key Vault
 echo "Adding local IP into ACL while storing SA secrets (before private link config) ...."
-az keyvault network-rule add --resource-group "$AZURE_RESOURCE_GROUP_NAME" --name "$keyVaultName" --ip-address "$(curl ifconfig.me)" --output none
+az keyvault network-rule add --resource-group "$AZURE_RESOURCE_GROUP_NAME" --name "$keyVaultName" --ip-address "$(curl -s ifconfig.me)" --output none
 echo "Retrieving keys from storage account"
 storageKeys=$(az storage account keys list --resource-group "$AZURE_RESOURCE_GROUP_NAME" --account-name "$storageAccountName")
 storageAccountKey1=$(echo "$storageKeys" | jq -r '.[0].value')
@@ -473,7 +458,7 @@ az keyvault secret set -n "StorageAccountKey1" --vault-name "$keyVaultName" --va
 az keyvault secret set -n "StorageAccountKey2" --vault-name "$keyVaultName" --value "$storageAccountKey2" --output none
 echo "Successfully stored secrets StorageAccountKey1 and StorageAccountKey2"
 echo "Removing local IP into ACL while storing secrets ...."
-az keyvault network-rule remove --resource-group "$AZURE_RESOURCE_GROUP_NAME" --name "$keyVaultName" --ip-address "$(curl ifconfig.me)/32" --output none
+az keyvault network-rule remove --resource-group "$AZURE_RESOURCE_GROUP_NAME" --name "$keyVaultName" --ip-address "$(curl -s ifconfig.me)/32" --output none
 echo "Removed"
 
 echo "Deploying Keyvault Private Link..."
