@@ -1,0 +1,28 @@
+# Databricks notebook source
+mount_point = "/mnt/sample-container-via-ad-passthrough"
+
+configs = {
+  "fs.azure.account.auth.type": "CustomAccessToken",
+  "fs.azure.account.custom.token.provider.class": spark.conf.get("spark.databricks.passthrough.adls.gen2.tokenProviderClassName")
+}
+
+dbutils.fs.refreshMounts()
+dbutils.fs.mounts()
+
+# COMMAND ----------
+
+if mount_point in list(map(lambda mnt: mnt.mountPoint, dbutils.fs.mounts())):
+  dbutils.fs.unmount(mount_point)
+
+dbutils.fs.mount(
+  source = "abfss://sample-container@${DEPLOYMENT_PREFIX}asa01.dfs.core.windows.net",
+  mount_point = mount_point,
+  extra_configs = configs)
+
+dbutils.fs.refreshMounts()
+dbutils.fs.mounts()
+
+# COMMAND ----------
+
+df = spark.read.json(mount_point + "/sample-data.us-population.json")
+display(df)
