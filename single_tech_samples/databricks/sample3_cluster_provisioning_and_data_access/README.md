@@ -4,6 +4,7 @@
 
 - [1. How to use this sample](#1-how-to-use-this-sample)
   - [1.1 Prerequisites](#11-prerequisites)
+    - [1.1.1 Software Prerequisites](#111-software-prerequisites)
   - [1.2. Setup and deployment](#12-setup-and-deployment)
     - [Source Environment File](#source-environment-file)
     - [Run `deploy.sh`](#run-deploysh)
@@ -32,6 +33,15 @@ In this sample we are doing a few things:
 If you would like to run this sample with sample 2, please follow
 [this](#2-run-sample-with-sample-2-enterprise-azure-databricks-environment)
 for a few extra setup steps.
+
+#### 1.1.1 Software Prerequisites
+
+1. [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/) installed on the local machine
+   - *Installation instructions* can be found [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+1. For Windows users,
+   1. Option 1: [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+   2. Option 2: Use the dev container published [here](../.devcontainer) as a host for the bash shell.
+1. [Databricks CLI](https://docs.microsoft.com/en-us/azure/databricks/dev-tools/cli/)
 
 ### 1.2. Setup and deployment
 
