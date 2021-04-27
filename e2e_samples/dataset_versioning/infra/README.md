@@ -70,6 +70,15 @@ terraform plan -var="rg_name=your_rg_name" -var="app_name=your_app_name" -out=/t
 terraform apply /tmp/myapp
 ```
 
+After terraform apply completes successfully, you can see output similar to following example. Please copy `arm_deploy_script` value for later process. You'll use it for deploying Azure Data Factory Logic.
+```console
+Apply complete! Resources: 0 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+arm_deploy_script = "az deployment group create --name arm_deploy --resource-group rg-masatf2 --template-file ./arm_template/arm_template.json --parameters factoryName='adf-masatfapp-dev' KeyVault_properties_typeProperties_baseUrl='https://kv-masatfapp-dev-eastus.vault.azure.net/' AzureBlobFS_properties_typeProperties_serviceEndpoint='https://dlsmasatfappdev.blob.core.windows.net/'"
+```
+
 ### Alternative: CI/CD
 
 Alternatively, we can run exact command in CICD pipeline. Since required credentials for terraform needs to be fetched from keyvault, you need to go to azure devops and set up secrets in library.
