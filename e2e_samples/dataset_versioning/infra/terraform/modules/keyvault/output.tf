@@ -11,3 +11,8 @@ output "kv_name" {
   sensitive   = true
 
 }
+
+output "kv_uri" {
+  value       = azurerm_key_vault.keyvault.vault_uri
+  description = "Key vault endpoint uri"
+}
