@@ -71,7 +71,7 @@ terraform apply /tmp/myapp
 ```
 
 After terraform apply completes successfully, you can see output similar to following example. Please copy `arm_deploy_script` value for later process. You'll use it for deploying Azure Data Factory Logic.
-```
+```console
 Apply complete! Resources: 0 added, 0 changed, 0 destroyed.
 
 Outputs:
