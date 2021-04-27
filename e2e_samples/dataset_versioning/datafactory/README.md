@@ -3,8 +3,8 @@
 This folder is for Data pipeline which copy data from SQL DB to Azure Storage (Delta Lake). We are using Azure Data Factory to implement pipeline.
 
 ## Prerequisites
-- Provision Azure Resources by IaC (Terraform)
 - [Install the Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+- Provision Azure Resources by IaC (Terraform)
 
 ## How to deploy it
 Run command to deploy business logic into Azure Data Factory ([document](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/deploy-cli#deploy-local-template-or-bicep-file)). You can utilize Terraform script `arm_deploy_script` output which you get in provisioning step.
