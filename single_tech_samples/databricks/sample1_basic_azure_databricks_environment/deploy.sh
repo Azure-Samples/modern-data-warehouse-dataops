@@ -59,13 +59,13 @@ else
 fi
 
 # Check the resource group and region
-RG_EXISTS=$(az group exists --resource-group "$AZURE_RESOURCE_GROUP_NAME")
+RG_EXISTS=$(az group exists --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output json)
 if [[ $RG_EXISTS == "false" ]]; then
     echo "Creating resource group $AZURE_RESOURCE_GROUP_NAME in $AZURE_RESOURCE_GROUP_LOCATION."
     az group create --location "$AZURE_RESOURCE_GROUP_LOCATION" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
 else
     echo "Resource group $AZURE_RESOURCE_GROUP_NAME exists in $AZURE_RESOURCE_GROUP_LOCATION."
-    RG_LOCATION=$(az group show --resource-group "$AZURE_RESOURCE_GROUP_NAME" --query location)
+    RG_LOCATION=$(az group show --resource-group "$AZURE_RESOURCE_GROUP_NAME" --query location --output tsv)
     if [[ "$RG_LOCATION" != "\"$AZURE_RESOURCE_GROUP_LOCATION\"" ]]; then
         echo "Resource group $AZURE_RESOURCE_GROUP_NAME is located in $RG_LOCATION, not \"$AZURE_RESOURCE_GROUP_LOCATION\""
     fi
@@ -185,7 +185,7 @@ fi
 
 # Store Storage Account keys in Key Vault
 echo "Retrieving keys from storage account"
-storageKeys=$(az storage account keys list --resource-group "$AZURE_RESOURCE_GROUP_NAME" --account-name "$storageAccountName")
+storageKeys=$(az storage account keys list --resource-group "$AZURE_RESOURCE_GROUP_NAME" --account-name "$storageAccountName" --output json)
 storageAccountKey1=$(echo "$storageKeys" | jq -r '.[0].value')
 storageAccountKey2=$(echo "$storageKeys" | jq -r '.[1].value')
 

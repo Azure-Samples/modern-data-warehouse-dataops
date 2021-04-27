@@ -25,7 +25,7 @@ if [[ -z "$AZURE_RESOURCE_GROUP_LOCATION" ]]; then
 fi
 
 # Login to Azure and select the subscription
-if ! AZURE_USERNAME=$(az account show --query user.name); then
+if ! AZURE_USERNAME=$(az account show --query user.name --output tsv); then
     echo "No Azure account logged in, now trying to log in."
     az login --output none
     az account set --subscription "$AZURE_SUBSCRIPTION_ID"
@@ -35,7 +35,7 @@ else
 fi
 
 # Check the resource group and region
-RG_EXISTS=$(az group exists --resource-group "$AZURE_RESOURCE_GROUP_NAME")
+RG_EXISTS=$(az group exists --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output tsv)
 if [[ $RG_EXISTS == "false" ]]; then
     echo "Error: Resource group $AZURE_RESOURCE_GROUP_NAME in $AZURE_RESOURCE_GROUP_LOCATION does not exist."
 else
