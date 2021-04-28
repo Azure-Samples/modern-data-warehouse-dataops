@@ -7,6 +7,15 @@ Credential Passthrough is a practice that is more recommended by the official do
 
 When using a High Concurrency Cluster with credential passthrough, this cluster can be shared among multiple users. The cluster will take the identity of whoever is using the cluster and access datalake. However according to the limitations mentioned in [this doc](https://docs.microsoft.com/en-us/azure/databricks/security/credential-passthrough/adls-passthrough#--limitations), looks like MLflow on high concurrency clusters will not work well. Since we will be using MLFlow in our project, we will avoid using the high concurrency cluster and just use the standard clusters. For Standard Clusters, only a single user's identity can be tied to each cluster, so every user will need to create their own cluster when using credential passthrough.
 
+## Prerequisite
+
+- Credential passthrough requires an Azure Databricks Premium Plan. Sample code is already configured to use Premium Plan
+- Azure Data Lake Storage Gen2 storage accounts must use the hierarchical namespace. This is already configured in sample code.
+
+## RBAC vs ACL
+
+ACLs give you the ability to apply "finer grain" level of access to directories and files. Permission on RBAC is checked first and moved on to ACL. For more details please refer to the [official doc](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-access-control-model).
+
 ## Credential Passthrough vs Service Principal
 
 The [official doc](https://docs.microsoft.com/en-us/azure/databricks/security/data-governance#secure-access-to-azure-data-lake-storage) mentioned:

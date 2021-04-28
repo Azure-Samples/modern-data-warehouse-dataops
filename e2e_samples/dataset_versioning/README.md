@@ -24,11 +24,17 @@ The solution demonstrates how to achieve the requirements described above by:
 
 We refer to [LendingClub issued Loans](https://www.kaggle.com/husainsb/lendingclub-issued-loans?select=lc_loan.csv) data hosted by Kaggle.
 
+> If you want to use you may want to modify read_csv function in main.py to customize for your sample.
+
 ### How to use the sample
 
 1. Setup Infra
     1. Provision infra with Terraform - [detailed steps](./infra/README.md)
-    1. **[Need update]** Add user permission (Credential passthough)
+    1. Add user permission (Credential passthrough) - [details steps](#credential-passthrough)
+        1. Add your READ and EXECUTE permission in ACL (Storage account -> containers -> container(datalake) -> Manage ACL)
+        1. Open up [Microsoft Azure Storage Explorer](https://azure.microsoft.com/en-us/features/storage-explorer/) and right click on container to add propagate access control list.
+        > Propagate access control list cannot be found: Try updating azure storage explorer to the latest version.
+        > You might already have acl permissions if you provision resources with your credentials (e.g. az login)
     1. Create table and install stored procedure - [detailed steps](./datafactory/config/README.md)
     1. Deploy application logic (ARM templates) for Data Factory - [detailed steps](./datafactory/README.md)
 1. Functional test
@@ -59,7 +65,7 @@ We refer to [LendingClub issued Loans](https://www.kaggle.com/husainsb/lendingcl
             ```python
             # List versions
             spark.sql(f"DESCRIBE HISTORY delta.`{file_path}`").show()
-            
+
             # Load from specific version
             load_data = spark.read.format("delta").option("versionAsOf", 0).load(file_path)
             load_data.show()
