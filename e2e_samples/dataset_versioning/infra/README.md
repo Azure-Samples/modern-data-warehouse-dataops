@@ -11,12 +11,12 @@
 
 The following steps will deploy the Azure base infrastructure for the Temperature Events sample. Ensure you are in `e2e_samples/dataset-versioning/infra/`.
 
-1. Log in to Azure CLI
+1. Log in with the Azure CLI
 2. Run the setup script
 3. Initialize Terraform
 4. Provision the resouces using Terraform
 
-### #1 Log in to the Azure CLI
+### #1 Log in with the Azure CLI
 
 ```bash
 > az login
