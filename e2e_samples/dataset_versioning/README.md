@@ -24,7 +24,7 @@ The solution demonstrates how to achieve the requirements described above by:
 
 We refer to [LendingClub issued Loans](https://www.kaggle.com/husainsb/lendingclub-issued-loans?select=lc_loan.csv) data hosted by Kaggle.
 
-> If you want to use you may want to modify read_csv function in main.py to customize for your sample.
+> If you want to use your custom data, you may want to modify read_csv function in main.py to customize for your sample.
 
 ### How to use the sample
 
