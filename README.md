@@ -28,8 +28,9 @@ The samples are either focused on a single azure service or showcases an end to 
 
 - [**Parking Sensor Solution**](e2e_samples/parking_sensors/) - This demonstrates batch, end-to-end data pipeline following the MDW architecture, along with a corresponding CI/CD process. See [here](https://www.youtube.com/watch?v=Xs1-OU5cmsw) for the presentation which includes a detailed walk-through of the solution.
   - *Technology stack*: Azure DevOps, Azure Data Factory, Azure Databricks, Azure Synapse and ADLS Gen2.
-- [**Temperature Events Solution**](e2e_samples/temperature_events) - This demonstrate a high-scale event-driven data pipeline with a focus on how to implement Observability and Load Testing.
+- [**Temperature Events Solution**](e2e_samples/temperature_events) - This demonstrates a high-scale event-driven data pipeline with a focus on how to implement Observability and Load Testing.
   - *Technology stack*: Azure DevOps, Azure Functions, Terraform, Application Insights, Azure Eventhubs
+- [**Dataset Versioning Solution**](e2e_samples/dataset_versioning) - This demonstrates how to use DataFactory to Orchestrate DataFlow, to do DeltaLoads into DeltaLake On DataLake(DoDDDoD).
 
 ### Single Technology Samples
 
