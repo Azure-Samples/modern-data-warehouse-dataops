@@ -9,14 +9,14 @@
 
 **Deploy Steps:**
 
-The following deploys the Azure base infrastructure for the Temperature Events sample. Ensure you are in `e2e_samples/dataset-versioning/infra/`.
+The following steps will deploy the Azure base infrastructure for the Temperature Events sample. Ensure you are in `e2e_samples/dataset-versioning/infra/`.
 
-1. `az login`
-2. `./setup.sh`
-3. Run terraform init with the output from step 2
-4. `terraform validate && terraform plan && terraform apply`
+1. Log in with the Azure CLI
+2. Run the setup script
+3. Initialize Terraform
+4. Provision the resouces using Terraform
 
-### #1 `az login`
+### #1 Log in with the Azure CLI
 
 ```bash
 > az login
@@ -31,7 +31,7 @@ You can check by using this command to get the list of subsciptions and see whic
 If you are using a different subscription and need to change it, use this command:
 ```az account set --subscription <your_subscription_id>```
 
-### #2 `./setup.sh` to create Terraform support resources
+### #2 Run the setup script
 
 This script will create a resource group, with 2 resources (Key Vault and Storage) to track the secrets and state of your infrastructure. It will also create a new Service Principal with contributor permissions for the Terraform app to use later.
 
@@ -40,33 +40,31 @@ This script will create a resource group, with 2 resources (Key Vault and Storag
 # NOTE: Change the values to a unique name for your account.
 # ./setup.sh 
 # Enter value: <resource group> <storage name> <Key Vault name> <region>
-$ az login
 $ ./setup.sh
 $ "Enter value: " rg-my-terraform stmyterraform kv-myterraform eastus2
 ```
 
 Keep note of the output from `./setup.sh`. The output will be used in the next command
 
-### #3 Run terraform init with the output from step 2
+### #3 Initialize Terraform
 
 Use the output from the last command, to initialise the Terraform state files and store them in the Azure storage & Key Vault resources created in step 2.
 
 ```bash
 # Note: This is an example, use the exact output given to you in step 2.
-az login
 cd terraform/live/dev
 
 terraform init -backend-config="storage_account_name=stmyterraform" -backend-config="container_name=terraform-state" -backend-config="access_key=$(az keyvault secret show --name tfstate-storage-key --vault-name kv-myterraform --query value -o tsv)" -backend-config="key=terraform.tfstate"
 ```
 
-### #4 Use `terraform apply` to create the sample resources
+### #4 Provision the resouces using Terraform
 
 Run the following commands to deploy the sample infrastructure.
-**Note:** Pick a globally unique name and replace "your_rg_name" and "your_app_name"`
+**Note:** Pick a globally unique name and replace `{your_rg_name}` and `{your_app_name}`
 
 ```bash
 # NOTE: enter your own unique value instead of `myapp`
-terraform plan -var="rg_name=your_rg_name" -var="app_name=your_app_name" -out=/tmp/myapp
+terraform plan -var="rg_name={your_rg_name}" -var="app_name={your_app_name}" -out=/tmp/myapp
 terraform apply /tmp/myapp
 ```
 
