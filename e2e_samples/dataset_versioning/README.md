@@ -30,7 +30,7 @@ We refer to [LendingClub issued Loans](https://www.kaggle.com/husainsb/lendingcl
 
 1. Setup Infra
     1. Provision infra with Terraform - [detailed steps](./infra/README.md)
-    1. Add user permission (Credential passthrough) - [details steps](#credential-passthrough)
+    1. Add user permission (Credential passthrough) - [details steps](./databricks/README)
         1. Add your READ and EXECUTE permission in ACL (Storage account -> containers -> container(datalake) -> Manage ACL)
         1. Open up [Microsoft Azure Storage Explorer](https://azure.microsoft.com/en-us/features/storage-explorer/) and right click on container to add propagate access control list.
         > Propagate access control list cannot be found: Try updating azure storage explorer to the latest version.
