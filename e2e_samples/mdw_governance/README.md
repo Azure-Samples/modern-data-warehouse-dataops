@@ -2,7 +2,7 @@
 
 This sample demonstrates how to provision end-to-end modern data warehouse solution using Azure DevOps pipelines to deploy Dev, Test and Prod environments.
 
-The sample focuses on data governance, using Purview, to track data assets and lineage to allow data managers to understand the quality and source of the data, as well as to understand if there is PII etc. in the data estate.
+The sample focuses on data governance, using Purview, to track data assets and lineage to allow data managers to understand the quality and source of the data, as well as to understand if there is PII and other sensitive information in your data estate.
 
 ## Contents <!-- omit in toc -->
 
@@ -24,7 +24,7 @@ The sample focuses on data governance, using Purview, to track data assets and l
 
 This solution sets up an Azure Data Lake storage account, with two containers: Datalake and Dropzone. The folder structure in datalake is structured to enable data tiering (Bronze, Silver, Gold), hold shared data (Reference) and shared libraries (Sys). Azure Data Factory instance with linked services connecting to the Azure Data Lake, Azure Key Vault and Azure Purview. Application Insights is used for event logging and Office365 API Connection in combination with Logic Apps is used for sending notification emails. A Virtual Network and Private Endpoints are deployed for Data Lake and Key Vault, however the firewall on the services is left open in the initial deployment. To fully secure the solution, the Virtual Network should be peered to an internal corporate network, and firewall closed on those services.
 
-The Azure Data Factory contains an ADF Pipeline that is stored in a git repository, that is taking data from the Dropzone and ingesting it into the bronze folder. The data files for running the pipeline can be found in [Data](./Data) folder of this repository.
+The Azure Data Factory contains an ADF Pipeline that is stored in a git repository, that is taking data from the Dropzone and ingesting it into the bronze folder. The data files for running the pipeline can be found in [Data](./data) folder of this repository.
 
 ### Architecture
 
@@ -96,14 +96,14 @@ Each environment has an identical set of resources
    5. In the Azure Portal, go to the Azure Resource Group you created, and grant this Service Principal the Owner role of the resource group (use the name found in the previous step to locate the Service Principal).
    6. With administrative privileges on the subscription, run `az provider register --namespace 'Microsoft.Purview'` to register Purview provider. Alternatively you can use the Azure Portal to search for and select Subscriptions, select the subscription you want to use, and then select Resource providers. Search and register Microsoft.Purview provider.
    7. Create a new repository in your Azure DevOps project and copy the contents of the `e2e_samples\mdw-governance` folder to the root of this repository.
-   8. Create a new pipeline from existing yml in Azure DevOps by selecting the repository and importing the `create-infrastructure.yml` YAML file (see [this post](https://stackoverflow.com/a/59067271) to learn how).
-   9. Make sure the values of the variables match the desired configuration and run the pipeline to deploy the core infrastructure. Update the dev-environment.yml, test-environment.yml and prod-environment.yml files to match your environment. Update at least:
-        - resourceGroup - this is the name of the Resource Group where the resources will be deployed
-        - resourcePrefix - this prefix will be appended to all resource names to make them unique (notice: lower-case letters only, no special characters allowed
-        - location - location where resources should be deployed
-        - locationFormatted - full name of location where resources should be deployed
-        - purviewAdmins - an [objectID](https://docs.microsoft.com/en-us/azure/marketplace/find-tenant-object-id) of the user/user group to be assigned admin rights to Purview (e.g. your Azure AD objectID)
-        - azureResourceManagerConnection - name of the service connection (by default this is derived from resource group name e.g. "SC-My-Resource-Group")
+   8. Update values of the variables to match the desired configuration by updating the `dev-environment.yml`, `test-environment.yml` and `prod-environment.yml` files to match your environment. Update at least:
+        - **resourceGroup** - this is the name of the Resource Group where the resources will be deployed
+        - **resourcePrefix** - this prefix will be appended to all resource names to make them unique (notice: lower-case letters only, no special characters allowed
+        - **location** - location where resources should be deployed
+        - **locationFormatted** - full name of location where resources should be deployed
+        - **purviewAdmins** - an [objectID](https://docs.microsoft.com/en-us/azure/marketplace/find-tenant-object-id) of the user/user group to be assigned admin rights to Purview (e.g. your Azure AD objectID). To find the object id of the current logged in user in `az cli`, run `az ad signed-in-user show --output json | jq -r '.objectId'`
+        - **azureResourceManagerConnection** - name of the service connection (by default this is derived from resource group name e.g. "SC-My-Resource-Group")
+   9. Create a new pipeline from existing yml in Azure DevOps by selecting the repository and importing the `create-infrastructure.yml` YAML file (see [this post](https://stackoverflow.com/a/59067271) to learn how).
    10. Run the `create-infrastructure.yml` pipeline.
 
 2. **Setup an ADF git integration in DEV Data Factory**
