@@ -2,7 +2,7 @@
 
 This sample demonstrates how to provision end-to-end modern data warehouse solution using Azure DevOps pipelines to deploy Dev, Test and Prod environments.
 
-The sample focuses on data governance, using Purview, to track data assets and lineage to allow data managers to understand the quality and source of the data, as well as to understand if there is PII and other sensitive information in your data estate.
+The sample focuses on data governance, using Purview, to track data assets and lineage to allow data managers to understand the quality and source of the data, as well as to understand if there is PII etc. in the data estate.
 
 ## Contents <!-- omit in toc -->
 
@@ -22,9 +22,9 @@ The sample focuses on data governance, using Purview, to track data assets and l
 
 ## Solution Overview
 
-This solution sets up an Azure Data Lake storage account, with two containers: Datalake and Dropzone. The folder structure in datalake is structured to enable data tiering (Bronze, Silver, Gold), hold shared data (Reference) and shared libraries (Sys). Azure Data Factory instance with linked services connecting to the Azure Data Lake, Azure Key Vault and Azure Purview. Application Insights is used for event logging and Office365 API Connection in combination with Logic Apps is used for sending notification emails. A Virtual Network and Private Endpoints are deployed for Data Lake and Key Vault, however the firewall on the services is left open in the initial deployment. To fully secure the solution, the Virtual Network should be peered to an internal corporate network, and firewall closed on those services.
+This solution sets up an Azure Data Lake storage account, with two containers: Datalake and Dropzone. The folder structure in datalake is structured to enable data tiering (Bronze, Silver, Gold), hold shared data (Reference) and shared libraries (Sys). Azure Data Factory instance with linked services connecting to the Azure Data Lake, Azure Key Vault, Azure Databricks and Azure Purview. Application Insights is used for event logging and Office365 API Connection in combination with Logic Apps is used for sending notification emails. A Virtual Network and Private Endpoints are deployed for Data Lake and Key Vault, however the firewall on the services is left open in the initial deployment. Additionally the Databricks virtual network is not peered to the solution's and the databricks public IP is enabled. To fully secure the solution, the Virtual Network should be peered to an internal corporate network, and firewall closed on those services.
 
-The Azure Data Factory contains an ADF Pipeline that is stored in a git repository, that is taking data from the Dropzone and ingesting it into the bronze folder. The data files for running the pipeline can be found in [Data](./data) folder of this repository.
+The Azure Data Factory contains an ADF Pipeline that is stored in a git repository, that is taking data from the Dropzone and ingesting it into the bronze folder, after anonymizing its content using [Presidio](https://github.com/microsoft/presidio). The data files for running the pipeline can be found in [Data](./Data) folder of this repository.
 
 ### Architecture
 
@@ -37,6 +37,7 @@ The following shows the architecture of the solution.
 - [Azure Purview](https://azure.microsoft.com/en-au/services/devops/)
 - [Azure Data Factory](https://azure.microsoft.com/en-au/services/data-factory/)
 - [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction)
+- [Azure Databricks](https://docs.microsoft.com/en-us/azure/databricks/)
 - [Azure Key Vault](https://azure.microsoft.com/en-us/services/key-vault/)
 - [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)
 - [Office365 API Connection](https://docs.microsoft.com/en-us/azure/connectors/connectors-create-api-office365-outlook)
@@ -52,11 +53,13 @@ The following summarizes key learnings and best practices demonstrated by this s
 
 ### 1. Use private endpoints and peered network to secure the solution
 
-To enable a network layer protection, the services should reside on Virtual Network (VNET) and firewall for those services should be enabled to block external access. This can be done under Networking tab in the portal, by selecting "Allow access from selected networks". Support for Private Endpoints varies in different services, where Data Lake and Key Vault have full support, Data Factory and Purview require some additional steps.
+To enable a network layer protection, the services should reside on Virtual Network (VNET) and firewall for those services should be enabled to block external access. This can be done under Networking tab in the portal, by selecting "Allow access from selected networks". Support for Private Endpoints varies in different services, where Data Lake and Key Vault have full support, Data Factory, Databricks and Purview require some additional steps.
 
 To establish a private connection from Data Factory you need to create an [Azure Integration Runtime](https://docs.microsoft.com/en-us/azure/data-factory/create-azure-integration-runtime), and then create a link to Key Vault and Data Lake.
 
 Purview at this time (feb-2021) does not yet fully support Private Endpoints, but since it is considered a trusted Azure Service, it can reach the services that have the firewall enabled when the "[Allow trusted Microsoft services to access](https://docs.microsoft.com/en-us/azure/storage/common/storage-network-security?tabs=azure-portal)..." exception is checked.
+
+Azure Databricks can be either provisioned in the virtual network (vnet-injection) in the Premium tier, or its managed virtual network can be peered to the solution's virtual network so that the cluster's nodes would have secure access to the data in Azure Storage. Additionaly, its [public IP should be disabled](https://docs.microsoft.com/en-us/azure/databricks/security/secure-cluster-connectivity) and routed through corporate network.
 
 Notice that once the firewall is enabled, and access is blocked from external IPs, you will not be able to access the resources directly, unless the VNET is peered into your internal network (e.g. with firewall on, you would not be able to use Azure Storage Explorer to access Data Lake, unless the network is peered).
 
@@ -96,14 +99,14 @@ Each environment has an identical set of resources
    5. In the Azure Portal, go to the Azure Resource Group you created, and grant this Service Principal the Owner role of the resource group (use the name found in the previous step to locate the Service Principal).
    6. With administrative privileges on the subscription, run `az provider register --namespace 'Microsoft.Purview'` to register Purview provider. Alternatively you can use the Azure Portal to search for and select Subscriptions, select the subscription you want to use, and then select Resource providers. Search and register Microsoft.Purview provider.
    7. Create a new repository in your Azure DevOps project and copy the contents of the `e2e_samples\mdw-governance` folder to the root of this repository.
-   8. Update values of the variables to match the desired configuration by updating the `dev-environment.yml`, `test-environment.yml` and `prod-environment.yml` files to match your environment. Update at least:
-        - **resourceGroup** - this is the name of the Resource Group where the resources will be deployed
-        - **resourcePrefix** - this prefix will be appended to all resource names to make them unique (notice: lower-case letters only, no special characters allowed
-        - **location** - location where resources should be deployed
-        - **locationFormatted** - full name of location where resources should be deployed
-        - **purviewAdmins** - an [objectID](https://docs.microsoft.com/en-us/azure/marketplace/find-tenant-object-id) of the user/user group to be assigned admin rights to Purview (e.g. your Azure AD objectID). To find the object id of the current logged in user in `az cli`, run `az ad signed-in-user show --output json | jq -r '.objectId'`
-        - **azureResourceManagerConnection** - name of the service connection (by default this is derived from resource group name e.g. "SC-My-Resource-Group")
-   9. Create a new pipeline from existing yml in Azure DevOps by selecting the repository and importing the `create-infrastructure.yml` YAML file (see [this post](https://stackoverflow.com/a/59067271) to learn how).
+   8. Create a new pipeline from existing yml in Azure DevOps by selecting the repository and importing the `create-infrastructure.yml` YAML file (see [this post](https://stackoverflow.com/a/59067271) to learn how).
+   9. Make sure the values of the variables match the desired configuration and run the pipeline to deploy the core infrastructure. Update the dev-environment.yml, test-environment.yml and prod-environment.yml files to match your environment. Update at least:
+        - resourceGroup - this is the name of the Resource Group where the resources will be deployed
+        - resourcePrefix - this prefix will be appended to all resource names to make them unique (notice: lower-case letters only, no special characters allowed
+        - location - location where resources should be deployed
+        - locationFormatted - full name of location where resources should be deployed
+        - purviewAdmins - an [objectID](https://docs.microsoft.com/en-us/azure/marketplace/find-tenant-object-id) of the user/user group to be assigned admin rights to Purview (e.g. your Azure AD objectID)
+        - azureResourceManagerConnection - name of the service connection (by default this is derived from resource group name e.g. "SC-My-Resource-Group")
    10. Run the `create-infrastructure.yml` pipeline.
 
 2. **Setup an ADF git integration in DEV Data Factory**
@@ -137,6 +140,7 @@ After a successful deployment, you should have 15 resources deployed per environ
 
 - **Data Factory** - with pipelines, datasets and linked services, a connection to Purview (tag), with Data Factory Managed Service Identity having Data Contributor rights in Purview
 - **Data Lake Store Gen2**
+- **Databricks** - with cluster-setup scripts and annymization notebook. Notice that there are additional resources deployed in a resource group named "databricks-rg-[prefix name of you solution]"
 - **KeyVault** with all relevant secrets stored.
 - **Purview** with the following connected services in Purview:
   - One Data Factory connection

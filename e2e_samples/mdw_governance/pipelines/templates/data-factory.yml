@@ -24,6 +24,12 @@ parameters:
     type: string
   - name: storageAccountName
     type: string
+  - name: databricksWorkspaceUrl
+    type: string
+  - name: databricksClusterId
+    type: string
+  - name: databricksSecretName
+    type: string
 
 steps:
   - task: AzureResourceManagerTemplateDeployment@3
@@ -70,7 +76,10 @@ steps:
       DATA_FACTORY_NAME: ${{ parameters.dataFactoryName }}
       KEYVAULT_NAME: ${{ parameters.keyVaultName }}
       RESOURCE_GROUP: ${{ parameters.resourceGroupName }}
-    displayName: Create link to ADL from ADF
+      DATABRICKS_WORKSPACE_URL: ${{ parameters.databricksWorkspaceUrl }}
+      DATABRICKS_CLUSTER_ID: ${{ parameters.databricksClusterId }} 
+      DATABRICKS_TOKEN_SECRET_NAME: ${{ parameters.databricksSecretName }}
+    displayName: Create ADF links to ADL, AKV and ADB
 
   - task: AzureCLI@2
     inputs:

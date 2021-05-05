@@ -3,9 +3,45 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy from Source to Bronze",
-				"type": "Copy",
+				"name": "Anonymize Source",
+				"description": "Anonymize description column with Presidio",
+				"type": "DatabricksNotebook",
 				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/notebooks/01_transform_presidio",
+					"baseParameters": {
+						"anonymized_column": "rd_seg_dsc",
+						"storage_output_folder": "anonymized",
+						"input_file_path": {
+							"value": "@pipeline().parameters.fileName",
+							"type": "Expression"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "PresidioDatabricks",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Copy from Anonymized to Bronze",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Anonymize Source",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,
@@ -20,6 +56,8 @@
 						"storeSettings": {
 							"type": "AzureBlobFSReadSettings",
 							"recursive": true,
+							"wildcardFolderPath": "anonymized",
+							"wildcardFileName": "part-*",
 							"enablePartitionDiscovery": false
 						},
 						"formatSettings": {
@@ -29,7 +67,8 @@
 					"sink": {
 						"type": "DelimitedTextSink",
 						"storeSettings": {
-							"type": "AzureBlobFSWriteSettings"
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "MergeFiles"
 						},
 						"formatSettings": {
 							"type": "DelimitedTextWriteSettings",
@@ -49,11 +88,8 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "ParkingSensors_Source_CSV",
-						"type": "DatasetReference",
-						"parameters": {
-							"fileName": "@pipeline().parameters.fileName"
-						}
+						"referenceName": "ParkingSensors_Anonymized_CSV",
+						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
@@ -61,10 +97,45 @@
 						"referenceName": "ParkingSensors_Bronze_CSV",
 						"type": "DatasetReference",
 						"parameters": {
-							"fileName": "@pipeline().parameters.fileName"
+							"fileName": {
+								"value": "@pipeline().parameters.fileName",
+								"type": "Expression"
+							}
 						}
 					}
 				]
+			},
+			{
+				"name": "Delete Anonymized",
+				"type": "Delete",
+				"dependsOn": [
+					{
+						"activity": "Copy from Anonymized to Bronze",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "ParkingSensors_Anonymized_CSV",
+						"type": "DatasetReference"
+					},
+					"enableLogging": false,
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					}
+				}
 			}
 		],
 		"parameters": {
