@@ -192,21 +192,6 @@
                     "serviceName": "Microsoft.Databricks/workspaces"
                   }
                 }
-              ],
-              "serviceEndpoints": [
-                {
-                  "service": "Microsoft.Storage",
-                  "locations": [
-                    "eastus",
-                    "westus"
-                  ]
-                },
-                {
-                  "service": "Microsoft.KeyVault",
-                  "locations": [
-                    "*"
-                  ]
-                }
               ]
             }
           },
@@ -227,21 +212,6 @@
                     "serviceName": "Microsoft.Databricks/workspaces"
                   }
                 }
-              ],
-              "serviceEndpoints": [
-                {
-                  "service": "Microsoft.Storage",
-                  "locations": [
-                    "eastus",
-                    "westus"
-                  ]
-                },
-                {
-                  "service": "Microsoft.KeyVault",
-                  "locations": [
-                    "*"
-                  ]
-                }
               ]
             }
           },
@@ -251,22 +221,7 @@
               "addressPrefix": "[parameters('privatelinkSubnetCidr')]",
               "delegations": [],
               "privateEndpointNetworkPolicies": "Disabled",
-              "privateLinkServiceNetworkPolicies": "Enabled",
-              "serviceEndpoints": [
-                {
-                  "service": "Microsoft.Storage",
-                  "locations": [
-                    "eastus",
-                    "westus"
-                  ]
-                },
-                {
-                  "service": "Microsoft.KeyVault",
-                  "locations": [
-                    "*"
-                  ]
-                }
-              ]
+              "privateLinkServiceNetworkPolicies": "Enabled"
             }
           }
         ],
