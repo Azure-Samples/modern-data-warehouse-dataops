@@ -1,8 +1,6 @@
 # Modern Data Warehouse Data Governance end-to-end deployment with Purview <!-- omit in toc -->
 
-This sample demonstrates how to provision end-to-end modern data warehouse solution using Azure DevOps pipelines to deploy Dev, Test and Prod environments.
-
-The sample focuses on data governance, using Purview, to track data assets and lineage to allow data managers to understand the quality and source of the data, as well as to understand if there is PII and other sensitive information in your data estate.
+This sample demonstrates how to provision end-to-end modern data warehouse solution using [Azure DevOps pipelines](https://azure.microsoft.com/en-au/services/devops/pipelines/) to deploy across Dev, Test and Prod environments. It particularly focuses on data governance, using [Azure Purview](https://azure.microsoft.com/en-au/services/purview/), to track data assets and lineage to allow data managers to understand the quality and source of the data, as well as to understand if there is PII and other sensitive information in your data estate.
 
 ## Contents <!-- omit in toc -->
 
