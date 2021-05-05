@@ -2,7 +2,7 @@
 
 This sample demonstrates how to provision end-to-end modern data warehouse solution using Azure DevOps pipelines to deploy Dev, Test and Prod environments.
 
-The sample focuses on data governance, using Purview, to track data assets and lineage to allow data managers to understand the quality and source of the data, as well as to understand if there is PII etc. in the data estate.
+The sample focuses on data governance, using Purview, to track data assets and lineage to allow data managers to understand the quality and source of the data, as well as to understand if there is PII etc. in the data estate. It also uses [presidio](https://github.com/microsoft/presidio), to anonymize parts of the scanned data and redcue the potential to expose PII. 
 
 ## Contents <!-- omit in toc -->
 
