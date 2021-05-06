@@ -99,14 +99,14 @@ Each environment has an identical set of resources
    5. In the Azure Portal, go to the Azure Resource Group you created, and grant this Service Principal the Owner role of the resource group (use the name found in the previous step to locate the Service Principal).
    6. With administrative privileges on the subscription, run `az provider register --namespace 'Microsoft.Purview'` to register Purview provider. Alternatively you can use the Azure Portal to search for and select Subscriptions, select the subscription you want to use, and then select Resource providers. Search and register Microsoft.Purview provider.
    7. Create a new repository in your Azure DevOps project and copy the contents of the `e2e_samples\mdw-governance` folder to the root of this repository.
-   8. Create a new pipeline from existing yml in Azure DevOps by selecting the repository and importing the `create-infrastructure.yml` YAML file (see [this post](https://stackoverflow.com/a/59067271) to learn how).
-   9. Make sure the values of the variables match the desired configuration and run the pipeline to deploy the core infrastructure. Update the dev-environment.yml, test-environment.yml and prod-environment.yml files to match your environment. Update at least:
-        - resourceGroup - this is the name of the Resource Group where the resources will be deployed
-        - resourcePrefix - this prefix will be appended to all resource names to make them unique (notice: lower-case letters only, no special characters allowed
-        - location - location where resources should be deployed
-        - locationFormatted - full name of location where resources should be deployed
-        - purviewAdmins - an [objectID](https://docs.microsoft.com/en-us/azure/marketplace/find-tenant-object-id) of the user/user group to be assigned admin rights to Purview (e.g. your Azure AD objectID)
-        - azureResourceManagerConnection - name of the service connection (by default this is derived from resource group name e.g. "SC-My-Resource-Group")
+   8. Update values of the variables to match the desired configuration by updating the `dev-environment.yml`, `test-environment.yml` and `prod-environment.yml` files to match your environment. Update at least:
+        - **resourceGroup** - this is the name of the Resource Group where the resources will be deployed
+        - **resourcePrefix** - this prefix will be appended to all resource names to make them unique (notice: lower-case letters only, no special characters allowed
+        - **location** - location where resources should be deployed
+        - **locationFormatted** - full name of location where resources should be deployed
+        - **purviewAdmins** - an [objectID](https://docs.microsoft.com/en-us/azure/marketplace/find-tenant-object-id) of the user/user group to be assigned admin rights to Purview (e.g. your Azure AD objectID). To find the object id of the current logged in user in `az cli`, run `az ad signed-in-user show --output json | jq -r '.objectId'`
+        - **azureResourceManagerConnection** - name of the service connection (by default this is derived from resource group name e.g. "SC-My-Resource-Group")
+   9. Create a new pipeline from existing yml in Azure DevOps by selecting the repository and importing the `create-infrastructure.yml` YAML file (see [this post](https://stackoverflow.com/a/59067271) to learn how).
    10. Run the `create-infrastructure.yml` pipeline.
 
 2. **Setup an ADF git integration in DEV Data Factory**
@@ -149,6 +149,11 @@ After a successful deployment, you should have 15 resources deployed per environ
 - **App Service Plan** and **Azure Function** used for data log collection
 - **Logic app** and **Office 365** connector, used for emailing notifications
 - **Virtual Network** and two **Private Endpoints** and two **Virtual Network Interfaces**: used to connect Data Lake and Key Vault to Data Factory over private connection
+
+#### Running the sample
+
+In the datalake storage, under the container named "dropzone" you will find the csv datasource On-street_Parking_Bay_Sensors_baylist.csv, which has the column "rd_seg_dsc". Start a debug execution of the ADF pipeline and input the name of the source file.
+The name of the column to be anonymized (rd_seg_dsc) is an input parameter to the ADF Databricks Notebook job, if you are using a different dataset, make sure to change the column name to fit your data scheme.
 
 ### Promoting development and test environment
 
