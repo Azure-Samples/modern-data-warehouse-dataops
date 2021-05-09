@@ -1,8 +1,6 @@
 # Modern Data Warehouse Data Governance end-to-end deployment with Purview <!-- omit in toc -->
 
-This sample demonstrates how to provision end-to-end modern data warehouse solution using Azure DevOps pipelines to deploy Dev, Test and Prod environments.
-
-The sample focuses on data governance, using Purview, to track data assets and lineage to allow data managers to understand the quality and source of the data, as well as to understand if there is PII etc. in the data estate. It also uses [presidio](https://github.com/microsoft/presidio), to anonymize parts of the scanned data and redcue the potential to expose PII. 
+This sample demonstrates how to provision end-to-end modern data warehouse solution using Azure DevOps pipelines to deploy Dev, Test and Prod environments. It focuses on data governance, using Purview, to track data assets and lineage to allow data managers to understand the quality and source of the data, as well as to understand if there is PII etc. in the data estate. It also uses [presidio](https://github.com/microsoft/presidio), to anonymize parts of the scanned data and reduce the potential to expose PII.
 
 ## Contents <!-- omit in toc -->
 
@@ -22,9 +20,9 @@ The sample focuses on data governance, using Purview, to track data assets and l
 
 ## Solution Overview
 
-This solution sets up an Azure Data Lake storage account, with two containers: Datalake and Dropzone. The folder structure in datalake is structured to enable data tiering (Bronze, Silver, Gold), hold shared data (Reference) and shared libraries (Sys). Azure Data Factory instance with linked services connecting to the Azure Data Lake, Azure Key Vault, Azure Databricks and Azure Purview. Application Insights is used for event logging and Office365 API Connection in combination with Logic Apps is used for sending notification emails. A Virtual Network and Private Endpoints are deployed for Data Lake and Key Vault, however the firewall on the services is left open in the initial deployment. Additionally the Databricks virtual network is not peered to the solution's and the databricks public IP is enabled. To fully secure the solution, the Virtual Network should be peered to an internal corporate network, and firewall closed on those services.
+This solution sets up an Azure Data Lake storage account, with two containers: Datalake and Dropzone. The folder structure in datalake is structured to enable data tiering (Bronze, Silver, Gold), hold shared data (Reference) and shared libraries (Sys). Azure Data Factory instance with linked services connecting to the Azure Data Lake, Azure Key Vault, Azure Databricks and Azure Purview. Application Insights is used for event logging and Office365 API Connection in combination with Logic Apps is used for sending notification emails. A Virtual Network and Private Endpoints are deployed for Data Lake and Key Vault, however the firewall on the services is left open in the initial deployment. Additionally the Databricks virtual network is not peered to the solution's and the databricks public IP is enabled. To fully secure the solution, the Virtual Network should be peered to an internal corporate network, and firewall closed on those services, and follow the [Databricks single tech sample](https://github.com/Azure-Samples/modern-data-warehouse-dataops/tree/master/single_tech_samples/databricks/sample2_enterprise_azure_databricks_environment) for more information on locking down a databricks environment.
 
-The Azure Data Factory contains an ADF Pipeline that is stored in a git repository, that is taking data from the Dropzone and ingesting it into the bronze folder, after anonymizing its content using [Presidio](https://github.com/microsoft/presidio). The data files for running the pipeline can be found in [Data](./Data) folder of this repository.
+The Azure Data Factory contains an ADF Pipeline that is stored in a git repository, that is taking data from the Dropzone and ingesting it into the bronze folder, after anonymizing its content using [Presidio](https://github.com/microsoft/presidio). The data files for running the pipeline can be found in [Data](./data) folder of this repository.
 
 ### Architecture
 
