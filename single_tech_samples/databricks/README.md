@@ -1,6 +1,6 @@
 # Azure Databricks
 
-[![Generic badge](Common_Assets/Images/Status-Active.svg)](https://github.com/Azure-Samples/modern-data-warehouse-dataops/commits/single-tech/databricks/single_tech_samples/databricks)
+[![Generic badge](Common_Assets/Images/Status-Active.svg)](https://github.com/Azure-Samples/modern-data-warehouse-dataops/tree/master/single_tech_samples/databricks#active)
 [![GitHub license](Common_Assets/Images/MIT.svg)](https://github.com/Azure-Samples/modern-data-warehouse-dataops/blob/master/LICENSE)
 [![Open Source? Yes!](Common_Assets/Images/Open_Source.svg)](https://opensource.microsoft.com/codeofconduct/)
 
