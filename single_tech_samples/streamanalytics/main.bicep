@@ -1,5 +1,5 @@
-param name string = 'tech-sample'
-param env string = 'test'
+param name string
+param env string
 param query string
 
 module iothubs './iothubs.bicep' = {

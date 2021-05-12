@@ -18,6 +18,15 @@
 
 1. __azure-streamanalytics-cicd__ Unit testing is possible using the `npm` package [azure-streamanalytics-cicd](https://www.npmjs.com/package/azure-streamanalytics-cicd). The tool provides additional features for working with `Azure Stream Analytics` locally. Check [here](https://docs.microsoft.com/en-us/azure/stream-analytics/cicd-tools?tabs=visual-studio-code) for more info.
 
+1. __Configure environment variables.__ We will assume these are customized and configured per your needs
+
+   ```bash
+   APP="tech-sample"
+   ENVIRONMENT="test"
+   LOCATION="japaneast"
+   STORAGE_ACCOUNT="st${APP/-/}${ENVIRONMENT}"
+   ```
+
 ## Build
 
 ```bash
@@ -25,21 +34,22 @@
 azure-streamanalytics-cicd test -project ./asaproj.json -outputPath ./output/
 
 # Create Resource Group
-az group create -n my-rg -l japaneast
+
+az group create -n rg-${APP} -l ${LOCATION}
 
 # Validate Generated Template
-az deployment group validate -f main.bicep -g my-rg --parameters query='@./streamanalytics-tech-sample.asaql'
+az deployment group validate -f main.bicep -g rg-${APP} --parameters query='@./streamanalytics-tech-sample.asaql' name=${APP} env=${ENVIRONMENT}
 
 # Show plan
-az deployment group what-if -f main.bicep -g my-rg --parameters query='@./streamanalytics-tech-sample.asaql'
+az deployment group what-if -f main.bicep -g rg-${APP} --parameters query='@./streamanalytics-tech-sample.asaql' name=${APP} env=${ENVIRONMENT}
 ```
 
-## Running the sample
+## Deploy
 
 ```bash
 # Create Azure Resources. This will also start the job
 
-az deployment group create -f main.bicep -g my-rg --parameters query='@./streamanalytics-tech-sample.asaql'
+az deployment group create -f main.bicep -g rg-${APP} --parameters query='@./streamanalytics-tech-sample.asaql' name=${APP} env=${ENVIRONMENT}
 ```
 
 ## Functional Test
@@ -47,11 +57,11 @@ az deployment group create -f main.bicep -g my-rg --parameters query='@./streama
 ```bash
 # Add device
 
-az iot hub device-identity create --hub-name iot-tech-sample-test --device-id iot-tech-sample-test --edge-enabled
+az iot hub device-identity create --hub-name iot-${APP}-${ENVIRONMENT} --device-id iot-${APP}-${ENVIRONMENT} --edge-enabled
 
 # Use connection information with "Raspberry Pi Azure IoT Online Simulator": https://azure-samples.github.io/raspberry-pi-web-simulator/
 
-az iot hub device-identity connection-string show --hub-name iot-tech-sample-test --device-id iot-tech-sample-test --output tsv
+az iot hub device-identity connection-string show --hub-name iot-${APP}-${ENVIRONMENT} --device-id iot-${APP}-${ENVIRONMENT} --output tsv
 ```
 
 > Check the blob storage container to ensure that a json file exists with expected temperature sensor data (exceeding 27 degrees) is present.
@@ -59,12 +69,18 @@ az iot hub device-identity connection-string show --hub-name iot-tech-sample-tes
 ## Automated End-to-End Test
 
 ```bash
-export DEVICE_CONNECTION_STRING=$(az iot hub device-identity connection-string show --hub-name iot-tech-sample-test --device-id iot-tech-sample-test --output tsv)
-export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string -n sttechsampletest --query connectionString -o tsv)
+export DEVICE_CONNECTION_STRING=$(az iot hub device-identity connection-string show --hub-name iot-${APP}-${ENVIRONMENT} --device-id iot-${APP}-${ENVIRONMENT} --output tsv)
+export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string -n ${STORAGE_ACCOUNT} --query connectionString -o tsv)
 
 cd e2e
 npm install 
 npm test
+```
+
+## Cleanup
+
+```bash
+az group delete -n rg-${APP}
 ```
 
 ## Key concepts
@@ -89,9 +105,22 @@ Resource naming conventions attempt to follow examples from [Define your naming 
 The structure of the __IaC__ scripts allow you to setup as many versions or the infrastructure as you need easily. For example an individual developer may create a version to use within their __Inner Dev Loop__:
 
 ```bash
-DEVELOPER=kaa
-az group create -n ${DEVELOPER}-rg -l japaneast
-az deployment group create -f main.bicep -g ${DEVELOPER}-rg --parameters query='@./streamanalytics-tech-sample.asaql' name=$DEVELOPER env=inner
+DEVELOPER="kaa"
+ENVIRONMENT="inner"
+LOCATION="japaneast"
+STORAGE_ACCOUNT="st${DEVELOPER}${ENVIRONMENT}"
+
+az group create -n rg-${DEVELOPER} -l $LOCATION
+
+az deployment group create -f main.bicep -g rg-${DEVELOPER} --parameters query='@./streamanalytics-tech-sample.asaql' name=${DEVELOPER} env=${ENVIRONMENT}
+
+az iot hub device-identity create --hub-name iot-${DEVELOPER}-${ENVIRONMENT} --device-id iot-${DEVELOPER}-${ENVIRONMENT} --edge-enabled
+
+export DEVICE_CONNECTION_STRING=$(az iot hub device-identity connection-string show --hub-name iot-${DEVELOPER}-${ENVIRONMENT} --device-id iot-${DEVELOPER}-${ENVIRONMENT} --output tsv)
+export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string -n ${STORAGE_ACCOUNT} --query connectionString -o tsv)
+
+# Cleanup
+az group delete -n rg-${DEVELOPER}
 ```
 
 ### Testing
@@ -104,7 +133,7 @@ Also this package can be used as part of an Azure DevOps CI\CD pipeline. More in
 
 > Key take aways for `azure-streamanalytics-cicd`
 >
-> * Test configuration is found under __/test__ directory.
+> * Test configuration is found under the __/test__ directory.
 > * This is the default location for `azure-streamanalytics-cicd`.
 > * __test/testConfig.json__ defines the test cases.
 > * __test/temperature ... .json__ defines pipeline inputs and outputs (as `JSON`)
