@@ -43,7 +43,7 @@ The samples are either focused on a single azure service (**Single Tech Samples*
 - [**Temperature Events Solution**](e2e_samples/temperature_events) - This demonstrate a high-scale event-driven data pipeline with a focus on how to implement Observability and Load Testing.
 ![Architecture](e2e_samples/temperature_events/images/temperature-events-architecture.png?raw=true "Architecture")
 - [**MDW Data Governance and PII data detection**](e2e_samples/mdw_governance) - This sample demonstrates how to deploy the Infrastructure of an end-to-end MDW Pipeline using [Azure DevOps pipelines](https://azure.microsoft.com/en-au/services/devops/pipelines/) along with a focus around Data Governance and PII data detection.
-  - *Technology stack*: Azure DevOps, Azure Data Factory, Azure Purview
+  - *Technology stack*: Azure DevOps, Azure Data Factory, Azure Databricks, Azure Purview, [Presidio](https://github.com/microsoft/presidio)
 
 ## Contributing
 
