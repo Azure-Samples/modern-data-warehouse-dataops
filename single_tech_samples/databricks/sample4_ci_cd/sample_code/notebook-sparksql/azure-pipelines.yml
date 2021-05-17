@@ -15,9 +15,6 @@ steps:
 - script: echo Hello, universe!
   displayName: 'Run a one-line script'
 
-- script: expecto petronum!
-  displayName: 'Run a one-line script again'
-
 - script: |
     echo Add other tasks to build, test, and deploy your project.
     echo See https://aka.ms/yaml
