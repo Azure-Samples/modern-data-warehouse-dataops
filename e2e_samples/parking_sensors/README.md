@@ -170,7 +170,7 @@ Notes:
 - This is a simplified Build and Release process for demo purposes based on [Trunk-based development practices](https://trunkbaseddevelopment.com/).
 - *A manual publish is required -- currently, this cannot be automated.
 - **The solution deployment script does not configure Approval Gates at the moment. See [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
-- ***Many organization use dedicated Release Branches (including Microsoft) instead of deploying from `master`. See [Release Flow](https://docs.microsoft.com/en-us/azure/devops/learn/devops-at-microsoft/release-flow).
+- ***Many organization use dedicated Release Branches (including Microsoft) instead of deploying from `master`. See [Release Flow](https://devblogs.microsoft.com/devops/release-flow-how-we-do-branching-on-the-vsts-team/).
 
 More resources:
 
