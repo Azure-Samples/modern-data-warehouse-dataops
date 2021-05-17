@@ -12,6 +12,16 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
+- task: UsePythonVersion@0
+  displayName: 'Use Python 3.7'
+  inputs:
+    versionSpec: 3.7
+
+- script: |
+    pip install pytest requests setuptools wheel
+    pip install -U databricks-connect==6.4.*
+  displayName: 'Load Python Dependencies'
+
 - script: echo Hello, universe!
   displayName: 'Run a one-line script'
 
