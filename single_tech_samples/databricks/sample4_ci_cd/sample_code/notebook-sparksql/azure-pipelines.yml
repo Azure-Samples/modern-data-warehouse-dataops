@@ -22,6 +22,15 @@ steps:
     pip install -U databricks-connect==6.4.*
   displayName: 'Load Python Dependencies'
 
+- script: |
+    echo "y
+    $(WORKSPACE-REGION-URL)
+    $(CSE-DEVELOP-PAT)
+    $(EXISTING-CLUSTER-ID)
+    $(WORKSPACE-ORG-ID)
+    15001" | databricks-connect configure
+  displayName: 'Configure DBConnect'
+  
 - script: echo Hello, universe!
   displayName: 'Run a one-line script'
 
