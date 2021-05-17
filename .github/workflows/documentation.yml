@@ -3,11 +3,11 @@ on:
   push:
     branches:
     - master
+    - single-tech/databricks
   pull_request:
-    paths:
-    - .github/workflows/documentation.yml
-    - .markdownlinkcheck.json
-    - .markdownlint.yml
+    branches:
+    - master
+    - single-tech/databricks
 
 jobs:
   markdown-link-check:

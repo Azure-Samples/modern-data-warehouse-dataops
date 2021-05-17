@@ -1,0 +1,57 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "logAnalyticsName": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        },
+        "sku": {
+            "type": "string"
+        },
+        "diagnosticSettingName": {
+            "type": "string"
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "2017-03-15-preview",
+            "name": "[parameters('logAnalyticsName')]",
+            "location": "[parameters('location')]",
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "properties": {
+                "sku": {
+                    "name": "[parameters('sku')]"
+                }
+            },
+            "resources": [
+                {
+                "type": "Microsoft.OperationalInsights/workspaces/providers/diagnosticSettings",
+                "apiVersion": "2017-05-01-preview",
+                "name": "[concat(parameters('logAnalyticsName'), '/Microsoft.Insights/', parameters('diagnosticSettingName'))]",
+                "location": "[parameters('location')]",
+                "dependsOn": [
+                    "[parameters('logAnalyticsName')]"
+                ],
+                "properties": {
+                    "workspaceId": "[concat(resourceGroup().id, '/providers/Microsoft.OperationalInsights/workspaces/', parameters('logAnalyticsName'))]",
+                    "logs": [
+                    {
+                        "category": "Audit",
+                        "enabled": true
+                    }
+                    ],
+                    "metrics": [
+                    {
+                        "category": "AllMetrics",
+                        "enabled": true
+                    }
+                    ]
+                }
+                }
+            ]
+        }
+    ]
+}

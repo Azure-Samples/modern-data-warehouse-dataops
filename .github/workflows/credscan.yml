@@ -3,6 +3,7 @@ on:
   push:
     branches:
     - master
+    - single-tech/databricks
 
 jobs:
   pattern_match_with_secrets:

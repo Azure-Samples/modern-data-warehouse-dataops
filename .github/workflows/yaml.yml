@@ -3,9 +3,11 @@ on:
   push:
     branches:
     - master
+    - single-tech/databricks
   pull_request:
-    paths:
-    - .github/workflows/yaml.yml
+    branches:
+    - master
+    - single-tech/databricks
 
 jobs:
   yml-lint:
