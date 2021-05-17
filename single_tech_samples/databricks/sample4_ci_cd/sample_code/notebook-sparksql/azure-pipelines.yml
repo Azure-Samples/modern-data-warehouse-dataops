@@ -4,7 +4,7 @@
 # https://aka.ms/yaml
 
 trigger:
-- singletech-databricksops
+- single-tech/databricks-ops-namts
 
 pool:
   vmImage: ubuntu-latest
