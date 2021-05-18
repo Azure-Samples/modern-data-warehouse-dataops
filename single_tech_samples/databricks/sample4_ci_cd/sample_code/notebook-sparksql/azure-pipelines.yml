@@ -22,15 +22,15 @@ steps:
 - task: deploynotebooks@0
   displayName: 'Publish notebooks to test workspace'
   inputs:
-    notebooksFolderPath: $notebook_folder_path
-    workspaceFolder: $workspace_folder
+    notebooksFolderPath: $(notebook_folder_path)
+    workspaceFolder: $(workspace_folder)
 
 - script: |
     pip install nutter
   displayName: 'Install Nutter'
 
 - script: |
-    nutter run $workspace_folder $CLUSTER --recursive --junit_report
+    nutter run $(workspace_folder) $CLUSTER --recursive --junit_report
   displayName: 'Execute Nutter'
   env:
       CLUSTER: $(clusterID)
