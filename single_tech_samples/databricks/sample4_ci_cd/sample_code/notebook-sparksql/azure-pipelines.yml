@@ -22,7 +22,7 @@ steps:
 - task: deploynotebooks@0
   displayName: 'Publish notebooks to test workspace'
   inputs:
-    notebooksFolderPath: '$(System.DefaultWorkingDirectory)/.git/single_tech_samples/databricks/sample4_ci_cd/sample_code/notebook-sparksql/notebooks/nutter'
+    notebooksFolderPath: '$(System.DefaultWorkingDirectory)/single_tech_samples/databricks/sample4_ci_cd/sample_code/notebook-sparksql/notebooks/nutter'
     workspaceFolder: '/Shared/nutter'
 
 - script: |
