@@ -10,8 +10,8 @@ variables:
   basePath: 'single_tech_samples/databricks/notebook-dataframe'
 
 steps:
-- task: PublishBuildArtifacts@1
+- task: PublishPipelineArtifact@1
   inputs:
-    PathtoPublish: '$(basePath)/notebooks'
-    ArtifactName: 'dist'
+    targetPath: '$(basePath)/notebooks'
+    ArtifactName: 'notebooks'
   displayName: 'Publish Databricks notebooks'
