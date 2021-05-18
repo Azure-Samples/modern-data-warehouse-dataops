@@ -1,4 +1,6 @@
 parameters:
+- name: environmentName
+  type: string
 - name: databricksDomain
   type: string
 - name: databricksToken
@@ -8,6 +10,7 @@ parameters:
 
 jobs:
 - deployment: deploy_databricks
+  environment: ${{ parameters.environmentName }}
   displayName: 'Deploy to Databricks'
   pool:
     vmImage: 'ubuntu-latest'

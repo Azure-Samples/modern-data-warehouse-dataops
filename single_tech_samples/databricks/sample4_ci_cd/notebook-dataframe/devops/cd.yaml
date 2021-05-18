@@ -13,11 +13,12 @@ resources:
     #   - master
 
 stages:
-- stage: deploy_to_test
-  displayName: 'Deploy to TEST'
+- stage: deploy_notebooks
+  displayName: 'Deploy notebooks'
   jobs:
   - template: jobs/deploy-notebooks-job.yml
     parameters:
+      environment: 'TEST'
       databricksDomain: '$(databricksDomain)'
       databricksToken: '$(databricksToken)'
       databricksNotebookPath: '$(databricksNotebookPath)'
