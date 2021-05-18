@@ -30,9 +30,10 @@ steps:
   displayName: 'Install Nutter'
 
 - script: |
-    nutter run /Shared/ $CLUSTER --recursive --junit_report
+    nutter run $SEARCHFOLDER $CLUSTER --recursive --junit_report
   displayName: 'Execute Nutter'
   env:
+      SEARCHFOLDER: $(test_search_folder)
       CLUSTER: $(clusterID)
       DATABRICKS_HOST: $(databricks_host)
       DATABRICKS_TOKEN: $(databricks_token)
