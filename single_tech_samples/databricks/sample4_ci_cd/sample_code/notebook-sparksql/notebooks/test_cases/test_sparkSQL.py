@@ -7,7 +7,7 @@ class MyTestFixture(NutterFixture):
 
    # Arrange
    def before_test_Records_Exist_Returns_Positive_Number(self):
-      self.code1_result = dbutils.notebook.run('./testSQL', 600)  
+      self.code1_result = dbutils.notebook.run('../sparkSQL_sample', 600)  
 
    # Act
    def run_test_Records_Exist_Returns_Positive_Number(self):
