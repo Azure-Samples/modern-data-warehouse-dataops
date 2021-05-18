@@ -15,6 +15,6 @@ steps:
 
 - task: PublishPipelineArtifact@1
   inputs:
-    targetPath: '$(basePath)/tests'
-    ArtifactName: 'tests'
-  displayName: 'Publish Tests'
+    targetPath: '$(basePath)/devops/scripts'
+    ArtifactName: 'devops_scripts'
+  displayName: 'Publish DevOps Scripts'
