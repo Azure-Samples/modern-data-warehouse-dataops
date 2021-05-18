@@ -1,4 +1,4 @@
-# Starter Nutter pipeline
+# Nutter pipeline for SPark SQL Tests
 
 trigger:
   branches:
