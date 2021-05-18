@@ -30,7 +30,14 @@ steps:
     $(WORKSPACE-ORG-ID)
     15001" | databricks-connect configure
   displayName: 'Configure DBConnect'
-  
+
+- checkout: self
+  persistCredentials: true
+  clean: true
+
+- script: git checkout singletech-databricksops
+  displayName: 'Get Latest Branch'
+
 - script: echo Hello, universe!
   displayName: 'Run a one-line script'
 
