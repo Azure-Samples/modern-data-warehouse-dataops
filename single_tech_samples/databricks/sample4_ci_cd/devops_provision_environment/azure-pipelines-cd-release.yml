@@ -2,28 +2,28 @@ trigger: none
 
 stages:
   - stage: deploy_to_dev
-  displayName: 'Deploy to Development'
-  variables:
-    - group: mdwdo-dbx-release-dev
-  jobs:
-    - template: templates/jobs/deploy-basic-azure-databricks-environment.yml
-    parameters:
-      environmentName: 'DEV'
+    displayName: 'Deploy to Development'
+    variables:
+      - group: mdwdo-dbx-release-dev
+    jobs:
+      - template: templates/jobs/deploy-basic-azure-databricks-environment.yml
+        parameters:
+          environmentName: 'DEV'
 
   - stage: deploy_to_stg
-  displayName: 'Deploy to Stage'
-  variables:
-    - group: mdwdo-dbx-release-stg
-  jobs:
-    - template: templates/jobs/deploy-basic-azure-databricks-environment.yml
-    parameters:
-      environmentName: 'STG'
+    displayName: 'Deploy to Stage'
+    variables:
+      - group: mdwdo-dbx-release-stg
+    jobs:
+      - template: templates/jobs/deploy-basic-azure-databricks-environment.yml
+        parameters:
+          environmentName: 'STG'
 
   - stage: deploy_to_prod
-  displayName: 'Deploy to Production'
-  variables:
-    - group: mdwdo-dbx-release-prod
-  jobs:
-    - template: templates/jobs/deploy-basic-azure-databricks-environment.yml
-    parameters:
-      environmentName: 'PROD'
+    displayName: 'Deploy to Production'
+    variables:
+      - group: mdwdo-dbx-release-prod
+    jobs:
+      - template: templates/jobs/deploy-basic-azure-databricks-environment.yml
+        parameters:
+          environmentName: 'PROD'
