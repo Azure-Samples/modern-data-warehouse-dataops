@@ -19,7 +19,7 @@ jobs:
     vmImage: 'ubuntu-latest'
   variables:
     pythonWorkingDir: 'single_tech_samples/databricks/sample4_ci_cd/notebook-dataframe'
-    pythonVersion: 3.6
+    pythonVersion: 3.8
   strategy:
     runOnce:
       deploy:
