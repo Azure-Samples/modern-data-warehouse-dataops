@@ -30,7 +30,7 @@ steps:
   displayName: 'Install Nutter'
 
 - script: |
-    nutter run $(workspace_folder) $CLUSTER --recursive --junit_report
+    nutter run /Shared/ $CLUSTER --recursive --junit_report
   displayName: 'Execute Nutter'
   env:
       CLUSTER: $(clusterID)
