@@ -30,7 +30,7 @@ jobs:
   - script: pip install pytest requests
     displayName: 'Install requirements'
 
-  - script: mkdir $(agent.builddirectory)/logs/json $(agent.builddirectory)/logs/xml
+  - script: mkdir -p $(Pipeline.Workspace)/logs/json $(Pipeline.Workspace)/logs/xml
     displayName: 'Create notebook execution logs and test summaries output'
 
   - task: PythonScript@0
