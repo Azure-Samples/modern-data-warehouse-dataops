@@ -12,17 +12,9 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- task: configuredatabricks@0
-  displayName: 'Configure Databricks CLI'
+- task: UsePythonVersion@0
   inputs:
-    url: $(databricks_host)
-    token: $(databricks_token)
-
-- task: deploynotebooks@0
-  displayName: 'Publish notebooks to test workspace'
-  inputs:
-    notebooksFolderPath: '$(System.DefaultWorkingDirectory)/notebooks/nutter'
-    workspaceFolder: '/Shared/nutter'
+    versionSpec: '3.5'
 
 - script: |
     pip install nutter
