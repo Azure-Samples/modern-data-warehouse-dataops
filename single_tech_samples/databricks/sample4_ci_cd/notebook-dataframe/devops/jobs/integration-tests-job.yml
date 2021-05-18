@@ -1,0 +1,41 @@
+parameters:
+- name: environmentName
+  type: string
+- name: databricksDomain
+  type: string
+- name: databricksToken
+  type: string
+- name: databricksNotebookPath
+  type: string
+- name: databricksClusterId
+  type: string
+
+jobs:
+- job: run_integration_tests
+  displayName: 'Run integration tests'
+  dependsOn: deploy_notebooks
+  pool:
+    vmImage: 'ubuntu-latest'
+  variables:
+    pythonWorkingDir: 'single_tech_samples/databricks/sample4_ci_cd/notebook-dataframe'
+    pythonVersion: 3.6
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '$(pythonVersion)'
+      addToPath: true
+      architecture: 'x64'
+    displayName: 'Use Python Version: $(pythonVersion)'
+
+  - script: pip install pytest requests
+    displayName: 'Install requirements'
+
+  - script: mkdir $(agent.builddirectory)/logs/json $(agent.builddirectory)/logs/xml
+    displayName: 'Create notebook execution logs and test summaries output'
+
+  - task: PythonScript@0
+    inputs:
+      workingDirectory: $(pythonWorkingDir)
+      scriptPath: executenotebook.py
+      arguments: --shard ${{ databricksDomain.databricksDomain }} --token ${{ parameters.databricksToken }} --clusterid ${{ parameters.databricksClusterId }} --localpath $(Pipeline.Workspace)/ci/notebooks --workspacepath ${{ parameters.databricksNotebookPath }} --outfilepath $(agent.builddirectory)/logs/json
+    displayName: 'Run integration tests'
