@@ -18,7 +18,7 @@ stages:
   jobs:
   - template: jobs/deploy-notebooks-job.yml
     parameters:
-      environment: 'TEST'
+      environmentName: 'TEST'
       databricksDomain: '$(databricksDomain)'
       databricksToken: '$(databricksToken)'
       databricksNotebookPath: '$(databricksNotebookPath)'
