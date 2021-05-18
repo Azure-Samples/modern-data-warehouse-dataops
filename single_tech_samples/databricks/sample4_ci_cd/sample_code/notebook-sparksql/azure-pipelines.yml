@@ -1,7 +1,4 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+# Starter Nutter pipeline
 
 trigger:
   branches:
@@ -9,13 +6,24 @@ trigger:
     - singletech-databricksops
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'ubuntu-latest'
 
 steps:
 - task: UsePythonVersion@0
-  displayName: 'Use Python 3.7'
   inputs:
-    versionSpec: 3.7
+    versionSpec: '3.5'
+
+- task: configuredatabricks@0
+  displayName: 'Configure Databricks CLI'
+  inputs:
+    url: $(databricks_host)
+    token: $(databricks_token)
+
+- task: deploynotebooks@0
+  displayName: 'Publish notebooks to test workspace'
+  inputs:
+    notebooksFolderPath: '$(System.DefaultWorkingDirectory)/notebooks/nutter'
+    workspaceFolder: '/Shared/nutter'
 
 - script: |
     pip install nutter
