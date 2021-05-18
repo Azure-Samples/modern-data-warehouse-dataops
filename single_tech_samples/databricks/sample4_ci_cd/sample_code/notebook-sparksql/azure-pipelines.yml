@@ -18,30 +18,20 @@ steps:
     versionSpec: 3.7
 
 - script: |
-    pip install pytest requests setuptools wheel
-    pip install -U databricks-connect==6.4.*
-  displayName: 'Load Python Dependencies'
+    pip install nutter
+  displayName: 'Install Nutter'
 
 - script: |
-    echo "y
-    $(WORKSPACE-REGION-URL)
-    $(CSE-DEVELOP-PAT)
-    $(EXISTING-CLUSTER-ID)
-    $(WORKSPACE-ORG-ID)
-    15001" | databricks-connect configure
-  displayName: 'Configure DBConnect'
+    nutter run /Shared/ $CLUSTER --recursive --junit_report
+  displayName: 'Execute Nutter'
+  env:
+      CLUSTER: $(clusterID)
+      DATABRICKS_HOST: $(databricks_host)
+      DATABRICKS_TOKEN: $(databricks_token)
 
-- checkout: self
-  persistCredentials: true
-  clean: true
-
-- script: git checkout singletech-databricksops
-  displayName: 'Get Latest Branch'
-
-- script: echo Hello, universe!
-  displayName: 'Run a one-line script'
-
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: '**/test-*.xml'
+    testRunTitle: 'Publish Nutter results'
+  condition: succeededOrFailed()
