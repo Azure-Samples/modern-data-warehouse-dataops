@@ -1,0 +1,23 @@
+
+
+trigger: none
+
+pr: none
+
+resources:
+  pipelines:
+  - pipeline: ci
+    source: ci
+    # trigger: 
+    #   branches:
+    #   - master
+
+stages:
+- stage: deploy_to_test
+  displayName: 'Deploy to TEST'
+  jobs:
+  - template: jobs/deploy-notebooks-job.yml
+    parameters:
+      databricksDomain: '$(databricksDomain)'
+      databricksToken: '$(databricksToken)'
+      databricksNotebookPath: '$(databricksNotebookPath)'
