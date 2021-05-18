@@ -7,7 +7,7 @@ pool:
   name: Hosted Ubuntu 1604
 
 variables:
-  basePath: 'single_tech_samples/databricks/notebook-dataframe'
+  basePath: 'single_tech_samples/databricks/sample4_ci_cd/notebook-dataframe'
 
 steps:
 - task: PublishPipelineArtifact@1
