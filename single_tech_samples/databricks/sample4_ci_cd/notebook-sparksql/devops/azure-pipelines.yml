@@ -3,7 +3,7 @@
 trigger:
   branches:
     include:
-    - singletech-databricksops
+    - single-tech/*
 
 pool:
   vmImage: 'ubuntu-latest'
