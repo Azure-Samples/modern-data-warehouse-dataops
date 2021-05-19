@@ -1,4 +1,4 @@
-# Databricks CI/CD template
+# Azure Databricks CI/CD template
 
 ## Contents
 
@@ -85,7 +85,7 @@ Below listed are the steps to deploy this template :
 
 1. Provisioning resources using Azure Pipelines
   
-    The easiest way to create all required Azure resources (Resource Group, Azure Databrciks, and others) is to use the Infrastructure as Code (IaC) pipeline with ARM templates. The pipeline takes care of setting up all required resources based on these [Azure Resource Manager templates](single-tech/databricks-ops/single_tech_samples/databricks/sample4_ci_cd/environment_setup/iac-create-environment-pipeline-arm.yml).
+    The easiest way to create all required Azure resources (Resource Group, Azure Databrciks, and others) is to use the Infrastructure as Code (IaC) pipeline with ARM templates. The pipeline takes care of setting up all required resources based on these [Azure Resource Manager templates](environment_setup/iac-create-environment-pipeline-arm.yml).
 
 1. Create the IaC Pipeline
 
@@ -93,7 +93,7 @@ Below listed are the steps to deploy this template :
 
     ![build pipeline](images/build-connect.png "build pipeline")
 
-    Select the Existing Azure Pipelines YAML file option and set the path to [single-tech/databricks-ops/single_tech_samples/databricks/sample4_ci_cd/environment_setup/iac-create-environment-pipeline-arm.yml](single-tech/databricks-ops/single_tech_samples/databricks/sample4_ci_cd/environment_setup/iac-create-environment-pipeline-arm.yml)
+    Select the Existing Azure Pipelines YAML file option and set the path to [environment_setup/iac-create-environment-pipeline-arm.yml](environment_setup/iac-create-environment-pipeline-arm.yml)
 
     > TODO add screenshot of the pipeline setup
 
@@ -124,6 +124,7 @@ Below listed are the steps to deploy this template :
 |      |     └──jobs
 |      └──scripts
 ├── multi-notebooks
+│   ├── README.md
 │   ├── devops
 │   │      ├──cd-pipeline.yml
 │   │      └──ci-pipeline.yml
@@ -137,6 +138,7 @@ Below listed are the steps to deploy this template :
 │               ├── module_a_test.py
 │               └── module_b_test.py
 ├── notebook-dataframe
+│   ├── README.md
 │   ├── devops
 │   │      ├──cd-pipeline.yml
 │   │      └──ci-pipeline.yml
@@ -146,6 +148,7 @@ Below listed are the steps to deploy this template :
 │        └── integration
 │             └── main_notebook_test.py
 ├── notebook-sparksql
+│   ├── README.md
 │   ├── devops
 │   │      ├──cd-pipeline.yml
 │   │      └──ci-pipeline.yml
@@ -155,6 +158,7 @@ Below listed are the steps to deploy this template :
 │        └── integration
 │             └── main_notebook_test.py
 ├── notebook-python-lib
+│   ├── README.md
 │   ├── devops
 │   │      ├──cd-pipeline.yml
 │   │      └──ci-pipeline.yml
@@ -172,6 +176,7 @@ Below listed are the steps to deploy this template :
 │             ├── module_a_test.py
 │             └── module_b_test.py
 ├── pyspark
+│   ├── README.md
 │   ├── devops
 │   │      ├──cd-pipeline.yml
 │   │      └──ci-pipeline.yml
