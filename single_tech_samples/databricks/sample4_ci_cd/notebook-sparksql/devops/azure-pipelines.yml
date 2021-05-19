@@ -1,4 +1,4 @@
-# Nutter pipeline for SPark SQL Tests
+# Nutter pipeline for SparkSQL Tests
 
 trigger:
   branches:
