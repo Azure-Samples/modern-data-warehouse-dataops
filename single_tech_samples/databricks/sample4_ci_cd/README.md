@@ -184,7 +184,7 @@ Below listed are the steps to deploy this template :
 │   │    ├── __init__.py
 │   │    ├── module_a.py
 │   │    └── module_b.py
-│   ├── main.py
+│   ├── main.psy
 │   ├── setup.py
 │   └── tests
 │        ├── integration
@@ -201,12 +201,56 @@ Below listed are the steps to deploy this template :
 
 ```
 
-#### 2.4.1 multiple notebooks
+In this template we offer 5 different ways to build a Spark Application with Databricks notebooks or python files.
+In each sample code folder, there are
 
-#### 2.4.2 notebook by pyspark API
+- sample notebooks or python files
+- unit testing code
+- Azure DevOps pipeline yaml files
 
-#### 2.4.3 notebook by sparksql
+#### How to use the sample code
+
+1. In your Azure DevOps project
+    - create a ci pipeline and select ci-pipeline.yml. it will run unit tests and publish the artifacts when changes committed.
+    - create a cd pipeline and select cd-pipeline.yml. it will run integration tests when ci pipeline successfully run and the go-production deployment can be manually triggered.
+
+2. For notebooks based spark application, you can import notebooks samples into databricks workspace from the repo of your Azure DevOps projects. Then use Databricks to edit teh notebooks. Here is an instructions how to import it.
+[https://docs.microsoft.com/en-us/azure/databricks/repos](https://docs.microsoft.com/en-us/azure/databricks/repos)
+
+3. For python files based spark application, you can clone it to your local repo from the repo of your Azure DevOps projects, and then edit in your favorite IDE.
+
+4. After you finshing add your logic or creating new files, you can run unit tests before you commit the changes to the repo of your Azure DevOps project. the commit will trigger the ci pipeline to run unit tests and publish artifacts.
+
+> we don't advice to run notebooks in local with unit testing mode, so notebooks only have integration testing.
+---
+> Why we have 5 different ways to build spark application? As it is not supported by Databricks to build python modules. You can only do it in local IDE. And local IDE have very limited intergation with notebooks. So to meet different spark application program mode, we created the differenct sample code including purely in spark sql.
+
+#### 2.4.1 notebook by pyspark API
+
+This folder includes a sample of notebook "main_notebook.py" which use pyspark API, plus another notebook as its integration test.
+
+[Please check the detail of the sample code.](notebook-dataframe/README.md)
+
+#### 2.4.2 notebook by sparksql
+
+This folder includes a sample of notebook "main_notebook.py" which use spark sql, plus anothernotebook as its integration test.
+
+[Please check the detail of the sample code.](notebook-sparksql/README.md)
+
+#### 2.4.3 notebook by multiple notebooks
+
+This folder includes 3 notebooks, the module_a and module_b notebooks are reusable notebooks. There are 3 integration testing notebooks.
+
+[Please check the detail of the sample code.](multi-notebooks/README.md)
 
 #### 2.4.4 notebook plus python module
 
+This folder includes 1 notebook and 2 python files, the python files will be build as a library and import by the notebook. There are 1 integration testing notebook and 2 pytest based unit tests.
+
+[Please check the detail of the sample code.](notebook-python-lib/README.md)
+
 #### 2.4.5 python spark job
+
+This folder includes 3 python files, the python files will be build as a spark job and library. There are 1 integration test and 2 pytest based unit tests.
+
+[Please check the detail of the sample code.](pyspark/README.md)
