@@ -28,7 +28,7 @@ class MyTestFixture(NutterFixture):
    # ************** Test Case 2 ********************
    # Act
    def run_FIRST_YEAR_RETURNS_1960(self):      
-      temp_result = sqlContext.sql('SSELECT YEAR FROM FIRST_YEARS_PUPULATION LIMIT 1')
+      temp_result = sqlContext.sql('SELECT YEAR FROM FIRST_YEARS_PUPULATION LIMIT 1')
       MyTestFixture.first_year = temp_result.first()[0]
 
    #Assert
