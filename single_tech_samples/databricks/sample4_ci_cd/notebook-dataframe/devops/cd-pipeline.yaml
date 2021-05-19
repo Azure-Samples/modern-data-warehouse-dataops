@@ -18,13 +18,13 @@ stages:
   variables:
   - group: mdwdo-dbx-nd-test
   jobs:
-  - template: ../devops/jobs/deploy-notebooks-job.yml
+  - template: ../../devops/templates/jobs/deploy-notebooks-job.yml
     parameters:
       environmentName: 'TEST'
       databricksDomain: '$(databricksDomain)'
       databricksToken: '$(databricksToken)'
       databricksNotebookPath: '$(databricksNotebookPath)'
-  - template: ../devops/jobs/integration-tests-job.yml
+  - template: ../../devops/templates/jobs/integration-tests-job.yml
     parameters:
       environmentName: 'TEST'
       databricksDomain: '$(databricksDomain)'
