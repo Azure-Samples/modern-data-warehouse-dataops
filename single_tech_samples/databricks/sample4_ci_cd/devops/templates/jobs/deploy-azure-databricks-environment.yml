@@ -28,6 +28,6 @@ jobs:
                 scriptLocation: inlineScript
                 inlineScript: |
                   export AZURE_SUBSCRIPTION_ID=$1
-                  bash single_tech_samples/databricks/sample1_basic_azure_databricks_environment/deploy.sh
+                  bash deploy.sh
                 arguments: ${{ parameters.azureSubscriptionID }}
-                workingDirectory: $(System.DefaultWorkingDirectory)
+                workingDirectory: $(System.DefaultWorkingDirectory)/single_tech_samples/databricks/sample1_basic_azure_databricks_environment
