@@ -4,12 +4,12 @@ pool:
   name: Hosted Ubuntu 1604
 
 variables:
-  basePath: 'single_tech_samples/databricks/sample4_ci_cd/notebook-dataframe'
+  basePath: 'single_tech_samples/databricks/sample4_ci_cd'
 
 steps:
 - task: PublishPipelineArtifact@1
   inputs:
-    targetPath: '$(basePath)/notebooks'
+    targetPath: '$(basePath)/notebook-dataframe/notebooks'
     ArtifactName: 'notebooks'
   displayName: 'Publish Databricks notebooks'
 
