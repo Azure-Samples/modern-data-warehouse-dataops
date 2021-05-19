@@ -26,3 +26,7 @@ dbutils.fs.mounts()
 
 df = spark.read.json(mount_point + "/sample-data.us-population.json")
 display(df)
+
+# COMMAND ----------
+
+df.write.saveAsTable("US_POPULATION")
