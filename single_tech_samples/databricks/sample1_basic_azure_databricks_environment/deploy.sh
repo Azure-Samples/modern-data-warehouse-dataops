@@ -212,6 +212,8 @@ echo "Got azureApiToken=\"${azureApiToken:0:20}...${azureApiToken:(-20)}\""
 keyVaultId=$(echo "$akvArmOutput" | jq -r '.properties.outputs.keyvault_id.value')
 keyVaultUri=$(echo "$akvArmOutput" | jq -r '.properties.outputs.keyvault_uri.value')
 
+az config set extension.use_dynamic_install=yes_without_prompt
+
 adbId=$(az databricks workspace show --resource-group "$AZURE_RESOURCE_GROUP_NAME" --name "$adbWorkspaceName" --query id --output tsv)
 adbWorkspaceUrl=$(az databricks workspace show --resource-group "$AZURE_RESOURCE_GROUP_NAME" --name "$adbWorkspaceName" --query workspaceUrl --output tsv)
 
