@@ -1,0 +1,28 @@
+parameters:
+  - name: environmentName
+    type: string
+  - name: serviceConnection
+    type: string
+
+jobs:
+  - deployment: deploy_dbx
+    displayName: 'Deploy Azure Databricks Environment'
+    pool:
+      vmImage: 'ubuntu-20.04'
+    workspace:
+      clean: all
+    environment: ${{ parameters.environmentName }}
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - checkout: self
+
+            - task: AzureCLI@2
+              displayName: Deploy Azure Databricks Workspace, Storage Account & key Vault
+              inputs:
+                azureSubscription: ${{ parameters.serviceConnection }}
+                scriptType: bash
+                scriptLocation: scriptPath
+                scriptPath: single_tech_samples/databricks/sample1_basic_azure_databricks_environment/deploy.sh
+                workingDirectory: $(System.DefaultWorkingDirectory)
