@@ -6,6 +6,10 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+variables:
+  clusterID: databricks_token
+  databricks_host: https://adb-1503291521252601.1.azuredatabricks.net
+  databricks_token: dapi3f1703a2a30dd59a487c0be9d67c3814
 steps:
 - task: UsePythonVersion@0
   inputs:
@@ -16,7 +20,7 @@ steps:
   displayName: 'Install Nutter'
 
 - script: |
-    nutter run /Shared/ $CLUSTER --recursive --junit_report
+    nutter run /Users/ganwa@microsoft.com/test_mynotebook --recursive --junit_report
   displayName: 'Execute Nutter'
   env:
       CLUSTER: $(clusterID)
