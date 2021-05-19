@@ -45,3 +45,7 @@ jobs:
 
         - script: TEST_OUTPUT_PATH=$(Pipeline.Workspace)/logs/json/ python -m pytest --junit-xml=$(Pipeline.Workspace)/logs/xml/TEST-notebookout.xml $(Pipeline.Workspace)/ci/devops_scripts/evaluatenotebookruns.py || true
           displayName: 'Evaluate test results'
+
+        - task: PublishTestResults@2
+          inputs:
+            testResultsFiles: $(Pipeline.Workspace)/logs/xml/TEST-notebookout.xml
