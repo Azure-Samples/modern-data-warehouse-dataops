@@ -41,7 +41,7 @@ This section holds the information about usage instructions of this sample.
 
 ### 2.1. Prerequisites
 
-> Note: Running [Sample 1](../../sample1_basic_azure_databricks_environment/README.md) (for provisioning the Azure Databricks Service) and [Sample 3](sample3_cluster_provisioning_and_data_access/README.md) (for creating the cluster and mounting the required data sources) are preconditions for this sample to work.
+> Note: Running [Sample 1](../../sample1_basic_azure_databricks_environment/README.md) (for provisioning the Azure Databricks Service) and [Sample 3](../../sample3_cluster_provisioning_and_data_access/README.md) (for creating the cluster and mounting the required data sources) are preconditions for this sample to work.
 
 The following are the prerequisites for deploying this sample :
 
@@ -79,7 +79,7 @@ Below listed are the steps to deploy this sample :
         ![alt text](../../Common_Assets/Images/ADO_Pipeline_Repo_Select.png)
       4. Under configure tab, select the pipeline type as "Starter Pipeline"
         ![alt text](../../Common_Assets/Images/ADO_Pipeline_Type.png)
-      5. Replace the code for the pipeline with the code from the '      azure-pipelines.yml' file under the [DevOps Folder](DevOps/azure-pipelines.yml)
+      5. Replace the code for the pipeline with the code from the '      azure-pipelines.yml' file under the [DevOps Folder](./devops/azure-pipelines.yml)
         ![alt text](../../Common_Assets/Images/ADO_Pipeline_Code.png)
       6. Select the 'variables' button to set the environment variables
         ![alt text](../../Common_Assets/Images/ADO_Pipeline_Variables.png)
