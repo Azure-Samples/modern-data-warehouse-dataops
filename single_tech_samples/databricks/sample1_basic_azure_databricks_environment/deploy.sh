@@ -90,7 +90,16 @@ else
 fi
 
 tenantId="$(az account show --query "tenantId" --output tsv)"
-objectId="$(az ad signed-in-user show --query "objectId" --output tsv)"
+
+userType="$(az account show --query "user.type" --output tsv)"
+userType=${userType//$'\r'/}
+if [[ $userType == "servicePrincipal" ]]; then
+    clientId="$(az account show --query "user.name" --output tsv)"
+    clientId=${clientId//$'\r'/}
+    objectId="$(az ad sp show --id "$clientId" --query objectId --output tsv)"
+else
+    objectId="$(az ad signed-in-user show --query "objectId" --output tsv)"
+fi
 
 echo "Validating parameters for Azure Key Vault..."
 if ! az deployment group validate \
