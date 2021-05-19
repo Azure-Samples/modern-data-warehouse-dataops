@@ -10,7 +10,7 @@ stages:
         parameters:
           environmentName: 'DEV'
           serviceConnection: 'mdwdo-dbx-serviceconnection-dev'
-          AZURE_SUBSCRIPTION_ID: $(AZURE_SUBSCRIPTION_ID)
+          azureSubscriptionID: $(AZURE_SUBSCRIPTION_ID)
 
   - stage: deploy_to_stg
     displayName: 'Deploy to Stage'
@@ -21,7 +21,7 @@ stages:
         parameters:
           environmentName: 'STG'
           serviceConnection: 'mdwdo-dbx-serviceconnection-stg'
-          AZURE_SUBSCRIPTION_ID: $(AZURE_SUBSCRIPTION_ID)
+          azureSubscriptionID: $(AZURE_SUBSCRIPTION_ID)
 
   - stage: deploy_to_prod
     displayName: 'Deploy to Production'
@@ -32,4 +32,4 @@ stages:
         parameters:
           environmentName: 'PROD'
           serviceConnection: 'mdwdo-dbx-serviceconnection-prod'
-          AZURE_SUBSCRIPTION_ID: $(AZURE_SUBSCRIPTION_ID)
+          azureSubscriptionID: $(AZURE_SUBSCRIPTION_ID)

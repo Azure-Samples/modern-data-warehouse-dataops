@@ -3,7 +3,7 @@ parameters:
     type: string
   - name: serviceConnection
     type: string
-  - name: AZURE_SUBSCRIPTION_ID
+  - name: azureSubscriptionID
     type: string
 
 jobs:
@@ -25,7 +25,9 @@ jobs:
               inputs:
                 azureSubscription: ${{ parameters.serviceConnection }}
                 scriptType: bash
-                scriptLocation: scriptPath
-                scriptPath: single_tech_samples/databricks/sample1_basic_azure_databricks_environment/deploy.sh
-                arguments: ${{ parameters.AZURE_SUBSCRIPTION_ID }}
+                scriptLocation: inlineScript
+                inlineScript: |
+                  export AZURE_SUBSCRIPTION_ID=$1
+                  bash single_tech_samples/databricks/sample1_basic_azure_databricks_environment/deploy.sh
+                arguments: ${{ parameters.azureSubscriptionID }}
                 workingDirectory: $(System.DefaultWorkingDirectory)
