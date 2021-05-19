@@ -125,41 +125,51 @@ Below listed are the steps to deploy this template :
 
 ### 2.4. Sample project Structure
 ```
-.
+├── devops
+|      ├──template
+|      |     └──jobs
+|      └──scripts
 ├── multi-notebooks
-│   ├── cd-pipeline.yml
-│   ├── ci-pipeline.yml
-│   ├── main_notebook.py
-│   ├── module_a_notebook.py
-│   ├── module_b_notebook.py
+│   ├── devops
+│   │      ├──cd-pipeline.yml
+│   │      └──ci-pipeline.yml
+│   ├── notebooks
+│   │      ├── main_notebook.py
+│   │      ├── module_a_notebook.py
+│   │      └── module_b_notebook.py
 │   └── tests
-│        ├── integration
-│        │    └── main_notebook_test.py
-│        └── unit
-│             ├── module_a_test.py
-│             └── module_b_test.py
+│          └── integration
+│               ├── main_notebook_test.py
+│               ├── module_a_test.py
+│               └── module_b_test.py
 ├── notebook-dataframe
-│   ├── cd-pipeline.yml
-│   ├── ci-pipeline.yml
-│   ├── main_notebook.py
+│   ├── devops
+│   │      ├──cd-pipeline.yml
+│   │      └──ci-pipeline.yml
+│   ├── notebooks
+│   │      └──main_notebook.py
 │   └── tests
 │        └── integration
 │             └── main_notebook_test.py
 ├── notebook-sparksql
-│   ├── cd-pipeline.yml
-│   ├── ci-pipeline.yml
-│   ├── main_notebook.py
+│   ├── devops
+│   │      ├──cd-pipeline.yml
+│   │      └──ci-pipeline.yml
+│   ├── notebooks
+│   │      └──main_notebook.py
 │   └── tests
-│       └── integration
-│            └── main_notebook_test.py
+│        └── integration
+│             └── main_notebook_test.py
 ├── notebook-python-lib
-│   ├── cd-pipeline.yml
-│   ├── ci-pipeline.yml
+│   ├── devops
+│   │      ├──cd-pipeline.yml
+│   │      └──ci-pipeline.yml
 │   ├── common
 │   │    ├── __init__.py
 │   │    ├── module_a.py
 │   │    └── module_b.py
-│   ├── main_notebook.py
+│   ├── notebooks
+│   │      └──main_notebook.py
 │   ├── setup.py
 │   └── tests
 │        ├── integration
@@ -168,8 +178,9 @@ Below listed are the steps to deploy this template :
 │             ├── module_a_test.py
 │             └── module_b_test.py
 ├── pyspark
-│   ├── cd-pipeline.yml
-│   ├── ci-pipeline.yml
+│   ├── devops
+│   │      ├──cd-pipeline.yml
+│   │      └──ci-pipeline.yml
 │   ├── common
 │   │    ├── __init__.py
 │   │    ├── module_a.py
@@ -178,11 +189,11 @@ Below listed are the steps to deploy this template :
 │   ├── setup.py
 │   └── tests
 │        ├── integration
-│        │     └── main_notebook_test.py
+│        │     └── main_test.py
 │        └── unit
 │              ├── module_a_test.py
 │              └── module_b_test.py
-├── environment_setup
+├── provision
 │   └── iac-create-environment-pipeline-arm.yml
 ├── .gitignore
 ├── README.md
