@@ -1,6 +1,6 @@
-# Databricks CI/CD template 
+# Databricks CI/CD template
 
-## Contents 
+## Contents
 
 - [1. Solution Overview](#1-solution-overview)
   - [1.1. Scope](#11-scope)
@@ -18,15 +18,13 @@
     - [2.4.4 notebook plus python module](#244-notebook-plus-python-module)
     - [2.4.5 python spark jo](#245-python-spark-job)
 
-
-
 ## 1. Solution Overview
 
-When build a project in databricks, we can start from some notebooks and implement the business logic in python. Before go-production, we need to create CI/CD pipelines. To reduce the effort of build CI/CD pipelines, we build this git repository as template including sample noteboks and unit testing plus Azure DevOps yaml files as CI/CD pipelines. 
+When build a project in databricks, we can start from some notebooks and implement the business logic in python. Before go-production, we need to create CI/CD pipelines. To reduce the effort of build CI/CD pipelines, we build this git repository as template including sample noteboks and unit testing plus Azure DevOps yaml files as CI/CD pipelines.
 
 **It is the scaffolding of Azure databricks project.**
 
-To make it easy extendable, the notebooks and python code only contain super simple logic, and the unit testing is implemented by pytest and [nutter](https://github.com/microsoft/nutter) 
+To make it easy extendable, the notebooks and python code only contain super simple logic, and the unit testing is implemented by pytest and [nutter](https://github.com/microsoft/nutter)
 
 This template focuses on automating provisioning, CI/CD pipeline, and various approaches of databricks implementation.
 
@@ -54,15 +52,13 @@ The below diagram illustrates the deployment process flow followed in this templ
 
   ![architecture](images/architecture.png "architecture")
 
-
-
 ### 1.3. Technologies used
 
 The following technologies are used to build this template:
 
 - [Azure Databricks](https://azure.microsoft.com/en-au/free/databricks/)
 - [Azure Resource Manager](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview)
-- [nutter](https://github.com/microsoft/nutter) 
+- [nutter](https://github.com/microsoft/nutter)
 
 ## 2. How to use this template
 
@@ -79,7 +75,6 @@ The following are the prerequisites for deploying this template :
    - Active subscription with the following [resource providers](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/azure-services-resource-providers) enabled:
      - Microsoft.Databricks
 
-
 ### 2.2. Setup and deployment
 
 > **IMPORTANT NOTE:** As with all Azure Deployments, this will **incur associated costs**. Remember to teardown all related resources after use to avoid unnecessary costs. See [here](#4.3.-deployed-resources) for a list of deployed resources.
@@ -93,7 +88,7 @@ Below listed are the steps to deploy this template :
     The easiest way to create all required Azure resources (Resource Group, Azure Databrciks, and others) is to use the Infrastructure as Code (IaC) pipeline with ARM templates. The pipeline takes care of setting up all required resources based on these [Azure Resource Manager templates](single-tech/databricks-ops/single_tech_samples/databricks/sample4_ci_cd/environment_setup/iac-create-environment-pipeline-arm.yml).
 
 1. Create the IaC Pipeline
-    
+
     In your Azure DevOps project, create a build pipeline from your forked repository:
 
     ![build pipeline](images/build-connect.png "build pipeline")
@@ -105,8 +100,6 @@ Below listed are the steps to deploy this template :
    Having done that, run the pipeline:
 
    > TODO add screenshot of the pipeline run
-
-
 
 ### 2.3. Deployed Resources
 
@@ -122,9 +115,10 @@ Below listed are the steps to deploy this template :
 
 > TODO add screenshot
 
-
 ### 2.4. Sample project Structure
-```
+
+```txt
+
 ├── devops
 |      ├──template
 |      |     └──jobs
@@ -201,11 +195,13 @@ Below listed are the steps to deploy this template :
 └── unit-requirements.txt
 
 ```
+
 #### 2.4.1 multiple notebooks
+
 #### 2.4.2 notebook by pyspark API
+
 #### 2.4.3 notebook by sparksql
+
 #### 2.4.4 notebook plus python module
+
 #### 2.4.5 python spark job
-
-
-
