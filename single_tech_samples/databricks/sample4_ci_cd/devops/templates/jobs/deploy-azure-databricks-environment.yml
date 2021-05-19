@@ -3,6 +3,8 @@ parameters:
     type: string
   - name: serviceConnection
     type: string
+  - name: AZURE_SUBSCRIPTION_ID
+    type: string
 
 jobs:
   - deployment: deploy_dbx
@@ -25,5 +27,5 @@ jobs:
                 scriptType: bash
                 scriptLocation: scriptPath
                 scriptPath: single_tech_samples/databricks/sample1_basic_azure_databricks_environment/deploy.sh
-                arguments: $(AZURE_SUBSCRIPTION_ID)
+                arguments: ${{ parameters.AZURE_SUBSCRIPTION_ID }}
                 workingDirectory: $(System.DefaultWorkingDirectory)
