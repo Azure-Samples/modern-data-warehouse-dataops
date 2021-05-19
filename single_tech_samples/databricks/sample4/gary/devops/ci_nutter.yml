@@ -20,10 +20,10 @@ steps:
   displayName: 'Install Nutter'
 
 - script: |
-    nutter run /Users/ganwa@microsoft.com/test_mynotebook --cluster_id $(clusterID) --recursive --junit_report
+    nutter run /Users/ganwa@microsoft.com/test_mynotebook $CLUSTER --recursive --junit_report
   displayName: 'Execute Nutter'
   env:
-      #CLUSTER: $(clusterID)
+      CLUSTER: $(clusterID)
       DATABRICKS_HOST: $(databricks_host)
       DATABRICKS_TOKEN: $(databricks_token)
 
