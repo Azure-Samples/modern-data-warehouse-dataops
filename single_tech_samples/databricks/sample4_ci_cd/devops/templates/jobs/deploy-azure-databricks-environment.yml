@@ -25,4 +25,5 @@ jobs:
                 scriptType: bash
                 scriptLocation: scriptPath
                 scriptPath: single_tech_samples/databricks/sample1_basic_azure_databricks_environment/deploy.sh
+                arguments: $(AZURE_SUBSCRIPTION_ID)
                 workingDirectory: $(System.DefaultWorkingDirectory)
