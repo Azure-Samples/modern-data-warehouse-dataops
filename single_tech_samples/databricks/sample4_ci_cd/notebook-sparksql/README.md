@@ -112,4 +112,4 @@ A successful run will result in an inference page as shown below:
 
 ### 2.5. Clean-up
 
-Executing the cleanup scripts from [Sample 3](sample3_cluster_provisioning_and_data_access/README.md) will also clean up the notebooks deployed by this sample.
+Executing the cleanup scripts from [Sample 3](../../sample3_cluster_provisioning_and_data_access/README.md) will also clean up the notebooks deployed by this sample.
