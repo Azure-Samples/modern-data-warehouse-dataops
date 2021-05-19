@@ -27,16 +27,16 @@ class MyTestFixture(NutterFixture):
 
    # ************** Test Case 2 ********************
    # Act
-   def run_FIRST_YEAR_RETURNS_1960(self):      
-      temp_result = sqlContext.sql('SELECT YEAR FROM FIRST_YEARS_PUPULATION LIMIT 1')
+   def run_First_Year_Returns(self):      
+      temp_result = sqlContext.sql('SELECT COUNT(*) FROM FIRST_YEAR WHERE YEAR = 1960')
       MyTestFixture.first_year = temp_result.first()[0]
 
    #Assert
-   def assertion_FIRST_YEAR_RETURNS_1960(self):      
-      assert (MyTestFixture.first_year == 1960)
+   def assertion_First_Year_Returns(self):      
+      assert (MyTestFixture.first_year > 0)
 
    #Clean
-   def after_FIRST_YEAR_RETURNS_1960(self):
+   def after_First_Year_Returns(self):
        sqlContext.sql('DROP TABLE IF EXISTS FIRST_YEARS_PUPULATION;')
 
 print("Starting Nutter tests")
