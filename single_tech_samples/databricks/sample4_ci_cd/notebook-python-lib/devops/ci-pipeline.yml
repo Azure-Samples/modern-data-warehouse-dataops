@@ -7,9 +7,8 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  clusterID: 0516-144506-pug503
-  databricks_host: https://adb-1503291521252601.1.azuredatabricks.net
-  databricks_token: dapi3f1703a2a30dd59a487c0be9d67c3814
+- group: notebook-python-lib-vg
+
 steps:
 - task: UsePythonVersion@0
   inputs:
