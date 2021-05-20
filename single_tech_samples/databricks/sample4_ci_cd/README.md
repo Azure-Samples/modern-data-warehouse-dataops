@@ -80,7 +80,6 @@ The following are the prerequisites for deploying this template :
 
 [Please check this document to the provision of databricks and other services](sample4_ci_cd/devops/README.md)
 
-
 ### 2.3. Sample project Structure
 
 ```txt
@@ -172,7 +171,6 @@ git add -A
 git commit -m "first commit"
 git push -u origin --all
 ```
-
 
 1. In your Azure DevOps project
     - create a ci pipeline and select ci-pipeline.yml. it will run unit tests and publish the artifacts when changes committed.
