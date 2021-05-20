@@ -7,7 +7,7 @@ class DoublePriceUTFixture(NutterFixture):
       self._prepare_test_data()
   
     def run_double_price(self):
-      dbutils.notebook.run('../notebooks/module_b_notebook', 32000)      
+      dbutils.notebook.run('../../notebooks/module_b_notebook', 32000)      
       self.double_price_df = spark.sql("select * from expected")
      
       
