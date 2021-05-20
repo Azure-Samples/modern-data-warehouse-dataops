@@ -11,7 +11,7 @@ class MyTestFixture(NutterFixture):
    def before_all(self):
       sqlContext.sql('CREATE TABLE US_POPULATION (date STRING, value BIGINT)')
       sqlContext.sql('INSERT INTO US_POPULATION VALUES ("1960", 100)')
-      dbutils.notebook.run('../sparkSQL_sample', 600)  
+      dbutils.notebook.run('../main_notebook', 600)  
 
    # ************** Test Case 1 ********************
    # Act
