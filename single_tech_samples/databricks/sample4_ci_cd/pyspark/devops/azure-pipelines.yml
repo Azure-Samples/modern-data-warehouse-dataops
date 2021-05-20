@@ -95,7 +95,7 @@ stages:
     steps:
     - task: AzureKeyVault@1
       inputs:
-        azureSubscription: $(AZURE_SERVICE_CONNECTION)
+        azureSubscription: '$(AZURE_SERVICE_CONNECTION)'
         KeyVaultName: ${{format('{0}akv01', '$(DEPLOYMENT_PREFIX)')}}
         SecretsFilter: '*'
         RunAsPreJob: true
@@ -137,7 +137,7 @@ stages:
     steps:
     - task: AzureKeyVault@1
       inputs:
-        azureSubscription: $(AZURE_SERVICE_CONNECTION)
+        azureSubscription: '$(AZURE_SERVICE_CONNECTION)'
         KeyVaultName: ${{format('{0}akv01', '$(DEPLOYMENT_PREFIX)')}}
         SecretsFilter: '*'
         RunAsPreJob: true
