@@ -30,10 +30,9 @@ Note that we use dbx CLI to deploy MLflow experiments/jobs,  for more informatio
 1. Both MLflow source and integration tests are deployed to target Databricks workspace as jobs and linked experiments via dbx CLI.
     - MLflow source and tests jobs are maintained in  __jobs__  key of /conf/deployment*.json file
     - Once the deployment stage of CI/CD pipeline has done, which means relevant unit tests and integrtaion tests in previous stages have passed, and we're ready to trigger source job run either via workspace UI or use dbx CLI like below.
-    
+
 ```sh
         # Set environment variable DATABRICKS_TOKEN and DATABRICKS_HOST before running 'dbx configure' command
         dbx configure
         dbx launch --job=$jobName
 ```
-    
