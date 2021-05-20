@@ -1,50 +1,14 @@
 # Databricks notebook source
-#python imports
-import sys
-import os
-from datetime import datetime, timedelta
-import pandas as pd
-import numpy as np
-
-# COMMAND ----------
-
-#pyspark imports
-from pyspark.sql import *
-import pyspark.sql.functions as F
-from pyspark.sql.window import Window
-from pyspark.sql.types import DateType, StructType, StructField, StringType
-
-
-# COMMAND ----------
-
-spark = SparkSession.builder.appName('aggregator').enableHiveSupport().getOrCreate()
-
-# COMMAND ----------
-
-def get_dbutils(spark = None):
-    try:
-        if spark == None:
-            spark = spark
-
-        from pyspark.dbutils import DBUtils
-        dbutils = DBUtils(spark)
-    except ImportError:
-        import IPython
-        dbutils = IPython.get_ipython().user_ns["dbutils"]
-    return dbutils
-
-dbutils = get_dbutils(spark = spark)
-
-# COMMAND ----------
-
-import sys
-sys.path.append('/dbfs/FileStore/common/')
-from common.module_a import get_litres_per_second
 
 # COMMAND ----------
 
 from pyspark.sql import Row, SparkSession
 from pyspark.sql.dataframe import DataFrame
+
+# COMMAND ----------
+%run "../common/module_a"
+
+# COMMAND ----------
 
 test_data = [
             # pipe_id, start_time, end_time, litres_pumped
