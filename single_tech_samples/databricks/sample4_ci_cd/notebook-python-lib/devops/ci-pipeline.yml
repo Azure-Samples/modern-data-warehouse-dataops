@@ -31,8 +31,9 @@ stages:
           architecture: 'x64'
 
       - script: |
+          cd notebook-python-lib
           python -m pip install --upgrade pip
-          pip install -r notebook-python-lib/requirements.txt
+          pip install -r requirements.txt
         displayName: 'Install libraries and dependencies'
 
       - script: |
@@ -45,7 +46,7 @@ stages:
         displayName: "Configure DBConnect"
 
       - script: |
-          pytest -v notebook-python-lib/ --doctest-modules --junitxml=unit-testresults.xml --cov=notebook-python-lib/ --cov-append --cov-report=xml:coverage.xml --cov-report=html:htmlcov
+          pytest -v notebook-python-lib/test --doctest-modules --junitxml=unit-testresults.xml --cov=notebook-python-lib/ --cov-append --cov-report=xml:coverage.xml --cov-report=html:htmlcov
         displayName: 'Run unit tests for the python library'
 
       - task: PublishTestResults@2
@@ -75,8 +76,9 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
+          cd notebook-python-lib
           python -m pip install wheel setuptools
-          python notebook-python-lib/setup.py bdist_wheel --universal
+          python setup.py bdist_wheel --universal
     - task: PublishPipelineArtifact@1
       displayName: Publish artifacts
       inputs:
