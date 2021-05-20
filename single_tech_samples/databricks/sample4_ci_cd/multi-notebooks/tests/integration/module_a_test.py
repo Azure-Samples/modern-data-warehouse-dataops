@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %run ../notebooks/main_notebook
+# MAGIC %run ../../notebooks/module_a_notebook
 
 # COMMAND ----------
 
@@ -12,16 +12,10 @@ class DoublePriceUTFixture(NutterFixture):
       self._prepare_test_data()
   
     def run_double_price(self):
-      self.double_price_df_a = double_price(self.df)
-      dbutils.notebook.run('../notebooks/main_notebook', 32000)      
-      self.double_price_df_b = spark.sql("select * from expected")
+      self.double_price_df = double_price(self.df)
       
     def assertion_double_price(self):
-      assert self.double_price_df_a.collect() == self.expected_df.collect()
-      assert self.double_price_df_b.count() == self.expected_df.count()
-      
-    def after_all(self):
-      spark.sql("DROP TABLE IF EXISTS expected")
+      assert self.double_price_df.collect() == self.expected_df.collect()
         
     def _prepare_test_data(self):
       self.df = spark.createDataFrame([('Fiji Apple', 'Red', 3.5), 
