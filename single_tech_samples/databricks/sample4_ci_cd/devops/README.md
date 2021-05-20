@@ -2,7 +2,7 @@
 
 This sample demonstrates how to provision an Azure Databricks environment using an Azure Devops pipeline. This sample leverages [sample1_basic_azure_databricks_environment](../../sample1_basic_azure_databricks_environment/README.md) and [sample3_cluster_provisioning_and_data_access](../../sample3_cluster_provisioning_and_data_access/README.md) for ARM templates and shell scripts to create the services.
 
-An [Azure Devops pipeline](iac-create-environment-pipeline-arm.yml) is used to orchestrate the provisioning of environment. The pipeline includes three stages, one for each deployment environment (DEV, STG, PROD). It is triggered manually with the option to deploy to one or more environments. A common [job template](../templates/jobs/deploy-azure-databricks-environment.yml) is used in conjunction with three different variable groups and service connections, one for each deployment environment.
+An [Azure Devops pipeline](iac-create-environment-pipeline-arm.yml) is used to orchestrate the provisioning of environment. The pipeline includes three stages, one for each deployment environment (DEV, STG, PROD). It is triggered manually with the option to deploy to one or more environments. A common [job template](templates/jobs/deploy-azure-databricks-environment.yml) is used in conjunction with three different variable groups and service connections, one for each deployment environment.
 
 The following services are provisioned as a part of this setup:
 
