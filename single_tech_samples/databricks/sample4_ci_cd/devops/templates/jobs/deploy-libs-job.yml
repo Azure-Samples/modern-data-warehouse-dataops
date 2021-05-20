@@ -32,8 +32,8 @@ jobs:
             pip install databricks-cli
           displayName: 'Setup Agent'
         - script: |
-            echo "Uploading notebooks at ${NOTEBOOKS_PATH} to workspace (${DATABRICKS_NOTEBOOK_PATH})..."
-            databricks fs cp "${LIB_PATH}" "dbfs:/FileStore/jars"
+            echo "Uploading libs at ${NOTEBOOKS_PATH} to workspace (${DATABRICKS_NOTEBOOK_PATH})..."
+            databricks fs cp "${LIB_PATH}" "dbfs:/FileStore/jars" --recursive --overwrite
             databricks libraries install --cluster-id $CLUSTER_ID --whl "dbfs:/FileStore/jars/common-0.1.0-py3-none-any.whl"   
           env:
             DATABRICKS_HOST: ${{ parameters.databricksDomain }}

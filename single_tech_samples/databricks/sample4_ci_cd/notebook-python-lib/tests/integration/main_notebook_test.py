@@ -3,7 +3,7 @@ from runtime.nutterfixture import NutterFixture, tag
 
 class MyTestFixture(NutterFixture):
    def run_test_name(self):
-      dbutils.notebook.run('mynotebook', 600)
+      dbutils.notebook.run('../../notebooks/main_notebook', 600)
 
    def assertion_test_name(self):
       sparkSession = SparkSession.builder.appName("example-pyspark-read").getOrCreate()
