@@ -1,0 +1,87 @@
+# trigger:
+#   branches:
+#     include:
+#       - 'main'
+
+pr:
+  branches:
+    include:
+    - '*'
+
+variables:
+  - group: 'DatabricksConnection'
+
+name: 'CI for Sample Python Notebook with Libraries'
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+- stage: UT
+  displayName: Python Unit Tests
+  jobs:
+    - job: UnitTest
+      displayName: Run Unit tests
+      pool:
+        vmImage: ubuntu-latest
+      steps:
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '3.8'
+          architecture: 'x64'
+
+      - script: |
+          cd notebook-python-lib
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+        displayName: 'Install requirements'
+
+      - script: |
+          echo "y
+          $(DATABRICKS-HOST)
+          $(DATABRICKS-PAT)
+          $(DATABRICKS-CLUSTER-ID)
+          $(DATABRICKS-WORKSPACE-ORG-ID)
+          15001" | databricks-connect configure
+        displayName: "Configure DBConnect"
+
+      - script: |
+          pytest -v notebook-python-lib/ --doctest-modules --junitxml=unit-testresults.xml --cov=notebook-python-lib/ --cov-append --cov-report=xml:coverage.xml --cov-report=html:htmlcov
+        displayName: 'Run python-lib package unit tests'
+
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: '**/*-testresults.xml'
+          testRunTitle: '$(Agent.OS) - $(Build.BuildNumber)[$(Agent.JobName)] - Python $(python.version) - Unit Test results'
+        condition: succeededOrFailed()
+        displayName: 'Publish unit test and linting results'
+
+      - task: PublishCodeCoverageResults@1
+        inputs:
+          codeCoverageTool: Cobertura
+          summaryFileLocation: 'coverage.xml'
+          reportDirectory: 'htmlcov'
+        displayName: 'Publish Coverage Results'
+
+- stage: PublishArtifact
+  condition: succeeded('UT')
+  displayName: Package Notebook
+  jobs:
+  - job: PkgNotebooks
+    displayName: Package Notebook into artifacts
+    steps:
+    - task: Bash@3
+      displayName: Build a wheel
+      inputs:
+        targetType: 'inline'
+        script: |
+          cd notebook-python-lib
+          python -m pip install wheel setuptools
+          python setup.py bdist_wheel --universal
+    - task: PublishPipelineArtifact@1
+      displayName: Publish artifacts
+      inputs:
+        targetPath: '$(Pipeline.Workspace)'
+        artifact: 'notebooksArtifactTest'
+        publishLocation: 'pipeline'
