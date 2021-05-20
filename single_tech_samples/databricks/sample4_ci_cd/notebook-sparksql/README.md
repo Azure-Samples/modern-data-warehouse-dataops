@@ -79,7 +79,7 @@ Below listed are the steps to deploy this sample :
         ![alt text](../../Common_Assets/Images/ADO_Pipeline_Repo_Select.png)
       4. Under configure tab, select the pipeline type as "Starter Pipeline"
         ![alt text](../../Common_Assets/Images/ADO_Pipeline_Type.png)
-      5. Replace the code for the pipeline with the code from the '      azure-pipelines.yml' file under the [DevOps Folder](./devops/azure-pipelines.yml)
+      5. Replace the code for the pipeline with the code from the `ci-pipeline.yml` file under the [DevOps Folder](./devops/azure-pipelines.yml)
         ![alt text](../../Common_Assets/Images/ADO_Pipeline_Code.png)
       6. Select the 'variables' button to set the environment variables
         ![alt text](../../Common_Assets/Images/ADO_Pipeline_Variables.png)
@@ -98,7 +98,7 @@ Below listed are the steps to deploy this sample :
 
 ### 2.3. Deployed Resources
 
-The pipeline will copy the [Sample SparkSQL](notebooks/sparkSQL_sample.sql) Notebook and the notebook with the [nutter tests](notebooks/test_cases/test_sparkSQL.py) to the target workspace as it runs. you should be able to navigate to the Azure Databricks Workspace to view these files
+The pipeline will copy the [Sample SparkSQL](notebooks/main_notebook.sql) Notebook and the notebook with the [nutter tests](notebooks/tests/main_notebook_test.py) to the target workspace as it runs. you should be able to navigate to the Azure Databricks Workspace to view these files
 
 ![alt text](../../Common_Assets/Images/ADB_Notebooks.png)
 
