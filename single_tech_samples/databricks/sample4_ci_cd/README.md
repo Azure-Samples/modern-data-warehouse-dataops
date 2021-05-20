@@ -218,5 +218,3 @@ This folder includes 1 notebook and 2 python files, the python files will be bui
 This folder includes 3 python files, the python files will be build as a spark job and library. There are 1 integration test and 2 pytest based unit tests.
 
 [Please check the detail of the sample code.](pyspark/README.md)
-
-
