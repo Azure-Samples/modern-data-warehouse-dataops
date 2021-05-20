@@ -4,7 +4,7 @@ import pandas as pd
 from pyspark.sql import Row, SparkSession
 from pyspark.sql.dataframe import DataFrame
 
-from modules.pump_utils import get_litres_per_second
+from common.module_a import get_litres_per_second
 
 
 class TestGetLitresPerSecond(unittest.TestCase):
@@ -14,12 +14,12 @@ class TestGetLitresPerSecond(unittest.TestCase):
     def test_get_litres_per_second(self):
         test_data = [
             # pipe_id, start_time, end_time, litres_pumped
-            (1, '2021-02-01 01:05:32', '2021-02-01 01:09:13', 24),
-            (2, '2021-02-01 01:09:14', '2021-02-01 01:14:17', 41),
-            (1, '2021-02-01 01:14:18', '2021-02-01 01:15:58', 11),
-            (2, '2021-02-01 01:15:59', '2021-02-01 01:18:26', 13),
-            (1, '2021-02-01 01:18:27', '2021-02-01 01:26:26', 45),
-            (3, '2021-02-01 01:26:27', '2021-02-01 01:38:57', 15)
+            (1, '2021-05-18 01:05:32', '2021-05-18 01:09:13', 24),
+            (2, '2021-05-18 01:09:14', '2021-05-18 01:14:17', 41),
+            (1, '2021-05-18 01:14:18', '2021-05-18 01:15:58', 11),
+            (2, '2021-05-18 01:15:59', '2021-05-18 01:18:26', 13),
+            (1, '2021-05-18 01:18:27', '2021-05-18 01:26:26', 45),
+            (3, '2021-05-18 01:26:27', '2021-05-18 01:38:57', 15)
         ]
         test_data = [
             {

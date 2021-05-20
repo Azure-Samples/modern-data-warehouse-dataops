@@ -1,7 +1,7 @@
-# trigger:
-#   branches:
-#     include:
-#       - 'main'
+trigger:
+  branches:
+    include:
+      - 'main'
 
 pr:
   branches:
@@ -31,10 +31,9 @@ stages:
           architecture: 'x64'
 
       - script: |
-          cd notebook-python-lib
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-        displayName: 'Install requirements'
+          pip install -r notebook-python-lib/requirements.txt
+        displayName: 'Install libraries and dependencies'
 
       - script: |
           echo "y
@@ -47,7 +46,7 @@ stages:
 
       - script: |
           pytest -v notebook-python-lib/ --doctest-modules --junitxml=unit-testresults.xml --cov=notebook-python-lib/ --cov-append --cov-report=xml:coverage.xml --cov-report=html:htmlcov
-        displayName: 'Run python-lib package unit tests'
+        displayName: 'Run unit tests for the python library'
 
       - task: PublishTestResults@2
         inputs:
@@ -66,7 +65,7 @@ stages:
 
 - stage: PublishArtifact
   condition: succeeded('UT')
-  displayName: Package Notebook
+  displayName: Package Python modules
   jobs:
   - job: PkgNotebooks
     displayName: Package Notebook into artifacts
@@ -76,12 +75,11 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          cd notebook-python-lib
           python -m pip install wheel setuptools
-          python setup.py bdist_wheel --universal
+          python notebook-python-lib/setup.py bdist_wheel --universal
     - task: PublishPipelineArtifact@1
       displayName: Publish artifacts
       inputs:
         targetPath: '$(Pipeline.Workspace)'
-        artifact: 'notebooksArtifactTest'
+        artifact: 'mdw-dbx-nbpylib-artifact'
         publishLocation: 'pipeline'
