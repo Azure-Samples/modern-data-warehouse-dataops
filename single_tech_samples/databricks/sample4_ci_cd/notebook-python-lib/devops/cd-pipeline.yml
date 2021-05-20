@@ -29,6 +29,7 @@ stages:
       databricksDomain: '$(databricksDomain)'
       databricksToken: '$(databricksToken)'
       databricksNotebookPath: '$(databricksNotebookPath)'
+      databricksClusterId: '$(databricksClusterId)'
   
   - job:
     displayName: 'Run integration tests'
