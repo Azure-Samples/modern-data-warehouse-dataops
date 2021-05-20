@@ -46,13 +46,10 @@ jobs:
             echo "Installing libs at ${NOTEBOOKS_PATH} to workspace (${DATABRICKS_NOTEBOOK_PATH})..."
             for file in "databricks fs ls dbfs:/FileStore/jars --absolute"
             do
-                if test -f $file
+                extension="${file##*.}"
+                if [ $extension = "whl" ];
                 then
-                  extension="${file##*.}"
-                  if [ $extension = "whl" ];
-                  then
-                      databricks libraries install --cluster-id $CLUSTER_ID --whl $file
-                  fi
+                    databricks libraries install --cluster-id $CLUSTER_ID --whl $file
                 fi
             done
           condition: succeeded()
