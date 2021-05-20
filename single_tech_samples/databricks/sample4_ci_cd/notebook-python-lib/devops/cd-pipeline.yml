@@ -16,7 +16,7 @@ stages:
   - group: mdwdo-dbx-npl-test
 
   jobs:
-  - template: ../../devops/templates/jobs/deploy-notebooks-job.yml
+  - template: ../../devops/templates/jobs/deploy-libs-job.yml
     parameters:
       environmentName: 'TEST'
       databricksDomain: '$(databricksDomain)'
