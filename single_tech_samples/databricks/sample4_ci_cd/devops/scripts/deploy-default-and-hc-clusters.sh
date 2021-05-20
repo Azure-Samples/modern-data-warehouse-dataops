@@ -44,6 +44,10 @@ else
     az account set --subscription "$AZURE_SUBSCRIPTION_ID"
 fi
 
+# Get Azure Key Vault Name
+
+keyVaultName="${DEPLOYMENT_PREFIX}akv01"
+
 # Get WorkspaceUrl from Azure Databricks
 
 adbName="${DEPLOYMENT_PREFIX}adb01"
@@ -95,5 +99,18 @@ for config in "${configs[@]}"; do
             --data-binary "@${config}" "https://${adbWorkspaceUrl}/api/2.0/clusters/create" |
             jq
         echo "Cluster \"$clusterName\" is being created."
+
+        clusterIdCreated=$(curl -sS -X GET -H "$authHeader" -H "$adbSPMgmtToken" -H "$adbResourceId" \
+            "https://${adbWorkspaceUrl}/api/2.0/clusters/list" |
+            jq -r "[ .clusters | .[] | select(.cluster_name == \"${clusterName}\") ][0].cluster_id")
+
+        echo "Storing Databricks Cluster ID in key vault"
+        if [[ "$clusterName" == "high-concurrency-cluster" ]]; then
+            az keyvault secret set -n "HighConcurrencyDatabricksClusterID" --vault-name "$keyVaultName" --value "clusterIdCreated" --output none
+            echo "Successfully stored secrets HighConcurrencyDatabricksClusterID"
+        else
+            az keyvault secret set -n "StandardDatabricksClusterID" --vault-name "$keyVaultName" --value "clusterIdCreated" --output none
+            echo "Successfully stored secrets StandardDatabricksClusterID"
+        fi
     fi
 done
