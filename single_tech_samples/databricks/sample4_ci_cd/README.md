@@ -20,27 +20,26 @@
 
 ## 1. Solution Overview
 
-When build a project in databricks, we can start from some notebooks and implement the business logic in python. Before go-production, we need to create CI/CD pipelines. To reduce the effort of build CI/CD pipelines, we build this git repository as template including sample noteboks and unit testing plus Azure DevOps yaml files as CI/CD pipelines.
+When build a project in databricks, we can start from some notebooks and implement the business logic in Python and SparkSQL. Before go-production, we need to create CI/CD pipelines. To reduce the effort of build CI/CD pipelines, we build this git repository as template including sample noteboks and unit testing plus Azure DevOps yaml files as CI/CD pipelines.
 
 **It is the scaffolding of Azure databricks project.**
 
 To make it easy extendable, the notebooks and python code only contain super simple logic, and the unit testing is implemented by pytest and [nutter](https://github.com/microsoft/nutter)
 
-This template focuses on automating provisioning, CI/CD pipeline, and various approaches of databricks implementation.
+This template focuses on automating provisioning, CI/CD pipeline, and various approaches of spark application implementation.
 
 ### 1.1. Scope
 
 The following list captures the scope of this template:
 
 1. Sample code
-    1. Notebook with pyspark API.
-    2. Notebook with spark sql.
-    3. Multi-NotBooks (main notebook plus reusable notebooks)
-    4. notebooks with python module
-    5. Non-Notebook, purely python
+    1. Notebook with pyspark API, Spark SQL and multiple notebooks.
+    2. Non-Notebook, purely python
+    3. hybrid - python module plus notebook
 2. Unit testing
-    1. pytest for python module
+    1. pytest for python module & notebooks
     2. [nutter](https://github.com/microsoft/nutter) for notebooks
+
 3. Provision Azure Databricks environments of development, testing and production via provision pipepline.
 4. CI/CD pipelien to build and run testing automatically.
 
@@ -56,6 +55,7 @@ The below diagram illustrates the deployment process flow followed in this templ
 
 The following technologies are used to build this template:
 
+- [Azure DevOps](https://azure.microsoft.com/en-us/services/devops/)
 - [Azure Databricks](https://azure.microsoft.com/en-au/free/databricks/)
 - [Azure Resource Manager](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview)
 - [nutter](https://github.com/microsoft/nutter)
@@ -74,90 +74,57 @@ The following are the prerequisites for deploying this template :
 
    - Active subscription with the following [resource providers](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/azure-services-resource-providers) enabled:
      - Microsoft.Databricks
+3. [DevOps for Azure Databricks](https://marketplace.visualstudio.com/items?itemName=riserrad.azdo-databricks) It is the plugin of DevOps to support Azure Databricks deployments.
 
 ### 2.2. Setup and deployment
 
-> **IMPORTANT NOTE:** As with all Azure Deployments, this will **incur associated costs**. Remember to teardown all related resources after use to avoid unnecessary costs. See [here](#4.3.-deployed-resources) for a list of deployed resources.
+[Please check this document to the provision of databricks and other services](sample4_ci_cd/devops/README.md)
 
-Below listed are the steps to deploy this template :
 
-1. Fork and clone this repository. Navigate to (CD) `single-tech/databricks-ops/single_tech_samples/databricks/sample4_ci_cd`.
-
-1. Provisioning resources using Azure Pipelines
-  
-    The easiest way to create all required Azure resources (Resource Group, Azure Databrciks, and others) is to use the Infrastructure as Code (IaC) pipeline with ARM templates. The pipeline takes care of setting up all required resources based on these [Azure Resource Manager templates](environment_setup/iac-create-environment-pipeline-arm.yml).
-
-1. Create the IaC Pipeline
-
-    In your Azure DevOps project, create a build pipeline from your forked repository:
-
-    ![build pipeline](images/build-connect.png "build pipeline")
-
-    Select the Existing Azure Pipelines YAML file option and set the path to [environment_setup/iac-create-environment-pipeline-arm.yml](environment_setup/iac-create-environment-pipeline-arm.yml)
-
-    > TODO add screenshot of the pipeline setup
-
-   Having done that, run the pipeline:
-
-   > TODO add screenshot of the pipeline run
-
-### 2.3. Deployed Resources
-
-  Check that the newly created resources appear in the [Azure Portal](https://portal.azure.com/):
-
-  The following resources will be deployed as a part of this template once the script is executed:
-
-  1. Azure Databricks workspace - development.
-
-  1. Azure Databricks workspace - staging.
-
-  1. Azure Databricks workspace - production.
-
-> TODO add screenshot
-
-### 2.4. Sample project Structure
+### 2.3. Sample project Structure
 
 ```txt
 
 ├── devops
-|      ├──template
-|      |     └──jobs
-|      └──scripts
-├── multi-notebooks
+|   ├── config
+|   ├── scripts
+|   ├── template
+|   |    └── jobs
+│   ├── README.md
+│   └── iac-create-environment-pipeline-arm.yml
+├── hybrid
+│   ├── README.md
+│   ├── devops
+│   │    ├──cd-pipeline.yml
+│   │    └──ci-pipeline.yml
+│   ├── common
+│   │    ├── __init__.py
+│   │    ├── module_a.py
+│   │    ├── module_b.py
+│   │    └── tests
+│   │          ├── module_a_test.py
+│   │          └── module_b_test.py
+│   ├── notebooks
+│   │    ├── main_notebook.py
+│   │    └── tests
+│   │          └── main_notebook_test.py
+│   └── setup.py
+├── notebook
 │   ├── README.md
 │   ├── devops
 │   │      ├──cd-pipeline.yml
 │   │      └──ci-pipeline.yml
-│   ├── notebooks
-│   │      ├── main_notebook.py
-│   │      ├── module_a_notebook.py
-│   │      └── module_b_notebook.py
-│   └── tests
-│          └── integration
+│   └── notebooks
+│          ├── main_notebook.py
+│          ├── main_notebook_sql.py
+│          ├── module_a_notebook.py
+│          ├── module_b_notebook.py
+│          └── tests
+│               ├── main_notebook_sql_test.py
 │               ├── main_notebook_test.py
-│               ├── module_a_test.py
-│               └── module_b_test.py
-├── notebook-dataframe
-│   ├── README.md
-│   ├── devops
-│   │      ├──cd-pipeline.yml
-│   │      └──ci-pipeline.yml
-│   ├── notebooks
-│   │      └──main_notebook.py
-│   └── tests
-│        └── integration
-│             └── main_notebook_test.py
-├── notebook-sparksql
-│   ├── README.md
-│   ├── devops
-│   │      ├──cd-pipeline.yml
-│   │      └──ci-pipeline.yml
-│   ├── notebooks
-│   │      └──main_notebook.py
-│   └── tests
-│        └── integration
-│             └── main_notebook_test.py
-├── notebook-python-lib
+│               ├── module_a_notebook_test.py
+│               └── module_b_notebook_test.py
+├── python
 │   ├── README.md
 │   ├── devops
 │   │      ├──cd-pipeline.yml
@@ -166,25 +133,7 @@ Below listed are the steps to deploy this template :
 │   │    ├── __init__.py
 │   │    ├── module_a.py
 │   │    └── module_b.py
-│   ├── notebooks
-│   │      └──main_notebook.py
-│   ├── setup.py
-│   └── tests
-│        ├── integration
-│        │    └── main_notebook_test.py
-│        └── unit
-│             ├── module_a_test.py
-│             └── module_b_test.py
-├── pyspark
-│   ├── README.md
-│   ├── devops
-│   │      ├──cd-pipeline.yml
-│   │      └──ci-pipeline.yml
-│   ├── common
-│   │    ├── __init__.py
-│   │    ├── module_a.py
-│   │    └── module_b.py
-│   ├── main.psy
+│   ├── main.py
 │   ├── setup.py
 │   └── tests
 │        ├── integration
@@ -192,11 +141,8 @@ Below listed are the steps to deploy this template :
 │        └── unit
 │              ├── module_a_test.py
 │              └── module_b_test.py
-├── provision
-│   └── iac-create-environment-pipeline-arm.yml
-├── .gitignore
-├── README.md
 ├── pytest.ini
+├── README.md
 └── unit-requirements.txt
 
 ```
@@ -208,22 +154,40 @@ In each sample code folder, there are
 - unit testing code
 - Azure DevOps pipeline yaml files
 
-#### How to use the sample code
+#### How to use the template
+
+1. Here is a shell script to setup your project with the template
+
+```shell
+git clone https://github.com/Azure-Samples/modern-data-warehouse-dataops.git 
+cd modern-data-warehouse-dataops
+git checkout single-tech/databricks-ops
+git archive --format=tar single-tech/databricks-ops:single_tech_samples/databricks/sample4_ci_cd | tar -x -C ../
+cd ..
+rm -rf modern-data-warehouse-dataops
+
+git init
+git remote add origin <your repo url>
+git add -A
+git commit -m "first commit"
+git push -u origin --all
+```
+
 
 1. In your Azure DevOps project
     - create a ci pipeline and select ci-pipeline.yml. it will run unit tests and publish the artifacts when changes committed.
     - create a cd pipeline and select cd-pipeline.yml. it will run integration tests when ci pipeline successfully run and the go-production deployment can be manually triggered.
 
-2. For notebooks based spark application, you can import notebooks samples into databricks workspace from the repo of your Azure DevOps projects. Then use Databricks to edit teh notebooks. Here is an instructions how to import it.
+1. For notebooks based spark application, you can import notebooks samples into databricks workspace from the repo of your Azure DevOps projects. Then use Databricks to edit teh notebooks. Here is an instructions how to import it.
 [https://docs.microsoft.com/en-us/azure/databricks/repos](https://docs.microsoft.com/en-us/azure/databricks/repos)
 
-3. For python files based spark application, you can clone it to your local repo from the repo of your Azure DevOps projects, and then edit in your favorite IDE.
+1. For python files based spark application, you can clone it to your local repo from the repo of your Azure DevOps projects, and then edit in your favorite IDE.
 
-4. After you finshing add your logic or creating new files, you can run unit tests before you commit the changes to the repo of your Azure DevOps project. the commit will trigger the ci pipeline to run unit tests and publish artifacts.
+1. After you finshing add your logic or creating new files, you can run unit tests before you commit the changes to the repo of your Azure DevOps project. the commit will trigger the ci pipeline to run unit tests and publish artifacts.
 
 > we don't advice to run notebooks in local with unit testing mode, so notebooks only have integration testing.
 ---
-> Why we have 5 different ways to build spark application? As it is not supported by Databricks to build python modules. You can only do it in local IDE. And local IDE have very limited intergation with notebooks. So to meet different spark application program mode, we created the differenct sample code including purely in spark sql.
+> Why we have 3 different ways to build spark application? As it is not supported by Databricks to build python modules. You can only do it in local IDE. And local IDE have very limited intergation with notebooks. So to meet different spark application programming approaches, we created the differenct samples.
 
 #### 2.4.1 notebook by pyspark API
 
@@ -254,3 +218,4 @@ This folder includes 1 notebook and 2 python files, the python files will be bui
 This folder includes 3 python files, the python files will be build as a spark job and library. There are 1 integration test and 2 pytest based unit tests.
 
 [Please check the detail of the sample code.](pyspark/README.md)
+
