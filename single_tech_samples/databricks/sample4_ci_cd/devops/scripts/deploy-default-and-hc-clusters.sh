@@ -28,11 +28,11 @@ if [[ -z "$AZURE_RESOURCE_GROUP_LOCATION" ]]; then
 fi
 if [[ -z "$CLUSTER_CONFIG" ]]; then
     echo "No Azure resource group [CLUSTER_CONFIG] specified, use default ./cluster-config.example.json"
-    CLUSTER_CONFIG="./config/cluster-config.default.json"
+    CLUSTER_CONFIG="../config/cluster-config.default.json"
 fi
 if [[ -z "$CLUSTER_CONFIG_HC" ]]; then
     echo "No Azure resource group [CLUSTER_CONFIG_HC] specified, use default ./cluster-config.example.json"
-    CLUSTER_CONFIG_HC="./config/cluster-config.high-concurrency.json"
+    CLUSTER_CONFIG_HC="../config/cluster-config.high-concurrency.json"
 fi
 
 if ! AZURE_USERNAME=$(az account show --query user.name --output tsv); then
