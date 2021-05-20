@@ -1,0 +1,95 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger: none
+
+pr: none
+
+resources:
+  pipelines:
+  - pipeline: ci
+    source: mdw-dbx-pyspark-ci-pipeline
+
+stages:
+- stage: IT
+  condition: succeeded('PublishArtifact')
+  dependsOn: PublishArtifact
+  displayName: Integration Test
+  variables:
+  - group: mdwdo-dbx-pyspark-test
+  - group: mdwdo-dbx-release-dev
+  jobs:
+  - job: ITJob
+    displayName: Integration Test with dbx CLI
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - task: AzureKeyVault@1
+      inputs:
+        azureSubscription: 'mdwdo-dbx-serviceconnection-dev'
+        KeyVaultName: 'onecseweekdevakv01'
+        SecretsFilter: '*'
+        RunAsPreJob: true
+
+    - script: |
+          deploymentJsonPath=$(find ./ -path "*/conf/deployment_test.json")
+          projectRootPath=$(sed "s|deployment_test.json|../|g" <<< $deploymentJsonPath)
+          # Replace actual cluster ID to target deployment json file
+          sed -i "s|CLUSTERID|$DATABRICKS_CLUSTERID|g" $deploymentJsonPath
+          
+          pip install dbx
+          # Configure dbx CLI, then deploy all jobs declared in deployment json
+          cd $projectRootPath
+          dbx configure
+          dbx deploy --deployment-file=conf/deployment_test.json
+          # Extract jobs then execute them one by one
+          jobs=( $(cat conf/deployment_test.json | jq '.default.jobs' | jq -r '.[]|.name') )
+          for job in "${jobs[@]}"; do
+              dbx launch --job=$job --trace
+          done
+      displayName: Run integrtion test with dbx CLI
+      env:
+        DATABRICKS_TOKEN: $(DatabricksToken)
+        DATABRICKS_HOST: $(DatabricksHost)
+        DATABRICKS_CLUSTERID: $(DATABRICKSCLUSTERID)
+        
+- stage: DeployMLflowExperiment
+  condition: succeeded('IT')
+  dependsOn: IT
+  displayName: Deploy MLflow Experiment
+  variables:
+  - group: mdwdo-dbx-pyspark-test
+  - group: mdwdo-dbx-release-dev
+  jobs:
+  - job: DeployMLflowExperimentJob
+    displayName: Deploy MLflow Experiment
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - task: AzureKeyVault@1
+      inputs:
+        azureSubscription: 'mdwdo-dbx-serviceconnection-dev'
+        KeyVaultName: 'onecseweekdevakv01'
+        SecretsFilter: '*'
+        RunAsPreJob: true
+
+    - script: |
+          deploymentJsonPath=$(find ./ -path "*/conf/deployment.json")
+          projectRootPath=$(sed "s|deployment.json|../|g" <<< $deploymentJsonPath)
+          # Replace actual cluster ID to target deployment json file
+          sed -i "s/CLUSTERID/$DATABRICKS_CLUSTERID/g" $deploymentJsonPath
+          
+          pip install dbx
+          # Configure dbx CLI, then deploy all jobs declared in deployment json
+          cd $projectRootPath
+          dbx configure
+          dbx deploy --deployment-file=conf/deployment.json
+      displayName: Deploy MLflow Experiment
+      env:
+        DATABRICKS_TOKEN: $(DatabricksToken)
+        DATABRICKS_HOST: $(DatabricksHost)
+        DATABRICKS_CLUSTERID: $(DATABRICKSCLUSTERID)
+
+

@@ -20,8 +20,9 @@ Note that we use dbx CLI to deploy MLflow experiments/jobs,  for more informatio
     - **databricksToken** - Databricks PAT token.
     - **databricksClusterId** - Databricks cluster id that will be used to run the notebooks.
 1. In Azure DevOps, [create Azure Pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/create-first-pipeline?view=azure-devops&tabs=java%2Ctfs-2018-2%2Cbrowser) based on below azure-pipeline definitions:
-    - `devops/azure-pipelines.yaml` - name this `mdw-dbx-pyspark-cicd-pipeline`
-1. Run the `mdw-dbx-pyspark-cicd-pipeline` manually or trigger it by commit changes to master branch.
+    - `devops/ci-pipeline.yml` - name this `mdw-dbx-pyspark-ci-pipeline`
+    - `devops/cd-pipeline.yml` - name this `mdw-dbx-pyspark-cd-pipeline`
+1. Run the `mdw-dbx-pyspark-ci-pipeline` manually or trigger it by commit changes to checkout branch; then trigger `mdw-dbx-pyspark-cd-pipeline` manually if UT runs good in former pipeline.
 1. For running unit test locally, Spark and Hadoop setup is required.
     - Download Spark source from [here](https://www.apache.org/dyn/closer.lua/spark/spark-3.1.1/spark-3.1.1-bin-hadoop2.7.tgz) if it not there yet.
     - Extract the download file then set/export SPARK_HOME to the extracted path.
@@ -29,10 +30,11 @@ Note that we use dbx CLI to deploy MLflow experiments/jobs,  for more informatio
     - Download Hadoop  __winutils__  from [here](https://github.com/cdarlint/winutils) and save it to HADOOP_HOME path.
 1. Both MLflow source and integration tests are deployed to target Databricks workspace as jobs and linked experiments via dbx CLI.
     - MLflow source and tests jobs are maintained in  __jobs__  key of /conf/deployment*.json file
-    - Once the deployment stage of CI/CD pipeline has done, which means relevant unit tests and integrtaion tests in previous stages have passed, and we're ready to trigger source job run either via workspace UI or use dbx CLI like below.
+    - Once the deployment stage of `mdw-dbx-pyspark-cd-pipeline` pipeline has done, which means relevant integrtaion tests in previous stages have passed, and we're ready to trigger source job run either via workspace UI or use dbx CLI like below.
 
 ```sh
-        # Set environment variable DATABRICKS_TOKEN and DATABRICKS_HOST before running 'dbx configure' command
+        # 1. Set environment variable DATABRICKS_TOKEN and DATABRICKS_HOST before running 'dbx configure' command
+        # 2. dbx configure command is recommended to run under project root path
         dbx configure
         dbx launch --job=$jobName
 ```
