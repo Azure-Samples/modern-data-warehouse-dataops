@@ -86,12 +86,20 @@ stages:
   displayName: Integration Test
   variables:
   - group: mdwdo-dbx-pyspark-test
+  - group: mdwdo-dbx-release-dev
   jobs:
   - job: ITJob
     displayName: Integration Test with dbx CLI
     pool:
       vmImage: ubuntu-latest
     steps:
+    - task: AzureKeyVault@1
+      inputs:
+        azureSubscription: $(AZURE_SUBSCRIPTION_ID)
+        KeyVaultName: format('{0}akv01', $(DEPLOYMENT_PREFIX))
+        SecretsFilter: '*'
+        RunAsPreJob: true
+
     - script: |
           deploymentJsonPath=$(find ./ -path "*/conf/deployment_test.json")
           projectRootPath=$(sed "s|deployment_test.json|../|g" <<< $deploymentJsonPath)
@@ -104,14 +112,14 @@ stages:
           dbx configure
           dbx deploy --deployment-file=conf/deployment_test.json
           # Extract jobs then execute them one by one
-          jobs=( $(cat $deploymentJsonPath | jq '.default.jobs' | jq -r '.[]|.name') )
+          jobs=( $(cat conf/deployment_test.json | jq '.default.jobs' | jq -r '.[]|.name') )
           for job in "${jobs[@]}"; do
               dbx launch --job=$job --trace
           done
       displayName: Run integrtion test with dbx CLI
       env:
-        DATABRICKS_TOKEN: $(DATABRICKSTOKEN)
-        DATABRICKS_HOST: $(DATABRICKSHOST)
+        DATABRICKS_TOKEN: $(DatabricksToken)
+        DATABRICKS_HOST: $(DatabricksHost)
         DATABRICKS_CLUSTERID: $(DATABRICKSCLUSTERID)
         
 - stage: DeployMLflowExperiment
@@ -120,12 +128,20 @@ stages:
   displayName: Deploy MLflow Experiment
   variables:
   - group: mdwdo-dbx-pyspark-test
+  - group: mdwdo-dbx-release-dev
   jobs:
   - job: DeployMLflowExperimentJob
     displayName: Deploy MLflow Experiment
     pool:
       vmImage: ubuntu-latest
     steps:
+    - task: AzureKeyVault@1
+      inputs:
+        azureSubscription: $(AZURE_SUBSCRIPTION_ID)
+        KeyVaultName: format('{0}akv01', $(DEPLOYMENT_PREFIX))
+        SecretsFilter: '*'
+        RunAsPreJob: true
+
     - script: |
           deploymentJsonPath=$(find ./ -path "*/conf/deployment.json")
           projectRootPath=$(sed "s|deployment.json|../|g" <<< $deploymentJsonPath)
@@ -139,8 +155,8 @@ stages:
           dbx deploy --deployment-file=conf/deployment.json
       displayName: Deploy MLflow Experiment
       env:
-        DATABRICKS_TOKEN: $(DATABRICKSTOKEN)
-        DATABRICKS_HOST: $(DATABRICKSHOST)
+        DATABRICKS_TOKEN: $(DatabricksToken)
+        DATABRICKS_HOST: $(DatabricksToken)
         DATABRICKS_CLUSTERID: $(DATABRICKSCLUSTERID)
 
 
