@@ -95,7 +95,7 @@ stages:
     steps:
     - task: AzureKeyVault@1
       inputs:
-        azureSubscription: 'yem-one-cse-week-may-2021'
+        azureSubscription: 'mdwdo-dbx-serviceconnection-dev'
         KeyVaultName: 'onecseweekdevakv01'
         SecretsFilter: '*'
         RunAsPreJob: true
@@ -137,7 +137,7 @@ stages:
     steps:
     - task: AzureKeyVault@1
       inputs:
-        azureSubscription: 'yem-one-cse-week-may-2021'
+        azureSubscription: 'mdwdo-dbx-serviceconnection-dev'
         KeyVaultName: 'onecseweekdevakv01'
         SecretsFilter: '*'
         RunAsPreJob: true
@@ -156,7 +156,7 @@ stages:
       displayName: Deploy MLflow Experiment
       env:
         DATABRICKS_TOKEN: $(DatabricksToken)
-        DATABRICKS_HOST: $(DatabricksToken)
+        DATABRICKS_HOST: $(DatabricksHost)
         DATABRICKS_CLUSTERID: $(DATABRICKSCLUSTERID)
 
 
