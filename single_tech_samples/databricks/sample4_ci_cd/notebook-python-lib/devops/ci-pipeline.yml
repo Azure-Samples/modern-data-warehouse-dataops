@@ -83,6 +83,11 @@ stages:
   - job: PkgNotebooks
     displayName: Package Notebook into artifacts
     steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.8'
+        architecture: 'x64'
+
     - task: Bash@3
       displayName: Build a wheel pkg
       inputs:
@@ -91,7 +96,7 @@ stages:
           cd $(basePath)/notebook-python-lib
           python -m pip install --upgrade pip
           python -m pip install wheel setuptools
-          python setup.py bdist_wheel --universal
+          python setup.py bdist_wheel
 
     - task: CopyFiles@2
       inputs:
