@@ -95,7 +95,7 @@ stages:
     steps:
     - task: AzureKeyVault@1
       inputs:
-        azureSubscription: 'yem-internal-poc&demo(10609c53-2ee3-4ff1-b438-46f7e9de2cc6)'
+        azureSubscription: 'yem-one-cse-week-may-2021'
         KeyVaultName: 'onecseweekdevakv01'
         SecretsFilter: '*'
         RunAsPreJob: true
@@ -137,7 +137,7 @@ stages:
     steps:
     - task: AzureKeyVault@1
       inputs:
-        azureSubscription: 'yem-internal-poc&demo(10609c53-2ee3-4ff1-b438-46f7e9de2cc6)'
+        azureSubscription: 'yem-one-cse-week-may-2021'
         KeyVaultName: 'onecseweekdevakv01'
         SecretsFilter: '*'
         RunAsPreJob: true
