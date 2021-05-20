@@ -30,13 +30,17 @@ stages:
         wget -P ./Hadoop/bin -q https://github.com/4ttty/winutils/raw/master/hadoop-2.7.1/bin/winutils.exe 
         export HADOOP_HOME=$(Build.Repository.LocalPath)/Hadoop
         
-        export PYTHONPATH=$PYTHONPATH:$(Build.Repository.LocalPath)/single_tech_samples/databricks/sample4_ci_cd/pyspark
+        deploymentJsonPath=$(find ./ -path "*/conf/deployment.json")
+        testsPath=$(sed "s|deployment.json|../tests|g" <<< $deploymentJsonPath)
+        projectRootPath=$(sed "s|deployment.json|../|g" <<< $deploymentJsonPath)
+        
+        export PYTHONPATH=$PYTHONPATH:$projectRootPath
         export PYSPARK_PYTHON=python
         python -m pip install --upgrade pip
         pip install pytest
         pip install pytest-cov
         pip install pyspark
-        python -m pytest single_tech_samples/databricks/sample4_ci_cd/pyspark/tests --doctest-modules --ignore single_tech_samples/databricks/sample4_ci_cd/pyspark/tests/integration/ --junitxml=single_tech_samples/databricks/sample4_ci_cd/pyspark/junit/test-results.xml --cov=. --cov-report=xml --cov-report=html
+        python -m pytest $testsPath --doctest-modules --ignore $testsPath/integration/ --junitxml=$projectRootPath/junit/test-results.xml --cov=. --cov-report=xml --cov-report=html
       displayName: Run UT with pytest
 
     - task: PublishTestResults@2
@@ -89,15 +93,16 @@ stages:
       vmImage: ubuntu-latest
     steps:
     - script: |
+          deploymentJsonPath=$(find ./ -path "*/conf/deployment_test.json")
           # Replace actual cluster ID to target deployment json file
-          sed -i "s/CLUSTERID/$DATABRICKS_CLUSTERID/g" ../conf/deployment_test.json
+          sed -i "s|CLUSTERID|$DATABRICKS_CLUSTERID|g" $deploymentJsonPath
           
           pip install dbx
           # Configure dbx CLI, then deploy all jobs declared in deployment json
           dbx configure
-          dbx deploy --deployment-file=../conf/deployment_test.json
+          dbx deploy --deployment-file=$deploymentJsonPath
           # Extract jobs then execute them one by one
-          jobs=( $(cat ../conf/deployment_test.json | jq '.default.jobs' | jq -r '.[]|.name') )
+          jobs=( $(cat $deploymentJsonPath | jq '.default.jobs' | jq -r '.[]|.name') )
           for job in "${jobs[@]}"; do
               dbx launch --job=$job
           done
@@ -120,13 +125,14 @@ stages:
       vmImage: ubuntu-latest
     steps:
     - script: |
+          deploymentJsonPath=$(find ./ -path "*/conf/deployment.json")
           # Replace actual cluster ID to target deployment json file
-          sed -i "s/CLUSTERID/$DATABRICKS_CLUSTERID/g" ../conf/deployment.json
+          sed -i "s/CLUSTERID/$DATABRICKS_CLUSTERID/g" $deploymentJsonPath
           
           pip install dbx
           # Configure dbx CLI, then deploy all jobs declared in deployment json
           dbx configure
-          dbx deploy --deployment-file=../conf/deployment.json
+          dbx deploy --deployment-file=$deploymentJsonPath
       displayName: Deploy MLflow Experiment
       env:
         DATABRICKS_TOKEN: $(DATABRICKSTOKEN)
