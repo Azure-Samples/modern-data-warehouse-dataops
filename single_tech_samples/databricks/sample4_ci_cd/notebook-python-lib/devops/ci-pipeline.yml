@@ -43,7 +43,7 @@ stages:
         displayName: 'Use Python Version: $(pythonVersion)'
 
       - script: |
-          cd notebook-python-lib
+          cd $(basePath)/notebook-python-lib
           python -m pip install --upgrade pip
           pip install -r requirements.txt
         displayName: 'Install libraries and dependencies'
@@ -58,7 +58,7 @@ stages:
         displayName: "Configure DBConnect"
 
       - script: |
-          pytest -v notebook-python-lib/test --doctest-modules --junitxml=unit-testresults.xml --cov=notebook-python-lib/ --cov-append --cov-report=xml:coverage.xml --cov-report=html:htmlcov
+          pytest -v $(basePath)/notebook-python-lib/test --doctest-modules --junitxml=unit-testresults.xml --cov=$(basePath)/notebook-python-lib/ --cov-append --cov-report=xml:coverage.xml --cov-report=html:htmlcov
         displayName: 'Run unit tests for the python library'
 
       - task: PublishTestResults@2
@@ -88,9 +88,10 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          cd notebook-python-lib
+          cd $(basePath)/notebook-python-lib
           python -m pip install wheel setuptools
           python setup.py bdist_wheel --universal
+
     - task: CopyFiles@2
       inputs:
         SourceFolder: '$(basePath)/notebook-python-lib/dist'
