@@ -21,6 +21,7 @@ stages:
       databricksDomain: '$(databricksDomain)'
       databricksToken: '$(databricksToken)'
       databricksNotebookPath: '$(databricksNotebookPath)'
+      databricksLocalNotebookPath: '$(Pipeline.Workspace)/ci/notebooks'
 
   - job:
     displayName: 'Run integration tests'
