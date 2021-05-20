@@ -1,0 +1,55 @@
+trigger: none
+
+pool:
+  name: Hosted Ubuntu 1604
+
+variables:
+  basePath: 'single_tech_samples/databricks/sample4_ci_cd'
+  pythonVersion: 3.8
+
+steps:
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(basePath)/notebook-python-lib/notebooks'
+    contents: '**'
+    targetFolder: $(Build.ArtifactStagingDirectory)/notebooks
+  displayName: 'Copy notebooks folder'
+
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(basePath)/notebook-python-lib/tests/integration'
+    contents: '**'
+    targetFolder: $(Build.ArtifactStagingDirectory)/tests/integration
+    displayName: 'Copy tests folder'
+
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '$(pythonVersion)'
+    addToPath: true
+    architecture: 'x64'
+  displayName: 'Use Python Version: $(pythonVersion)'
+
+- script: |
+    python -m pip install --upgrade pip
+    pip install wheel
+  displayName: 'Setup Agent'
+
+- script: |
+    echo "Packaging the lib..."
+    cd $(basePath)/notebook-python-lib
+    python setup.py bdist_wheel
+  displayName: 'Package lib'
+
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(basePath)/notebook-python-lib/dist'
+    contents: '**'
+    targetFolder: $(Build.ArtifactStagingDirectory)/lib
+    displayName: 'Copy lib folder'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: $(Build.ArtifactStagingDirectory)
+    cleanTargetFolder: true # Optional
+    artifactName: notebooks
+  displayName: 'Publish notebooks'

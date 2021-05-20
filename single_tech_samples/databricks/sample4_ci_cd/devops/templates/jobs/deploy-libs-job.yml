@@ -1,0 +1,55 @@
+parameters:
+- name: environmentName
+  type: string
+- name: databricksDomain
+  type: string
+- name: databricksToken
+  type: string
+- name: databricksNotebookPath
+  type: string
+- name: databricksClusterId
+  type: string
+
+jobs:
+- deployment: deploy_libs
+  environment: ${{ parameters.environmentName }}
+  displayName: 'Deploy libs to Databricks'
+  pool:
+    vmImage: 'ubuntu-latest'
+  variables:
+    pythonVersion: 3.8
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - task: UsePythonVersion@0
+          inputs:
+            versionSpec: '$(pythonVersion)'
+            addToPath: true
+            architecture: 'x64'
+          displayName: 'Use Python Version: $(pythonVersion)'
+
+        - script: |
+            python -m pip install --upgrade pip
+            pip install databricks-cli
+          displayName: 'Setup Agent'
+        - script: |
+            echo "Uploading libs at ${NOTEBOOKS_PATH} to workspace (${DATABRICKS_NOTEBOOK_PATH})..."
+            databricks fs cp "${LIB_PATH}" "dbfs:/FileStore/jars" --recursive --overwrite
+          env:
+            DATABRICKS_HOST: ${{ parameters.databricksDomain }}
+            DATABRICKS_TOKEN: ${{ parameters.databricksToken }}
+            LIB_PATH: $(Pipeline.Workspace)/ci/notebooks/lib
+            DATABRICKS_LIB_PATH: ${{ parameters.databricksNotebookPath }}
+          displayName: 'Deploy libs'
+        - script: |
+            echo "Installing libs at ${NOTEBOOKS_PATH} to workspace (${DATABRICKS_NOTEBOOK_PATH})..."
+            databricks libraries install --cluster-id $CLUSTER_ID --whl "dbfs:/FileStore/jars/common-0.1.0-py3-none-any.whl"   
+          condition: succeeded()
+          env:
+            DATABRICKS_HOST: ${{ parameters.databricksDomain }}
+            DATABRICKS_TOKEN: ${{ parameters.databricksToken }}
+            LIB_PATH: $(Pipeline.Workspace)/ci/notebooks/lib
+            DATABRICKS_LIB_PATH: ${{ parameters.databricksNotebookPath }}
+            CLUSTER_ID: ${{ parameters.databricksClusterId }}
+          displayName: 'Install libs'
