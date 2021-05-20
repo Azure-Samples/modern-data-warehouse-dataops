@@ -218,6 +218,11 @@ az config set extension.use_dynamic_install=yes_without_prompt
 adbId=$(az databricks workspace show --resource-group "$AZURE_RESOURCE_GROUP_NAME" --name "$adbWorkspaceName" --query id --output tsv)
 adbWorkspaceUrl=$(az databricks workspace show --resource-group "$AZURE_RESOURCE_GROUP_NAME" --name "$adbWorkspaceName" --query workspaceUrl --output tsv)
 
+echo "Storing Databricks Host and Token in key vault"
+az keyvault secret set -n "DatabricksHost" --vault-name "$keyVaultName" --value "https://$adbWorkspaceUrl" --output none
+az keyvault secret set -n "DatabricksToken" --vault-name "$keyVaultName" --value "$adbGlobalToken" --output none
+echo "Successfully stored secrets DatabricksHost and DatabricksToken"
+
 authHeader="Authorization: Bearer $adbGlobalToken"
 adbSPMgmtToken="X-Databricks-Azure-SP-Management-Token:$azureApiToken"
 adbResourceId="X-Databricks-Azure-Workspace-Resource-Id:$adbId"
