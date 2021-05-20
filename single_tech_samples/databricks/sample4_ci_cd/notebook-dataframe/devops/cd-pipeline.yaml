@@ -24,6 +24,7 @@ stages:
       databricksDomain: '$(databricksDomain)'
       databricksToken: '$(databricksToken)'
       databricksNotebookPath: '$(databricksNotebookPath)'
+      databricksLocalNotebookPath: $(Pipeline.Workspace)/ci/notebooks
   - template: ../../devops/templates/jobs/integration-tests-job.yml
     parameters:
       environmentName: 'TEST'
