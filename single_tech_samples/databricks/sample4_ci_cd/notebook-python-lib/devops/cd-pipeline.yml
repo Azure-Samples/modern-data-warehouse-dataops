@@ -16,13 +16,6 @@ stages:
   - group: mdwdo-dbx-npl-test
 
   jobs:
-  - template: ../../devops/templates/jobs/deploy-libs-job.yml
-    parameters:
-      environmentName: 'TEST'
-      databricksDomain: '$(databricksDomain)'
-      databricksToken: '$(databricksToken)'
-      databricksNotebookPath: '$(databricksNotebookPath)'
-  
   - template: ../../devops/templates/jobs/deploy-notebooks-job.yml
     parameters:
       environmentName: 'TEST'
@@ -30,9 +23,16 @@ stages:
       databricksToken: '$(databricksToken)'
       databricksNotebookPath: '$(databricksNotebookPath)'
 
+  - template: ../../devops/templates/jobs/deploy-libs-job.yml
+    parameters:
+      environmentName: 'TEST'
+      databricksDomain: '$(databricksDomain)'
+      databricksToken: '$(databricksToken)'
+      databricksNotebookPath: '$(databricksNotebookPath)'
+  
   - job:
     displayName: 'Run integration tests'
-    dependsOn: deploy_notebooks
+    dependsOn: deploy_libs
     pool:
       vmImage: 'ubuntu-latest'
     variables:
