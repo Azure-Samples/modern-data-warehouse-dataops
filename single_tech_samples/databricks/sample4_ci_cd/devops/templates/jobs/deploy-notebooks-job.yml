@@ -1,0 +1,43 @@
+parameters:
+- name: environmentName
+  type: string
+- name: databricksDomain
+  type: string
+- name: databricksToken
+  type: string
+- name: databricksNotebookPath
+  type: string
+
+jobs:
+- deployment: deploy_notebooks
+  environment: ${{ parameters.environmentName }}
+  displayName: 'Deploy to Databricks'
+  pool:
+    vmImage: 'ubuntu-latest'
+  variables:
+    pythonVersion: 3.8
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - task: UsePythonVersion@0
+          inputs:
+            versionSpec: '$(pythonVersion)'
+            addToPath: true
+            architecture: 'x64'
+          displayName: 'Use Python Version: $(pythonVersion)'
+
+        - script: |
+            python -m pip install --upgrade pip
+            pip install databricks-cli
+          displayName: 'Setup Agent'
+
+        - script: |
+            echo "Uploading notebooks at ${NOTEBOOKS_PATH} to workspace (${DATABRICKS_NOTEBOOK_PATH})..."
+            databricks workspace import_dir --overwrite "${NOTEBOOKS_PATH}" "${DATABRICKS_NOTEBOOK_PATH}"
+          env:
+            DATABRICKS_HOST: ${{ parameters.databricksDomain }}
+            DATABRICKS_TOKEN: ${{ parameters.databricksToken }}
+            NOTEBOOKS_PATH: $(Pipeline.Workspace)/ci/notebooks
+            DATABRICKS_NOTEBOOK_PATH: ${{ parameters.databricksNotebookPath }}
+          displayName: 'Deploy notebooks'
