@@ -7,8 +7,13 @@ parameters:
   type: string
 - name: databricksNotebookPath
   type: string
+- name: databricksTestsNotebookPath  # ei. $(Pipeline.Workspace)/my_ci_pipeline/notebooks/tests
+  type: string
 - name: databricksClusterId
   type: string
+- name: devopsScriptsBasePath # ei. $(Pipeline.Workspace)/my_ci_pipeline/devops_scripts
+  type: string
+
 
 jobs:
 - deployment: run_integration_tests
@@ -39,11 +44,11 @@ jobs:
 
         - task: PythonScript@0
           inputs:
-            scriptPath: $(Pipeline.Workspace)/ci/devops_scripts/executenotebook.py
-            arguments: --shard ${{ parameters.databricksDomain }} --token ${{ parameters.databricksToken }} --clusterid ${{ parameters.databricksClusterId }} --localpath $(Pipeline.Workspace)/ci/notebooks --workspacepath ${{ parameters.databricksNotebookPath }} --outfilepath $(Pipeline.Workspace)/logs/json
+            scriptPath: ${{ parameters.devopsScriptsBasePath }}/executenotebook.py
+            arguments: --shard ${{ parameters.databricksDomain }} --token ${{ parameters.databricksToken }} --clusterid ${{ parameters.databricksClusterId }} --localpath ${{ parameters.databricksTestsNotebookPath }} --workspacepath ${{ parameters.databricksNotebookPath }} --outfilepath $(Pipeline.Workspace)/logs/json
           displayName: 'Run integration tests'
 
-        - script: TEST_OUTPUT_PATH=$(Pipeline.Workspace)/logs/json/ python -m pytest --junit-xml=$(Pipeline.Workspace)/logs/xml/TEST-notebookout.xml $(Pipeline.Workspace)/ci/devops_scripts/evaluatenotebookruns.py || true
+        - script: TEST_OUTPUT_PATH=$(Pipeline.Workspace)/logs/json/ python -m pytest --junit-xml=$(Pipeline.Workspace)/logs/xml/TEST-notebookout.xml ${{ parameters.devopsScriptsBasePath }}/evaluatenotebookruns.py || true
           displayName: 'Evaluate test results'
 
         - task: PublishTestResults@2

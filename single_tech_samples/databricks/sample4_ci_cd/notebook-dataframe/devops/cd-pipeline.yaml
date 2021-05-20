@@ -31,4 +31,6 @@ stages:
       databricksDomain: '$(databricksDomain)'
       databricksToken: '$(databricksToken)'
       databricksNotebookPath: '$(databricksNotebookPath)'
+      databricksTestsNotebookPath: $(Pipeline.Workspace)/ci/notebooks/tests
       databricksClusterId: '$(databricksClusterId)'
+      devopsScriptsBasePath: $(Pipeline.Workspace)/ci/devops_scripts
