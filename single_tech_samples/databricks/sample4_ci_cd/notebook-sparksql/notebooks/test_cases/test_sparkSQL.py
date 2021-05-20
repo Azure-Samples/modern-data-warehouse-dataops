@@ -7,8 +7,10 @@ class MyTestFixture(NutterFixture):
    total = 0
    first_year = 0
     
-   # Arrange
+   # Arrange All
    def before_all(self):
+      sqlContext.sql('CREATE TABLE US_POPULATION (date STRING, value BIGINT)')
+      sqlContext.sql('INSERT INTO US_POPULATION VALUES ("1960", 100)')
       dbutils.notebook.run('../sparkSQL_sample', 600)  
 
    # ************** Test Case 1 ********************
@@ -28,7 +30,7 @@ class MyTestFixture(NutterFixture):
    # ************** Test Case 2 ********************
    # Act
    def run_First_Year_Returns_One_Record(self):      
-      temp_result = sqlContext.sql('SELECT COUNT(*) FROM FIRST_YEAR WHERE YEAR = 1960')
+      temp_result = sqlContext.sql('SELECT COUNT(*) AS TOTAL FROM FIRST_YEAR_POPULATION WHERE YEAR = "1960"')
       MyTestFixture.first_year = temp_result.first()[0]
 
    #Assert
@@ -37,8 +39,12 @@ class MyTestFixture(NutterFixture):
 
    #Clean
    def after_First_Year_Returns_One_Record(self):
-       sqlContext.sql('DROP TABLE IF EXISTS FIRST_YEARS_PUPULATION;')
-
+       sqlContext.sql('DROP TABLE IF EXISTS FIRST_YEAR_POPULATION;')
+        
+   # ************** Clean All ********************
+   def after_all(self):
+       sqlContext.sql('DROP TABLE IF EXISTS US_POPULATION;')
+  
 print("Starting Nutter tests")
 result = MyTestFixture().execute_tests()
 print("Test execution complete")
