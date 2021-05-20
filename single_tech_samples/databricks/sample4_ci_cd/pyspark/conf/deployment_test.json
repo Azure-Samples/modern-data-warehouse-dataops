@@ -1,0 +1,19 @@
+{
+    "default": {
+        "jobs": [
+            {
+                "name": "mlflow-sample-job-it",
+                "existing_cluster_id": "CLUSTERID", 
+                "libraries": [],
+                "max_retries": 0,
+                "spark_python_task": {
+                    "python_file": "tests/integration/sample_job_test.py"
+                },
+                "parameters": [
+                    "--conf-file",
+                    "conf/test/sample.json"
+                ]
+            }
+        ]
+    }
+}

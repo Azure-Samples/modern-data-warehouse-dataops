@@ -1,0 +1,136 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+- single-tech/databricks-ops
+- single-tech/databricks-ops-thurstonchen
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+- stage: UT
+  displayName: Unit Test
+  jobs:
+  - job: NotebooksUT
+    pool:
+      vmImage: ubuntu-latest
+    displayName: Notebooks Unit Test
+
+    steps:
+    - script: |
+        wget -q https://downloads.apache.org/spark/spark-3.1.1/spark-3.1.1-bin-hadoop2.7.tgz
+        tar -xf ./spark-3.1.1-bin-hadoop2.7.tgz
+        export SPARK_HOME=$(Build.Repository.LocalPath)/spark-3.1.1-bin-hadoop2.7
+        
+        mkdir -p Hadoop/bin
+        wget -P ./Hadoop/bin -q https://github.com/4ttty/winutils/raw/master/hadoop-2.7.1/bin/winutils.exe 
+        export HADOOP_HOME=$(Build.Repository.LocalPath)/Hadoop
+        
+        export PYTHONPATH=$PYTHONPATH:$(Build.Repository.LocalPath)/mlflow-sample
+        export PYSPARK_PYTHON=python
+        python -m pip install --upgrade pip
+        pip install pytest
+        pip install pytest-cov
+        pip install pyspark
+        python -m pytest tests --doctest-modules --ignore tests/integration/ --junitxml=junit/test-results.xml --cov=. --cov-report=xml --cov-report=html
+      displayName: Run UT with pytest
+
+    - task: PublishTestResults@2
+      displayName: Publish UT results
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '**/test-*.xml'
+        failTaskOnFailedTests: true
+        testRunTitle: 'Publish UT results (on Python $(python.version))'
+
+    - task: PublishCodeCoverageResults@1
+      displayName: Publish code coverage results
+      inputs:
+        codeCoverageTool: 'Cobertura'
+        summaryFileLocation: '**/coverage.xml'
+        reportDirectory: '**/htmlcov'
+
+- stage: PublishArtifact
+  condition: succeeded('UT')
+  displayName: Pack & publish Notebooks Artifact
+  jobs:
+  - job: PackagingNotebooks
+    displayName: Pack & publish artifacts
+    steps:
+    - task: Bash@3
+      displayName: Packing notebooks to whl
+      inputs:
+        targetType: 'inline'
+        script: |
+          python -m pip install wheel setuptools
+          python setup.py bdist_wheel --universal
+
+    - task: PublishPipelineArtifact@1
+      displayName: Publish artifacts
+      inputs:
+        targetPath: '$(Pipeline.Workspace)'
+        artifact: 'notebooksArtifactTest'
+        publishLocation: 'pipeline'
+
+- stage: IT
+  condition: succeeded('PublishArtifact')
+  dependsOn: PublishArtifact
+  displayName: Integration Test
+  variables:
+  - group: mdwdo-dbx-pyspark-test
+  jobs:
+  - job: ITJob
+    displayName: Integration Test with dbx CLI
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - script: |
+          # Replace actual cluster ID to target deployment json file
+          sed -i "s/CLUSTERID/$DATABRICKS_CLUSTERID/g" ../conf/deployment_test.json
+          
+          pip install dbx
+          # Configure dbx CLI, then deploy all jobs declared in deployment json
+          dbx configure
+          dbx deploy --deployment-file=../conf/deployment_test.json
+          # Extract jobs then execute them one by one
+          jobs=( $(cat ../conf/deployment_test.json | jq '.default.jobs' | jq -r '.[]|.name') )
+          for job in "${jobs[@]}"; do
+              dbx launch --job=$job
+          done
+      displayName: Run integrtion test with dbx CLI
+      env:
+        DATABRICKS_TOKEN: $(DATABRICKSTOKEN)
+        DATABRICKS_HOST: $(DATABRICKSHOST)
+        DATABRICKS_CLUSTERID: $(DATABRICKSCLUSTERID)
+        
+- stage: DeployMLflowExperiment
+  condition: succeeded('IT')
+  dependsOn: IT
+  displayName: Deploy MLflow Experiment
+  variables:
+  - group: mdwdo-dbx-pyspark-test
+  jobs:
+  - job: DeployMLflowExperimentJob
+    displayName: Deploy MLflow Experiment
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - script: |
+          # Replace actual cluster ID to target deployment json file
+          sed -i "s/CLUSTERID/$DATABRICKS_CLUSTERID/g" ../conf/deployment.json
+          
+          pip install dbx
+          # Configure dbx CLI, then deploy all jobs declared in deployment json
+          dbx configure
+          dbx deploy --deployment-file=../conf/deployment.json
+      displayName: Deploy MLflow Experiment
+      env:
+        DATABRICKS_TOKEN: $(DATABRICKSTOKEN)
+        DATABRICKS_HOST: $(DATABRICKSHOST)
+        DATABRICKS_CLUSTERID: $(DATABRICKSCLUSTERID)
+
+
