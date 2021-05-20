@@ -1,34 +1,29 @@
-# Starter Nutter pipeline
-
-trigger:
-- none
+trigger: none
 
 pool:
-  vmImage: 'ubuntu-latest'
+  name: Hosted Ubuntu 1604
 
 variables:
-- group: notebook-python-lib-vg
+  basePath: 'single_tech_samples/databricks/sample4_ci_cd'
 
 steps:
-- task: UsePythonVersion@0
+- task: CopyFiles@2
   inputs:
-    versionSpec: '3.7'
+    SourceFolder: '$(basePath)/multi-notebooks/notebooks'
+    contents: '**'
+    targetFolder: $(Build.ArtifactStagingDirectory)/notebooks
+  displayName: 'Copy notebooks folder'
 
-- script: |
-    pip install nutter
-  displayName: 'Install Nutter'
-
-- script: |
-    nutter run /Users/ganwa@microsoft.com/test_mynotebook $CLUSTER --recursive --junit_report
-  displayName: 'Execute Nutter'
-  env:
-      CLUSTER: $(clusterID)
-      DATABRICKS_HOST: $(databricks_host)
-      DATABRICKS_TOKEN: $(databricks_token)
-
-- task: PublishTestResults@2
+- task: CopyFiles@2
   inputs:
-    testResultsFormat: 'JUnit'
-    testResultsFiles: '**/test-*.xml'
-    testRunTitle: 'Publish Nutter results'
-  condition: succeededOrFailed()
+    SourceFolder: '$(basePath)/multi-notebooks/tests/integration'
+    contents: '**'
+    targetFolder: $(Build.ArtifactStagingDirectory)/tests/integration
+    displayName: 'Copy tests folder'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: $(Build.ArtifactStagingDirectory)
+    cleanTargetFolder: true # Optional
+    artifactName: notebooks
+  displayName: 'Publish notebooks'

@@ -1,0 +1,31 @@
+trigger: none
+
+pr: none
+
+resources:
+  pipelines:
+  - pipeline: ci
+    source: mdw-dbx-nd-ci-pipeline
+    # trigger: 
+    #   branches:
+    #   - master
+
+stages:
+- stage: deploy_to_test
+  displayName: 'Deploy notebooks'
+  variables:
+  - group: mdwdo-dbx-nd-test
+  jobs:
+  - template: ../../devops/templates/jobs/deploy-notebooks-job.yml
+    parameters:
+      environmentName: 'TEST'
+      databricksDomain: '$(databricksDomain)'
+      databricksToken: '$(databricksToken)'
+      databricksNotebookPath: '$(databricksNotebookPath)'
+  - template: ../../devops/templates/jobs/integration-tests-job.yml
+    parameters:
+      environmentName: 'TEST'
+      databricksDomain: '$(databricksDomain)'
+      databricksToken: '$(databricksToken)'
+      databricksNotebookPath: '$(databricksNotebookPath)'
+      databricksClusterId: '$(databricksClusterId)'
