@@ -30,7 +30,7 @@ stages:
         wget -P ./Hadoop/bin -q https://github.com/4ttty/winutils/raw/master/hadoop-2.7.1/bin/winutils.exe 
         export HADOOP_HOME=$(Build.Repository.LocalPath)/Hadoop
         
-        export PYTHONPATH=$PYTHONPATH:$(Build.Repository.LocalPath)/mlflow-sample
+        export PYTHONPATH=$PYTHONPATH:$(Build.Repository.LocalPath)/single_tech_samples/databricks/sample4_ci_cd/pyspark
         export PYSPARK_PYTHON=python
         python -m pip install --upgrade pip
         pip install pytest
