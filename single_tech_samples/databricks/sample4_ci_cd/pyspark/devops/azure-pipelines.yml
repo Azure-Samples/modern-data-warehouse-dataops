@@ -36,7 +36,7 @@ stages:
         pip install pytest
         pip install pytest-cov
         pip install pyspark
-        python -m pytest tests --doctest-modules --ignore tests/integration/ --junitxml=junit/test-results.xml --cov=. --cov-report=xml --cov-report=html
+        python -m pytest single_tech_samples/databricks/sample4_ci_cd/pyspark/tests --doctest-modules --ignore single_tech_samples/databricks/sample4_ci_cd/pyspark/tests/integration/ --junitxml=single_tech_samples/databricks/sample4_ci_cd/pyspark/junit/test-results.xml --cov=. --cov-report=xml --cov-report=html
       displayName: Run UT with pytest
 
     - task: PublishTestResults@2
@@ -67,13 +67,13 @@ stages:
         targetType: 'inline'
         script: |
           python -m pip install wheel setuptools
-          python setup.py bdist_wheel --universal
+          python single_tech_samples/databricks/sample4_ci_cd/pyspark/setup.py bdist_wheel --universal
 
     - task: PublishPipelineArtifact@1
       displayName: Publish artifacts
       inputs:
         targetPath: '$(Pipeline.Workspace)'
-        artifact: 'notebooksArtifactTest'
+        artifact: 'mlflowSampleArtifactTest'
         publishLocation: 'pipeline'
 
 - stage: IT
