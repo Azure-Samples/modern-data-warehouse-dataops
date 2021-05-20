@@ -78,7 +78,7 @@ The following are the prerequisites for deploying this template :
 
 ### 2.2. Setup and deployment
 
-[Please check this document to the provision of databricks and other services](sample4_ci_cd/devops/README.md)
+[Please check this document to the provision of databricks and other services](devops/README.md)
 
 ### 2.3. Sample project Structure
 
