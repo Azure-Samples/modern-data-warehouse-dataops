@@ -60,6 +60,7 @@ fi
 
 # Check the resource group and region
 RG_EXISTS=$(az group exists --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output json)
+RG_EXISTS=${RG_EXISTS//$'\r'/}
 if [[ $RG_EXISTS == "false" ]]; then
     echo "Creating resource group $AZURE_RESOURCE_GROUP_NAME in $AZURE_RESOURCE_GROUP_LOCATION."
     az group create --location "$AZURE_RESOURCE_GROUP_LOCATION" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
