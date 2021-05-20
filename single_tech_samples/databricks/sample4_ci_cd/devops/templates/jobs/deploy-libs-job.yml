@@ -34,16 +34,16 @@ jobs:
             pip install databricks-cli
           displayName: 'Setup Agent'
         - script: |
-            echo "Uploading libs at ${NOTEBOOKS_PATH} to workspace (${DATABRICKS_NOTEBOOK_PATH})..."
+            echo "Uploading libs at ${LIB_PATH} to workspace (${DATABRICKS_LIB_PATH})..."
             databricks fs cp "${LIB_PATH}" "dbfs:/FileStore/jars" --recursive --overwrite
           env:
             DATABRICKS_HOST: ${{ parameters.databricksDomain }}
             DATABRICKS_TOKEN: ${{ parameters.databricksToken }}
             LIB_PATH: $(Pipeline.Workspace)/ci/notebooks/lib
             DATABRICKS_LIB_PATH: ${{ parameters.databricksNotebookPath }}
-          displayName: 'Deploy libs'
+          displayName: 'Upload libs'
         - script: |
-            echo "Installing libs at ${NOTEBOOKS_PATH} to workspace (${DATABRICKS_NOTEBOOK_PATH})..."
+            echo "Installing libs (${DATABRICKS_LIB_PATH}) on (${CLUSTER_ID})..."
             for file in `databricks fs ls dbfs:/FileStore/jars --absolute`
             do
                 extension="${file##*.}"
