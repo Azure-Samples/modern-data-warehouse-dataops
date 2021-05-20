@@ -2,7 +2,7 @@
 
 This sample demonstrates how to automate testing of Databricks notebooks which have inline `assert` statements within the notebook itself. The tests are run through a Build and Release pipeline. The test results are also published as part of the pipeline.
 
-The sample Databricks notebook under test can be found [here](./notebooks/sample_spark.py). Notice a single assert statement at the end.
+The sample Databricks notebook under test can be found [here](./notebooks/main_notebook.py). Notice a single assert statement at the end.
 
 For more information, see [here](https://docs.microsoft.com/en-us/azure/databricks/dev-tools/ci-cd/ci-cd-azure-devops#run-integration-tests-from-an-azure-databricks-notebook).
 
