@@ -31,3 +31,15 @@ jobs:
                   bash deploy.sh
                 arguments: ${{ parameters.azureSubscriptionID }}
                 workingDirectory: $(System.DefaultWorkingDirectory)/single_tech_samples/databricks/sample1_basic_azure_databricks_environment
+            
+            - task: AzureCLI@2
+              displayName: Deploy Azure Databricks Clusters
+              inputs:
+                azureSubscription: ${{ parameters.serviceConnection }}
+                scriptType: bash
+                scriptLocation: inlineScript
+                inlineScript: |
+                  export AZURE_SUBSCRIPTION_ID=$1
+                  bash deploy-default-and-hc-clusters.sh
+                arguments: ${{ parameters.azureSubscriptionID }}
+                workingDirectory: $(System.DefaultWorkingDirectory)/single_tech_samples/databricks/sample4_ci_cd/devops/scripts
