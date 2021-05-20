@@ -95,8 +95,8 @@ stages:
     steps:
     - task: AzureKeyVault@1
       inputs:
-        azureSubscription: 'mdwdo-dbx-serviceconnection-dev'
-        KeyVaultName: 'onecseweekdevakv01'
+        azureSubscription: $(AZURE_SERVICE_CONNECTION)
+        KeyVaultName: ${{format('{0}akv01', '$(DEPLOYMENT_PREFIX)')}}
         SecretsFilter: '*'
         RunAsPreJob: true
 
@@ -137,8 +137,8 @@ stages:
     steps:
     - task: AzureKeyVault@1
       inputs:
-        azureSubscription: 'mdwdo-dbx-serviceconnection-dev'
-        KeyVaultName: 'onecseweekdevakv01'
+        azureSubscription: $(AZURE_SERVICE_CONNECTION)
+        KeyVaultName: ${{format('{0}akv01', '$(DEPLOYMENT_PREFIX)')}}
         SecretsFilter: '*'
         RunAsPreJob: true
 
