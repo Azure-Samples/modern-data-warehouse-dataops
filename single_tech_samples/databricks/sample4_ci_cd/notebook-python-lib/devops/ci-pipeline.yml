@@ -50,10 +50,10 @@ stages:
 
       - script: |
           echo "y
-          $(DATABRICKS-HOST)
-          $(DATABRICKS-PAT)
-          $(DATABRICKS-CLUSTER-ID)
-          $(DATABRICKS-WORKSPACE-ORG-ID)
+          $(databricksDomain)
+          $(databricksPat)
+          $(databricksClusterId)
+          $(databricksWorkspaceOrgId)
           15001" | databricks-connect configure
         displayName: "Configure DBConnect"
 
