@@ -7,49 +7,100 @@ variables:
   basePath: 'single_tech_samples/databricks/sample4_ci_cd'
   pythonVersion: 3.8
 
-steps:
-- task: CopyFiles@2
-  inputs:
-    SourceFolder: '$(basePath)/notebook-python-lib/notebooks'
-    contents: '**'
-    targetFolder: $(Build.ArtifactStagingDirectory)/notebooks
-  displayName: 'Copy notebooks folder'
+stages:
+- stage: UT
+  displayName: Python Unit Tests
+  jobs:
+    - job: UnitTest
+      displayName: Run Unit tests
+      pool:
+        vmImage: ubuntu-latest
+      steps:
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '3.8'
+          architecture: 'x64'
 
-- task: CopyFiles@2
-  inputs:
-    SourceFolder: '$(basePath)/notebook-python-lib/tests/integration'
-    contents: '**'
-    targetFolder: $(Build.ArtifactStagingDirectory)/tests/integration
-    displayName: 'Copy tests folder'
+      - task: CopyFiles@2
+        inputs:
+          SourceFolder: '$(basePath)/notebook-python-lib/notebooks'
+          contents: '**'
+          targetFolder: $(Build.ArtifactStagingDirectory)/notebooks
+        displayName: 'Copy notebooks folder'
 
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '$(pythonVersion)'
-    addToPath: true
-    architecture: 'x64'
-  displayName: 'Use Python Version: $(pythonVersion)'
+      - task: CopyFiles@2
+        inputs:
+          SourceFolder: '$(basePath)/notebook-python-lib/tests/integration'
+          contents: '**'
+          targetFolder: $(Build.ArtifactStagingDirectory)/tests/integration
+          displayName: 'Copy tests folder'
 
-- script: |
-    python -m pip install --upgrade pip
-    pip install wheel
-  displayName: 'Setup Agent'
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '$(pythonVersion)'
+          addToPath: true
+          architecture: 'x64'
+        displayName: 'Use Python Version: $(pythonVersion)'
 
-- script: |
-    echo "Packaging the lib..."
-    cd $(basePath)/notebook-python-lib
-    python setup.py bdist_wheel
-  displayName: 'Package lib'
+      - script: |
+          cd notebook-python-lib
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+        displayName: 'Install libraries and dependencies'
 
-- task: CopyFiles@2
-  inputs:
-    SourceFolder: '$(basePath)/notebook-python-lib/dist'
-    contents: '**'
-    targetFolder: $(Build.ArtifactStagingDirectory)/lib
-    displayName: 'Copy lib folder'
+      - script: |
+          echo "y
+          $(DATABRICKS-HOST)
+          $(DATABRICKS-PAT)
+          $(DATABRICKS-CLUSTER-ID)
+          $(DATABRICKS-WORKSPACE-ORG-ID)
+          15001" | databricks-connect configure
+        displayName: "Configure DBConnect"
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    pathToPublish: $(Build.ArtifactStagingDirectory)
-    cleanTargetFolder: true # Optional
-    artifactName: notebooks
-  displayName: 'Publish notebooks'
+      - script: |
+          pytest -v notebook-python-lib/test --doctest-modules --junitxml=unit-testresults.xml --cov=notebook-python-lib/ --cov-append --cov-report=xml:coverage.xml --cov-report=html:htmlcov
+        displayName: 'Run unit tests for the python library'
+
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: '**/*-testresults.xml'
+          testRunTitle: '$(Agent.OS) - $(Build.BuildNumber)[$(Agent.JobName)] - Python $(python.version) - Unit Test results'
+        condition: succeededOrFailed()
+        displayName: 'Publish unit test and linting results'
+
+      - task: PublishCodeCoverageResults@1
+        inputs:
+          codeCoverageTool: Cobertura
+          summaryFileLocation: 'coverage.xml'
+          reportDirectory: 'htmlcov'
+        displayName: 'Publish Coverage Results'
+
+- stage: PublishArtifact
+  condition: succeeded('UT')
+  displayName: Package Python modules
+  jobs:
+  - job: PkgNotebooks
+    displayName: Package Notebook into artifacts
+    steps:
+    - task: Bash@3
+      displayName: Build a wheel pkg
+      inputs:
+        targetType: 'inline'
+        script: |
+          cd notebook-python-lib
+          python -m pip install wheel setuptools
+          python setup.py bdist_wheel --universal
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: '$(basePath)/notebook-python-lib/dist'
+        contents: '**'
+        targetFolder: $(Build.ArtifactStagingDirectory)/lib
+        displayName: 'Copy lib folder'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathToPublish: $(Build.ArtifactStagingDirectory)
+        cleanTargetFolder: true # Optional
+        artifactName: 'mdw-dbx-nbpylib-artifact'
+      displayName: 'Publish notebooks'

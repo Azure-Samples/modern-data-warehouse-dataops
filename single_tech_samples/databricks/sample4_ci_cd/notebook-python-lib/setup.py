@@ -1,6 +1,10 @@
-from setuptools import find_packages, setup
-setup(
-    name='common',
-    packages=['common'],
-    version='0.1.0'
-)
+from setuptools import setup, find_packages
+
+data = {
+    'name': 'mdw-dbx-nbpylib',
+    'version': '0.0.1',
+    'packages': find_packages()
+}
+
+if __name__ == '__main__':
+    setup(**data)
