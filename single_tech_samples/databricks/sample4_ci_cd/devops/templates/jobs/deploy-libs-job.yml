@@ -44,7 +44,17 @@ jobs:
           displayName: 'Deploy libs'
         - script: |
             echo "Installing libs at ${NOTEBOOKS_PATH} to workspace (${DATABRICKS_NOTEBOOK_PATH})..."
-            databricks libraries install --cluster-id $CLUSTER_ID --whl "dbfs:/FileStore/jars/common-0.1.0-py3-none-any.whl"   
+            for file in "databricks fs ls dbfs:/FileStore/jars --absolute"
+            do
+                if test -f $file
+                then
+                  extension="${file##*.}"
+                  if [ $extension = "whl" ];
+                  then
+                      databricks libraries install --cluster-id $CLUSTER_ID --whl $file
+                  fi
+                fi
+            done
           condition: succeeded()
           env:
             DATABRICKS_HOST: ${{ parameters.databricksDomain }}
