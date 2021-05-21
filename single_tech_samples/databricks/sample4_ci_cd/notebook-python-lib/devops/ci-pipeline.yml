@@ -10,6 +10,9 @@ variables:
 stages:
 - stage: UT
   displayName: Python Unit Tests
+  variables:
+  - group: mdwdo-dbx-npl-test
+
   jobs:
     - job: UnitTest
       displayName: Run Unit tests
@@ -37,7 +40,7 @@ stages:
       - script: |
           echo "y
           $(databricksDomain)
-          $(databricksPat)
+          $(databricksToken)
           $(databricksClusterId)
           $(databricksWorkspaceOrgId)
           15001" | databricks-connect configure
