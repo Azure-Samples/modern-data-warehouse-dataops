@@ -10,7 +10,24 @@ Note that we use dbx CLI to deploy MLflow experiments/jobs,  for more informatio
 
 - [Azure DevOps account](https://azure.microsoft.com/en-au/services/devops/)
 - [Github account](https://github.com/)
-- [Azure Databricks workspace](https://azure.microsoft.com/en-au/services/databricks/) with an [existing cluster](https://docs.microsoft.com/en-us/azure/databricks/clusters/create) running.
+- Provision Key valuts instance, Databricks workspace as well as Spark cluster via [this provisioning pipeline](https://github.com/Azure-Samples/modern-data-warehouse-dataops/blob/single-tech/databricks-ops/single_tech_samples/databricks/sample4_ci_cd/devops/iac-create-environment-pipeline-arm.yml)
+    - In Azure DevOps, [create three Azure Resource Manager service connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/connect-to-azure?view=azure-devops) with the naming convention `mdwdo-dbx-serviceconnection-<environment>` (where `<environment>` stands for `dev`, `stg`, `prod`).
+    - In Azure DevOps, define three [Variable Groups](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml) with the naming convention `mdwdo-dbx-release-<environment>` (where `<environment>` stands for `dev`, `stg`, `prod`) with the following variables:
+        - **AZURE_RESOURCE_GROUP_LOCATION** - Azure region where the resources will be deployed. (e.g. australiaeast, eastus, etc.).
+        - **AZURE_RESOURCE_GROUP_NAME** - Name of the containing resource group.
+        - **AZURE_SUBSCRIPTION_ID** - Subscription ID of the Azure subscription where the resources will be deployed.
+        - **AZURE_SERVICE_CONNECTION** - Name of the Azure Resource Manager service connection to the Azure account where resources will be deployed.
+        - **DEPLOYMENT_PREFIX** - Prefix for the resource names which will be created as a part of this deployment.
+        > Note:
+            - DEPLOYMENT_PREFIX can contain numbers and lowercase letters only. This is to keep in line with the naming standards allowed for Azure Storage Account.
+            - The variable names in variable groups have been constructed in a manner that allows them to be injected into pipeline tasks as [environment variables](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables?view=azure-devops&tabs=yaml%2Cbatch#environment-variables). For example, on UNIX systems (macOS and Linux), environment variables have the format `$VARIABLE_NAME`.
+    - The following secrets are stored in Azure Key Vault as part of provisioning setup:
+        - DatabricksHost
+        - DatabricksToken
+        - HighConcurrencyDatabricksClusterID
+        - StandardDatabricksClusterID
+        - StorageAccountKey1
+        - StorageAccountKey2
 
 ### Setup and deployment
 
@@ -18,7 +35,7 @@ Note that we use dbx CLI to deploy MLflow experiments/jobs,  for more informatio
 1. In Azure DevOps, [define a Variable Group](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml) called `mdwdo-dbx-pyspark-test` with the following variables:
     - **databricksHost** - The databricks host in this format: `https://adb-123456789xxxx.x.azuredatabricks.net`
     - **databricksToken** - Databricks PAT token.
-    - **databricksClusterId** - Databricks cluster id that will be used to run the notebooks.
+    - **databricksClusterId** - Databricks cluster id that will be used for dbx CLI to run deployed jobs.
 1. In Azure DevOps, [create Azure Pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/create-first-pipeline?view=azure-devops&tabs=java%2Ctfs-2018-2%2Cbrowser) based on below azure-pipeline definitions:
     - `devops/ci-pipeline.yml` - name this `mdw-dbx-pyspark-ci-pipeline`
     - `devops/cd-pipeline.yml` - name this `mdw-dbx-pyspark-cd-pipeline`

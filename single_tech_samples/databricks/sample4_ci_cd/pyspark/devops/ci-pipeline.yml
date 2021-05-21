@@ -15,10 +15,10 @@ stages:
 - stage: UT
   displayName: Unit Test
   jobs:
-  - job: NotebooksUT
+  - job: RunSparkUT
     pool:
       vmImage: ubuntu-latest
-    displayName: Notebooks Unit Test
+    displayName: Run Spark Unit Tests
 
     steps:
     - script: |
