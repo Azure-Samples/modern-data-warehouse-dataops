@@ -49,15 +49,6 @@ stages:
         displayName: 'Install libraries and dependencies'
 
       - script: |
-          echo "y
-          $(databricksDomain)
-          $(databricksPat)
-          $(databricksClusterId)
-          $(databricksWorkspaceOrgId)
-          15001" | databricks-connect configure
-        displayName: "Configure DBConnect"
-
-      - script: |
           pytest -v $(basePath)/notebook-python-lib/tests/unit --doctest-modules --junitxml=unit-testresults.xml --cov=$(basePath)/notebook-python-lib/ --cov-append --cov-report=xml:coverage.xml --cov-report=html:htmlcov
         displayName: 'Run unit tests for the python library'
 
