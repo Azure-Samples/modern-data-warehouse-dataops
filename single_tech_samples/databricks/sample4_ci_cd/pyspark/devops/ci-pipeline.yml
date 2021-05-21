@@ -40,7 +40,7 @@ stages:
         pip install pytest
         pip install pytest-cov
         pip install pyspark
-        python -m pytest $testsPath --doctest-modules --ignore $testsPath/integration/ --junitxml=$projectRootPath/junit/test-results.xml --cov=. --cov-report=xml --cov-report=html
+        python -m pytest $testsPath --doctest-modules --ignore $testsPath/integration/ --junitxml=$projectRootPath/junit/test-results.xml --cov=. --cov-report=xml
       displayName: Run UT with pytest
 
     - task: PublishTestResults@2
@@ -56,7 +56,6 @@ stages:
       inputs:
         codeCoverageTool: 'Cobertura'
         summaryFileLocation: '**/coverage.xml'
-        reportDirectory: '**/htmlcov'
 
 - stage: PublishArtifact
   condition: succeeded('UT')
