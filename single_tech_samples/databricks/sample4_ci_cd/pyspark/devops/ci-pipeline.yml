@@ -62,21 +62,12 @@ stages:
   condition: succeeded('UT')
   displayName: Publish Artifacts
   jobs:
-  - job: PackagingNotebooks
-    displayName: Pack & publish artifacts
+  - job: PublishArtifactJob
+    displayName: Publish artifacts
     steps:
-    - task: Bash@3
-      displayName: Get target path
-      inputs:
-        targetType: 'inline'
-        script: |
-          deploymentJsonPath=$(find ./ -path "*/conf/deployment.json")
-          targetProjectRootPath=$(sed "s|deployment.json|../|g" <<< $deploymentJsonPath)
-          echo "##vso[task.setvariable variable=targetProjectRootPath;isOutput=true]$targetProjectRootPath"
-          
     - task: PublishPipelineArtifact@1
       displayName: Publish artifacts
       inputs:
-        targetPath: '$(targetProjectRootPath)'
+        targetPath: 'single_tech_samples/databricks/sample4_ci_cd/pyspark'
         artifact: 'mlProjectSampleArtifactTest'
         publishLocation: 'pipeline'
