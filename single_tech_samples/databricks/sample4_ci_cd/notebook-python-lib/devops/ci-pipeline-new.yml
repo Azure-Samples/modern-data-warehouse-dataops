@@ -1,0 +1,127 @@
+trigger: none
+
+pool:
+  name: Hosted Ubuntu 1604
+
+variables:
+  basePath: 'single_tech_samples/databricks/sample4_ci_cd'
+  pythonVersion: 3.8
+
+stages:
+- stage: UT
+  displayName: Python Unit Tests
+  jobs:
+    - job: UnitTest
+      displayName: Run Unit tests
+      pool:
+        vmImage: ubuntu-latest
+      steps:
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '3.8'
+          architecture: 'x64'
+
+      - task: CopyFiles@2
+        inputs:
+          SourceFolder: '$(basePath)/notebook-python-lib/notebooks'
+          contents: '**'
+          targetFolder: $(Build.ArtifactStagingDirectory)/notebooks
+        displayName: 'Copy notebooks folder'
+
+      - task: CopyFiles@2
+        inputs:
+          SourceFolder: '$(basePath)/notebook-python-lib/tests/integration'
+          contents: '**'
+          targetFolder: $(Build.ArtifactStagingDirectory)/tests/integration
+          displayName: 'Copy tests folder'
+
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '$(pythonVersion)'
+          addToPath: true
+          architecture: 'x64'
+        displayName: 'Use Python Version: $(pythonVersion)'
+
+      - script: |
+          cd $(basePath)/notebook-python-lib
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+        displayName: 'Install libraries and dependencies'
+
+      - script: |
+          echo "y
+          $(databricksDomain)
+          $(databricksPat)
+          $(databricksClusterId)
+          $(databricksWorkspaceOrgId)
+          15001" | databricks-connect configure
+        displayName: "Configure DBConnect"
+
+      - script: |
+          pytest -v $(basePath)/notebook-python-lib/tests/unit --doctest-modules --junitxml=unit-testresults.xml --cov=$(basePath)/notebook-python-lib/ --cov-append --cov-report=xml:coverage.xml --cov-report=html:htmlcov
+        displayName: 'Run unit tests for the python library'
+
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: '**/*-testresults.xml'
+          testRunTitle: '$(Agent.OS) - $(Build.BuildNumber)[$(Agent.JobName)] - Python $(python.version) - Unit Test results'
+        condition: succeededOrFailed()
+        displayName: 'Publish unit test and linting results'
+
+      - task: PublishCodeCoverageResults@1
+        inputs:
+          codeCoverageTool: Cobertura
+          summaryFileLocation: 'coverage.xml'
+          reportDirectory: 'htmlcov'
+        displayName: 'Publish Coverage Results'
+
+- stage: PublishArtifact
+  condition: succeeded('UT')
+  displayName: Package Python modules
+  jobs:
+  - job: PkgNotebooks
+    displayName: Package Notebook into artifacts
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.8'
+        architecture: 'x64'
+
+    - task: CopyFiles@2
+        inputs:
+          SourceFolder: '$(basePath)/notebook-python-lib/notebooks'
+          contents: '**'
+          targetFolder: $(Build.ArtifactStagingDirectory)/notebooks
+        displayName: 'Copy notebooks folder'
+
+      - task: CopyFiles@2
+        inputs:
+          SourceFolder: '$(basePath)/notebook-python-lib/tests/integration'
+          contents: '**'
+          targetFolder: $(Build.ArtifactStagingDirectory)/tests/integration
+          displayName: 'Copy tests folder'
+
+    - task: Bash@3
+      displayName: Build a wheel pkg
+      inputs:
+        targetType: 'inline'
+        script: |
+          cd $(basePath)/notebook-python-lib
+          python -m pip install --upgrade pip
+          python -m pip install wheel setuptools
+          python setup.py bdist_wheel
+
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: '$(basePath)/notebook-python-lib/dist'
+        contents: '**'
+        targetFolder: $(Build.ArtifactStagingDirectory)/lib
+        displayName: 'Copy lib folder'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathToPublish: $(Build.ArtifactStagingDirectory)
+        cleanTargetFolder: true # Optional
+        artifactName: 'mdw-dbx-nbpylib-artifact'
+      displayName: 'Publish notebooks'
