@@ -68,6 +68,6 @@ stages:
     - task: PublishPipelineArtifact@1
       displayName: Publish artifacts
       inputs:
-        targetPath: 'single_tech_samples/databricks/sample4_ci_cd/pyspark'
+        targetPath: '$(Pipeline.Workspace)'
         artifact: 'mlProjectSampleArtifactTest'
         publishLocation: 'pipeline'
