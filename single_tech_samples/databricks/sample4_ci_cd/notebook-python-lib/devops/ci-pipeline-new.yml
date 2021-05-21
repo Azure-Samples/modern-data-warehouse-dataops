@@ -89,18 +89,18 @@ stages:
         architecture: 'x64'
 
     - task: CopyFiles@2
-        inputs:
-          SourceFolder: '$(basePath)/notebook-python-lib/notebooks'
-          contents: '**'
-          targetFolder: $(Build.ArtifactStagingDirectory)/notebooks
-        displayName: 'Copy notebooks folder'
+      inputs:
+        SourceFolder: '$(basePath)/notebook-python-lib/notebooks'
+        contents: '**'
+        targetFolder: $(Build.ArtifactStagingDirectory)/notebooks
+      displayName: 'Copy notebooks folder'
 
-      - task: CopyFiles@2
-        inputs:
-          SourceFolder: '$(basePath)/notebook-python-lib/tests/integration'
-          contents: '**'
-          targetFolder: $(Build.ArtifactStagingDirectory)/tests/integration
-          displayName: 'Copy tests folder'
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: '$(basePath)/notebook-python-lib/tests/integration'
+        contents: '**'
+        targetFolder: $(Build.ArtifactStagingDirectory)/tests/integration
+        displayName: 'Copy tests folder'
 
     - task: Bash@3
       displayName: Build a wheel pkg
