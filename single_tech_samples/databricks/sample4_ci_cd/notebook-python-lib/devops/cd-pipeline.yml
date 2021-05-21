@@ -22,7 +22,7 @@ stages:
       databricksDomain: '$(databricksDomain)'
       databricksToken: '$(databricksToken)'
       databricksNotebookPath: '$(databricksNotebookPath)'
-      databricksLocalNotebookPath: $(Pipeline.Workspace)/ci/notebooks
+      databricksLocalNotebookPath: $(Pipeline.Workspace)/ci/mdw-dbx-npl-artifacts
   
   - template: ../../devops/templates/jobs/deploy-libs-job.yml
     parameters:
