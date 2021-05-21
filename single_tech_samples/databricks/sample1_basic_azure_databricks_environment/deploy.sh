@@ -60,6 +60,7 @@ fi
 
 # Check the resource group and region
 RG_EXISTS=$(az group exists --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output json)
+RG_EXISTS=${RG_EXISTS//$'\r'/}
 if [[ $RG_EXISTS == "false" ]]; then
     echo "Creating resource group $AZURE_RESOURCE_GROUP_NAME in $AZURE_RESOURCE_GROUP_LOCATION."
     az group create --location "$AZURE_RESOURCE_GROUP_LOCATION" --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output none
@@ -90,7 +91,16 @@ else
 fi
 
 tenantId="$(az account show --query "tenantId" --output tsv)"
-objectId="$(az ad signed-in-user show --query "objectId" --output tsv)"
+
+userType="$(az account show --query "user.type" --output tsv)"
+userType=${userType//$'\r'/}
+if [[ $userType == "servicePrincipal" ]]; then
+    clientId="$(az account show --query "user.name" --output tsv)"
+    clientId=${clientId//$'\r'/}
+    objectId="$(az ad sp show --id "$clientId" --query objectId --output tsv)"
+else
+    objectId="$(az ad signed-in-user show --query "objectId" --output tsv)"
+fi
 
 echo "Validating parameters for Azure Key Vault..."
 if ! az deployment group validate \
@@ -203,8 +213,15 @@ echo "Got azureApiToken=\"${azureApiToken:0:20}...${azureApiToken:(-20)}\""
 keyVaultId=$(echo "$akvArmOutput" | jq -r '.properties.outputs.keyvault_id.value')
 keyVaultUri=$(echo "$akvArmOutput" | jq -r '.properties.outputs.keyvault_uri.value')
 
+az config set extension.use_dynamic_install=yes_without_prompt
+
 adbId=$(az databricks workspace show --resource-group "$AZURE_RESOURCE_GROUP_NAME" --name "$adbWorkspaceName" --query id --output tsv)
 adbWorkspaceUrl=$(az databricks workspace show --resource-group "$AZURE_RESOURCE_GROUP_NAME" --name "$adbWorkspaceName" --query workspaceUrl --output tsv)
+
+echo "Storing Databricks Host and Token in key vault"
+az keyvault secret set -n "DatabricksHost" --vault-name "$keyVaultName" --value "https://$adbWorkspaceUrl" --output none
+az keyvault secret set -n "DatabricksToken" --vault-name "$keyVaultName" --value "$adbGlobalToken" --output none
+echo "Successfully stored secrets DatabricksHost and DatabricksToken"
 
 authHeader="Authorization: Bearer $adbGlobalToken"
 adbSPMgmtToken="X-Databricks-Azure-SP-Management-Token:$azureApiToken"
@@ -231,3 +248,5 @@ printf "KEY VAULT NAME: \t\t %s\n" "$keyVaultName"
 printf "\nSecret names:\n"
 printf "STORAGE ACCOUNT KEY 1: \t\t StorageAccountKey1\n"
 printf "STORAGE ACCOUNT KEY 2: \t\t StorageAccountKey2\n"
+printf "DATABRICKS HOST: \t\t DatabricksHost\n"
+printf "DATABRICKS TOKEN: \t\t DatabricksToken\n"

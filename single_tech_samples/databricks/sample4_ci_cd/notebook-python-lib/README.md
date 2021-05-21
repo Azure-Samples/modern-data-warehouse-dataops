@@ -1,12 +1,15 @@
 # Testing a Databricks Python Notebook with imported custom libraries
 
 ## Overview
+
 This sample demonstrates:
+
 1. how to import custom python libraries/modules into a databricks notebook
 2. how to use unit tests to test the python modules and use [nutter](https://github.com/microsoft/nutter) to perform integration test on the notebook
 3. how to package the python modules & notebook, execute tests and publish the results as part of Build and Release pipelines
 
 ## How to use this sample
+
 ### Prerequisites
 
 - [Azure DevOps account](https://azure.microsoft.com/en-au/services/devops/) for running pipelines
@@ -27,7 +30,9 @@ This sample demonstrates:
 1. Run the `mdw-dbx-npl-ci-pipeline`, first then the `mdw-dbx-npl-cd-pipeline`. Currently, these are not automatically triggered and needs to be triggered manually.
 
 ### Notes
+
 In order for this sample to work from the Databricks Workspace and not from pipeline, follow the below steps:
+
 1. Import only the notebooks and python files in the same structure as in the `notebook-python-lib` folder
 2. The individual python modules can run as is with no additional changes.
 3. In order to execute the unit tests manually from the databricks workspace,
