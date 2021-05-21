@@ -30,7 +30,7 @@ stages:
       databricksDomain: '$(databricksDomain)'
       databricksToken: '$(databricksToken)'
       localLibPath: $(Pipeline.Workspace)/ci/mdw-dbx-npl-artifacts/lib
-      databricksLibPath: '$(databricksNotebookPath)/lib'
+      databricksLibPath: 'dbfs:/FileStore/jars'
       databricksClusterId: '$(databricksClusterId)'
   
   - job:
