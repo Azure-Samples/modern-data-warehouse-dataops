@@ -58,6 +58,6 @@ jobs:
           env:
             DATABRICKS_HOST: ${{ parameters.databricksDomain }}
             DATABRICKS_TOKEN: ${{ parameters.databricksToken }}
-            DATABRICKS_LIB_PATH: ${{ parameters.databricksLibsPath }}
+            DATABRICKS_LIB_PATH: ${{ parameters.databricksLibPath }}
             CLUSTER_ID: ${{ parameters.databricksClusterId }}
           displayName: 'Install libs'
