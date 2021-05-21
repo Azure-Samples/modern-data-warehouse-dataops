@@ -39,7 +39,7 @@ jobs:
           env:
             DATABRICKS_HOST: ${{ parameters.databricksDomain }}
             DATABRICKS_TOKEN: ${{ parameters.databricksToken }}
-            LIB_PATH: $(Pipeline.Workspace)/ci/notebooks/lib
+            LIB_PATH: $(Pipeline.Workspace)/ci/mdw-dbx-npl-artifacts/lib
             DATABRICKS_LIB_PATH: ${{ parameters.databricksNotebookPath }}
           displayName: 'Upload libs'
         - script: |
