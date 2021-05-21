@@ -109,5 +109,5 @@ stages:
       inputs:
         pathToPublish: $(Build.ArtifactStagingDirectory)
         cleanTargetFolder: true # Optional
-        artifactName: 'mdw-dbx-nbpylib-artifact'
+        artifactName: 'mdw-dbx-npl-artifacts'
       displayName: 'Publish notebooks'
