@@ -37,7 +37,7 @@ jobs:
           displayName: 'Setup Agent'
         - script: |
             echo "Uploading libs at ${LOCAL_LIB_PATH} to workspace (${DATABRICKS_LIB_PATH})..."
-            databricks fs cp "${LOCAL_LIB_PATH}" "${DATABRICKS_LIB_PATH}"" --recursive --overwrite
+            databricks fs cp "${LOCAL_LIB_PATH}" "${DATABRICKS_LIB_PATH}" --recursive --overwrite
           env:
             DATABRICKS_HOST: ${{ parameters.databricksDomain }}
             DATABRICKS_TOKEN: ${{ parameters.databricksToken }}
