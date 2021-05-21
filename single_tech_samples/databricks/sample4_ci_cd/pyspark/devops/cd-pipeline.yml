@@ -14,8 +14,6 @@ resources:
 
 stages:
 - stage: IT
-  condition: succeeded('PublishArtifact')
-  dependsOn: PublishArtifact
   displayName: Integration Test
   variables:
   - group: mdwdo-dbx-pyspark-test
