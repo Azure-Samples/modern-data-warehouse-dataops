@@ -24,6 +24,7 @@ This sample demonstrates:
     1. **databricksToken** - Databricks PAT token.
     1. **databricksNotebookPath** - Where in the databricks workspace the notebook will be uploaded as part of the Release pipeline. ei. `/Shared/notebooks`
     1. **databricksClusterId** - Databricks cluster id that will be used to run the notebooks.
+    1. **databricksPortNum** - Port Number where databricks-connect tool connects to the cluster. Eg value is 15001
 1. In Azure DevOps, [create two Azure Pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/create-first-pipeline?view=azure-devops&tabs=java%2Ctfs-2018-2%2Cbrowser) based on the following azure-pipeline definitions:
     1. `devops/cd-pipeline.yaml` - name this `mdw-dbx-npl-ci-pipeline`
     1. `devops/ci-pipeline.yaml` - name this `mdw-dbx-npl-cd-pipeline`
