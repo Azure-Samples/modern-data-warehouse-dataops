@@ -5,7 +5,9 @@ parameters:
   type: string
 - name: databricksToken
   type: string
-- name: databricksNotebookPath
+- name: localLibPath
+  type: string
+- name: databricksLibPath
   type: string
 - name: databricksClusterId
   type: string
@@ -34,17 +36,17 @@ jobs:
             pip install databricks-cli
           displayName: 'Setup Agent'
         - script: |
-            echo "Uploading libs at ${LIB_PATH} to workspace (${DATABRICKS_LIB_PATH})..."
-            databricks fs cp "${LIB_PATH}" "dbfs:/FileStore/jars" --recursive --overwrite
+            echo "Uploading libs at ${LOCAL_LIB_PATH} to workspace (${DATABRICKS_LIB_PATH})..."
+            databricks fs cp "${LOCAL_LIB_PATH}" "${DATABRICKS_LIB_PATH}" --recursive --overwrite
           env:
             DATABRICKS_HOST: ${{ parameters.databricksDomain }}
             DATABRICKS_TOKEN: ${{ parameters.databricksToken }}
-            LIB_PATH: $(Pipeline.Workspace)/ci/mdw-dbx-npl-artifacts/lib
-            DATABRICKS_LIB_PATH: ${{ parameters.databricksNotebookPath }}
+            LOCAL_LIB_PATH: ${{ parameters.localLibPath }}
+            DATABRICKS_LIB_PATH: ${{ parameters.databricksLibPath }}
           displayName: 'Upload libs'
         - script: |
             echo "Installing libs (${DATABRICKS_LIB_PATH}) on (${CLUSTER_ID})..."
-            for file in `databricks fs ls dbfs:/FileStore/jars --absolute`
+            for file in `databricks fs ls ${DATABRICKS_LIB_PATH} --absolute`
             do
                 extension="${file##*.}"
                 if [ $extension = "whl" ]
@@ -56,7 +58,6 @@ jobs:
           env:
             DATABRICKS_HOST: ${{ parameters.databricksDomain }}
             DATABRICKS_TOKEN: ${{ parameters.databricksToken }}
-            LIB_PATH: $(Pipeline.Workspace)/ci/notebooks/lib
-            DATABRICKS_LIB_PATH: ${{ parameters.databricksNotebookPath }}
+            DATABRICKS_LIB_PATH: ${{ parameters.databricksLibPath }}
             CLUSTER_ID: ${{ parameters.databricksClusterId }}
           displayName: 'Install libs'

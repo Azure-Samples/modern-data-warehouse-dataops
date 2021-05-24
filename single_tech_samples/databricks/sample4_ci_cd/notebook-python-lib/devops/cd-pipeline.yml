@@ -29,7 +29,8 @@ stages:
       environmentName: 'TEST'
       databricksDomain: '$(databricksDomain)'
       databricksToken: '$(databricksToken)'
-      databricksNotebookPath: '$(databricksNotebookPath)'
+      localLibPath: $(Pipeline.Workspace)/ci/mdw-dbx-npl-artifacts/lib
+      databricksLibPath: 'dbfs:$(databricksNotebookPath)/lib'
       databricksClusterId: '$(databricksClusterId)'
   
   - job:
