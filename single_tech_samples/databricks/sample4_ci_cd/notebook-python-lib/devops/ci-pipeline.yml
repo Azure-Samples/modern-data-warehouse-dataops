@@ -43,7 +43,7 @@ stages:
           $(databricksToken)
           $(databricksClusterId)
           $(databricksWorkspaceOrgId)
-          15001" | databricks-connect configure
+          $(databricksPortNum)" | databricks-connect configure
         displayName: "Configure DBConnect"
 
       - script: |

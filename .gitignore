@@ -464,4 +464,4 @@ MigrationBackup/
 .terraform.lock.hcl
 
 # metadata files
-*/.DS_Store
+*/*.DS_Store
