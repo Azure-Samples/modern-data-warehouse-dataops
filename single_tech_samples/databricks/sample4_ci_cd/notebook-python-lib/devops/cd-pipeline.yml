@@ -1,0 +1,68 @@
+trigger: none
+pr: none
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+resources:
+  pipelines:
+  - pipeline: ci
+    source: mdw-dbx-npl-ci-pipeline
+
+stages:
+- stage: deploy_to_test
+  displayName: 'Deploy notebooks'
+  variables:
+  - group: mdwdo-dbx-npl-test
+
+  jobs:
+  - template: ../../devops/templates/jobs/deploy-notebooks-job.yml
+    parameters:
+      environmentName: 'TEST'
+      databricksDomain: '$(databricksDomain)'
+      databricksToken: '$(databricksToken)'
+      databricksNotebookPath: '$(databricksNotebookPath)'
+      databricksLocalNotebookPath: $(Pipeline.Workspace)/ci/mdw-dbx-npl-artifacts
+  
+  - template: ../../devops/templates/jobs/deploy-libs-job.yml
+    parameters:
+      environmentName: 'TEST'
+      databricksDomain: '$(databricksDomain)'
+      databricksToken: '$(databricksToken)'
+      localLibPath: $(Pipeline.Workspace)/ci/mdw-dbx-npl-artifacts/lib
+      databricksLibPath: 'dbfs:$(databricksNotebookPath)/lib'
+      databricksClusterId: '$(databricksClusterId)'
+  
+  - job:
+    displayName: 'Run integration tests'
+    dependsOn: deploy_libs
+    pool:
+      vmImage: 'ubuntu-latest'
+    variables:
+      pythonVersion: 3.8
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '$(pythonVersion)'
+        addToPath: true
+        architecture: 'x64'
+      displayName: 'Use Python Version: $(pythonVersion)'
+
+    - script: |
+        pip install nutter
+      displayName: 'Install Nutter'
+
+    - script: |
+        nutter run $(databricksNotebookPath) $CLUSTER --recursive --junit_report
+      displayName: 'Execute Nutter'
+      env:
+          CLUSTER: '$(databricksClusterId)'
+          DATABRICKS_HOST: '$(databricksDomain)'
+          DATABRICKS_TOKEN: '$(databricksToken)'
+
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '**/test-*.xml'
+        testRunTitle: 'Publish Nutter results'
+      condition: succeededOrFailed()

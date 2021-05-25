@@ -33,7 +33,6 @@ jobs:
             python -m pip install --upgrade pip
             pip install databricks-cli
           displayName: 'Setup Agent'
-
         - script: |
             echo "Uploading notebooks at ${NOTEBOOKS_PATH} to workspace (${DATABRICKS_NOTEBOOK_PATH})..."
             databricks workspace import_dir --overwrite "${NOTEBOOKS_PATH}" "${DATABRICKS_NOTEBOOK_PATH}"

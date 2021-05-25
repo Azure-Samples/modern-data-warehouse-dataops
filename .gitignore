@@ -462,6 +462,10 @@ MigrationBackup/
 
 .terraform
 .terraform.lock.hcl
+
+# metadata files
+*/*.DS_Store
+
 package-lock.json
 package.json
 __azurite_db_queue__.json
