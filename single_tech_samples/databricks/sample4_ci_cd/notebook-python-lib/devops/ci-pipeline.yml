@@ -37,6 +37,7 @@ stages:
           pip install -r requirements.txt
         displayName: 'Install libraries and dependencies'
 
+      # Refer to https://tinyurl.com/4bdu4dtd for details on databricks-connect properties
       - script: |
           echo "y
           $(databricksDomain)
