@@ -55,6 +55,8 @@ parameters:
     type: string
   - name: purviewAdmins
     type: string
+  - name: databricksWorkspaceName
+    type: string
 
 jobs:
   - deployment: BaseInfrastructure
@@ -159,6 +161,18 @@ jobs:
                 subnetName: ${{ parameters.coreInfrastructureSubnetName }}
                 virtualNetworkName: ${{ parameters.virtualNetworkName }}
 
+            - template: ../templates/databricks.yml
+              parameters:
+                subscriptionId: $(subscriptionId)
+                resourceManagerConnection: ${{ parameters.azureResourceManagerConnection }}
+                resourceGroupName: ${{ parameters.resourceGroup }}
+                location: ${{ parameters.location }}
+                workspaceName: ${{ parameters.databricksWorkspaceName }}
+                storageAccountName: ${{ parameters.dataLakeStorageAccountName }}
+                storageContainerName: ${{ parameters.dropzoneStorageContainerName }}
+                keyVaultName: ${{ parameters.keyVaultName }}
+                databricksSecretName: "databricks-pat"
+                
             - template: ../templates/data-factory.yml
               parameters:
                 subscriptionId: $(subscriptionId)
@@ -171,3 +185,6 @@ jobs:
                 logAnalyticsName: ${{ parameters.logAnalyticsWorkspaceName }}
                 purviewAccountName: ${{ parameters.purviewAccountName }}
                 storageAccountName: ${{ parameters.dataLakeStorageAccountName }}
+                databricksSecretName: "databricks-pat"
+                databricksWorkspaceUrl: $(databricksWorkspaceUrl)
+                databricksClusterId: $(databricksClusterId)

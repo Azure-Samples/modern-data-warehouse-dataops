@@ -39,6 +39,7 @@ stages:
           dropzoneStorageContainerName: ${{ variables.dropzoneStorageContainerName }}
           publicIpAddressName: ${{ variables.publicIpAddressName }}
           purviewAdmins: ${{ variables.purviewAdmins }}
+          databricksWorkspaceName: ${{ variables.databricksWorkspaceName }}
       - template: ./jobs/create-data-lake-log-sender-job.yml
         parameters:
           dependsOn:
@@ -92,6 +93,7 @@ stages:
           dropzoneStorageContainerName: ${{ variables.dropzoneStorageContainerName }}
           publicIpAddressName: ${{ variables.publicIpAddressName }}
           purviewAdmins: ${{ variables.purviewAdmins }}
+          databricksWorkspaceName: ${{ variables.databricksWorkspaceName }}
       - template: ./jobs/create-data-lake-log-sender-job.yml
         parameters:
           dependsOn:
@@ -145,6 +147,7 @@ stages:
           dropzoneStorageContainerName: ${{ variables.dropzoneStorageContainerName }}
           publicIpAddressName: ${{ variables.publicIpAddressName }}
           purviewAdmins: ${{ variables.purviewAdmins }}
+          databricksWorkspaceName: ${{ variables.databricksWorkspaceName }}
       - template: ./jobs/create-data-lake-log-sender-job.yml
         parameters:
           dependsOn:
