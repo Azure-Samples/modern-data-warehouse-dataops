@@ -1,0 +1,52 @@
+parameters:
+- name: environmentName
+  type: string
+- name: databricksDomain
+  type: string
+- name: databricksToken
+  type: string
+- name: databricksClusterId
+  type: string
+- name: databricksNotebookTestPath  # Databricks workspace path where TESTS notebook are located.
+  type: string
+
+
+
+
+jobs:
+- deployment: run_integration_tests
+  environment: ${{ parameters.environmentName }}
+  displayName: 'Run nutter tests'
+  dependsOn: deploy_notebooks
+  pool:
+    vmImage: 'ubuntu-latest'
+  variables:
+    pythonWorkingDir: '.'
+    pythonVersion: 3.8
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - task: UsePythonVersion@0
+          inputs:
+                versionSpec: '3.5'
+
+        - script: |
+            pip install nutter
+          displayName: 'Install Nutter'
+
+        - script: |
+            nutter run $NOTEBOOK_PATH $CLUSTER --recursive --junit_report
+          displayName: 'Execute Nutter'
+          env:
+            CLUSTER: ${{ parameters.databricksClusterId}}
+            DATABRICKS_HOST: ${{ parameters.databricksDomain}}
+            DATABRICKS_TOKEN: ${{ parameters.databricksToken}}
+            NOTEBOOK_PATH: ${{ parameters.databricksNotebookTestPath}}
+
+        - task: PublishTestResults@2
+          inputs:
+            testResultsFormat: 'JUnit'
+            testResultsFiles: '**/test-*.xml'
+            testRunTitle: 'Publish Nutter results'
+          condition: succeededOrFailed()

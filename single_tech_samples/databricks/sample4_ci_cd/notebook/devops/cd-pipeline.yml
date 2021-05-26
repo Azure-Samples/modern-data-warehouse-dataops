@@ -1,5 +1,3 @@
-
-
 trigger: none
 
 pr: none
@@ -7,30 +5,28 @@ pr: none
 resources:
   pipelines:
   - pipeline: ci
-    source: mdw-dbx-nd-ci-pipeline
-    # trigger: 
-    #   branches:
-    #   - master
+    source: dbx-notebook-ci
+
 
 stages:
 - stage: deploy_to_test
   displayName: 'Deploy notebooks'
   variables:
-  - group: mdwdo-dbx-nd-test
+  - group: dbx-env-test
+  - name: notebookpath
+    value: /Shared/notebook-tests/$(Build.DefinitionName)_$(Build.BuildId)/ 
   jobs:
   - template: ../../devops/templates/jobs/deploy-notebooks-job.yml
     parameters:
       environmentName: 'TEST'
       databricksDomain: '$(databricksDomain)'
       databricksToken: '$(databricksToken)'
-      databricksNotebookPath: '$(databricksNotebookPath)'
+      databricksNotebookPath: '$(notebookpath)'
       databricksLocalNotebookPath: $(Pipeline.Workspace)/ci/notebooks
-  - template: ../../devops/templates/jobs/integration-tests-job.yml
+  - template: ../../devops/templates/jobs/nutter-tests-job.yml
     parameters:
       environmentName: 'TEST'
       databricksDomain: '$(databricksDomain)'
       databricksToken: '$(databricksToken)'
       databricksClusterId: '$(databricksClusterId)'
-      databricksNotebookTestPath: '$(databricksNotebookPath)/tests'
-      databricksLocalNotebookTestPath: $(Pipeline.Workspace)/ci/notebooks/tests
-      devopsScriptsBasePath: $(Pipeline.Workspace)/ci/devops_scripts
+      databricksNotebookTestPath: '$(notebookpath)'

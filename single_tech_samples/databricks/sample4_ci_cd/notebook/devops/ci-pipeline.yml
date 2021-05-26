@@ -4,17 +4,25 @@ pool:
   name: Hosted Ubuntu 1604
 
 variables:
-  basePath: 'single_tech_samples/databricks/sample4_ci_cd'
+  basePath: '.'
 
 steps:
-- task: PublishPipelineArtifact@1
+- task: CopyFiles@2
   inputs:
-    targetPath: '$(basePath)/notebook-dataframe/notebooks'
-    ArtifactName: 'notebooks'
-  displayName: 'Publish Databricks notebooks'
+    SourceFolder: '$(basePath)/notebooks'
+    contents: '**'
+    targetFolder: $(Build.ArtifactStagingDirectory)/notebooks
+  displayName: 'Copy notebooks folder'
 
-- task: PublishPipelineArtifact@1
+- task: CopyFiles@2
   inputs:
-    targetPath: '$(basePath)/devops/scripts'
-    ArtifactName: 'devops_scripts'
+    SourceFolder: '$(basePath)/notebooks/tests'
+    contents: '**'
+    targetFolder: $(Build.ArtifactStagingDirectory)/notebooks/tests
+  displayName: 'Copy tests folder'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: $(Build.ArtifactStagingDirectory)
+    artifactName: notebooks
   displayName: 'Publish DevOps Scripts'
