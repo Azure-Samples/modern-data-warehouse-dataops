@@ -13,7 +13,7 @@ parameters:
 jobs:
 - deployment: deploy_notebooks
   environment: ${{ parameters.environmentName }}
-  displayName: 'Deploy to Databricks'
+  displayName: 'Deploy Notebooks to Databricks'
   pool:
     vmImage: 'ubuntu-latest'
   variables:
