@@ -44,7 +44,7 @@ We refer to [LendingClub issued Loans](https://www.kaggle.com/husainsb/lendingcl
         2. Click pencil button at left pane, then select `DeltaCopyPipeline`.
         3. Click **Debug** button to run pipeline.
 
-        ![ADF Pipelines](./docs/images/adf_pipeline.jpg)
+        ![ADF Pipelines](./docs/images/adf_pipeline.JPG)
     3. Use Databricks to query Delta versions - [detailed steps](./databricks/README.md#setup_and_deployment)
     4. Repeat loading data and running data factory to see multiple versioned data getting populated.
         1. Insert next version of data (ex. version 1)

@@ -82,7 +82,7 @@ arm_deploy_script = "az deployment group create --name arm_deploy --resource-gro
 
 ## Next step
 
-[Create AzureSQL Database tables and stored procedure](./sql/ddl/README.md)
+[Create AzureSQL Database tables and stored procedure](../sql/ddl/README.md)
 
 ## Directory Structure/Provisioned resources
 

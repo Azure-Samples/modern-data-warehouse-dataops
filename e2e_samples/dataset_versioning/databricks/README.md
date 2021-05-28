@@ -45,6 +45,6 @@ The [official doc](https://docs.microsoft.com/en-us/azure/databricks/security/da
 3. Import the `data_versioning.py` notebook into your Databricks workspace. Set the `your_storage_account_name` variable with the name of your storage account that was created as part of the [provisioned Azure Resources by IaC (Terraform)](../infra/README.md) step.
 4. Run the notebook.
 
- ![Versioned Data in Databricks](../docs/images/versioned_data.jpg)
+ ![Versioned Data in Databricks](../docs/images/versioned_data.JPG)
 
 See here for more information on [Credential Passthrough](https://docs.microsoft.com/en-us/azure/databricks/security/credential-passthrough/adls-passthrough).

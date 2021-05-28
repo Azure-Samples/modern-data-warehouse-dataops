@@ -34,4 +34,4 @@ See [here](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templat
 
 ## Next step
 
-Running the sample: [Load data into data source (Azure SQL Database)](./sql/data_generator/README.md)
+Running the sample: [Load data into data source (Azure SQL Database)](../sql/data_generator/README.md)
