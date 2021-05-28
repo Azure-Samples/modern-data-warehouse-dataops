@@ -15,7 +15,7 @@ The solution demonstrates how to achieve the requirements described above by:
 - Incrementally ingesting data from a source system such as AzureSQL Database.
   - Data pipeline (Azure Data Factory) utilizes a watermark to see new/updated data in the data source. It helps to copy data with shorter intervals.
 - Data Pipeline stores **versioned data** in the sink.
-- User, such Data Scientists, can read versioned data from the datalake via Databricks by specifying version number per loaded data instance.
+- Users (ei. Data Scientists) can read versioned data from the datalake via Databricks by specifying version number per loaded data instance.
 
 In addition to this, the sample also includes:
 
