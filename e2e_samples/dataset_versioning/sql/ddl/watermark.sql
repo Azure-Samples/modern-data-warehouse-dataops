@@ -1,8 +1,10 @@
--- Create Watermark table
+
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
+
+-- Create Watermark table
 CREATE TABLE [dbo].[WaterMark](
 	TableName varchar(50) NOT NULL UNIQUE,
 	WaterMarkVal datetime NOT NULL
@@ -24,11 +26,6 @@ END
 GO
 
 -- Create Source Table
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-
 CREATE TABLE [dbo].[source](
 	id int NOT NULL UNIQUE,
 	loan_amnt float NULL,

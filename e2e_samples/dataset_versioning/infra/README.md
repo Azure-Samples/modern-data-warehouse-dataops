@@ -1,37 +1,39 @@
-# Infrastructure as Code
+# Infrastructure as Code with Terraform
 
-## Getting Started
+This contains Terraform scripts to deploy Azure Resources required for this sample.
 
-**Prerequisites:**
+## Prerequisites
 
-- Terraform > 0.14.7
-- Azure cli > 2.19.1
+- [Terraform](https://www.terraform.io/) > 0.14.7
+- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) > 2.19.1
 
-**Deploy Steps:**
+## Setup and Deployment
 
 The following steps will deploy the Azure base infrastructure for the Temperature Events sample. Ensure you are in `e2e_samples/dataset-versioning/infra/`.
 
-1. Log in with the Azure CLI
-2. Run the setup script
-3. Initialize Terraform
-4. Provision the resouces using Terraform
+1. Setup Terraform prerequisites.
+   1. Log in with the Azure CLI
+   1. Run the setup script to create Azure KeyVault and Azure Storage (required by Terraform).
+   1. Initialize Terraform.
+2. Provision the Azure resources using Terraform.
 
-### #1 Log in with the Azure CLI
+### Setup Terraform prerequisites
+
+#### #1 Log in with Azure CLI
+
+[Authenticate with the Azure CLI](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli), to ensure you are able interact with your Azure account.
 
 ```bash
 > az login
 ```
 
-Authenticate with the Azure CLI, to ensure you are able interact with your Azure account.
-<https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli>
-
-Before running the setup.sh script, make sure you are using the right subscription.
-You can check by using this command to get the list of subsciptions and see which one is the default:
+Ensure you are targeting correct Azure Subscription.
 ```az account list --output table```
-If you are using a different subscription and need to change it, use this command:
+
+To change target Azure subscription.
 ```az account set --subscription <your_subscription_id>```
 
-### #2 Run the setup script
+#### #2 Run the setup script
 
 This script will create a resource group, with 2 resources (Key Vault and Storage) to track the secrets and state of your infrastructure. It will also create a new Service Principal with contributor permissions for the Terraform app to use later.
 
@@ -46,9 +48,9 @@ $ "Enter value: " rg-my-terraform stmyterraform kv-myterraform eastus2
 
 Keep note of the output from `./setup.sh`. The output will be used in the next command
 
-### #3 Initialize Terraform
+#### #3 Initialize Terraform
 
-Use the output from the last command, to initialise the Terraform state files and store them in the Azure storage & Key Vault resources created in step 2.
+Use the output from the last command, to initialise the Terraform state files and store them in the Azure storage & Key Vault resources created in step 2. You can modify the [variables.tf](terraform/live/dev/variables.tf) to customize the deployment.
 
 ```bash
 # Note: This is an example, use the exact output given to you in step 2.
@@ -57,7 +59,7 @@ cd terraform/live/dev
 terraform init -backend-config="storage_account_name=stmyterraform" -backend-config="container_name=terraform-state" -backend-config="access_key=$(az keyvault secret show --name tfstate-storage-key --vault-name kv-myterraform --query value -o tsv)" -backend-config="key=terraform.tfstate"
 ```
 
-### #4 Provision the resouces using Terraform
+### Provision the resources using Terraform
 
 Run the following commands to deploy the sample infrastructure.
 **Note:** Pick a globally unique name and replace `{your_rg_name}` and `{your_app_name}`
@@ -68,7 +70,7 @@ terraform plan -var="rg_name={your_rg_name}" -var="app_name={your_app_name}" -ou
 terraform apply /tmp/myapp
 ```
 
-After terraform apply completes successfully, you can see output similar to following example. Please copy `arm_deploy_script` value for later process. You'll use it for deploying Azure Data Factory Logic.
+After terraform apply completes successfully, you can see output similar to following example. **Please copy `arm_deploy_script`.** You'll use it for deploying Azure Data Factory pipelines.
 
 ```console
 Apply complete! Resources: 0 added, 0 changed, 0 destroyed.
@@ -78,14 +80,9 @@ Outputs:
 arm_deploy_script = "az deployment group create --name arm_deploy --resource-group rg-masatf2 --template-file ./arm_template/arm_template.json --parameters factoryName='adf-masatfapp-dev' KeyVault_properties_typeProperties_baseUrl='https://kv-masatfapp-dev-eastus.vault.azure.net/' AzureBlobFS_properties_typeProperties_serviceEndpoint='https://dlsmasatfappdev.blob.core.windows.net/'"
 ```
 
-### Alternative: CI/CD
+## Next step
 
-Alternatively, we can run exact command in CICD pipeline. Since required credentials for terraform needs to be fetched from keyvault, you need to go to azure devops and set up secrets in library.
-
-## Before sending PR
-
-1. Run [pre-commit](https://pre-commit.com/#install)
-1. Make sure this README.md is updated
+[Create AzureSQL Database tables and stored procedure](./sql/ddl/README.md)
 
 ## Directory Structure/Provisioned resources
 
