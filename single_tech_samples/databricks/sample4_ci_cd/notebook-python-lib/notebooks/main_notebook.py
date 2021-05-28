@@ -1,10 +1,7 @@
 # Databricks notebook source
 
 # COMMAND ----------
-# MAGIC %run ../common/module_a
-# MAGIC %run ../common/module_a
 
-# COMMAND ----------
 from common.module_b import int_to_str
 print(int_to_str(1000))
 

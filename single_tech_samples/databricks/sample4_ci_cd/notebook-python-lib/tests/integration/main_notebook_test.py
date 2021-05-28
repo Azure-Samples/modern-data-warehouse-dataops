@@ -1,5 +1,7 @@
 # Databricks notebook source
-# MAGIC %run ../../notebooks/main_notebook
+
+# COMMAND ----------
+# MAGIC  %pip install nutter
 
 # COMMAND ----------
 
