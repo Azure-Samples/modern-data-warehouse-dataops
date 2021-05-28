@@ -8,7 +8,7 @@ This folder is for SQL query which creates the following required tables and sto
 
 ## Prerequisites
 
-- [Provisioned Azure Resources by IaC (Terraform)](../infra/README.md)
+- [Provisioned Azure Resources by IaC (Terraform)](../../infra/README.md)
 
 ## Setup and Deployment
 
@@ -24,4 +24,4 @@ This folder is for SQL query which creates the following required tables and sto
 
 ## Next step
 
-[Deploy Data Factory Pipelines](./datafactory/README.md)
+[Deploy Data Factory Pipelines](../../datafactory/README.md)

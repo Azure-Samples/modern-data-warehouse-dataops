@@ -37,9 +37,9 @@ We refer to [LendingClub issued Loans](https://www.kaggle.com/husainsb/lendingcl
     1. Create AzureSQL Database tables and stored procedure. - [detailed steps](./sql/ddl/README.md)
     1. Deploy Data Factory Pipelines. - [detailed steps](./datafactory/README.md)
 2. Running the sample
-    1. Load data into data source (Azure SQL Database)
+    1. Load data into data source (Azure SQL Database).
         1. Use Python script to load "LendingClub issued Loans" data - [detailed steps](./sql/data_generator/README.md)
-    2. Run Azure Data Factory pipeline to load Delta Lake
+    2. Run Azure Data Factory pipeline to load Delta Lake.
         1. Go to provisioned Azure Data Factory, then click **Author & Monitor** button to open development portal.
         2. Click pencil button at left pane, then select `DeltaCopyPipeline`.
         3. Click **Debug** button to run pipeline.
