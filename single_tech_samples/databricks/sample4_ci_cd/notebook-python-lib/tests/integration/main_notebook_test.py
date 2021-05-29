@@ -41,7 +41,7 @@ class DataAggregatorUTFixture(NutterFixture):
          } for row in test_data
       ]
       self.test_df = spark.createDataFrame(map(lambda x: Row(**x), test_data))
-      self.expected_df = spark.createDataFrame([(1, 800, 100, 0.125),
+      self.expected_df = spark.createDataFrame([(1, 800, 100, 0.12),
                            (2, 450, 60, 0.13),
                            (3, 750, 60, 0.08)],
                            ['pipe_id', 'total_duration_seconds', 'total_litres_pumped', 'avg_litres_per_second'])

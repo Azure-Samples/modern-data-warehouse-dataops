@@ -41,7 +41,7 @@ class TestGetLitresPerSecond(unittest.TestCase):
                 'pipe_id': 1,
                 'total_duration_seconds': 800,
                 'total_litres_pumped': 100,
-                'avg_litres_per_second': 0.125
+                'avg_litres_per_second': 0.12
             },
             {
                 'pipe_id': 2,
