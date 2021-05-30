@@ -21,11 +21,6 @@ stages:
       steps:
       - task: UsePythonVersion@0
         inputs:
-          versionSpec: '3.8'
-          architecture: 'x64'
-
-      - task: UsePythonVersion@0
-        inputs:
           versionSpec: '$(pythonVersion)'
           addToPath: true
           architecture: 'x64'

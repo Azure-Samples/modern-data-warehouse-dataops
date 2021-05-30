@@ -14,12 +14,12 @@ class TestGetLitresPerSecond(unittest.TestCase):
     def test_get_litres_per_second(self):
         test_data = [
             # pipe_id, start_time, end_time, litres_pumped
-            (1, '2021-05-18 01:05:32', '2021-05-18 01:09:13', 24),
-            (2, '2021-05-18 01:09:14', '2021-05-18 01:14:17', 41),
-            (1, '2021-05-18 01:14:18', '2021-05-18 01:15:58', 11),
-            (2, '2021-05-18 01:15:59', '2021-05-18 01:18:26', 13),
-            (1, '2021-05-18 01:18:27', '2021-05-18 01:26:26', 45),
-            (3, '2021-05-18 01:26:27', '2021-05-18 01:38:57', 15)
+            (1, '2021-05-18 01:05:32', '2021-05-18 01:09:13', 10),
+            (2, '2021-05-18 01:09:14', '2021-05-18 01:14:17', 20),
+            (1, '2021-05-18 01:14:18', '2021-05-18 01:15:58', 30),
+            (2, '2021-05-18 01:15:59', '2021-05-18 01:18:26', 40),
+            (1, '2021-05-18 01:18:27', '2021-05-18 01:26:26', 60),
+            (3, '2021-05-18 01:26:27', '2021-05-18 01:38:57', 60)
         ]
         test_data = [
             {
@@ -40,20 +40,20 @@ class TestGetLitresPerSecond(unittest.TestCase):
             {
                 'pipe_id': 1,
                 'total_duration_seconds': 800,
-                'total_litres_pumped': 80,
-                'avg_litres_per_second': 0.1
+                'total_litres_pumped': 100,
+                'avg_litres_per_second': 0.12
             },
             {
                 'pipe_id': 2,
                 'total_duration_seconds': 450,
-                'total_litres_pumped': 54,
-                'avg_litres_per_second': 0.12
+                'total_litres_pumped': 60,
+                'avg_litres_per_second': 0.13
             },
             {
                 'pipe_id': 3,
                 'total_duration_seconds': 750,
-                'total_litres_pumped': 15,
-                'avg_litres_per_second': 0.02
+                'total_litres_pumped': 60,
+                'avg_litres_per_second': 0.08
             },
         ])
         pd.testing.assert_frame_equal(expected_output_df, output_df_as_pd)

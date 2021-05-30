@@ -1,4 +1,4 @@
-from pyspark.sql.functions import col, sum as col_sum
+from pyspark.sql.functions import col, bround, sum as col_sum
 
 # Example case for simple data aggregation:
 # Assume there are multiple water pipes each with a unique id (pipe_id)
@@ -17,6 +17,6 @@ def get_litres_per_second(pipe_data_df):
         col_sum('litres_pumped').alias("total_litres_pumped")
     ).withColumn(
         "avg_litres_per_second",
-        col("total_litres_pumped") / col("total_duration_seconds")
+        bround((col("total_litres_pumped") / col("total_duration_seconds")), 2)
     )
     return output_df

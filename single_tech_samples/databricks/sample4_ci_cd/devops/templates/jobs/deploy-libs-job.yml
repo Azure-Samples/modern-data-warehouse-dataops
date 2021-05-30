@@ -15,7 +15,7 @@ parameters:
 jobs:
 - deployment: deploy_libs
   environment: ${{ parameters.environmentName }}
-  displayName: 'Deploy libs to Databricks'
+  displayName: 'Deploy libraries to Databricks'
   pool:
     vmImage: 'ubuntu-latest'
   variables:
