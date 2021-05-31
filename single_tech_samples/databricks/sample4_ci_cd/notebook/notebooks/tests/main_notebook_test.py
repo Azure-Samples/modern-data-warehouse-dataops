@@ -44,13 +44,13 @@ class Test1Fixture(NutterFixture):
     self.actual_df = None
     NutterFixture.__init__(self)
     
-  def run_test_1(self):
+  def run_test_transform_data(self):
     self.actual_df = transform_data(df)
     
-  def assertion_test_1(self):
+  def assertion_test_transform_data(self):
     assert(self.actual_df.collect() == expected_df.collect())
 
-  def after_test_1(self):
+  def after_test_transform_data(self):
     print('done')
 
 # COMMAND ----------

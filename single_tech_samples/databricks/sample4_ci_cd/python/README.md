@@ -1,0 +1,1 @@
+dbx execute --cluster-name=oneweekcluster  --job=spark_python_project_integration_test

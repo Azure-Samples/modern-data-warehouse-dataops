@@ -1,0 +1,43 @@
+{
+    "default": {
+        "jobs": [
+            {
+                "name": "spark_python_project",
+                "new_cluster": {
+                    "spark_version": "7.3.x-cpu-ml-scala2.12",
+                    "node_type_id": "Standard_F4s",
+                    "num_workers": 2
+                },
+                "libraries": [],
+                "email_notifications": {
+                    "on_start": [],
+                    "on_success": [],
+                    "on_failure": []
+                },
+                "max_retries": 0,
+                "spark_python_task": {
+                    "python_file": "main.py"
+                }
+            },
+            {
+                "name": "spark_python_project_integration_test",
+                "new_cluster": {
+                    "spark_version": "7.3.x-cpu-ml-scala2.12",
+                    "node_type_id": "Standard_F4s",
+                    "num_workers": 1
+                },
+                "libraries": [],
+                "email_notifications": {
+                    "on_start": [],
+                    "on_success": [],
+                    "on_failure": []
+                },
+                "max_retries": 0,
+                "spark_python_task": {
+                    "python_file": "tests/integration/main_test.py"
+                }
+            }
+            
+        ]
+    }
+}

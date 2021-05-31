@@ -1,0 +1,91 @@
+variables:
+- group: Databricks-environment
+
+trigger:
+  batch: true
+  branches:
+    include:
+    - '*'
+
+  tags:
+    include:
+      - v*.*
+      - prod
+
+stages:
+- stage: onPush
+  jobs:
+  - job: onPushJob
+    pool:
+      vmImage: 'ubuntu-18.04'
+
+    steps:
+    - script: env | sort
+      displayName: 'Environment / Context'
+
+    - task: UsePythonVersion@0
+      displayName: 'Use Python 3.7'
+      inputs:
+        versionSpec: 3.7
+
+    - checkout: self
+      persistCredentials: true
+      clean: true
+      displayName: 'Checkout & Build.Reason: $(Build.Reason) & Build.SourceBranchName: $(Build.SourceBranchName)'
+
+    - script: |
+        python -m pip install --upgrade pip
+        pip install -r unit-requirements.txt
+        pip install -e .
+      displayName: 'Install dependencies'
+
+    - script: |
+        pytest tests/unit --cov
+      displayName: 'Run Unit tests'
+
+    - script: |
+        dbx deploy --jobs=spark_python_project_integration_test --files-only
+      displayName: 'Deploy integration test'
+
+    - script: |
+        dbx launch --job=spark_python_project_integration_test --as-run-submit --trace
+      displayName: 'Launch integration on test'
+
+- stage: onRelease
+  condition: |
+    or(
+      startsWith(variables['Build.SourceBranch'], 'refs/heads/releases'),
+      startsWith(variables['Build.SourceBranch'], 'refs/tags/v')
+    )
+  jobs:
+  - job: onReleaseJob
+    pool:
+      vmImage: 'ubuntu-18.04'
+
+    steps:
+      - script: env | sort
+        displayName: 'Environment / Context'
+
+      - task: UsePythonVersion@0
+        displayName: 'Use Python 3.7'
+        inputs:
+          versionSpec: 3.7
+
+      - checkout: self
+        persistCredentials: true
+        clean: true
+        displayName: 'Checkout & Build.Reason: $(Build.Reason) & Build.SourceBranchName: $(Build.SourceBranchName)'
+
+      - script: |
+          python -m pip install --upgrade pip
+          pip install -r unit-requirements.txt
+          pip install -e .
+        displayName: 'Install dependencies'
+
+      - script: |
+          pytest tests/unit
+        displayName: 'Run Unit tests'
+
+      - script: |
+          dbx deploy --jobs=spark_python_project
+        displayName: 'Deploy the job'

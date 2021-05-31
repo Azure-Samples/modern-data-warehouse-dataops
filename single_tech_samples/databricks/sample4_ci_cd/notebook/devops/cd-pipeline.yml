@@ -14,7 +14,7 @@ stages:
   variables:
   - group: dbx-env-test
   - name: notebookpath
-    value: /Shared/notebook-tests/$(Build.DefinitionName)_$(Build.BuildId)/ 
+    value: /Shared/notebook-tests/dbxbuild_$(Build.BuildId)/ 
   jobs:
   - template: ../../devops/templates/jobs/deploy-notebooks-job.yml
     parameters:

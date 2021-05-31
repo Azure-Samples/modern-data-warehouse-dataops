@@ -1,0 +1,9 @@
+{
+    "environments": {
+        "default": {
+            "profile": "DEFAULT",
+            "workspace_dir": "/Shared/dbx/projects/python",
+            "artifact_location": "dbfs:/dbx/python"
+        }
+    }
+}

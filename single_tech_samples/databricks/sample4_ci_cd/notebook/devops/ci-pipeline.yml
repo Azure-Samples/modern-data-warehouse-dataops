@@ -4,7 +4,7 @@ pool:
   name: Hosted Ubuntu 1604
 
 variables:
-  basePath: '.'
+  basePath: './notebook'
 
 steps:
 - task: CopyFiles@2

@@ -36,13 +36,13 @@ class Test1Fixture(NutterFixture):
     self.actual_df = None
     NutterFixture.__init__(self)
     
-  def run_test_1(self):
+  def run_test_add_mount(self):
     self.actual_df = add_mount(df, 10)
     
-  def assertion_test_1(self):
+  def assertion_test_add_mount(self):
     assert(self.actual_df.collect() == expected_df.collect())
 
-  def after_test_1(self):
+  def after_test_add_mount(self):
     print('done')
 
 # COMMAND ----------

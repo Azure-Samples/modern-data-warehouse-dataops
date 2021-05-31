@@ -117,12 +117,10 @@ The following are the prerequisites for deploying this template :
 │          ├── main_notebook.py
 │          ├── main_notebook_sql.py
 │          ├── module_a_notebook.py
-│          ├── module_b_notebook.py
 │          └── tests
 │               ├── main_notebook_sql_test.py
 │               ├── main_notebook_test.py
 │               ├── module_a_notebook_test.py
-│               └── module_b_notebook_test.py
 ├── python
 │   ├── README.md
 │   ├── devops
@@ -146,7 +144,7 @@ The following are the prerequisites for deploying this template :
 
 ```
 
-In this template we offer 5 different ways to build a Spark Application with Databricks notebooks or python files.
+In this template we offer 3 different ways to build a Spark Application with Databricks notebooks or python files.
 In each sample code folder, there are
 
 - sample notebooks or python files
@@ -187,11 +185,11 @@ git push -u origin --all
 ---
 > Why we have 3 different ways to build spark application? As it is not supported by Databricks to build python modules. You can only do it in local IDE. And local IDE have very limited intergation with notebooks. So to meet different spark application programming approaches, we created the differenct samples.
 
-#### 2.4.1 notebook by pyspark API
+#### 2.4.1 notebook by pyspark API and SparkSQL
 
-This folder includes a sample of notebook "main_notebook.py" which use pyspark API, plus another notebook as its integration test.
+This folder includes a set of notebooks "main_notebook.py" which use pyspark API, plus another notebook as its integration test.
 
-[Please check the detail of the sample code.](notebook-dataframe/README.md)
+[Please check the detail of the sample code.](notebook/README.md)
 
 #### 2.4.2 notebook by sparksql
 
