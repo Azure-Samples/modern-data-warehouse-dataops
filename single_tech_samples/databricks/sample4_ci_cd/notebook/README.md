@@ -12,7 +12,7 @@ Here is a sample spark application with notebooks and testing notebooks.
     %run ./module_a_notebook
     ```
 
-- [module_a_notebook.py](./main_notebook.py)
+- [module_a_notebook.py](./module_a_notebook.py)
 
     This notebook has a method and is used by the notebook [main_notebook.py](./main_notebook.py).
 
@@ -73,6 +73,23 @@ Here is a sample spark application with notebooks and testing notebooks.
     ```python
     dbutils.notebook.run('../main_notebook_sql', 600)
     ```
+
+## Installing a project from the template
+
+```bash
+git clone https://github.com/Azure-Samples/modern-data-warehouse-dataops.git 
+cd modern-data-warehouse-dataops
+git checkout single-tech/databricks-ops
+git archive --format=tar single-tech/databricks-ops:single_tech_samples/databricks/sample4_ci_cd/notebook | tar -x -C ../
+cd ..
+rm -rf modern-data-warehouse-dataops
+
+git init
+git remote add origin <your repo url>
+git add -A
+git commit -m "first commit"
+git push -u origin --all
+```
 
 ## How to setup and run the CI pipeline
 

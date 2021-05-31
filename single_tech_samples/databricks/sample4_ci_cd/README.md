@@ -83,7 +83,7 @@ The following are the prerequisites for deploying this template :
 ### 2.3. Sample project Structure
 
 ```txt
-
+├── README.md
 ├── devops
 |   ├── config
 |   ├── scripts
@@ -120,27 +120,27 @@ The following are the prerequisites for deploying this template :
 │          └── tests
 │               ├── main_notebook_sql_test.py
 │               ├── main_notebook_test.py
-│               ├── module_a_notebook_test.py
-├── python
-│   ├── README.md
-│   ├── devops
-│   │      ├──cd-pipeline.yml
-│   │      └──ci-pipeline.yml
-│   ├── common
-│   │    ├── __init__.py
-│   │    ├── module_a.py
-│   │    └── module_b.py
-│   ├── main.py
-│   ├── setup.py
-│   └── tests
-│        ├── integration
-│        │     └── main_test.py
-│        └── unit
-│              ├── module_a_test.py
-│              └── module_b_test.py
-├── pytest.ini
-├── README.md
-└── unit-requirements.txt
+│               └── module_a_notebook_test.py
+└── python
+    ├── README.md
+    ├── conf
+    │     └── deployment.json
+    ├── devops
+    │     └── azure-pipelines.yml
+    ├── jobs
+    │     ├── main.py
+    │     └── common
+    │         └── module_a.py
+    ├── main.py
+    ├── pytest.ini
+    ├── setup.py
+    ├── tests
+    │     ├── integration
+    │     │    └── main_test.py
+    │     └── unit
+    │           ├── main_test.py
+    │           └── module_a_test.py
+    └──unit-requirements
 
 ```
 
