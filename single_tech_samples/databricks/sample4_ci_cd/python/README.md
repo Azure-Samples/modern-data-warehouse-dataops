@@ -10,7 +10,7 @@ Here is a sample spark application with python and testing based on pytest and [
 
 - [jobs/module_a.py](./jobs/common/module_a.py)
 
-    This python has a method, which is used by [main.py](./main.py).
+    This python has a method, which is used by [main.py](./jobs/main.py).
 
 - [tests/unit/main_test.py](./tests/unit/main_test.py)
 and  [tests/unit/module_a_test.py](./tests/unit/module_a_test.py)

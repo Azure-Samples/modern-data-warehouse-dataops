@@ -4,23 +4,23 @@
 
 Here is a sample spark application with notebooks and testing notebooks.
 
-- [main_notebook.py](./main_notebook.py)
+- [main_notebook.py](./notebooks/main_notebook.py)
 
-    The notebook uses Spark DataFrame API to process a data, and it imports a method declared in the [module_a_notebook.py](./main_notebook.py). The code below shows how to include the notebook.
+    The notebook uses Spark DataFrame API to process a data, and it imports a method declared in the [module_a_notebook.py](./notebooks/main_notebook.py). The code below shows how to include the notebook.
 
     ```python
     %run ./module_a_notebook
     ```
 
-- [module_a_notebook.py](./module_a_notebook.py)
+- [module_a_notebook.py](./notebooks/module_a_notebook.py)
 
-    This notebook has a method and is used by the notebook [main_notebook.py](./main_notebook.py).
+    This notebook has a method and is used by the notebook [main_notebook.py](./notebooks/main_notebook.py).
 
-- [main_notebook_sql.py](./main_notebook_sql.py)
+- [main_notebook_sql.py](./notebooks/main_notebook_sql.py)
 
     This notebook shows how to use Spark Sql to process data.
 
-- [tests/main_notebook_test.py](./tests/main_notebook_test.py)
+- [tests/main_notebook_test.py](./notebooks/tests/main_notebook_test.py)
 
     It is the [nutter](https://github.com/microsoft/nutter) based notebook testing, it run the notebook as below.
 
@@ -43,7 +43,7 @@ Here is a sample spark application with notebooks and testing notebooks.
             assert(self.actual_df.collect() == expected_df.collect())
     ```
 
-- [tests/module_a_notebook_test.py](./tests/main_notebook_test.py)
+- [tests/module_a_notebook_test.py](./notebooks/tests/main_notebook_test.py)
 
     It is the [nutter](https://github.com/microsoft/nutter) based notebook testing, it runs the notebook as below.
 
@@ -66,7 +66,7 @@ Here is a sample spark application with notebooks and testing notebooks.
             assert(self.actual_df.collect() == expected_df.collect())
     ```
 
-- [tests/main_notebook_sql.py](./tests/main_notebook_sql.py)
+- [tests/main_notebook_sql.py](./notebooks/tests/main_notebook_sql_test.py)
 
     It is the [nutter](https://github.com/microsoft/nutter) based notebook testing, it run the notebook as below.
 
@@ -93,7 +93,7 @@ git push -u origin --all
 
 ## How to setup and run the CI pipeline
 
-The yaml file of the ci pipeline is [./doveops/ci-pipeline.yml](./doveops/ci-pipeline.yml)
+The yaml file of the ci pipeline is [./doveops/ci-pipeline.yml](./devops/ci-pipeline.yml)
 
 1. In the project pipeline page, click the "New pipeline" Button.
 
