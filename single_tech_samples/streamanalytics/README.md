@@ -23,7 +23,7 @@
    ```bash
    APP="tech-sample"
    ENVIRONMENT="test"
-   LOCATION="japaneast"
+   LOCATION="westus"
    STORAGE_ACCOUNT="st${APP/-/}${ENVIRONMENT}"
    ```
 
@@ -50,14 +50,15 @@ az deployment group what-if -f main.bicep -g rg-${APP} --parameters query='@./st
 # Create Azure Resources. This will also start the job
 
 az deployment group create -f main.bicep -g rg-${APP} --parameters query='@./streamanalytics-tech-sample.asaql' name=${APP} env=${ENVIRONMENT}
+
+# Add device
+
+az iot hub device-identity create --hub-name iot-${APP}-${ENVIRONMENT} --device-id iot-${APP}-${ENVIRONMENT} --edge-enabled
 ```
 
 ## Functional Test
 
 ```bash
-# Add device
-
-az iot hub device-identity create --hub-name iot-${APP}-${ENVIRONMENT} --device-id iot-${APP}-${ENVIRONMENT} --edge-enabled
 
 # Use connection information with "Raspberry Pi Azure IoT Online Simulator": https://azure-samples.github.io/raspberry-pi-web-simulator/
 

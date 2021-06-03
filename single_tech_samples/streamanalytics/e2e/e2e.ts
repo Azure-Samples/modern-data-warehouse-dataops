@@ -5,7 +5,7 @@ import { BlobItem, ContainerClient } from '@azure/storage-blob';
 chai.use(require('chai-subset'));
 
 const EVENT_SINK_CONTAINER = 'bloboutput';
-const EXPECTED_E2E_LATENCY_MS = 1000;
+const EXPECTED_E2E_LATENCY_MS = 1500;
 const DEVICE_ID = 'modern-data-warehouse-dataops/single_tech_samples/streamanalytics/e2e'
 
 describe('Send to IoT Hub', () => {
@@ -78,8 +78,8 @@ describe('Send to IoT Hub', () => {
         });
     }
 
-    async function delay(factor = 1) {
-        await new Promise(resolve => setTimeout(resolve, EXPECTED_E2E_LATENCY_MS * factor));
+    async function delay() {
+        await new Promise(resolve => setTimeout(resolve, EXPECTED_E2E_LATENCY_MS));
     }
 
     describe('payload with temperature', () => {
@@ -101,7 +101,7 @@ describe('Send to IoT Hub', () => {
                 const entries = convertBlobData(blobData);
                 chai.expect(entries).to.have.length(1);
                 chai.expect(entries).to.containSubset([data]);
-            });
+            }).timeout(3000);
         });
 
         describe('equal to 27 degrees', () => {
@@ -114,11 +114,11 @@ describe('Send to IoT Hub', () => {
 
                 await send(message);
 
-                await delay(1.5);
+                await delay();
 
                 const blob = await getFirstBlob();
                 chai.expect(blob).to.be.undefined;
-            });
+            }).timeout(2000);
         });
 
         describe('less than 27 degrees', () => {
@@ -131,11 +131,11 @@ describe('Send to IoT Hub', () => {
 
                 await send(message);
 
-                await delay(1.5);
+                await delay();
 
                 const blob = await getFirstBlob();
                 chai.expect(blob).to.be.undefined;
-            });
+            }).timeout(2000);
         });
     });
 });
