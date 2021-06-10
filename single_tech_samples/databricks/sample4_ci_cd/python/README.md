@@ -19,7 +19,7 @@ and  [tests/unit/module_a_test.py](./tests/unit/module_a_test.py)
 
 - [tests/integration/main_test.py](./tests/integration/main_test.py)
 
-    This is an intergation, which validate the output data in dbfs.
+    This is an intergation which validate the output data in dbfs.
 
 ## Installing a project from the template
 
@@ -78,7 +78,7 @@ dbx configure
     - `DATABRICKS_HOST` datavricks url
     - `DATABRICKS_TOKEN` databricks access token
 
-        Here is [a docuemnt how to get the token](https://docs.databricks.com/dev-tools/api/latest/authentication.html#generate-a-personal-access-token).
+        Here is [a document how to get the token](https://docs.databricks.com/dev-tools/api/latest/authentication.html#generate-a-personal-access-token).
 
 ## Testing and releasing via CI pipeline
 

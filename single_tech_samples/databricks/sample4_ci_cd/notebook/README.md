@@ -111,7 +111,7 @@ The yaml file of the ci pipeline is [./doveops/ci-pipeline.yml](./devops/ci-pipe
 
     ![New Pipeline](../images/new_ci_pipeline_4.png "New Pipeline")
 
-5. Select the branch and Path to the  the ci-pipeline.yml file.
+5. Select the branch and Path to the  ci-pipeline.yml file.
 
     ![New Pipeline](../images/new_ci_pipeline_5.png "New Pipeline")
 
@@ -135,9 +135,9 @@ The yaml file of the ci pipeline is [./doveops/ci-pipeline.yml](./devops/ci-pipe
 
 The yaml file of the cd pipeline is [./doveops/cd-pipeline.yml](./doveops/cd-pipeline.yml.
 
-the first 6 steps is the same as ci-pipeline.
+the first 6 steps are the same as ci-pipeline.
 
-1. In the project pipeline page, click the "New pipeline" Button.
+1. On the project pipeline page, click the "New pipeline" Button.
 
     ![New Pipeline](../images/new_ci_pipeline_1.png "New Pipeline")
 
@@ -157,7 +157,7 @@ the first 6 steps is the same as ci-pipeline.
 
     ![New Pipeline](../images/new_cd_pipeline_5.png "New Pipeline")
 
-6. Change the name of ci pipeline created in last step, such as 'dbx_ci_pipeline', and create a Varibale Group in Library.
+6. Change the name of ci pipeline created in last step, such as 'dbx_ci_pipeline', and create a variable Group in Library.
 
     ![New Pipeline](../images/new_cd_pipeline_6.png "New Pipeline")
 
@@ -173,7 +173,7 @@ the first 6 steps is the same as ci-pipeline.
 
     - **databricksClusterId**: the id of Databricks cluster
     - **databricksDomain**: the url of Databricks
-    - **databricksToken**: the access token of Databricks, Here is [a docuemnt how to get the token](https://docs.databricks.com/dev-tools/api/latest/authentication.html#generate-a-personal-access-token).
+    - **databricksToken**: the access token of Databricks, Here is [a document how to get the token](https://docs.databricks.com/dev-tools/api/latest/authentication.html#generate-a-personal-access-token).
 
 9. Run the pipeline.
 
