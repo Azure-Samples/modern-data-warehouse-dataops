@@ -1,0 +1,70 @@
+variables:
+- group: Databricks-dev-environment
+- group: Databricks-stg-environment
+- group: Databricks-prod-environment
+
+
+trigger:
+  batch: true
+  branches:
+    include:
+    - '*'
+
+  tags:
+    include:
+      - v*.*
+      - prod
+
+  paths:
+    include:
+      - common/**
+
+stages:
+- stage: test_library
+  displayName: 'Test Library'
+  jobs:
+  - template: ./template/test-lib-job.yml
+    parameters:
+      environmentName: 'STG'
+- stage: deploy_library_to_dev
+  displayName: 'Deploy to Dev'
+  condition: |
+    and(
+      startsWith(variables['Build.SourceBranch'], 'refs/heads/develop'),
+      succeeded('test_library')
+    )
+  jobs:
+  - template: ./template/deploy-lib-job.yml
+    parameters:
+      environmentName: 'STG'
+      databricksDomain: '$(databricksDomain_dev)'
+      databricksToken: '$(databricksToken_dev)'
+      databricksClusterId: '$(databricksClusterId_dev)'
+- stage: deploy_library_to_stg
+  displayName: 'Deploy to Staging'
+  condition: |
+    and(
+      startsWith(variables['Build.SourceBranch'], 'refs/heads/staging'),
+      succeeded('test_library')
+    )
+  jobs:
+  - template: ./template/deploy-lib-job.yml
+    parameters:
+      environmentName: 'STG'
+      databricksDomain: '$(databricksDomain_stg)'
+      databricksToken: '$(databricksToken_stg)'
+      databricksClusterId: '$(databricksClusterId_stg)'
+- stage: deploy_library_to_prod
+  displayName: 'Deploy to Prod'
+  condition: |
+    and(
+      startsWith(variables['Build.SourceBranch'], 'refs/heads/release'),
+      succeeded('test_library')
+    )
+  jobs:
+  - template: ./template/deploy-lib-job.yml
+    parameters:
+      environmentName: 'PROD'
+      databricksDomain: '$(databricksDomain_prod)'
+      databricksToken: '$(databricksToken_prod)'
+      databricksClusterId: '$(databricksClusterId_prod)'
