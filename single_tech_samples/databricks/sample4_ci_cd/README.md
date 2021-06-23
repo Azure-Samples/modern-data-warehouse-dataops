@@ -11,14 +11,14 @@
   - [2.2. Infrastructure as Code](#22-Infrastructure-as-Code)
   - [2.3. Project Structure](#23-Project-Structure)
   - [2.4. The Notebook Approach](#24-The-Notebook-Approach)
-    - [2.4.1 Reposiory setup](#241-multiple-notebooks)
+    - [2.4.1 Repository setup](#241-multiple-notebooks)
     - [2.4.2 DevOps pipeline setup](#242-devops-pipeline-setup)
     - [2.4.3 Import into DEV databricks workspace](#243-Import-into-DEV-databricks-workspace)
     - [2.4.4 Implement and run tests in DEV databricks workspace](#244-Implement-and-run-tests-in-DEV-databricks-workspace)
     - [2.4.5 Run test with pipelines and Deployment](#245-Run-test-with-pipelines-and-Deployment)
     - [2.4.6 Deployment](#246-Deployment)
   - [2.5. The Spark Python Approach](#25-The-Spark-Python-Approach)
-    - [2.5.1 Reposiory setup](#251-Reposiory-setup)
+    - [2.5.1 Repository setup](#251-Repository-setup)
     - [2.5.2 DevOps pipeline setup](#252-DevOps-pipeline-setup)
     - [2.5.3 Implement and run tests in VSCode](#253-Implement-and-run-tests-in-VSCode)
     - [2.5.4 Run test with pipelines](#254-Run-test-with-pipelines)
@@ -32,7 +32,7 @@ When building a project in databricks, we can start from a notebook and implemen
 
 To make it easy extendable, the notebooks and python code only contain super simple logic, and the unit tests are implemented by pytest and [nutter](https://github.com/microsoft/nutter)
 
-This template focuses on solutions of CI/CD pipeline, and demostrate to support 2 approaches of spark application implementation, "notebook job" and "spark python job". A python package is also implemented and imported to notebooks and spark python job as library.
+This template focuses on solutions of CI/CD pipeline, and demonstrates to support 2 approaches of spark application implementation, "notebook job" and "spark python job". A python package is also implemented and imported to notebooks and spark python job as library.
 
 ### 1.1. Scope
 
@@ -82,7 +82,7 @@ The following are the prerequisites for deploying this template :
 
 ### 2.2. Infrastructure as Code (IaC)
 
-You need have 3 databricks workspace for 'develop', 'staging' and 'prodoct'. You setup Azure Databricks services by the IaC samples from [here](https://github.com/Azure-Samples/modern-data-warehouse-dataops/tree/master/single_tech_samples/databricks)
+You need have 3 databricks workspace for 'develop', 'staging' and 'product'. You setup Azure Databricks services by the IaC samples from [here](https://github.com/Azure-Samples/modern-data-warehouse-dataops/tree/master/single_tech_samples/databricks)
 
 ### 2.3. Project Structure
 
@@ -262,7 +262,7 @@ This is to support the job of [Notebook](https://docs.microsoft.com/en-us/azure/
 
 #### 2.4.1 Repository setup
 
-The bash script below is to ccreate a standalone git repository. You need to [create a project in Azure DevOps and create a reporsitory in the project](https://docs.microsoft.com/en-us/azure/devops/organizations/projects/create-project?view=azure-devops&tabs=preview-page). And replace the **[your repo url]** in the code below with [your reporsitory url](https://docs.microsoft.com/en-us/azure/devops/user-guide/code-with-git?toc=%2Fazure%2Fdevops%2Frepos%2Ftoc.json&bc=%2Fazure%2Fdevops%2Frepos%2Fbreadcrumb%2Ftoc.json&view=azure-devops).
+The bash script below is to create a standalone git repository. You need to [create a project in Azure DevOps and create a repository in the project](https://docs.microsoft.com/en-us/azure/devops/organizations/projects/create-project?view=azure-devops&tabs=preview-page). And replace the **[your repo url]** in the code below with [your repository url](https://docs.microsoft.com/en-us/azure/devops/user-guide/code-with-git?toc=%2Fazure%2Fdevops%2Frepos%2Ftoc.json&bc=%2Fazure%2Fdevops%2Frepos%2Fbreadcrumb%2Ftoc.json&view=azure-devops).
 
 ```bash
 git clone https://github.com/Azure-Samples/modern-data-warehouse-dataops.git 
@@ -287,7 +287,7 @@ After running the scripts, you can open the your repo url to check the code is p
 There are 3 branch in the repository:
 
 - **develop branch** is the code base of development
-- **staging branch** is for intergation testing
+- **staging branch** is for integration testing
 - **production branch** is for production deployment
 
 You can find the [document](https://docs.microsoft.com/en-us/azure/devops/repos/git/branch-policies?view=azure-devops) to set branch policy.
@@ -296,11 +296,11 @@ You can find the [document](https://docs.microsoft.com/en-us/azure/devops/repos/
 
 In this repo, there are several yml files which are the pipelines to support the CI/CD. you need to import the yml as build pipeline.
 
-- Import [./doveops/notebook-pipelines.yml](./devops/notebook-pipelines.yml) as build pipeline. This pipeline tests and uploads the notebooks to databricks workspace.
+- Import [./devops/notebook-pipelines.yml](./devops/notebook-pipelines.yml) as build pipeline. This pipeline tests and uploads the notebooks to databricks workspace.
 
-> Here is a [post](https://stackoverflow.com/questions/59067096/create-a-new-pipeline-from-existing-yml-file-in-the-repository-azure-pipelines) to introduce how to import a yaml file as Azure DevOps pipeline from Azure DevOps reporsitory.
+> Here is a [post](https://stackoverflow.com/questions/59067096/create-a-new-pipeline-from-existing-yml-file-in-the-repository-azure-pipelines) to introduce how to import a yaml file as Azure DevOps pipeline from Azure DevOps repository.
 
-- Import [./doveops/lib-pipelines.yml](./devops/lib-pipelines.yml) as build pipeline. This pipeline tests and uploads the python library to databricks cluster as a library.
+- Import [./devops/lib-pipelines.yml](./devops/lib-pipelines.yml) as build pipeline. This pipeline tests and uploads the python library to databricks cluster as a library.
 
 > You need to run this pipeline to deploy the library into databricks, before running the notebook pipeline.  Or remove the Import statement in notebook, if no library is required in the project, then this pipeline is not needed.
 
@@ -317,11 +317,11 @@ In this repo, there are several yml files which are the pipelines to support the
   - **databricksDomain**: the url of Databricks workspace.
   - **databricksToken**: the access token of Databricks.
 
-> Here are the [document](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=classic) of how to create variable groups, and the [docuemnt](https://docs.databricks.com/dev-tools/api/latest/authentication.html#generate-a-personal-access-token) of how to get the token.
+> Here are the [document](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=classic) of how to create variable groups, and the [document](https://docs.databricks.com/dev-tools/api/latest/authentication.html#generate-a-personal-access-token) of how to get the token.
 
 #### 2.4.3 Import into DEV databricks workspace
 
-Follow this [document](https://docs.microsoft.com/en-us/azure/databricks/repos) you can import the notebooks from the repository to databricks worksapce.
+Follow this [document](https://docs.microsoft.com/en-us/azure/databricks/repos) you can import the notebooks from the repository to databricks workspace.
 
   ![add-repo](images/dbx-repo.png "add-repo")
 
@@ -343,7 +343,7 @@ Follow this [document](https://docs.microsoft.com/en-us/azure/databricks/repos) 
 
 #### 2.4.6 Deployment
 
-- Create a pull request from **staging branch** to **production branch** or directly run the pipeine on release branch.
+- Create a pull request from **staging branch** to **production branch** or directly run the pipeline on release branch.
 - It triggers the pipeline to run tests and import notebooks into production databricks workspace.
 
 >The pipeline does not create job with the notebooks.
@@ -362,7 +362,7 @@ Please follow [2.4.1 Repository setup](#241-Repository-setup)
 
 In this repo, there are several yaml files, which are the pipelines to support the CI/CD. You need to import the yaml as build pipeline.
 
-- Import [./doveops/spark-python-pipelines.yml](./devops/spark-python-pipelines.yml) as build pipeline. This pipeline tests and uploads the notebooks to databricks workspace.
+- Import [./devops/spark-python-pipelines.yml](./devops/spark-python-pipelines.yml) as build pipeline. This pipeline tests and uploads the notebooks to databricks workspace.
 
 #### 2.5.3 Implement and run tests in VSCode
 
@@ -393,7 +393,7 @@ pytest spark_python_jobs/tests/unit
 
 #### 2.5.5 Deployment
 
-- Create a pull request from **staging branch** to **production branch** or directly run the pipeine
+- Create a pull request from **staging branch** to **production branch** or directly run the pipeline
 - Complete the merge, it will trigger the pipeline to run tests and create a job in production databricks.
 
   ![spark-python-prod](images/spark-python-prod.png "spark-python-prod")
