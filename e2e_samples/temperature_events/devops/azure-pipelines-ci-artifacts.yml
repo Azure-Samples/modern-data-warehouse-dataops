@@ -1,7 +1,7 @@
 trigger:
   branches:
     include:
-    - master
+    - main
     - release/*
     - e2e/temperature-events-milestone1
   paths:

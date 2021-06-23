@@ -34,7 +34,7 @@ Azure SQL Database.
 The following are some sample [Azure DevOps](https://docs.microsoft.com/en-us/azure/devops/?view=azure-devops) pipelines. To deploy these samples, see [How to use the samples](./README.md#how-to-use-the-samples).
 
 1. **Validate Pull Request** [[azure-pipelines-01-validate-pr](pipelines/azure-pipelines-01-validate-pr.yml)]
-   - This pipeline builds the [DACPAC](https://docs.microsoft.com/en-us/sql/relational-databases/data-tier-applications/data-tier-applications?view=sql-server-ver15) and runs tests (if any). This is triggered only on PRs and is used to validate them before merging into master. This pipeline does not produce any artifacts.
+   - This pipeline builds the [DACPAC](https://docs.microsoft.com/en-us/sql/relational-databases/data-tier-applications/data-tier-applications?view=sql-server-ver15) and runs tests (if any). This is triggered only on PRs and is used to validate them before merging into `main`. This pipeline does not produce any artifacts.
 
 2. **Build Pipeline** [[azure-pipelines-02-build](pipelines/azure-pipelines-02-build.yml)]
    - This pipeline builds the DACPAC and publishes it as a [Build Artifact](https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/build-artifacts?view=azure-devops&tabs=yaml). Its purpose is to produce the Build Artifact that may be consumed by a[Release Pipeline (classic)](https://docs.microsoft.com/en-us/azure/devops/pipelines/release/?view=azure-devops).
@@ -60,7 +60,7 @@ The following are some sample [Azure DevOps](https://docs.microsoft.com/en-us/az
      3. Deploy to Prod
    - This mimics, to a certain extent, a production release, as it is applying the expected changes to a copy of the production database. It also allows for potentially running additional tests run in this environment, along with capturing common schema change errors such as adding a non-nullable column without a default value.
    - Important considerations:
-     - Depending on the size and pricing tier of your Production AzureSQL database, a restore might take several minutes to several hours. Consider batching changes and running this pipeline on a schedule (such as nightly) instead on every commit to master.
+     - Depending on the size and pricing tier of your Production AzureSQL database, a restore might take several minutes to several hours. Consider batching changes and running this pipeline on a schedule (such as nightly) instead on every commit to `main`.
      - For simplicity purposes, the Test database is deployed in the same logical server as Production, however, in reality these should be completely separate servers.
 
 ### Testing
@@ -105,7 +105,7 @@ To setup the samples, run the following:
    2. **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). This requires "repo" scope.
    Optionally, set the following environment variables
        1. **DEPLOYMENT_ID** - string appended to all resource names. *Default*: random five character string.
-       2. **BRANCH_NAME**** - git branch with Azure DevOps pipelines definitions to deploy. *Default*: master.
+       2. **BRANCH_NAME**** - git branch with Azure DevOps pipelines definitions to deploy. *Default*: main.
        3. **RESOURCE_GROUP_NAME** - target resource group to deploy to
        4. **RESOURCE_GROUP_LOCATION** - location of target resource group
        5. **AZURESQL_SERVER_PASSWORD** - Password of the admin account for your AzureSQL server instance. Default: mdw-dataops-SqlP@ss-${DEPLOYMENT_ID}
@@ -114,9 +114,9 @@ To setup the samples, run the following:
 
 #### Additional notes
 
-**Your forked repo will serve as the main repository which triggers all pipelines -- allowing you complete control over the sample solution as compared to using the main Azure-Samples repository directly. All pipeline defintions are also pulled from this fork*.
+**Your forked repo will serve as the main repository which triggers all pipelines -- allowing you complete control over the sample solution as compared to using the main Azure-Samples repository directly. All pipeline definitions are also pulled from this fork*.
 
-***The pipelines are deployed to use the master branch by default. This can be inconvenient when working on the pipelines in a different branch. You can set the BRANCH_NAME environment variable to override this behaviour. This makes it easier to test changes to your pipeline file. Be sure to push the changes in your yaml file to your repo before running the deployment script. Note that it does not change branch triggers.*
+***The pipelines are deployed to use the `main` branch by default. This can be inconvenient when working on the pipelines in a different branch. You can set the BRANCH_NAME environment variable to override this behaviour. This makes it easier to test changes to your pipeline file. Be sure to push the changes in your yaml file to your repo before running the deployment script. Note that it does not change branch triggers.*
 
 ****Note that in case of any errors midway through the script, in order to rerun the deployment, you may need to perform some cleanup of any deployed resources. See [Cleanup](./README.md#Cleanup
 ) below.*
@@ -150,7 +150,7 @@ Once you've setup the sample, you should have the following deployed:
 
 The following shows how to deploy changes to the AzureSQL database using the CI/CD pipelines.
 
-1. In local clone of your forked repo, create a local branch of master and call it `dev/sample_change`. Checkout this branch.
+1. In local clone of your forked repo, create a local branch of `main` and call it `dev/sample_change`. Checkout this branch.
 
      ![azuresql_git_checkout](./docs/images/azuresql_gitbranchcheckout.PNG)
 
@@ -164,11 +164,11 @@ The following shows how to deploy changes to the AzureSQL database using the CI/
 
      ![azuresql_add_column](./docs/images/azuresql_gitcommitpush.PNG)
 
-5. Raise a Pull Request to merge `dev/sample_change` to `master`. This should trigger the the `azuresql-validate-pr` pipeline.
+5. Raise a Pull Request to merge `dev/sample_change` to `main`. This should trigger the the `azuresql-validate-pr` pipeline.
 
      ![azuresql_pr_validation](./docs/images/azuresql_prvalidation.PNG)
 
-6. Typically, a code review would take place. After this, merge changes to `master` by completing the Pull Request. This should trigger the `azuresql-build` and `azuresql-simple-multi-stage`.
+6. Typically, a code review would take place. After this, merge changes to `main` by completing the Pull Request. This should trigger the `azuresql-build` and `azuresql-simple-multi-stage`.
 
      ![azuresql_pr_validation](./docs/images/azuresql_builds.PNG)
 

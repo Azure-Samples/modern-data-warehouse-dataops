@@ -1,7 +1,7 @@
 # For more information on PR triggers, see this:
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/build/triggers?view=azure-devops&tabs=yaml#pr-triggers
 pr:
-- master
+- main
 
 pool:
   vmImage: 'windows-latest'

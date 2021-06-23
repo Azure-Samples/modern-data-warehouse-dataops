@@ -2,7 +2,7 @@ name: Custom Cred Scan
 on:
   push:
     branches:
-    - master
+    - main
     - single-tech/databricks
 
 jobs:

@@ -8,7 +8,7 @@ resources:
     source: mdwdo-park-ci-artifacts
     trigger: 
       branches:
-      - master
+      - main
   repositories:
   - repository: mdwdataops_adfpublish
     type: github

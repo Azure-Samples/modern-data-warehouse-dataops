@@ -47,6 +47,6 @@ fi
 AZDO_PIPELINES_BRANCH_NAME=${AZDO_PIPELINES_BRANCH_NAME:-}
 if [ -z $AZDO_PIPELINES_BRANCH_NAME ]
 then
-    export AZDO_PIPELINES_BRANCH_NAME="master"
+    export AZDO_PIPELINES_BRANCH_NAME="main"
     echo "No branch name in [AZDO_PIPELINES_BRANCH_NAME] specified. defaulting to $AZDO_PIPELINES_BRANCH_NAME."
 fi

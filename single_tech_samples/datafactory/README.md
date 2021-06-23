@@ -21,8 +21,7 @@ This sample demonstrates how to apply DevOps with Azure Data Factory (ADF) by so
     - [Resources](#resources)
 - [How to use the sample](#how-to-use-the-sample)
   - [Prerequisites](#prerequisites)
-    - [Software pre-requisites if you don't use a dev container](#software-pre-requisites-if-you-dont-use-a-dev-container)
-    - [Software pre-requisites if you use a dev container](#software-pre-requisites-if-you-use-a-dev-container)
+    - [Software pre-requisites](#software-pre-requisites)
   - [Setup and Deployment](#setup-and-deployment)
     - [Deployed Resources](#deployed-resources)
   - [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
@@ -189,7 +188,7 @@ This deployment was tested using WSL 2 (Ubuntu 20.04)
        - **AZURE_SUBSCRIPTION_ID** - Azure subscription id to use to deploy resources. *Default*: default azure subscription. To see your default, run `az account list`.
        - **RESOURCE_GROUP_NAME_PREFIX** - name of the resource group. This will automatically be appended with the environment name. For example: `RESOURCE_GROUP_NAME_PREFIX-dev-rg`. *Default*: mdwdo-ado-${DEPLOYMENT_ID}.
        - **DEPLOYMENT_ID** - string appended to all resource names. This is to ensure uniqueness of azure resource names. *Default*: random five character string.
-       - **AZDO_PIPELINES_BRANCH_NAME** - git branch where Azure DevOps pipelines definitions are retrieved from. *Default*: master.
+       - **AZDO_PIPELINES_BRANCH_NAME** - git branch where Azure DevOps pipelines definitions are retrieved from. *Default*: main.
 
       To further customize the solution, set parameters in `arm.parameters` files located in the `infrastructure` folder.
 
@@ -208,11 +207,11 @@ This deployment was tested using WSL 2 (Ubuntu 20.04)
         - Repository type: **Github**
         - Github Account: **your_Github_account**
         - Git repository name: **imported Github repository**
-        - Collaboration branch: **master**
+        - Collaboration branch: **main**
         - Root folder: **/single_tech_samples/datafactory/adf**
         - Import Existing Data Factory resource to repository: **Selected**
         - Branch to import resource into: **Use Collaboration**
-    5. When prompted to select a working branch, select **master**
+    5. When prompted to select a working branch, select **main**
 
    > **IMPORTANT NOTE:** Only the **DEV** Data Factory should be setup with Git integration. Do **NOT** setup git integration in the STG and PROD Data Factories.
 
@@ -220,7 +219,7 @@ This deployment was tested using WSL 2 (Ubuntu 20.04)
 
    1. In the **DEV** Data Factory portal, click `Publish` to publish changes.
       - Publishing a change is **required** to generate the `adf_publish` branch which is required in the Release pipelines.
-   2. In Azure DevOps, notice a new run of the Build Pipeline (**mdw-adf-ci-artifacts**) off `master`.
+   2. In Azure DevOps, notice a new run of the Build Pipeline (**mdw-adf-ci-artifacts**) off `main`.
    3. After completion, this should automatically trigger the Release Pipeline (**mdw-adf-cd-release**). This will deploy the artifacts across environments.
       - You may need to authorize the Pipelines initially to use the Service Connection for the first time.
       ![Release Pipeline](docs/images/ReleasePipeline.png "Release Pipelines")

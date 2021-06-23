@@ -3,7 +3,7 @@ trigger:
   branches:
     include:
     - e2e/temperature-events-milestone1
-    - master
+    - main
   paths:
     include:
     - Infra/*
