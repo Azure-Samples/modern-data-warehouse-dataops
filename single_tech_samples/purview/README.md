@@ -93,7 +93,7 @@ Each environment has an identical set of resources
 
 ### Resources
 
-To view the API Swagger documentation, download [PurviewCatalogAPISwagger.zip](https://github.com/Azure/Purview-Samples/raw/main/rest-api/PurviewCatalogAPISwagger.zip), extract its files, and open index.html.
+To view the API Swagger documentation, download [PurviewCatalogAPISwagger.zip](https://github.com/Azure/Purview-Samples/raw/master/rest-api/PurviewCatalogAPISwagger.zip), extract its files, and open index.html.
 
 ## How to use the sample
 
