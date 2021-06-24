@@ -31,7 +31,7 @@ set -o pipefail
 
 # OPTIONAL VARIABLES
 # DEPLOYMENT_ID - Identifier to append to names of resource created for this deployment. Resources will also be tagged with this. Defaults to generated string.
-# BRANCH_NAME - Branch that pipelines will be deployed for. Defaults to Master.
+# BRANCH_NAME - Branch that pipelines will be deployed for. Defaults to main.
 # AZURESQL_SERVER_PASSWORD - Password for the sqlAdmin account. Defaults to generated value.
 # RESOURCE_GROUP_NAME - resource group name
 # RESOURCE_GROUP_LOCATION - resource group location (ei. australiaeast)
@@ -41,8 +41,8 @@ set -o pipefail
 
 if [ -z $BRANCH_NAME ]
 then 
-    echo "No working branch name specified, defaulting to master"
-    export BRANCH_NAME='master'
+    echo "No working branch name specified, defaulting to main"
+    export BRANCH_NAME='main'
 fi
 
 # Create resource group

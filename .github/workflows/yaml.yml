@@ -2,11 +2,11 @@ name: Yaml Lint
 on:
   push:
     branches:
-    - master
+    - main
     - single-tech/databricks
   pull_request:
     branches:
-    - master
+    - main
     - single-tech/databricks
 
 jobs:

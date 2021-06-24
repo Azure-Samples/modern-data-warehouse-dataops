@@ -10,8 +10,8 @@ Azure Purview is a managed data governance cloud service for centrally managing 
   - [Architecture](#architecture)
   - [Technologies used](#technologies-used)
 - [Key Learnings](#key-learnings)
-  - [1. Levarage Apache Atlas 2.0 API for programatic data management](#1-levarage-apache-atlas-2.0-API-for-programatic-data-management)
-  - [2. Publish data lineage by connecting Azure Data Factory to Purview](#2-publish-data-lineage-by-connecting-Azure-Data-Factory-to-Purview)
+  - [1. Leverage Apache Atlas 2.0 API for programmatic data management](#1-leverage-apache-atlas-20-api-for-programmatic-data-management)
+  - [2. Publish data lineage by connecting Azure Data Factory to Purview](#2-publish-data-lineage-by-connecting-azure-data-factory-to-purview)
   - [3. Use search to create custom reporting](#3-use-search-to-create-custom-reporting)
 - [Key Concepts](#key-concepts)
   - [Environments](#environments)
@@ -21,7 +21,9 @@ Azure Purview is a managed data governance cloud service for centrally managing 
     - [Software pre-requisites](#software-pre-requisites)
   - [Setup and Deployment](#setup-and-deployment)
     - [Deployed Resources](#deployed-resources)
-  - [Optional Scripts](#optional-scripts)
+  - [Optional scripts](#optional-scripts)
+    - [search_advanced.sh](#search_advancedsh)
+    - [delete_purview_data.sh](#delete_purview_datash)
 
 ## Solution Overview
 
@@ -148,11 +150,11 @@ This deployment was tested using WSL 2 (Ubuntu 20.04)
         - Repository type: **Github**
         - Github Account: **your_Github_account**
         - Git repository name: **imported Github repository**
-        - Collaboration branch: **master**
+        - Collaboration branch: **main**
         - Root folder: **/single_tech_samples/purview/adf**
         - Import Existing Data Factory resource to repository: **Selected**
         - Branch to import resource into: **Use Collaboration**
-    5. When prompted to select a working branch, select **master**
+    5. When prompted to select a working branch, select **main**
 
    > **IMPORTANT NOTE:** Only the **DEV** Data Factory should be setup with Git integration. Do **NOT** setup git integration in the STG and PROD Data Factories.
 

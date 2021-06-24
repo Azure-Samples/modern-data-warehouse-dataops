@@ -142,7 +142,7 @@ The Build and Release Pipelines definitions can be found [here](devops/README.md
 
 #### Environments
 
-1. **Sandbox and Dev**- the DEV resource group is used by developers to build and test their solutions. It contains two logical environments - (1) a Sandbox environment per developer so each developer can make and test their changes in isolation prior committing to `master`, and (2) a shared Dev environment for integrating changes from the entire development team. "Isolated" sandbox environment are accomplish through a number of practices depending on the Azure Service.
+1. **Sandbox and Dev**- the DEV resource group is used by developers to build and test their solutions. It contains two logical environments - (1) a Sandbox environment per developer so each developer can make and test their changes in isolation prior committing to `main`, and (2) a shared Dev environment for integrating changes from the entire development team. "Isolated" sandbox environment are accomplish through a number of practices depending on the Azure Service.
    - Databricks - developers use their dedicated Workspace folder to author and save notebooks. Developers can choose to spin up their own dedicated clusters or share a High-concurrency cluster.
    - DataLake Gen2 - a "sandbox" file system is created. Each developer creates their own folder within this Sandbox filesystem.
    - AzureSQL or SQLDW - A transient database (restored from DEV) is spun up per developer on demand.
@@ -157,10 +157,10 @@ There are eight numbered orange boxes describing the sequence from sandbox devel
 ![CI/CD](../../docs/images/CI_CD_process_sequence.PNG?raw=true "CI/CD")
 
 1. Developers develop in their own Sandbox environments within the DEV resource group and commit changes into their own short-lived git branches. (i.e. <developer_name>/<branch_name>)
-2. When changes are complete, developers raise a PR to master for review. This automatically kicks-off the PR validation pipeline which runs the unit tests, linting and DACPAC builds.
-3. On PR completion, the commit to master will trigger a Build pipeline -- publishing all necessary Build Artifacts.
+2. When changes are complete, developers raise a PR to `main` for review. This automatically kicks-off the PR validation pipeline which runs the unit tests, linting and DACPAC builds.
+3. On PR completion, the commit to `main` will trigger a Build pipeline -- publishing all necessary Build Artifacts.
 4. The completion of a successful Build pipeline will trigger the first stage of the Release pipeline. This deploys the publish build artifacts into the DEV environment, with the exception of Azure Data Factory*.
-5. Developers perform a Manual Publish to the DEV ADF from the collaboration branch (`master`). This updates the ARM templates in in the `adf_publish` branch.
+5. Developers perform a Manual Publish to the DEV ADF from the collaboration branch (`main`). This updates the ARM templates in in the `adf_publish` branch.
 6. On the successful completion of the first stage, this triggers an Manual Approval Gate**. On Approval, the release pipeline continues with the second stage -- deploying changes to the Staging environment.
 7. Integration tests are run to test changes in the Staging environment.
 8. ***On the successful completion of the second stage, this triggers a second Manual Approval Gate. On Approval, the release pipeline continues with the third stage -- deploying changes to the Production environment.
@@ -170,7 +170,7 @@ Notes:
 - This is a simplified Build and Release process for demo purposes based on [Trunk-based development practices](https://trunkbaseddevelopment.com/).
 - *A manual publish is required -- currently, this cannot be automated.
 - **The solution deployment script does not configure Approval Gates at the moment. See [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
-- ***Many organization use dedicated Release Branches (including Microsoft) instead of deploying from `master`. See [Release Flow](https://devblogs.microsoft.com/devops/release-flow-how-we-do-branching-on-the-vsts-team/).
+- ***Many organization use dedicated Release Branches (including Microsoft) instead of deploying from `main`. See [Release Flow](https://devblogs.microsoft.com/devops/release-flow-how-we-do-branching-on-the-vsts-team/).
 
 More resources:
 
@@ -180,7 +180,7 @@ More resources:
 
 ### Testing
 
-- Unit Testing - These test small pieces of functionality within your code. Data transformation code should have unit tests and can be accomplished by abstracting Data Transformation logic into packages. Unit tests along with linting are automatically run when a PR is raised to `master`.
+- Unit Testing - These test small pieces of functionality within your code. Data transformation code should have unit tests and can be accomplished by abstracting Data Transformation logic into packages. Unit tests along with linting are automatically run when a PR is raised to `main`.
   - See here for [unit tests](./src/ddo_transform/tests/) within the solution and the corresponding [QA Pipeline](./devops/azure-pipelines-ci-qa-python.yml) that executes the unit tests on every PR.
 
 - Integration Testing - These are run to ensure integration points of the solution function as expected. In this demo solution, an actual Data Factory Pipeline run is automatically triggered and its output verified as part of the Release to the Staging Environment.
@@ -257,7 +257,7 @@ More resources:
        - **AZURE_SUBSCRIPTION_ID** - Azure subscription id to use to deploy resources. *Default*: default azure subscription. To see your default, run `az account list`.
        - **RESOURCE_GROUP_NAME_PREFIX** - name of the resource group. This will automatically be appended with the environment name. For example: `RESOURCE_GROUP_NAME_PREFIX-dev-rg`. *Default*: mdwdo-park-${DEPLOYMENT_ID}.
        - **DEPLOYMENT_ID** - string appended to all resource names. This is to ensure uniqueness of azure resource names. *Default*: random five character string.
-       - **AZDO_PIPELINES_BRANCH_NAME** - git branch where Azure DevOps pipelines definitions are retrieved from. *Default*: master.
+       - **AZDO_PIPELINES_BRANCH_NAME** - git branch where Azure DevOps pipelines definitions are retrieved from. *Default*: main.
        - **AZURESQL_SERVER_PASSWORD** - Password of the SQL Server instance. *Default*: semi-random string.
 
       To further customize the solution, set parameters in `arm.parameters` files located in the `infrastructure` folder.
@@ -278,11 +278,11 @@ More resources:
         - Repository type: **Github**
         - Github Account: **your_Github_account**
         - Git repository name: **imported Github repository**
-        - Collaboration branch: **master**
+        - Collaboration branch: **main**
         - Root folder: **/e2e_samples/parking_sensors/adf**
         - Import Existing Data Factory resource to repository: **Selected**
         - Branch to import resource into: **Use Collaboration**
-    5. When prompted to select a working branch, select **master**
+    5. When prompted to select a working branch, select **main**
 
    **IMPORTANT NOTE:** Only the **DEV** Data Factory should be setup with Git integration. Do **NOT** setup git integration in the STG and PROD Data Factories.
 
@@ -290,7 +290,7 @@ More resources:
 
    1. In the **DEV** Data Factory portal, navigate to "Manage > Triggers". Select the `T_Sched` trigger and activate it by clicking on the "Play" icon next to it. Click `Publish` to publish changes.
       - Publishing a change is **required** to generate the `adf_publish` branch which is required in the Release pipelines.
-   2. In Azure DevOps, notice a new run of the Build Pipeline (**mdw-park-ci-artifacts**) off `master`. This will build the Python package and SQL DACPAC, then publish these as Pipeline Artifacts.
+   2. In Azure DevOps, notice a new run of the Build Pipeline (**mdw-park-ci-artifacts**) off `main`. This will build the Python package and SQL DACPAC, then publish these as Pipeline Artifacts.
    3. After completion, this should automatically trigger the Release Pipeline (**mdw-park-cd-release**). This will deploy the artifacts across environments.
       - You may need to authorize the Pipelines initially to use the Service Connection for the first time.
       ![Release Pipeline](../../docs/images/ReleasePipeline.PNG?raw=true "Release Pipelines")
@@ -322,8 +322,8 @@ After a successful deployment, you should have the following resources:
   - **Four (4) Azure Pipelines**
     - mdwdo-park-cd-release - Release Pipeline
     - mdwdo-park-ci-artifacts - Build Pipeline
-    - mdwdo-park-ci-qa-python - "QA" pipeline runs on PR to master
-    - mdwdo-park-ci-qa-sql - "QA" pipeline runs on PR to master
+    - mdwdo-park-ci-qa-python - "QA" pipeline runs on PR to `main`
+    - mdwdo-park-ci-qa-sql - "QA" pipeline runs on PR to `main`
   - **Three (6) Variables Groups** - two per environment
     - mdwdo-park-release-dev
     - mdwdo-park-release-secrets-dev**

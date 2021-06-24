@@ -24,7 +24,7 @@ fi
 
 if [ -z $BRANCH_NAME ]
 then 
-    export BRANCH_NAME='master'
+    export BRANCH_NAME='main'
     echo "No working branch name specified, defaulting to $BRANCH_NAME"
 fi
 
