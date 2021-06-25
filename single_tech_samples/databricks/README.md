@@ -1,7 +1,7 @@
 # Azure Databricks
 
-[![Generic badge](Common_Assets/Images/Status-Active.svg)](https://github.com/Azure-Samples/modern-data-warehouse-dataops/commits/master/single_tech_samples/databricks)
-[![GitHub license](Common_Assets/Images/MIT.svg)](https://github.com/Azure-Samples/modern-data-warehouse-dataops/blob/master/LICENSE)
+[![Generic badge](Common_Assets/Images/Status-Active.svg)](https://github.com/Azure-Samples/modern-data-warehouse-dataops/commits/main/single_tech_samples/databricks)
+[![GitHub license](Common_Assets/Images/MIT.svg)](https://github.com/Azure-Samples/modern-data-warehouse-dataops/blob/main/LICENSE)
 [![Open Source? Yes!](Common_Assets/Images/Open_Source.svg)](https://opensource.microsoft.com/codeofconduct/)
 
 [Azure Databricks](https://docs.microsoft.com/en-us/azure/databricks/) is a data analytics platform optimized for the Microsoft Azure cloud services platform which lets you set up your Apache Spark™ environment in minutes, and enable you to autoscale, and collaborate on shared projects in an interactive workspace.
