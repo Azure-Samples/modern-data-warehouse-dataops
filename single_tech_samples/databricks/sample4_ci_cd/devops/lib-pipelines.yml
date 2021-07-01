@@ -3,51 +3,29 @@ variables:
 - group: Databricks-stg-environment
 - group: Databricks-prod-environment
 
-
-trigger:
-  batch: true
-  branches:
-    include:
-    - '*'
-
-  tags:
-    include:
-      - v*.*
-      - prod
-
-  paths:
-    include:
-      - common/**
-
 stages:
-- stage: test_library
-  displayName: 'Test Library'
-  jobs:
-  - template: ./template/test-lib-job.yml
-    parameters:
-      environmentName: 'STG'
 - stage: deploy_library_to_dev
   displayName: 'Deploy to Dev'
   condition: |
-    and(
-      startsWith(variables['Build.SourceBranch'], 'refs/heads/develop'),
-      succeeded('test_library')
-    )
+      startsWith(variables['Build.SourceBranch'], 'refs/heads/develop')
   jobs:
+  - template: ./template/test-lib-job.yml
+    parameters:
+      environmentName: 'DEV'
   - template: ./template/deploy-lib-job.yml
     parameters:
-      environmentName: 'STG'
+      environmentName: 'DEV'
       databricksDomain: '$(databricksDomain_dev)'
       databricksToken: '$(databricksToken_dev)'
       databricksClusterId: '$(databricksClusterId_dev)'
 - stage: deploy_library_to_stg
   displayName: 'Deploy to Staging'
   condition: |
-    and(
-      startsWith(variables['Build.SourceBranch'], 'refs/heads/staging'),
-      succeeded('test_library')
-    )
+      startsWith(variables['Build.SourceBranch'], 'refs/heads/staging')
   jobs:
+  - template: ./template/test-lib-job.yml
+    parameters:
+      environmentName: 'STG'
   - template: ./template/deploy-lib-job.yml
     parameters:
       environmentName: 'STG'
@@ -57,11 +35,11 @@ stages:
 - stage: deploy_library_to_prod
   displayName: 'Deploy to Prod'
   condition: |
-    and(
-      startsWith(variables['Build.SourceBranch'], 'refs/heads/release'),
-      succeeded('test_library')
-    )
+    startsWith(variables['Build.SourceBranch'], 'refs/heads/production')
   jobs:
+  - template: ./template/test-lib-job.yml
+    parameters:
+      environmentName: 'PROD'
   - template: ./template/deploy-lib-job.yml
     parameters:
       environmentName: 'PROD'

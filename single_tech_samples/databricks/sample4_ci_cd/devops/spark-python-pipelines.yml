@@ -35,7 +35,7 @@ stages:
   condition: |
     or(
       startsWith(variables['Build.SourceBranch'], 'refs/heads/staging'),
-      startsWith(variables['Build.SourceBranch'], 'refs/heads/release')
+      startsWith(variables['Build.SourceBranch'], 'refs/heads/production')
     )
   jobs:
   - template: ./template/test-lib-job.yml
@@ -56,7 +56,7 @@ stages:
   displayName: 'Deploy to Prod'
   condition: |
     and(
-      startsWith(variables['Build.SourceBranch'], 'refs/heads/release'),
+      startsWith(variables['Build.SourceBranch'], 'refs/heads/production'),
       succeeded('test_at_stg')
     )
   jobs:

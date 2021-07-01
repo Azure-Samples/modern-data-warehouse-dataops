@@ -65,7 +65,7 @@ The following technologies are used to build this template:
 - [Azure Resource Manager](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview)
 - [nutter](https://github.com/microsoft/nutter)
 - [databricks cli](https://docs.microsoft.com/en-us/azure/databricks/dev-tools/cli/)
-- [dbx](https://github.com/databrickslabs/dbx) - DataBricks CLI eXtensions
+- [dbx](https://github.com/databrickslabs/dbx) - Databricks CLI eXtensions
 
 ## 2. How to use this template
 
@@ -265,6 +265,8 @@ This is to support the job of [Notebook](https://docs.microsoft.com/en-us/azure/
 The bash script below is to create a standalone git repository. You need to [create a project in Azure DevOps and create a repository in the project](https://docs.microsoft.com/en-us/azure/devops/organizations/projects/create-project?view=azure-devops&tabs=preview-page). And replace the **[your repo url]** in the code below with [your repository url](https://docs.microsoft.com/en-us/azure/devops/user-guide/code-with-git?toc=%2Fazure%2Fdevops%2Frepos%2Ftoc.json&bc=%2Fazure%2Fdevops%2Frepos%2Fbreadcrumb%2Ftoc.json&view=azure-devops).
 
 ```bash
+mkdir [your project name]
+cd [your project name]
 git clone https://github.com/Azure-Samples/modern-data-warehouse-dataops.git 
 cd modern-data-warehouse-dataops
 git checkout single-tech/databricks-ops
@@ -280,6 +282,9 @@ git push -u origin --all
 git branch develop master
 git branch staging develop
 git branch production staging
+git push -u origin develop
+git push -u origin staging
+git push -u origin production
 ```
 
 After running the scripts, you can open the your repo url to check the code is pushed to the repository.
@@ -296,26 +301,32 @@ You can find the [document](https://docs.microsoft.com/en-us/azure/devops/repos/
 
 In this repo, there are several yml files which are the pipelines to support the CI/CD. you need to import the yml as build pipeline.
 
+![pipelines](images/pipelines.png "pipelines")
+
 - Import [./devops/notebook-pipelines.yml](./devops/notebook-pipelines.yml) as build pipeline. This pipeline tests and uploads the notebooks to databricks workspace.
 
 > Here is a [post](https://stackoverflow.com/questions/59067096/create-a-new-pipeline-from-existing-yml-file-in-the-repository-azure-pipelines) to introduce how to import a yaml file as Azure DevOps pipeline from Azure DevOps repository.
 
-- Import [./devops/lib-pipelines.yml](./devops/lib-pipelines.yml) as build pipeline. This pipeline tests and uploads the python library to databricks cluster as a library.
+- Import [./devops/lib-pipelines.yml](./devops/lib-pipelines.yml) as build pipeline. This pipeline tests and uploads the python library to databricks cluster as a library. You need to select branch to run the pipeline for different environments.
 
-> You need to run this pipeline to deploy the library into databricks, before running the notebook pipeline.  Or remove the Import statement in notebook, if no library is required in the project, then this pipeline is not needed.
+![deploy-lib](images/deploy-lib.png "deploy-lib")
 
-![pipelines](images/pipelines.png "pipelines")
+> If no library is required in your notebooks project, you need remove the Import statement in notebooks. 
 
 - Create 3 Variable Group as the names below.
   - Databricks-dev-environment
   - Databricks-stg-environment
   - Databricks-prod-environment
 
+    ![variable-group](images/variable-group.png "variable-group")
+
   Each variable group has 3 variables:
 
-  - **databricksClusterId**: the id of Databricks cluster.
-  - **databricksDomain**: the url of Databricks workspace.
-  - **databricksToken**: the access token of Databricks.
+  - **databricksClusterId_[dev|stg|prod]**: the id of Databricks cluster.
+  - **databricksDomain_[dev|stg|prod]**: the url of Databricks workspace.
+  - **databricksToken_[dev|stg|prod]**: the access token of Databricks.
+
+    ![variables](images/variables.png "variables")
 
 > Here are the [document](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=classic) of how to create variable groups, and the [document](https://docs.databricks.com/dev-tools/api/latest/authentication.html#generate-a-personal-access-token) of how to get the token.
 
@@ -345,6 +356,10 @@ Follow this [document](https://docs.microsoft.com/en-us/azure/databricks/repos) 
 
 - Create a pull request from **staging branch** to **production branch** or directly run the pipeline on release branch.
 - It triggers the pipeline to run tests and import notebooks into production databricks workspace.
+
+Or
+
+- Manually run the pipeline from **production branch**
 
 >The pipeline does not create job with the notebooks.
 
@@ -383,11 +398,17 @@ pytest common/tests
 pytest spark_python_jobs/tests/unit
 ```
 
+  ![pytest-output](images/pytest-output.png "pytest-output")
+
 #### 2.5.4 Run test with pipelines
 
 - Commit and push the changes to **develop branch**.
 - Create a pull request from **develop branch** to **staging branch**
 - Complete the merge, it will trigger the pipeline to run tests at staging databricks cluster.
+
+Or
+
+- Manually run the pipeline from **production branch**
 
   ![spark-python-staging](images/spark-python-staging.png "spark-python-staging")
 
