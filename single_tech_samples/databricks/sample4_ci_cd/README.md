@@ -307,11 +307,17 @@ In this repo, there are several yml files which are the pipelines to support the
 
 > Here is a [post](https://stackoverflow.com/questions/59067096/create-a-new-pipeline-from-existing-yml-file-in-the-repository-azure-pipelines) to introduce how to import a yaml file as Azure DevOps pipeline from Azure DevOps repository.
 
-- Import [./devops/lib-pipelines.yml](./devops/lib-pipelines.yml) as build pipeline. This pipeline tests and uploads the python library to databricks cluster as a library. You need to select branch to run the pipeline for different environments.
+- Import [./devops/lib-pipelines.yml](./devops/lib-pipelines.yml) as build pipeline. This pipeline tests and uploads the python library to databricks cluster as a library.
+
+You need to select branch to run the pipeline for different environments.
+
+- Manually run the pipeline from **develop branch** to deploy the libray to Databricks in develop environment
+- Manually run the pipeline from **staging branch** to deploy the libray to Databricks in staging environment
+- Manually run the pipeline from **production branch** to deploy the libray to Databricks in production environment
 
 ![deploy-lib](images/deploy-lib.png "deploy-lib")
 
-> If no library is required in your notebooks project, you need remove the Import statement in notebooks. 
+> If no library is required in your notebooks project, you need remove the Import statement in notebooks.
 
 - Create 3 Variable Group as the names below.
   - Databricks-dev-environment
@@ -349,6 +355,10 @@ Follow this [document](https://docs.microsoft.com/en-us/azure/databricks/repos) 
 
 - Create a pull request from **develop branch** to **staging branch**
 - Complete the merge, it triggers the pipeline to run tests at staging databricks cluster.
+
+Or
+
+- Manually run the pipeline from **staging branch**
 
   ![notebook-staging](images/notebook-staging.png "notebook-staging")
 
@@ -408,7 +418,7 @@ pytest spark_python_jobs/tests/unit
 
 Or
 
-- Manually run the pipeline from **production branch**
+- Manually run the pipeline from **staging branch**
 
   ![spark-python-staging](images/spark-python-staging.png "spark-python-staging")
 
@@ -416,6 +426,10 @@ Or
 
 - Create a pull request from **staging branch** to **production branch** or directly run the pipeline
 - Complete the merge, it will trigger the pipeline to run tests and create a job in production databricks.
+
+Or
+
+- Manually run the pipeline from **production branch**
 
   ![spark-python-prod](images/spark-python-prod.png "spark-python-prod")
   
