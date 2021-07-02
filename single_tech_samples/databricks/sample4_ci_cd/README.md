@@ -13,8 +13,8 @@
   - [2.4. The Notebook Approach](#24-The-Notebook-Approach)
     - [2.4.1 Repository setup](#241-multiple-notebooks)
     - [2.4.2 DevOps pipeline setup](#242-devops-pipeline-setup)
-    - [2.4.3 Import into DEV databricks workspace](#243-Import-into-DEV-databricks-workspace)
-    - [2.4.4 Implement and run tests in DEV databricks workspace](#244-Implement-and-run-tests-in-DEV-databricks-workspace)
+    - [2.4.3 Import into DEV Databricks workspace](#243-Import-into-DEV-databricks-workspace)
+    - [2.4.4 Implement and run tests in DEV Databricks workspace](#244-Implement-and-run-tests-in-DEV-databricks-workspace)
     - [2.4.5 Run test with pipelines and Deployment](#245-Run-test-with-pipelines-and-Deployment)
     - [2.4.6 Deployment](#246-Deployment)
   - [2.5. The Spark Python Approach](#25-The-Spark-Python-Approach)
@@ -26,7 +26,7 @@
 
 ## 1. Solution Overview
 
-When building a project in databricks, we can start from a notebook and implement the business logic in Python or SparkSQL. Before go-production, we need to create CI/CD pipelines. To reduce the effort of build CI/CD pipelines, we build this git repository as template including sample noteboks and unit tests with CI/CD pipelines in Azure DevOps yaml files .
+When building a project in databricks, we can start from a notebook and implement the business logic in Python or SparkSQL. Before go-production, we need to create CI/CD pipelines. To reduce the effort of build CI/CD pipelines, we build this git repository as template including sample notebooks and unit tests with CI/CD pipelines in Azure DevOps yaml files .
 
 **It is the scaffolding of Azure databricks project.**
 
@@ -311,9 +311,9 @@ In this repo, there are several yml files which are the pipelines to support the
 
 You need to select branch to run the pipeline for different environments.
 
-- Manually run the pipeline from **develop branch** to deploy the libray to Databricks in develop environment
-- Manually run the pipeline from **staging branch** to deploy the libray to Databricks in staging environment
-- Manually run the pipeline from **production branch** to deploy the libray to Databricks in production environment
+- Manually run the pipeline from **develop branch** to deploy the library to Databricks in develop environment
+- Manually run the pipeline from **staging branch** to deploy the library to Databricks in staging environment
+- Manually run the pipeline from **production branch** to deploy the library to Databricks in production environment
 
 ![deploy-lib](images/deploy-lib.png "deploy-lib")
 
