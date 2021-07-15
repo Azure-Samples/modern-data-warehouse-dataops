@@ -1,0 +1,8 @@
+__pycache__/
+sparkapp_project.egg-info/
+dist/
+build/
+temp/
+.pytest_cache/
+.coverage
+tree.doc
