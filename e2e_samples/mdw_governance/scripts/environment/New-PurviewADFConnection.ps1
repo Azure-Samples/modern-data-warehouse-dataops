@@ -3,7 +3,7 @@
 # Connect a Data Factory to Purview for lineage tracking
 # Currently, to create a connection, you have to add a tag to the Data Factory
 
-$dataFactory=(az datafactory factory show --name $env:DATA_FACTORY_NAME --resource-group $env:RESOURCE_GROUP |  ConvertFrom-Json)
+$dataFactory=(az datafactory show --name $env:DATA_FACTORY_NAME --resource-group $env:RESOURCE_GROUP |  ConvertFrom-Json)
 
 $catalogAPI = "$env:PURVIEW_ACCOUNT_NAME.catalog.purview.azure.com"
 
