@@ -12,8 +12,13 @@ resources:
   repositories:
   - repository: mdwdataops_adfpublish
     type: github
+<<<<<<< HEAD
     endpoint: mdwdops-github
     name: devlace/mdw-dataops-clone
+=======
+    endpoint: mdwdo-park-github
+    name: devlace/mdw-dataops-parkingsensors-02
+>>>>>>> 38da4d8 (Single tech/databricks ops (#371))
     ref: adf_publish
 
 # The deployment script sets this as a Pipeline Variable, but you may choose to set it here in the definition
