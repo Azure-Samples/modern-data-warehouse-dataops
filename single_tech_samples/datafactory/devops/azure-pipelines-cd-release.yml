@@ -9,7 +9,7 @@ resources:
       source: mdwdo-adf-ci-artifacts
       trigger:
         branches:
-          - master
+          - main
   repositories:
     - repository: mdwdataops_adfpublish
       type: github

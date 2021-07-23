@@ -28,3 +28,4 @@ variables:
   emailSenderLogicAppName: ${{ variables.resourcePrefix }}laemail
   emailSenderRecipientAddress: "test@test.com"
   o365ConnectionName: "office365"
+  databricksWorkspaceName: ${{ variables.resourcePrefix }}dbricks

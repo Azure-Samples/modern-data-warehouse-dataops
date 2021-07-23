@@ -2,8 +2,8 @@ name: Custom Cred Scan
 on:
   push:
     branches:
-    - master
-    - single-tech/databricks-ops
+    - main
+    - single-tech/databricks
 
 jobs:
   pattern_match_with_secrets:

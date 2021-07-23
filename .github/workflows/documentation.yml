@@ -2,12 +2,12 @@ name: Documentation Lint
 on:
   push:
     branches:
-    - master
-    - single-tech/databricks-ops
+    - main
+    - single-tech/databricks
   pull_request:
     branches:
-    - master
-    - single-tech/databricks-ops
+    - main
+    - single-tech/databricks
 
 jobs:
   markdown-link-check:
