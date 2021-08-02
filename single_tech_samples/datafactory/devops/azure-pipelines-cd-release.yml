@@ -33,6 +33,14 @@ stages:
         parameters:
           environmentName: 'STG'
           serviceConnection: 'mdwdo-adf-serviceconnection-stg'
+      - template: templates/jobs/integration-test-adf-job.yml
+        parameters:
+          environmentName: 'STG'
+          serviceConnection: 'mdwdo-adf-serviceconnection-stg'
+          resourceGroup: $(adfName)
+          datafactoryName: $(rgName)
+          accountName: $(datalakeAccountName)
+          accountKey: $(datalakeKey)
 
   - stage: deploy_to_prod
     displayName: 'Deploy to Prod'
