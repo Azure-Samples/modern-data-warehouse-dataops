@@ -24,24 +24,21 @@ set -o nounset
 # REQUIRED VARIABLES:
 #
 # DATABRICKS_HOST
-# DATABRICKS_TOKEN
-# AZURE_STORAGE_ACCOUNT
-# APPINSIGHTS_KEY
-# SP_STOR_ID
-# SP_STOR_PASS
-# SP_STOR_TENANT
+# DATABRICKS_TOKEN - this needs to be a Azure AD user token (not PAT token or Azure AD application token that belongs to a service principal)
+# KEYVAULT_RESOURCE_ID
+# KEYVAULT_DNS_NAME
 
 
 wait_for_run () {
     # See here: https://docs.azuredatabricks.net/api/latest/jobs.html#jobsrunresultstate
     declare mount_run_id=$1
     while : ; do
-        life_cycle_status=$(databricks runs get --run-id $mount_run_id | jq -r ".state.life_cycle_state") 
-        result_state=$(databricks runs get --run-id $mount_run_id | jq -r ".state.result_state")
+        life_cycle_status=$(databricks runs get --run-id "$mount_run_id" | jq -r ".state.life_cycle_state") 
+        result_state=$(databricks runs get --run-id "$mount_run_id" | jq -r ".state.result_state")
         if [[ $result_state == "SUCCESS" || $result_state == "SKIPPED" ]]; then
             break;
         elif [[ $life_cycle_status == "INTERNAL_ERROR" || $result_state == "FAILED" ]]; then
-            state_message=$(databricks runs get --run-id $mount_run_id | jq -r ".state.state_message")
+            state_message=$(databricks runs get --run-id "$mount_run_id" | jq -r ".state.state_message")
             echo -e "${RED}Error while running ${mount_run_id}: ${state_message} ${NC}"
             exit 1
         else 
@@ -66,19 +63,17 @@ echo "Configuring Databricks workspace."
 
 # Create secret scope, if not exists
 scope_name="storage_scope"
-if [[ -z $(databricks secrets list-scopes | grep "$scope_name") ]]; then
-    echo "Creating secrets scope: $scope_name"
-    databricks secrets create-scope --scope "$scope_name"
+if [[ ! -z $(databricks secrets list-scopes | grep "$scope_name") ]]; then
+    # Delete existing scope
+    # NOTE: Need to recreate everytime to ensure idempotent deployment. Reruning deployment overrides KeyVault permissions.
+    echo "Scope already exists, re-creating secrets scope: $scope_name"
+    databricks secrets delete-scope --scope "$scope_name"
 fi
-
-# Create secrets
-echo "Creating secrets within scope $scope_name..."
-
-databricks secrets write --scope "$scope_name" --key "appinsights_key" --string-value  "$APPINSIGHTS_KEY"
-databricks secrets write --scope "$scope_name" --key "storage_account" --string-value  "$AZURE_STORAGE_ACCOUNT"
-databricks secrets write --scope "$scope_name" --key "storage_sp_id" --string-value  "$SP_STOR_ID"
-databricks secrets write --scope "$scope_name" --key "storage_sp_key" --string-value  "$SP_STOR_PASS"
-databricks secrets write --scope "$scope_name" --key "storage_sp_tenant" --string-value  "$SP_STOR_TENANT"
+# Create secret scope
+databricks secrets create-scope --scope "$scope_name" \
+    --scope-backend-type AZURE_KEYVAULT \
+    --resource-id "$KEYVAULT_RESOURCE_ID" \
+    --dns-name "$KEYVAULT_DNS_NAME"
 
 # Upload notebooks
 echo "Uploading notebooks..."
@@ -96,8 +91,8 @@ databricks fs cp --recursive --overwrite "./databricks/libs/" "dbfs:/mnt/datalak
 # Create initial cluster, if not yet exists
 cluster_config="./databricks/config/cluster.config.json"
 echo "Creating an interactive cluster using config in $cluster_config..."
-cluster_name=$(cat $cluster_config | jq -r ".cluster_name")
-if cluster_exists $cluster_name; then 
+cluster_name=$(cat "$cluster_config" | jq -r ".cluster_name")
+if cluster_exists "$cluster_name"; then 
     echo "Cluster ${cluster_name} already exists!"
 else
     echo "Creating cluster ${cluster_name}..."

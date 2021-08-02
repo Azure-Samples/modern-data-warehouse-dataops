@@ -55,7 +55,7 @@ createPipeline () {
         --service-connection "$github_sc_id" \
         --skip-first-run true \
         --output json | jq -r '.id')
-    echo $pipeline_id
+    echo "$pipeline_id"
 }
 
 # Build Pipelines
@@ -68,5 +68,5 @@ cd_release_pipeline_id=$(createPipeline "cd-release")
 
 az pipelines variable create \
     --name devAdfName \
-    --pipeline-id $cd_release_pipeline_id \
+    --pipeline-id "$cd_release_pipeline_id" \
     --value "$DEV_DATAFACTORY_NAME"

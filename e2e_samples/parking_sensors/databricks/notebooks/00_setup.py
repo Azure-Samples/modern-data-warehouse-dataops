@@ -21,10 +21,10 @@ dbutils.fs.refreshMounts()
 # COMMAND ----------
 
 # Retrieve storage credentials
-storage_account = dbutils.secrets.get(scope = "storage_scope", key = "storage_account")
-storage_sp_id = dbutils.secrets.get(scope = "storage_scope", key = "storage_sp_id")
-storage_sp_key = dbutils.secrets.get(scope = "storage_scope", key = "storage_sp_key")
-storage_sp_tenant = dbutils.secrets.get(scope = "storage_scope", key = "storage_sp_tenant")
+storage_account = dbutils.secrets.get(scope = "storage_scope", key = "datalakeAccountName")
+storage_sp_id = dbutils.secrets.get(scope = "storage_scope", key = "spStorId")
+storage_sp_key = dbutils.secrets.get(scope = "storage_scope", key = "spStorPass")
+storage_sp_tenant = dbutils.secrets.get(scope = "storage_scope", key = "spStorTenantId")
 
 # Mount
 configs = {"fs.azure.account.auth.type": "OAuth",
@@ -33,11 +33,13 @@ configs = {"fs.azure.account.auth.type": "OAuth",
            "fs.azure.account.oauth2.client.secret": storage_sp_key,
            "fs.azure.account.oauth2.client.endpoint": "https://login.microsoftonline.com/" + storage_sp_tenant + "/oauth2/token"} 
 
+
 # Optionally, you can add <your-directory-name> to the source URI of your mount point.
 dbutils.fs.mount(
   source = "abfss://" + storage_mount_container + "@" + storage_account + ".dfs.core.windows.net/",
   mount_point = storage_mount_data_path,
   extra_configs = configs)
+
 
 # Refresh mounts
 dbutils.fs.refreshMounts()
