@@ -1,5 +1,3 @@
-import pytest
-from blob_storage import blob_service_client
 
 PIPELINE_NAME = "IngestToBronze"
 SINK_CONTAINER = "datalake"
