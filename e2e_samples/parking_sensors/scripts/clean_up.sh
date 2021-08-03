@@ -34,7 +34,7 @@ echo "THIS SCRIPT WILL DELETE RESOURCES PREFIXED WITH $prefix !!"
 if [[ -n $prefix ]]; then
 
     printf "\nPIPELINES:\n"
-    az pipelines list -o tsv --only-show-errors | { grep "$prefix" || true; } | awk '{print $6}'
+    az pipelines list -o tsv --only-show-errors | { grep "$prefix" || true; } | awk '{print $8}'
     
     printf "\nVARIABLE GROUPS:\n"
     az pipelines variable-group list -o tsv --only-show-errors | { grep "$prefix" || true; } | awk '{print $6}'

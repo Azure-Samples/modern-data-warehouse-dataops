@@ -33,15 +33,15 @@ github_repo_url="https://github.com/$GITHUB_REPO"
 ###################
 # DEPLOY ALL FOR EACH ENVIRONMENT
 
-for env_name in dev stg prod; do  # dev stg prod
-    PROJECT=$project \
-    DEPLOYMENT_ID=$DEPLOYMENT_ID \
-    ENV_NAME=$env_name \
-    AZURE_LOCATION=$AZURE_LOCATION \
-    AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID \
-    AZURESQL_SERVER_PASSWORD=$AZURESQL_SERVER_PASSWORD \
-    bash -c "./scripts/deploy_infrastructure.sh"  # inclues AzDevOps Azure Service Connections and Variable Groups
-done
+# for env_name in prod; do  # dev stg prod
+#     PROJECT=$project \
+#     DEPLOYMENT_ID=$DEPLOYMENT_ID \
+#     ENV_NAME=$env_name \
+#     AZURE_LOCATION=$AZURE_LOCATION \
+#     AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID \
+#     AZURESQL_SERVER_PASSWORD=$AZURESQL_SERVER_PASSWORD \
+#     bash -c "./scripts/deploy_infrastructure.sh"  # inclues AzDevOps Azure Service Connections and Variable Groups
+# done
 
 
 ###################

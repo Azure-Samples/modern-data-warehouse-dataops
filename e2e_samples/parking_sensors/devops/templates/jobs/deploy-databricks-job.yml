@@ -36,6 +36,9 @@ jobs:
           displayName: 'Set packageWheelName variable'
 
         - script: |
+            echo "TEMP!!"
+            echo $DATABRICKS_HOST
+            echo $DATABRICKS_TOKEN
             echo "Uploading app libraries to DBFS..."
             echo "Uploading SOURCE whl file: ${WHEEL_FILE_PATH}/${WHEEL_FILE_NAME} to dbfs DESTINATION: ${DBFS_LIBS_PATH}/${WHEEL_FILE_NAME}"
             databricks fs cp "${WHEEL_FILE_PATH}/${WHEEL_FILE_NAME}" "${DBFS_LIBS_PATH}/${WHEEL_FILE_NAME}"

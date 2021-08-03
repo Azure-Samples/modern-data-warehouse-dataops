@@ -313,7 +313,7 @@ After a successful deployment, you should have the following resources:
     - notebooks uploaded at `/notebooks` folder in the workspace
     - SparkSQL tables created
     - ADLS Gen2 mounted at `dbfs:/mnt/datalake` using the Storage Service Principal.
-    - Databricks secrets created*
+    - Databricks KeyVault secrets scope created
   - **Azure Synapse (formerly SQLDW)** - currently, empty. The Release Pipeline will deploy the SQL Database objects.
   - **Application Insights**
   - **KeyVault** with all relevant secrets stored.
@@ -325,11 +325,11 @@ After a successful deployment, you should have the following resources:
     - mdwdops-ci-qa-sql - "QA" pipeline runs on PR to `main`
   - **Three (6) Variables Groups** - two per environment
     - mdwdops-release-dev
-    - mdwdops-secrets-dev**
+    - mdwdops-secrets-dev*
     - mdwdops-release-stg
-    - mdwdops-secrets-stg**
+    - mdwdops-secrets-stg*
     - mdwdops-release-prod
-    - mdwdops-secrets-prod**
+    - mdwdops-secrets-prod*
   - **Four (4) Service Connections**
     - **Three Azure Service Connections** (one per environment) each with a **Service Principal** with Contributor rights to the corresponding Resource Group.
       - mdwdops-serviceconnection-dev
@@ -340,9 +340,7 @@ After a successful deployment, you should have the following resources:
 
 Notes:
 
-- *This secret-scope is currently not deployed as a KeyVault-backed secret scope due to limitations of creating it programmatically.
-
-- **These variable groups are currently not linked to KeyVault due to limitations of creating these programmatically. See [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
+- *These variable groups are currently not linked to KeyVault due to limitations of creating these programmatically. See [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
 
 <!--TODO: Add Cleanup script-->
 
@@ -363,8 +361,6 @@ ADLS Gen2 is structured as the following:
 
 The following lists some limitations of the solution and associated deployment script:
 
-- Databricks KeyVault-backed secrets scopes can only be create via the UI, cannot be created programmatically and was not incorporated in the automated deployment of the solution.
-  - **Workaround**: Deployment uses normal Databricks secrets with the downside of duplicated information. If you wish, you many manually convert these to KeyVault-back secret scopes. See [here](https://docs.microsoft.com/en-us/azure/databricks/security/secrets/secret-scopes#--create-an-azure-key-vault-backed-secret-scope) for more information.
 - Azure DevOps Variable Groups linked to KeyVault can only be created via the UI, cannot be created programmatically and was not incorporated in the automated deployment of the solution.
   - **Workaround**: Deployment add sensitive configuration as "secrets" in Variable Groups with the downside of duplicated information. If you wish, you may manually link a second Variable Group to KeyVault to pull out the secrets. KeyVault secret names should line up with required variables in the Azure DevOps pipelines. See [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml#link-secrets-from-an-azure-key-vault) for more information.
 - Azure DevOps Environment and Approval Gates can only be managed via the UI, cannot be managed programmatically and was not incorporated in the automated deployment of the solution.
