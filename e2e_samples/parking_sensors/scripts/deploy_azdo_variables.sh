@@ -43,6 +43,7 @@ set -o xtrace # For debugging
 # KV_URL
 # DATABRICKS_HOST
 # DATABRICKS_TOKEN
+# DATABRICKS_WORKSPACE_RESOURCE_ID
 # SQL_SERVER_NAME
 # SQL_SERVER_USERNAME
 # SQL_SERVER_PASSWORD
@@ -118,6 +119,8 @@ az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
     --secret "true" --name "databricksDomain" --value "$DATABRICKS_HOST"
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
     --secret "true" --name "databricksToken" --value "$DATABRICKS_TOKEN"
+az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
+    --secret "true" --name "databricksWorkspaceResourceId" --value "$DATABRICKS_WORKSPACE_RESOURCE_ID"
 # Datalake
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
     --secret "true" --name "datalakeAccountName" --value "$AZURE_STORAGE_ACCOUNT"

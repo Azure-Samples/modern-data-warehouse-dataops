@@ -198,6 +198,7 @@ az keyvault secret set --vault-name "$kv_name" --name "spStorTenantId" --value "
 echo "Generate Databricks AAD token"
 databricks_token=$(az account get-access-token --resource 2ff814a6-3304-4ab8-85cb-cd0e6f879c1d --output json | jq -r .accessToken) # Databricks app global id
 databricks_host=https://$(echo "$arm_output" | jq -r '.properties.outputs.databricks_output.value.properties.workspaceUrl')
+databricks_workspace_resource_id=$(echo "$arm_output" | jq -r '.properties.outputs.databricks_id.value')
 
 # Configure databricks (KeyVault-backed Secret scope, mount to storage via SP, databricks tables, cluster)
 DATABRICKS_TOKEN=$databricks_token \
@@ -268,6 +269,7 @@ AZURE_LOCATION=$AZURE_LOCATION \
 KV_URL=$kv_dns_name \
 DATABRICKS_TOKEN=$databricks_token \
 DATABRICKS_HOST=$databricks_host \
+DATABRICKS_WORKSPACE_RESOURCE_ID=$databricks_workspace_resource_id \
 SQL_SERVER_NAME=$sql_server_name \
 SQL_SERVER_USERNAME=$sql_server_username \
 SQL_SERVER_PASSWORD=$sql_server_password \

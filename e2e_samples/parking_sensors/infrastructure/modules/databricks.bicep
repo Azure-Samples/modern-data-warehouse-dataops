@@ -39,3 +39,4 @@ resource databricks_roleassignment 'Microsoft.Authorization/roleAssignments@2020
 }
 
 output databricks_output object = databricks
+output databricks_id string = databricks.id
