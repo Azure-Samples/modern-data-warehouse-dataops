@@ -29,6 +29,7 @@ The sample demonstrate how DevOps principles can be applied end to end Data Pipe
     - [Software pre-requisites if you use dev container](#software-pre-requisites-if-you-use-dev-container)
   - [Setup and Deployment](#setup-and-deployment)
     - [Deployed Resources](#deployed-resources)
+    - [Clean up](#clean-up)
   - [Data Lake Physical layout](#data-lake-physical-layout)
   - [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
 
@@ -342,7 +343,9 @@ Notes:
 
 - *These variable groups are currently not linked to KeyVault due to limitations of creating these programmatically. See [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
 
-<!--TODO: Add Cleanup script-->
+#### Clean up
+
+This sample comes with an [optional, interactive clean-up script](./scripts/clean_up.sh) which will delete resources with `mdwdops` in its name. It will list resources to be deleted and will prompt before continuing. IMPORTANT NOTE: As it simply searches for `mdwdops` in the resource name, it could list resources not part of the deployment! Use with care.
 
 ### Data Lake Physical layout
 
