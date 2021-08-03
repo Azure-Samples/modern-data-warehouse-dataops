@@ -212,7 +212,8 @@ az keyvault secret set --vault-name "$kv_name" --name "databricksToken" --value 
 az keyvault secret set --vault-name "$kv_name" --name "databricksWorkspaceResourceId" --value "$databricks_workspace_resource_id"
 
 # Configure databricks (KeyVault-backed Secret scope, mount to storage via SP, databricks tables, cluster)
-DATABRICKS_TOKEN=$databricks_token \
+# NOTE: must use AAD token, not PAT token
+DATABRICKS_TOKEN=$databricks_aad_token \
 DATABRICKS_HOST=$databricks_host \
 KEYVAULT_DNS_NAME=$kv_dns_name \
 KEYVAULT_RESOURCE_ID=$(echo "$arm_output" | jq -r '.properties.outputs.keyvault_resource_id.value') \
