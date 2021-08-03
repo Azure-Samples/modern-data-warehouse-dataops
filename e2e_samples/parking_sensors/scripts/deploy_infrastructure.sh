@@ -127,6 +127,7 @@ az storage blob upload --container-name $storage_file_system --account-name "$az
 
 # Set Keyvault secrets
 az keyvault secret set --vault-name "$kv_name" --name "datalakeAccountName" --value "$azure_storage_account"
+az keyvault secret set --vault-name "$kv_name" --name "datalakeKey" --value "$azure_storage_key"
 
 
 ###################
@@ -195,10 +196,20 @@ az keyvault secret set --vault-name "$kv_name" --name "spStorId" --value "$sp_st
 az keyvault secret set --vault-name "$kv_name" --name "spStorPass" --value "$sp_stor_pass"
 az keyvault secret set --vault-name "$kv_name" --name "spStorTenantId" --value "$sp_stor_tenant"
 
-echo "Generate Databricks AAD token"
-databricks_token=$(az account get-access-token --resource 2ff814a6-3304-4ab8-85cb-cd0e6f879c1d --output json | jq -r .accessToken) # Databricks app global id
+echo "Generate Databricks token"
 databricks_host=https://$(echo "$arm_output" | jq -r '.properties.outputs.databricks_output.value.properties.workspaceUrl')
 databricks_workspace_resource_id=$(echo "$arm_output" | jq -r '.properties.outputs.databricks_id.value')
+databricks_aad_token=$(az account get-access-token --resource 2ff814a6-3304-4ab8-85cb-cd0e6f879c1d --output json | jq -r .accessToken) # Databricks app global id
+
+# Use AAD token to generate PAT token
+databricks_token=$(DATABRICKS_TOKEN=$databricks_aad_token \
+    DATABRICKS_HOST=$databricks_host \
+    bash -c "databricks tokens create --comment 'deployment'" | jq -r .token_value)
+
+# Save in KeyVault
+az keyvault secret set --vault-name "$kv_name" --name "databricksDomain" --value "$databricks_host"
+az keyvault secret set --vault-name "$kv_name" --name "databricksToken" --value "$databricks_token"
+az keyvault secret set --vault-name "$kv_name" --name "databricksWorkspaceResourceId" --value "$databricks_workspace_resource_id"
 
 # Configure databricks (KeyVault-backed Secret scope, mount to storage via SP, databricks tables, cluster)
 DATABRICKS_TOKEN=$databricks_token \
@@ -206,6 +217,7 @@ DATABRICKS_HOST=$databricks_host \
 KEYVAULT_DNS_NAME=$kv_dns_name \
 KEYVAULT_RESOURCE_ID=$(echo "$arm_output" | jq -r '.properties.outputs.keyvault_resource_id.value') \
     bash -c "./scripts/configure_databricks.sh"
+
 
 
 ####################
@@ -274,7 +286,7 @@ SQL_SERVER_NAME=$sql_server_name \
 SQL_SERVER_USERNAME=$sql_server_username \
 SQL_SERVER_PASSWORD=$sql_server_password \
 SQL_DW_DATABASE_NAME=$sql_dw_database_name \
-AZURE_STORAGE_KEY=$azure_storage_account \
+AZURE_STORAGE_KEY=$azure_storage_key \
 AZURE_STORAGE_ACCOUNT=$azure_storage_account \
 DATAFACTORY_NAME=$datafactory_name \
 SP_ADF_ID=$sp_adf_id \
