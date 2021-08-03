@@ -90,7 +90,8 @@
                     "server": "=",
                     "url": "=",
                     "aadResourceId": "=",
-                    "connectionString": "|:-connectionString:secureString"
+                    "connectionString": "|:-connectionString:secureString",
+                    "workspaceResourceId": "="
                 }
             }
         },
