@@ -26,33 +26,47 @@ set -o nounset
 . ./scripts/init_environment.sh
 
 
+project=mdwdops # CONSTANT - this is prefixes to all resources of the Parking Sensor sample
+github_repo_url="https://github.com/$GITHUB_REPO"
+
+
 ###################
 # DEPLOY ALL FOR EACH ENVIRONMENT
 
 for env_name in dev stg prod; do  # dev stg prod
-    PROJECT=mdwdops \
+    PROJECT=$project \
+    DEPLOYMENT_ID=$DEPLOYMENT_ID \
     ENV_NAME=$env_name \
-    RESOURCE_GROUP_NAME="$RESOURCE_GROUP_NAME_PREFIX-$env_name-rg" \
-    GITHUB_REPO_URL="https://github.com/$GITHUB_REPO" \
-    bash -c ./scripts/deploy_infrastructure.sh  # inclues AzDevOps Azure Service Connections and Variable Groups
+    AZURE_LOCATION=$AZURE_LOCATION \
+    AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID \
+    AZURESQL_SERVER_PASSWORD=$AZURESQL_SERVER_PASSWORD \
+    bash -c "./scripts/deploy_infrastructure.sh"  # inclues AzDevOps Azure Service Connections and Variable Groups
 done
 
 
 ###################
 # Deploy AzDevOps Pipelines
 
-# AzDo Github Service Connection -- required only once for the entire deployment
-./scripts/deploy_azdo_service_connections_github.sh
-
-# Release pipelines require DEV_DATAFACTORY_NAME set, retrieve this value from .env.dev file
-export DEV_$(grep -e '^DATAFACTORY_NAME' .env.dev | tail -1 | xargs)
+# Create AzDo Github Service Connection -- required only once for the entire deployment
+PROJECT=$project \
+GITHUB_PAT_TOKEN=$GITHUB_PAT_TOKEN \
+GITHUB_REPO_URL=$github_repo_url \
+    bash -c "./scripts/deploy_azdo_service_connections_github.sh"
 
 # Replace 'devlace/mdw-dataops-clone' to deployer's github project
 sed -i "s+devlace/mdw-dataops-clone+$GITHUB_REPO+" devops/azure-pipelines-cd-release.yml
 
-# Deploy pipelines
-./scripts/deploy_azdo_pipelines.sh
+# azure-pipelines-cd-release.yml pipeline require DEV_DATAFACTORY_NAME set, retrieve this value from .env.dev file
+declare DEV_"$(grep -e '^DATAFACTORY_NAME' .env.dev | tail -1 | xargs)"
 
+# Deploy all pipelines
+PROJECT=$project \
+GITHUB_REPO_URL=$github_repo_url \
+AZDO_PIPELINES_BRANCH_NAME=$AZDO_PIPELINES_BRANCH_NAME \
+DEV_DATAFACTORY_NAME=$DEV_DATAFACTORY_NAME \
+    bash -c "./scripts/deploy_azdo_pipelines.sh"
+
+####
 
 echo "Deployment complete!"
 echo "IMPORTANT: This script updating the Azure Pipeline YAML definitions to point to your Github repo."

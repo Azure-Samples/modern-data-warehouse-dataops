@@ -5,15 +5,15 @@ pr: none
 resources:
   pipelines:
   - pipeline: ciartifacts
-    source: mdwdo-park-ci-artifacts
+    source: mdwdops-ci-artifacts
     trigger: 
       branches:
       - main
   repositories:
   - repository: mdwdataops_adfpublish
     type: github
-    endpoint: mdwdo-park-github
-    name: devlace/mdw-dataops-parkingsensors-02
+    endpoint: mdwdops-github
+    name: devlace/mdw-dataops-parkingsensors-bicep
     ref: adf_publish
 
 # The deployment script sets this as a Pipeline Variable, but you may choose to set it here in the definition
@@ -25,8 +25,8 @@ stages:
 - stage: deploy_to_dev
   displayName: 'Deploy to DEV'  # In DEV, excludes publishing to ADF as this is a manual publish step
   variables:
-  - group: mdwdo-park-release-dev
-  - group: mdwdo-park-release-secrets-dev
+  - group: mdwdops-release-dev
+  - group: mdwdops-secrets-dev
   jobs:
   - template: templates/jobs/deploy-databricks-job.yml
     parameters:
@@ -34,13 +34,13 @@ stages:
   - template: templates/jobs/deploy-azuresqldb-job.yml
     parameters:
       environmentName: 'DEV'
-      serviceConnection: 'mdwdo-park-serviceconnection-dev'
+      serviceConnection: 'mdwdops-serviceconnection-dev'
 
 - stage: deploy_to_stg
   displayName: 'Deploy to Stage'
   variables:
-  - group: mdwdo-park-release-stg
-  - group: mdwdo-park-release-secrets-stg
+  - group: mdwdops-release-stg
+  - group: mdwdops-release-secrets-stg
   jobs: 
   - template: templates/jobs/deploy-databricks-job.yml
     parameters:
@@ -48,19 +48,19 @@ stages:
   - template: templates/jobs/deploy-azuresqldb-job.yml
     parameters:
       environmentName: 'STG'
-      serviceConnection: 'mdwdo-park-serviceconnection-stg'
+      serviceConnection: 'mdwdops-serviceconnection-stg'
   - template: templates/jobs/deploy-adf-job.yml
     parameters:
       environmentName: 'STG'
-      serviceConnection: 'mdwdo-park-serviceconnection-stg'
+      serviceConnection: 'mdwdops-serviceconnection-stg'
   # Integration tests
   - template: templates/jobs/integration-tests-job.yml
 
 - stage: deploy_to_prod
   displayName: 'Deploy to Prod'
   variables:
-  - group: mdwdo-park-release-prod
-  - group: mdwdo-park-release-secrets-prod
+  - group: mdwdops-release-prod
+  - group: mdwdops-release-secrets-prod
   jobs: 
   - template: templates/jobs/deploy-databricks-job.yml
     parameters:
@@ -68,8 +68,8 @@ stages:
   - template: templates/jobs/deploy-azuresqldb-job.yml
     parameters:
       environmentName: 'PROD'
-      serviceConnection: 'mdwdo-park-serviceconnection-prod'
+      serviceConnection: 'mdwdops-serviceconnection-prod'
   - template: templates/jobs/deploy-adf-job.yml
     parameters:
       environmentName: 'PROD'
-      serviceConnection: 'mdwdo-park-serviceconnection-prod'
+      serviceConnection: 'mdwdops-serviceconnection-prod'

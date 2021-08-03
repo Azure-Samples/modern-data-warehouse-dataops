@@ -29,7 +29,7 @@
 set -o errexit
 set -o pipefail
 set -o nounset
-# set -o xtrace # For debugging
+set -o xtrace # For debugging
 
 ###################
 # REQUIRED ENV VARIABLES:
@@ -44,7 +44,7 @@ set -o nounset
 github_sc_name="${PROJECT}-github"
 export AZURE_DEVOPS_EXT_GITHUB_PAT=$GITHUB_PAT_TOKEN
 
-if sc_id=$(az devops service-endpoint list -o tsv | grep "$github_sc_name" | awk '{print $3}'); then
+if sc_id=$(az devops service-endpoint list -o tsv | { grep "$github_sc_name" || true; } | awk '{print $3}'); then
     echo "Service connection: $github_sc_name already exists. Deleting..."
     az devops service-endpoint delete --id "$sc_id" -y
 fi

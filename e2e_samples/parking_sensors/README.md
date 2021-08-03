@@ -253,9 +253,8 @@ More resources:
        - **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). This requires "repo" scope.
 
        Optionally, set the following environment variables:
-       - **RESOURCE_GROUP_LOCATION** - Azure location to deploy resources. *Default*: `westus`.
+       - **AZURE_LOCATION** - Azure location to deploy resources. *Default*: `westus`.
        - **AZURE_SUBSCRIPTION_ID** - Azure subscription id to use to deploy resources. *Default*: default azure subscription. To see your default, run `az account list`.
-       - **RESOURCE_GROUP_NAME_PREFIX** - name of the resource group. This will automatically be appended with the environment name. For example: `RESOURCE_GROUP_NAME_PREFIX-dev-rg`. *Default*: mdwdo-park-${DEPLOYMENT_ID}.
        - **DEPLOYMENT_ID** - string appended to all resource names. This is to ensure uniqueness of azure resource names. *Default*: random five character string.
        - **AZDO_PIPELINES_BRANCH_NAME** - git branch where Azure DevOps pipelines definitions are retrieved from. *Default*: main.
        - **AZURESQL_SERVER_PASSWORD** - Password of the SQL Server instance. *Default*: semi-random string.
@@ -320,24 +319,24 @@ After a successful deployment, you should have the following resources:
   - **KeyVault** with all relevant secrets stored.
 - In Azure DevOps
   - **Four (4) Azure Pipelines**
-    - mdwdo-park-cd-release - Release Pipeline
-    - mdwdo-park-ci-artifacts - Build Pipeline
-    - mdwdo-park-ci-qa-python - "QA" pipeline runs on PR to `main`
-    - mdwdo-park-ci-qa-sql - "QA" pipeline runs on PR to `main`
+    - mdwdops-cd-release - Release Pipeline
+    - mdwdops-ci-artifacts - Build Pipeline
+    - mdwdops-ci-qa-python - "QA" pipeline runs on PR to `main`
+    - mdwdops-ci-qa-sql - "QA" pipeline runs on PR to `main`
   - **Three (6) Variables Groups** - two per environment
-    - mdwdo-park-release-dev
-    - mdwdo-park-release-secrets-dev**
-    - mdwdo-park-release-stg
-    - mdwdo-park-release-secrets-stg**
-    - mdwdo-park-release-prod
-    - mdwdo-park-release-secrets-prod**
+    - mdwdops-release-dev
+    - mdwdops-secrets-dev**
+    - mdwdops-release-stg
+    - mdwdops-secrets-stg**
+    - mdwdops-release-prod
+    - mdwdops-secrets-prod**
   - **Four (4) Service Connections**
     - **Three Azure Service Connections** (one per environment) each with a **Service Principal** with Contributor rights to the corresponding Resource Group.
-      - mdwdo-park-serviceconnection-dev
-      - mdwdo-park-serviceconnection-stg
-      - mdwdo-park-serviceconnection-prod
+      - mdwdops-serviceconnection-dev
+      - mdwdops-serviceconnection-stg
+      - mdwdops-serviceconnection-prod
     - **Github Service Connection** for retrieving code from Github
-      - mdwdo-park-github
+      - mdwdops-github
 
 Notes:
 

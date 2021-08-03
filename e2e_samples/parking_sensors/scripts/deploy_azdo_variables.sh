@@ -38,7 +38,7 @@ set -o nounset
 # PROJECT
 # ENV_NAME
 # AZURE_SUBSCRIPTION_ID
-# RESOURCE_GROUP_LOCATION
+# AZURE_LOCATION
 # RESOURCE_GROUP_NAME
 # KV_URL
 # DATABRICKS_HOST
@@ -79,7 +79,7 @@ az pipelines variable-group create \
     --name "$vargroup_name" \
     --authorize "true" \
     --variables \
-        azureLocation="$RESOURCE_GROUP_LOCATION" \
+        azureLocation="$AZURE_LOCATION" \
         rgName="$RESOURCE_GROUP_NAME" \
         adfName="$DATAFACTORY_NAME" \
         databricksDbfsLibPath="$databricksDbfsLibPath" \

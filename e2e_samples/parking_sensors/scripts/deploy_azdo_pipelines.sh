@@ -29,26 +29,28 @@
 set -o errexit
 set -o pipefail
 set -o nounset
-# set -o xtrace # For debugging
+set -o xtrace # For debugging
 
 ###################
 # REQUIRED ENV VARIABLES:
 #
+# PROJECT
 # GITHUB_REPO_URL
 # AZDO_PIPELINES_BRANCH_NAME
 # DEV_DATAFACTORY_NAME
 
 # Retrieve Github Service Connection Id
-github_sc_name="mdwdo-park-github"
+github_sc_name="${PROJECT}-github"
 github_sc_id=$(az devops service-endpoint list --output json |
     jq -r --arg NAME "$github_sc_name" '.[] | select(.name==$NAME) | .id')
 
 createPipeline () {
     declare pipeline_name=$1
-    full_pipeline_name=mdwdo-park-$pipeline_name
+    declare pipeline_description=$2
+    full_pipeline_name=$PROJECT-$pipeline_name
     pipeline_id=$(az pipelines create \
         --name "$full_pipeline_name" \
-        --description 'This pipeline runs python unit tests and linting.' \
+        --description "$pipeline_description" \
         --repository "$GITHUB_REPO_URL" \
         --branch "$AZDO_PIPELINES_BRANCH_NAME" \
         --yaml-path "/e2e_samples/parking_sensors/devops/azure-pipelines-$pipeline_name.yml" \
@@ -59,12 +61,12 @@ createPipeline () {
 }
 
 # Build Pipelines
-createPipeline "ci-qa-python"
-createPipeline "ci-qa-sql"
-createPipeline "ci-artifacts"
+createPipeline "ci-qa-python" "This pipeline runs python unit tests and linting."
+createPipeline "ci-qa-sql" "This pipeline builds the sql dacpac"
+createPipeline "ci-artifacts" "This pipeline publishes build artifacts"
 
 # Release Pipelines
-cd_release_pipeline_id=$(createPipeline "cd-release")
+cd_release_pipeline_id=$(createPipeline "cd-release" "This pipeline releases across environments")
 
 az pipelines variable create \
     --name devAdfName \

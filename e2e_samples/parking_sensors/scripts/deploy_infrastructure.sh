@@ -34,26 +34,11 @@ set -o xtrace # For debugging
 # REQUIRED ENV VARIABLES:
 #
 # PROJECT
+# DEPLOYMENT_ID
 # ENV_NAME
-# RESOURCE_GROUP_NAME
-# RESOURCE_GROUP_LOCATION
+# AZURE_LOCATION
 # AZURE_SUBSCRIPTION_ID
 # AZURESQL_SERVER_PASSWORD
-
-
-##### TEMP!!!
-export TIMESTAMP=$(date +%s)
-export RED='\033[0;31m'
-export ORANGE='\033[0;33m'
-export NC='\033[0m'
-
-# Helper functions
-random_str() {
-    local length=$1
-    cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $length | head -n 1 | tr '[:upper:]' '[:lower:]'
-    return 0
-}
-###
 
 
 #####################
@@ -64,8 +49,9 @@ echo "Deploying to Subscription: $AZURE_SUBSCRIPTION_ID"
 az account set --subscription "$AZURE_SUBSCRIPTION_ID"
 
 # Create resource group
-echo "Creating resource group: $RESOURCE_GROUP_NAME"
-az group create --name "$RESOURCE_GROUP_NAME" --location "$RESOURCE_GROUP_LOCATION" --tags Environment="$ENV_NAME"
+resource_group_name="$PROJECT-$DEPLOYMENT_ID-$ENV_NAME-rg"
+echo "Creating resource group: $resource_group_name"
+az group create --name "$resource_group_name" --location "$AZURE_LOCATION" --tags Environment="$ENV_NAME"
 
 # By default, set all KeyVault permission to deployer
 # Retrieve KeyVault User Id
@@ -74,19 +60,19 @@ kv_owner_object_id=$(az ad signed-in-user show --output json | jq -r '.objectId'
 # Validate arm template
 echo "Validating deployment"
 arm_output=$(az deployment group validate \
-    --resource-group "$RESOURCE_GROUP_NAME" \
+    --resource-group "$resource_group_name" \
     --template-file "./infrastructure/main.bicep" \
     --parameters @"./infrastructure/main.parameters.${ENV_NAME}.json" \
     --parameters project="${PROJECT}" keyvault_owner_object_id="${kv_owner_object_id}" deployment_id="${DEPLOYMENT_ID}" sql_server_password="${AZURESQL_SERVER_PASSWORD}" \
     --output json)
 
 # Deploy arm template
-echo "Deploying resources into $RESOURCE_GROUP_NAME"
+echo "Deploying resources into $resource_group_name"
 arm_output=$(az deployment group create \
-    --resource-group "$RESOURCE_GROUP_NAME" \
+    --resource-group "$resource_group_name" \
     --template-file "./infrastructure/main.bicep" \
     --parameters @"./infrastructure/main.parameters.${ENV_NAME}.json" \
-    --parameters project="${PROJECT}" keyvault_owner_object_id="${kv_owner_object_id}" deployment_id="${DEPLOYMENT_ID}" sql_server_password="${AZURESQL_SERVER_PASSWORD}" \
+    --parameters project="${PROJECT}" deployment_id="${DEPLOYMENT_ID}" keyvault_owner_object_id="${kv_owner_object_id}" sql_server_password="${AZURESQL_SERVER_PASSWORD}" \
     --output json)
 
 if [[ -z $arm_output ]]; then
@@ -115,7 +101,7 @@ az keyvault secret set --vault-name "$kv_name" --name "subscriptionId" --value "
 azure_storage_account=$(echo "$arm_output" | jq -r '.properties.outputs.storage_account_name.value')
 azure_storage_key=$(az storage account keys list \
     --account-name "$azure_storage_account" \
-    --resource-group "$RESOURCE_GROUP_NAME" \
+    --resource-group "$resource_group_name" \
     --output json |
     jq -r '.[0].value')
 
@@ -175,7 +161,7 @@ echo "Retrieving ApplicationInsights information from the deployment."
 appinsights_name=$(echo "$arm_output" | jq -r '.properties.outputs.appinsights_name.value')
 appinsights_key=$(az monitor app-insights component show \
     --app "$appinsights_name" \
-    --resource-group "$RESOURCE_GROUP_NAME" \
+    --resource-group "$resource_group_name" \
     --output json |
     jq -r '.instrumentationKey')
 
@@ -190,7 +176,7 @@ az keyvault secret set --vault-name "$kv_name" --name "applicationInsightsKey" -
 echo "Creating Service Principal (SP) for access to ADLA Gen2 used in Databricks mounting"
 stor_id=$(az storage account show \
     --name "$azure_storage_account" \
-    --resource-group "$RESOURCE_GROUP_NAME" \
+    --resource-group "$resource_group_name" \
     --output json |
     jq -r '.id')
 sp_stor_name="${PROJECT}-stor-${ENV_NAME}-${DEPLOYMENT_ID}-sp"
@@ -214,11 +200,11 @@ databricks_token=$(az account get-access-token --resource 2ff814a6-3304-4ab8-85c
 databricks_host=https://$(echo "$arm_output" | jq -r '.properties.outputs.databricks_output.value.properties.workspaceUrl')
 
 # Configure databricks (KeyVault-backed Secret scope, mount to storage via SP, databricks tables, cluster)
-# DATABRICKS_TOKEN=$databricks_token \
-# DATABRICKS_HOST=$databricks_host \
-# KEYVAULT_DNS_NAME=$kv_dns_name \
-# KEYVAULT_RESOURCE_ID=$(echo "$arm_output" | jq -r '.properties.outputs.keyvault_resource_id.value') \
-#     bash -c "./scripts/configure_databricks.sh"
+DATABRICKS_TOKEN=$databricks_token \
+DATABRICKS_HOST=$databricks_host \
+KEYVAULT_DNS_NAME=$kv_dns_name \
+KEYVAULT_RESOURCE_ID=$(echo "$arm_output" | jq -r '.properties.outputs.keyvault_resource_id.value') \
+    bash -c "./scripts/configure_databricks.sh"
 
 
 ####################
@@ -240,7 +226,7 @@ az keyvault secret set --vault-name "$kv_name" --name "adfName" --value "$datafa
 
 # Deploy ADF artifacts
 AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID \
-RESOURCE_GROUP_NAME=$RESOURCE_GROUP_NAME \
+RESOURCE_GROUP_NAME=$resource_group_name \
 DATAFACTORY_NAME=$datafactory_name \
 ADF_DIR=$adfTempDir \
     bash -c "./scripts/deploy_adf_artifacts.sh"
@@ -249,7 +235,7 @@ ADF_DIR=$adfTempDir \
 sp_adf_name="${PROJECT}-adf-${ENV_NAME}-${DEPLOYMENT_ID}-sp"
 sp_adf_out=$(az ad sp create-for-rbac \
     --role "Data Factory contributor" \
-    --scopes "/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP_NAME/providers/Microsoft.DataFactory/factories/$datafactory_name" \
+    --scopes "/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$resource_group_name/providers/Microsoft.DataFactory/factories/$datafactory_name" \
     --name "$sp_adf_name" \
     --output json)
 sp_adf_id=$(echo "$sp_adf_out" | jq -r '.appId')
@@ -269,7 +255,7 @@ az keyvault secret set --vault-name "$kv_name" --name "spAdfTenantId" --value "$
 # AzDO Azure Service Connections
 PROJECT=$PROJECT \
 ENV_NAME=$ENV_NAME \
-RESOURCE_GROUP_NAME=$RESOURCE_GROUP_NAME \
+RESOURCE_GROUP_NAME=$resource_group_name \
 DEPLOYMENT_ID=$DEPLOYMENT_ID \
     bash -c "./scripts/deploy_azdo_service_connections_azure.sh"
 
@@ -277,8 +263,8 @@ DEPLOYMENT_ID=$DEPLOYMENT_ID \
 PROJECT=$PROJECT \
 ENV_NAME=$ENV_NAME \
 AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID \
-RESOURCE_GROUP_NAME=$RESOURCE_GROUP_NAME \
-RESOURCE_GROUP_LOCATION=$RESOURCE_GROUP_LOCATION \
+RESOURCE_GROUP_NAME=$resource_group_name \
+AZURE_LOCATION=$AZURE_LOCATION \
 KV_URL=$kv_dns_name \
 DATABRICKS_TOKEN=$databricks_token \
 DATABRICKS_HOST=$databricks_host \
@@ -303,8 +289,8 @@ echo "Appending configuration to .env file."
 cat << EOF >> "$env_file"
 
 # ------ Configuration from deployment on ${TIMESTAMP} -----------
-RESOURCE_GROUP_NAME=${RESOURCE_GROUP_NAME}
-RESOURCE_GROUP_LOCATION=${RESOURCE_GROUP_LOCATION}
+RESOURCE_GROUP_NAME=${resource_group_name}
+AZURE_LOCATION=${AZURE_LOCATION}
 SQL_SERVER_NAME=${sql_server_name}
 SQL_SERVER_USERNAME=${sql_server_username}
 SQL_SERVER_PASSWORD=${sql_server_password}
@@ -322,4 +308,4 @@ APPINSIGHTS_KEY=${appinsights_key}
 KV_URL=${kv_dns_name}
 
 EOF
-echo "Completed deploying Azure resources $RESOURCE_GROUP_NAME ($ENV_NAME)"
+echo "Completed deploying Azure resources $resource_group_name ($ENV_NAME)"
