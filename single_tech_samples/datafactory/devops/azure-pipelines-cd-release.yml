@@ -37,8 +37,8 @@ stages:
         parameters:
           environmentName: 'STG'
           serviceConnection: 'mdwdo-adf-serviceconnection-stg'
-          resourceGroup: $(adfName)
-          datafactoryName: $(rgName)
+          resourceGroup: $(rgName)
+          datafactoryName: $(adfName)
           accountName: $(datalakeAccountName)
           accountKey: $(datalakeKey)
 

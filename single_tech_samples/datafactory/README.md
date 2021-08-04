@@ -32,7 +32,7 @@ This solution sets up an [Azure Data Lake Gen2](https://docs.microsoft.com/en-us
 
 The Azure Data Factory contains a simple pipeline taking data from the file share and ingesting it to the bronze folder.
 
-The ADF Pipeline definitions are stored in a git repository, and the CI/CD pipelines defined in Azure DevOps takes the produced ARM templates and deploys these across environments.
+The ADF Pipeline definitions are stored in a git repository, and the CI/CD pipelines defined in Azure DevOps takes the produced ARM templates and deploys these across environments. And how to leverage [pytest-adf](https://github.com/devlace/pytest-adf) do the integration testing.
 
 The main purpose of this sample is not to showcase the data flows, but rather how to work with source control, and continuous delivery to ensure that the data flows are properly versioned, that you can re-create old datasets, and that any new changes are propagated to all environments.
 
@@ -47,7 +47,7 @@ The following shows the logical flow of performing CI/CD with Azure Data Factory
 ![CICD Process](./docs/images/CICD-logical.PNG "CICD Process")
 
 The following shows the overall CI/CD process as built with Azure DevOps Pipelines.
-![CICD Process](docs/images/CICD.PNG "CICD Process")
+![CICD Process](docs/images/CICDv2.PNG "CICD Process")
 
 ### Technologies used
 
@@ -55,6 +55,7 @@ The following shows the overall CI/CD process as built with Azure DevOps Pipelin
 - [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction)
 - [Azure Key Vault](https://azure.microsoft.com/en-us/services/key-vault/)
 - [Azure DevOps](https://azure.microsoft.com/en-au/services/devops/)
+- [pytest-adf](https://github.com/devlace/pytest-adf)
 
 ## Key Learnings
 
@@ -222,7 +223,10 @@ This deployment was tested using WSL 2 (Ubuntu 20.04)
    2. In Azure DevOps, notice a new run of the Build Pipeline (**mdw-adf-ci-artifacts**) off `main`.
    3. After completion, this should automatically trigger the Release Pipeline (**mdw-adf-cd-release**). This will deploy the artifacts across environments.
       - You may need to authorize the Pipelines initially to use the Service Connection for the first time.
-      ![Release Pipeline](docs/images/ReleasePipeline.png "Release Pipelines")
+      - Integration tests are automatically performed before the deployment to the Prod environment
+      ![Release Pipeline](docs/images/ReleasePipelinev2.png "Release Pipelines")
+      - If you want check information about test results, you can view the test report
+       ![Integration Test Result](docs/images/integrationTestResult.png "Integration Test Result")
    4. **Optional**. Trigger the Data Factory Pipelines per environment.
       1. In the Data Factory portal of each environment, navigate to "Author", then select the `ParkingSensors\IngestToBronze` pipeline.
       2. Select "Trigger > Trigger Now".
