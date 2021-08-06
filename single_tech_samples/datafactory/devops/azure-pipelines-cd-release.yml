@@ -33,13 +33,6 @@ stages:
         parameters:
           environmentName: 'STG'
           serviceConnection: 'mdwdo-adf-serviceconnection-stg'
-
-  - stage: integration_e2e_test
-    displayName: 'Integration E2E Test'
-    variables:
-      - group: mdwdo-adf-release-stg
-      - group: mdwdo-adf-release-secrets-stg
-    jobs:
       - template: templates/jobs/integration-test-adf-job.yml
         parameters:
           environmentName: 'STG'
