@@ -6,7 +6,7 @@ FILE_NAME = "On-street_Parking_Bay_Sensors.csv"
 FILE_ROWS_COUNT = 3123
 
 def test_pipeline_succeeded(adf_pipeline_run, blob_service_client):
-    """Test that pipeline has data in SQL"""
+    """Test that pipeline has copied target CSV file to container of sink storage account"""
     this_run = adf_pipeline_run(PIPELINE_NAME, run_inputs={"fileName": FILE_NAME})
     
     # Assert pipeline execution status
