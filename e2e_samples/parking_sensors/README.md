@@ -271,6 +271,9 @@ More resources:
       - This will trigger a Build and Release which will fail due to a lacking `adf_publish` branch -- this is expected. This branch will be created once you've setup git integration with your DEV Data Factory and publish a change.
 
 3. **Setup ADF git integration in DEV Data Factory**
+
+    > **IMPORTANT NOTE**: Only the **DEV** Data Factory should be setup with Git integration. Do **not** setup git integration in the STG and PROD Data Factories.
+
     1. In the Azure Portal, navigate to the Data Factory in the **DEV** environment.
     2. Click "Author & Monitor" to launch the Data Factory portal.
     3. On the landing page, select "Set up code repository". For more information, see [here](https://docs.microsoft.com/en-us/azure/data-factory/source-control).
@@ -284,7 +287,7 @@ More resources:
         - Branch to import resource into: **Use Collaboration**
     5. When prompted to select a working branch, select **main**
 
-   **IMPORTANT NOTE:** Only the **DEV** Data Factory should be setup with Git integration. Do **NOT** setup git integration in the STG and PROD Data Factories.
+   > **Ensure you Import Existing Data Factory resources to repository**. The deployment script deployed ADF objects with Linked Service configurations in line with the newly deployed environments. Importing existing ADF resources definitions to the repository overrides any default Linked Services values so they are correctly in sync with your DEV environment.
 
 4. **Trigger an initial Release**
 
