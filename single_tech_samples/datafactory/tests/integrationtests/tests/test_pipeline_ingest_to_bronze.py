@@ -24,5 +24,5 @@ def test_pipeline_succeeded(adf_pipeline_run, blob_service_client):
     storage_stream_downloader = blob_container_client.download_blob(blob.name, None, None)
     blob_bytes = storage_stream_downloader.readall()
     
-    contents_array = blob_bytes.decode("UTF-8").split("\r\n")
+    contents_array = blob_bytes.decode("UTF-8").split("\n")
     assert len(contents_array) == FILE_ROWS_COUNT
