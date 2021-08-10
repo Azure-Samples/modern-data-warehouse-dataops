@@ -12,6 +12,14 @@ loadid = dbutils.widgets.get("loadid")
 
 # COMMAND ----------
 
+<<<<<<< HEAD
+=======
+from applicationinsights import TelemetryClient
+tc = TelemetryClient(dbutils.secrets.get(scope = "storage_scope", key = "applicationInsightsKey"))
+
+# COMMAND ----------
+
+>>>>>>> e15dc70 (E2E Parking Sensor: Convert ARM templates to Bicep, Improve Deployment script, and bugfix #370 (#378))
 import os
 import datetime
 

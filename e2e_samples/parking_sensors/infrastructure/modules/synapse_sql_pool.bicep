@@ -48,5 +48,9 @@ resource sql_server 'Microsoft.Sql/servers@2021-02-01-preview' = {
 output synapse_sql_pool_output object = {
   name: sql_server.name
   username: sql_server_username
+<<<<<<< HEAD
+=======
+  password: sql_server_password
+>>>>>>> e15dc70 (E2E Parking Sensor: Convert ARM templates to Bicep, Improve Deployment script, and bugfix #370 (#378))
   synapse_pool_name: sql_server::synapse_dedicated_sql_pool.name
 }

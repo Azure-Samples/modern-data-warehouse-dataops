@@ -1,12 +1,18 @@
 param project string = 'mdwdo'
 param env string = 'dev'
+<<<<<<< HEAD
 param email_id string = 'support@domain.com'
+=======
+>>>>>>> e15dc70 (E2E Parking Sensor: Convert ARM templates to Bicep, Improve Deployment script, and bugfix #370 (#378))
 param location string = resourceGroup().location
 param deployment_id string
 param keyvault_owner_object_id string
 @secure()
 param sql_server_password string
+<<<<<<< HEAD
 param enable_monitoring bool
+=======
+>>>>>>> e15dc70 (E2E Parking Sensor: Convert ARM templates to Bicep, Improve Deployment script, and bugfix #370 (#378))
 
 
 module datafactory './modules/datafactory.bicep' = {
@@ -68,7 +74,10 @@ module keyvault './modules/keyvault.bicep' = {
   ]
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> e15dc70 (E2E Parking Sensor: Convert ARM templates to Bicep, Improve Deployment script, and bugfix #370 (#378))
 module appinsights './modules/appinsights.bicep' = {
   name: 'appinsights_deploy_${deployment_id}'
   params: {
@@ -79,6 +88,7 @@ module appinsights './modules/appinsights.bicep' = {
   }
 }
 
+<<<<<<< HEAD
 module loganalytics './modules/log_analytics.bicep' = if (enable_monitoring) {
   name: 'log_analytics_deploy_${deployment_id}'
   params: {
@@ -157,6 +167,8 @@ module data_quality_workbook './modules/data_quality_workbook.bicep' = if (enabl
     appinsights    
   ]
 }
+=======
+>>>>>>> e15dc70 (E2E Parking Sensor: Convert ARM templates to Bicep, Improve Deployment script, and bugfix #370 (#378))
 
 
 
@@ -168,4 +180,7 @@ output appinsights_name string = appinsights.outputs.appinsights_name
 output keyvault_name string = keyvault.outputs.keyvault_name
 output keyvault_resource_id string = keyvault.outputs.keyvault_resource_id
 output datafactory_name string = datafactory.outputs.datafactory_name
+<<<<<<< HEAD
 output loganalytics_name string = loganalytics.outputs.loganalyticswsname
+=======
+>>>>>>> e15dc70 (E2E Parking Sensor: Convert ARM templates to Bicep, Improve Deployment script, and bugfix #370 (#378))

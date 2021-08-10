@@ -4,12 +4,15 @@
     "parameters": {
       "env": {
         "value": "stg"
+<<<<<<< HEAD
       },      
       "email_id": {
         "value": "support@domain.com"
       },
       "enable_monitoring": {
         "value": true
+=======
+>>>>>>> e15dc70 (E2E Parking Sensor: Convert ARM templates to Bicep, Improve Deployment script, and bugfix #370 (#378))
       }
     }
   }

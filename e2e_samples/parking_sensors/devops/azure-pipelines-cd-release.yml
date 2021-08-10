@@ -13,12 +13,17 @@ resources:
   - repository: mdwdataops_adfpublish
     type: github
 <<<<<<< HEAD
+<<<<<<< HEAD
     endpoint: mdwdops-github
     name: devlace/mdw-dataops-clone
 =======
     endpoint: mdwdo-park-github
     name: devlace/mdw-dataops-parkingsensors-02
 >>>>>>> 38da4d8 (Single tech/databricks ops (#371))
+=======
+    endpoint: mdwdops-github
+    name: devlace/mdw-dataops-clone
+>>>>>>> e15dc70 (E2E Parking Sensor: Convert ARM templates to Bicep, Improve Deployment script, and bugfix #370 (#378))
     ref: adf_publish
 
 # The deployment script sets this as a Pipeline Variable, but you may choose to set it here in the definition
