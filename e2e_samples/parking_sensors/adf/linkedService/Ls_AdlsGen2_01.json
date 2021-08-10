@@ -1,19 +1,11 @@
 {
 	"name": "Ls_AdlsGen2_01",
-	"type": "Microsoft.DataFactory/factories/linkedservices",
 	"properties": {
 		"annotations": [],
 		"type": "AzureBlobFS",
 		"typeProperties": {
-			"url": "https://mdwdostordevkdnam.dfs.core.windows.net",
-			"accountKey": {
-				"type": "AzureKeyVaultSecret",
-				"store": {
-					"referenceName": "Ls_KeyVault_01",
-					"type": "LinkedServiceReference"
-				},
-				"secretName": "datalakeKey"
-			}
+			"url": "https://mdwdopsstdev16.dfs.core.windows.net"
 		}
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/linkedservices"
 }

@@ -49,25 +49,25 @@ createLinkedService () {
     declare name=$1
     echo "Creating ADF LinkedService: $name"
     adfLsUrl="${adfFactoryBaseUrl}/linkedservices/${name}?api-version=${apiVersion}"
-    az rest --method put --uri $adfLsUrl --body @${ADF_DIR}/linkedService/${name}.json
+    az rest --method put --uri "$adfLsUrl" --body @"${ADF_DIR}"/linkedService/"${name}".json
 }
 createDataset () {
     declare name=$1
     echo "Creating ADF Dataset: $name"
     adfDsUrl="${adfFactoryBaseUrl}/datasets/${name}?api-version=${apiVersion}"
-    az rest --method put --uri $adfDsUrl --body @${ADF_DIR}/dataset/${name}.json
+    az rest --method put --uri "$adfDsUrl" --body @"${ADF_DIR}"/dataset/"${name}".json
 }
 createPipeline () {
     declare name=$1
     echo "Creating ADF Pipeline: $name"
     adfPUrl="${adfFactoryBaseUrl}/pipelines/${name}?api-version=${apiVersion}"
-    az rest --method put --uri $adfPUrl --body @${ADF_DIR}/pipeline/${name}.json
+    az rest --method put --uri "$adfPUrl" --body @"${ADF_DIR}"/pipeline/"${name}".json
 }
 createTrigger () {
     declare name=$1
     echo "Creating ADF Trigger: $name"
     adfTUrl="${adfFactoryBaseUrl}/triggers/${name}?api-version=${apiVersion}"
-    az rest --method put --uri $adfTUrl --body @${ADF_DIR}/trigger/${name}.json
+    az rest --method put --uri "$adfTUrl" --body @"${ADF_DIR}"/trigger/"${name}".json
 }
 
 echo "Deploying Data Factory artifacts."
@@ -87,27 +87,3 @@ createPipeline "P_Ingest_MelbParkingData"
 createTrigger "T_Sched"
 
 echo "Completed deploying Data Factory artifacts."
-
-############################
-# Setup git integration
-# LACE: unfortunately, there doesn't seem to be a way to trigger "import existing resources into Collaboration branch" when we setup Git integration manually.
-
-# # Commit changes to the LinkedServices
-# git checkout -b $COLLABORATION_BRANCH
-# git add $adfLsDir/Ls_KeyVault_01.json
-# git add $adfLsDir/Ls_AdlsGen2_01.json
-# git commit -m "fix: [deploy script] update Linked Service URL to point to correct DEV environment."
-# git push
-
-# adfRepoUrl="$baseUrl/providers/Microsoft.DataFactory/locations/${RESOURCE_GROUP_LOCATION}/configureFactoryRepo?api-version=${apiVersion}"
-
-# body=$(jq -n \
-#     --arg frid "/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP_NAME/providers/Microsoft.DataFactory/factories/$DATAFACTORY_NAME" \
-#     --arg an "$GITHUB_ACCOUNT_NAME" \
-#     --arg cb "$COLLABORATION_BRANCH" \
-#     --arg repo "$REPOSITORY_NAME" \
-#     --arg rfolder "/e2e_samples/parking_sensors/adf" \
-#     --arg rtype "FactoryGitHubConfiguration" \
-#     '{"factoryResourceId": $frid, "repoConfiguration": {"accountName": $an, "collaborationBranch": $cb, "repositoryName": $repo, "rootFolder": $rfolder, "type": $rtype }}')
-
-# az rest --method post --uri $adfRepoUrl --body "$body"

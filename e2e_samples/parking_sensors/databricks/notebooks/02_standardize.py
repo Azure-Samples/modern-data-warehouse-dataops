@@ -8,7 +8,7 @@ loadid = dbutils.widgets.get("loadid")
 # COMMAND ----------
 
 from applicationinsights import TelemetryClient
-tc = TelemetryClient(dbutils.secrets.get(scope = "storage_scope", key = "appinsights_key"))
+tc = TelemetryClient(dbutils.secrets.get(scope = "storage_scope", key = "applicationInsightsKey"))
 
 # COMMAND ----------
 
