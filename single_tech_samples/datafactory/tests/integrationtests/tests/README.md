@@ -1,4 +1,4 @@
-
+# ADF Integration Tests
 
 This makes use of [PyTest framework](https://docs.pytest.org/en/latest/) to execute integration tests. In general, the tests do the following:
 
@@ -28,7 +28,6 @@ Azure Storage Account connection information:
 Additional *optional* configuration:
 
 - **AZURE_DATAFACTORY_POLL_INTERVAL** - Poll interval in seconds for checking for pipeline status. *Default*: 5.
-
 
 ## Code structure
 

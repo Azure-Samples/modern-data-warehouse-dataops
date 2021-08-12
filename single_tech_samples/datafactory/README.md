@@ -75,6 +75,7 @@ This has many benefits, among others:
 
 - Include all artifacts needed to build the data pipeline from scratch in source control. This includes infrastructure-as-code artifacts, database objects (schema definitions, functions, stored procedures, etc), reference/application data, data pipeline definitions and data validation and transformation logic.
 - There should be a safe, repeatable process to move changes through dev, test and finally production
+- Ensure data pipelines are functioning as expected through [automated integration tests](tests/integrationtests/tests/README.md).
 
 ### 3. Store secrets used by the pipelines in Key Vault
 
