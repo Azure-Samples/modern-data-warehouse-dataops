@@ -10,6 +10,7 @@
     [ProductCategoryID]      INT              NULL,
     [ProductModelID]         INT              NULL,
     [SellStartDate]          DATETIME         NOT NULL,
+    [SellStartDate2]          DATETIME         NOT NULL,
     [SellEndDate]            DATETIME         NULL,
     [DiscontinuedDate]       DATETIME         NULL,
     [ThumbNailPhoto]         VARBINARY (MAX)  NULL,
