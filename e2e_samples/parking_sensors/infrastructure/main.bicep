@@ -28,7 +28,7 @@ module databricks './modules/databricks.bicep' = {
   }
 }
 
-module storage './modules/storage.bicep' = {
+module storage './modules/storage_v2.bicep' = {
   name: 'storage_deploy_${deployment_id}'
   params: {
     project: project
@@ -39,8 +39,8 @@ module storage './modules/storage.bicep' = {
   }
 }
 
-module synapse_sql_pool './modules/synapse_sql_pool.bicep' = {
-  name: 'synapse_sql_pool_deploy_${deployment_id}'
+module synapse './modules/synapse.bicep' = {
+  name: 'synapse_deploy_${deployment_id}'
   params: {
     project: project
     env: env
@@ -76,14 +76,13 @@ module appinsights './modules/appinsights.bicep' = {
   }
 }
 
-
-
-
 output storage_account_name string = storage.outputs.storage_account_name
-output synapse_sql_pool_output object = synapse_sql_pool.outputs.synapse_sql_pool_output
+output synapse_sql_pool object = synapse.outputs.synapse_sql_pool_output
+output synapse_output_spark_pool_name string = synapse.outputs.synapseBigdataPoolName
 output databricks_output object = databricks.outputs.databricks_output
 output databricks_id string = databricks.outputs.databricks_id
 output appinsights_name string = appinsights.outputs.appinsights_name
 output keyvault_name string = keyvault.outputs.keyvault_name
 output keyvault_resource_id string = keyvault.outputs.keyvault_resource_id
 output datafactory_name string = datafactory.outputs.datafactory_name
+
