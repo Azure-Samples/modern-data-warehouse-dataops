@@ -313,12 +313,22 @@ After a successful deployment, you should have the following resources:
 - In Azure, **three (3) Resource Groups** (one per environment) each with the following Azure resources.
   - **Data Factory** - with pipelines, datasets, linked services, triggers deployed and configured correctly per environment.
   - **Data Lake Store Gen2** and a **Service Principal (SP)** with Storage Contributor rights assigned.
+    - Main Data Lake:
+      - mdwdopsst-dev-*
+      - mdwdopsst-stg-*
+      - mdwdopsst-prod-*
+    - Default Storage for Azure Synapse workspace:
+      - mdwdopsst2-dev-*
+      - mdwdopsst2-stg-*
+      - mdwdopsst2-prod-*
   - **Databricks workspace**
     - notebooks uploaded at `/notebooks` folder in the workspace
     - SparkSQL tables created
     - ADLS Gen2 mounted at `dbfs:/mnt/datalake` using the Storage Service Principal.
     - Databricks KeyVault secrets scope created
-  - **Azure Synapse (formerly SQLDW)** - currently, empty. The Release Pipeline will deploy the SQL Database objects.
+  - **Azure Synapse SQL Dedicated Pool (formerly SQLDW)** - currently, empty. The Release Pipeline will deploy the SQL Database objects.
+  - **Azure Synapse Spark Pool** - currently, empty.
+  - **Azure Synapse Workspace** - currently, empty.
   - **Application Insights**
   - **KeyVault** with all relevant secrets stored.
 - In Azure DevOps
