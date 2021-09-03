@@ -1,0 +1,121 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "prefix": {
+            "value": "abc"
+        },
+        "adminUsername": {
+            "value": "adminuser" // Do not use admin
+        },
+        "adminPassword": {
+            "value": "" // TODO: Fill in parameter value
+        },
+        "linkAkstoAml": {
+            "value": true
+        },
+        "deployADBCluster": {
+            "value": true
+        },
+        "updateAKVKeys": {
+            "value": true
+        },
+        "adb_pat_lifetime": {
+            "value": "3600"
+        },
+        "adb_cluster_name": {
+            "value": "test-cluster-01"
+        },
+        "adb_spark_version": {
+            "value": "7.3.x-scala2.12"
+        },
+        "adb_node_type": {
+            "value": "Standard_D3_v2"
+        },
+        "adb_num_worker": {
+            "value": "3"
+        },
+        "adb_auto_terminate_min": {
+            "value": "30"
+        },
+        "aksAgentCount": {
+            "value": 3
+        },
+        "aksAgentVMSize": {
+            "value": "Standard_A4_v2"
+        },
+        "location": {
+            "value": "southeastasia"
+        },
+        "hubVnetName": {
+            "value": "hubvnet"
+        },
+        "spokeVnetName": {
+            "value": "spokevnet"
+        },
+        "HubVnetCidr": {
+            "value": "10.0.0.0/16"
+        },
+        "FirewallSubnetCidr": {
+            "value": "10.0.1.0/26"
+        },
+        "clientDevicesSubnetCidr": {
+            "value": "10.0.200.0/24"
+        },
+        "SpokeVnetCidr": {
+            "value": "10.179.0.0/16"
+        },
+        "PrivateSubnetCidr": {
+            "value": "10.179.0.0/18"
+        },
+        "PublicSubnetCidr": {
+            "value": "10.179.64.0/18"
+        },
+        "AksSubnetCidr": {
+            "value": "10.179.128.0/18"
+        },
+        "PrivateLinkSubnetCidr": {
+            "value": "10.179.192.0/18"
+        },
+        "webappDestinationAddresses": {
+            "value": [
+              "52.187.145.107/32",
+              "52.187.0.85/32"
+            ]
+        },
+        "logBlobstorageDomains": {
+            "value": [
+              "[format('dblogprodseasia.blob.{0}', environment().suffixes.storage)]"
+            ]
+        },
+        "extendedInfraIp": {
+            "value": [
+              "20.195.104.64/28"
+            ]
+        },
+        "sccReplayDomain": {
+            "value": [
+              "tunnel.southeastasia.azuredatabricks.net"
+            ]
+        },
+        "metastoreDomains": {
+            "value": [
+              "consolidated-southeastasia-prod-metastore.mysql.database.azure.com"
+            ]
+        },
+        "eventHubEndpointDomain": {
+            "value": [
+              "prod-southeastasia-observabilityeventhubs.servicebus.windows.net"
+            ]
+        },
+        "artifactBlobStoragePrimaryDomains": {
+            "value": [
+              "[format('dbartifactsprodseap.blob.{0}', environment().suffixes.storage)]",
+              "[format('arprodseapa1.blob.{0}', environment().suffixes.storage)]",
+              "[format('arprodseapa2.blob.{0}', environment().suffixes.storage)]",
+              "[format('arprodseapa3.blob.{0}', environment().suffixes.storage)]",
+              "[format('dbartifactsprodeap.blob.{0}', environment().suffixes.storage)]"
+            ]
+        }
+    }
+}
