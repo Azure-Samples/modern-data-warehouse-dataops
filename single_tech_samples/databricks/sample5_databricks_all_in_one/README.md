@@ -126,7 +126,7 @@ This repo code is provided as-is and if you need help/support on bicep reach out
 ## 3 Next Steps
 
 - Create Databricks secret scope backed by Azure Key Vault. [Link](https://docs.microsoft.com/en-us/azure/databricks/security/secrets/secret-scopes)
-- Create Azure SQL with Private link. [Link](https://docs.microsoft.com/en-us/azure/sql/private-link)
+- Create Azure SQL with Private link
 - Create an integrated ADF pipeline
 - Integrate into Azure DevOps
 - Create Databricks performance dashboards
