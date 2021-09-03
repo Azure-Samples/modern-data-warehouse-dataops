@@ -1,4 +1,4 @@
-## Deploying secure Databricks cluster with Data exfiltration Protection and Privatelink for Storage, KeyVault and EventHub using Bicep </a> <!-- omit in toc -->
+# Deploying secure Databricks cluster with Data exfiltration Protection and Privatelink for Storage, KeyVault and EventHub using Bicep </a> <!-- omit in toc -->
 
 ## Contents <!-- omit in toc -->
 
@@ -49,7 +49,8 @@ More resources available at this [Link](https://docs.microsoft.com/en-us/azure/a
 
 ![Architecture](https://raw.githubusercontent.com/lordlinus/databricks-all-in-one-bicep-template/main/Architecture.jpg)
 
-- Based on best practices from <a href="https://github.com/Azure/AzureDatabricksBestPractices/blob/master/toc.md">Azure Databricks Best Practices</a> and template from <a href="https://github.com/Azure-Samples/modern-data-warehouse-dataops/tree/main/single_tech_samples/databricks/sample2_enterprise_azure_databricks_environment">Anti-Data-Exfiltration Reference architecture</a>
+- Based on best practices [Link](https://github.com/Azure/AzureDatabricksBestPractices/blob/master/toc.md)
+- Azure Databricks Best Practices and template from [sample2_enterprise_azure_databricks_environment](https://github.com/Azure-Samples/modern-data-warehouse-dataops/tree/main/single_tech_samples/databricks/sample2_enterprise_azure_databricks_environment) Anti-Data-Exfiltration Reference architecture
 
 ### 1.4 Technologies used
 
