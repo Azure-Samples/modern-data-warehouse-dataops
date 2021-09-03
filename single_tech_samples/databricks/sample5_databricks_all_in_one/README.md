@@ -1,4 +1,4 @@
-## Deploying secure Databricks cluster with Data exfiltration Protection and Privatelink for Storage, KeyVault and EventHub using <a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview" target="_blank">Bicep </a> <!-- omit in toc -->
+## Deploying secure Databricks cluster with Data exfiltration Protection and Privatelink for Storage, KeyVault and EventHub using Bicep </a> <!-- omit in toc -->
 
 ## Contents <!-- omit in toc -->
 
