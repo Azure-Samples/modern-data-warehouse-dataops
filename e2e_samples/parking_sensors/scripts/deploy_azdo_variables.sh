@@ -54,6 +54,10 @@ set -o xtrace # For debugging
 # SP_ADF_ID
 # SP_ADF_PASS
 # SP_ADF_TENANT
+# SYNAPSE_WORKSPACE_NAME
+# BIG_DATAPOOL_NAME
+# LOG_ANALYTICS_WS_ID
+# LOG_ANALYTICS_WS_KEY
 
 
 # Const
@@ -133,6 +137,18 @@ az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
     --secret "true" --name "spAdfPass" --value "$SP_ADF_PASS"
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
     --secret "true" --name "spAdfTenantId" --value "$SP_ADF_TENANT"
+
+# Log Analytics
+az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
+    --secret "true" --name "logAnalyticsWorkspaceId" --value "$LOG_ANALYTICS_WS_ID"
+az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
+    --secret "true" --name "logAnalyticsWorkspaceKey" --value "$LOG_ANALYTICS_WS_KEY"
+
+# Synapse
+az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
+    --secret "true" --name "synapseWorkspaceName" --value "$SYNAPSE_WORKSPACE_NAME"
+az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
+    --secret "true" --name "synapseSparkPoolName" --value "$BIG_DATAPOOL_NAME"
 
 # Delete dummy vars
 az pipelines variable-group variable delete --group-id "$vargroup_secrets_id" --name "foo" -y
