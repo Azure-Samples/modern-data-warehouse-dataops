@@ -89,6 +89,7 @@ It makes use of the following azure services:
 - [Azure DevOps](https://azure.microsoft.com/en-au/services/devops/)
 - [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)
 - [PowerBI](https://powerbi.microsoft.com/en-us/)
+- [Log Analytics](https://docs.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overview)
 
 For a detailed walk-through of the solution and key concepts, watch the following video recording:
 
@@ -326,8 +327,9 @@ After a successful deployment, you should have the following resources:
     - SparkSQL tables created
     - ADLS Gen2 mounted at `dbfs:/mnt/datalake` using the Storage Service Principal.
     - Databricks KeyVault secrets scope created
+  - **Log Analytics Workspace** - including a kusto query on Query explorer -> Saved queries, to verify results that will be looged on Synapse notebooks (notebooks are not deployed yet).
   - **Azure Synapse SQL Dedicated Pool (formerly SQLDW)** - currently, empty. The Release Pipeline will deploy the SQL Database objects.
-  - **Azure Synapse Spark Pool** - currently, empty.
+  - **Azure Synapse Spark Pool** - currently, empty. Configured to point the deployed Log Analytics workspace, under "Apache Spark Configuration".
   - **Azure Synapse Workspace** - currently, empty.
   - **Application Insights**
   - **KeyVault** with all relevant secrets stored.
