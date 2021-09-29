@@ -21,20 +21,6 @@ namespace WebApi.Repositories
 
         private readonly CloudTableClient tableClient;
 
-        /// <summary>
-        /// Get search target table name of specified datetime.
-        /// </summary>
-        /// <param name="dateTime">Datetime utc.</param>
-        /// <returns>A table name.</returns>
-        public static string GetTableName(DateTime dateTime)
-        {
-            // table name is form "telemetry{yyyyMMddHHmm}".
-            var dateTimeHour = dateTime.ToString("yyyyMMddHH");
-            int min = dateTime.Minute / 10;
-            var tableName = string.Format("{0}{1}{2}0", StorageTableNamePrefix, dateTimeHour, min);
-
-            return tableName;
-        }
 
         /// <summary>
         /// Get telemetries filtered for corresponding deviceId
@@ -78,7 +64,7 @@ namespace WebApi.Repositories
 
             try
             {
-                CloudTable table = this.tableClient.GetTableReference(GetTableName(dateTime));
+                CloudTable table = this.tableClient.GetTableReference("telemetry");
 
                 var telemtriesQuery = new TableQuery<TelemetryEntity>()
                     .Where(TableQuery.GenerateFilterCondition(

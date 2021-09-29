@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using TelemetryProcessor.Models.CustomAttributes;
@@ -23,5 +24,12 @@ namespace TelemetryProcessor.Models
         /// </summary>
         [JsonProperty("telemetryData")]
         public Dictionary<string, object> TelemetryData { get; set; }
+        
+        /// <summary>
+        /// Gets or sets DeviceTime.
+        /// </summary>
+        [Key]
+        [JsonProperty("deviceTime")]
+        public DateTime DeviceTime { get; set; }
     }
 }
