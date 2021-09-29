@@ -47,37 +47,45 @@ synapseResource="https://dev.azuresynapse.net"
 
 baseUrl="https://management.azure.com/subscriptions/${AZURE_SUBSCRIPTION_ID}"
 synapseWorkspaceBaseUrl="$baseUrl/resourceGroups/${RESOURCE_GROUP_NAME}/providers/Microsoft.Synapse/workspaces/${SYNAPSE_WORKSPACE_NAME}"
+requirementsFileName='./synapse/config/requirements.txt'
+packagesDirectory='./synapse/libs/'
 
 synapse_ws_location=$(az group show \
     --name "${RESOURCE_GROUP_NAME}" \
     --output json |
     jq -r '.location')
 
-# uploadSynapsePackagesToWorkspace is still UNDER DEVELOPMENT
+# Function responsible to perform the 4 steps needed to upload a single package to the synapse workspace area
 uploadSynapsePackagesToWorkspace(){
     declare name=$1
     echo "Uploading Library Wheel Package to Workspace: $name"
-    RESOURCE_GROUP_NAME="ys-synapse"
 
+    #az synapse workspace wait --resource-group "${RESOURCE_GROUP_NAME}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --created
     # Step 1: Get bearer token for the Data plane
     token=$(az account get-access-token --resource ${synapseResource} --query accessToken --output tsv)
     
     # Step 2: create workspace package placeholder
-    synapseLibraryUri=${SYNAPSE_DEV_ENDPOINT}/libraries/${name}?api-version=${dataPlaneApiVersion}
-    az rest --method put --headers 'Authorization=Bearer '${token} 'Content-Type=application/json;charset=utf-8' --url "${synapseLibraryUri}"
+    synapseLibraryUri="${SYNAPSE_DEV_ENDPOINT}/libraries/${name}?api-version=${dataPlaneApiVersion}"
+    az rest --method put --headers "Authorization=Bearer ${token}" "Content-Type=application/json;charset=utf-8" --url "${synapseLibraryUri}"
+    sleep 5s
 
     # Step 3: upload package content to workspace placeholder
-    #az synapse workspace wait --resource-group ${RESOURCE_GROUP_NAME} --workspace-name ${SYNAPSE_WORKSPACE_NAME} --updated
+    #az synapse workspace wait --resource-group "${RESOURCE_GROUP_NAME}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --updated
     synapseLibraryUriForAppend="${SYNAPSE_DEV_ENDPOINT}/libraries/${name}?comp=appendblock&api-version=${dataPlaneApiVersion}"
-    curl -i -X PUT -H "Authorization: Bearer ${token}" -H "Content-Type: application/octet-stream" --data-binary @../synapse/libs/${name} "${synapseLibraryUriForAppend}"
+    curl -i -X PUT -H "Authorization: Bearer ${token}" -H "Content-Type: application/octet-stream" --data-binary @./synapse/libs/"${name}" "${synapseLibraryUriForAppend}"
+    sleep 15s
   
     # Step4: Completing Package creation/Flush the library
+    #az synapse workspace wait --resource-group "${RESOURCE_GROUP_NAME}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --updated
     synapseLibraryUriForFlush="${SYNAPSE_DEV_ENDPOINT}/libraries/${name}/flush?api-version=${dataPlaneApiVersion}"
-    az rest --method post --headers 'Authorization=Bearer '${token} 'Content-Type=application/json;charset=utf-8' --url "${synapseLibraryUriForFlush}"
+    az rest --method post --headers "Authorization=Bearer ${token}" "Content-Type=application/json;charset=utf-8" --url "${synapseLibraryUriForFlush}"
 
 }
 
+# Function responsible to perform the update of a spark pool on 3 configurations: requirements.txt, packages and spark configuration
 uploadSynapseArtifactsToSparkPool(){
+    declare requirementList=$1
+    declare customLibraryList=$2
     echo "Uploading Synapse Artifacts to Spark Pool: ${BIG_DATAPOOL_NAME}"
 
     json_body="{
@@ -105,9 +113,10 @@ uploadSynapseArtifactsToSparkPool(){
         \"sparkVersion\": \"2.4\",
         \"libraryRequirements\": {
             \"filename\": \"requirements.txt\",
-            \"content\": \"opencensus==0.7.13\"
+            \"content\": \"${requirementList}\"
         },
         \"sessionLevelPackagesEnabled\": true,
+        ${customLibraryList}
         \"sparkConfigProperties\": {
             \"configurationType\": 0,
             \"filename\": \"spark_loganalytics_conf.txt\",
@@ -121,7 +130,42 @@ uploadSynapseArtifactsToSparkPool(){
     az account get-access-token
     
     #Update the Spark Pool with requirements.txt and sparkconfiguration
-    az rest --method put --headers 'Content-Type=application/json' --url "${managementApiUri}" --body "$json_body"
+    #az synapse spark pool wait --resource-group "${RESOURCE_GROUP_NAME}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --big-data-pool-name "${BIG_DATAPOOL_NAME}" --created
+    az rest --method put --headers "Content-Type=application/json" --url "${managementApiUri}" --body "$json_body"
 }
 
-uploadSynapseArtifactsToSparkPool
+# Build requirement.txt string to upload in the Spark Configuration
+provision_state=$(az synapse spark pool show \
+    --name "$BIG_DATAPOOL_NAME" \
+    --workspace-name "$SYNAPSE_WORKSPACE_NAME" \
+    --resource-group "$RESOURCE_GROUP_NAME" \
+    --output json |
+    jq -r '.provisioningState')
+
+while [ "$provision_state" != "Succeeded" ]
+do
+    if [ "$provision_state" == "Failed" ]; then break ; else sleep 10s; fi
+done
+
+configurationList=""
+while read -r p; do 
+    #line="${p//'[\r\n]'/''}"
+    line=$(echo $p | sed -e 's/[\r\n]//g')
+    if [ "$configurationList" != "" ]; then configurationList="$configurationList$line\r\n" ; else configurationList="$line\r\n"; fi
+done < $requirementsFileName
+
+# Build packages list to upload in the Spark Pool, upload packages to synapse workspace
+libraryList=""
+for file in "$packagesDirectory"*.whl; do
+    filename=${file##*/}
+    librariesToUpload="{
+        \"name\": \"${filename}\",
+        \"path\": \"${SYNAPSE_WORKSPACE_NAME}/libraries/${filename}\",
+        \"containerName\": \"prep\",
+        \"type\": \"whl\"
+    }"
+    if [ "$libraryList" != "" ]; then libraryList=${libraryList}","${librariesToUpload}; else libraryList=${librariesToUpload};fi
+    uploadSynapsePackagesToWorkspace "${filename}"
+done
+customlibraryList="customLibraries:[$libraryList],"
+uploadSynapseArtifactsToSparkPool "${configurationList}" "${customlibraryList}"

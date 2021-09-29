@@ -52,11 +52,12 @@ resource storage_roleassignment 'Microsoft.Authorization/roleAssignments@2020-08
   properties: {
     roleDefinitionId: storage_blob_data_contributor
     principalId: contributor_principal_id
+    principalType: 'ServicePrincipal'
   }
 }
 
 // Synapse Storage
-resource storage2 'Microsoft.Storage/storageAccounts@2021-04-01' = {
+resource synapseStorage 'Microsoft.Storage/storageAccounts@2021-04-01' = {
   name: '${project}st2${env}${deployment_id}'
   location: location
   tags: {
@@ -89,24 +90,25 @@ resource storage2 'Microsoft.Storage/storageAccounts@2021-04-01' = {
   }
 }
 
-resource storageFileSystem2 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-04-01' = {
+resource synapseStorageFileSystem 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-04-01' = {
   name: '${project}st2${env}${deployment_id}/default/container001'
   properties: {
-    publicAccess: 'Container'
+    publicAccess: 'None'
   }
   dependsOn: [
-    storage2
+    synapseStorage
   ]
 }
 
-resource storage_roleassignment2 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = {
-  name: guid(storage2.id)
-  scope: storage2
+resource synapseStorage_roleassignment 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = {
+  name: guid(synapseStorage.id)
+  scope: synapseStorage
   properties: {
     roleDefinitionId: storage_blob_data_contributor
     principalId: contributor_principal_id
+    principalType: 'ServicePrincipal'
   }
 }
 
 output storage_account_name string = storage.name
-output storage_account_name_synapse string = storage2.name
+output storage_account_name_synapse string = synapseStorage.name

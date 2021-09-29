@@ -5,19 +5,21 @@ param deployment_id string
 
 param synStorageAccount string = '${project}st2${env}${deployment_id}'
 param mainStorageAccount string = '${project}st${env}${deployment_id}'
-param synStorageFilesys string = '${synStorageAccount}/default/container001'
+param synStorageFileSys string = '${synStorageAccount}/default/container001'
 param keyvault string = '${project}-kv-${env}-${deployment_id}'
 
 param sql_server_username string = 'sqlAdmin'
 @secure()
 param sql_server_password string
 
+var storage_blob_data_contributor = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')
+
 resource synStorage 'Microsoft.Storage/storageAccounts@2021-04-01' existing = {
   name: synStorageAccount
 }
 
 resource synFileSystem 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-04-01' existing = {
-  name: synStorageFilesys
+  name: synStorageFileSys
 }
 
 resource mainStorage 'Microsoft.Storage/storageAccounts@2021-04-01' existing = {
@@ -129,21 +131,21 @@ resource synapseWorkspaceFirewallRule1 'Microsoft.Synapse/workspaces/firewallrul
   }
 }
 
-resource roleAssignment1 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = {
+resource roleAssignmentSynStorage1 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = {
   name: guid(resourceGroup().id, resourceId('Microsoft.Storage/storageAccounts', synStorage.name))
   properties: {
     principalId: synapseWorkspace.identity.principalId
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')
+    roleDefinitionId: storage_blob_data_contributor
     principalType: 'ServicePrincipal'
   }
   scope: synStorage
 }
 
-resource roleAssignment2 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = {
+resource roleAssignmentSynStorage2 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = {
   name: guid(resourceGroup().id, resourceId('Microsoft.Storage/storageAccounts', mainStorage.name))
   properties: {
     principalId: synapseWorkspace.identity.principalId
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')
+    roleDefinitionId: storage_blob_data_contributor
     principalType: 'ServicePrincipal'
   }
   scope: mainStorage
