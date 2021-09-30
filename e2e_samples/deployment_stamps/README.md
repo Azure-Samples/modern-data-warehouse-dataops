@@ -27,7 +27,9 @@ This sample sets up a pipeline which will create a new "stamp" each time.
  A *stamp* (or a *scale unit*) means a "group of resources to host and operate multiple workloads or tenants". For more detailed explanation of the deployment stamps pattern, please refer to [Azure Docs - Deployment Stamps pattern](https://docs.microsoft.com/en-us/azure/architecture/patterns/deployment-stamp).
 
 > In a multi-tenant environment, every stamp or scale unit can serve a predefined number of tenants.
+
 > Multiple stamps can be deployed to scale the solution almost linearly and serve an increasing number of tenants.
+
 > This approach can improve the scalability of your solution, allow you to deploy instances across multiple regions, and separate your customer data.
 
 In this sample, a stamp is defined with ARM templates which includes following resources:
