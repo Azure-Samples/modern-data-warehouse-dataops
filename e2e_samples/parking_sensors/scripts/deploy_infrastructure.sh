@@ -169,7 +169,6 @@ appinsights_key=$(az monitor app-insights component show \
 # Store in Keyvault
 az keyvault secret set --vault-name "$kv_name" --name "applicationInsightsKey" --value "$appinsights_key"
 
-
 # ###########################
 # # RETRIEVE DATABRICKS INFORMATION AND CONFIGURE WORKSPACE
 
@@ -262,6 +261,53 @@ az keyvault secret set --vault-name "$kv_name" --name "spAdfId" --value "$sp_adf
 az keyvault secret set --vault-name "$kv_name" --name "spAdfPass" --value "$sp_adf_pass"
 az keyvault secret set --vault-name "$kv_name" --name "spAdfTenantId" --value "$sp_adf_tenant"
 
+####################
+# LOG ANALYTICS 
+
+echo "Retrieving Log Analytics information from the deployment."
+loganalytics_name=$(echo "$arm_output" | jq -r '.properties.outputs.loganalytics_name.value')
+loganalytics_id=$(az monitor log-analytics workspace show \
+    --workspace-name "$loganalytics_name" \
+    --resource-group "$resource_group_name" \
+    --output json |
+    jq -r '.customerId')
+loganalytics_key=$(az monitor log-analytics workspace get-shared-keys \
+    --workspace-name "$loganalytics_name" \
+    --resource-group "$resource_group_name" \
+    --output json |
+    jq -r '.primarySharedKey')
+
+# Store in Keyvault
+az keyvault secret set --vault-name "$kv_name" --name "logAnalyticsId" --value "$loganalytics_id"
+az keyvault secret set --vault-name "$kv_name" --name "logAnalyticsKey" --value "$loganalytics_key"
+
+####################
+# SYNAPSE ANALYTICS
+
+echo "Retrieving Synapse Analytics information from the deployment."
+synapseworkspace_name=$(echo "$arm_output" | jq -r '.properties.outputs.synapseworskspace_name.value')
+synapse_dev_endpoint=$(az synapse workspace show \
+    --name "$synapseworkspace_name" \
+    --resource-group "$resource_group_name" \
+    --output json |
+    jq -r '.connectivityEndpoints | .dev')
+
+synapse_sparkpool_name=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_output_spark_pool_name.value')
+
+# Store in Keyvault
+az keyvault secret set --vault-name "$kv_name" --name "synapseWorkspaceName" --value "$synapseworkspace_name"
+az keyvault secret set --vault-name "$kv_name" --name "synapseDevEndpoint" --value "$synapse_dev_endpoint"
+az keyvault secret set --vault-name "$kv_name" --name "synapseSparkPoolName" --value "$synapse_sparkpool_name"
+
+# Deploy Synapse artifacts
+AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID \
+RESOURCE_GROUP_NAME=$resource_group_name \
+SYNAPSE_WORKSPACE_NAME=$synapseworkspace_name \
+SYNAPSE_DEV_ENDPOINT=$synapse_dev_endpoint \
+BIG_DATAPOOL_NAME=$synapse_sparkpool_name \
+LOG_ANALYTICS_WS_ID=$loganalytics_id \
+LOG_ANALYTICS_WS_KEY=$loganalytics_key \
+    bash -c "./scripts/deploy_synapse_artifacts.sh"
 
 ####################
 # AZDO Azure Service Connection and Variables Groups
@@ -293,6 +339,10 @@ DATAFACTORY_NAME=$datafactory_name \
 SP_ADF_ID=$sp_adf_id \
 SP_ADF_PASS=$sp_adf_pass \
 SP_ADF_TENANT=$sp_adf_tenant \
+SYNAPSE_WORKSPACE_NAME=$synapseworkspace_name \
+BIG_DATAPOOL_NAME=$synapse_sparkpool_name \
+LOG_ANALYTICS_WS_ID=$loganalytics_id \
+LOG_ANALYTICS_WS_KEY=$loganalytics_key \
     bash -c "./scripts/deploy_azdo_variables.sh"
 
 
@@ -321,6 +371,8 @@ DATABRICKS_TOKEN=${databricks_token}
 DATAFACTORY_NAME=${datafactory_name}
 APPINSIGHTS_KEY=${appinsights_key}
 KV_URL=${kv_dns_name}
+LOG_ANALYTICS_WS_ID=${loganalytics_id}
+SYNAPSE_WORKSPACE_NAME=${synapseworkspace_name}
 
 EOF
 echo "Completed deploying Azure resources $resource_group_name ($ENV_NAME)"
