@@ -144,7 +144,7 @@ Assume to be test user1 who belongs to Tenant B,
   ```
   https://{api-url}/v1/{tenantC-Id}/devices/{any-device-Id}/Telemetries
   ```
-  Error of 403 unauthorized will be returned.
+  Error of 401 unauthorized will be returned.
 
 - Try to retrieve telemetries of a not existed device in Tenant B with following url,
   ```
