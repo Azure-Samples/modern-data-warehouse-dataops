@@ -26,11 +26,9 @@ This sample sets up a pipeline which will create a new "stamp" each time.
 
  A *stamp* (or a *scale unit*) means a "group of resources to host and operate multiple workloads or tenants". For more detailed explanation of the deployment stamps pattern, please refer to [Azure Docs - Deployment Stamps pattern](https://docs.microsoft.com/en-us/azure/architecture/patterns/deployment-stamp).
 
-> In a multi-tenant environment, every stamp or scale unit can serve a predefined number of tenants.
-
-> Multiple stamps can be deployed to scale the solution almost linearly and serve an increasing number of tenants.
-
-> This approach can improve the scalability of your solution, allow you to deploy instances across multiple regions, and separate your customer data.
+> - In a multi-tenant environment, every stamp or scale unit can serve a predefined number of tenants.  
+> -  Multiple stamps can be deployed to scale the solution almost linearly and serve an increasing number of tenants.  
+> - This approach can improve the scalability of your solution, allow you to deploy instances across multiple regions, and separate your customer data.
 
 In this sample, a stamp is defined with ARM templates which includes following resources:
 
@@ -90,7 +88,7 @@ The center Tenant will be used by the API app to check authentication and author
 
 #### Azure DevOps to Run the Pipeline
 
-1. Create a service connection under your Azure DevOps project following steps in the official documentation [Azure DevOps - Manage service connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml). 
+1. Create a service connection under your Azure DevOps project following steps in the official documentation [Azure DevOps - Manage service connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml).
     - Set `Scope level` property to `Subscription` if all stamps are planned to be deployed to one subscription; to `Management Group` if stamps are planned to be deployed across subscriptions.
     - Leave `Resource Group` property empty.
 2. Host the code in a Azure DevOps repository.
@@ -108,7 +106,7 @@ The center Tenant will be used by the API app to check authentication and author
     |Client Id |the client/application id of the App registration |
     |Stamp Id | a customized stamp id for filtering stamp resources if multiple resources deployed to same resource group. This will used as tags attached to all resources of the stamp  |
 
-4. Go to Azure portal to check the resource group. You will be able to use the tag of the stamp id you have input to run the pipeline.
+5. Go to Azure portal to check the resource group. You will be able to use the tag of the stamp id you have input to run the pipeline.
 
 #### Create Sample Data
 
