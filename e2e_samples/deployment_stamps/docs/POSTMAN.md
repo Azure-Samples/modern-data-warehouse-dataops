@@ -3,7 +3,7 @@
 
 Use Postman to test API app easily.
 
-## Get WebApps token 
+## Get WebApps token
 
 Perform the following operations to get an access token.
 
@@ -15,7 +15,7 @@ Perform the following operations to get an access token.
 
 ![image.png](./.images/postman-token4.PNG)
 
-3\. Enter the settings on the configuration. Please be noticed that the configuration required here belongs to the **center Tenant**. 
+3\. Enter the settings on the configuration. Please be noticed that the configuration required here belongs to the **center Tenant**.
 
 ![image.png](./.images/postman-token5.PNG)
 
@@ -33,7 +33,7 @@ Perform the following operations to get an access token.
 
 *Tokens expire on a regular basis, so do the same when they expire.
 
-## Retrieve 
+## Retrieve
 
 Set the Get Url as following and click "Send" button.
 

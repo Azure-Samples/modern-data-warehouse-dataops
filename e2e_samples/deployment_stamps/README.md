@@ -84,15 +84,14 @@ The center Tenant will be used by the API app to check authentication and author
   - With the center tenant setup, the sample will already be able to work as a stamp serving a single tenant (like the "stamp2" in the Architecture). In this case, Tenant D and the center Tenant are the same Tenant. Test user 2 should be added to the center Tenant (which is also Tenant D).
   
 - Multi-Tenants Stamps
-  - For creating a multi-tenants stamp (like "stamp1" and "stamp3"), Azure AD Tenants besides the center Tenant should also be created and the test users under them should be added to the center Tenant as guest users ([Azure AD - Add guest users](https://docs.microsoft.com/en-us/azure/active-directory/external-identities/b2b-quickstart-add-guest-users-portal)). 
+  - For creating a multi-tenants stamp (like "stamp1" and "stamp3"), Azure AD Tenants besides the center Tenant should also be created and the test users under them should be added to the center Tenant as guest users ([Azure AD - Add guest users](https://docs.microsoft.com/en-us/azure/active-directory/external-identities/b2b-quickstart-add-guest-users-portal)).
 
   - For example, if you want to do a tryout of "stamp1" in the Architecture, create a center Tenant first; the center Tenant can be used as any of the three Tenants A, B and C; then create the other two Tenants and add their test users to the center Tenant as guest users.
- 
 
 #### Azure DevOps to Run the Pipeline
 
 1. Create a service connection under your Azure DevOps project following steps in the official documentation [Azure DevOps - Manage service connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml). 
-    - Set `Scope level` property to `Subscription` if all stamps are planned to be deployed to one subscription; to `Management Group` if stamps are planned to be deployed across subscriptions. 
+    - Set `Scope level` property to `Subscription` if all stamps are planned to be deployed to one subscription; to `Management Group` if stamps are planned to be deployed across subscriptions.
     - Leave `Resource Group` property empty.
 2. Host the code in a Azure DevOps repository.
 3. Create a pipeline with existing yaml file `pipelines/create-one-stamp.yaml`.
@@ -134,13 +133,14 @@ Use the [azure-samples/iot-telemetry-simulator](https://github.com/Azure-Samples
 
 Use postman to test the Web API. See [POSTMAN readme](./docs/POSTMAN.md) for more detail.
 
-Assume to be test user1 who belongs to Tenant B, 
+Assume to be test user1 who belongs to Tenant B,
+
 - Firstly use postman to achieve the token for user1
 - Try retrieve telemetries of Tenant B with following url,
 
   ```text
   https://{api-url}/v1/{tenantB-Id}/devices/{device1-Id}/Telemetries
-  ``` 
+  ```
 
   The json of `Device1` telemetries (which are sent to Event Hub with iot-telemetry-simulator in previous step) will be returned.
 
@@ -157,7 +157,7 @@ Assume to be test user1 who belongs to Tenant B,
   ```text
   https://{api-url}/v1/{tenantB-Id}/devices/{non-existed-device-Id}/Telemetries
   ```
-  
+
   Error of 404 not found will be returned.
 
 ## Debug API and Function App Code Locally
@@ -169,6 +169,7 @@ Both of the API and Function App can be debugged locally. Setup the testing envi
 .NET 5.0 is needed for running the API App. [[download .NET 5.0]](https://dotnet.microsoft.com/download/dotnet/5.0)
 
 Update following values in the `appsettings.json` with resources in the created stamp
+
 - Cosmos DB connection string
 - Storage Account connection string
 - Azure AD tenant and client ID
@@ -177,9 +178,10 @@ Change directory to **.\api\WebApi\\** and run command `dotnet run`.
 
 ### For Function App
 
-Azure Functions Core Tools is needed for debugging Function App locally. [[download Version 3.x]](https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=windows%2Ccsharp%2Cportal%2Cbash%2Ckeda#v2)  
+Azure Functions Core Tools is needed for debugging Function App locally. [[download Version 3.x]](https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=windows%2Ccsharp%2Cportal%2Cbash%2Ckeda#v2)
 
 Copy `.local.settings.json` to `local.settings.json` and update following values of resources in the created stamp,
+
 - Storage Account connection string
 - Event Hub Connection string
 
