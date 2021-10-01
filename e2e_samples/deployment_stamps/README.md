@@ -132,7 +132,7 @@ Use the [azure-samples/iot-telemetry-simulator](https://github.com/Azure-Samples
 
 #### Access through API
 
-Use postman to test the Web API. See [POSTMAN readme](./POSTMAN.md) for more detail.
+Use postman to test the Web API. See [POSTMAN readme](./docs/POSTMAN.md) for more detail.
 
 Assume to be test user1 who belongs to Tenant B, 
 - Firstly use postman to achieve the token for user1
