@@ -1,8 +1,10 @@
 
 # Postman
+
 Use Postman to test API app easily.
 
 ## Get WebApps token 
+
 Perform the following operations to get an access token.
 
 1\. Click [+] from the **Postman tab**.
@@ -32,8 +34,9 @@ Perform the following operations to get an access token.
 *Tokens expire on a regular basis, so do the same when they expire.
 
 ## Retrieve 
+
 Set the Get Url as following and click "Send" button.
-```
+
+```text
 https://{api-url}/v1/{tenantId}/devices/{deviceId}/Telemetries
 ```
-

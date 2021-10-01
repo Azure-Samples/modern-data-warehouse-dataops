@@ -137,21 +137,27 @@ Use postman to test the Web API. See [POSTMAN readme](./docs/POSTMAN.md) for mor
 Assume to be test user1 who belongs to Tenant B, 
 - Firstly use postman to achieve the token for user1
 - Try retrieve telemetries of Tenant B with following url,
-  ```
+
+  ```text
   https://{api-url}/v1/{tenantB-Id}/devices/{device1-Id}/Telemetries
   ``` 
+
   The json of `Device1` telemetries (which are sent to Event Hub with iot-telemetry-simulator in previous step) will be returned.
 
 - Try to retrieve telemetries of another Tenant C with following url,
-  ```
+
+  ```text
   https://{api-url}/v1/{tenantC-Id}/devices/{any-device-Id}/Telemetries
   ```
+
   Error of 401 unauthorized will be returned.
 
 - Try to retrieve telemetries of a not existed device in Tenant B with following url,
-  ```
+
+  ```text
   https://{api-url}/v1/{tenantB-Id}/devices/{non-existed-device-Id}/Telemetries
   ```
+  
   Error of 404 not found will be returned.
 
 ## Debug API and Function App Code Locally
@@ -159,6 +165,7 @@ Assume to be test user1 who belongs to Tenant B,
 Both of the API and Function App can be debugged locally. Setup the testing environment by creating a stamp first.
 
 ### For API App
+
 .NET 5.0 is needed for running the API App. [[download .NET 5.0]](https://dotnet.microsoft.com/download/dotnet/5.0)
 
 Update following values in the `appsettings.json` with resources in the created stamp
@@ -169,6 +176,7 @@ Update following values in the `appsettings.json` with resources in the created 
 Change directory to **.\api\WebApi\\** and run command `dotnet run`.
 
 ### For Function App
+
 Azure Functions Core Tools is needed for debugging Function App locally. [[download Version 3.x]](https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=windows%2Ccsharp%2Cportal%2Cbash%2Ckeda#v2)  
 
 Copy `.local.settings.json` to `local.settings.json` and update following values of resources in the created stamp,
