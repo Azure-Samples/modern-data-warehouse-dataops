@@ -49,7 +49,7 @@ Follow the steps below to register new application.
 Once you setup an application, you need to setup authentication.
 
 1. In the newly registered App's page, select "Authentication" menu and click "Add a platform".
-1. Select "Web" and enter redirect URIs of your server. If you want to debug locally, it would be https://localhost:<port>/signin-oidc. If you deploy the app to Azure WebApp, use the web app URL and add "/signin-oidc" at the end.
+1. Select "Web" and enter redirect URIs of your server. If you want to debug locally, it would be `https://localhost:<port>/signin-oidc`. If you deploy the app to Azure WebApp, use the web app URL and add "/signin-oidc" at the end.
 1. Click "Configure".
 
 ### Setup Expose an API
