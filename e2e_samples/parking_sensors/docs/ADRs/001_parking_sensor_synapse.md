@@ -1,8 +1,8 @@
-# Title
+# Title: Where to land Parking Sensor (Synapse) in repo
 
 ## Status
 
-Proposed
+Accepted.
 
 ## Context
 
@@ -111,8 +111,10 @@ Since this proposes a completely new sample, the end-user experience will be spe
 
 ## Decision
 
-What is the change that we're proposing and/or doing?
+After discussion with crew, the majority opted for Option 3 for the immediate short-term with the potential to move the structure to Option 2 for the medium to longterm.
 
 ## Consequences
 
-What becomes easier or more difficult to do because of this change?
+- Acceptance of duplication of code between the two samples.
+- Potential to improve how original Parking Sensor codebase is structured.
+- Existing work needs to be ported (copied) over.
