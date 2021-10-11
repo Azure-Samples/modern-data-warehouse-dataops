@@ -88,16 +88,23 @@ resource synapseStorage 'Microsoft.Storage/storageAccounts@2021-04-01' = {
     }
     accessTier: 'Hot'
   }
-}
 
-resource synapseStorageFileSystem 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-04-01' = {
-  name: '${project}st2${env}${deployment_id}/default/container001'
-  properties: {
-    publicAccess: 'None'
+  resource synapseStorageFileSystem 'blobServices@2021-04-01' = {
+    name: 'default'
+    properties: {
+      isVersioningEnabled: false
+    }
+    dependsOn: [
+      synapseStorage
+    ]
+
+    resource synapseStorageFileSystem2  'containers@2021-04-01' = {
+      name: 'synapsedefaultfs'
+      properties: {
+        publicAccess: 'None'
+      }
+    }
   }
-  dependsOn: [
-    synapseStorage
-  ]
 }
 
 resource synapseStorage_roleassignment 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = {

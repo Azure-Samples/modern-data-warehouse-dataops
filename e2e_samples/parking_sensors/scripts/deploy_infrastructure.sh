@@ -128,7 +128,7 @@ az storage blob upload --container-name $storage_file_system --account-name "$az
 # Set Keyvault secrets
 az keyvault secret set --vault-name "$kv_name" --name "datalakeAccountName" --value "$azure_storage_account"
 az keyvault secret set --vault-name "$kv_name" --name "datalakeKey" --value "$azure_storage_key"
-
+az keyvault secret set --vault-name "$kv_name" --name "datalakeurl" --value "https://$azure_storage_account.dfs.core.windows.net"
 
 ###################
 # SQL
@@ -307,6 +307,7 @@ SYNAPSE_DEV_ENDPOINT=$synapse_dev_endpoint \
 BIG_DATAPOOL_NAME=$synapse_sparkpool_name \
 LOG_ANALYTICS_WS_ID=$loganalytics_id \
 LOG_ANALYTICS_WS_KEY=$loganalytics_key \
+KEYVAULT_NAME=$kv_name \
     bash -c "./scripts/deploy_synapse_artifacts.sh"
 
 ####################
