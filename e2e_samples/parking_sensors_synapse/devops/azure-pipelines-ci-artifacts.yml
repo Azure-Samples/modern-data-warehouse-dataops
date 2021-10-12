@@ -1,0 +1,96 @@
+trigger:
+  branches:
+    include:
+    - main
+    - release/*
+  paths:
+    include:
+    - e2e_samples/parking_sensors/*
+
+pr: none
+
+variables:
+  basePath: 'e2e_samples/parking_sensors'
+  pythonWorkingDir: '$(basePath)/src/ddo_transform'
+  pythonPackageMajorVersion:  1
+  pythonPackageMinorVersion:  1
+  pythonPackagePatchVersion:  $(Build.BuildId)
+  sqlDwPath: '$(basePath)/sql/ddo_azuresqldw_dw'
+  sqlDwSolutionName: 'ddo_azuresqldw_dw'
+  sqlDwSolution: '$(sqlDwPath)/$(sqlDwSolutionName).sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+stages:
+- stage: 'publish_artifacts'
+  displayName: 'Publish Build Artifacts'
+  jobs:
+  - job: 'publish_python_packages'
+    displayName: 'Publish Python Packages'
+    pool:
+      vmImage: 'Ubuntu-16.04'
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.6'
+        architecture: 'x64'
+
+    - script: pip install -r requirements_dev.txt && pip install -r requirements.txt
+      workingDirectory: $(pythonWorkingDir)
+      displayName: 'Install requirements'
+
+    - script: make dist
+      env:
+        PACKAGE_VERSION: $(pythonPackageMajorVersion).$(pythonPackageMinorVersion).$(pythonPackagePatchVersion)
+      workingDirectory: $(pythonWorkingDir)
+      displayName: 'Create wheel package'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(pythonWorkingDir)/dist'
+        ArtifactName: 'dist'
+      displayName: 'Publish Dist Artifacts'
+
+  - job: 'publish_static_artifacts'
+    displayName: 'Publish Static Artifacts'
+    pool:
+      vmImage: 'Ubuntu-16.04'
+    steps:
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(basePath)/databricks'
+        ArtifactName: 'databricks'
+      displayName: 'Publish Databricks Artifacts'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(basePath)/adf/_scripts/deploymentadf.ps1'
+        ArtifactName: 'adf_scripts'
+      displayName: 'Publish ADF Scripts'
+
+  - job: 'publish_sql_packages'
+    displayName: 'Publish SQL Packages'
+    pool:
+      vmImage: 'windows-latest'
+    steps:
+    - task: NuGetToolInstaller@1
+
+    - task: NuGetCommand@2
+      inputs:
+        restoreSolution: '$(sqlDwSolution)'
+
+    - task: VSBuild@1
+      inputs:
+        solution: '$(sqlDwSolution)'
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+    - task: VSTest@2
+      inputs:
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(sqlDwPath)/$(sqlDwSolutionName)/bin/$(buildConfiguration)/ddo_azuresqldw_dw.dacpac'
+        ArtifactName: 'sql_dw_dacpac'
+      displayName: 'Publish SQL DACPAC'

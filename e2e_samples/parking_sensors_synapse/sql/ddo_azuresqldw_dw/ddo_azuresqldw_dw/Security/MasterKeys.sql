@@ -1,0 +1,2 @@
+﻿CREATE MASTER KEY;
+

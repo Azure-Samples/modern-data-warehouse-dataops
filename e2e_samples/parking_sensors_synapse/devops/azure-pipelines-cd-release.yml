@@ -1,0 +1,75 @@
+trigger: none
+
+pr: none
+
+resources:
+  pipelines:
+  - pipeline: ciartifacts
+    source: mdwdops-ci-artifacts
+    trigger: 
+      branches:
+      - main
+  repositories:
+  - repository: mdwdataops_adfpublish
+    type: github
+    endpoint: mdwdops-github
+    name: devlace/mdw-dataops-clone
+    ref: adf_publish
+
+# The deployment script sets this as a Pipeline Variable, but you may choose to set it here in the definition
+#
+# variables:
+#   devAdfName: <DEV DATAFACTORY NAME>
+
+stages:
+- stage: deploy_to_dev
+  displayName: 'Deploy to DEV'  # In DEV, excludes publishing to ADF as this is a manual publish step
+  variables:
+  - group: mdwdops-release-dev
+  - group: mdwdops-secrets-dev
+  jobs:
+  - template: templates/jobs/deploy-databricks-job.yml
+    parameters:
+      environmentName: 'DEV'
+  - template: templates/jobs/deploy-azuresqldb-job.yml
+    parameters:
+      environmentName: 'DEV'
+      serviceConnection: 'mdwdops-serviceconnection-dev'
+
+- stage: deploy_to_stg
+  displayName: 'Deploy to Stage'
+  variables:
+  - group: mdwdops-release-stg
+  - group: mdwdops-secrets-stg
+  jobs: 
+  - template: templates/jobs/deploy-databricks-job.yml
+    parameters:
+      environmentName: 'STG'
+  - template: templates/jobs/deploy-azuresqldb-job.yml
+    parameters:
+      environmentName: 'STG'
+      serviceConnection: 'mdwdops-serviceconnection-stg'
+  - template: templates/jobs/deploy-adf-job.yml
+    parameters:
+      environmentName: 'STG'
+      serviceConnection: 'mdwdops-serviceconnection-stg'
+  # Integration tests
+  - template: templates/jobs/integration-tests-job.yml
+
+- stage: deploy_to_prod
+  displayName: 'Deploy to Prod'
+  variables:
+  - group: mdwdops-release-prod
+  - group: mdwdops-secrets-prod
+  jobs: 
+  - template: templates/jobs/deploy-databricks-job.yml
+    parameters:
+      environmentName: 'PROD'
+  - template: templates/jobs/deploy-azuresqldb-job.yml
+    parameters:
+      environmentName: 'PROD'
+      serviceConnection: 'mdwdops-serviceconnection-prod'
+  - template: templates/jobs/deploy-adf-job.yml
+    parameters:
+      environmentName: 'PROD'
+      serviceConnection: 'mdwdops-serviceconnection-prod'
