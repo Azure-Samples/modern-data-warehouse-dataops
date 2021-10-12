@@ -119,7 +119,6 @@ uploadSynapseArtifactsToSparkPool(){
         \"sessionLevelPackagesEnabled\": true,
         ${customLibraryList}
         \"sparkConfigProperties\": {
-            \"configurationType\": \"File\",
             \"filename\": \"spark_loganalytics_conf.txt\",
             \"content\": \"spark.synapse.logAnalytics.enabled true\r\nspark.synapse.logAnalytics.workspaceId ${LOG_ANALYTICS_WS_ID}\r\nspark.synapse.logAnalytics.secret ${LOG_ANALYTICS_WS_KEY}\"
         },
