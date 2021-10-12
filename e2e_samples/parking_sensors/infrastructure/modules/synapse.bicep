@@ -5,7 +5,8 @@ param deployment_id string
 
 param synStorageAccount string = '${project}st2${env}${deployment_id}'
 param mainStorageAccount string = '${project}st${env}${deployment_id}'
-param synStorageFileSys string = '${synStorageAccount}/default/container001'
+//param synStorageFileSys string = '${synStorageAccount}/default/container001'
+param synStorageFileSys string = 'synapsedefaultfs'
 param keyvault string = '${project}-kv-${env}-${deployment_id}'
 
 param sql_server_username string = 'sqlAdmin'
@@ -87,6 +88,15 @@ resource synapseWorkspace 'Microsoft.Synapse/workspaces@2021-03-01' = {
     managedResourceGroupName: '${project}-mrg-${env}-syn'
     sqlAdministratorLogin: 'sqladminuser'
     sqlAdministratorLoginPassword: ''
+  }
+
+  resource managedIdentitySqlControlSettings 'managedIdentitySqlControlSettings@2021-06-01-preview' = {
+    name: 'default'
+    properties: {
+      grantSqlControlToManagedIdentity: {
+        desiredState: 'Enabled'
+      }
+    }
   }
 }
 

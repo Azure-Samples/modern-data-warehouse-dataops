@@ -39,6 +39,7 @@ set -o xtrace # For debugging
 # BIG_DATAPOOL_NAME
 # LOG_ANALYTICS_WS_ID
 # LOG_ANALYTICS_WS_KEY
+# KEYVAULT_NAME
 
 # Consts
 apiVersion="2020-12-01&force=true"
@@ -118,7 +119,7 @@ uploadSynapseArtifactsToSparkPool(){
         \"sessionLevelPackagesEnabled\": true,
         ${customLibraryList}
         \"sparkConfigProperties\": {
-            \"configurationType\": 0,
+            \"configurationType\": \"File\",
             \"filename\": \"spark_loganalytics_conf.txt\",
             \"content\": \"spark.synapse.logAnalytics.enabled true\r\nspark.synapse.logAnalytics.workspaceId ${LOG_ANALYTICS_WS_ID}\r\nspark.synapse.logAnalytics.secret ${LOG_ANALYTICS_WS_KEY}\"
         },
@@ -134,6 +135,37 @@ uploadSynapseArtifactsToSparkPool(){
     az rest --method put --headers "Content-Type=application/json" --url "${managementApiUri}" --body "$json_body"
 }
 
+createLinkedService () {
+    declare name=$1
+    echo "Creating Synapse LinkedService: $name"
+    az synapse linked-service create --file @./synapse/workspace/linkedService/"${name}".json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}"
+}
+createDataset () {
+    declare name=$1
+    echo "Creating Synapse Dataset: $name"
+    az synapse dataset create --file @./synapse/workspace/dataset/"${name}".json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}"
+}
+createNotebook() {
+    declare name=$1
+    echo "Creating Synapse Notebook: $name"
+    az synapse notebook create --file @./synapse/workspace/notebooks/"${name}".ipynb --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spark-pool-name "${BIG_DATAPOOL_NAME}"
+}
+createPipeline () {
+    declare name=$1
+    echo "Creating Synapse Pipeline: $name"
+
+    # Replace keyvault current value in json file
+    tmp=$(mktemp)
+    jq '.properties.activities[4].typeProperties.parameters.keyvaultname.value ='"${KEYVAULT_NAME}" ./synapse/workspace/pipelines/"${name}".json > "$tmp" && mv "$tmp" ./synapse/workspace/pipelines/"${name}".json
+    # Deploy the pipeline
+    az synapse pipeline create --file @./synapse/workspace/pipelines/"${name}".json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}"
+}
+createTrigger () {
+    declare name=$1
+    echo "Creating Synapse Trigger: $name"
+    az synapse trigger create --file @./synapse/workspace/triggers/"${name}".json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}"
+}
+
 # Build requirement.txt string to upload in the Spark Configuration
 provision_state=$(az synapse spark pool show \
     --name "$BIG_DATAPOOL_NAME" \
@@ -146,6 +178,43 @@ while [ "$provision_state" != "Succeeded" ]
 do
     if [ "$provision_state" == "Failed" ]; then break ; else sleep 10s; fi
 done
+
+# Deploy all Linked Services
+# Auxiliary string to parametrize the keyvault name on the ls json file
+keyVaultLsContent="{
+    \"name\": \"Ls_KeyVault_01\",
+    \"properties\": {
+        \"annotations\": [],
+        \"type\": \"AzureKeyVault\",
+        \"typeProperties\": {
+            \"baseUrl\": \"https://${KEYVAULT_NAME}.vault.azure.net/\"
+        }
+    }
+}"
+echo "$keyVaultLsContent" > ./synapse/workspace/linkedService/Ls_KeyVault_01.json
+
+createLinkedService "Ls_KeyVault_01"
+createLinkedService "Ls_AdlsGen2_01"
+createLinkedService "Ls_AzureSQLDW_01"
+createLinkedService "Ls_Rest_MelParkSensors_01"
+
+# Deploy all Datasets
+createDataset "Ds_AdlsGen2_MelbParkingData"
+createDataset "Ds_REST_MelbParkingData"
+
+# Deploy all Notebooks
+sleep 5s
+createNotebook "00_setup"
+createNotebook "01_explore"
+createNotebook "02_standardize"
+createNotebook "03_transform"
+createNotebook "04_load"
+
+# Deploy all Pipelines
+createPipeline "P_Ingest_MelbParkingData"
+
+# Deploy triggers
+createTrigger "T_Sched"
 
 configurationList=""
 while read -r p; do 
@@ -169,3 +238,5 @@ for file in "$packagesDirectory"*.whl; do
 done
 customlibraryList="customLibraries:[$libraryList],"
 uploadSynapseArtifactsToSparkPool "${configurationList}" "${customlibraryList}"
+
+echo "Completed deploying Synapse artifacts."
