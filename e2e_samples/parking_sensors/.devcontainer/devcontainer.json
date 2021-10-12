@@ -5,11 +5,13 @@
 	"service": "parking_sensor_dc",
 	"extensions": [
 		"ms-python.python",
+		"eamodio.gitlens",
 		"DavidAnson.vscode-markdownlint",
-		"eamodio.gitlens"
+		"yzhang.markdown-all-in-one",
+		"ms-azuretools.vscode-bicep"
 	],
 	"settings": {
 		"python.pythonPath": "/usr/local/bin/python"
 	},
-	"postCreateCommand": "az devops configure --defaults organization=$AZDO_ORGANIZATION_URL project=$AZDO_PROJECT  && pip install -r e2e_samples/parking_sensors/src/ddo_transform/requirements_dev.txt" 
+	"postCreateCommand": "az devops configure --defaults organization=$AZDO_ORGANIZATION_URL project=$AZDO_PROJECT  && pip install -r ../e2e_samples/parking_sensors/src/ddo_transform/requirements_dev.txt" 
 }
