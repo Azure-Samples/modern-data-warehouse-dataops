@@ -31,7 +31,7 @@ stages:
   - template: templates/jobs/deploy-databricks-job.yml
     parameters:
       environmentName: 'DEV'
-  - template: templates/jobs/deploy-azuresqldb-job.yml
+  - template: templates/jobs/deploy-dedicated-sql-pool-job.yml
     parameters:
       environmentName: 'DEV'
       serviceConnection: 'mdwdops-serviceconnection-dev'
@@ -45,7 +45,7 @@ stages:
   - template: templates/jobs/deploy-databricks-job.yml
     parameters:
       environmentName: 'STG'
-  - template: templates/jobs/deploy-azuresqldb-job.yml
+  - template: templates/jobs/deploy-dedicated-sql-pool-job.yml
     parameters:
       environmentName: 'STG'
       serviceConnection: 'mdwdops-serviceconnection-stg'
@@ -65,7 +65,7 @@ stages:
   - template: templates/jobs/deploy-databricks-job.yml
     parameters:
       environmentName: 'PROD'
-  - template: templates/jobs/deploy-azuresqldb-job.yml
+  - template: templates/jobs/deploy-dedicated-sql-pool-job.yml
     parameters:
       environmentName: 'PROD'
       serviceConnection: 'mdwdops-serviceconnection-prod'
