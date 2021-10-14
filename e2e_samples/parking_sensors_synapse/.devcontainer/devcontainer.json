@@ -13,5 +13,5 @@
 	"settings": {
 		"python.pythonPath": "/usr/local/bin/python"
 	},
-	"postCreateCommand": "bash .devcontainer/post_create.sh"
+	"postCreateCommand": "./.devcontainer/post_create.sh"
 }

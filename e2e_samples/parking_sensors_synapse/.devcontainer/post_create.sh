@@ -1,4 +1,4 @@
-#!bin/bash
+#!/usr/bin/env bash
 
 # Configure az devops cli
 az devops configure --defaults organization="$AZDO_ORGANIZATION_URL" project="$AZDO_PROJECT"
