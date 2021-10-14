@@ -1,6 +1,6 @@
-# DataOps - Parking Sensor Demo <!-- omit in toc -->
+# DataOps - Parking Sensor (Synapse) <!-- omit in toc -->
 
-The sample demonstrate how DevOps principles can be applied end to end Data Pipeline Solution built according to the [Modern Data Warehouse (MDW)](https://azure.microsoft.com/en-au/solutions/architecture/modern-data-warehouse/) pattern.
+The sample demonstrate how DevOps principles can be applied to an end to end Data Pipeline Solution built according to the [Modern Data Warehouse (MDW)](https://azure.microsoft.com/en-au/solutions/architecture/modern-data-warehouse/) pattern, implemented in Azure Synapse.
 
 ## Contents <!-- omit in toc -->
 
@@ -22,8 +22,6 @@ The sample demonstrate how DevOps principles can be applied end to end Data Pipe
     - [Build and Release Sequence](#build-and-release-sequence)
   - [Testing](#testing)
   - [Observability / Monitoring](#observability--monitoring)
-    - [Databricks](#databricks)
-    - [Data Factory](#data-factory)
 - [How to use the sample](#how-to-use-the-sample)
   - [Prerequisites](#prerequisites)
     - [Software pre-requisites if you use dev container](#software-pre-requisites-if-you-use-dev-container)
@@ -33,32 +31,11 @@ The sample demonstrate how DevOps principles can be applied end to end Data Pipe
   - [Data Lake Physical layout](#data-lake-physical-layout)
   - [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
 
-<!-- 
-## Contents
-
-1. [Solution Overview](./README.md#Solution-Overview)
-2. [Key Learnings](./README.md#key-learnings)
-   1. [Use Data-Tiering in your Data Lake](./README.md#1-use-data-tiering-in-your-data-lake)
-   2. [Validate data early in your pipeline](./README.md#2-validate-data-early-in-your-pipeline)
-   3. [Make your data pipelines replayable and idempotent](./README.md#3-Make-your-data-pipelines-replayable-and-idempotent)
-   4. [Ensure data transformation code is testable](./README.md#4-ensure-data-transformation-code-is-testable)
-   5. [Have a CI/CD pipeline](./README.md#5-Have-a-CICD-pipeline)
-   6. [Secure and centralize configuration](./README.md#6-Secure-and-centralize-configuration)
-   7. [Monitor infrastructure, pipelines and data](./README.md#7-Monitor-infrastructure-pipelines-and-data)
-3. [Key Concepts](./README.md#key-concepts)
-   1. [Build and Release](./README.md#build-and-release)
-   2. [Testing](./README.md#testing)
-   3. [Observability and Monitoring](./README.md#observability-and-monitoring)
-4. [How to use the sample](./README.md#how-to-use-the-sample)
-   1. [Prerequisites](./README.md#prerequisites)
-   2. [Setup and Deployment](./README.md#setup-and-deployment)
-   3. [Deployed resources](./README.md#deployed-resources)
-   4. [Known Issues, Limitations and Workarounds](./README.md#known-issues-limitations-workarounds) -->
 ---------------------
 
 ## Solution Overview
 
-The solution pulls near realtime [Melbourne Parking Sensor data](https://www.melbourne.vic.gov.au/about-council/governance-transparency/open-data/Pages/on-street-parking-data.aspx) from a publicly available REST api endpoint and saves this to [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction). It then validates, cleanses, and transforms the data to a known schema using [Azure Databricks](https://azure.microsoft.com/en-au/services/databricks/). A second Azure Databricks job then transforms these into a [Star Schema](https://en.wikipedia.org/wiki/Star_schema) which are then loaded into [Azure Synapse Analytics (formerly SQLDW)](https://azure.microsoft.com/en-au/services/synapse-analytics/) using [Polybase](https://docs.microsoft.com/en-us/sql/relational-databases/polybase/polybase-guide?view=sql-server-ver15). The entire pipeline is orchestrated with [Azure Data Factory](https://azure.microsoft.com/en-au/services/data-factory/).
+The solution pulls near realtime [Melbourne Parking Sensor data](https://www.melbourne.vic.gov.au/about-council/governance-transparency/open-data/Pages/on-street-parking-data.aspx) from a publicly available REST api endpoint and saves this to [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction). It then validates, cleanses, and transforms the data to a known schema using [Azure Synapse - Spark Pools](https://docs.microsoft.com/en-us/azure/synapse-analytics/spark/apache-spark-overview). A second Spark job then transforms these into a [Star Schema](https://en.wikipedia.org/wiki/Star_schema) which are then loaded into [Azure Synapse - SQL Dedicated Pool (formerly SQLDW)](https://docs.microsoft.com/en-us/azure/synapse-analytics/sql-data-warehouse/sql-data-warehouse-overview-what-is?context=/azure/synapse-analytics/context/context) using [Polybase](https://docs.microsoft.com/en-us/sql/relational-databases/polybase/polybase-guide?view=sql-server-ver15). The entire pipeline is orchestrated with [Azure Synapse Data Pipelines](https://docs.microsoft.com/en-us/azure/data-factory/concepts-pipelines-activities?context=/azure/synapse-analytics/context/context&tabs=synapse-analytics).
 
 ### Architecture
 
@@ -82,18 +59,12 @@ See [here](#build-and-release-pipeline) for details.
 
 It makes use of the following azure services:
 
-- [Azure Data Factory](https://azure.microsoft.com/en-au/services/data-factory/)
-- [Azure Databricks](https://azure.microsoft.com/en-au/services/databricks/)
+- [Azure Synapse Analytics](https://azure.microsoft.com/en-au/services/synapse-analytics/)
 - [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction)
-- [Azure Synapse Analytics (formerly SQLDW)](https://azure.microsoft.com/en-au/services/synapse-analytics/)
 - [Azure DevOps](https://azure.microsoft.com/en-au/services/devops/)
-- [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)
 - [PowerBI](https://powerbi.microsoft.com/en-us/)
+- [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)
 - [Log Analytics](https://docs.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overview)
-
-For a detailed walk-through of the solution and key concepts, watch the following video recording:
-
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/Xs1-OU5cmsw/0.jpg)](https://www.youtube.com/watch?v=Xs1-OU5cmsw")
 
 ## Key Learnings
 
@@ -145,10 +116,9 @@ The Build and Release Pipelines definitions can be found [here](devops/README.md
 #### Environments
 
 1. **Sandbox and Dev**- the DEV resource group is used by developers to build and test their solutions. It contains two logical environments - (1) a Sandbox environment per developer so each developer can make and test their changes in isolation prior committing to `main`, and (2) a shared Dev environment for integrating changes from the entire development team. "Isolated" sandbox environment are accomplish through a number of practices depending on the Azure Service.
-   - Databricks - developers use their dedicated Workspace folder to author and save notebooks. Developers can choose to spin up their own dedicated clusters or share a High-concurrency cluster.
    - DataLake Gen2 - a "sandbox" file system is created. Each developer creates their own folder within this Sandbox filesystem.
-   - AzureSQL or SQLDW - A transient database (restored from DEV) is spun up per developer on demand.
-   - Data Factory - git integration allows them to make changes to their own branches and debug runs independently.
+   - AzureSQL or SQLDW - A transient database (restored from DEV) is spun up per developer on demand, if required.
+   - Azure Synapse - git integration allows them to make changes to their own branches and debug runs independently.
 2. **Stage** - the STG resource group is used to test deployments prior to going to production in a production-like environment. Integration tests are run in this environment.
 3. **Production** - the PROD resource group is the final Production environment.
 
@@ -161,8 +131,8 @@ There are eight numbered orange boxes describing the sequence from sandbox devel
 1. Developers develop in their own Sandbox environments within the DEV resource group and commit changes into their own short-lived git branches. (i.e. <developer_name>/<branch_name>)
 2. When changes are complete, developers raise a PR to `main` for review. This automatically kicks-off the PR validation pipeline which runs the unit tests, linting and DACPAC builds.
 3. On PR completion, the commit to `main` will trigger a Build pipeline -- publishing all necessary Build Artifacts.
-4. The completion of a successful Build pipeline will trigger the first stage of the Release pipeline. This deploys the publish build artifacts into the DEV environment, with the exception of Azure Data Factory*.
-5. Developers perform a Manual Publish to the DEV ADF from the collaboration branch (`main`). This updates the ARM templates in in the `adf_publish` branch.
+4. The completion of a successful Build pipeline will trigger the first stage of the Release pipeline. This deploys the publish build artifacts into the DEV environment, with the exception of Azure Synapse Artifacts*.
+5. Developers perform a Manual Publish to the DEV ADF from the collaboration branch (`main`). This updates the ARM templates in in the `workspace_publish` branch.
 6. On the successful completion of the first stage, this triggers an Manual Approval Gate**. On Approval, the release pipeline continues with the second stage -- deploying changes to the Staging environment.
 7. Integration tests are run to test changes in the Staging environment.
 8. ***On the successful completion of the second stage, this triggers a second Manual Approval Gate. On Approval, the release pipeline continues with the third stage -- deploying changes to the Production environment.
@@ -176,8 +146,7 @@ Notes:
 
 More resources:
 
-- [Continuous Integration & Continuous Delivery with Databricks](https://databricks.com/blog/2017/10/30/continuous-integration-continuous-delivery-databricks.html)
-- [Continuous integration and delivery in Azure Data Factory](https://docs.microsoft.com/en-us/azure/data-factory/continuous-integration-deployment)
+- [Continuous Integration & Continuous Delivery for an Azure Synapse Analytics workspace](https://docs.microsoft.com/en-us/azure/synapse-analytics/cicd/continuous-integration-delivery)
 - [Devops for AzureSQL](https://devblogs.microsoft.com/azure-sql/devops-for-azure-sql/)
 
 ### Testing
@@ -195,18 +164,11 @@ More resources:
 
 ### Observability / Monitoring
 
-#### Databricks
-
-- [Monitoring Azure Databricks with Azure Monitor](https://docs.microsoft.com/en-us/azure/architecture/databricks-monitoring/)
-- [Monitoring Azure Databricks Jobs with Application Insights](https://msdn.microsoft.com/en-us/magazine/mt846727.aspx)
-
-#### Data Factory
-
-- [Monitor Azure Data Factory with Azure Monitor](https://docs.microsoft.com/en-us/azure/data-factory/monitor-using-azure-monitor)
-- [Alerting in Azure Data Factory](https://azure.microsoft.com/en-in/blog/create-alerts-to-proactively-monitor-your-data-factory-pipelines/)
+<!--TODO-->
 
 ## How to use the sample
 
+<!--TODO: update this to run for synapse sample-->
 ### Prerequisites
 
 1. [Github account](https://github.com/)
@@ -294,8 +256,8 @@ More resources:
 
    1. In the **DEV** Data Factory portal, navigate to "Manage > Triggers". Select the `T_Sched` trigger and activate it by clicking on the "Play" icon next to it. Click `Publish` to publish changes.
       - Publishing a change is **required** to generate the `adf_publish` branch which is required in the Release pipelines.
-   2. In Azure DevOps, notice a new run of the Build Pipeline (**mdw-park-ci-artifacts**) off `main`. This will build the Python package and SQL DACPAC, then publish these as Pipeline Artifacts.
-   3. After completion, this should automatically trigger the Release Pipeline (**mdw-park-cd-release**). This will deploy the artifacts across environments.
+   2. In Azure DevOps, notice a new run of the Build Pipeline (**mdwdops-ci-artifacts**) off `main`. This will build the Python package and SQL DACPAC, then publish these as Pipeline Artifacts.
+   3. After completion, this should automatically trigger the Release Pipeline (**mdwdops-cd-release**). This will deploy the artifacts across environments.
       - You may need to authorize the Pipelines initially to use the Service Connection for the first time.
       ![Release Pipeline](../../docs/images/ReleasePipeline.PNG?raw=true "Release Pipelines")
    4. **Optional**. Trigger the Data Factory Pipelines per environment.
