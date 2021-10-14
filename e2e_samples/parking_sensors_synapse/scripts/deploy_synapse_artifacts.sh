@@ -154,9 +154,9 @@ createPipeline () {
     declare name=$1
     echo "Creating Synapse Pipeline: $name"
 
-    # Replace keyvault current value in json file
+    # Replace dedicated sql pool name
     tmp=$(mktemp)
-    jq '.properties.activities[4].typeProperties.parameters.keyvaultname.value ='"${KEYVAULT_NAME}" ./synapse/workspace/pipelines/"${name}".json > "$tmp" && mv "$tmp" ./synapse/workspace/pipelines/"${name}".json
+    jq --arg a "${SQL_POOL_NAME}" '.properties.activities[5].sqlPool.referenceName = $a' ./synapse/workspace/pipelines/"${name}".json > "$tmp" && mv "$tmp" ./synapse/workspace/pipelines/"${name}".json
     # Deploy the pipeline
     az synapse pipeline create --file @./synapse/workspace/pipelines/"${name}".json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}"
 }
@@ -166,56 +166,27 @@ createTrigger () {
     az synapse trigger create --file @./synapse/workspace/triggers/"${name}".json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}"
 }
 
-# Build requirement.txt string to upload in the Spark Configuration
-provision_state=$(az synapse spark pool show \
+
+getProvisioningState(){
+    provision_state=$(az synapse spark pool show \
     --name "$BIG_DATAPOOL_NAME" \
     --workspace-name "$SYNAPSE_WORKSPACE_NAME" \
     --resource-group "$RESOURCE_GROUP_NAME" \
     --output json |
     jq -r '.provisioningState')
+}
+
+getProvisioningState
+echo "$provision_state"
 
 while [ "$provision_state" != "Succeeded" ]
 do
     if [ "$provision_state" == "Failed" ]; then break ; else sleep 10s; fi
+    getProvisioningState
+    echo "$provision_state"
 done
 
-# Deploy all Linked Services
-# Auxiliary string to parametrize the keyvault name on the ls json file
-keyVaultLsContent="{
-    \"name\": \"Ls_KeyVault_01\",
-    \"properties\": {
-        \"annotations\": [],
-        \"type\": \"AzureKeyVault\",
-        \"typeProperties\": {
-            \"baseUrl\": \"https://${KEYVAULT_NAME}.vault.azure.net/\"
-        }
-    }
-}"
-echo "$keyVaultLsContent" > ./synapse/workspace/linkedService/Ls_KeyVault_01.json
-
-createLinkedService "Ls_KeyVault_01"
-createLinkedService "Ls_AdlsGen2_01"
-createLinkedService "Ls_AzureSQLDW_01"
-createLinkedService "Ls_Rest_MelParkSensors_01"
-
-# Deploy all Datasets
-createDataset "Ds_AdlsGen2_MelbParkingData"
-createDataset "Ds_REST_MelbParkingData"
-
-# Deploy all Notebooks
-sleep 5s
-createNotebook "00_setup"
-createNotebook "01_explore"
-createNotebook "02_standardize"
-createNotebook "03_transform"
-createNotebook "04_load"
-
-# Deploy all Pipelines
-createPipeline "P_Ingest_MelbParkingData"
-
-# Deploy triggers
-createTrigger "T_Sched"
-
+# Build requirement.txt string to upload in the Spark Configuration
 configurationList=""
 while read -r p; do 
     #line="${p//'[\r\n]'/''}"
@@ -238,5 +209,52 @@ for file in "$packagesDirectory"*.whl; do
 done
 customlibraryList="customLibraries:[$libraryList],"
 uploadSynapseArtifactsToSparkPool "${configurationList}" "${customlibraryList}"
+
+
+# Deploy all Linked Services
+# Auxiliary string to parametrize the keyvault name on the ls json file
+keyVaultLsContent="{
+    \"name\": \"Ls_KeyVault_01\",
+    \"properties\": {
+        \"annotations\": [],
+        \"type\": \"AzureKeyVault\",
+        \"typeProperties\": {
+            \"baseUrl\": \"https://${KEYVAULT_NAME}.vault.azure.net/\"
+        }
+    }
+}"
+echo "$keyVaultLsContent" > ./synapse/workspace/linkedService/Ls_KeyVault_01.json
+
+getProvisioningState
+echo $provision_state
+while [ "$provision_state" != "Succeeded" ]
+do
+    if [ "$provision_state" == "Failed" ]; then break ; else sleep 10s; fi
+    getProvisioningState
+    echo "$provision_state"
+done
+
+createLinkedService "Ls_KeyVault_01"
+createLinkedService "Ls_AdlsGen2_01"
+createLinkedService "Ls_Rest_MelParkSensors_01"
+
+# Deploy all Datasets
+createDataset "Ds_AdlsGen2_MelbParkingData"
+createDataset "Ds_REST_MelbParkingData"
+
+# Deploy all Notebooks
+# This line allows the spark pool to be available to attach to the notebooks
+az synapse spark session list --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spark-pool-name "${BIG_DATAPOOL_NAME}"
+createNotebook "00_setup"
+createNotebook "01_explore"
+createNotebook "02_standardize"
+createNotebook "03_transform"
+
+
+# Deploy all Pipelines
+createPipeline "P_Ingest_MelbParkingData"
+
+# Deploy triggers
+createTrigger "T_Sched"
 
 echo "Completed deploying Synapse artifacts."

@@ -63,7 +63,7 @@ arm_output=$(az deployment group validate \
     --resource-group "$resource_group_name" \
     --template-file "./infrastructure/main.bicep" \
     --parameters @"./infrastructure/main.parameters.${ENV_NAME}.json" \
-    --parameters project="${PROJECT}" keyvault_owner_object_id="${kv_owner_object_id}" deployment_id="${DEPLOYMENT_ID}" sql_server_password="${AZURESQL_SERVER_PASSWORD}" \
+    --parameters project="${PROJECT}" keyvault_owner_object_id="${kv_owner_object_id}" deployment_id="${DEPLOYMENT_ID}" \
     --output json)
 
 # Deploy arm template
@@ -72,7 +72,7 @@ arm_output=$(az deployment group create \
     --resource-group "$resource_group_name" \
     --template-file "./infrastructure/main.bicep" \
     --parameters @"./infrastructure/main.parameters.${ENV_NAME}.json" \
-    --parameters project="${PROJECT}" deployment_id="${DEPLOYMENT_ID}" keyvault_owner_object_id="${kv_owner_object_id}" sql_server_password="${AZURESQL_SERVER_PASSWORD}" \
+    --parameters project="${PROJECT}" deployment_id="${DEPLOYMENT_ID}" keyvault_owner_object_id="${kv_owner_object_id}" \
     --output json)
 
 if [[ -z $arm_output ]]; then
@@ -129,31 +129,6 @@ az storage blob upload --container-name $storage_file_system --account-name "$az
 az keyvault secret set --vault-name "$kv_name" --name "datalakeAccountName" --value "$azure_storage_account"
 az keyvault secret set --vault-name "$kv_name" --name "datalakeKey" --value "$azure_storage_key"
 az keyvault secret set --vault-name "$kv_name" --name "datalakeurl" --value "https://$azure_storage_account.dfs.core.windows.net"
-
-###################
-# SQL
-
-echo "Retrieving SQL Server information from the deployment."
-# Retrieve SQL creds
-sql_server_name=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_sql_pool_output.value.name')
-sql_server_username=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_sql_pool_output.value.username')
-sql_server_password=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_sql_pool_output.value.password')
-sql_dw_database_name=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_sql_pool_output.value.synapse_pool_name')
-
-# SQL Connection String
-sql_dw_connstr_nocred=$(az sql db show-connection-string --client ado.net \
-    --name "$sql_dw_database_name" --server "$sql_server_name" --output json |
-    jq -r .)
-sql_dw_connstr_uname=${sql_dw_connstr_nocred/<username>/$sql_server_username}
-sql_dw_connstr_uname_pass=${sql_dw_connstr_uname/<password>/$sql_server_password}
-
-# Store in Keyvault
-az keyvault secret set --vault-name "$kv_name" --name "sqlsrvrName" --value "$sql_server_name"
-az keyvault secret set --vault-name "$kv_name" --name "sqlsrvUsername" --value "$sql_server_username"
-az keyvault secret set --vault-name "$kv_name" --name "sqlsrvrPassword" --value "$sql_server_password"
-az keyvault secret set --vault-name "$kv_name" --name "sqldwDatabaseName" --value "$sql_dw_database_name"
-az keyvault secret set --vault-name "$kv_name" --name "sqldwConnectionString" --value "$sql_dw_connstr_uname_pass"
-
 
 ####################
 # APPLICATION INSIGHTS
@@ -293,11 +268,13 @@ synapse_dev_endpoint=$(az synapse workspace show \
     jq -r '.connectivityEndpoints | .dev')
 
 synapse_sparkpool_name=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_output_spark_pool_name.value')
+synapse_sqlpool_name=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_output_sql_pool_name.value')
 
 # Store in Keyvault
 az keyvault secret set --vault-name "$kv_name" --name "synapseWorkspaceName" --value "$synapseworkspace_name"
 az keyvault secret set --vault-name "$kv_name" --name "synapseDevEndpoint" --value "$synapse_dev_endpoint"
 az keyvault secret set --vault-name "$kv_name" --name "synapseSparkPoolName" --value "$synapse_sparkpool_name"
+az keyvault secret set --vault-name "$kv_name" --name "synapseSQLPoolName" --value "$synapse_sqlpool_name"
 
 # Deploy Synapse artifacts
 AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID \
@@ -305,6 +282,7 @@ RESOURCE_GROUP_NAME=$resource_group_name \
 SYNAPSE_WORKSPACE_NAME=$synapseworkspace_name \
 SYNAPSE_DEV_ENDPOINT=$synapse_dev_endpoint \
 BIG_DATAPOOL_NAME=$synapse_sparkpool_name \
+SQL_POOL_NAME=$synapse_sqlpool_name \
 LOG_ANALYTICS_WS_ID=$loganalytics_id \
 LOG_ANALYTICS_WS_KEY=$loganalytics_key \
 KEYVAULT_NAME=$kv_name \
@@ -330,9 +308,6 @@ KV_URL=$kv_dns_name \
 DATABRICKS_TOKEN=$databricks_token \
 DATABRICKS_HOST=$databricks_host \
 DATABRICKS_WORKSPACE_RESOURCE_ID=$databricks_workspace_resource_id \
-SQL_SERVER_NAME=$sql_server_name \
-SQL_SERVER_USERNAME=$sql_server_username \
-SQL_SERVER_PASSWORD=$sql_server_password \
 SQL_DW_DATABASE_NAME=$sql_dw_database_name \
 AZURE_STORAGE_KEY=$azure_storage_key \
 AZURE_STORAGE_ACCOUNT=$azure_storage_account \
@@ -342,6 +317,7 @@ SP_ADF_PASS=$sp_adf_pass \
 SP_ADF_TENANT=$sp_adf_tenant \
 SYNAPSE_WORKSPACE_NAME=$synapseworkspace_name \
 BIG_DATAPOOL_NAME=$synapse_sparkpool_name \
+SQL_POOL_NAME=$synapse_sqlpool_name \
 LOG_ANALYTICS_WS_ID=$loganalytics_id \
 LOG_ANALYTICS_WS_KEY=$loganalytics_key \
     bash -c "./scripts/deploy_azdo_variables.sh"
@@ -357,9 +333,6 @@ cat << EOF >> "$env_file"
 # ------ Configuration from deployment on ${TIMESTAMP} -----------
 RESOURCE_GROUP_NAME=${resource_group_name}
 AZURE_LOCATION=${AZURE_LOCATION}
-SQL_SERVER_NAME=${sql_server_name}
-SQL_SERVER_USERNAME=${sql_server_username}
-SQL_SERVER_PASSWORD=${sql_server_password}
 SQL_DW_DATABASE_NAME=${sql_dw_database_name}
 AZURE_STORAGE_ACCOUNT=${azure_storage_account}
 AZURE_STORAGE_KEY=${azure_storage_key}

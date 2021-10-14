@@ -44,10 +44,6 @@ set -o xtrace # For debugging
 # DATABRICKS_HOST
 # DATABRICKS_TOKEN
 # DATABRICKS_WORKSPACE_RESOURCE_ID
-# SQL_SERVER_NAME
-# SQL_SERVER_USERNAME
-# SQL_SERVER_PASSWORD
-# SQL_DW_DATABASE_NAME
 # AZURE_STORAGE_ACCOUNT
 # AZURE_STORAGE_KEY
 # DATAFACTORY_NAME
@@ -105,15 +101,6 @@ az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
     --secret "true" --name "subscriptionId" --value "$AZURE_SUBSCRIPTION_ID"
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
     --secret "true" --name "kvUrl" --value "$KV_URL"
-# sql server
-az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "sqlsrvrName" --value "$SQL_SERVER_NAME"
-az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "sqlsrvrUsername" --value "$SQL_SERVER_USERNAME"
-az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "sqlsrvrPassword" --value "$SQL_SERVER_PASSWORD"
-az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "sqlDwDatabaseName" --value "$SQL_DW_DATABASE_NAME"
 # Databricks
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
     --secret "true" --name "databricksDomain" --value "$DATABRICKS_HOST"
