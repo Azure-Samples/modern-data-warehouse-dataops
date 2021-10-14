@@ -85,7 +85,7 @@ resource synapseWorkspace 'Microsoft.Synapse/workspaces@2021-03-01' = {
     }
     publicNetworkAccess: 'Enabled'
     managedVirtualNetwork: 'default'
-    managedResourceGroupName: '${project}-mrg-${env}-syn'
+    managedResourceGroupName: '${project}-syn-mrg-${env}-${deployment_id}'
     sqlAdministratorLogin: 'sqladminuser'
     sqlAdministratorLoginPassword: ''
   }
