@@ -47,10 +47,10 @@ stages:
     parameters:
       environmentName: 'STG'
       serviceConnection: 'mdwdops-serviceconnection-stg'
-  - template: templates/jobs/deploy-adf-job.yml
-    parameters:
-      environmentName: 'STG'
-      serviceConnection: 'mdwdops-serviceconnection-stg'
+  # - template: templates/jobs/deploy-adf-job.yml
+  #   parameters:
+  #     environmentName: 'STG'
+  #     serviceConnection: 'mdwdops-serviceconnection-stg'
   - template: templates/jobs/deploy-wheel-job.yml
     parameters:
       environmentName: 'STG'
@@ -68,10 +68,10 @@ stages:
     parameters:
       environmentName: 'PROD'
       serviceConnection: 'mdwdops-serviceconnection-prod'
-  - template: templates/jobs/deploy-adf-job.yml
-    parameters:
-      environmentName: 'PROD'
-      serviceConnection: 'mdwdops-serviceconnection-prod'
+  # - template: templates/jobs/deploy-adf-job.yml
+  #   parameters:
+  #     environmentName: 'PROD'
+  #     serviceConnection: 'mdwdops-serviceconnection-prod'
   - template: templates/jobs/deploy-wheel-job.yml
     parameters:
       environmentName: 'PROD'
