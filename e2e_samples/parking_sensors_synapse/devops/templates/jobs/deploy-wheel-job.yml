@@ -13,6 +13,11 @@ jobs:
       deploy:
         steps:
         - script: |
+            az upgrade --yes
+          name: az_upgrade
+          displayName: 'upgrade az cli to latest version'
+
+        - script: |
             packageWheelName=$(ls ${WHEEL_FILE_PATH} | grep '^ddo_transform.*.whl$' | head -n 1)
             echo "Package wheel name is: $packageWheelName"
             echo "##vso[task.setvariable variable=packageWheelName;isOutput=true]$packageWheelName"
