@@ -9,7 +9,7 @@ jobs:
   displayName: Deploy Wheel Package to Synapse
   environment: ${{ parameters.environmentName }}
   pool: 
-    name: macOS-11
+    vmImage: macOS-11
   strategy:
     runOnce:
       deploy:
