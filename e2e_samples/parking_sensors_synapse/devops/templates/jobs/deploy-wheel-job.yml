@@ -47,9 +47,9 @@ jobs:
             scriptType: bash
             scriptLocation: inlineScript
             inlineScript: |
-             az synapse spark pool update \
-             --name $(synapseSparkPoolName) \ 
-             --workspace-name $(synapseWorkspaceName) \ 
-             --resource-group $(rgName) \ 
-             --package-action Add \
-             --package $(setPackageWheelName.packageWheelName)
+              az synapse spark pool update \
+              --name $(synapseSparkPoolName) \ 
+              --workspace-name $(synapseWorkspaceName) \ 
+              --resource-group $(rgName) \ 
+              --package-action Add \
+              --package $(setPackageWheelName.packageWheelName)
