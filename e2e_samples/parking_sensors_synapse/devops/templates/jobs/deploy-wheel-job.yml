@@ -12,11 +12,11 @@ jobs:
     runOnce:
       deploy:
         steps:
-        - script: |
-            az --version
-            az upgrade --yes
-          name: az_upgrade
-          displayName: 'upgrade az cli to latest version'
+        # - script: |
+        #     az --version
+        #     az upgrade --yes
+        #   name: az_upgrade
+        #   displayName: 'upgrade az cli to latest version'
 
         - script: |
             packageWheelName=$(ls ${WHEEL_FILE_PATH} | grep '^ddo_transform.*.whl$' | head -n 1)
@@ -34,6 +34,8 @@ jobs:
             scriptType: bash
             scriptLocation: inlineScript
             inlineScript: |
+              az --version
+              az upgrade --yes
               az synapse workspace-package upload \
               --workspace-name $(synapseWorkspaceName) \
               --package $(Pipeline.Workspace)/ciartifacts/dist/$(setPackageWheelName.packageWheelName)
