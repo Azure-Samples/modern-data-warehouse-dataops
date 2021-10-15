@@ -13,6 +13,7 @@ jobs:
       deploy:
         steps:
         - script: |
+            az --version
             az upgrade --yes
           name: az_upgrade
           displayName: 'upgrade az cli to latest version'
