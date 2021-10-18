@@ -34,7 +34,7 @@ Run the existing `./deploy.sh` and prompt for choice of `databricks` or `synapse
   - `devops` - AzDO job templates and pipelines
     - `azure-pipelines-ci-qa-sql.yml` - Runs SQL DACPAC build as part of PR.
     - `azure-pipelines-ci-qa-python.yml` - Run python package unit tests as part of PR.
-    - `deploy-azuresqldb-job.yml` - template to deploy SQL DACPAC
+    - `deploy-dedicated-sql-pool-job.yml` - template to deploy SQL DACPAC
     - *Partly* `integration-tests-job.yml` - template to run integration tests, calls pytest. Environment variables passed to pytest will differ between Synapse and Databricks.
   - `sql` - SSDT Visual Studio Project that creates the SQL DACPAC
   - `src/ddo_transform` - Python package source code that produces the wheel file
