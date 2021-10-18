@@ -5,13 +5,8 @@ param deployment_id string
 
 param synStorageAccount string = '${project}st2${env}${deployment_id}'
 param mainStorageAccount string = '${project}st${env}${deployment_id}'
-//param synStorageFileSys string = '${synStorageAccount}/default/container001'
 param synStorageFileSys string = 'synapsedefaultfs'
 param keyvault string = '${project}-kv-${env}-${deployment_id}'
-
-param sql_server_username string = 'sqlAdmin'
-@secure()
-param sql_server_password string
 
 var storage_blob_data_contributor = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')
 
@@ -31,43 +26,6 @@ resource kv 'Microsoft.KeyVault/vaults@2019-09-01' existing = {
   name: keyvault
 }
 
-resource sql_server 'Microsoft.Sql/servers@2021-02-01-preview' = {
-  name: 'sql${env}${deployment_id}'
-  location: location
-  tags: {
-    DisplayName: 'SQL Server'
-    Environment: env
-  }
-  properties: {
-    administratorLogin: sql_server_username
-    administratorLoginPassword: sql_server_password
-  }
-  
-  resource synapse_dedicated_sql_pool 'databases@2021-02-01-preview' = {
-    name: 'syndp${env}${deployment_id}'
-    location: location
-    tags: {
-      DisplayName: 'SQL Dedicated Pool'
-      Environment: env
-    }
-    sku: {
-      name: 'DW100c'
-      tier: 'DataWarehouse'
-    }
-    properties: {
-      collation: 'SQL_Latin1_General_CP1_CI_AS'
-    }
-  }
-
-  resource firewall_rules 'firewallRules@2021-02-01-preview' = {
-    name: 'AllowAllAzureIps'
-    properties: {
-      endIpAddress: '0.0.0.0'
-      startIpAddress: '0.0.0.0'
-    }
-  }
-}
-
 resource synapseWorkspace 'Microsoft.Synapse/workspaces@2021-03-01' = {
   name: 'syws${env}${deployment_id}'
   tags: {
@@ -84,19 +42,9 @@ resource synapseWorkspace 'Microsoft.Synapse/workspaces@2021-03-01' = {
       filesystem: synFileSystem.name
     }
     publicNetworkAccess: 'Enabled'
-    managedVirtualNetwork: 'default'
     managedResourceGroupName: '${project}-syn-mrg-${env}-${deployment_id}'
     sqlAdministratorLogin: 'sqladminuser'
     sqlAdministratorLoginPassword: ''
-  }
-
-  resource managedIdentitySqlControlSettings 'managedIdentitySqlControlSettings@2021-06-01-preview' = {
-    name: 'default'
-    properties: {
-      grantSqlControlToManagedIdentity: {
-        desiredState: 'Enabled'
-      }
-    }
   }
 }
 
@@ -129,6 +77,23 @@ resource synapse_spark_sql_pool 'Microsoft.Synapse/workspaces/bigDataPools@2021-
     customLibraries: []
     defaultSparkLogFolder: 'logs/'
     sparkEventsFolder: 'events/'
+  }
+}
+
+resource synapse_sql_pool 'Microsoft.Synapse/workspaces/sqlPools@2021-03-01' = {
+  parent: synapseWorkspace
+  name: 'syndp${env}${deployment_id}'
+  location: location
+  tags: {
+    DisplayName: 'Synapse Dedicated SQL Pool'
+    Environment: env
+  }
+  sku: {
+    name: 'DW100c'
+    tier: 'DataWarehouse'
+  }
+  properties: {
+    collation: 'SQL_Latin1_General_CP1_CI_AS'
   }
 }
 
@@ -182,10 +147,5 @@ resource kvAccessPolicy 'Microsoft.KeyVault/vaults/accessPolicies@2019-09-01' = 
 
 output synapseWorkspaceName string = synapseWorkspace.name
 output synapseDefaultStorageAccountName string = synStorage.name
-output synapse_sql_pool_output object = {
-  name: sql_server.name
-  username: sql_server_username
-  password: sql_server_password
-  synapse_pool_name: sql_server::synapse_dedicated_sql_pool.name
-}
 output synapseBigdataPoolName string = synapse_spark_sql_pool.name
+output synapseSqlPoolName string = synapse_sql_pool.name
