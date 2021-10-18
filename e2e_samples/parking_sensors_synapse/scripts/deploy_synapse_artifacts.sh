@@ -62,11 +62,18 @@ uploadSynapsePackagesToWorkspace(){
     echo "Uploading Library Wheel Package to Workspace: $name"
 
     #az synapse workspace wait --resource-group "${RESOURCE_GROUP_NAME}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --created
-    # Step 1: Get bearer token for the Data plane
-    token=$(az account get-access-token --resource ${synapseResource} --query accessToken --output tsv)
-    
+    # Step 1: Get bearer token for the Data plane    
+    token=$(az account get-access-token --resource ${synapseResource} --query accessToken --output tsv)    
     # Step 2: create workspace package placeholder
-    synapseLibraryUri="${SYNAPSE_DEV_ENDPOINT}/libraries/${name}?api-version=${dataPlaneApiVersion}"
+    synapseLibraryBaseUri=${SYNAPSE_DEV_ENDPOINT}/libraries
+    synapseLibraryUri="${synapseLibraryBaseUri}/${name}?api-version=${dataPlaneApiVersion}"
+
+    if [[ -n $(az rest --method get --headers "Authorization=Bearer ${token}" 'Content-Type=application/json;charset=utf-8' --url "${synapseLibraryBaseUri}?api-version=${dataPlaneApiVersion}" --query "value[?name == '${name}']" -o tsv) ]]; then
+        echo "Library exists: ${name}"
+        echo "Skipping creation"
+        return 0
+    fi
+
     az rest --method put --headers "Authorization=Bearer ${token}" "Content-Type=application/json;charset=utf-8" --url "${synapseLibraryUri}"
     sleep 5s
 
