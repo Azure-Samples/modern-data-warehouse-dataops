@@ -42,19 +42,9 @@ resource synapseWorkspace 'Microsoft.Synapse/workspaces@2021-03-01' = {
       filesystem: synFileSystem.name
     }
     publicNetworkAccess: 'Enabled'
-    managedVirtualNetwork: 'default'
     managedResourceGroupName: '${project}-syn-mrg-${env}-${deployment_id}'
     sqlAdministratorLogin: 'sqladminuser'
     sqlAdministratorLoginPassword: ''
-  }
-
-  resource managedIdentitySqlControlSettings 'managedIdentitySqlControlSettings@2021-06-01-preview' = {
-    name: 'default'
-    properties: {
-      grantSqlControlToManagedIdentity: {
-        desiredState: 'Enabled'
-      }
-    }
   }
 }
 
