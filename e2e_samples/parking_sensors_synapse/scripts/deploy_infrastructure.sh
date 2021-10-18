@@ -308,7 +308,6 @@ KV_URL=$kv_dns_name \
 DATABRICKS_TOKEN=$databricks_token \
 DATABRICKS_HOST=$databricks_host \
 DATABRICKS_WORKSPACE_RESOURCE_ID=$databricks_workspace_resource_id \
-SQL_DW_DATABASE_NAME=$sql_dw_database_name \
 AZURE_STORAGE_KEY=$azure_storage_key \
 AZURE_STORAGE_ACCOUNT=$azure_storage_account \
 DATAFACTORY_NAME=$datafactory_name \
@@ -333,7 +332,6 @@ cat << EOF >> "$env_file"
 # ------ Configuration from deployment on ${TIMESTAMP} -----------
 RESOURCE_GROUP_NAME=${resource_group_name}
 AZURE_LOCATION=${AZURE_LOCATION}
-SQL_DW_DATABASE_NAME=${sql_dw_database_name}
 AZURE_STORAGE_ACCOUNT=${azure_storage_account}
 AZURE_STORAGE_KEY=${azure_storage_key}
 SP_STOR_NAME=${sp_stor_name}
