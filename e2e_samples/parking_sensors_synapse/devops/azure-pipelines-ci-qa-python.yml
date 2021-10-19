@@ -7,10 +7,10 @@ pr:
     - releases/*
   paths:
     include:
-    - e2e_samples/parking_sensors/src/ddo_transform/*
+    - e2e_samples/parking_sensors_synapse/src/ddo_transform/*
 
 variables:
-  pythonWorkingDir: 'e2e_samples/parking_sensors/src/ddo_transform'
+  pythonWorkingDir: 'e2e_samples/parking_sensors_synapse/src/ddo_transform'
 
 pool:
   vmImage: 'Ubuntu-latest'

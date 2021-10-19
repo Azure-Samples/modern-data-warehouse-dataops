@@ -46,7 +46,6 @@ stages:
     parameters:
       environmentName: 'STG'
       serviceConnection: 'mdwdops-serviceconnection-stg'
-  - template: templates/jobs/integration-tests-job.yml
 
 - stage: deploy_to_prod
   displayName: 'Deploy to Prod'
