@@ -55,14 +55,14 @@ GITHUB_REPO_URL=$github_repo_url \
 # Replace 'devlace/mdw-dataops-clone' to deployer's github project
 sed -i "s+devlace/mdw-dataops-clone+$GITHUB_REPO+" devops/azure-pipelines-cd-release.yml
 
-# azure-pipelines-cd-release.yml pipeline require DEV_DATAFACTORY_NAME set, retrieve this value from .env.dev file
+azure-pipelines-cd-release.yml pipeline require DEV_DATAFACTORY_NAME set, retrieve this value from .env.dev file
 declare DEV_"$(grep -e '^DATAFACTORY_NAME' .env.dev | tail -1 | xargs)"
 
 # Deploy all pipelines
+# DEV_DATAFACTORY_NAME=$DEV_DATAFACTORY_NAME \
 PROJECT=$project \
 GITHUB_REPO_URL=$github_repo_url \
 AZDO_PIPELINES_BRANCH_NAME=$AZDO_PIPELINES_BRANCH_NAME \
-DEV_DATAFACTORY_NAME=$DEV_DATAFACTORY_NAME \
     bash -c "./scripts/deploy_azdo_pipelines.sh"
 
 ####

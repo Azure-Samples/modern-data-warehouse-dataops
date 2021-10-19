@@ -68,7 +68,6 @@ az pipelines variable-group create \
     --variables \
         azureLocation="$AZURE_LOCATION" \
         rgName="$RESOURCE_GROUP_NAME" \
-        adfName="$DATAFACTORY_NAME" \
         apiBaseUrl="$apiBaseUrl" \
     --output json
 
