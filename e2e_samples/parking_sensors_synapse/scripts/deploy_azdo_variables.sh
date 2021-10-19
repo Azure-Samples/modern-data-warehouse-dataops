@@ -98,6 +98,7 @@ az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
     --secret "true" --name "logAnalyticsWorkspaceId" --value "$LOG_ANALYTICS_WS_ID"
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
     --secret "true" --name "logAnalyticsWorkspaceKey" --value "$LOG_ANALYTICS_WS_KEY"
+# TODO: This may be required for the automated Integration Tests. Comment out for now.
 # Synapse SQL Dedicated Pool (formerly SQL DW)
 # az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
 #     --secret "true" --name "sqlsrvrName" --value "$SQL_SERVER_NAME"
