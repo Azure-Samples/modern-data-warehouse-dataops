@@ -250,7 +250,7 @@ BIG_DATAPOOL_NAME=$synapse_sparkpool_name \
 SQL_POOL_NAME=$synapse_sqlpool_name \
 LOG_ANALYTICS_WS_ID=$loganalytics_id \
 LOG_ANALYTICS_WS_KEY=$loganalytics_key \
-    # bash -c "./scripts/deploy_azdo_variables.sh"
+    bash -c "./scripts/deploy_azdo_variables.sh"
 
 
 ####################
