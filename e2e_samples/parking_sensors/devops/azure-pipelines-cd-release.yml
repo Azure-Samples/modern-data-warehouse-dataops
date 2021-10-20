@@ -28,7 +28,7 @@ stages:
   - group: mdwdops-release-dev
   - group: mdwdops-secrets-dev
   jobs:
-  - template: templates/jobs/deploy-azuresqldb-job.yml
+  - template: templates/jobs/deploy-dedicated-sql-pool-job.yml
     parameters:
       environmentName: 'DEV'
       serviceConnection: 'mdwdops-serviceconnection-dev'
@@ -39,7 +39,7 @@ stages:
   - group: mdwdops-release-stg
   - group: mdwdops-secrets-stg
   jobs: 
-  - template: templates/jobs/deploy-azuresqldb-job.yml
+  - template: templates/jobs/deploy-dedicated-sql-pool-job.yml
     parameters:
       environmentName: 'STG'
       serviceConnection: 'mdwdops-serviceconnection-stg'
