@@ -8,13 +8,13 @@ resources:
     source: mdwdops-ci-artifacts
     trigger: 
       branches:
-      - main
+      - sinnypan/synapse-integration-test
   repositories:
   - repository: mdwdataops_adfpublish
     type: github
     endpoint: mdwdops-github
-    name: devlace/mdw-dataops-clone
-    ref: adf_publish
+    name: sinnypan/modern-data-warehouse-dataops-1
+    ref: workspace_publish
 
 # The deployment script sets this as a Pipeline Variable, but you may choose to set it here in the definition
 #
