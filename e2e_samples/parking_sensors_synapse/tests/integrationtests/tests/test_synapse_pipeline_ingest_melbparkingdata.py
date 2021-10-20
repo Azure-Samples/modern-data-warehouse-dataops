@@ -18,7 +18,7 @@ def run_and_observe_pipeline(azure_credential: ClientSecretCredential,
     print(f'Pipeline run with RunID: {pipeline_run_id}')
     pipeline_run_status = observe_pipeline(synapse_client, pipeline_run_id)
 
-    return pipeline_run_status
+    return (pipeline_run_id, pipeline_run_status)
 
 
 def run_pipeline(synapse_client: ArtifactsClient, azure_credential: ClientSecretCredential,
@@ -26,29 +26,9 @@ def run_pipeline(synapse_client: ArtifactsClient, azure_credential: ClientSecret
                  params: dict) -> str:
     print('Run pipeline')
 
-    # Debug
-    # Get pipeline list of the workspace
-    #pipelines = synapse_client.pipeline.get_pipelines_by_workspace()
-    pipeline = synapse_client.pipeline.get_pipeline(pipeline_name, if_none_match=None)
-    print(pipeline.name)
-    print(pipeline.id)
-
-
-    # Implementation with SDK
     run_pipeliine = synapse_client.pipeline.create_pipeline_run(
         pipeline_name, parameters=params)
     print(run_pipeliine.run_id)
-
-    # Implementation with REST API
-    #run_pipeline_url = f'{synapse_endpoint}/pipelines/{pipeline_name}'\
-    #    '/createRun?api-version=2020-12-01'
-    #access_token = azure_credential.get_token(
-    #    'https://dev.azuresynapse.net/.default')
-    #headers = {'Authorization': f'Bearer {access_token.token}'}
-    #response = requests.post(run_pipeline_url, headers=headers,
-    #                         data=json.dumps(params))
-    #print(f"response:{response}")
-    #pipeline_run_id = response.json()['runId']
     return run_pipeliine.run_id
 
 
@@ -70,20 +50,20 @@ def observe_pipeline(synapse_client: ArtifactsClient, run_id: str,
         pipeline_run_status = pipeline_run.status
         time.sleep(poll_interval)
     print(
-        f'pipeline run id {run_id}'
+        f'pipeline run id {run_id}: '
         f'finished with status {pipeline_run_status}')
     return pipeline_run_status
 
 def test_synapse_pipeline_succeeded(azure_credential, synapse_endpoint, sql_connection):
     """Test that pipeline has data in SQL"""
-    this_run = run_and_observe_pipeline(azure_credential, synapse_endpoint, 
+    this_run_id, this_run_status = run_and_observe_pipeline(azure_credential, synapse_endpoint, 
         PIPELINE_NAME, params={})  
     # Assert
     cursor = sql_connection.cursor()
     cursor.execute(
         "SELECT COUNT(*) AS COUNT FROM dbo.fact_parking WHERE load_id='{load_id}'"
-        .format(load_id=str(this_run.run_id)))
+        .format(load_id=this_run_id))
     row = cursor.fetchone()
-    assert this_run.status == "Succeeded"
+    assert this_run_status == "Succeeded"
     assert row is not None
     assert int(row.COUNT) >= 1

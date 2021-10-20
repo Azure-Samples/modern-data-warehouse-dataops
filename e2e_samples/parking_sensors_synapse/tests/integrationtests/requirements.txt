@@ -7,13 +7,10 @@ Sphinx
 twine
 pytest
 pytest-runner
-pytest-adf
 tox
 autopep8
 azure-mgmt-resource
 azure-mgmt-datafactory
 azure-storage-blob
 pyodbc
-azure-synapse==0.1.1
-azure-synapse-artifacts==0.9.0
-azure-storage-file-datalake
+azure-synapse-artifacts
