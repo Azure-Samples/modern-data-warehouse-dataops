@@ -22,3 +22,6 @@ AZ_SQL_DATABASE_NAME=
 ###
 # OPTIONAL. Environment variables for other non-required configuration.
 # Uncomment to set values.
+
+# Poll interval in seconds for checking for pipeline status. *Default*: 5.
+# AZURE_SYNAPSE_POLL_INTERVAL=

@@ -14,3 +14,4 @@ azure-mgmt-datafactory
 azure-storage-blob
 pyodbc
 azure-synapse-artifacts
+azure-identity
