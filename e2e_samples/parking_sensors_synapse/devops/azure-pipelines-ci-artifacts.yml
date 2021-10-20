@@ -51,6 +51,12 @@ stages:
         ArtifactName: 'dist'
       displayName: 'Publish Dist Artifacts'
 
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(pythonWorkingDir)/requirements.txt'
+        ArtifactName: 'synapse_pool_requirements'
+      displayName: 'Publish requirement.txt to Artifacts'
+
   - job: 'publish_static_artifacts'
     displayName: 'Publish Static Artifacts'
     pool:

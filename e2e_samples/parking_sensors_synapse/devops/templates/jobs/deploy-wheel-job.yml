@@ -40,10 +40,17 @@ jobs:
               --package $(Pipeline.Workspace)/ciartifacts/dist/$(setPackageWheelName.packageWheelName)
         
         - task: AzureCLI@2
-          displayName: Upload package to Synapse workspace
+          displayName: Add package to spark pool
           inputs:
             azureSubscription: ${{ parameters.serviceConnection }}
             scriptType: bash
             scriptLocation: inlineScript
             inlineScript: |
-              az synapse spark pool update --name $(synapseSparkPoolName) --workspace-name $(synapseWorkspaceName) --resource-group $(rgName) --package-action Add --package $(setPackageWheelName.packageWheelName)
+              az synapse spark pool update \
+              --name $(synapseSparkPoolName) \
+              --workspace-name $(synapseWorkspaceName) \
+              --resource-group $(rgName) \
+              --package-action Add \
+              --package $(setPackageWheelName.packageWheelName) \
+              --library-requirements $(Pipeline.Workspace)/ciartifacts/synapse_pool_requirements/requirements.txt
+
