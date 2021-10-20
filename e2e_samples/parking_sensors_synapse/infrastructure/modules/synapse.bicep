@@ -11,6 +11,7 @@ param sql_server_username string = 'sqlAdmin'
 @secure()
 param sql_server_password string
 
+//https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles
 var storage_blob_data_contributor = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')
 
 resource synStorage 'Microsoft.Storage/storageAccounts@2021-04-01' existing = {
