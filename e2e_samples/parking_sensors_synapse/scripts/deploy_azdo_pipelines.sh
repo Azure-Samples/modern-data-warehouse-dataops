@@ -74,11 +74,11 @@ createPipeline "ci-artifacts" "This pipeline publishes build artifacts"
 cd_release_pipeline_id=$(createPipeline "cd-release" "This pipeline releases across environments")
 
 
-if [[ -z $(az pipelines variable list --pipeline-id "${cd_release_pipeline_id}" --query "devAdfName" -o tsv) ]]; then
-    az pipelines variable create \
-        --name devAdfName \
-        --pipeline-id "$cd_release_pipeline_id" \
-        --value "$DEV_DATAFACTORY_NAME"
-else
-    echo "Pipeline variable already exists. devAdfName"
-fi
+# if [[ -z $(az pipelines variable list --pipeline-id "${cd_release_pipeline_id}" --query "devAdfName" -o tsv) ]]; then
+#     az pipelines variable create \
+#         --name devAdfName \
+#         --pipeline-id "$cd_release_pipeline_id" \
+#         --value "$DEV_DATAFACTORY_NAME"
+# else
+#     echo "Pipeline variable already exists. devAdfName"
+# fi
