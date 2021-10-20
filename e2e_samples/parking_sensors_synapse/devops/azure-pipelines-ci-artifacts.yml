@@ -60,7 +60,7 @@ stages:
   - job: 'publish_static_artifacts'
     displayName: 'Publish Static Artifacts'
     pool:
-      vmImage: 'Ubuntu-16.04'
+      vmImage: 'Ubuntu-latest'
     steps:
     - task: PublishBuildArtifacts@1
       inputs:
