@@ -23,10 +23,10 @@ stages:
   - group: mdwdops-release-dev
   - group: mdwdops-secrets-dev
   jobs:
-  - template: templates/jobs/deploy-dedicated-sql-pool-job.yml
-    parameters:
-      environmentName: 'DEV'
-      serviceConnection: 'mdwdops-serviceconnection-dev'
+  # - template: templates/jobs/deploy-dedicated-sql-pool-job.yml
+  #   parameters:
+  #     environmentName: 'DEV'
+  #     serviceConnection: 'mdwdops-serviceconnection-dev'
   - template: templates/jobs/deploy-wheel-job.yml
     parameters:
       environmentName: 'DEV'
