@@ -1,0 +1,406 @@
+{
+	"name": "02_standardize",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "synspdevdosyn1",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2
+		},
+		"metadata": {
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			}
+		},
+		"cells": [
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# 1. Get dynamic pipeline parameters"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": true,
+					"tags": [
+						"parameters"
+					]
+				},
+				"source": [
+					"# Get folder where the REST downloads were placed\r\n",
+					"infilefolder = '2021_10_05_07_58_15/'\r\n",
+					"\r\n",
+					"# Get pipeline name\r\n",
+					"pipelinename = 'P_Ingest_MelbParkingData'\r\n",
+					"\r\n",
+					"# Get pipeline run id\r\n",
+					"loadid = 'df2ddb82-9004-449f-84da-ae9484b446f4\"'\r\n",
+					"\r\n",
+					"# Get keyvault linked service name\r\n",
+					"keyvaultlsname = 'Ls_KeyVault_01'\r\n"
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# 2. Prepare observability mechanisms variables"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": true
+				},
+				"source": [
+					"from pyspark.sql import SparkSession\r\n",
+					"\r\n",
+					"sc = SparkSession.builder.getOrCreate()\r\n",
+					"token_library = sc._jvm.com.microsoft.azure.synapse.tokenlibrary.TokenLibrary\r\n",
+					"\r\n",
+					"env = mssparkutils.env\r\n",
+					"pipelineruninfo = f'[{pipelinename}]::[{loadid}]::[{env.getJobId()}]::[{env.getPoolName}]::[{env.getWorkspaceName}]::[{env.getUserId()}]'\r\n",
+					"\r\n",
+					"# Needed to get App Insights Key\r\n",
+					"appi_key = token_library.getSecretWithLS(keyvaultlsname,\"applicationInsightsKey\")\r\n",
+					"sc.stop\r\n",
+					"\r\n"
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# 3. Load file path variables"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": true,
+					"tags": []
+				},
+				"source": [
+					"import os\r\n",
+					"import datetime\r\n",
+					"from pyspark.sql import SparkSession\r\n",
+					"\r\n",
+					"sc = SparkSession.builder.getOrCreate()\r\n",
+					"token_library = sc._jvm.com.microsoft.azure.synapse.tokenlibrary.TokenLibrary\r\n",
+					"\r\n",
+					"# For testing\r\n",
+					"#infilefolder = '2021_08_17_09_23_52/'\r\n",
+					"\r\n",
+					"# Primary storage info \r\n",
+					"account_name = token_library.getSecretWithLS( keyvaultlsname, \"datalakeaccountname\")\r\n",
+					"container_name = 'datalake' # fill in your container name \r\n",
+					"relative_path = 'data/lnd/' # fill in your relative folder path \r\n",
+					"\r\n",
+					"adls_path = 'abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_path) \r\n",
+					"print('Primary storage account path: ' + adls_path) \r\n",
+					"load_id = loadid\r\n",
+					"loaded_on = datetime.datetime.now()\r\n",
+					"base_path = os.path.join(adls_path, infilefolder)\r\n",
+					"\r\n",
+					"parkingbay_filepath = os.path.join(base_path, \"MelbParkingBayData.json\")\r\n",
+					"print(parkingbay_filepath)\r\n",
+					"sensors_filepath = os.path.join(base_path, \"MelbParkingSensorData.json\")\r\n",
+					"print(sensors_filepath)\r\n",
+					"#sc.stop"
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# 4. Transform: Standardize"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": true
+				},
+				"source": [
+					"import ddo_transform.standardize as s\r\n",
+					"\r\n",
+					"# Retrieve schema\r\n",
+					"parkingbay_schema = s.get_schema(\"in_parkingbay_schema\")\r\n",
+					"sensordata_schema = s.get_schema(\"in_sensordata_schema\")\r\n",
+					"\r\n",
+					"# Read data\r\n",
+					"parkingbay_sdf = spark.read\\\r\n",
+					"  .schema(parkingbay_schema)\\\r\n",
+					"  .option(\"badRecordsPath\", os.path.join(base_path, \"__corrupt\", \"MelbParkingBayData\"))\\\r\n",
+					"  .option(\"multiLine\", True)\\\r\n",
+					"  .json(parkingbay_filepath)\r\n",
+					"sensordata_sdf = spark.read\\\r\n",
+					"  .schema(sensordata_schema)\\\r\n",
+					"  .option(\"badRecordsPath\", os.path.join(base_path, \"__corrupt\", \"MelbParkingSensorData\"))\\\r\n",
+					"  .option(\"multiLine\", True)\\\r\n",
+					"  .json(sensors_filepath)\r\n",
+					"\r\n",
+					"\r\n",
+					"# Standardize\r\n",
+					"t_parkingbay_sdf, t_parkingbay_malformed_sdf = s.standardize_parking_bay(parkingbay_sdf, load_id, loaded_on)\r\n",
+					"t_sensordata_sdf, t_sensordata_malformed_sdf = s.standardize_sensordata(sensordata_sdf, load_id, loaded_on)\r\n",
+					"\r\n",
+					"# Insert new rows\r\n",
+					"t_parkingbay_sdf.write.mode(\"append\").insertInto(\"interim.parking_bay\")\r\n",
+					"t_sensordata_sdf.write.mode(\"append\").insertInto(\"interim.sensor\")\r\n",
+					"\r\n",
+					"# Insert bad rows\r\n",
+					"t_parkingbay_malformed_sdf.write.mode(\"append\").insertInto(\"malformed.parking_bay\")\r\n",
+					"t_sensordata_malformed_sdf.write.mode(\"append\").insertInto(\"malformed.sensor\")"
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# 5. Observability: create log messages"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": true
+				},
+				"source": [
+					"parkingbay_count = t_parkingbay_sdf.count()\r\n",
+					"sensordata_count = t_sensordata_sdf.count()\r\n",
+					"parkingbay_malformed_count = t_parkingbay_malformed_sdf.count()\r\n",
+					"sensordata_malformed_count = t_sensordata_malformed_sdf.count()\r\n",
+					"\r\n",
+					"\r\n",
+					"final_message = f'Standardize : Completed load {pipelineruninfo}::[parkingbay_filepath::{parkingbay_filepath}]::[sensors_filepath:{sensors_filepath}]::[parkingbay_count:{parkingbay_count}]::[sensordata_count:{sensordata_count}]::[parkingbay_malformed_count:{parkingbay_malformed_count}]::[sensordata_malformed_count:{sensordata_malformed_count}]'\r\n"
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# 6. Observability: logging on App Insigths using OpenCensus Library"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": true
+				},
+				"source": [
+					"import logging\r\n",
+					"import os\r\n",
+					"from opencensus.ext.azure.log_exporter import AzureLogHandler\r\n",
+					"from opencensus.ext.azure.log_exporter import AzureEventHandler\r\n",
+					"#from pyspark.sql.session import SparkSession\r\n",
+					"from datetime import datetime\r\n",
+					"\r\n",
+					"# Enable App Insights\r\n",
+					"aiLogger = logging.getLogger(\"ParkingSensorLogs-Standardize\")\r\n",
+					"aiLogger.addHandler(AzureEventHandler(connection_string = 'InstrumentationKey=' + appi_key))\r\n",
+					"#logger.addHandler(AzureLogHandler(connection_string = 'InstrumentationKey=' + appi_key))\r\n",
+					"\r\n",
+					"\r\n",
+					"aiLogger.warning(\"Starting at: \" + datetime.now().strftime(\"%Y-%m-%d %H:%M:%S\"))\r\n",
+					"properties = {'custom_dimensions': {'pipeline': pipelinename, 'run_id': loadid, 'parking count': parkingbay_count, 'sensor count': sensordata_count}}\r\n",
+					"aiLogger.warning(final_message, extra=properties)\r\n",
+					"# To query this log go to the Azure Monitor and run the following kusto query (if you are using the EventHandler)\r\n",
+					"#customEvents\r\n",
+					"#|order by timestamp desc\r\n",
+					"# To query this log go to the Azure Monitor and run the following kusto query (if you are using the LogHandler)\r\n",
+					"# traces\r\n",
+					"#|order by timestamp desc\r\n",
+					"\r\n"
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# 7. Observability logging on Log Analytics workspace using Log4J"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": true
+				},
+				"source": [
+					"import logging\r\n",
+					"import sys\r\n",
+					"from pyspark.sql import SparkSession\r\n",
+					"\r\n",
+					"sc = SparkSession.builder.getOrCreate()\r\n",
+					"env = mssparkutils.env\r\n",
+					"pipelineruninfo = f'[{pipelinename}]::[{loadid}]::[{env.getJobId()}]::[{env.getPoolName}]::[{env.getWorkspaceName}]::[{env.getUserId()}]'\r\n",
+					"final_message = f'Standardize:Completed load::[parkingbay_filepath::{parkingbay_filepath}]::[sensors_filepath:{sensors_filepath}]::[parkingbay_count:{parkingbay_count}]::[sensor_count:{sensordata_count}]::[parkingbay_malformed_count:{parkingbay_malformed_count}]::[sensor_malformed_count:{sensordata_malformed_count}]'\r\n",
+					"\r\n",
+					"# Enable Log Analytics using Log4J\r\n",
+					"log4jLogger = sc._jvm.org.apache.log4j\r\n",
+					"logger = log4jLogger.LogManager.getLogger(\"ParkingSensorLogs-Standardize\")\r\n",
+					"logger.info(pipelineruninfo)\r\n",
+					"logger.info(final_message)\r\n",
+					"\r\n",
+					"# To query this log go to the log analytics workspace and run the following kusto query:\r\n",
+					"# SparkLoggingEvent_CL\r\n",
+					"# | where logger_name_s == \"ParkingSensorLogs-Standardize\"\r\n",
+					"\r\n",
+					"\r\n",
+					"sc.stop"
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [],
+				"attachments": null
+			}
+		]
+	}
+}
