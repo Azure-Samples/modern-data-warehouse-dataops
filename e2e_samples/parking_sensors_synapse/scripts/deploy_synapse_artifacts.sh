@@ -40,6 +40,7 @@ set -o xtrace # For debugging
 # LOG_ANALYTICS_WS_ID
 # LOG_ANALYTICS_WS_KEY
 # KEYVAULT_NAME
+# AZURE_STORAGE_ACCOUNT
 
 # Consts
 apiVersion="2020-12-01&force=true"
@@ -173,7 +174,6 @@ createTrigger () {
     az synapse trigger create --file @./synapse/workspace/triggers/"${name}".json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}"
 }
 
-
 getProvisioningState(){
     provision_state=$(az synapse spark pool show \
     --name "$BIG_DATAPOOL_NAME" \
@@ -181,6 +181,54 @@ getProvisioningState(){
     --resource-group "$RESOURCE_GROUP_NAME" \
     --output json |
     jq -r '.provisioningState')
+}
+
+UpdateExternalTableScript () {
+    echo "Replace SQL script with: $AZURE_STORAGE_ACCOUNT"
+    sed "s/<data storage account>/$AZURE_STORAGE_ACCOUNT/" ./synapse/workspace/scripts/create_external_table_template.sql > ./synapse/workspace/scripts/create_external_table.sql
+}
+
+UploadSql () {
+    echo "Try to upload sql script"
+    declare name=$1
+    echo "Uploading sql script to Workspace: $name"
+
+    #az synapse workspace wait --resource-group "${RESOURCE_GROUP_NAME}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --created
+    # Step 1: Get bearer token for the Data plane    
+    token=$(az account get-access-token --resource ${synapseResource} --query accessToken --output tsv)    
+    # Step 2: create workspace package placeholder
+    synapseSqlBaseUri=${SYNAPSE_DEV_ENDPOINT}/sqlScripts
+
+    synapseSqlApiUri="${synapseSqlBaseUri}/$name?api-version=${apiVersion}"
+    body_content="$(sed 'N;s/\n/\\n/' ./synapse/workspace/scripts/$name.sql)"
+    json_body="{
+    \"name\": \"$name\",
+    \"properties\": {
+        \"description\": \"$name\",        
+        \"content\":{ 
+            \"query\": \"$body_content\",
+            \"currentConnection\": { 
+                \"name\": \"master\",
+                \"type\": \"SqlOnDemand\"
+                }
+        },
+        \"metadata\": {
+            \"language\": \"sql\"
+        },
+        \"type\": \"SqlQuery\"      
+    }
+}"
+    #sed "s/<script_name>/$name/" ./synapse/api/sqlupload_template.json > ./synapse/api/$name.json
+    #body_content="$(cat ./synapse/workspace/scripts/$name.sql)"
+    # body_content="$(sed ':a;N;$!ba;s/\n/\\n/g' synapse/workspace/scripts/$name.sql)
+    
+    #sed -i "s/<script_content>/$body_content/" ./synapse/api/$name.json 
+    curl -X PUT -H "Content-Type: application/json" -H "Authorization:Bearer $token" --data-raw "$json_body" --url $synapseSqlApiUri
+
+    # body_content="$(cat synapse/api/sqlupload.json | jq .)"
+    # body_content=${body_content//\"/\\\"}
+    # az rest --method put --headers "Authorization=Bearer ${token}" "Content-Type=application/json;charset=utf-8" --url "${synapseLibraryUri}" --body $body_content
+    sleep 5s
 }
 
 getProvisioningState
@@ -256,6 +304,7 @@ createNotebook "00_setup"
 createNotebook "01_explore"
 createNotebook "02_standardize"
 createNotebook "03_transform"
+createNotebook "04_explore_interim"
 
 
 # Deploy all Pipelines
@@ -264,4 +313,8 @@ createPipeline "P_Ingest_MelbParkingData"
 # Deploy triggers
 createTrigger "T_Sched"
 
+# Upload SQL script
+UpdateExternalTableScript
+UploadSql "create_external_table"
+UploadSql "create_db_user"
 echo "Completed deploying Synapse artifacts."

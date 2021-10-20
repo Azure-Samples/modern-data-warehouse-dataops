@@ -286,6 +286,7 @@ SQL_POOL_NAME=$synapse_sqlpool_name \
 LOG_ANALYTICS_WS_ID=$loganalytics_id \
 LOG_ANALYTICS_WS_KEY=$loganalytics_key \
 KEYVAULT_NAME=$kv_name \
+AZURE_STORAGE_ACCOUNT=$azure_storage_account \
     bash -c "./scripts/deploy_synapse_artifacts.sh"
 
 ####################
