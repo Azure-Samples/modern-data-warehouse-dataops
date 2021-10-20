@@ -1,0 +1,19 @@
+{
+    "run_name": "Setup workspace",
+    "new_cluster": {
+        "spark_version": "6.6.x-scala2.11",
+        "node_type_id": "Standard_DS3_v2",
+        "num_workers": 1,
+        "spark_env_vars": {
+            "PYSPARK_PYTHON": "/databricks/python3/bin/python3",
+            "MOUNT_DATA_PATH": "/mnt/datalake",
+            "MOUNT_DATA_CONTAINER": "datalake",
+            "DATABASE": "datalake"
+        }
+    },
+    "libraries": [],
+    "timeout_seconds": 3600,
+    "notebook_task": {
+        "notebook_path": "/notebooks/00_setup"
+    }
+}

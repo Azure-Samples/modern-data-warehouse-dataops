@@ -9,6 +9,7 @@ param location string = resourceGroup().location
 param deployment_id string
 
 param keyvault_owner_object_id string
+param datafactory_principal_id string
 
 
 resource keyvault 'Microsoft.KeyVault/vaults@2019-09-01' = {
@@ -37,6 +38,16 @@ resource keyvault 'Microsoft.KeyVault/vaults@2019-09-01' = {
                 'all'
             ]
         }
+      }
+      {
+          tenantId: subscription().tenantId
+          objectId: datafactory_principal_id
+          permissions: {
+              secrets: [
+                  'get'
+                  'list'
+              ]
+          }
       }
     ]
   }

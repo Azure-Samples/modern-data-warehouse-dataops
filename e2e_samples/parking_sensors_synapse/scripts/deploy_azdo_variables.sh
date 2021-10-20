@@ -41,19 +41,29 @@ set -o xtrace # For debugging
 # AZURE_LOCATION
 # RESOURCE_GROUP_NAME
 # KV_URL
-# SQL_SERVER_NAME
-# SQL_SERVER_USERNAME
-# SQL_SERVER_PASSWORD
-# SQL_DW_DATABASE_NAME
+# DATABRICKS_HOST
+# DATABRICKS_TOKEN
+# DATABRICKS_WORKSPACE_RESOURCE_ID
 # AZURE_STORAGE_ACCOUNT
 # AZURE_STORAGE_KEY
-# SYNAPSE_WORKSPACE_NAME
-# BIG_DATAPOOL_NAME
-# LOG_ANALYTICS_WS_ID
-# LOG_ANALYTICS_WS_KEY
+# DATAFACTORY_NAME
+# SP_ADF_ID
+# SP_ADF_PASS
+# SP_ADF_TENANT
+
 
 # Const
 apiBaseUrl="https://data.melbourne.vic.gov.au/resource/"
+if [ "$ENV_NAME" == "dev" ]
+then 
+    # In DEV, we fix the path to "dev" folder  to simplify as this is manual publish DEV ADF.
+    # In other environments, the ADF release pipeline overwrites these automatically.
+    databricksDbfsLibPath="dbfs:/mnt/datalake/sys/databricks/libs/dev/"
+    databricksNotebookPath='/releases/dev/'
+else
+    databricksDbfsLibPath='dbfs:/mnt/datalake/sys/databricks/libs/$(Build.BuildId)'
+    databricksNotebookPath='/releases/$(Build.BuildId)'
+fi
 
 # Create vargroup
 vargroup_name="${PROJECT}-release-$ENV_NAME"
@@ -68,6 +78,9 @@ az pipelines variable-group create \
     --variables \
         azureLocation="$AZURE_LOCATION" \
         rgName="$RESOURCE_GROUP_NAME" \
+        adfName="$DATAFACTORY_NAME" \
+        databricksDbfsLibPath="$databricksDbfsLibPath" \
+        databricksNotebookPath="$databricksNotebookPath" \
         apiBaseUrl="$apiBaseUrl" \
     --output json
 
@@ -88,26 +101,30 @@ az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
     --secret "true" --name "subscriptionId" --value "$AZURE_SUBSCRIPTION_ID"
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
     --secret "true" --name "kvUrl" --value "$KV_URL"
+# Databricks
+az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
+    --secret "true" --name "databricksDomain" --value "$DATABRICKS_HOST"
+az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
+    --secret "true" --name "databricksToken" --value "$DATABRICKS_TOKEN"
+az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
+    --secret "true" --name "databricksWorkspaceResourceId" --value "$DATABRICKS_WORKSPACE_RESOURCE_ID"
 # Datalake
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
     --secret "true" --name "datalakeAccountName" --value "$AZURE_STORAGE_ACCOUNT"
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
     --secret "true" --name "datalakeKey" --value "$AZURE_STORAGE_KEY"
+# Adf
+az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
+    --secret "true" --name "spAdfId" --value "$SP_ADF_ID"
+az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
+    --secret "true" --name "spAdfPass" --value "$SP_ADF_PASS"
+az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
+    --secret "true" --name "spAdfTenantId" --value "$SP_ADF_TENANT"
 # Log Analytics
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
     --secret "true" --name "logAnalyticsWorkspaceId" --value "$LOG_ANALYTICS_WS_ID"
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
     --secret "true" --name "logAnalyticsWorkspaceKey" --value "$LOG_ANALYTICS_WS_KEY"
-# TODO: This may be required for the automated Integration Tests. Comment out for now.
-# Synapse SQL Dedicated Pool (formerly SQL DW)
-# az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-#     --secret "true" --name "sqlsrvrName" --value "$SQL_SERVER_NAME"
-# az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-#     --secret "true" --name "sqlsrvrUsername" --value "$SQL_SERVER_USERNAME"
-# az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-#     --secret "true" --name "sqlsrvrPassword" --value "$SQL_SERVER_PASSWORD"
-# az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-#     --secret "true" --name "sqlDwDatabaseName" --value "$SQL_DW_DATABASE_NAME"
 # Synapse
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
     --secret "true" --name "synapseWorkspaceName" --value "$SYNAPSE_WORKSPACE_NAME"

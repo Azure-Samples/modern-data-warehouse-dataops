@@ -1,22 +1,21 @@
 {
-	"name": "Ls_AdlsGen2_01",
-	"type": "Microsoft.Synapse/workspaces/linkedservices",
-	"properties": {
-		"type": "AzureBlobFS",
-		"connectVia": {
-			"referenceName": "AutoResolveIntegrationRuntime",
-			"type": "IntegrationRuntimeReference"
-		},
-		"annotations": [],
-		"typeProperties": {
-			"url": {
-				"type": "AzureKeyVaultSecret",
-				"store": {
-					"referenceName": "Ls_KeyVault_01",
-					"type": "LinkedServiceReference"
-				},
-				"secretName": "datalakeurl"
-			}
-		}
-	}
+    "name": "Ls_AdlsGen2_01",
+    "properties": {
+        "type": "AzureBlobFS",
+        "annotations": [],
+        "typeProperties": {
+            "url": {
+                "type": "AzureKeyVaultSecret",
+                "store": {
+                    "referenceName": "Ls_KeyVault_01",
+                    "type": "LinkedServiceReference"
+                },
+                "secretName": "datalakeurl"
+            }
+        },
+        "connectVia": {
+            "referenceName": "AutoResolveIntegrationRuntime",
+            "type": "IntegrationRuntimeReference"
+        }
+    }
 }
