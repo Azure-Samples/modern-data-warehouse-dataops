@@ -130,6 +130,7 @@ az keyvault secret set --vault-name "$kv_name" --name "datalakeAccountName" --va
 az keyvault secret set --vault-name "$kv_name" --name "datalakeKey" --value "$azure_storage_key"
 az keyvault secret set --vault-name "$kv_name" --name "datalakeurl" --value "https://$azure_storage_account.dfs.core.windows.net"
 
+
 ####################
 # APPLICATION INSIGHTS
 
@@ -144,29 +145,6 @@ appinsights_key=$(az monitor app-insights component show \
 # Store in Keyvault
 az keyvault secret set --vault-name "$kv_name" --name "applicationInsightsKey" --value "$appinsights_key"
 
-
-# ####################
-# # DATA FACTORY
-
-# SERVICE PRINCIPAL IN SYNAPSE INTEGRATION TESTS
-# TODO: Update to grant correct rights to Synapse resource instead.
-
-# # ADF SP for integration tests 
-# sp_synapse_name="${PROJECT}-syn-${ENV_NAME}-${DEPLOYMENT_ID}-sp"
-# sp_synapse_out=$(az ad sp create-for-rbac \
-#     --role "Data Factory contributor" \
-#     --scopes "/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$resource_group_name/providers/Microsoft.DataFactory/factories/$datafactory_name" \
-#     --name "$sp_adf_name" \
-#     --output json)
-# sp_synapse_id=$(echo "$sp_adf_out" | jq -r '.appId')
-# sp_synapse_pass=$(echo "$sp_adf_out" | jq -r '.password')
-# sp_synapse_tenant=$(echo "$sp_adf_out" | jq -r '.tenant')
-
-# # Save ADF SP credentials in Keyvault
-# az keyvault secret set --vault-name "$kv_name" --name "spAdfName" --value "$sp_adf_name"
-# az keyvault secret set --vault-name "$kv_name" --name "spAdfId" --value "$sp_adf_id"
-# az keyvault secret set --vault-name "$kv_name" --name "spAdfPass" --value "$sp_adf_pass"
-# az keyvault secret set --vault-name "$kv_name" --name "spAdfTenantId" --value "$sp_adf_tenant"
 
 ####################
 # LOG ANALYTICS 
@@ -187,6 +165,7 @@ loganalytics_key=$(az monitor log-analytics workspace get-shared-keys \
 # Store in Keyvault
 az keyvault secret set --vault-name "$kv_name" --name "logAnalyticsId" --value "$loganalytics_id"
 az keyvault secret set --vault-name "$kv_name" --name "logAnalyticsKey" --value "$loganalytics_key"
+
 
 ####################
 # SYNAPSE ANALYTICS
@@ -220,6 +199,28 @@ LOG_ANALYTICS_WS_KEY=$loganalytics_key \
 KEYVAULT_NAME=$kv_name \
     bash -c "./scripts/deploy_synapse_artifacts.sh"
 
+
+# SERVICE PRINCIPAL IN SYNAPSE INTEGRATION TESTS
+# TODO: Update to grant correct rights to Synapse resource instead.
+
+# # ADF SP for integration tests 
+# sp_synapse_name="${PROJECT}-syn-${ENV_NAME}-${DEPLOYMENT_ID}-sp"
+# sp_synapse_out=$(az ad sp create-for-rbac \
+#     --role "Data Factory contributor" \
+#     --scopes "/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$resource_group_name/providers/Microsoft.DataFactory/factories/$datafactory_name" \
+#     --name "$sp_adf_name" \
+#     --output json)
+# sp_synapse_id=$(echo "$sp_adf_out" | jq -r '.appId')
+# sp_synapse_pass=$(echo "$sp_adf_out" | jq -r '.password')
+# sp_synapse_tenant=$(echo "$sp_adf_out" | jq -r '.tenant')
+
+# # Save ADF SP credentials in Keyvault
+# az keyvault secret set --vault-name "$kv_name" --name "spAdfName" --value "$sp_adf_name"
+# az keyvault secret set --vault-name "$kv_name" --name "spAdfId" --value "$sp_adf_id"
+# az keyvault secret set --vault-name "$kv_name" --name "spAdfPass" --value "$sp_adf_pass"
+# az keyvault secret set --vault-name "$kv_name" --name "spAdfTenantId" --value "$sp_adf_tenant"
+
+
 ####################
 # AZDO Azure Service Connection and Variables Groups
 
@@ -235,7 +236,6 @@ DEPLOYMENT_ID=$DEPLOYMENT_ID \
 # SP_SYNAPSE_ID=$sp_synapse_id \
 # SP_SYNAPSE_PASS=$sp_synapse_pass \
 # SP_SYNAPSE_TENANT=$sp_synapse_tenant \
-
 PROJECT=$PROJECT \
 ENV_NAME=$ENV_NAME \
 AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID \
