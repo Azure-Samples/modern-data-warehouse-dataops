@@ -8,15 +8,14 @@ jobs:
 - deployment: Deploy_Wheel_To_Synapse
   displayName: Deploy Wheel Package to Synapse
   environment: ${{ parameters.environmentName }}
-  pool: 
-    vmImage: macOS-11
   strategy:
     runOnce:
       deploy:
         steps:
         - script: |
-            az --version
-            az upgrade --yes
+            # az upgrade and apt-get command both failed for updating to 2.29.0 
+            # version on ubuntu at this point
+            curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
           name: az_upgrade
           displayName: 'upgrade az cli to latest version'
 
