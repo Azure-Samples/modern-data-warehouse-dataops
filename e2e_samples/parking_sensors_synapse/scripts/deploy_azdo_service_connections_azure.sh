@@ -38,6 +38,7 @@ set -o nounset
 # ENV_NAME
 # RESOURCE_GROUP_NAME
 # DEPLOYMENT_ID
+# SYNAPSE_WORKSPACE_NAME
 
 ###############
 # Setup Azure service connection
@@ -57,6 +58,12 @@ az_sp=$(az ad sp create-for-rbac \
     --output json)
 service_principal_id=$(echo "$az_sp" | jq -r '.appId')
 az_sp_tenant_id=$(echo "$az_sp" | jq -r '.tenant')
+
+# This sp needs to have synapse rbac in order to do CD for synapse
+az synapse role assignment create \
+    --workspace-name $SYNAPSE_WORKSPACE_NAME \
+    --role "Synapse Administrator" \
+    --assignee $az_sp_name
 
 # Create Azure Service connection in Azure DevOps
 azure_devops_ext_azure_rm_service_principal_key=$(echo "$az_sp" | jq -r '.password')

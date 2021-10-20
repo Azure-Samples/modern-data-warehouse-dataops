@@ -229,6 +229,7 @@ PROJECT=$PROJECT \
 ENV_NAME=$ENV_NAME \
 RESOURCE_GROUP_NAME=$resource_group_name \
 DEPLOYMENT_ID=$DEPLOYMENT_ID \
+SYNAPSE_WORKSPACE_NAME=$synapseworkspace_name \
     bash -c "./scripts/deploy_azdo_service_connections_azure.sh"
 
 # AzDO Variable Groups
@@ -249,7 +250,7 @@ BIG_DATAPOOL_NAME=$synapse_sparkpool_name \
 SQL_POOL_NAME=$synapse_sqlpool_name \
 LOG_ANALYTICS_WS_ID=$loganalytics_id \
 LOG_ANALYTICS_WS_KEY=$loganalytics_key \
-    bash -c "./scripts/deploy_azdo_variables.sh"
+    # bash -c "./scripts/deploy_azdo_variables.sh"
 
 
 ####################
