@@ -45,6 +45,9 @@ stages:
       workingDirectory: $(pythonWorkingDir)
       displayName: 'Create wheel package'
 
+    - script: echo "test"
+        displayName: 'test pipeline not updating'
+        
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: '$(pythonWorkingDir)/dist'
@@ -56,6 +59,9 @@ stages:
         PathtoPublish: '$(pythonWorkingDir)/requirements.txt'
         ArtifactName: 'synapse_pool_requirements'
       displayName: 'Publish requirement.txt to Artifacts'
+
+    - script: echo "test"
+        displayName: 'test pipeline not updating'
 
   - job: 'publish_static_artifacts'
     displayName: 'Publish Static Artifacts'
