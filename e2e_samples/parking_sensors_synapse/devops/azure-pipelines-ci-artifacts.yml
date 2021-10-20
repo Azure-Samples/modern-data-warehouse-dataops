@@ -45,9 +45,6 @@ stages:
       workingDirectory: $(pythonWorkingDir)
       displayName: 'Create wheel package'
 
-    - script: echo "test"
-        displayName: 'test pipeline not updating'
-        
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: '$(pythonWorkingDir)/dist'
@@ -60,49 +57,46 @@ stages:
         ArtifactName: 'synapse_pool_requirements'
       displayName: 'Publish requirement.txt to Artifacts'
 
-    - script: echo "test"
-        displayName: 'test pipeline not updating'
+  # - job: 'publish_static_artifacts'
+  #   displayName: 'Publish Static Artifacts'
+  #   pool:
+  #     vmImage: 'Ubuntu-16.04'
+  #   steps:
+  #   - task: PublishBuildArtifacts@1
+  #     inputs:
+  #       PathtoPublish: '$(basePath)/databricks'
+  #       ArtifactName: 'databricks'
+  #     displayName: 'Publish Databricks Artifacts'
 
-  - job: 'publish_static_artifacts'
-    displayName: 'Publish Static Artifacts'
-    pool:
-      vmImage: 'Ubuntu-16.04'
-    steps:
-    - task: PublishBuildArtifacts@1
-      inputs:
-        PathtoPublish: '$(basePath)/databricks'
-        ArtifactName: 'databricks'
-      displayName: 'Publish Databricks Artifacts'
+  #   - task: PublishBuildArtifacts@1
+  #     inputs:
+  #       PathtoPublish: '$(basePath)/adf/_scripts/deploymentadf.ps1'
+  #       ArtifactName: 'adf_scripts'
+  #     displayName: 'Publish ADF Scripts'
 
-    - task: PublishBuildArtifacts@1
-      inputs:
-        PathtoPublish: '$(basePath)/adf/_scripts/deploymentadf.ps1'
-        ArtifactName: 'adf_scripts'
-      displayName: 'Publish ADF Scripts'
+  # - job: 'publish_sql_packages'
+  #   displayName: 'Publish SQL Packages'
+  #   pool:
+  #     vmImage: 'windows-latest'
+  #   steps:
+  #   - task: NuGetToolInstaller@1
 
-  - job: 'publish_sql_packages'
-    displayName: 'Publish SQL Packages'
-    pool:
-      vmImage: 'windows-latest'
-    steps:
-    - task: NuGetToolInstaller@1
+  #   - task: NuGetCommand@2
+  #     inputs:
+  #       restoreSolution: '$(sqlDwSolution)'
 
-    - task: NuGetCommand@2
-      inputs:
-        restoreSolution: '$(sqlDwSolution)'
+  #   - task: VSBuild@1
+  #     inputs:
+  #       solution: '$(sqlDwSolution)'
+  #       platform: '$(buildPlatform)'
+  #       configuration: '$(buildConfiguration)'
+  #   - task: VSTest@2
+  #     inputs:
+  #       platform: '$(buildPlatform)'
+  #       configuration: '$(buildConfiguration)'
 
-    - task: VSBuild@1
-      inputs:
-        solution: '$(sqlDwSolution)'
-        platform: '$(buildPlatform)'
-        configuration: '$(buildConfiguration)'
-    - task: VSTest@2
-      inputs:
-        platform: '$(buildPlatform)'
-        configuration: '$(buildConfiguration)'
-
-    - task: PublishBuildArtifacts@1
-      inputs:
-        PathtoPublish: '$(sqlDwPath)/$(sqlDwSolutionName)/bin/$(buildConfiguration)/ddo_azuresqldw_dw.dacpac'
-        ArtifactName: 'sql_dw_dacpac'
-      displayName: 'Publish SQL DACPAC'
+  #   - task: PublishBuildArtifacts@1
+  #     inputs:
+  #       PathtoPublish: '$(sqlDwPath)/$(sqlDwSolutionName)/bin/$(buildConfiguration)/ddo_azuresqldw_dw.dacpac'
+  #       ArtifactName: 'sql_dw_dacpac'
+  #     displayName: 'Publish SQL DACPAC'
