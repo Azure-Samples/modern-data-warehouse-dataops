@@ -198,7 +198,6 @@ UploadSql () {
     token=$(az account get-access-token --resource ${synapseResource} --query accessToken --output tsv)    
     # Step 2: create workspace package placeholder
     synapseSqlBaseUri=${SYNAPSE_DEV_ENDPOINT}/sqlScripts
-
     synapseSqlApiUri="${synapseSqlBaseUri}/$name?api-version=${apiVersion}"
     body_content="$(sed 'N;s/\n/\\n/' ./synapse/workspace/scripts/$name.sql)"
     json_body="{
@@ -217,17 +216,8 @@ UploadSql () {
         },
         \"type\": \"SqlQuery\"      
     }
-}"
-    #sed "s/<script_name>/$name/" ./synapse/api/sqlupload_template.json > ./synapse/api/$name.json
-    #body_content="$(cat ./synapse/workspace/scripts/$name.sql)"
-    # body_content="$(sed ':a;N;$!ba;s/\n/\\n/g' synapse/workspace/scripts/$name.sql)
-    
-    #sed -i "s/<script_content>/$body_content/" ./synapse/api/$name.json 
+    }"    
     curl -X PUT -H "Content-Type: application/json" -H "Authorization:Bearer $token" --data-raw "$json_body" --url $synapseSqlApiUri
-
-    # body_content="$(cat synapse/api/sqlupload.json | jq .)"
-    # body_content=${body_content//\"/\\\"}
-    # az rest --method put --headers "Authorization=Bearer ${token}" "Content-Type=application/json;charset=utf-8" --url "${synapseLibraryUri}" --body $body_content
     sleep 5s
 }
 
