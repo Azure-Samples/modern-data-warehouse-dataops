@@ -40,12 +40,19 @@ jobs:
               --package $(Pipeline.Workspace)/ciartifacts/dist/$(setPackageWheelName.packageWheelName)
         
         - task: AzureCLI@2
-          displayName: Add package to spark pool
+          displayName: Remove old version and add package to spark pool
           inputs:
             azureSubscription: ${{ parameters.serviceConnection }}
             scriptType: bash
             scriptLocation: inlineScript
             inlineScript: |
+              az synapse spark pool update \
+              --name $(synapseSparkPoolName) \
+              --workspace-name $(synapseWorkspaceName) \
+              --resource-group $(rgName) \
+              --package-action Remove \
+              --package *
+
               az synapse spark pool update \
               --name $(synapseSparkPoolName) \
               --workspace-name $(synapseWorkspaceName) \
