@@ -46,12 +46,18 @@ jobs:
             scriptType: bash
             scriptLocation: inlineScript
             inlineScript: |
+              oldPackage=$(az synapse spark pool show \
+              --name $(synapseSparkPoolName) \
+              --workspace-name $(synapseWorkspaceName) \
+              --resource-group $(rgName) \
+              --query customLibraries[].name -o tsv | grep ddo_transform)
+
               az synapse spark pool update \
               --name $(synapseSparkPoolName) \
               --workspace-name $(synapseWorkspaceName) \
               --resource-group $(rgName) \
               --package-action Remove \
-              --package *
+              --package $oldPackage
 
               az synapse spark pool update \
               --name $(synapseSparkPoolName) \
