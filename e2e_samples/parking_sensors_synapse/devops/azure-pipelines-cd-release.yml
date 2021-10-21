@@ -14,7 +14,7 @@ resources:
     type: github
     endpoint: mdwdops-github
     name: devlace/mdw-dataops-clone
-    ref: adf_publish
+    ref: workspace_publish
 
 stages:
 - stage: deploy_to_dev
