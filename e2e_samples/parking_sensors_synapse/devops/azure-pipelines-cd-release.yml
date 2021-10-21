@@ -46,9 +46,7 @@ stages:
     parameters:
       environmentName: 'STG'
       serviceConnection: 'mdwdops-serviceconnection-stg'
-  # Integration tests
-  # Commenting this out for now because the integration test jobs needs to be updated for the synapse version.
-  # - template: templates/jobs/integration-tests-job.yml
+  - template: templates/jobs/integration-tests-job.yml
 
 - stage: deploy_to_prod
   displayName: 'Deploy to Prod'
