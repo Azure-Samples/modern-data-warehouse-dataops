@@ -13,7 +13,7 @@ resources:
   - repository: mdwdataops_adfpublish
     type: github
     endpoint: mdwdops-github
-    name: shervyna/modern-data-warehouse-dataops
+    name: devlace/mdw-dataops-clone
     ref: adf_publish
 
 stages:
@@ -23,10 +23,10 @@ stages:
   - group: mdwdops-release-dev
   - group: mdwdops-secrets-dev
   jobs:
-  # - template: templates/jobs/deploy-dedicated-sql-pool-job.yml
-  #   parameters:
-  #     environmentName: 'DEV'
-  #     serviceConnection: 'mdwdops-serviceconnection-dev'
+  - template: templates/jobs/deploy-dedicated-sql-pool-job.yml
+    parameters:
+      environmentName: 'DEV'
+      serviceConnection: 'mdwdops-serviceconnection-dev'
   - template: templates/jobs/deploy-wheel-job.yml
     parameters:
       environmentName: 'DEV'
