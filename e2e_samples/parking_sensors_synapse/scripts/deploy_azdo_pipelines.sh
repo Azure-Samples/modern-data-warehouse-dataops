@@ -56,7 +56,7 @@ createPipeline () {
             --description "$pipeline_description" \
             --repository "$GITHUB_REPO_URL" \
             --branch "$AZDO_PIPELINES_BRANCH_NAME" \
-            --yaml-path "/e2e_samples/parking_sensors/devops/azure-pipelines-$pipeline_name.yml" \
+            --yaml-path "/e2e_samples/parking_sensors_synapse/devops/azure-pipelines-$pipeline_name.yml" \
             --service-connection "$github_sc_id" \
             --skip-first-run true \
             --query="id" \
@@ -72,13 +72,3 @@ createPipeline "ci-artifacts" "This pipeline publishes build artifacts"
 
 # Release Pipelines
 cd_release_pipeline_id=$(createPipeline "cd-release" "This pipeline releases across environments")
-
-
-# if [[ -z $(az pipelines variable list --pipeline-id "${cd_release_pipeline_id}" --query "devAdfName" -o tsv) ]]; then
-#     az pipelines variable create \
-#         --name devAdfName \
-#         --pipeline-id "$cd_release_pipeline_id" \
-#         --value "$DEV_DATAFACTORY_NAME"
-# else
-#     echo "Pipeline variable already exists. devAdfName"
-# fi

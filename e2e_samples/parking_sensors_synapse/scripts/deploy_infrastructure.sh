@@ -229,6 +229,7 @@ PROJECT=$PROJECT \
 ENV_NAME=$ENV_NAME \
 RESOURCE_GROUP_NAME=$resource_group_name \
 DEPLOYMENT_ID=$DEPLOYMENT_ID \
+SYNAPSE_WORKSPACE_NAME=$synapseworkspace_name \
     bash -c "./scripts/deploy_azdo_service_connections_azure.sh"
 
 # AzDO Variable Groups
