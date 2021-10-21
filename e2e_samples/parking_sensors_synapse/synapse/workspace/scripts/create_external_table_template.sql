@@ -31,7 +31,7 @@ IF NOT EXISTS
     CREATE DATABASE SCOPED CREDENTIAL WorkspaceIdentity
     WITH IDENTITY = 'Managed Identity'
 GO
--- Create Delta Format [SynapseDeltaFormat]
+-- Create Parquet Format [SynapseParquetFormat]
 IF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'SynapseParquetFormat')
 	CREATE EXTERNAL FILE FORMAT [SynapseParquetFormat]
 	WITH ( FORMAT_TYPE = parquet)
