@@ -51,6 +51,9 @@ set -o xtrace # For debugging
 # BIG_DATAPOOL_NAME
 # LOG_ANALYTICS_WS_ID
 # LOG_ANALYTICS_WS_KEY
+# SP_SYNAPSE_ID
+# SP_SYNAPSE_PASS
+# SP_SYNAPSE_TENANT
 
 # Const
 apiBaseUrl="https://data.melbourne.vic.gov.au/resource/"
@@ -113,6 +116,14 @@ az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
     --secret "true" --name "synapseWorkspaceName" --value "$SYNAPSE_WORKSPACE_NAME"
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
     --secret "true" --name "synapseSparkPoolName" --value "$BIG_DATAPOOL_NAME"
+
+# Service Principal for Synapse Integration Testing
+az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
+    --secret "true" --name "spSynapseId" --value "$SP_SYNAPSE_ID"
+az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
+    --secret "true" --name "spSynapsePass" --value "$SP_SYNAPSE_PASS"
+az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
+    --secret "true" --name "spSynapseTenantId" --value "$SP_SYNAPSE_TENANT"
 
 # Delete dummy vars
 az pipelines variable-group variable delete --group-id "$vargroup_secrets_id" --name "foo" -y

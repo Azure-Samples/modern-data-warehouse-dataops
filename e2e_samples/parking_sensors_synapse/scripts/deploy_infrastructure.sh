@@ -57,7 +57,9 @@ az group create --name "$resource_group_name" --location "$AZURE_LOCATION" --tag
 # Retrieve KeyVault User Id
 kv_owner_object_id=$(az ad signed-in-user show --output json | jq -r '.objectId')
 
+
 # Validate arm template
+
 echo "Validating deployment"
 arm_output=$(az deployment group validate \
     --resource-group "$resource_group_name" \
@@ -201,24 +203,29 @@ KEYVAULT_NAME=$kv_name \
 
 
 # SERVICE PRINCIPAL IN SYNAPSE INTEGRATION TESTS
-# TODO: Update to grant correct rights to Synapse resource instead.
+# Synapse SP for integration tests 
+ sp_synapse_name="${PROJECT}-syn-${ENV_NAME}-${DEPLOYMENT_ID}-sp"
+ sp_synapse_out=$(az ad sp create-for-rbac \
+     --skip-assignment \
+     --scopes "/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$resource_group_name/providers/Microsoft.Synapse/workspaces/$synapseworkspace_name" \
+     --name "$sp_synapse_name" \
+     --output json)
+ sp_synapse_id=$(echo "$sp_synapse_out" | jq -r '.appId')
+ sp_synapse_pass=$(echo "$sp_synapse_out" | jq -r '.password')
+ sp_synapse_tenant=$(echo "$sp_synapse_out" | jq -r '.tenant')
 
-# # ADF SP for integration tests 
-# sp_synapse_name="${PROJECT}-syn-${ENV_NAME}-${DEPLOYMENT_ID}-sp"
-# sp_synapse_out=$(az ad sp create-for-rbac \
-#     --role "Data Factory contributor" \
-#     --scopes "/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$resource_group_name/providers/Microsoft.DataFactory/factories/$datafactory_name" \
-#     --name "$sp_adf_name" \
-#     --output json)
-# sp_synapse_id=$(echo "$sp_adf_out" | jq -r '.appId')
-# sp_synapse_pass=$(echo "$sp_adf_out" | jq -r '.password')
-# sp_synapse_tenant=$(echo "$sp_adf_out" | jq -r '.tenant')
+# Save Synapse SP credentials in Keyvault
+ az keyvault secret set --vault-name "$kv_name" --name "spSynapseName" --value "$sp_synapse_name"
+ az keyvault secret set --vault-name "$kv_name" --name "spSynapseId" --value "$sp_synapse_id"
+ az keyvault secret set --vault-name "$kv_name" --name "spSynapsePass" --value "$sp_synapse_pass"
+ az keyvault secret set --vault-name "$kv_name" --name "spSynapseTenantId" --value "$sp_synapse_tenant"
 
-# # Save ADF SP credentials in Keyvault
-# az keyvault secret set --vault-name "$kv_name" --name "spAdfName" --value "$sp_adf_name"
-# az keyvault secret set --vault-name "$kv_name" --name "spAdfId" --value "$sp_adf_id"
-# az keyvault secret set --vault-name "$kv_name" --name "spAdfPass" --value "$sp_adf_pass"
-# az keyvault secret set --vault-name "$kv_name" --name "spAdfTenantId" --value "$sp_adf_tenant"
+# Since service principal might take a while to be searchable in the tenant, here we wait for 30s
+# in case immediately assign Synapse RBAC command failed
+sleep 60s
+# Grant Synapse Administrator to this SP so that it can trigger Synapse pipelines
+az synapse role assignment create --workspace-name $synapseworkspace_name \
+    --role "Synapse Administrator" --assignee $sp_synapse_name
 
 
 ####################
@@ -234,9 +241,9 @@ SYNAPSE_WORKSPACE_NAME=$synapseworkspace_name \
 
 # AzDO Variable Groups
 
-# SP_SYNAPSE_ID=$sp_synapse_id \
-# SP_SYNAPSE_PASS=$sp_synapse_pass \
-# SP_SYNAPSE_TENANT=$sp_synapse_tenant \
+SP_SYNAPSE_ID=$sp_synapse_id \
+SP_SYNAPSE_PASS=$sp_synapse_pass \
+SP_SYNAPSE_TENANT=$sp_synapse_tenant \
 PROJECT=$PROJECT \
 ENV_NAME=$ENV_NAME \
 AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID \
@@ -269,6 +276,8 @@ APPINSIGHTS_KEY=${appinsights_key}
 KV_URL=${kv_dns_name}
 LOG_ANALYTICS_WS_ID=${loganalytics_id}
 SYNAPSE_WORKSPACE_NAME=${synapseworkspace_name}
+SP_SYNAPSE_ID=${sp_synapse_id}
+SP_SYNAPSE_NAME=${sp_synapse_name}
 
 EOF
 echo "Completed deploying Azure resources $resource_group_name ($ENV_NAME)"
