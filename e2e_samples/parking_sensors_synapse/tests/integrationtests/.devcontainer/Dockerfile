@@ -14,9 +14,14 @@ WORKDIR /workspace
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+#wget http://archive.ubuntu.com/ubuntu/pool/main/g/glibc/multiarch-support_2.27-3ubuntu1.4_amd64.deb \
+#    && sudo apt-get install ./multiarch-support_2.27-3ubuntu1.4_amd64.deb \
+
 # Install Microsoft ODBC driver for SQL Server
 # https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver15#debian17
-RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
+RUN wget http://archive.ubuntu.com/ubuntu/pool/main/g/glibc/multiarch-support_2.27-3ubuntu1.4_amd64.deb \
+    && sudo apt-get install ./multiarch-support_2.27-3ubuntu1.4_amd64.deb \
+    && curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
     && curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list \
     && apt-get update \
     && ACCEPT_EULA=Y apt-get -y install msodbcsql17 unixodbc-dev

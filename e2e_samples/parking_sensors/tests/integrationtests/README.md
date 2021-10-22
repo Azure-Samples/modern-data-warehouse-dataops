@@ -2,7 +2,7 @@
 
 This makes use of [PyTest framework](https://docs.pytest.org/en/latest/) to execute integration tests. In general, the tests do the following:
 
-1. Upload known input test data (located in `/tests/data`) into specified data sources (ei. blob storage) necessary for the pipeline to run.
+1. Upload known input test data (Public API: "https://data.melbourne.vic.gov.au/resource/) into specified data sources (ei. blob storage) necessary for the pipeline to run.
 2. Trigger pipeline to consume uploaded test data.
 3. Verify pipeline run has succeeded and data outputs are valid.
 
@@ -45,7 +45,7 @@ Additional *optional* configuration:
 ### Steps to setup Development environment
 
 1. Open VSCode from the **root of the Python project**. That is, the root of your VSCode workspace needs to be at `/test`. It should have `.devcontainer` and `.vscode` folders.
-2. Create an `.env` file. Set the environment variables as listed out in "Environment Variables" section.
+2. Copy `.envtemplate` file as new `.env` file. Set the environment variables as listed out in `.envtemplate` file.
 3. In VSCode command pallete (`ctrl+shift+p`), select `Remote-Containers: Reopen in container`. First time building the Devcontainer may take a while.
 4. Run `pytest` to run tests.
 
@@ -56,5 +56,4 @@ The code is organized as follows:
 - `tests/`
   - `conftest.py` - Common Pytest [Fixtures](https://docs.pytest.org/en/stable/fixture.html).
   - `dataconnectors/` - Data connector specific fixtures, subdivided into modules.
-  - `data/` - all test data used in test cases
   - `test_*.py` - contain all test cases

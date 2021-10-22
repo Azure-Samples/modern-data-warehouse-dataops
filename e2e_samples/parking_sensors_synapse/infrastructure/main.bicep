@@ -3,6 +3,8 @@ param env string = 'dev'
 param location string = resourceGroup().location
 param deployment_id string
 param keyvault_owner_object_id string
+@secure()
+param sql_server_password string
 
 module storage './modules/storage.bicep' = {
   name: 'storage_deploy_${deployment_id}'
@@ -21,6 +23,7 @@ module synapse './modules/synapse.bicep' = {
     env: env
     location: location
     deployment_id: deployment_id
+    sql_server_password: sql_server_password
   }
 }
 
