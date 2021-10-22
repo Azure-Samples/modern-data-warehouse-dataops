@@ -26,10 +26,10 @@ def run_pipeline(synapse_client: ArtifactsClient, azure_credential: ClientSecret
                  params: dict) -> str:
     print('Run pipeline')
 
-    run_pipeliine = synapse_client.pipeline.create_pipeline_run(
+    run_pipeline = synapse_client.pipeline.create_pipeline_run(
         pipeline_name, parameters=params)
-    print(run_pipeliine.run_id)
-    return run_pipeliine.run_id
+    print(run_pipeline.run_id)
+    return run_pipeline.run_id
 
 
 def observe_pipeline(synapse_client: ArtifactsClient, run_id: str,                     
