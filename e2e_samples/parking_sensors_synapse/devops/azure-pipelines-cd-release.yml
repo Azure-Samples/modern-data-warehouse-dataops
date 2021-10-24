@@ -13,7 +13,7 @@ resources:
   - repository: mdwdataops_adfpublish
     type: github
     endpoint: mdwdops-github
-    name: sinnypan/modern-data-warehouse-dataops-1
+    name: devlace/mdw-dataops-clone
     ref: workspace_publish
 
 stages:
