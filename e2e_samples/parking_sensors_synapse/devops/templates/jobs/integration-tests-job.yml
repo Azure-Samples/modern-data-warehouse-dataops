@@ -34,9 +34,9 @@ jobs:
       AZ_SERVICE_PRINCIPAL_TENANT_ID: $(spSynapseTenantId)
       AZ_SUBSCRIPTION_ID: $(subscriptionId)
       AZ_RESOURCE_GROUP_NAME: $(rgName)
-      AZ_SYNAPSE_NAME: $(adfName)
-      AZ_SQL_SERVER_NAME: $(dedicatedSqlPoolName).sql.azuresynapse.net
-      AZ_SQL_SERVER_USERNAME: $(dedicatedSqlPoolUsername)
-      AZ_SQL_SERVER_PASSWORD: $(dedicatedSqlPoolPassword)
-      AZ_SQL_DATABASE_NAME: $(dedicatedSqlPoolDatabaseName)
+      AZ_SYNAPSE_NAME: $(synapseWorkspaceName)
+      AZ_SYNAPSE_DEDICATED_SQLPOOL_NAME: $(synapseSqlPoolServer).sql.azuresynapse.net
+      AZ_SYNAPSE_SQLPOOL_ADMIN_USERNAME: $(synapseSqlPoolAdminUsername)
+      AZ_SYNAPSE_SQLPOOL_ADMIN_PASSWORD: $(synapseSqlPoolAdminPassword)
+      AZ_SYNAPSE_DEDICATED_SQLPOOL_DATABASE_NAME: $(synapseDedicatedSqlPoolDBName)
     displayName: 'Run integration tests'

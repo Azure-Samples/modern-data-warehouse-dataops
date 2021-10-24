@@ -260,7 +260,7 @@
         },
         "userProperties": [],
         "sqlPool": {
-          "referenceName": "syndpproddosyn1",
+          "referenceName": "syndpdevsin23",
           "type": "SqlPoolReference"
         },
         "typeProperties": {

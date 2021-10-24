@@ -12,10 +12,10 @@ AZ_SYNAPSE_NAME=
 
 ###
 # REQUIRED. Azure Synapse output(s) connection information, fill in corresponding ENV(ex: stg)'s info::
-AZ_SQL_SERVER_NAME={synapseWorkspaceName}.sql.azuresynapse.net
-AZ_SQL_SERVER_USERNAME=
-AZ_SQL_SERVER_PASSWORD=
-AZ_SQL_DATABASE_NAME=
+AZ_SYNAPSE_DEDICATED_SQLPOOL_NAME={synapseDedicatedSqlPoolName}.sql.azuresynapse.net
+AZ_SYNAPSE_SQLPOOL_ADMIN_USERNAME=
+AZ_SYNAPSE_SQLPOOL_ADMIN_PASSWORD=
+AZ_SYNAPSE_DEDICATED_SQLPOOL_DATABASE_NAME=
 
 
 ###
