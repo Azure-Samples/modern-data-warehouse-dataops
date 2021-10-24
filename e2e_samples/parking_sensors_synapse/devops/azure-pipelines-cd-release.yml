@@ -13,7 +13,7 @@ resources:
   - repository: mdwdataops_adfpublish
     type: github
     endpoint: mdwdops-github
-    name: sinnypan/modern-data-warehouse-dataops-1
+    name: devlace/mdw-dataops-clone
     ref: workspace_publish
 
 stages:
@@ -31,8 +31,6 @@ stages:
     parameters:
       environmentName: 'DEV'
       serviceConnection: 'mdwdops-serviceconnection-dev'
-    # Integration tests
-  - template: templates/jobs/integration-tests-job.yml
 
 - stage: deploy_to_stg
   displayName: 'Deploy to Stage'
@@ -48,6 +46,8 @@ stages:
     parameters:
       environmentName: 'STG'
       serviceConnection: 'mdwdops-serviceconnection-stg'
+      # Integration tests
+  - template: templates/jobs/integration-tests-job.yml
 
 - stage: deploy_to_prod
   displayName: 'Deploy to Prod'
