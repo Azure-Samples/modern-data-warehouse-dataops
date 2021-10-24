@@ -9,7 +9,7 @@ services:
     env_file: devcontainer.env
     build:
       context: ../../../
-      dockerfile: e2e_samples/parking_sensors_synapse/.devcontainer/Dockerfile
+      dockerfile: e2e_samples/parking_sensors/.devcontainer/Dockerfile
     ports: 
     - 5004:5004
     volumes:

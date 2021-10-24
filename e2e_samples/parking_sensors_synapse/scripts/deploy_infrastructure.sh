@@ -38,7 +38,7 @@ set -o xtrace # For debugging
 # ENV_NAME
 # AZURE_LOCATION
 # AZURE_SUBSCRIPTION_ID
-# AZURESQL_SERVER_PASSWORD
+# SYNAPSE_SQL_PASSWORD
 
 
 #####################
@@ -65,7 +65,7 @@ arm_output=$(az deployment group validate \
     --resource-group "$resource_group_name" \
     --template-file "./infrastructure/main.bicep" \
     --parameters @"./infrastructure/main.parameters.${ENV_NAME}.json" \
-    --parameters project="${PROJECT}" keyvault_owner_object_id="${kv_owner_object_id}" deployment_id="${DEPLOYMENT_ID}" sql_server_password="${AZURESQL_SERVER_PASSWORD}" \
+    --parameters project="${PROJECT}" keyvault_owner_object_id="${kv_owner_object_id}" deployment_id="${DEPLOYMENT_ID}" synapse_sqlpool_admin_password="${SYNAPSE_SQL_PASSWORD}" \
     --output json)
 
 # Deploy arm template
@@ -74,7 +74,7 @@ arm_output=$(az deployment group create \
     --resource-group "$resource_group_name" \
     --template-file "./infrastructure/main.bicep" \
     --parameters @"./infrastructure/main.parameters.${ENV_NAME}.json" \
-    --parameters project="${PROJECT}" deployment_id="${DEPLOYMENT_ID}" keyvault_owner_object_id="${kv_owner_object_id}" sql_server_password="${AZURESQL_SERVER_PASSWORD}" \
+    --parameters project="${PROJECT}" deployment_id="${DEPLOYMENT_ID}" keyvault_owner_object_id="${kv_owner_object_id}" synapse_sqlpool_admin_password="${SYNAPSE_SQL_PASSWORD}" \
     --output json)
 
 if [[ -z $arm_output ]]; then
@@ -183,11 +183,21 @@ synapse_dev_endpoint=$(az synapse workspace show \
 synapse_sparkpool_name=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_output_spark_pool_name.value')
 synapse_sqlpool_name=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_output_sql_pool_name.value')
 
+# The server name of connection string will be the same as Synapse worspace name
+synapse_sqlpool_server=$(echo "$arm_output" | jq -r '.properties.outputs.synapseworskspace_name.value')
+synapse_sqlpool_admin_username=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_sql_pool_output.value.username')
+synapse_sqlpool_admin_password=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_sql_pool_output.value.password')
+# the database name of dedicated sql pool will be the same with dedicated sql pool by default
+synapse_dedicated_sqlpool_db_name=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_sql_pool_output.value.synapse_pool_name')
+
 # Store in Keyvault
 az keyvault secret set --vault-name "$kv_name" --name "synapseWorkspaceName" --value "$synapseworkspace_name"
 az keyvault secret set --vault-name "$kv_name" --name "synapseDevEndpoint" --value "$synapse_dev_endpoint"
 az keyvault secret set --vault-name "$kv_name" --name "synapseSparkPoolName" --value "$synapse_sparkpool_name"
-az keyvault secret set --vault-name "$kv_name" --name "synapseSQLPoolName" --value "$synapse_sqlpool_name"
+az keyvault secret set --vault-name "$kv_name" --name "synapseSqlPoolServer" --value "$synapse_sqlpool_server"
+az keyvault secret set --vault-name "$kv_name" --name "synapseSQLPoolAdminUsername" --value "$synapse_sqlpool_admin_username"
+az keyvault secret set --vault-name "$kv_name" --name "synapseSQLPoolAdminPassword" --value "$synapse_sqlpool_admin_password"
+az keyvault secret set --vault-name "$kv_name" --name "synapseDedicatedSQLPoolDBName" --value "$synapse_dedicated_sqlpool_db_name"
 
 # Deploy Synapse artifacts
 AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID \
@@ -254,7 +264,10 @@ AZURE_STORAGE_KEY=$azure_storage_key \
 AZURE_STORAGE_ACCOUNT=$azure_storage_account \
 SYNAPSE_WORKSPACE_NAME=$synapseworkspace_name \
 BIG_DATAPOOL_NAME=$synapse_sparkpool_name \
-SQL_POOL_NAME=$synapse_sqlpool_name \
+SYNAPSE_SQLPOOL_SERVER=$synapse_sqlpool_server \
+SYNAPSE_SQLPOOL_ADMIN_USERNAME=$synapse_sqlpool_admin_username \
+SYNAPSE_SQLPOOL_ADMIN_PASSWORD=$synapse_sqlpool_admin_password \
+SYNAPSE_DEDICATED_SQLPOOL_DATABASE_NAME=$synapse_dedicated_sqlpool_db_name \
 LOG_ANALYTICS_WS_ID=$loganalytics_id \
 LOG_ANALYTICS_WS_KEY=$loganalytics_key \
     bash -c "./scripts/deploy_azdo_variables.sh"
@@ -276,6 +289,9 @@ APPINSIGHTS_KEY=${appinsights_key}
 KV_URL=${kv_dns_name}
 LOG_ANALYTICS_WS_ID=${loganalytics_id}
 SYNAPSE_WORKSPACE_NAME=${synapseworkspace_name}
+SYNAPSE_SQLPOOL_SERVER=${synapse_sqlpool_name}
+SYNAPSE_SQLPOOL_ADMIN_USERNAME=${synapse_sqlpool_admin_username}
+SYNAPSE_DEDICATED_SQLPOOL_DATABASE_NAME=${synapse_dedicated_sqlpool_db_name}
 SP_SYNAPSE_ID=${sp_synapse_id}
 SP_SYNAPSE_NAME=${sp_synapse_name}
 
