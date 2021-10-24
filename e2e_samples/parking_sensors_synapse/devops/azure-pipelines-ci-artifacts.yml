@@ -5,12 +5,12 @@ trigger:
     - release/*
   paths:
     include:
-    - e2e_samples/parking_sensors/*
+    - e2e_samples/parking_sensors_synapse/*
 
 pr: none
 
 variables:
-  basePath: 'e2e_samples/parking_sensors'
+  basePath: 'e2e_samples/parking_sensors_synapse'
   pythonWorkingDir: '$(basePath)/src/ddo_transform'
   pythonPackageMajorVersion:  1
   pythonPackageMinorVersion:  1
@@ -64,15 +64,9 @@ stages:
     steps:
     - task: PublishBuildArtifacts@1
       inputs:
-        PathtoPublish: '$(basePath)/databricks'
-        ArtifactName: 'databricks'
-      displayName: 'Publish Databricks Artifacts'
-
-    - task: PublishBuildArtifacts@1
-      inputs:
-        PathtoPublish: '$(basePath)/adf/_scripts/deploymentadf.ps1'
-        ArtifactName: 'adf_scripts'
-      displayName: 'Publish ADF Scripts'
+        PathtoPublish: '$(basePath)/synapse'
+        ArtifactName: 'synapse'
+      displayName: 'Publish Synapse Artifacts'
 
   - job: 'publish_sql_packages'
     displayName: 'Publish SQL Packages'

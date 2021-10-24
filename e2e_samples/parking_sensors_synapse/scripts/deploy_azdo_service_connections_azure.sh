@@ -29,7 +29,7 @@
 set -o errexit
 set -o pipefail
 set -o nounset
-# set -o xtrace # For debugging
+set -o xtrace # For debugging
 
 ###################
 # REQUIRED ENV VARIABLES:
@@ -59,7 +59,6 @@ az_sp=$(az ad sp create-for-rbac \
 service_principal_id=$(echo "$az_sp" | jq -r '.appId')
 az_sp_tenant_id=$(echo "$az_sp" | jq -r '.tenant')
 
-
 # Create Azure Service connection in Azure DevOps
 azure_devops_ext_azure_rm_service_principal_key=$(echo "$az_sp" | jq -r '.password')
 export AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY=$azure_devops_ext_azure_rm_service_principal_key
@@ -80,13 +79,13 @@ az devops service-endpoint update \
     --id "$sc_id" \
     --enable-for-all "true"
 
-sleep 60s
 service_principal_object_id=$(az ad sp show --id "$service_principal_id" --query "objectId" -o tsv)
 role_exists=$(az synapse role assignment list --workspace-name "$SYNAPSE_WORKSPACE_NAME" \
  --query="[?principalId == '$service_principal_object_id' ]" -o tsv)
 if [[ -z $role_exists ]]; then
+    sleep 60s; # Wait for SP to be visible to Synapse. 
     az synapse role assignment create --workspace-name "$SYNAPSE_WORKSPACE_NAME" \
     --role "Synapse Administrator" --assignee "$service_principal_object_id"
 else 
     echo "Synapse role exists for ${service_principal_object_id}"
-fi 
+fi
