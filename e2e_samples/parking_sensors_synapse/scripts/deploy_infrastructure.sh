@@ -220,7 +220,7 @@ KEYVAULT_NAME=$kv_name \
  az keyvault secret set --vault-name "$kv_name" --name "spSynapsePass" --value "$sp_synapse_pass"
  az keyvault secret set --vault-name "$kv_name" --name "spSynapseTenantId" --value "$sp_synapse_tenant"
 
-# Since service principal might take a while to be searchable in the tenant, here we wait for 30s
+# Since service principal might take a while to be searchable in the tenant, here we wait for 60s
 # in case immediately assign Synapse RBAC command failed
 sleep 60s
 # Grant Synapse Administrator to this SP so that it can trigger Synapse pipelines
