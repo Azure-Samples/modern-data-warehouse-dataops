@@ -222,7 +222,7 @@ More resources:
        - **AZURE_SUBSCRIPTION_ID** - Azure subscription id to use to deploy resources. *Default*: default azure subscription. To see your default, run `az account list`.
        - **DEPLOYMENT_ID** - string appended to all resource names. This is to ensure uniqueness of azure resource names. *Default*: random five character string.
        - **AZDO_PIPELINES_BRANCH_NAME** - git branch where Azure DevOps pipelines definitions are retrieved from. *Default*: main.
-       - **SYNAPSE_SQL_PASSWORD** - Password of the Synapse SQL instance. *Default*: semi-random string.
+       - **SYNAPSE_SQL_PASSWORD** - Password of the Synapse SQL instance. *Default*: random string.
 
       To further customize the solution, set parameters in `arm.parameters` files located in the `infrastructure` folder.
 
