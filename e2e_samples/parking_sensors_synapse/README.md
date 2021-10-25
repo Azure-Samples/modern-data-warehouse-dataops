@@ -188,6 +188,7 @@ More resources:
 - [Python 3+](https://www.python.org/)
 - [databricks-cli](https://docs.azuredatabricks.net/dev-tools/databricks-cli.html)
 - [jq](https://stedolan.github.io/jq/)
+- [makepasswd](https://manpages.debian.org/stretch/makepasswd/makepasswd.1.en.html)
 
 #### Software pre-requisites if you use dev container
 

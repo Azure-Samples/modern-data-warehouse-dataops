@@ -47,6 +47,5 @@ fi
 SYNAPSE_SQL_PASSWORD=${SYNAPSE_SQL_PASSWORD:-}
 if [ -z "$SYNAPSE_SQL_PASSWORD" ]
 then 
-    export SYNAPSE_SQL_PASSWORD="mdwdo-synsql-SqlP@ss-${DEPLOYMENT_ID}"
-    echo "No password for synapse sqlpool specified, defaulting to $SYNAPSE_SQL_PASSWORD"
+    export SYNAPSE_SQL_PASSWORD="$(makepasswd --chars 16)"
 fi
