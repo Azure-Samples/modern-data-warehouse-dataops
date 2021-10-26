@@ -26,10 +26,10 @@ Azure Synapse Analytics:
 
 Azure Synapse Analytics output(s) connection information:
 
-- **AZ_SQL_SERVER_NAME**
-- **AZ_SQL_SERVER_USERNAME**
-- **AZ_SQL_SERVER_PASSWORD**
-- **AZ_SQL_DATABASE_NAME**
+- **AZ_SYNAPSE_DEDICATED_SQLPOOL_NAME**
+- **AZ_SYNAPSE_SQLPOOL_ADMIN_USERNAME**
+- **AZ_SYNAPSE_SQLPOOL_ADMIN_PASSWORD**
+- **AZ_SYNAPSE_DEDICATED_SQLPOOL_DATABASE_NAME**
 
 Additional *optional* configuration:
 

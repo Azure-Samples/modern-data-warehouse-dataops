@@ -7,9 +7,9 @@ param synStorageAccount string = '${project}st2${env}${deployment_id}'
 param mainStorageAccount string = '${project}st${env}${deployment_id}'
 param synStorageFileSys string = 'synapsedefaultfs'
 param keyvault string = '${project}-kv-${env}-${deployment_id}'
-param sql_server_username string = 'sqlAdmin'
+param synapse_sqlpool_admin_username string = 'sqlAdmin'
 @secure()
-param sql_server_password string
+param synapse_sqlpool_admin_password string
 
 //https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles
 var storage_blob_data_contributor = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')
@@ -47,8 +47,8 @@ resource synapseWorkspace 'Microsoft.Synapse/workspaces@2021-03-01' = {
     }
     publicNetworkAccess: 'Enabled'
     managedResourceGroupName: '${project}-syn-mrg-${env}-${deployment_id}'
-    sqlAdministratorLogin: sql_server_username
-    sqlAdministratorLoginPassword: sql_server_password
+    sqlAdministratorLogin: synapse_sqlpool_admin_username
+    sqlAdministratorLoginPassword: synapse_sqlpool_admin_password
   }
 }
 
@@ -152,5 +152,10 @@ resource kvAccessPolicy 'Microsoft.KeyVault/vaults/accessPolicies@2019-09-01' = 
 output synapseWorkspaceName string = synapseWorkspace.name
 output synapseDefaultStorageAccountName string = synStorage.name
 output synapseBigdataPoolName string = synapse_spark_sql_pool.name
-output synapseSqlPoolName string = synapse_sql_pool.name
+output synapse_sql_pool_output object = {
+  username: synapseWorkspace.properties.sqlAdministratorLogin
+  password: synapse_sqlpool_admin_password
+  synapse_pool_name: synapse_sql_pool.name
+}
+
 

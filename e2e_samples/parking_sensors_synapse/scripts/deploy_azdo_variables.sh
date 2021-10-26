@@ -41,16 +41,19 @@ set -o xtrace # For debugging
 # AZURE_LOCATION
 # RESOURCE_GROUP_NAME
 # KV_URL
-# SQL_SERVER_NAME
-# SQL_SERVER_USERNAME
-# SQL_SERVER_PASSWORD
-# SQL_DW_DATABASE_NAME
+# SYNAPSE_SQLPOOL_SERVER
+# SYNAPSE_SQLPOOL_ADMIN_USERNAME
+# SYNAPSE_SQLPOOL_ADMIN_PASSWORD
+# SYNAPSE_DEDICATED_SQLPOOL_DATABASE_NAME
 # AZURE_STORAGE_ACCOUNT
 # AZURE_STORAGE_KEY
 # SYNAPSE_WORKSPACE_NAME
 # BIG_DATAPOOL_NAME
 # LOG_ANALYTICS_WS_ID
 # LOG_ANALYTICS_WS_KEY
+# SP_SYNAPSE_ID
+# SP_SYNAPSE_PASS
+# SP_SYNAPSE_TENANT
 
 # Const
 apiBaseUrl="https://data.melbourne.vic.gov.au/resource/"
@@ -98,21 +101,29 @@ az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
     --secret "true" --name "logAnalyticsWorkspaceId" --value "$LOG_ANALYTICS_WS_ID"
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
     --secret "true" --name "logAnalyticsWorkspaceKey" --value "$LOG_ANALYTICS_WS_KEY"
-# TODO: This may be required for the automated Integration Tests. Comment out for now.
+
 # Synapse SQL Dedicated Pool (formerly SQL DW)
-# az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-#     --secret "true" --name "sqlsrvrName" --value "$SQL_SERVER_NAME"
-# az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-#     --secret "true" --name "sqlsrvrUsername" --value "$SQL_SERVER_USERNAME"
-# az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-#     --secret "true" --name "sqlsrvrPassword" --value "$SQL_SERVER_PASSWORD"
-# az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-#     --secret "true" --name "sqlDwDatabaseName" --value "$SQL_DW_DATABASE_NAME"
+az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
+    --secret "true" --name "synapseSqlPoolServer" --value "$SYNAPSE_SQLPOOL_SERVER"
+az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
+   --secret "true" --name "synapseSqlPoolAdminUsername" --value "$SYNAPSE_SQLPOOL_ADMIN_USERNAME"
+az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
+    --secret "true" --name "synapseSqlPoolAdminPassword" --value "$SYNAPSE_SQLPOOL_ADMIN_PASSWORD"
+az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
+    --secret "true" --name "synapseDedicatedSqlPoolDBName" --value "$SYNAPSE_DEDICATED_SQLPOOL_DATABASE_NAME"
 # Synapse
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
     --secret "true" --name "synapseWorkspaceName" --value "$SYNAPSE_WORKSPACE_NAME"
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
     --secret "true" --name "synapseSparkPoolName" --value "$BIG_DATAPOOL_NAME"
+
+# Service Principal for Synapse Integration Testing
+az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
+    --secret "true" --name "spSynapseId" --value "$SP_SYNAPSE_ID"
+az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
+    --secret "true" --name "spSynapsePass" --value "$SP_SYNAPSE_PASS"
+az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
+    --secret "true" --name "spSynapseTenantId" --value "$SP_SYNAPSE_TENANT"
 
 # Delete dummy vars
 az pipelines variable-group variable delete --group-id "$vargroup_secrets_id" --name "foo" -y

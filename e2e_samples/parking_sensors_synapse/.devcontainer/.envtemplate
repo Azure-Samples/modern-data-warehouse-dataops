@@ -34,7 +34,7 @@ GITHUB_PAT_TOKEN=
 # git branch where Azure DevOps pipelines definitions are retrieved from. Default: main
 # AZDO_PIPELINES_BRANCH_NAME=
 
-# Password of the SQL Server instance. Default: semi-random string
-# AZURESQL_SERVER_PASSWORD=
+# Password of the Synapse SQL instance. Default: random string
+# SYNAPSE_SQL_PASSWORD=
 
 
