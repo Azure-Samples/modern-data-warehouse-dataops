@@ -4,7 +4,7 @@ BEGIN
     CREATE DATABASE external_db
 END
 USE external_db
--- Create MASTER KEY ENCRYPTION  PASSWORD
+-- Create MASTER KEY 
 IF NOT EXISTS
     (SELECT * FROM sys.symmetric_keys
         WHERE symmetric_key_id = 101)
