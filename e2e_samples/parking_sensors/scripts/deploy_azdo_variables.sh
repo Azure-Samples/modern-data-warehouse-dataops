@@ -133,16 +133,6 @@ az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
     --secret "true" --name "spAdfPass" --value "$SP_ADF_PASS"
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
     --secret "true" --name "spAdfTenantId" --value "$SP_ADF_TENANT"
-# Log Analytics
-az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "logAnalyticsWorkspaceId" --value "$LOG_ANALYTICS_WS_ID"
-az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "logAnalyticsWorkspaceKey" --value "$LOG_ANALYTICS_WS_KEY"
-# Synapse
-az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "synapseWorkspaceName" --value "$SYNAPSE_WORKSPACE_NAME"
-az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "synapseSparkPoolName" --value "$BIG_DATAPOOL_NAME"
 
 # Delete dummy vars
 az pipelines variable-group variable delete --group-id "$vargroup_secrets_id" --name "foo" -y

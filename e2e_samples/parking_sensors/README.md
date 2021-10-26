@@ -89,7 +89,6 @@ It makes use of the following azure services:
 - [Azure DevOps](https://azure.microsoft.com/en-au/services/devops/)
 - [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)
 - [PowerBI](https://powerbi.microsoft.com/en-us/)
-- [Log Analytics](https://docs.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overview)
 
 For a detailed walk-through of the solution and key concepts, watch the following video recording:
 
