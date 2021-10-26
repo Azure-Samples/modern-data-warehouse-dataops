@@ -157,5 +157,5 @@ output synapse_sql_pool_output object = {
   password: synapse_sqlpool_admin_password
   synapse_pool_name: synapse_sql_pool.name
 }
-output synapseSqlPoolName string = synapse_sql_pool.name
+
 

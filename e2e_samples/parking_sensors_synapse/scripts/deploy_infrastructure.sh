@@ -181,7 +181,7 @@ synapse_dev_endpoint=$(az synapse workspace show \
     jq -r '.connectivityEndpoints | .dev')
 
 synapse_sparkpool_name=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_output_spark_pool_name.value')
-synapse_sqlpool_name=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_output_sql_pool_name.value')
+synapse_sqlpool_name=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_sql_pool_output.value.synapse_pool_name')
 
 # The server name of connection string will be the same as Synapse worspace name
 synapse_sqlpool_server=$(echo "$arm_output" | jq -r '.properties.outputs.synapseworskspace_name.value')

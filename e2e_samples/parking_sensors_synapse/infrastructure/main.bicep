@@ -65,6 +65,5 @@ output keyvault_name string = keyvault.outputs.keyvault_name
 output keyvault_resource_id string = keyvault.outputs.keyvault_resource_id
 output synapse_output_spark_pool_name string = synapse.outputs.synapseBigdataPoolName
 output synapse_sql_pool_output object = synapse.outputs.synapse_sql_pool_output
-output synapse_output_sql_pool_name string = synapse.outputs.synapseSqlPoolName
 output synapseworskspace_name string = synapse.outputs.synapseWorkspaceName
 output loganalytics_name string = loganalytics.outputs.loganalyticswsname
