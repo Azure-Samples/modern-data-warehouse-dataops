@@ -1,13 +1,7 @@
-DECLARE @masterkey uniqueidentifier
-DECLARE @CREATEMASTERKEY_TEMPLATE VARCHAR(MAX)
-DECLARE @MASTERKEYSQL_SCRIPT VARCHAR(MAX)
-SET @masterkey = NEWID()  
-SET @CREATEMASTERKEY_TEMPLATE = 'CREATE MASTER KEY ENCRYPTION BY PASSWORD = {masterkey}'
-SET @MASTERKEYSQL_SCRIPT = REPLACE(@CREATEMASTERKEY_TEMPLATE, '{masterkey}',QuoteName(@masterKey, ''''))
 -- CREATE DATABASE
 IF NOT EXISTS(SELECT * FROM sys.databases WHERE name = 'external_db')
 BEGIN
-    CREATE DATABASE [external_db]
+    CREATE DATABASE external_db
 END
 USE external_db
 -- Create MASTER KEY ENCRYPTION  PASSWORD
@@ -15,7 +9,7 @@ IF NOT EXISTS
     (SELECT * FROM sys.symmetric_keys
         WHERE symmetric_key_id = 101)
 BEGIN
-    EXECUTE (@MASTERKEYSQL_SCRIPT)
+    CREATE MASTER KEY
 END
 GO
 -- Create Database Scope Credential [Managed Identity]
