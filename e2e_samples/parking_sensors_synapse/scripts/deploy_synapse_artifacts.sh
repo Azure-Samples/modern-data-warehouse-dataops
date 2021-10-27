@@ -305,6 +305,8 @@ createTrigger "T_Sched"
 
 # Upload SQL script
 UpdateExternalTableScript
-UploadSql "create_external_table"
+# Upload create_db_user_template for now. 
+# TODO: will replace and run this sql in deploying
+UploadSql "create_db_user_template"
 UploadSql "create_db_user"
 echo "Completed deploying Synapse artifacts."
