@@ -5,7 +5,7 @@ parameters:
   type: string
 
 jobs:
-- deployment: Deploy_Wheel_To_Synapse
+- deployment: deploy_wheel_to_synapse
   displayName: Deploy Wheel Package to Synapse
   environment: ${{ parameters.environmentName }}
   strategy:

@@ -12,8 +12,8 @@ RUN apt-get update \
 # Install git, process tools, lsb-release (common in install instructions for CLIs)
 RUN apt-get -y install git procps lsb-release 
 
-# Install any missing dependencies for enhanced language service
-RUN apt-get install -y libicu[0-9][0-9]
+# Install any missing dependencies for enhanced language service, along with password generator
+RUN apt-get install -y libicu[0-9][0-9] && apt-get install -y makepasswd
 
 # Install Azure CLI and application insights and azure devops extension
 RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash

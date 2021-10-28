@@ -50,6 +50,14 @@ resource synapseWorkspace 'Microsoft.Synapse/workspaces@2021-03-01' = {
     sqlAdministratorLogin: synapse_sqlpool_admin_username
     sqlAdministratorLoginPassword: synapse_sqlpool_admin_password
   }
+
+  resource synapseFirewall 'firewallRules@2021-06-01-preview' = {
+      name: 'AllowAllWindowsAzureIps'
+      properties: {
+        startIpAddress: '0.0.0.0'
+        endIpAddress: '0.0.0.0'
+      }
+  }
 }
 
 resource synapse_spark_sql_pool 'Microsoft.Synapse/workspaces/bigDataPools@2021-03-01' = {

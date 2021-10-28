@@ -37,7 +37,7 @@ set -o xtrace # For debugging
 # PROJECT
 # GITHUB_REPO_URL
 # AZDO_PIPELINES_BRANCH_NAME
-# DEV_DATAFACTORY_NAME
+# DEV_SYNAPSE_WORKSPACE_NAME
 
 # Retrieve Github Service Connection Id
 github_sc_name="${PROJECT}-github"
@@ -72,3 +72,13 @@ createPipeline "ci-artifacts" "This pipeline publishes build artifacts"
 
 # Release Pipelines
 cd_release_pipeline_id=$(createPipeline "cd-release" "This pipeline releases across environments")
+
+
+if [[ -z $(az pipelines variable list --pipeline-id "${cd_release_pipeline_id}" --query "devSynapseWorkspaceName" -o tsv) ]]; then
+    az pipelines variable create \
+        --name devSynapseWorkspaceName \
+        --pipeline-id "$cd_release_pipeline_id" \
+        --value "$DEV_SYNAPSE_WORKSPACE_NAME"
+else
+    echo "Pipeline variable already exists. devSynapseWorkspaceName"
+fi
