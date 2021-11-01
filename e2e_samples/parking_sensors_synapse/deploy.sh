@@ -55,7 +55,7 @@ GITHUB_REPO_URL=$github_repo_url \
 # This replaces 'your_github_handle/your_repo' to deployer's github project
 sed -i "s+your_github_handle/your_repo+$GITHUB_REPO+" devops/azure-pipelines-cd-release.yml
 
-# azure-pipelines-cd-release.yml pipeline require DEV_DATAFACTORY_NAME set, this line retrieves this value from .env.dev file and sets it in DEV_SYNAPSE_WORKSPACE_NAME
+# azure-pipelines-cd-release.yml pipeline require DEV_SYNAPSE_WORKSPACE_NAME set, this line retrieves this value from .env.dev file and sets it in DEV_SYNAPSE_WORKSPACE_NAME
 declare DEV_"$(grep -e '^SYNAPSE_WORKSPACE_NAME' .env.dev | tail -1 | xargs)"
 
 # Deploy all pipelines
