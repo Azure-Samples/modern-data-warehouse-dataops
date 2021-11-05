@@ -34,7 +34,7 @@
 					"import datetime\r\n",
 					"\r\n",
 					"# For testing\r\n",
-					"base_path = 'abfss://datalake@mdwdostordevi6c0n.dfs.core.windows.net/data/lnd/2021_08_04_01_28_02'\r\n",
+					"base_path = 'abfss://datalake@<YOUR_STORAGE_ACCOUNT>.dfs.core.windows.net/data/lnd/2021_XX_XX_X1_XX_XX'\r\n",
 					"parkingbay_filepath = os.path.join(base_path, \"MelbParkingBayData.json\")\r\n",
 					"sensors_filepath = os.path.join(base_path, \"MelbParkingSensorData.json\")\r\n",
 					"\r\n",
