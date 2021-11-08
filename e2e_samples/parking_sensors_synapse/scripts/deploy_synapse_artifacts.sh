@@ -154,8 +154,11 @@ createDataset () {
 }
 createNotebook() {
     declare name=$1
+    # As of 26 Oct 2021, there is an outstanding bug regarding az synapse notebook create command which prevents it from deploy notebook .JSON files
+    # Thus, we are resorting to deploying notebooks in .ipynb format.
+    # See here: https://github.com/Azure/azure-cli/issues/20037
     echo "Creating Synapse Notebook: $name"
-    az synapse notebook create --file @./synapse/workspace/notebooks/"${name}".ipynb --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spark-pool-name "${BIG_DATAPOOL_NAME}"
+    az synapse notebook create --file @./synapse/notebook/"${name}".ipynb --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spark-pool-name "${BIG_DATAPOOL_NAME}"
 }
 createPipeline () {
     declare name=$1
@@ -165,12 +168,12 @@ createPipeline () {
     tmp=$(mktemp)
     jq --arg a "${SQL_POOL_NAME}" '.properties.activities[5].sqlPool.referenceName = $a' ./synapse/workspace/pipelines/"${name}".json > "$tmp" && mv "$tmp" ./synapse/workspace/pipelines/"${name}".json
     # Deploy the pipeline
-    az synapse pipeline create --file @./synapse/workspace/pipelines/"${name}".json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}"
+    az synapse pipeline create --file @./synapse/workspace/pipeline/"${name}".json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}"
 }
 createTrigger () {
     declare name=$1
     echo "Creating Synapse Trigger: $name"
-    az synapse trigger create --file @./synapse/workspace/triggers/"${name}".json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}"
+    az synapse trigger create --file @./synapse/workspace/trigger/"${name}".json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}"
 }
 
 

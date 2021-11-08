@@ -10,15 +10,15 @@ resources:
       branches:
       - main
   repositories:
-  - repository: mdwdataops_adfpublish
+  - repository: mdwdataops_workspace_publish
     type: github
     endpoint: mdwdops-github
-    name: devlace/mdw-dataops-clone
+    name: your_github_handle/your_repo  # deploy script should replace this with your github repo
     ref: workspace_publish
 
 stages:
 - stage: deploy_to_dev
-  displayName: 'Deploy to DEV'  # In DEV, excludes publishing to ADF as this is a manual publish step
+  displayName: 'Deploy to DEV'  # In DEV, excludes publishing to Synapse workspace as this is a manual publish step
   variables:
   - group: mdwdops-release-dev
   - group: mdwdops-secrets-dev
@@ -46,7 +46,11 @@ stages:
     parameters:
       environmentName: 'STG'
       serviceConnection: 'mdwdops-serviceconnection-stg'
-      # Integration tests
+  - template: templates/jobs/deploy-synapse-workspace-job.yml
+    parameters:
+      environmentName: 'STG'
+      serviceConnection: 'mdwdops-serviceconnection-stg'
+  # Integration tests
   - template: templates/jobs/integration-tests-job.yml
 
 - stage: deploy_to_prod
@@ -60,6 +64,10 @@ stages:
       environmentName: 'PROD'
       serviceConnection: 'mdwdops-serviceconnection-prod'
   - template: templates/jobs/deploy-wheel-job.yml
+    parameters:
+      environmentName: 'PROD'
+      serviceConnection: 'mdwdops-serviceconnection-prod'
+  - template: templates/jobs/deploy-synapse-workspace-job.yml
     parameters:
       environmentName: 'PROD'
       serviceConnection: 'mdwdops-serviceconnection-prod'
