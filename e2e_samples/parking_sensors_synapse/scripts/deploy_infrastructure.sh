@@ -186,7 +186,10 @@ synapse_sqlpool_name=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_s
 # The server name of connection string will be the same as Synapse worspace name
 synapse_sqlpool_server=$(echo "$arm_output" | jq -r '.properties.outputs.synapseworskspace_name.value')
 synapse_sqlpool_admin_username=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_sql_pool_output.value.username')
+<<<<<<< HEAD
 synapse_sqlpool_admin_password=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_sql_pool_output.value.password')
+=======
+>>>>>>> 204a186d8e1f398d4f53c19f69348caf2d0be481
 # the database name of dedicated sql pool will be the same with dedicated sql pool by default
 synapse_dedicated_sqlpool_db_name=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_sql_pool_output.value.synapse_pool_name')
 
@@ -196,7 +199,7 @@ az keyvault secret set --vault-name "$kv_name" --name "synapseDevEndpoint" --val
 az keyvault secret set --vault-name "$kv_name" --name "synapseSparkPoolName" --value "$synapse_sparkpool_name"
 az keyvault secret set --vault-name "$kv_name" --name "synapseSqlPoolServer" --value "$synapse_sqlpool_server"
 az keyvault secret set --vault-name "$kv_name" --name "synapseSQLPoolAdminUsername" --value "$synapse_sqlpool_admin_username"
-az keyvault secret set --vault-name "$kv_name" --name "synapseSQLPoolAdminPassword" --value "$synapse_sqlpool_admin_password"
+az keyvault secret set --vault-name "$kv_name" --name "synapseSQLPoolAdminPassword" --value "$SYNAPSE_SQL_PASSWORD"
 az keyvault secret set --vault-name "$kv_name" --name "synapseDedicatedSQLPoolDBName" --value "$synapse_dedicated_sqlpool_db_name"
 
 # Deploy Synapse artifacts
@@ -234,8 +237,8 @@ KEYVAULT_NAME=$kv_name \
 # in case immediately assign Synapse RBAC command failed
 sleep 60s
 # Grant Synapse Administrator to this SP so that it can trigger Synapse pipelines
-az synapse role assignment create --workspace-name $synapseworkspace_name \
-    --role "Synapse Administrator" --assignee $sp_synapse_name
+az synapse role assignment create --workspace-name "$synapseworkspace_name" \
+    --role "Synapse Administrator" --assignee "$sp_synapse_name"
 
 
 ####################
@@ -266,7 +269,7 @@ SYNAPSE_WORKSPACE_NAME=$synapseworkspace_name \
 BIG_DATAPOOL_NAME=$synapse_sparkpool_name \
 SYNAPSE_SQLPOOL_SERVER=$synapse_sqlpool_server \
 SYNAPSE_SQLPOOL_ADMIN_USERNAME=$synapse_sqlpool_admin_username \
-SYNAPSE_SQLPOOL_ADMIN_PASSWORD=$synapse_sqlpool_admin_password \
+SYNAPSE_SQLPOOL_ADMIN_PASSWORD=$SYNAPSE_SQL_PASSWORD \
 SYNAPSE_DEDICATED_SQLPOOL_DATABASE_NAME=$synapse_dedicated_sqlpool_db_name \
 LOG_ANALYTICS_WS_ID=$loganalytics_id \
 LOG_ANALYTICS_WS_KEY=$loganalytics_key \
