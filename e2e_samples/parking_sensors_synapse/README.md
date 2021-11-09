@@ -126,7 +126,7 @@ The Build and Release Pipelines definitions can be found [here](devops/README.md
 
 There are eight numbered orange boxes describing the sequence from sandbox development to target environments:
 
-![CI/CD](../../docs/images/CI_CD_process_sequence.PNG?raw=true "CI/CD")
+![CI/CD](docs/images/CI_CD_process_sequence.PNG?raw=true "CI/CD")
 
 1. Developers develop in their own Sandbox environments within the DEV resource group and commit changes into their own short-lived git branches. (i.e. <developer_name>/<branch_name>)
 2. When changes are complete, developers raise a PR to `main` for review. This automatically kicks-off the PR validation pipeline which runs the unit tests, linting and DACPAC builds.
@@ -252,8 +252,11 @@ More resources:
     4. When prompted to select a working branch, select **main**
 
    > **Ensure you Import Existing Synapse resources to repository**. The deployment script deployed Synapse Workspace objects with Linked Service configurations in line with the newly deployed environments. Importing existing Synapse Workspace resources definitions to the repository overrides any default Linked Services values so they are correctly in sync with your DEV environment.
-4. **Run setup notebook in Synapse workspace per environment** <!--TODO-- investigate whether we can trigger the running of each setup notebook automatically-->
-   1. Navigate into DEV Synapse workspace notebooks tab, then run the *setup* notebook. Repeat this in the STG and PROD Synapse workspace.
+4. **Run setup notebook in Synapse workspace per environment**
+   1. Grant yourself *Storage Data Blob Contributor* to the Synapse main storage (`mdwdopsst2<ENV><DEPLOYMENT_ID>`).
+   2. Navigate into DEV Synapse workspace notebooks tab and select the *00_setup* notebook.
+   3. Run this notebook, attaching to the created Spark Pool.
+   4. Repeat this in the STG and PROD Synapse workspace.
 
 5. **Trigger an initial Release**
 
@@ -262,12 +265,24 @@ More resources:
    2. In Azure DevOps, notice a new run of the Build Pipeline (**mdwdops-ci-artifacts**) off `main`. This will build the Python package and SQL DACPAC, then publish these as Pipeline Artifacts.
    3. After completion, this should automatically trigger the Release Pipeline (**mdwdops-cd-release**). This will deploy the artifacts across environments.
       - You may need to authorize the Pipelines initially to use the Service Connection for the first time.
-      ![Release Pipeline](../../docs/images/ReleasePipelineSynapse.PNG?raw=true "Release Pipelines")
+      ![Release Pipeline](docs/images/ReleasePipelineSynapse.PNG?raw=true "Release Pipelines")
    4. **Optional**. Trigger the Synapse Data Pipelines per environment.
       1. In the Synapse workspace of each environment, navigate to "Author", then select the `P_Ingest_MelbParkingData`.
       2. Select "Trigger > Trigger Now".
       3. To monitor the run, go to "Monitor > Pipeline runs".
-      ![Pipeline Run](../../docs/images/ADFRun.PNG?raw=true "Pipeline Run]") <!--TODO: Replace me with Synapse run-->
+      ![Pipeline Run](docs/images/SynapseRun.PNG?raw=true "Pipeline Run]")
+
+6. **Optional. Visualize data in PowerBI**
+    > This requires [PowerBI Desktop App](https://powerbi.microsoft.com/en-us/desktop/) installed.
+    1. Open the provided PowerBi pbix (PowerBI_ParkingSensors.pbix) under `reports` folder.
+    2. Under Queries, select "Transform Data" > "Data source settings".
+    3. Select "Change Source..." and enter the Server and Database details of your SQL Dedicated Pool. Click "Ok".
+        > You can retrieve these from the Azure Portal under "Connection Strings" of your SQL Dedicated Pool Instance.
+    4. Select "Edit Permissions...". Under "Credentials", select "Edit...". Select the "Database" tab. Enter the User name and password of your SQL Dedicated Pool Instance.
+        > You can retrieve these from the Secrets in your KeyVault instance.
+    5. Close the Data Source tabs.
+    6. Click on Refresh data.
+        > Your Dashboard will initially be empty. You will need your data pipeline to run a few times for the data in your SQL Dedicated Pool to populate.
 
 Congratulations!! 🥳 You have successfully deployed the solution and accompanying Build and Release Pipelines.
 
