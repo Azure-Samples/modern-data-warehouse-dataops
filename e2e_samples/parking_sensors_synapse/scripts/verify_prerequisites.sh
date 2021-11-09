@@ -7,3 +7,7 @@ command -v makepasswd >/dev/null 2>&1 || { echo >&2 "I require makepasswd. See h
 
 # Check if user is logged in
 [[ -n $(az account show 2> /dev/null) ]] || { echo "Please login via the Azure CLI: "; az login; }
+
+# Check if az cli required extensions are installed
+az extension list -o tsv | grep application-insights >/dev/null || { echo >&2 "I required az cli extension: application-insights. Aborting."; exit 1; }
+az extension list -o tsv | grep azure-devops >/dev/null || { echo >&2 "I required az cli extension: azure-devops. Aborting."; exit 1; }

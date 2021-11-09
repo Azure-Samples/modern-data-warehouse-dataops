@@ -250,7 +250,7 @@ More resources:
          - To set target Azure Subscription, run `az account set -s <AZURE_SUBSCRIPTION_ID>`
       - Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to.
          - To set target Azure DevOps project, run `az devops configure --defaults organization=https://dev.azure.com/<MY_ORG>/ project=<MY_PROJECT>`
-   2. **Import** this repository into a new Github repo. See [here](https://help.github.com/en/github/importing-your-projects-to-github/importing-a-repository-with-github-importer) on how to import a github repo. Importing is necessary for setting up git integration with Azure Data Factory.
+   2. **Fork** this repository into a new Github repo.
    3. Set the following **required** environment variables:
        - **GITHUB_REPO** - Name of your imported github repo in this form `<my_github_handle>/<repo>`. (ei. "devlace/mdw-dataops-import")
        - **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). This requires "repo" scope.
@@ -276,18 +276,17 @@ More resources:
 
     > **IMPORTANT NOTE**: Only the **DEV** Data Factory should be setup with Git integration. Do **not** setup git integration in the STG and PROD Data Factories.
 
-    1. In the Azure Portal, navigate to the Data Factory in the **DEV** environment.
-    2. Click "Author & Monitor" to launch the Data Factory portal.
-    3. On the landing page, select "Set up code repository". For more information, see [here](https://docs.microsoft.com/en-us/azure/data-factory/source-control).
-    4. Fill in the repository settings with the following:
+    1. In the Azure Portal, navigate to the Data Factory in the **DEV** environment and launch the Data Factory portal.
+    2. On the landing page, select "Set up code repository". For more information, see [here](https://docs.microsoft.com/en-us/azure/data-factory/source-control).
+    3. Fill in the repository settings with the following:
         - Repository type: **Github**
         - Github Account: **your_Github_account**
-        - Git repository name: **imported Github repository**
+        - Git repository (select *Use repository link*, if forked): **forked Github repository url**
         - Collaboration branch: **main**
         - Root folder: **/e2e_samples/parking_sensors/adf**
         - Import Existing Data Factory resource to repository: **Selected**
         - Branch to import resource into: **Use Collaboration**
-    5. When prompted to select a working branch, select **main**
+    4. When prompted to select a working branch, select **main**
 
    > **Ensure you Import Existing Data Factory resources to repository**. The deployment script deployed ADF objects with Linked Service configurations in line with the newly deployed environments. Importing existing ADF resources definitions to the repository overrides any default Linked Services values so they are correctly in sync with your DEV environment.
 
@@ -348,6 +347,7 @@ After a successful deployment, you should have the following resources:
       - mdwdops-serviceconnection-prod
     - **Github Service Connection** for retrieving code from Github
       - mdwdops-github
+  - **Three additional Service Principals** (one per environment) with Data Factory Contributor role for running Integration Tests
 
 Notes:
 
