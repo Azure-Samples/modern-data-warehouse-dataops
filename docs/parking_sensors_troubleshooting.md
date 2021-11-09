@@ -67,6 +67,7 @@ When running the deploy.sh with WSL (Windows Subsystem Linux) environment, it mi
 and this error will result in deployment process stopped and failed. 
 
 The detail issue can refer the following:
+
 **failed shell script:** 
 ```
 deploy_azdo_service_connections_azure.sh
