@@ -80,7 +80,7 @@ az devops service-endpoint github create
 ```
 
 **error message:**
-![WSLCannotRecognizeEnvVar](images/troubleshooting/wsl_cannot_recognize_env_var.PNG)
+![WSLCannotRecognizeEnvVar](images/troubleshooting/wsl_cannot_recognize_env_var.png)
 
 **Solution**:
 Make above 2 environment variables become **shareable** between WSL and Windows environment.
