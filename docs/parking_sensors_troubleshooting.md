@@ -56,3 +56,63 @@ Deploy script does not deploy Approval Gates or Environments.
 **Solution**:
 
 Creation of Approval Gates and Environments currently cannot be automated. These need to be manually created.
+
+
+## WSL cannot recognize declared environment variables issue
+**Problem**:
+When running the deploy.sh with WSL (Windows Subsystem Linux) environment, it might occur that WSL session (ex: Ubuntu session) could not find the following environment variables:
+  - AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY  
+  - AZURE_DEVOPS_EXT_GITHUB_PAT
+  
+and this error will result in deployment process stopped and failed. 
+
+The detail issue can refer the following:
+**failed shell script:** 
+```
+deploy_azdo_service_connections_azure.sh
+deploy_azdo_service_connections_github.sh
+```
+
+**failed command:** 
+```
+az devops service-endpoint azurerm create
+az devops service-endpoint github create
+```
+
+**error message:**
+![WSLCannotRecognizeEnvVar](images/troubleshooting/wsl_cannot_recognize_env_var.PNG)
+
+**Solution**:
+Make above 2 environment variables become **shareable** between WSL and Windows environment.
+
+Steps:
+1. Open Powershell or CMD session
+2. Set the variables that you want to be referred in WSL session at PS/CMD session, can assign any value for now since we will re-assign value in WSL session when executing deploy shell script.
+
+```
+PS session
+setx AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY testkey
+setx AZURE_DEVOPS_EXT_GITHUB_PAT testpat
+```
+```
+CMD session
+set AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY=testkey
+set AZURE_DEVOPS_EXT_GITHUB_PAT=testpat
+```
+
+3. Set **WSLENV** variable
+```
+PS session
+setx WSLENV WT_SESSION:WT_PROFILE_ID:AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY/u:AZURE_DEVOPS_EXT_GITHUB_PAT/u
+```
+```
+CMD session
+set WSLENV=WT_SESSION:WT_PROFILE_ID:AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY/u:AZURE_DEVOPS_EXT_GITHUB_PAT/u
+```
+
+4. Type "**wsl**" to open WSL session **from current PS/CMD session**
+> **IMPORTANT**: Ensure you initiate the WSL session based on current PS or CMD session so that can achieving shareable variables.
+
+5. Verify: echo the env variables that you set previously, if you can get the values that you set in PS/CMD session in WSL session, then it means successfully setup shareable environment variables between WSL and Windows environments.
+
+Reference: https://devblogs.microsoft.com/commandline/share-environment-vars-between-wsl-and-windows/
