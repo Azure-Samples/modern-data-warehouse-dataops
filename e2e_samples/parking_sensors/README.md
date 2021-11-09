@@ -305,6 +305,18 @@ More resources:
       ![Data Factory Run](../../docs/images/ADFRun.PNG?raw=true "Data Factory Run]")
       - Currently, the data pipeline is configured to use "on-demand" databricks clusters so it takes a few minutes to spin up. That said, it is not uncommon to change these to point to "existing" running clusters in Development for faster data pipeline runs.
 
+5. **Optional. Visualize data in PowerBI**
+    > This requires [PowerBI Desktop App](https://powerbi.microsoft.com/en-us/desktop/) installed.
+    1. Open the provided PowerBi pbix (PowerBI_ParkingSensors.pbix) under `reports` folder.
+    2. Under Queries, select "Transform Data" > "Data source settings".
+    3. Select "Change Source..." and enter the Server and Database details of your SQL Dedicated Pool. Click "Ok".
+        > You can retrieve these from the Azure Portal under "Connection Strings" of your SQL Dedicated Pool Instance.
+    4. Select "Edit Permissions...". Under "Credentials", select "Edit...". Select the "Database" tab. Enter the User name and password of your SQL Dedicated Pool Instance.
+        > You can retrieve these from the Secrets in your KeyVault instance.
+    5. Close the Data Source tabs.
+    6. Click on Refresh data.
+        > Your Dashboard will initially be empty. You will need your data pipeline to run a few times for the data in your SQL Dedicated Pool to populate.
+
 Congratulations!! 🥳 You have successfully deployed the solution and accompanying Build and Release Pipelines. For next steps, we recommend watching [this presentation](https://www.youtube.com/watch?v=Xs1-OU5cmsw) for a detailed walk-through of the running solution.
 
 If you've encountered any issues, please review the [Troubleshooting](../../docs/parking_sensors_troubleshooting.md) section. If you are still stuck, please file a Github issue with the relevant error message, error screenshots, and replication steps.
