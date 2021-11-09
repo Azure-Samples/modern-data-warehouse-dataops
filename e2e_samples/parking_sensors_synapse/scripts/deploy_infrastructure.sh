@@ -208,6 +208,7 @@ SQL_POOL_NAME=$synapse_sqlpool_name \
 LOG_ANALYTICS_WS_ID=$loganalytics_id \
 LOG_ANALYTICS_WS_KEY=$loganalytics_key \
 KEYVAULT_NAME=$kv_name \
+AZURE_STORAGE_ACCOUNT=$azure_storage_account \
     bash -c "./scripts/deploy_synapse_artifacts.sh"
 
 
@@ -236,6 +237,9 @@ sleep 60s
 az synapse role assignment create --workspace-name "$synapseworkspace_name" \
     --role "Synapse Administrator" --assignee "$sp_synapse_name"
 
+# Grant Synapse SQL Admin to subscription
+az synapse role assignment create --workspace-name "$synapseworkspace_name" \
+    --role "Synapse SQL Administrator" --assignee "$AZURE_SUBSCRIPTION_ID"
 
 ####################
 # AZDO Azure Service Connection and Variables Groups
