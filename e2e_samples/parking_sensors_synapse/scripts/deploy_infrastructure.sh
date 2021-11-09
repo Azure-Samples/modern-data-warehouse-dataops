@@ -186,10 +186,6 @@ synapse_sqlpool_name=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_s
 # The server name of connection string will be the same as Synapse worspace name
 synapse_sqlpool_server=$(echo "$arm_output" | jq -r '.properties.outputs.synapseworskspace_name.value')
 synapse_sqlpool_admin_username=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_sql_pool_output.value.username')
-<<<<<<< HEAD
-synapse_sqlpool_admin_password=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_sql_pool_output.value.password')
-=======
->>>>>>> 204a186d8e1f398d4f53c19f69348caf2d0be481
 # the database name of dedicated sql pool will be the same with dedicated sql pool by default
 synapse_dedicated_sqlpool_db_name=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_sql_pool_output.value.synapse_pool_name')
 
