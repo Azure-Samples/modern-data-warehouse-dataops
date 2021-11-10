@@ -6,7 +6,7 @@ Observability in Azure Synapse can be divided in two broad categories:
 
 Azure Monitor provides base-level infrastructure metrics, alerts, and logs for most Azure services. Azure diagnostic logs are emitted by a resource and provide rich, frequent data about the operation of that resource. Azure Synapse Analytics can write diagnostic logs in Azure Monitor.
 
-In this solution, the [diagnostic settings](https://docs.microsoft.com/en-us/azure/synapse-analytics/monitoring/how-to-monitor-using-azure-monitor#diagnostic-settings) have been enabled and the diagnostic logs are sent to Log Analytics Workspace ([diagnostic_settings.bicep](../infrastructure/modules/diagnostic_settings.bicep).
+In this solution, the [diagnostic settings](https://docs.microsoft.com/en-us/azure/synapse-analytics/monitoring/how-to-monitor-using-azure-monitor#diagnostic-settings) have been enabled and the diagnostic logs are sent to Log Analytics Workspace (Refer [diagnostic_settings.bicep](../infrastructure/modules/diagnostic_settings.bicep)).
 
 With that, the pipeline/activity/trigger runs status can be queries in Azure Monitor using Kusto queries. The screenshot below shows one such query. Under Azure Monitor -> Logs, the "log analytics workspace" has been selected as the scope. The Kusto query is based on "SynapseIntegrationPipelineRuns" Synapse workspace log and shows that the pipeline run has "failed".
 

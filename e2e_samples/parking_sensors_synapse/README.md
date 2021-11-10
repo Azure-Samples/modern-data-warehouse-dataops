@@ -164,7 +164,7 @@ More resources:
 
 ### Observability / Monitoring
 
-<!--TODO-->
+Please check the details [here](docs/observability.md).
 
 ## How to use the sample
 
