@@ -1,12 +1,10 @@
 # Observability / Monitoring
 
-Observability in Azure Synapse can be divided in two broad categories:
-
 ## Using base-level infrastructure metrics, alerts, and logs
 
 Azure Monitor provides base-level infrastructure metrics, alerts, and logs for most Azure services. Azure diagnostic logs are emitted by a resource and provide rich, frequent data about the operation of that resource. Azure Synapse Analytics can write diagnostic logs in Azure Monitor.
 
-In this solution, the [diagnostic settings](https://docs.microsoft.com/en-us/azure/synapse-analytics/monitoring/how-to-monitor-using-azure-monitor#diagnostic-settings) have been enabled and the diagnostic logs are sent to Log Analytics Workspace (Refer [diagnostic_settings.bicep](../infrastructure/modules/diagnostic_settings.bicep)).
+In this solution, the [diagnostic settings](https://docs.microsoft.com/en-us/azure/synapse-analytics/monitoring/how-to-monitor-using-azure-monitor#diagnostic-settings) have been enabled and the diagnostic logs are sent to Log Analytics Workspace (check [diagnostic_settings.bicep](../infrastructure/modules/diagnostic_settings.bicep)).
 
 With that, the pipeline/activity/trigger runs status can be queries in Azure Monitor using Kusto queries. The screenshot below shows one such query. Under Azure Monitor -> Logs, the log analytics workspace has been selected as the scope. The Kusto query is based on "SynapseIntegrationPipelineRuns" Synapse workspace log and shows that the pipeline run has "failed".
 
@@ -27,7 +25,7 @@ Depending on the pipeline activities, the custom application logs can be written
 
 The two notebooks "02_standardize" and "03_transform" illustrate two different ways of writing custom logs.
 
-### Using Application Insights and OpenCensus Library
+### 1. Using Application Insights and OpenCensus Library
 
 In the first method, the logging information is written to Azure Application Insights using OpenCensus Library. As part of the initial deployment, the application insights key has already been added to the Key Vault as secret key "applicationInsightsKey". Also, the "opencensus" package has been uploaded to the spark pool using "requirements.txt" file during the initial deployment.
 
@@ -59,7 +57,7 @@ The same information can also be queried in Azure Monitor. For that, the relevan
 
 Please refer to [Set up Azure Monitor for your Python application](https://docs.microsoft.com/en-us/azure/azure-monitor/app/opencensus-python) for additional information on this topic.
 
-### Using Log Analytics Workspace and log4j logger
+### 2. Using Log Analytics Workspace and log4j logger
 
 The other option is to use the "log4j" logger to send the logs to Log Analytics Workspace. To facilitate this, a spark configuration file "spark_loganalytics_conf.txt" has already been uploaded to the spark pool during the intial deployment. This configuration file has the following entries:
 
@@ -100,4 +98,4 @@ For querting this information in Azure Monitor, go to Logs and select the releva
 
 Please refer to [Monitor Apache Spark applications with Azure Log Analytics](https://docs.microsoft.com/en-us/azure/synapse-analytics/spark/apache-spark-azure-log-analytics) for detailed information on this topic.
 
-***NOTE***: Here it's worth mentioning that the above examples are for general guidance only. Readers are encouraged to explore different options and customize the message formats as per their use-cases.
+**NOTE**: Here it's worth mentioning that the above examples are for general guidance only. Readers are encouraged to explore different options and customize the message formats as per their use-cases.
