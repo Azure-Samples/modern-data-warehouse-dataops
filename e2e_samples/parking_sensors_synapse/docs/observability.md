@@ -40,7 +40,7 @@ aiLogger = logging.getLogger(__name__)
 aiLogger.addHandler(AzureEventHandler(connection_string = 'InstrumentationKey=' + appi_key))
 ```
 
-Note that it's also possible to set "custom_dimentions" with this approach which can be passed to the logger as a JSON object:
+Note that it's also possible to set "custom_dimensions" with this approach which can be passed to the logger as a JSON object:
 
 ```python
 properties = {"custom_dimensions": {"pipeline": pipelinename, "run_id": loadid, "parkingbay_count": parkingbay_count, "sensordata_count": sensordata_count, "parkingbay_malformed_count": parkingbay_malformed_count, "sensordata_malformed_count": sensordata_malformed_count}}
@@ -51,7 +51,7 @@ Once the pipeline "P_Ingest_MelbParkingData" has been executed, this logging inf
 
 ![observability-app-insights-logs-in-synapse](images/observability-app-insights-logs-in-synapse.png)
 
-The same information can also be queried in Azure Monitor. For that, the relevant application insights instance has been selected for the scope under Azure Monitor -> Logs. The query is based on "customEvents" logs. The "customDimentions" has been parsed to get the individual metrics.
+The same information can also be queried in Azure Monitor. For that, the relevant application insights instance has been selected for the scope under Azure Monitor -> Logs. The query is based on "customEvents" logs. The "customDimensions" has been parsed to get the individual metrics.
 
 ![observability-app-insights-logs-in-monitor](images/observability-app-insights-logs-in-monitor.png)
 
@@ -92,7 +92,7 @@ Within the Synapse Studio, these log messages can be found under Monitor -> Apac
 
 ![observability-log4j-logs-in-synapse](images/observability-log4j-logs-in-synapse.png)
 
-For querting this information in Azure Monitor, go to Logs and select the relevant log analytics workspace instance as the scope. The custom logs get logged under Custom Logs -> SparkLoggingEvent_CL, here is a screenshot:
+For querying this information in Azure Monitor, go to Logs and select the relevant log analytics workspace instance as the scope. The custom logs get logged under Custom Logs -> SparkLoggingEvent_CL, here is a screenshot:
 
 ![observability-log4j-logs-in-monitor](images/observability-log4j-logs-in-monitor.png)
 
