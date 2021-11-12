@@ -239,7 +239,7 @@ az synapse role assignment create --workspace-name "$synapseworkspace_name" \
 
 # Grant Synapse SQL Admin to subscription
 az synapse role assignment create --workspace-name "$synapseworkspace_name" \
-    --role "Synapse SQL Administrator" --assignee "$AZURE_SUBSCRIPTION_ID"
+    --role "Synapse SQL Administrator" --assignee "${kv_owner_object_id}"
 
 ####################
 # AZDO Azure Service Connection and Variables Groups
