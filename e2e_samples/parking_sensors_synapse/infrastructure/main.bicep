@@ -58,6 +58,22 @@ module loganalytics './modules/log_analytics.bicep' = {
   }
 }
 
+module diagnostic './modules/diagnostic_settings.bicep' = {
+  name: 'diagnostic_settings_deploy_${deployment_id}'
+  params: {
+    project: project
+    env: env
+    deployment_id: deployment_id
+    loganalytics_workspace_name: loganalytics.outputs.loganalyticswsname
+    synapse_workspace_name: synapse.outputs.synapseWorkspaceName
+    synapse_sql_pool_name: synapse.outputs.synapse_sql_pool_output.synapse_pool_name
+    synapse_spark_pool_name: synapse.outputs.synapseBigdataPoolName
+  }
+  dependsOn: [
+    loganalytics
+    synapse
+  ]
+}
 
 output storage_account_name string = storage.outputs.storage_account_name
 output appinsights_name string = appinsights.outputs.appinsights_name

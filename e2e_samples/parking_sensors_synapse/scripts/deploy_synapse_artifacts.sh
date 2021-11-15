@@ -166,7 +166,7 @@ createPipeline () {
 
     # Replace dedicated sql pool name
     tmp=$(mktemp)
-    jq --arg a "${SQL_POOL_NAME}" '.properties.activities[5].sqlPool.referenceName = $a' ./synapse/workspace/pipelines/"${name}".json > "$tmp" && mv "$tmp" ./synapse/workspace/pipelines/"${name}".json
+    jq --arg a "${SQL_POOL_NAME}" '.properties.activities[5].sqlPool.referenceName = $a' ./synapse/workspace/pipeline/"${name}".json > "$tmp" && mv "$tmp" ./synapse/workspace/pipeline/"${name}".json
     # Deploy the pipeline
     az synapse pipeline create --file @./synapse/workspace/pipeline/"${name}".json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}"
 }
