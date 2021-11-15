@@ -91,6 +91,7 @@ echo "Retrieving KeyVault information from the deployment."
 kv_name=$(echo "$arm_output" | jq -r '.properties.outputs.keyvault_name.value')
 kv_dns_name=https://${kv_name}.vault.azure.net/
 
+
 # Store in KeyVault
 az keyvault secret set --vault-name "$kv_name" --name "kvUrl" --value "$kv_dns_name"
 az keyvault secret set --vault-name "$kv_name" --name "subscriptionId" --value "$AZURE_SUBSCRIPTION_ID"
@@ -239,7 +240,7 @@ az synapse role assignment create --workspace-name "$synapseworkspace_name" \
 
 # Grant Synapse SQL Admin to subscription
 az synapse role assignment create --workspace-name "$synapseworkspace_name" \
-    --role "Synapse SQL Administrator" --assignee "${kv_owner_object_id}"
+    --role "Synapse SQL Administrator" --assignee "${kv_owner_object_id}"
 
 ####################
 # AZDO Azure Service Connection and Variables Groups

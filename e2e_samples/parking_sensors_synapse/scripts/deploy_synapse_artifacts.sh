@@ -298,6 +298,7 @@ createNotebook "00_setup"
 createNotebook "01_explore"
 createNotebook "02_standardize"
 createNotebook "03_transform"
+createNotebook "04_explore_interim"
 
 # Deploy all Pipelines
 createPipeline "P_Ingest_MelbParkingData"
