@@ -126,13 +126,13 @@ The Build and Release Pipelines definitions can be found [here](devops/README.md
 
 There are eight numbered orange boxes describing the sequence from sandbox development to target environments:
 
-![CI/CD](../../docs/images/CI_CD_process_sequence.PNG?raw=true "CI/CD")
+![CI/CD](docs/images/CI_CD_process_sequence.PNG?raw=true "CI/CD")
 
 1. Developers develop in their own Sandbox environments within the DEV resource group and commit changes into their own short-lived git branches. (i.e. <developer_name>/<branch_name>)
 2. When changes are complete, developers raise a PR to `main` for review. This automatically kicks-off the PR validation pipeline which runs the unit tests, linting and DACPAC builds.
 3. On PR completion, the commit to `main` will trigger a Build pipeline -- publishing all necessary Build Artifacts.
 4. The completion of a successful Build pipeline will trigger the first stage of the Release pipeline. This deploys the publish build artifacts into the DEV environment, with the exception of Azure Synapse Artifacts*.
-5. Developers perform a Manual Publish to the DEV ADF from the collaboration branch (`main`). This updates the ARM templates in in the `workspace_publish` branch.
+5. Developers perform a Manual Publish to the DEV Synapse Workspace from the collaboration branch (`main`). This updates the ARM templates in in the `workspace_publish` branch.
 6. On the successful completion of the first stage, this triggers an Manual Approval Gate**. On Approval, the release pipeline continues with the second stage -- deploying changes to the Staging environment.
 7. Integration tests are run to test changes in the Staging environment.
 8. ***On the successful completion of the second stage, this triggers a second Manual Approval Gate. On Approval, the release pipeline continues with the third stage -- deploying changes to the Production environment.
@@ -154,13 +154,8 @@ More resources:
 - Unit Testing - These test small pieces of functionality within your code. Data transformation code should have unit tests and can be accomplished by abstracting Data Transformation logic into packages. Unit tests along with linting are automatically run when a PR is raised to `main`.
   - See here for [unit tests](./src/ddo_transform/tests/) within the solution and the corresponding [QA Pipeline](./devops/azure-pipelines-ci-qa-python.yml) that executes the unit tests on every PR.
 
-- Integration Testing - These are run to ensure integration points of the solution function as expected. In this demo solution, an actual Data Factory Pipeline run is automatically triggered and its output verified as part of the Release to the Staging Environment.
+- Integration Testing - These are run to ensure integration points of the solution function as expected. In this demo solution, an actual Synapse Data Pipeline run is automatically triggered and its output verified as part of the Release to the Staging Environment.
   - See here for the [integration tests](./tests/integrationtests/) and the corresponding [Release Pipeline Job Definition](./devops/templates/jobs/integration-tests-job.yml) for running them as part of the Release pipeline.
-
-More resources:
-
-- [pytest-adf](https://github.com/devlace/pytest-adf) - Pytest helper plugin for integration testing Azure Data Factory
-- [nutter testing framework](https://github.com/microsoft/nutter) - Testing framework for Databricks notebooks.
 
 ### Observability / Monitoring
 
@@ -203,7 +198,7 @@ Please check the details [here](docs/observability.md).
 ### Setup and Deployment
 
 **IMPORTANT NOTE:** As with all Azure Deployments, this will **incur associated costs**. Remember to teardown all related resources after use to avoid unnecessary costs. See [here](#deployed-resources) for list of deployed resources.
-*NOTE: This deployment was tested using WSL 2 (Ubuntu 18.04) and Debian GNU/Linux 9.9 (stretch)*
+*NOTE: This deployment was tested using WSL 2 (Ubuntu 20.04) and Debian GNU/Linux 9.9 (stretch)*
 
 1. **Initial Setup**
    1. Ensure that:
@@ -212,7 +207,7 @@ Please check the details [here](docs/observability.md).
          - To set target Azure Subscription, run `az account set -s <AZURE_SUBSCRIPTION_ID>`
       - Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to.
          - To set target Azure DevOps project, run `az devops configure --defaults organization=https://dev.azure.com/<MY_ORG>/ project=<MY_PROJECT>`
-   2. **Import** this repository into a new Github repo. See [here](https://help.github.com/en/github/importing-your-projects-to-github/importing-a-repository-with-github-importer) on how to import a github repo. Importing is necessary for setting up git integration with Azure Data Factory.
+   2. **Fork** this repository into a new Github repo.
    3. Set the following **required** environment variables:
        - **GITHUB_REPO** - Name of your imported github repo in this form `<my_github_handle>/<repo>`. (ei. "devlace/mdw-dataops-import")
        - **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). This requires "repo" scope.
@@ -238,41 +233,56 @@ Please check the details [here](docs/observability.md).
       - This may take around **~30mins or more** to run end to end. So grab yourself a cup of coffee... ☕
       - After a successful deployment, you will find `.env.{environment_name}` files containing essential configuration information per environment. See [here](#deployed-resources) for list of deployed resources.
    4. As part of the deployment script, this updated the Azure DevOps Release Pipeline YAML definition to point to your Github repository. **Commit and push up these changes.**
-      - This will trigger a Build and Release which will fail due to a lacking `adf_publish` branch -- this is expected. This branch will be created once you've setup git integration with your DEV Data Factory and publish a change.
+      - This will trigger a Build and Release which will fail due to a lacking `workspace_publish` branch -- this is expected. This branch will be created once you've setup git integration with your DEV Synapse workspace and publish a change.
 
-3. **Setup ADF git integration in DEV Data Factory**
+3. **Setup Synapse git integration in DEV Synapse workspace**
 
-    > **IMPORTANT NOTE**: Only the **DEV** Data Factory should be setup with Git integration. Do **not** setup git integration in the STG and PROD Data Factories.
+    > **IMPORTANT NOTE**: Only the **DEV** Synapse workspace should be setup with Git integration. Do **not** setup git integration in the STG and PROD Data Factories.
 
-    1. In the Azure Portal, navigate to the Data Factory in the **DEV** environment.
-    2. Click "Author & Monitor" to launch the Data Factory portal.
-    3. On the landing page, select "Set up code repository". For more information, see [here](https://docs.microsoft.com/en-us/azure/data-factory/source-control).
-    4. Fill in the repository settings with the following:
+    1. In the Azure Portal, navigate to the Synapse workspace in the **DEV** environment and launch the Synapse workspace portal.
+    2. Under "manage" > Source Control - Git configuration, select "Configure". For more information, see [here](https://docs.microsoft.com/en-us/azure/synapse-analytics/cicd/source-control).
+    3. Fill in the repository settings with the following:
         - Repository type: **Github**
         - Github Account: **your_Github_account**
-        - Git repository name: **imported Github repository**
+        - Git repository (select *Use repository link*, if forked): **forked Github repository url**
         - Collaboration branch: **main**
-        - Root folder: **/e2e_samples/parking_sensors/adf**
+        - Root folder: **/e2e_samples/parking_sensors_synapse/synapse/workspace**
         - Import Existing Data Factory resource to repository: **Selected**
         - Branch to import resource into: **Use Collaboration**
-    5. When prompted to select a working branch, select **main**
+    4. When prompted to select a working branch, select **main**
 
-   > **Ensure you Import Existing Data Factory resources to repository**. The deployment script deployed ADF objects with Linked Service configurations in line with the newly deployed environments. Importing existing ADF resources definitions to the repository overrides any default Linked Services values so they are correctly in sync with your DEV environment.
+   > **Ensure you Import Existing Synapse resources to repository**. The deployment script deployed Synapse Workspace objects with Linked Service configurations in line with the newly deployed environments. Importing existing Synapse Workspace resources definitions to the repository overrides any default Linked Services values so they are correctly in sync with your DEV environment.
+4. **Run setup notebook in Synapse workspace per environment**
+   1. Grant yourself *Storage Data Blob Contributor* to the Synapse main storage (`mdwdopsst2<ENV><DEPLOYMENT_ID>`).
+   2. Navigate into DEV Synapse workspace notebooks tab and select the *00_setup* notebook.
+   3. Run this notebook, attaching to the created Spark Pool.
+   4. Repeat this in the STG and PROD Synapse workspace.
 
-4. **Trigger an initial Release**
+5. **Trigger an initial Release**
 
-   1. In the **DEV** Data Factory portal, navigate to "Manage > Triggers". Select the `T_Sched` trigger and activate it by clicking on the "Play" icon next to it. Click `Publish` to publish changes.
-      - Publishing a change is **required** to generate the `adf_publish` branch which is required in the Release pipelines.
+   1. In the **DEV** Synapse workspace, navigate to "Manage > Triggers". Select the `T_Sched` trigger and activate it by clicking on the "Play" icon next to it. Click `Publish` to publish changes.
+      - Publishing a change is **required** to generate the `workspace_publish` branch which is required in the Release pipelines.
    2. In Azure DevOps, notice a new run of the Build Pipeline (**mdwdops-ci-artifacts**) off `main`. This will build the Python package and SQL DACPAC, then publish these as Pipeline Artifacts.
    3. After completion, this should automatically trigger the Release Pipeline (**mdwdops-cd-release**). This will deploy the artifacts across environments.
       - You may need to authorize the Pipelines initially to use the Service Connection for the first time.
-      ![Release Pipeline](../../docs/images/ReleasePipeline.PNG?raw=true "Release Pipelines")
-   4. **Optional**. Trigger the Data Factory Pipelines per environment.
-      1. In the Data Factory portal of each environment, navigate to "Author", then select the `P_Ingest_MelbParkingData`.
+      ![Release Pipeline](docs/images/ReleasePipelineSynapse.PNG?raw=true "Release Pipelines")
+   4. **Optional**. Trigger the Synapse Data Pipelines per environment.
+      1. In the Synapse workspace of each environment, navigate to "Author", then select the `P_Ingest_MelbParkingData`.
       2. Select "Trigger > Trigger Now".
       3. To monitor the run, go to "Monitor > Pipeline runs".
-      ![Data Factory Run](../../docs/images/ADFRun.PNG?raw=true "Data Factory Run]")
-      - Currently, the data pipeline is configured to use "on-demand" databricks clusters so it takes a few minutes to spin up. That said, it is not uncommon to change these to point to "existing" running clusters in Development for faster data pipeline runs.
+      ![Pipeline Run](docs/images/SynapseRun.PNG?raw=true "Pipeline Run]")
+
+6. **Optional. Visualize data in PowerBI**
+    > This requires [PowerBI Desktop App](https://powerbi.microsoft.com/en-us/desktop/) installed.
+    1. Open the provided PowerBi pbix (PowerBI_ParkingSensors.pbix) under `reports` folder.
+    2. Under Queries, select "Transform Data" > "Data source settings".
+    3. Select "Change Source..." and enter the Server and Database details of your SQL Dedicated Pool. Click "Ok".
+        > You can retrieve these from the Azure Portal under "Connection Strings" of your SQL Dedicated Pool Instance.
+    4. Select "Edit Permissions...". Under "Credentials", select "Edit...". Select the "Database" tab. Enter the User name and password of your SQL Dedicated Pool Instance.
+        > You can retrieve these from the Secrets in your KeyVault instance.
+    5. Close the Data Source tabs.
+    6. Click on Refresh data.
+        > Your Dashboard will initially be empty. You will need your data pipeline to run a few times for the data in your SQL Dedicated Pool to populate.
 
 Congratulations!! 🥳 You have successfully deployed the solution and accompanying Build and Release Pipelines.
 
@@ -283,17 +293,16 @@ If you've encountered any issues, please review the [Troubleshooting](../../docs
 After a successful deployment, you should have the following resources:
 
 - In Azure, **three (3) Resource Groups** (one per environment) each with the following Azure resources.
-  - **Data Factory** - with pipelines, datasets, linked services, triggers deployed and configured correctly per environment.
+  - **Azure Synapse Workspace** including:
+    - **Data Pipelines** - with pipelines, datasets, linked services, triggers deployed and configured correctly per environment.
+    - **Notebooks** - Spark, SQL Serverless
+    - **Workspace package** (ei. Python Wheel package)
+    - **Spark Pool**
+      - Workspace package installed
+      - Configured to point the deployed Log Analytics workspace, under "Apache Spark Configuration".
+    - **SQL Dedicated Pool (formerly SQLDW)** - Initally empty. Release Pipeline should deploy SQL Database objects using the SQL DACPAC.
   - **Data Lake Store Gen2** and a **Service Principal (SP)** with Storage Contributor rights assigned.
-  - **Databricks workspace**
-    - notebooks uploaded at `/notebooks` folder in the workspace
-    - SparkSQL tables created
-    - ADLS Gen2 mounted at `dbfs:/mnt/datalake` using the Storage Service Principal.
-    - Databricks KeyVault secrets scope created
   - **Log Analytics Workspace** - including a kusto query on Query explorer -> Saved queries, to verify results that will be looged on Synapse notebooks (notebooks are not deployed yet).
-  - **Azure Synapse SQL Dedicated Pool (formerly SQLDW)** - currently, empty. The Release Pipeline will deploy the SQL Database objects.
-  - **Azure Synapse Spark Pool** - currently, empty. Configured to point the deployed Log Analytics workspace, under "Apache Spark Configuration".
-  - **Azure Synapse Workspace** - currently, empty.
   - **Application Insights**
   - **KeyVault** with all relevant secrets stored.
 - In Azure DevOps
@@ -316,6 +325,7 @@ After a successful deployment, you should have the following resources:
       - mdwdops-serviceconnection-prod
     - **Github Service Connection** for retrieving code from Github
       - mdwdops-github
+  - **Three additional Service Principals** (one per environment) with Synapse Administrator role for running Integration Tests
 
 Notes:
 
@@ -347,3 +357,4 @@ The following lists some limitations of the solution and associated deployment s
   - **Workaround**: Deployment add sensitive configuration as "secrets" in Variable Groups with the downside of duplicated information. If you wish, you may manually link a second Variable Group to KeyVault to pull out the secrets. KeyVault secret names should line up with required variables in the Azure DevOps pipelines. See [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml#link-secrets-from-an-azure-key-vault) for more information.
 - Azure DevOps Environment and Approval Gates can only be managed via the UI, cannot be managed programmatically and was not incorporated in the automated deployment of the solution.
   - **Workaround**: Approval Gates can be easily configured manually. See [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/environments?view=azure-devops#approvals) for more information.
+- Azure Synapse SQL Serverless artifacts (ei. Tables, Views, etc) are not currently updated as part of the CICD pipeline.
