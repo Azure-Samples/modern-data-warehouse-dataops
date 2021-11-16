@@ -3,6 +3,7 @@ IF NOT EXISTS(SELECT * FROM sys.databases WHERE name = 'external_db')
 BEGIN
     CREATE DATABASE external_db
 END
+GO
 USE external_db
 -- Create MASTER KEY 
 IF NOT EXISTS
