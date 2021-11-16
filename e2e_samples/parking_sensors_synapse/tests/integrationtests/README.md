@@ -2,7 +2,7 @@
 
 This makes use of [PyTest framework](https://docs.pytest.org/en/latest/) to execute integration tests. In general, the tests do the following:
 
-1. Upload known input test data (Public API: "https://data.melbourne.vic.gov.au/resource/) into specified data sources (ei. blob storage) necessary for the pipeline to run.
+1. Upload known input test data ([Public API](https://data.melbourne.vic.gov.au/resource/)) into specified data sources (ei. blob storage) necessary for the pipeline to run.
 2. Trigger pipeline to consume uploaded test data.
 3. Verify pipeline run has succeeded and data outputs are valid.
 
@@ -32,7 +32,6 @@ Azure Synapse Analytics output(s) connection information:
 - **AZ_SYNAPSE_DEDICATED_SQLPOOL_DATABASE_NAME**
 
 Additional *optional* configuration:
-
 
 ## Development setup
 
