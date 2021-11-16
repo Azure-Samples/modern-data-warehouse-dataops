@@ -227,7 +227,6 @@ More resources:
 - [jq](https://stedolan.github.io/jq/)
 - [makepasswd](https://manpages.debian.org/stretch/makepasswd/makepasswd.1.en.html)
 
-
 #### Software pre-requisites if you use dev container
 
 - [Docker](https://www.docker.com/)

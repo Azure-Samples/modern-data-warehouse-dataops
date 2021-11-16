@@ -340,14 +340,14 @@ This sample comes with an [optional, interactive clean-up script](./scripts/clea
 
 ADLS Gen2 is structured as the following:
 
----------------------
+```text
     datalake                    <- filesystem
         /sys/databricks/libs    <- contains all libs, jars, wheels needed for processing
         /data
             /lnd                <- Bronze - landing folder where all data files are ingested into.
             /interim            <- Silver - interim (cleansed) tables
             /dw                 <- Gold - final tables 
----------------------
+```
 
 ### Known Issues, Limitations and Workarounds
 
