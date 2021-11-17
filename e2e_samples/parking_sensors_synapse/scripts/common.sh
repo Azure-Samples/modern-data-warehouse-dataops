@@ -32,3 +32,16 @@ print_style () {
 
     printf "$STARTCOLOR%b$ENDCOLOR" "$1";
 }
+
+
+# There is a delay between creating a service principal and when it is ready for use.
+# This helper function to blocks till Service Principal is ready for use.
+# Usage: wait_service_principal_creation <SERVICE_PRINCIPAL_APP_ID>
+wait_service_principal_creation () {
+    local sp_app_id=$1
+    until az ad sp list --show-mine --query "[].appId" -o tsv | grep "$sp_app_id"
+    do
+        echo "waiting for sp to create..."
+        sleep 10s
+    done
+}

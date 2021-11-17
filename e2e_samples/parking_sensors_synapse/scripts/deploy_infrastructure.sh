@@ -30,6 +30,8 @@ set -o pipefail
 set -o nounset
 set -o xtrace # For debugging
 
+. ./scripts/common.sh
+
 ###################
 # REQUIRED ENV VARIABLES:
 #
@@ -229,10 +231,8 @@ KEYVAULT_NAME=$kv_name \
  az keyvault secret set --vault-name "$kv_name" --name "spSynapsePass" --value "$sp_synapse_pass"
  az keyvault secret set --vault-name "$kv_name" --name "spSynapseTenantId" --value "$sp_synapse_tenant"
 
-# Since service principal might take a while to be searchable in the tenant, here we wait for 60s
-# in case immediately assign Synapse RBAC command failed
-sleep 60s
 # Grant Synapse Administrator to this SP so that it can trigger Synapse pipelines
+wait_service_principal_creation "$sp_synapse_id"
 az synapse role assignment create --workspace-name "$synapseworkspace_name" \
     --role "Synapse Administrator" --assignee "$sp_synapse_name"
 

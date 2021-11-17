@@ -79,6 +79,7 @@ az devops service-endpoint update \
     --id "$sc_id" \
     --enable-for-all "true"
 
+wait_service_principal_creation "$service_principal_id"
 service_principal_object_id=$(az ad sp show --id "$service_principal_id" --query "objectId" -o tsv)
 role_exists=$(az synapse role assignment list --workspace-name "$SYNAPSE_WORKSPACE_NAME" \
  --query="[?principalId == '$service_principal_object_id' ]" -o tsv)
