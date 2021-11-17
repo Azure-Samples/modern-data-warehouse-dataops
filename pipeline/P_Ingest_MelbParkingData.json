@@ -4,7 +4,7 @@
 		"description": "Hello from NDC Sydney!!!",
 		"activities": [
 			{
-				"name": "StandardizeData",
+				"name": "SpicyStandardizeData",
 				"description": "",
 				"type": "DatabricksNotebook",
 				"dependsOn": [
@@ -15,7 +15,7 @@
 						]
 					},
 					{
-						"activity": "DownloadBayData",
+						"activity": "SpicyDownloadBayData",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -125,7 +125,7 @@
 				]
 			},
 			{
-				"name": "DownloadBayData",
+				"name": "SpicyDownloadBayData",
 				"type": "Copy",
 				"dependsOn": [
 					{
@@ -183,7 +183,7 @@
 				"type": "DatabricksNotebook",
 				"dependsOn": [
 					{
-						"activity": "StandardizeData",
+						"activity": "SpicyStandardizeData",
 						"dependencyConditions": [
 							"Succeeded"
 						]
