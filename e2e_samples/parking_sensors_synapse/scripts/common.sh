@@ -35,7 +35,7 @@ print_style () {
 
 
 # There is a delay between creating a service principal and when it is ready for use.
-# This helper function to blocks till Service Principal is ready for use.
+# This helper function blocks deployment till Service Principal is ready for use.
 # Usage: wait_service_principal_creation <SERVICE_PRINCIPAL_APP_ID>
 wait_service_principal_creation () {
     local sp_app_id=$1
