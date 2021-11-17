@@ -30,7 +30,7 @@ set -o pipefail
 set -o nounset
 set -o xtrace # For debugging
 
-. ./common.sh
+. ./scripts/common.sh
 
 ###################
 # REQUIRED ENV VARIABLES:
