@@ -12,7 +12,7 @@
 
 1. __Bicep__  This project uses `Bicep` templates to setup `Azure` infrastructure. Please follow the steps under [Install and manage via Azure CLI (easiest)](https://github.com/Azure/bicep/blob/main/docs/installing.md#install-and-manage-via-azure-cli-easiest) to install the `Azure Cli` extension.
 
-   A `Bicep` tutorial can be found [here](https://github.com/Azure/bicep/blob/main/docs/tutorial/01-simple-template.md).
+   For an introduction to `Bicep`, you can find more information in the `Bicep` repo under [Get started with Bicep](https://github.com/Azure/bicep/#get-started-with-bicep).
 
 1. __Raspberry Pi Azure IoT Online Simulator__ To run through the [Functional Test](#Functional%20Test) section, you can use [this](https://azure-samples.github.io/raspberry-pi-web-simulator/) simulator. Makes sure to follow the step required to edit the js code.
 
