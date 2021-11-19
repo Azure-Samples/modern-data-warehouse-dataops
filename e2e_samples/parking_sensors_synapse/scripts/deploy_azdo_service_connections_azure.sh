@@ -86,8 +86,8 @@ service_principal_object_id=$(az ad sp show --id "$service_principal_id" --query
 role_exists=$(az synapse role assignment list --workspace-name "$SYNAPSE_WORKSPACE_NAME" \
  --query="[?principalId == '$service_principal_object_id' ]" -o tsv)
 if [[ -z $role_exists ]]; then
-    sleep 60s; # Wait for SP to be visible to Synapse. 
-    az synapse role assignment create --workspace-name "$SYNAPSE_WORKSPACE_NAME" \
+    # There is delay until sp is available for role assignment
+    retry 10 az synapse role assignment create --workspace-name "$SYNAPSE_WORKSPACE_NAME" \
     --role "Synapse Administrator" --assignee "$service_principal_object_id"
 else 
     echo "Synapse role exists for ${service_principal_object_id}"
