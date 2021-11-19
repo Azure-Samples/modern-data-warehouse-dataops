@@ -189,7 +189,9 @@ getProvisioningState(){
 
 UpdateExternalTableScript () {
     echo "Replace SQL script with: $AZURE_STORAGE_ACCOUNT"
-    sed "s/<data storage account>/$AZURE_STORAGE_ACCOUNT/" ./synapse/workspace/scripts/create_external_table_template.sql > ./synapse/workspace/scripts/create_external_table.sql
+    sed "s/<data storage account>/$AZURE_STORAGE_ACCOUNT/" \
+    ./synapse/workspace/scripts/create_external_table_template.sql \
+    > ./synapse/workspace/scripts/create_external_table.sql
 }
 
 UploadSql () {
