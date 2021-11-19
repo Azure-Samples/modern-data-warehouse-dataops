@@ -5,16 +5,16 @@
 
 ## Setup Pipeline
 - To be able to create view with schema less, need to have data in the target location.
-- Thus, Need to run pipeline once before running the "create_external_table"
+- Thus, need to run pipeline once before running the "create_external_table"
 
 ## Run SQL script to create view
-- Makse sure you are in the synapse sql admin role
-- Execuet "create_external_table.sql
+- Make sure you are in the synapse sql admin role
+- Execute "create_external_table.sql
 - Right click view and select query
 - Check result can be queried successfully
   ![query](./images/tableview_run_queryview.png)
+
 ## Query from notebook
-- To be able to query from notebook
 - Need to either get ADToken or use user name and password to connect to SQL Serverless 
 - clone "create_db_user_template.sql" to a new sql "create_db_user.sql"
 - Update "create_db_user.sql". Replace [<your sql login user name>],[<your database name>] with the setting in the keyvault of secret synapseSQLPoolAdminUsername
