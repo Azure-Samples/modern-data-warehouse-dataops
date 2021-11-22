@@ -163,7 +163,6 @@ Please check the details [here](docs/observability.md).
 
 ## How to use the sample
 
-<!--TODO: update this to run for synapse sample-->
 ### Prerequisites
 
 1. [Github account](https://github.com/)
@@ -197,8 +196,8 @@ Please check the details [here](docs/observability.md).
 
 ### Setup and Deployment
 
-**IMPORTANT NOTE:** As with all Azure Deployments, this will **incur associated costs**. Remember to teardown all related resources after use to avoid unnecessary costs. See [here](#deployed-resources) for list of deployed resources.
-*NOTE: This deployment was tested using WSL 2 (Ubuntu 20.04) and Debian GNU/Linux 9.9 (stretch)*
+> **IMPORTANT NOTE:** As with all Azure Deployments, this will **incur associated costs**. Remember to teardown all related resources after use to avoid unnecessary costs. See [here](#deployed-resources) for list of deployed resources.
+> This deployment was tested using WSL 2 (Ubuntu 20.04) and Debian GNU/Linux 9.9 (stretch)
 
 1. **Initial Setup**
    1. Ensure that:

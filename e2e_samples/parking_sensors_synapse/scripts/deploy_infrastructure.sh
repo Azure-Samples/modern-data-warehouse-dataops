@@ -235,12 +235,9 @@ AZURE_STORAGE_ACCOUNT=$azure_storage_account \
 
 # Grant Synapse Administrator to this SP so that it can trigger Synapse pipelines
 wait_service_principal_creation "$sp_synapse_id"
-az synapse role assignment create --workspace-name "$synapseworkspace_name" \
-    --role "Synapse Administrator" --assignee "$sp_synapse_name"
+assign_synapse_role_if_not_exists "$synapseworkspace_name" "Synapse Administrator" "$sp_synapse_name"
+assign_synapse_role_if_not_exists "$synapseworkspace_name" "Synapse SQL Administrator" "$sp_synapse_name"
 
-# Grant Synapse SQL Admin to subscription
-az synapse role assignment create --workspace-name "$synapseworkspace_name" \
-    --role "Synapse SQL Administrator" --assignee "${kv_owner_object_id}"
 
 ####################
 # AZDO Azure Service Connection and Variables Groups

@@ -46,7 +46,7 @@ if [[ -n $prefix ]]; then
     az ad sp list --query "[?contains(appDisplayName,'$prefix')].displayName" -o tsv --show-mine
     
     printf "\nRESOURCE GROUPS:\n"
-    az group list --query "[?contains(name,'$prefix') && ! contains(name,'dbw')].name" -o tsv
+    az group list --query "[?contains(name,'$prefix') && managedBy == null].name" -o tsv
 
     printf "\nEND OF SUMMARY\n"
 
@@ -82,7 +82,7 @@ if [[ -n $prefix ]]; then
 
             echo "Delete resource group the start with '$prefix' in name..."
             [[ -n $prefix ]] &&
-                az group list --query "[?contains(name,'$prefix') && ! contains(name,'dbw')].name" -o tsv |
+                az group list --query "[?contains(name,'$prefix') && managedBy == null].name" -o tsv |
                 xargs -I % az group delete --verbose --name % -y
             ;;
         *)
