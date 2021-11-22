@@ -31,6 +31,8 @@ set -o pipefail
 set -o nounset
 set -o xtrace # For debugging
 
+. ./scripts/common.sh
+
 ###################
 # REQUIRED ENV VARIABLES:
 #
@@ -79,12 +81,13 @@ az devops service-endpoint update \
     --id "$sc_id" \
     --enable-for-all "true"
 
+wait_service_principal_creation "$service_principal_id"
 service_principal_object_id=$(az ad sp show --id "$service_principal_id" --query "objectId" -o tsv)
 role_exists=$(az synapse role assignment list --workspace-name "$SYNAPSE_WORKSPACE_NAME" \
  --query="[?principalId == '$service_principal_object_id' ]" -o tsv)
 if [[ -z $role_exists ]]; then
-    sleep 60s; # Wait for SP to be visible to Synapse. 
-    az synapse role assignment create --workspace-name "$SYNAPSE_WORKSPACE_NAME" \
+    # There is a delay until sp is available for role assignment, so adding retry
+    retry 10 az synapse role assignment create --workspace-name "$SYNAPSE_WORKSPACE_NAME" \
     --role "Synapse Administrator" --assignee "$service_principal_object_id"
 else 
     echo "Synapse role exists for ${service_principal_object_id}"
