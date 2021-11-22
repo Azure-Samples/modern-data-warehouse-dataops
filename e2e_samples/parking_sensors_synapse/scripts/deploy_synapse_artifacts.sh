@@ -40,6 +40,7 @@ set -o xtrace # For debugging
 # LOG_ANALYTICS_WS_ID
 # LOG_ANALYTICS_WS_KEY
 # KEYVAULT_NAME
+# AZURE_STORAGE_ACCOUNT
 
 # Consts
 apiVersion="2020-12-01&force=true"
@@ -186,6 +187,46 @@ getProvisioningState(){
     jq -r '.provisioningState')
 }
 
+UpdateExternalTableScript () {
+    echo "Replace SQL script with: $AZURE_STORAGE_ACCOUNT"
+    sed "s/<data storage account>/$AZURE_STORAGE_ACCOUNT/" \
+    ./synapse/workspace/scripts/create_external_table_template.sql \
+    > ./synapse/workspace/scripts/create_external_table.sql
+}
+
+UploadSql () {
+    echo "Try to upload sql script"
+    declare name=$1
+    echo "Uploading sql script to Workspace: $name"
+
+    #az synapse workspace wait --resource-group "${RESOURCE_GROUP_NAME}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --created
+    # Step 1: Get bearer token for the Data plane    
+    token=$(az account get-access-token --resource ${synapseResource} --query accessToken --output tsv)    
+    # Step 2: create workspace package placeholder
+    synapseSqlBaseUri=${SYNAPSE_DEV_ENDPOINT}/sqlScripts
+    synapseSqlApiUri="${synapseSqlBaseUri}/$name?api-version=${apiVersion}"
+    body_content="$(sed 'N;s/\n/\\n/' ./synapse/workspace/scripts/$name.sql)"
+    json_body="{
+    \"name\": \"$name\",
+    \"properties\": {
+        \"description\": \"$name\",        
+        \"content\":{ 
+            \"query\": \"$body_content\",
+            \"currentConnection\": { 
+                \"name\": \"master\",
+                \"type\": \"SqlOnDemand\"
+                }
+        },
+        \"metadata\": {
+            \"language\": \"sql\"
+        },
+        \"type\": \"SqlQuery\"      
+    }
+    }"    
+    curl -X PUT -H "Content-Type: application/json" -H "Authorization:Bearer $token" --data-raw "$json_body" --url $synapseSqlApiUri
+    sleep 5s
+}
+
 getProvisioningState
 echo "$provision_state"
 
@@ -259,6 +300,7 @@ createNotebook "00_setup"
 createNotebook "01_explore"
 createNotebook "02_standardize"
 createNotebook "03_transform"
+createNotebook "04_explore_interim"
 
 # Deploy all Pipelines
 createPipeline "P_Ingest_MelbParkingData"
@@ -266,4 +308,11 @@ createPipeline "P_Ingest_MelbParkingData"
 # Deploy triggers
 createTrigger "T_Sched"
 
+# Upload SQL script
+UpdateExternalTableScript
+# Upload create_db_user_template for now. 
+# TODO: will replace and run this sql in deploying
+# TODO: will replace and run this sql in deploying
+UploadSql "create_db_user_template"
+UploadSql "create_external_table"
 echo "Completed deploying Synapse artifacts."
