@@ -41,11 +41,11 @@ The solution pulls near realtime [Melbourne Parking Sensor data](https://www.mel
 
 The following shows the overall architecture of the solution.
 
-![Architecture](docs/images/architecture.PNG?raw=true "Architecture")
+![Architecture](docs/images/architecture.png?raw=true "Architecture")
 
 Sample PowerBI report
 
-![PowerBI report](../../docs/images/PBI_parking_sensors.PNG?raw=true "PowerBI Report")
+![PowerBI report](../../docs/images/PBI_parking_sensors.png?raw=true "PowerBI Report")
 
 ### Continuous Integration and Continuous Delivery (CI/CD)
 
@@ -126,7 +126,7 @@ The Build and Release Pipelines definitions can be found [here](devops/README.md
 
 There are eight numbered orange boxes describing the sequence from sandbox development to target environments:
 
-![CI/CD](docs/images/CI_CD_process_sequence.PNG?raw=true "CI/CD")
+![CI/CD](docs/images/CI_CD_process_sequence.png?raw=true "CI/CD")
 
 1. Developers develop in their own Sandbox environments within the DEV resource group and commit changes into their own short-lived git branches. (i.e. <developer_name>/<branch_name>)
 2. When changes are complete, developers raise a PR to `main` for review. This automatically kicks-off the PR validation pipeline which runs the unit tests, linting and DACPAC builds.

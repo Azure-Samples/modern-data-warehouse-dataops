@@ -14,7 +14,7 @@ If error persists, you can try deploying one environment at a time. Do this by b
 
 > **IMPORTANT**: Ensure you set the `DEPLOYMENT_ID` environment variable to ensure succeeding reruns of the `deploy.sh` target the same deployment.
 
-![TokenExpirationWorkaround](images/troubleshooting/token_expiration_workaround.PNG)
+![TokenExpirationWorkaround](images/troubleshooting/token_expiration_workaround.png)
 
 ## Conditional Access error
 
@@ -26,7 +26,7 @@ When deploying the solution from within a devcontainer running on a Mac, you run
 ERROR: AADSTS50005: User tried to log in to a device from a platform (Unknown) that's currently not supported through Conditional Access policy.
 ```
 
-![ConditionalAccessError](images/troubleshooting/conditional_access_error.PNG)
+![ConditionalAccessError](images/troubleshooting/conditional_access_error.png)
 
 The exact line that fails:
 

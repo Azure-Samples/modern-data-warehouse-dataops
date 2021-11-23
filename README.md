@@ -43,7 +43,7 @@ The samples are either focused on a single azure service (**Single Tech Samples*
 ## End to End samples
 
 - **Parking Sensor Solution** - This demonstrates batch, end-to-end data pipeline following the MDW architecture, along with a corresponding CI/CD process.
-![Architecture](docs/images/CI_CD_process_simplified.PNG?raw=true "Architecture")
+![Architecture](docs/images/CI_CD_process_simplified.png?raw=true "Architecture")
   This has two version of the solution:
   - [Azure Data Factory and Azure Databricks Version](e2e_samples/parking_sensors/)
   - [Azure Synapse Version](e2e_samples/parking_sensors_synapse/)
