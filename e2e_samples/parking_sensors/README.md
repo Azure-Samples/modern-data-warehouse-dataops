@@ -295,7 +295,7 @@ More resources:
       - Publishing a change is **required** to generate the `adf_publish` branch which is required in the Release pipelines.
    2. In Azure DevOps, notice a new run of the Build Pipeline (**mdw-park-ci-artifacts**) off `main`. This will build the Python package and SQL DACPAC, then publish these as Pipeline Artifacts.
    3. After completion, this should automatically trigger the Release Pipeline (**mdw-park-cd-release**). This will deploy the artifacts across environments.
-      - You may need to authorize the Pipelines initially to use the Service Connection for the first time.
+      - You may need to authorize the Pipelines initially to use the Service Connection and deploy the target environments for the first time.
       ![Release Pipeline](../../docs/images/ReleasePipeline.PNG?raw=true "Release Pipelines")
    4. **Optional**. Trigger the Data Factory Pipelines per environment.
       1. In the Data Factory portal of each environment, navigate to "Author", then select the `P_Ingest_MelbParkingData`.
