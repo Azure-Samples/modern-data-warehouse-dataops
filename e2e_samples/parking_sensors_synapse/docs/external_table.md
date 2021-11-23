@@ -12,7 +12,7 @@
 ## Run SQL script to create view
 
 - Make sure you are in the synapse sql admin role
-- Execute "create_external_table.sql
+- Execute "create_external_table.sql"
 - Right click view and select query
 - Check result can be queried successfully
   ![query](./images/tableview_run_queryview.png)
