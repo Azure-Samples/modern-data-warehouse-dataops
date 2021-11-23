@@ -28,8 +28,7 @@ set -o nounset
 # RESOURCE_GROUP_NAME_PREFIX
 prefix="mdwdops"
 
-echo "!! WARNING: !!"
-echo "THIS SCRIPT WILL DELETE RESOURCES PREFIXED WITH $prefix !!"
+echo "Listing resources prefixed with $prefix to be delete. You will have a chance to confirm deletion."
 
 if [[ -n $prefix ]]; then
 
