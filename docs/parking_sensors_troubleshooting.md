@@ -14,7 +14,7 @@ If error persists, you can try deploying one environment at a time. Do this by b
 
 > **IMPORTANT**: Ensure you set the `DEPLOYMENT_ID` environment variable to ensure succeeding reruns of the `deploy.sh` target the same deployment.
 
-![TokenExpirationWorkaround](images/troubleshooting/token_expiration_workaround.PNG)
+![TokenExpirationWorkaround](images/troubleshooting/token_expiration_workaround.png)
 
 ## Conditional Access error
 
@@ -26,7 +26,7 @@ When deploying the solution from within a devcontainer running on a Mac, you run
 ERROR: AADSTS50005: User tried to log in to a device from a platform (Unknown) that's currently not supported through Conditional Access policy.
 ```
 
-![ConditionalAccessError](images/troubleshooting/conditional_access_error.PNG)
+![ConditionalAccessError](images/troubleshooting/conditional_access_error.png)
 
 The exact line that fails:
 
@@ -125,3 +125,16 @@ Steps:
 1. Verify: echo the env variables that you set previously, if you can get the values that you set in PS/CMD session in WSL session, then it means successfully setup shareable environment variables between WSL and Windows environments.
 
 Reference: [Share Environment Vars between WSL and Windows](https://devblogs.microsoft.com/commandline/share-environment-vars-between-wsl-and-windows/)
+
+## Release pipeline fails on rerun with: "ERROR: A workspace package with name already exists."
+
+**Problem**:
+
+The release pipeline fails with error: "ERROR: A workspace package with name 'ddo_transform-1.1.XXXX-py2.py3-none-any.whl' already exists."
+![error a workspace package with name already exists](images/troubleshooting/a_workspace_package_with_name_already_exists.png)
+
+This fails because the pipeline is attempting to upload the same package with the same version.
+
+**Solution**:
+
+To resolve this, rerun the CI pipeline (`mdwdops-ci-artifacts`) to generate a new package with a new version for the CD pipeline to pickup, then rerun CD pipeline.

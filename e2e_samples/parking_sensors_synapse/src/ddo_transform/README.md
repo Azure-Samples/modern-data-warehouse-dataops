@@ -18,10 +18,10 @@
       - **DATABRICKS_CLUSTER_ID** - Cluster Id of Databricks cluster where package will be installed when calling `make installdatabricks`
 3. In VSCode command pallete (`ctrl+shift+p`), select `Remote-Containers: Reopen in container`. First time building the Devcontainer may take a while.
 4. Run `make` to see options.
-    ![makefile](./docs/images/make.PNG)
+    ![makefile](./docs/images/make.png)
 
 ### Debugging unit tests
 
 The Devcontainer should have ms-python extension installed and .vscode all the necessary settings. All you need to do is run `Python: Discover tests`, from the vscode command pallete. Now, all tests (currently located under the `src/ddo_transform/tests` folder) should have `Run test | Debug test` annotation:
 
-![Test annotation](./docs/images/test_annotation.PNG)
+![Test annotation](./docs/images/test_annotation.png)

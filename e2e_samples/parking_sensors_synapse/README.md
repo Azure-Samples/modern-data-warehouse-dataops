@@ -41,17 +41,17 @@ The solution pulls near realtime [Melbourne Parking Sensor data](https://www.mel
 
 The following shows the overall architecture of the solution.
 
-![Architecture](docs/images/architecture.PNG?raw=true "Architecture")
+![Architecture](docs/images/architecture.png?raw=true "Architecture")
 
 Sample PowerBI report
 
-![PowerBI report](../../docs/images/PBI_parking_sensors.PNG?raw=true "PowerBI Report")
+![PowerBI report](../../docs/images/PBI_parking_sensors.png?raw=true "PowerBI Report")
 
 ### Continuous Integration and Continuous Delivery (CI/CD)
 
 The following shows the overall CI/CD process end to end.
 
-![CI/CD](docs/images/CI_CD_process.PNG?raw=true "CI/CD")
+![CI/CD](docs/images/CI_CD_process.png?raw=true "CI/CD")
 
 See [here](#build-and-release-pipeline) for details.
 
@@ -126,7 +126,7 @@ The Build and Release Pipelines definitions can be found [here](devops/README.md
 
 There are eight numbered orange boxes describing the sequence from sandbox development to target environments:
 
-![CI/CD](docs/images/CI_CD_process_sequence.PNG?raw=true "CI/CD")
+![CI/CD](docs/images/CI_CD_process_sequence.png?raw=true "CI/CD")
 
 1. Developers develop in their own Sandbox environments within the DEV resource group and commit changes into their own short-lived git branches. (i.e. <developer_name>/<branch_name>)
 2. When changes are complete, developers raise a PR to `main` for review. This automatically kicks-off the PR validation pipeline which runs the unit tests, linting and DACPAC builds.
@@ -163,7 +163,6 @@ Please check the details [here](docs/observability.md).
 
 ## How to use the sample
 
-<!--TODO: update this to run for synapse sample-->
 ### Prerequisites
 
 1. [Github account](https://github.com/)
@@ -197,8 +196,8 @@ Please check the details [here](docs/observability.md).
 
 ### Setup and Deployment
 
-**IMPORTANT NOTE:** As with all Azure Deployments, this will **incur associated costs**. Remember to teardown all related resources after use to avoid unnecessary costs. See [here](#deployed-resources) for list of deployed resources.
-*NOTE: This deployment was tested using WSL 2 (Ubuntu 20.04) and Debian GNU/Linux 9.9 (stretch)*
+> **IMPORTANT NOTE:** As with all Azure Deployments, this will **incur associated costs**. Remember to teardown all related resources after use to avoid unnecessary costs. See [here](#deployed-resources) for list of deployed resources. See [here](#clean-up) for information on the clean_up script.
+> This deployment was tested using WSL 2 (Ubuntu 20.04) and Debian GNU/Linux 9.9 (stretch)
 
 1. **Initial Setup**
    1. Ensure that:
@@ -264,13 +263,13 @@ Please check the details [here](docs/observability.md).
       - Publishing a change is **required** to generate the `workspace_publish` branch which is required in the Release pipelines.
    2. In Azure DevOps, notice a new run of the Build Pipeline (**mdwdops-ci-artifacts**) off `main`. This will build the Python package and SQL DACPAC, then publish these as Pipeline Artifacts.
    3. After completion, this should automatically trigger the Release Pipeline (**mdwdops-cd-release**). This will deploy the artifacts across environments.
-      - You may need to authorize the Pipelines initially to use the Service Connection for the first time.
-      ![Release Pipeline](docs/images/ReleasePipelineSynapse.PNG?raw=true "Release Pipelines")
+      - You may need to authorize the Pipelines initially to use the Service Connection and deploy the target environments for the first time.
+      ![Release Pipeline](docs/images/ReleasePipelineSynapse.png?raw=true "Release Pipelines")
    4. **Optional**. Trigger the Synapse Data Pipelines per environment.
       1. In the Synapse workspace of each environment, navigate to "Author", then select the `P_Ingest_MelbParkingData`.
       2. Select "Trigger > Trigger Now".
       3. To monitor the run, go to "Monitor > Pipeline runs".
-      ![Pipeline Run](docs/images/SynapseRun.PNG?raw=true "Pipeline Run]")
+      ![Pipeline Run](docs/images/SynapseRun.png?raw=true "Pipeline Run]")
 
 6. **Optional. Visualize data in PowerBI**
     > This requires [PowerBI Desktop App](https://powerbi.microsoft.com/en-us/desktop/) installed.
@@ -334,7 +333,8 @@ Notes:
 
 #### Clean up
 
-This sample comes with an [optional, interactive clean-up script](./scripts/clean_up.sh) which will delete resources with `mdwdops` in its name. It will list resources to be deleted and will prompt before continuing. IMPORTANT NOTE: As it simply searches for `mdwdops` in the resource name, it could list resources not part of the deployment! Use with care.
+This sample comes with an [optional, interactive clean-up script](./scripts/clean_up.sh) which will delete resources with `mdwdops` in its name. It will list resources to be deleted and will prompt before continuing.
+> IMPORTANT NOTE: As it simply searches for `mdwdops` in the resource name, it could list resources not part of the deployment! Use with care.
 
 ### Data Lake Physical layout
 

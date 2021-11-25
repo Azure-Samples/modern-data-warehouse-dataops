@@ -297,10 +297,11 @@ createDataset "Ds_REST_MelbParkingData"
 # This line allows the spark pool to be available to attach to the notebooks
 az synapse spark session list --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spark-pool-name "${BIG_DATAPOOL_NAME}"
 createNotebook "00_setup"
-createNotebook "01_explore"
+createNotebook "01a_explore"
+createNotebook "01b_explore_sqlserverless"
 createNotebook "02_standardize"
 createNotebook "03_transform"
-createNotebook "04_explore_interim"
+
 
 # Deploy all Pipelines
 createPipeline "P_Ingest_MelbParkingData"

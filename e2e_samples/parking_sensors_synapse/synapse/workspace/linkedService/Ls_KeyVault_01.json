@@ -5,7 +5,7 @@
 		"type": "AzureKeyVault",
 		"annotations": [],
 		"typeProperties": {
-			"baseUrl": "https://mdwdops-kv-dev-dosyn1.vault.azure.net/"
+			"baseUrl": ""
 		}
 	}
 }
