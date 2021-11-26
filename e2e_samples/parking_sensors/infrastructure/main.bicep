@@ -77,8 +77,6 @@ module appinsights './modules/appinsights.bicep' = {
 }
 
 
-
-
 output storage_account_name string = storage.outputs.storage_account_name
 output synapse_sql_pool_output object = synapse_sql_pool.outputs.synapse_sql_pool_output
 output databricks_output object = databricks.outputs.databricks_output

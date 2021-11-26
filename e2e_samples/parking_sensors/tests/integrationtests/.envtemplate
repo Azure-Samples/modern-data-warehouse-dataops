@@ -1,0 +1,26 @@
+###
+# REQUIRED. Service principal account details used to connect to Azure, if its STG environment, fill in corresponding ENV's Service Principal Info
+AZ_SERVICE_PRINCIPAL_ID=
+AZ_SERVICE_PRINCIPAL_SECRET=
+AZ_SERVICE_PRINCIPAL_TENANT_ID=
+
+###
+# REQUIRED. For Azure related resource like Azure Data Factory, fill in corresponding ENV(ex: stg)'s info:
+AZ_SUBSCRIPTION_ID=
+AZ_RESOURCE_GROUP_NAME=
+AZ_DATAFACTORY_NAME=
+
+###
+# REQUIRED. Azure Data Factory output(s) connection information, fill in corresponding ENV(ex: stg)'s info::
+AZ_SQL_SERVER_NAME=
+AZ_SQL_SERVER_USERNAME=
+AZ_SQL_SERVER_PASSWORD=
+AZ_SQL_DATABASE_NAME=
+
+
+###
+# OPTIONAL. Environment variables for other non-required configuration.
+# Uncomment to set values.
+
+# Poll interval in seconds for checking for pipeline status. *Default*: 5.
+# AZURE_DATAFACTORY_POLL_INTERVAL=

@@ -1,0 +1,2 @@
+﻿CREATE DATABASE SCOPED CREDENTIAL [ADLSCredentialKey] WITH IDENTITY = N'user', SECRET = '$(ADLSCredentialKey)';
+
