@@ -77,9 +77,8 @@ The following are the prerequisites for deploying this sample :
 
    - Active subscription with the following [resource providers](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/azure-services-resource-providers) enabled:
 
-     - Microsoft.Sql
+     - Microsoft.Synapse
      - Microsoft.Storage
-    
 
 #### 2.1.1 Software Prerequisites
 
