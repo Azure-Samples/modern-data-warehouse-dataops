@@ -1,12 +1,12 @@
-# Deploying a secure Azure Databricks environment using Infrastructure as Code <!-- omit in toc -->
+# Metadata driven dynamic loading of modules in synapse.
 
 ## Contents <!-- omit in toc -->
 
 - [1. Solution Overview](#1-solution-overview)
   - [1.1. Scope](#11-scope)
-  - [1.2. Architecture](#12-architecture)
-    - [1.2.1. Patterns](#121-patterns)
-  - [1.3. Technologies used](#13-technologies-used)
+  - [1.2. Use Case](#12-use-case)
+  - [1.3. Architecture](#13-architecture)    
+  - [1.4. Technologies used](#14-technologies-used)
 - [2. How to use this sample](#2-how-to-use-this-sample)
   - [2.1. Prerequisites](#21-prerequisites)
     - [2.1.1 Software Prerequisites](#211-software-prerequisites)
@@ -18,48 +18,50 @@
 
 ## 1. Solution Overview
 
-It is a recommended pattern for enterprise applications to automate platform provisioning to achieve consistent, repeatable deployments using Infrastructure as Code (IaC). This practice is highly encouraged by organizations that run multiple environments such as Dev, Test, Performance Test, UAT, Blue and Green production environments, etc. IaC is also very effective in managing deployments when the production environments are spread across multiple regions across the globe.
+This solution demonstrates how we can separate our business logic transformations into different modules which can be packaged and loaded dynamically into synapse spark pools based on the defined metadata.
 
-Tools like Azure Resource Manager (ARM), Terraform, and the Azure Command Line Interface (CLI) enable you to declaratively script the cloud infrastructure and use software engineering practices such as testing and versioning while implementing IaC.
+We can define the metadata in a separate database, a json configuration file or provide them as synapse pipeline parameters. To keep this sample simple and light weighted we are using pipeline parameters to store metadata for running our pipelines.
 
-This sample will focus on automating the provisioning of a basic Azure Databricks environment using the Infrastructure as Code pattern
+This sample will focus on provisioning a synapse work space and required resources where you can run the synapse pipeline to see how the same pipeline can be used with multiple datasets to perform data sepecific transformations by loading the module dynamically at run time.
+
+
 
 ### 1.1. Scope
 
 The following list captures the scope of this sample:
 
-1. Provision an Azure Databricks environment using ARM templates orchestrated by a shell script.
-1. The following services will be provisioned as a part of the basic Azure Databricks environment setup:
-   1. Azure Databricks Workspace
-   2. Azure Storage account with hierarchical namespace enabled to support ABFS
-   3. Azure key vault to store secrets and access tokens
+1. Provision an Azure Synapse environment by a shell script.
+1. The following services will be provisioned as a part of this sample setup:
+   1. Synapse work space
+   2. Azure Storage account with a root container having sample csv data file.
+   3. Synapse spark pool.
+   4. Synapse pipeline.   
 
 Details about [how to use this sample](#3-how-to-use-this-sample) can be found in the later sections of this document.
 
-### 1.2. Architecture
+### 1.2. Use Case
+For our sample use case we have a country list csv file which gets processed via synapse pipeline and data gets stored in spark external tables. 
 
-The below diagram illustrates the deployment process flow followed in this sample:
+We have two sample transformation modules:
+* md5: This module calculates the hash of all the columns and adds that as a separate column to the country list data.
+* data_filter: This module returns a filtered dataset based on what condition we pass to the module. E.g get the countries where region is **Asia**
 
-![alt text](../Common_Assets/Images/IAC_Architecture.png "Logo Title Text 1")
+Synpase pipeline will be run twice to demonstrate how the two different transformations will be applied to the country list data.
 
-#### 1.2.1. Patterns
+Details about [how to run the pipeline](#3-how-to-use-this-sample) can be found in the later sections of this document.
 
-Following are the cloud design patterns being used by this sample:
+### 1.3. Architecture
 
-- [External Configuration Store pattern](https://docs.microsoft.com/en-us/azure/architecture/patterns/external-configuration-store): Configuration for the deployment is persisted externally as a parameter file separate from the deployment script.
-- [Federated Identity pattern](https://docs.microsoft.com/en-us/azure/architecture/patterns/federated-identity): Azure active directory is used as the federated identity store to enable seamless integration with enterprise identity providers.
-- [Valet Key pattern](https://docs.microsoft.com/en-us/azure/architecture/patterns/valet-key): Azure key vault is used to manage the secrets and access toked used by the services.
-- [Compensating Transaction pattern](https://docs.microsoft.com/en-us/azure/architecture/patterns/compensating-transaction#): The script will roll back partially configured resources if the deployment is incomplete.
+The below diagram illustrates the design and the flow the system:
 
-### 1.3. Technologies used
+![alt text](images/design.png "Design Diagram")
+
+### 1.4. Technologies used
 
 The following technologies are used to build this sample:
 
-- [Azure Databricks](https://azure.microsoft.com/en-au/free/databricks/)
+- [Azure Synapse Analytics](https://azure.microsoft.com/en-in/services/synapse-analytics/)
 - [Azure Storage](https://azure.microsoft.com/en-au/services/storage/data-lake-storage/)
-- [Azure Key Vault](https://azure.microsoft.com/en-au/services/key-vault/)
-- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/)
-- [Azure Resource Manager](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview)
 
 ## 2. How to use this sample
 
@@ -180,4 +182,3 @@ The clean-up script can be executed to clean up the resources provisioned in thi
 
 
 ## 3. Next Step
-
