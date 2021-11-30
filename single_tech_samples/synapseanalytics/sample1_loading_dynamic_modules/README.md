@@ -95,9 +95,9 @@ The following are the prerequisites for deploying this sample :
 
 Below listed are the steps to deploy this sample :
 
-1. Fork and clone this repository. Navigate to  `single_tech_samples/synapseanalytics/sample1_loading_dynamic_modules/`.
+1. Fork and clone this repository. Navigate to  `single_tech_samples/synapseanalytics/sample1_loading_dynamic_modules/setup/`.
 
-1. The sample depends on the following variables to be set before the deployment script is run:
+1. The sample depends on the variables to be set before the deployment script is run; Script will prompt you to provide input for following variables.
   
     > - `DEPLOYMENT_PREFIX` - Prefix for the resource names which will be created as a part of this deployment
     > - `AZURE_SUBSCRIPTION_ID` - Subscription ID of the Azure subscription where the resources should be deployed.
@@ -149,7 +149,8 @@ The following steps can be performed to validate the correct deployment and exec
     - `basePath` is the folder inside the container name where you want to pick the files from
     - `filPath` is file name regex with which you want to pick the files. 
     - `arhivePath`: defaults to `archive` folder inside the azure blob container
-    -  In the parameters, you can specify which module you want to run with the module config as required. We'll first run it with `md5` module which doens't take any module configuration.
+    -  `moduleName` is the name of the transformation module(wheel package) you want to transform your data with during the the pipeline run. Defaults to `md5`
+    - `moduleConfig` is the configuration required for the transformation module. It can be empty incase the module doesn't take any configuration. 
     - `targetTable` parameter takes a JSON object with table name and path where the parquet files will be stored for the external table. 
     - `database`: Input for the spark database ; defaults to `default` value
 
@@ -163,7 +164,7 @@ The following steps can be performed to validate the correct deployment and exec
     6. Once pipeline finished, you'll see a new spark table named `country_list_asia` created successfully. 
 ![alt text](../Common_Assets/Images/spark_table_asia.png "Logo Title Text 1")
 
-    With this you can keep the pipeline generic & using dynamic loading of modules you'll be able to perform differnet transformations as per your need.
+   With this you can have generic pipelines which can load transformation modules dynamically based on configurations to process your data.
 
 ### 2.5. Clean-up
 
@@ -171,7 +172,7 @@ Please follow the below steps to clean up your environment :
 
 The clean-up script can be executed to clean up the resources provisioned in this sample. Following are the steps to execute the script:
 
-1. Navigate to `single_tech_samples/synapseanalytics/sample1_loading_dynamic_modules/`.
+1. Navigate to `single_tech_samples/synapseanalytics/sample1_loading_dynamic_modules/setup/`.
 
 2. Run '/destroy.sh'
 
