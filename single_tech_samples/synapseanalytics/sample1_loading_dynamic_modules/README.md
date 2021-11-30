@@ -111,8 +111,6 @@ Below listed are the steps to deploy this sample :
 
    The script will create the Synapse analytics workspace, Azure storage, Synapse pipelines & Synapse notebook. This script will also upload the sample file to blob storage and wheel packages to the Azure synapse.
 
-   > Note: `DEPLOYMENT_PREFIX` for this deployment was set as `lumustest`
-
     ![alt text](../Common_Assets/Images/IAC_Script_Deploy.png "Logo Title Text 1")
 
 ### 2.3. Deployed Resources
