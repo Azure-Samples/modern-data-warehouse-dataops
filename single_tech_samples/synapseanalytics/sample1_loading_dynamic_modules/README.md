@@ -95,15 +95,13 @@ The following are the prerequisites for deploying this sample :
 
 Below listed are the steps to deploy this sample :
 
-1. Fork and clone this repository. Navigate to (CD) `single_tech_samples/synapseanalytics/sample1_loading_dynamic_modules/`.
+1. Fork and clone this repository. Navigate to  `single_tech_samples/synapseanalytics/sample1_loading_dynamic_modules/`.
 
-1. The sample depends on the following environment variables to be set before the deployment script is run:
+1. The sample depends on the following variables to be set before the deployment script is run:
   
     > - `DEPLOYMENT_PREFIX` - Prefix for the resource names which will be created as a part of this deployment
     > - `AZURE_SUBSCRIPTION_ID` - Subscription ID of the Azure subscription where the resources should be deployed.
-    > - `AZURE_RESOURCE_GROUP_NAME` - Name of the containing resource group
     > - `AZURE_RESOURCE_GROUP_LOCATION` - Azure region where the resources will be deployed. (e.g. australiaeast, eastus, etc.)
-    > - `DELETE_RESOURCE_GROUP` - Flag to indicate the cleanup step for the resource group
 
 1. Run '/deploy.sh'
    > Note: The script will prompt you to log in to the Azure account for authorization to deploy resources.
@@ -173,7 +171,7 @@ Please follow the below steps to clean up your environment :
 
 The clean-up script can be executed to clean up the resources provisioned in this sample. Following are the steps to execute the script:
 
-1. Navigate to (CD) `single_tech_samples/synapseanalytics/sample1_loading_dynamic_modules/`.
+1. Navigate to `single_tech_samples/synapseanalytics/sample1_loading_dynamic_modules/`.
 
 2. Run '/destroy.sh'
 
