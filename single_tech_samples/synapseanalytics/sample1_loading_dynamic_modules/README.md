@@ -52,7 +52,7 @@ Details about [how to run the pipeline](#3-how-to-use-this-sample) can be found 
 
 ### 1.3. Architecture
 
-The below diagram illustrates the design and the flow the system:
+The below diagram illustrates the design and the flow of the system:
 ![alt text](../Common_Assets/Images/Architecture_design.png "Design Diagram")
 
 
