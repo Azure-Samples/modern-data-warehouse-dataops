@@ -4,9 +4,9 @@
 
 - [1. Solution Overview](#1-solution-overview)
   - [1.1. Scope](#11-scope)
-  - [1.2. Use Case](#12-usecase)
+  - [1.2. Use Case](#12-use-case)
   - [1.3. Architecture](#13-architecture)    
-  - [1.4. Technologies used](#13-technologies-used)
+  - [1.4. Technologies used](#14-technologies-used)
 - [2. How to use this sample](#2-how-to-use-this-sample)
   - [2.1. Prerequisites](#21-prerequisites)
     - [2.1.1 Software Prerequisites](#211-software-prerequisites)
