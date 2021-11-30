@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 echo "Enter resource group to delete azure resources:"
 read AZURE_RESOURCE_GROUP_NAME
@@ -22,8 +22,9 @@ fi
 RG_EXISTS=$(az group exists --resource-group "$AZURE_RESOURCE_GROUP_NAME" --output tsv)
 if [[ $RG_EXISTS == "false" ]]; then
     echo "Error: Resource group $AZURE_RESOURCE_GROUP_NAME in $AZURE_RESOURCE_GROUP_LOCATION does not exist."
+    exit 1
 else
-    echo "Resource group $AZURE_RESOURCE_GROUP_NAME exists in $AZURE_RESOURCE_GROUP_LOCATION. Removing created resources"
+    echo "Resource group $AZURE_RESOURCE_GROUP_NAME exists. Removing created resources"
 fi
 
 echo "Deleting resource group: $AZURE_RESOURCE_GROUP_NAME with all the resources. In 5 seconds..."
