@@ -1,4 +1,4 @@
-# Metadata driven dynamic loading of modules in synapse.
+# Metadata driven dynamic loading of modules in synapse <!-- omit in toc -->
 
 ## Contents <!-- omit in toc -->
 
@@ -12,7 +12,7 @@
     - [2.1.1 Software Prerequisites](#211-software-prerequisites)
   - [2.2. Setup and deployment](#22-setup-and-deployment)
   - [2.3. Deployed Resources](#23-deployed-resources)
-  - [2.4. Deployment validation](#24-deployment-validation)
+  - [2.4. Deployment validation](#24-deployment-validation-and-execution)
   - [2.5. Clean-up](#25-clean-up)
 - [3. Next Step](#3-next-step)
 
@@ -37,7 +37,7 @@ The following list captures the scope of this sample:
    3. Synapse spark pool.
    4. Synapse pipeline.   
 
-Details about [how to use this sample](#3-how-to-use-this-sample) can be found in the later sections of this document.
+Details about [how to use this sample](#2-how-to-use-this-sample) can be found in the later sections of this document.
 
 ### 1.2. Use Case
 For our sample use case we have a country list csv file which gets processed via synapse pipeline and data gets stored in spark external tables. 
@@ -48,7 +48,7 @@ We have two sample transformation modules:
 
 Synpase pipeline will be run twice to demonstrate how the two different transformations will be applied to the country list data.
 
-Details about [how to run the pipeline](#3-how-to-use-this-sample) can be found in the later sections of this document.
+Details about [how to run the pipeline](#24-deployment-validation-and-execution) can be found in the later sections of this document.
 
 ### 1.3. Architecture
 
@@ -124,9 +124,9 @@ The following resources will be deployed as a part of this sample once the scrip
 
 2.Azure Synapse spark pool with wheel packages.
 
-![alt text](../Common_Assets/Images/IAC_Package.png "Logo Title Text 1")
+![alt text](../Common_Assets/Images/IAC_package.png "Logo Title Text 1")
 
-### 2.4. Deployment validation & Execution
+### 2.4. Deployment validation and Execution
 
 The following steps can be performed to validate the correct deployment and execution of the sample:
 
@@ -155,7 +155,7 @@ The following steps can be performed to validate the correct deployment and exec
     - `database`: Input for the spark database ; defaults to `default` value
 
     3. Fill in the parameters as required (or keeping the default values) and run the pipeline. Once the pipeline is successful, you'll see the data in the spark table as defined in the `targetTable` parameter
-    ![alt text](../Common_Assets/Images/spark_table_full.png "spark table")
+    ![alt text](../Common_Assets/Images/Spark_table_full.png "spark table")
     
     4. Now let's run the same pipeline with another module, keeping everything same except the module name, module coinfiguration and target tables.
 ![alt text](../Common_Assets/Images/pipeline_run_asia.png "Logo Title Text 1")
