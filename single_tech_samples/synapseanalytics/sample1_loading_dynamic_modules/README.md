@@ -29,7 +29,7 @@ The following list captures the scope of this sample:
 
 1. Provision an Azure Synapse environment by a shell script.
 1. The following services will be provisioned as a part of this sample setup:
-   1. Synapse work space
+   1. Synapse work space.
    2. Azure Storage account with a root container having sample csv data file.
    3. Synapse spark pool.
    4. Synapse pipeline.
@@ -67,7 +67,7 @@ This section holds the information about usage instructions of this sample.
 
 ### 2.1. Prerequisites
 
-The following are the prerequisites for deploying this sample :
+The following are the prerequisites for deploying this sample:
 
 1. [Github account](https://github.com/)
 2. [Azure Account](https://azure.microsoft.com/en-au/free/search/?&ef_id=Cj0KCQiAr8bwBRD4ARIsAHa4YyLdFKh7JC0jhbxhwPeNa8tmnhXciOHcYsgPfNB7DEFFGpNLTjdTPbwaAh8bEALw_wcB:G:s&OCID=AID2000051_SEM_O2ShDlJP&MarinID=O2ShDlJP_332092752199_azure%20account_e_c__63148277493_aud-390212648371:kwd-295861291340&lnkd=Google_Azure_Brand&dclid=CKjVuKOP7uYCFVapaAoddSkKcA)
@@ -173,4 +173,3 @@ The clean-up script can be executed to clean up the resources provisioned in thi
 1. Navigate to `single_tech_samples/synapseanalytics/sample1_loading_dynamic_modules/setup/`.
 
 2. Run '/destroy.sh'
-
