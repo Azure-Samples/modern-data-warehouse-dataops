@@ -37,7 +37,7 @@ The following list captures the scope of this sample:
    3. Synapse spark pool.
    4. Synapse pipeline.   
 
-Details about [how to use this sample](#3-how-to-use-this-sample) can be found in the later sections of this document.
+Details about [how to use this sample](#2-how-to-use-this-sample) can be found in the later sections of this document.
 
 ### 1.2. Use Case
 For our sample use case we have a country list csv file which gets processed via synapse pipeline and data gets stored in spark external tables. 
