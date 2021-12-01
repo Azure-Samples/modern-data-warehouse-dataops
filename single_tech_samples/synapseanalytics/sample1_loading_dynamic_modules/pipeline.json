@@ -299,7 +299,7 @@
         "parameters": {
             "storageAccountName": {
                 "type": "string",
-                "defaultValue": "synapsesharingstorage"
+                "defaultValue": "TEMP-STORAGE-ACCOUNT"
             },
             "containerName": {
                 "type": "string",
@@ -322,7 +322,8 @@
                 "defaultValue": "md5"
             },
             "moduleConfig": {
-                "type": "string"
+                "type": "string",
+                "defaultValue": "{}"
             },
             "targetTable": {
                 "type": "string",
