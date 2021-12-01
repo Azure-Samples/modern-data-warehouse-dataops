@@ -8,3 +8,10 @@
 
 Ex:
 * Config : {"key_col" : "region", "filter_criteria" : ["Asia"]}
+
+## Creating Wheel Package
+Building your package, from your terminal go to your package directory `modules/data_filter` and execute the following command:
+```
+python setup.py bdist_wheel
+```
+This command will create a dist folder in your module containing the `.whl` file.
