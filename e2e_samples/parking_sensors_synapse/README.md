@@ -140,7 +140,7 @@ There are eight numbered orange boxes describing the sequence from sandbox devel
 Notes:
 
 - This is a simplified Build and Release process for demo purposes based on [Trunk-based development practices](https://trunkbaseddevelopment.com/).
-- *A manual publish is required -- currently, this cannot be automated.
+- *A manual publish is **required** -- currently, this cannot be automated. See [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
 - **The solution deployment script does not configure Approval Gates at the moment. See [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
 - ***Many organization use dedicated Release Branches (including Microsoft) instead of deploying from `main`. See [Release Flow](https://devblogs.microsoft.com/devops/release-flow-how-we-do-branching-on-the-vsts-team/).
 
@@ -169,7 +169,7 @@ Please check the details [here](docs/observability.md).
 2. [Azure Account](https://azure.microsoft.com/en-au/free/search/?&ef_id=Cj0KCQiAr8bwBRD4ARIsAHa4YyLdFKh7JC0jhbxhwPeNa8tmnhXciOHcYsgPfNB7DEFFGpNLTjdTPbwaAh8bEALw_wcB:G:s&OCID=AID2000051_SEM_O2ShDlJP&MarinID=O2ShDlJP_332092752199_azure%20account_e_c__63148277493_aud-390212648371:kwd-295861291340&lnkd=Google_Azure_Brand&dclid=CKjVuKOP7uYCFVapaAoddSkKcA)
    - *Permissions needed*: ability to create and deploy to an azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
 3. [Azure DevOps Project](https://azure.microsoft.com/en-us/services/devops/)
-   - *Permissions needed*: ability to create [service connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml), [pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops&tabs=yaml) and [variable groups](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml).
+   - *Permissions needed*: ability to create [service connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml), [pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops&tabs=yaml) and [variable groups](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml). Ability to install Azure DevOps extensions (unless the required [Synapse extension](https://marketplace.visualstudio.com/items?itemName=AzureSynapseWorkspace.synapsecicd-deploy) is already installed).
 
 #### Software pre-requisites if you don't use dev container<!-- omit in toc -->
 
@@ -192,7 +192,7 @@ Please check the details [here](docs/observability.md).
 
 1. Rename `.envtemplate` to `devcontainer.env` and update the values as explained in **Initial Setup** section.
 2. Open the project inside the vscode dev container (see details [here](docs/devcontainer.md))
-3. `cd` into the `e2e_samples/parking_sensors` folder and run `./deploy.sh` inside the dev container terminal.
+3. `cd` into the `e2e_samples/parking_sensors_synapse` folder and run `./deploy.sh` inside the dev container terminal.
 
 ### Setup and Deployment
 
@@ -206,9 +206,11 @@ Please check the details [here](docs/observability.md).
          - To set target Azure Subscription, run `az account set -s <AZURE_SUBSCRIPTION_ID>`
       - Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to.
          - To set target Azure DevOps project, run `az devops configure --defaults organization=https://dev.azure.com/<MY_ORG>/ project=<MY_PROJECT>`
+      - Azure DevOps organization has the [Synapse workspace deployment](https://marketplace.visualstudio.com/items?itemName=AzureSynapseWorkspace.synapsecicd-deploy) extension installed. For more information on how to install Azure DevOps extensions, see [here](https://docs.microsoft.com/en-us/azure/devops/marketplace/install-extension).
+         - To install extension, run `az devops extension install --extension-id "synapsecicd-deploy" --publisher-id "AzureSynapseWorkspace" --org "<MY_ORG>"`. Note that this requires [the Project Collection Administrator role or organization Owner](https://docs.microsoft.com/en-us/azure/devops/marketplace/faq-extensions?view=azure-devops) role.
    2. **Fork** this repository into a new Github repo.
    3. Set the following **required** environment variables:
-       - **GITHUB_REPO** - Name of your imported github repo in this form `<my_github_handle>/<repo>`. (ei. "devlace/mdw-dataops-import")
+       - **GITHUB_REPO** - Name of your forked github repo in this form `<my_github_handle>/<repo>`. (ei. "devlace/mdw-dataops-import")
        - **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). This requires "repo" scope.
 
        Optionally, set the following environment variables:
@@ -221,7 +223,7 @@ Please check the details [here](docs/observability.md).
       To further customize the solution, set parameters in `arm.parameters` files located in the `infrastructure` folder.
 
 2. **Deploy Azure resources**
-   1. Clone locally the imported Github Repo, then `cd` into the `e2e_samples/parking_sensors` folder of the repo
+   1. Clone locally the imported Github Repo, then `cd` into the `e2e_samples/parking_sensors_synapse` folder of the repo
    2. Configure your default AzDo Organization and Project
 
       ```bash
@@ -260,7 +262,7 @@ Please check the details [here](docs/observability.md).
 5. **Trigger an initial Release**
 
    1. In the **DEV** Synapse workspace, navigate to "Manage > Triggers". Select the `T_Sched` trigger and activate it by clicking on the "Play" icon next to it. Click `Publish` to publish changes.
-      - Publishing a change is **required** to generate the `workspace_publish` branch which is required in the Release pipelines.
+      > Publishing a change is **required** to generate the `workspace_publish` branch which is used in the Release pipelines. Note that publishing changes in a Synapse workspace currently cannot be automated. See [Known Issues](#known-issues-limitations-and-workarounds).
    2. In Azure DevOps, notice a new run of the Build Pipeline (**mdwdops-ci-artifacts**) off `main`. This will build the Python package and SQL DACPAC, then publish these as Pipeline Artifacts.
    3. After completion, this should automatically trigger the Release Pipeline (**mdwdops-cd-release**). This will deploy the artifacts across environments.
       - You may need to authorize the Pipelines initially to use the Service Connection and deploy the target environments for the first time.
@@ -358,3 +360,5 @@ The following lists some limitations of the solution and associated deployment s
 - Azure DevOps Environment and Approval Gates can only be managed via the UI, cannot be managed programmatically and was not incorporated in the automated deployment of the solution.
   - **Workaround**: Approval Gates can be easily configured manually. See [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/environments?view=azure-devops#approvals) for more information.
 - Azure Synapse SQL Serverless artifacts (ei. Tables, Views, etc) are not currently updated as part of the CICD pipeline.
+- Manually publishing the Synapse workspace is required. Currently, this cannot be automated. Failing to publish will mean potentially releasing a stale data pipeline definition in the release pipeline.
+  - **Mitigation**: Set Approval Gates between environments. This allows for an opportunity to verify whether the manual publish has been performed.

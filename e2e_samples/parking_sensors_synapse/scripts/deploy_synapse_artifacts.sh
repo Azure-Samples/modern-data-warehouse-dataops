@@ -27,7 +27,7 @@
 set -o errexit
 set -o pipefail
 set -o nounset
-set -o xtrace # For debugging
+# set -o xtrace # For debugging
 
 ###################
 # REQUIRED ENV VARIABLES:
@@ -98,41 +98,41 @@ uploadSynapseArtifactsToSparkPool(){
     echo "Uploading Synapse Artifacts to Spark Pool: ${BIG_DATAPOOL_NAME}"
 
     json_body="{
-    \"location\": \"${synapse_ws_location}\",
-    \"properties\": {
-        \"nodeCount\": 10,
-        \"isComputeIsolationEnabled\": false,
-        \"nodeSizeFamily\": \"MemoryOptimized\",
-        \"nodeSize\": \"Small\",
-        \"autoScale\": {
-            \"enabled\": true,
-            \"minNodeCount\": 3,
-            \"maxNodeCount\": 10
-        },
-        \"cacheSize\": 0,
-        \"dynamicExecutorAllocation\": {
-            \"enabled\": false,
-            \"minExecutors\": 0,
-            \"maxExecutors\": 10
-        },
-        \"autoPause\": {
-            \"enabled\": true,
-            \"delayInMinutes\": 15
-        },
-        \"sparkVersion\": \"2.4\",
-        \"libraryRequirements\": {
-            \"filename\": \"requirements.txt\",
-            \"content\": \"${requirementList}\"
-        },
-        \"sessionLevelPackagesEnabled\": true,
-        ${customLibraryList}
-        \"sparkConfigProperties\": {
-            \"configurationType\": \"File\",
-            \"filename\": \"spark_loganalytics_conf.txt\",
-            \"content\": \"spark.synapse.logAnalytics.enabled true\r\nspark.synapse.logAnalytics.workspaceId ${LOG_ANALYTICS_WS_ID}\r\nspark.synapse.logAnalytics.secret ${LOG_ANALYTICS_WS_KEY}\"
-        },
-    }
-}"
+        \"location\": \"${synapse_ws_location}\",
+        \"properties\": {
+            \"nodeCount\": 10,
+            \"isComputeIsolationEnabled\": false,
+            \"nodeSizeFamily\": \"MemoryOptimized\",
+            \"nodeSize\": \"Small\",
+            \"autoScale\": {
+                \"enabled\": true,
+                \"minNodeCount\": 3,
+                \"maxNodeCount\": 10
+            },
+            \"cacheSize\": 0,
+            \"dynamicExecutorAllocation\": {
+                \"enabled\": false,
+                \"minExecutors\": 0,
+                \"maxExecutors\": 10
+            },
+            \"autoPause\": {
+                \"enabled\": true,
+                \"delayInMinutes\": 15
+            },
+            \"sparkVersion\": \"2.4\",
+            \"libraryRequirements\": {
+                \"filename\": \"requirements.txt\",
+                \"content\": \"${requirementList}\"
+            },
+            \"sessionLevelPackagesEnabled\": true,
+            ${customLibraryList}
+            \"sparkConfigProperties\": {
+                \"configurationType\": \"File\",
+                \"filename\": \"spark_loganalytics_conf.txt\",
+                \"content\": \"spark.synapse.logAnalytics.enabled true\r\nspark.synapse.logAnalytics.workspaceId ${LOG_ANALYTICS_WS_ID}\r\nspark.synapse.logAnalytics.secret ${LOG_ANALYTICS_WS_KEY}\"
+            },
+        }
+    }"
     
     #Get bearer token for the management API
     managementApiUri="${synapseWorkspaceBaseUrl}/bigDataPools/${BIG_DATAPOOL_NAME}?api-version=${apiVersion}"
