@@ -5,7 +5,7 @@
 - [1. Solution Overview](#1-solution-overview)
   - [1.1. Scope](#11-scope)
   - [1.2. Use Case](#12-use-case)
-  - [1.3. Architecture](#13-architecture)    
+  - [1.3. Architecture](#13-architecture)
   - [1.4. Technologies used](#14-technologies-used)
 - [2. How to use this sample](#2-how-to-use-this-sample)
   - [2.1. Prerequisites](#21-prerequisites)
@@ -14,7 +14,6 @@
   - [2.3. Deployed Resources](#23-deployed-resources)
   - [2.4. Deployment validation](#24-deployment-validation-and-execution)
   - [2.5. Clean-up](#25-clean-up)
-- [3. Next Step](#3-next-step)
 
 ## 1. Solution Overview
 
@@ -23,8 +22,6 @@ This solution demonstrates how we can separate our business logic transformation
 We can define the metadata in a separate database, a json configuration file or provide them as synapse pipeline parameters. To keep this sample simple and light weighted we are using pipeline parameters to store metadata for running our pipelines.
 
 This sample will focus on provisioning a synapse work space and required resources where you can run the synapse pipeline to see how the same pipeline can be used with multiple datasets to perform data sepecific transformations by loading the module dynamically at run time.
-
-
 
 ### 1.1. Scope
 
@@ -35,16 +32,18 @@ The following list captures the scope of this sample:
    1. Synapse work space
    2. Azure Storage account with a root container having sample csv data file.
    3. Synapse spark pool.
-   4. Synapse pipeline.   
+   4. Synapse pipeline.
 
 Details about [how to use this sample](#2-how-to-use-this-sample) can be found in the later sections of this document.
 
 ### 1.2. Use Case
-For our sample use case we have a country list csv file which gets processed via synapse pipeline and data gets stored in spark external tables. 
+
+For our sample use case we have a country list csv file which gets processed via synapse pipeline and data gets stored in spark external tables.
 
 We have two sample transformation modules:
-* md5: This module calculates the hash of all the columns and adds that as a separate column to the country list data.
-* data_filter: This module returns a filtered dataset based on what condition we pass to the module. E.g get the countries where region is **Asia**
+
+- md5: This module calculates the hash of all the columns and adds that as a separate column to the country list data.
+- data_filter: This module returns a filtered dataset based on what condition we pass to the module. E.g get the countries where region is **Asia**
 
 Synpase pipeline will be run twice to demonstrate how the two different transformations will be applied to the country list data.
 
@@ -54,7 +53,6 @@ Details about [how to run the pipeline](#24-deployment-validation-and-execution)
 
 The below diagram illustrates the design and the flow of the system:
 ![alt text](../Common_Assets/Images/Architecture_design.png "Design Diagram")
-
 
 ### 1.4. Technologies used
 
@@ -130,13 +128,13 @@ The following resources will be deployed as a part of this sample once the scrip
 
 The following steps can be performed to validate the correct deployment and execution of the sample:
 
-* Users with appropriate access rights should be able to:
+- Users with appropriate access rights should be able to:
 
    1. Launch the synapse workspace from the Azure portal.
    2. Access the control plane for the storage account through the Azure portal.
    3. View the files uploaded in the Azure storage container
 
-* Detail steps on how to execute the sample:
+- Detail steps on how to execute the sample:
 
     1. Launch the Azure synapse workspace & open the synapse pipelines
     2. You'll see the pipeline with activities and some default parameters values. Click on debug or trigger to run the pipeline.
@@ -144,24 +142,24 @@ The following steps can be performed to validate the correct deployment and exec
 
     ![alt text](../Common_Assets/Images/pipeline_run.png "Logo Title Text 1")
 
-    * `storageAccountName` is Azure storage account name
-    - `containerName` is Azure blob storage container name
-    - `basePath` is the folder inside the container name where you want to pick the files from
-    - `filPath` is file name regex with which you want to pick the files. 
-    - `arhivePath`: defaults to `archive` folder inside the azure blob container
-    -  `moduleName` is the name of the transformation module(wheel package) you want to transform your data with during the the pipeline run. Defaults to `md5`
-    - `moduleConfig` is the configuration required for the transformation module. It can be empty incase the module doesn't take any configuration. 
-    - `targetTable` parameter takes a JSON object with table name and path where the parquet files will be stored for the external table. 
-    - `database`: Input for the spark database ; defaults to `default` value
+  - `storageAccountName` is Azure storage account name
+  - `containerName` is Azure blob storage container name
+  - `basePath` is the folder inside the container name where you want to pick the files from
+  - `filPath` is file name regex with which you want to pick the files.
+  - `arhivePath`: defaults to `archive` folder inside the azure blob container
+  - `moduleName` is the name of the transformation module(wheel package) you want to transform your data with during the the pipeline run. Defaults to `md5`
+  - `moduleConfig` is the configuration required for the transformation module. It can be empty incase the module doesn't take any configuration.
+  - `targetTable` parameter takes a JSON object with table name and path where the parquet files will be stored for the external table.
+  - `database`: Input for the spark database ; defaults to `default` value
 
-    3. Fill in the parameters as required (or keeping the default values) and run the pipeline. Once the pipeline is successful, you'll see the data in the spark table as defined in the `targetTable` parameter
+    1. Fill in the parameters as required (or keeping the default values) and run the pipeline. Once the pipeline is successful, you'll see the data in the spark table as defined in the `targetTable` parameter
     ![alt text](../Common_Assets/Images/Spark_table_full.png "spark table")
-    
-    4. Now let's run the same pipeline with another module, keeping everything same except the module name, module coinfiguration and target tables.
+
+    1. Now let's run the same pipeline with another module, keeping everything same except the module name, module coinfiguration and target tables.
 ![alt text](../Common_Assets/Images/pipeline_run_asia.png "Logo Title Text 1")
 
-    5. Run the pipeline again with the moduleName as `data_filter` & this module will filter the data based on the filter criteria provided in the moduleConfig parameter, which in our case is "Asia" on `region` column.
-    6. Once pipeline finished, you'll see a new spark table named `country_list_asia` created successfully. 
+    1. Run the pipeline again with the moduleName as `data_filter` & this module will filter the data based on the filter criteria provided in the moduleConfig parameter, which in our case is "Asia" on `region` column.
+    1. Once pipeline finished, you'll see a new spark table named `country_list_asia` created successfully.
 ![alt text](../Common_Assets/Images/spark_table_asia.png "Logo Title Text 1")
 
    With this you can have generic pipelines which can load transformation modules dynamically based on configurations to process your data.
@@ -176,5 +174,3 @@ The clean-up script can be executed to clean up the resources provisioned in thi
 
 2. Run '/destroy.sh'
 
-
-## 3. Next Step
