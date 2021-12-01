@@ -235,8 +235,9 @@ AZURE_STORAGE_ACCOUNT=$azure_storage_account \
 
 # Grant Synapse Administrator to this SP so that it can trigger Synapse pipelines
 wait_service_principal_creation "$sp_synapse_id"
-assign_synapse_role_if_not_exists "$synapseworkspace_name" "Synapse Administrator" "$sp_synapse_name"
-assign_synapse_role_if_not_exists "$synapseworkspace_name" "Synapse SQL Administrator" "$sp_synapse_name"
+sp_synapse_object_id=$(az ad sp show --id "$sp_synapse_id" --query "objectId" -o tsv)
+assign_synapse_role_if_not_exists "$synapseworkspace_name" "Synapse Administrator" "$sp_synapse_object_id"
+assign_synapse_role_if_not_exists "$synapseworkspace_name" "Synapse SQL Administrator" "$sp_synapse_object_id"
 
 
 ####################
