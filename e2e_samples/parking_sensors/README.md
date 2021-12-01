@@ -292,7 +292,7 @@ More resources:
 4. **Trigger an initial Release**
 
    1. In the **DEV** Data Factory portal, navigate to "Manage > Triggers". Select the `T_Sched` trigger and activate it by clicking on the "Play" icon next to it. Click `Publish` to publish changes.
-      - Publishing a change is **required** to generate the `adf_publish` branch which is required in the Release pipelines.
+      - Publishing a change is **required** to generate the `adf_publish` branch which is used in the Release pipelines.
    2. In Azure DevOps, notice a new run of the Build Pipeline (**mdw-park-ci-artifacts**) off `main`. This will build the Python package and SQL DACPAC, then publish these as Pipeline Artifacts.
    3. After completion, this should automatically trigger the Release Pipeline (**mdw-park-cd-release**). This will deploy the artifacts across environments.
       - You may need to authorize the Pipelines initially to use the Service Connection and deploy the target environments for the first time.
