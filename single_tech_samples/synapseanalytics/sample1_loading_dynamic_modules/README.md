@@ -1,4 +1,4 @@
-# Metadata driven dynamic loading of modules in synapse.
+# Metadata driven dynamic loading of modules in synapse <!-- omit in toc -->
 
 ## Contents <!-- omit in toc -->
 
