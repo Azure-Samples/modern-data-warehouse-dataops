@@ -12,7 +12,7 @@
     - [2.1.1 Software Prerequisites](#211-software-prerequisites)
   - [2.2. Setup and deployment](#22-setup-and-deployment)
   - [2.3. Deployed Resources](#23-deployed-resources)
-  - [2.4. Deployment validation](#24-deployment-validation)
+  - [2.4. Deployment validation](#24-deployment-validation-and-execution)
   - [2.5. Clean-up](#25-clean-up)
 - [3. Next Step](#3-next-step)
 
@@ -48,7 +48,7 @@ We have two sample transformation modules:
 
 Synpase pipeline will be run twice to demonstrate how the two different transformations will be applied to the country list data.
 
-Details about [how to run the pipeline](#3-how-to-use-this-sample) can be found in the later sections of this document.
+Details about [how to run the pipeline](#24-deployment-validation-and-execution) can be found in the later sections of this document.
 
 ### 1.3. Architecture
 
@@ -126,7 +126,7 @@ The following resources will be deployed as a part of this sample once the scrip
 
 ![alt text](../Common_Assets/Images/IAC_Package.png "Logo Title Text 1")
 
-### 2.4. Deployment validation & Execution
+### 2.4. Deployment validation and Execution
 
 The following steps can be performed to validate the correct deployment and execution of the sample:
 
