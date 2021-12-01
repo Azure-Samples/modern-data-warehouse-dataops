@@ -5,7 +5,7 @@
 - [1. Solution Overview](#1-solution-overview)
   - [1.1. Scope](#11-scope)
   - [1.2. Use Case](#12-use-case)
-  - [1.3. Architecture](#13-architecture)    
+  - [1.3. Architecture](#13-architecture)
   - [1.4. Technologies used](#14-technologies-used)
 - [2. How to use this sample](#2-how-to-use-this-sample)
   - [2.1. Prerequisites](#21-prerequisites)
@@ -24,22 +24,21 @@ We can define the metadata in a separate database, a json configuration file or 
 
 This sample will focus on provisioning a synapse work space and required resources where you can run the synapse pipeline to see how the same pipeline can be used with multiple datasets to perform data sepecific transformations by loading the module dynamically at run time.
 
-
-
 ### 1.1. Scope
 
 The following list captures the scope of this sample:
 
 1. Provision an Azure Synapse environment by a shell script.
 1. The following services will be provisioned as a part of this sample setup:
-   1. Synapse work space
+   1. Synapse work space.
    2. Azure Storage account with a root container having sample csv data file.
    3. Synapse spark pool.
-   4. Synapse pipeline.   
+   4. Synapse pipeline.
 
 Details about [how to use this sample](#2-how-to-use-this-sample) can be found in the later sections of this document.
 
 ### 1.2. Use Case
+
 For our sample use case we have a country list csv file which gets processed via synapse pipeline and data gets stored in spark external tables. 
 
 We have two sample transformation modules:
@@ -55,7 +54,6 @@ Details about [how to run the pipeline](#24-deployment-validation-and-execution)
 The below diagram illustrates the design and the flow of the system:
 ![alt text](../Common_Assets/Images/Architecture_design.png "Design Diagram")
 
-
 ### 1.4. Technologies used
 
 The following technologies are used to build this sample:
@@ -69,7 +67,7 @@ This section holds the information about usage instructions of this sample.
 
 ### 2.1. Prerequisites
 
-The following are the prerequisites for deploying this sample :
+The following are the prerequisites for deploying this sample:
 
 1. [Github account](https://github.com/)
 2. [Azure Account](https://azure.microsoft.com/en-au/free/search/?&ef_id=Cj0KCQiAr8bwBRD4ARIsAHa4YyLdFKh7JC0jhbxhwPeNa8tmnhXciOHcYsgPfNB7DEFFGpNLTjdTPbwaAh8bEALw_wcB:G:s&OCID=AID2000051_SEM_O2ShDlJP&MarinID=O2ShDlJP_332092752199_azure%20account_e_c__63148277493_aud-390212648371:kwd-295861291340&lnkd=Google_Azure_Brand&dclid=CKjVuKOP7uYCFVapaAoddSkKcA)
