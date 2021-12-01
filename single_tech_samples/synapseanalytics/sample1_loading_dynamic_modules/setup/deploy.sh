@@ -45,6 +45,7 @@ STORAGE_ACCOUNT_NAME="${DEPLOYMENT_PREFIX}${unique_str}sa"
 SQL_ADMIN_LOGIN_USER="${DEPLOYMENT_PREFIX}_sql_admin"
 SQL_ADMIN_PASSWORD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 15 | head -n 1)
 SPARK_POOL="SparkPool1"
+IP_ADDRESS=`curl -s checkip.dyndns.org | sed -e 's/.*Current IP Address: //' -e 's/<.*$//'`
 
 # create resource group
 echo "Creating resource group: $AZURE_RESOURCE_GROUP_NAME"
@@ -83,12 +84,12 @@ az role assignment create --assignee-object-id $identity --role "Storage Blob Da
 
 
 #### Create Firewall Rule ####
-echo "Creating firewall to allow acces."
+echo "Creating firewall to allow acces from your client ip ($IP_ADDRESS)."
 az synapse workspace firewall-rule create --resource-group $AZURE_RESOURCE_GROUP_NAME \
                                           --workspace-name $WORK_SPACE_NAME \
                                           --name allow-all \
-                                          --start-ip-address 0.0.0.0 \
-                                          --end-ip-address 255.255.255.255
+                                          --start-ip-address $IP_ADDRESS \
+                                          --end-ip-address $IP_ADDRESS
 
 
 echo "Creating spark pool: $SPARK_POOL"  
@@ -102,8 +103,11 @@ az synapse notebook import --file '@../OrchestratorNotebook.ipynb' --name Orches
 # Update linked service name in dataset
 sed "s/TEMP-WORKSPACE-NAME/$WORK_SPACE_NAME/" ../csv_dataset.json > ../temp_csv_dataset.json
 
-#Update default value for staorage account parameter.
+#Update default value for storage account parameter.
 sed "s/TEMP-STORAGE-ACCOUNT/$STORAGE_ACCOUNT_NAME/" ../pipeline.json > ../temp_pipeline.json
+
+#Update storage account for linked service.
+sed "s/TEMP-STORAGE-ACCOUNT/$STORAGE_ACCOUNT_NAME/" ../linked_service.json > ../temp_linked_service.json
 
 #Create dataset
 echo "Creating synapse dataset."
@@ -112,6 +116,10 @@ az synapse dataset create --workspace-name $WORK_SPACE_NAME --name csv_dataset -
 #Create synapse pipeline
 echo "Creating synapse pipeline."
 az synapse pipeline create --workspace-name $WORK_SPACE_NAME --name DataProcessPipeline --file '@../temp_pipeline.json'
+
+#Create linked service
+echo "Creating linked service for storage account"
+az synapse linked-service create --file '@../temp_linked_service.json' --name adls-linkedservice --workspace-name $WORK_SPACE_NAME
 
 # uploading packages
 echo "Uploading workspace packages."
