@@ -79,7 +79,11 @@ wait_service_principal_creation () {
     until az ad sp list --show-mine --query "[].appId" -o tsv | grep "$sp_app_id"
     do
         echo "waiting for service principal to finish creating..."
+<<<<<<< HEAD
         sleep 10
+=======
+        sleep 10s
+>>>>>>> f06c799 (fix(parking_sensors_synapse): clarity in README in parking sensor synapse sample, add requirement for Synapse extension, comment out debugging in script by default, add general troubleshooting section (#466))
     done
     # Now, try to retrieve it
     retry 10 az ad sp show --id "$sp_app_id" --query "objectId"

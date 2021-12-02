@@ -65,6 +65,10 @@ def test_synapse_pipeline_succeeded(azure_credential, synapse_endpoint, sql_conn
     row = cursor.fetchone()
     assert this_run_status == "Succeeded"
     assert row is not None
+<<<<<<< HEAD
     # In some rare scenarios, it might so happen that the dataset gets aggregated but still manages to produce one row.
     # For avoiding such an edge case, the assertion is checking for more than one row.
     assert int(row.COUNT) > 1
+=======
+    assert int(row.COUNT) >= 1
+>>>>>>> f06c799 (fix(parking_sensors_synapse): clarity in README in parking sensor synapse sample, add requirement for Synapse extension, comment out debugging in script by default, add general troubleshooting section (#466))

@@ -53,12 +53,16 @@ GITHUB_REPO_URL=$github_repo_url \
     bash -c "./scripts/deploy_azdo_service_connections_github.sh"
 
 # This replaces 'your_github_handle/your_repo' to deployer's github project
+<<<<<<< HEAD
 # Adding "uname" check so that the command works on Mac.
 if [[ $(uname) == "Darwin" ]]; then
     sed -i '' "s+your_github_handle/your_repo+$GITHUB_REPO+" devops/azure-pipelines-cd-release.yml
 else
     sed -i "s+your_github_handle/your_repo+$GITHUB_REPO+" devops/azure-pipelines-cd-release.yml
 fi
+=======
+sed -i "s+your_github_handle/your_repo+$GITHUB_REPO+" devops/azure-pipelines-cd-release.yml
+>>>>>>> f06c799 (fix(parking_sensors_synapse): clarity in README in parking sensor synapse sample, add requirement for Synapse extension, comment out debugging in script by default, add general troubleshooting section (#466))
 
 # azure-pipelines-cd-release.yml pipeline require DEV_SYNAPSE_WORKSPACE_NAME set, this line retrieves this value from .env.dev file and sets it in DEV_SYNAPSE_WORKSPACE_NAME
 declare DEV_"$(grep -e '^SYNAPSE_WORKSPACE_NAME' .env.dev | tail -1 | xargs)"

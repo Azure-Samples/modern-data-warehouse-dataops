@@ -170,8 +170,6 @@ module data_quality_workbook './modules/data_quality_workbook.bicep' = if (enabl
 =======
 >>>>>>> e15dc70 (E2E Parking Sensor: Convert ARM templates to Bicep, Improve Deployment script, and bugfix #370 (#378))
 
-
-
 output storage_account_name string = storage.outputs.storage_account_name
 output synapse_sql_pool_output object = synapse_sql_pool.outputs.synapse_sql_pool_output
 output databricks_output object = databricks.outputs.databricks_output

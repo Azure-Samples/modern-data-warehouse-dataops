@@ -12,7 +12,10 @@ pr: none
 variables:
   basePath: 'e2e_samples/parking_sensors_synapse'
   pythonWorkingDir: '$(basePath)/src/ddo_transform'
+<<<<<<< HEAD
   synapseConfigDir: '$(basePath)/synapse/config'
+=======
+>>>>>>> f06c799 (fix(parking_sensors_synapse): clarity in README in parking sensor synapse sample, add requirement for Synapse extension, comment out debugging in script by default, add general troubleshooting section (#466))
   pythonPackageMajorVersion:  1
   pythonPackageMinorVersion:  1
   pythonPackagePatchVersion:  $(Build.BuildId)
@@ -54,9 +57,15 @@ stages:
 
     - task: PublishBuildArtifacts@1
       inputs:
+<<<<<<< HEAD
         PathtoPublish: '$(synapseConfigDir)/requirements.txt'
         ArtifactName: 'synapse_pool_requirements'
       displayName: 'Publish requirements.txt to Artifacts'
+=======
+        PathtoPublish: '$(pythonWorkingDir)/requirements.txt'
+        ArtifactName: 'synapse_pool_requirements'
+      displayName: 'Publish requirement.txt to Artifacts'
+>>>>>>> f06c799 (fix(parking_sensors_synapse): clarity in README in parking sensor synapse sample, add requirement for Synapse extension, comment out debugging in script by default, add general troubleshooting section (#466))
 
   - job: 'publish_static_artifacts'
     displayName: 'Publish Static Artifacts'
