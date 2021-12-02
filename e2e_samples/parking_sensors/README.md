@@ -64,17 +64,17 @@ The solution pulls near realtime [Melbourne Parking Sensor data](https://www.mel
 
 The following shows the overall architecture of the solution.
 
-![Architecture](../../docs/images/architecture.PNG?raw=true "Architecture")
+![Architecture](../../docs/images/architecture.png?raw=true "Architecture")
 
 Sample PowerBI report
 
-![PowerBI report](../../docs/images/PBI_parking_sensors.PNG?raw=true "PowerBI Report")
+![PowerBI report](../../docs/images/PBI_parking_sensors.png?raw=true "PowerBI Report")
 
 ### Continuous Integration and Continuous Delivery (CI/CD)
 
 The following shows the overall CI/CD process end to end.
 
-![CI/CD](../../docs/images/CI_CD_process.PNG?raw=true "CI/CD")
+![CI/CD](../../docs/images/CI_CD_process.png?raw=true "CI/CD")
 
 See [here](#build-and-release-pipeline) for details.
 
@@ -155,7 +155,7 @@ The Build and Release Pipelines definitions can be found [here](devops/README.md
 
 There are eight numbered orange boxes describing the sequence from sandbox development to target environments:
 
-![CI/CD](../../docs/images/CI_CD_process_sequence.PNG?raw=true "CI/CD")
+![CI/CD](../../docs/images/CI_CD_process_sequence.png?raw=true "CI/CD")
 
 1. Developers develop in their own Sandbox environments within the DEV resource group and commit changes into their own short-lived git branches. (i.e. <developer_name>/<branch_name>)
 2. When changes are complete, developers raise a PR to `main` for review. This automatically kicks-off the PR validation pipeline which runs the unit tests, linting and DACPAC builds.
@@ -225,6 +225,7 @@ More resources:
 - [Python 3+](https://www.python.org/)
 - [databricks-cli](https://docs.azuredatabricks.net/dev-tools/databricks-cli.html)
 - [jq](https://stedolan.github.io/jq/)
+- [makepasswd](https://manpages.debian.org/stretch/makepasswd/makepasswd.1.en.html)
 
 #### Software pre-requisites if you use dev container
 
@@ -248,7 +249,7 @@ More resources:
          - To set target Azure Subscription, run `az account set -s <AZURE_SUBSCRIPTION_ID>`
       - Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to.
          - To set target Azure DevOps project, run `az devops configure --defaults organization=https://dev.azure.com/<MY_ORG>/ project=<MY_PROJECT>`
-   2. **Import** this repository into a new Github repo. See [here](https://help.github.com/en/github/importing-your-projects-to-github/importing-a-repository-with-github-importer) on how to import a github repo. Importing is necessary for setting up git integration with Azure Data Factory.
+   2. **Fork** this repository into a new Github repo.
    3. Set the following **required** environment variables:
        - **GITHUB_REPO** - Name of your imported github repo in this form `<my_github_handle>/<repo>`. (ei. "devlace/mdw-dataops-import")
        - **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). This requires "repo" scope.
@@ -258,7 +259,7 @@ More resources:
        - **AZURE_SUBSCRIPTION_ID** - Azure subscription id to use to deploy resources. *Default*: default azure subscription. To see your default, run `az account list`.
        - **DEPLOYMENT_ID** - string appended to all resource names. This is to ensure uniqueness of azure resource names. *Default*: random five character string.
        - **AZDO_PIPELINES_BRANCH_NAME** - git branch where Azure DevOps pipelines definitions are retrieved from. *Default*: main.
-       - **AZURESQL_SERVER_PASSWORD** - Password of the SQL Server instance. *Default*: semi-random string.
+       - **AZURESQL_SERVER_PASSWORD** - Password of the SQL Server instance. *Default*: random string.
 
       To further customize the solution, set parameters in `arm.parameters` files located in the `infrastructure` folder.
 
@@ -274,37 +275,50 @@ More resources:
 
     > **IMPORTANT NOTE**: Only the **DEV** Data Factory should be setup with Git integration. Do **not** setup git integration in the STG and PROD Data Factories.
 
-    1. In the Azure Portal, navigate to the Data Factory in the **DEV** environment.
-    2. Click "Author & Monitor" to launch the Data Factory portal.
-    3. On the landing page, select "Set up code repository". For more information, see [here](https://docs.microsoft.com/en-us/azure/data-factory/source-control).
-    4. Fill in the repository settings with the following:
+    1. In the Azure Portal, navigate to the Data Factory in the **DEV** environment and launch the Data Factory portal.
+    2. On the landing page, select "Set up code repository". For more information, see [here](https://docs.microsoft.com/en-us/azure/data-factory/source-control).
+    3. Fill in the repository settings with the following:
         - Repository type: **Github**
         - Github Account: **your_Github_account**
-        - Git repository name: **imported Github repository**
+        - Git repository (select *Use repository link*, if forked): **forked Github repository url**
         - Collaboration branch: **main**
         - Root folder: **/e2e_samples/parking_sensors/adf**
         - Import Existing Data Factory resource to repository: **Selected**
         - Branch to import resource into: **Use Collaboration**
-    5. When prompted to select a working branch, select **main**
+    4. When prompted to select a working branch, select **main**
 
    > **Ensure you Import Existing Data Factory resources to repository**. The deployment script deployed ADF objects with Linked Service configurations in line with the newly deployed environments. Importing existing ADF resources definitions to the repository overrides any default Linked Services values so they are correctly in sync with your DEV environment.
 
 4. **Trigger an initial Release**
 
    1. In the **DEV** Data Factory portal, navigate to "Manage > Triggers". Select the `T_Sched` trigger and activate it by clicking on the "Play" icon next to it. Click `Publish` to publish changes.
-      - Publishing a change is **required** to generate the `adf_publish` branch which is required in the Release pipelines.
+      - Publishing a change is **required** to generate the `adf_publish` branch which is used in the Release pipelines.
    2. In Azure DevOps, notice a new run of the Build Pipeline (**mdw-park-ci-artifacts**) off `main`. This will build the Python package and SQL DACPAC, then publish these as Pipeline Artifacts.
    3. After completion, this should automatically trigger the Release Pipeline (**mdw-park-cd-release**). This will deploy the artifacts across environments.
-      - You may need to authorize the Pipelines initially to use the Service Connection for the first time.
-      ![Release Pipeline](../../docs/images/ReleasePipeline.PNG?raw=true "Release Pipelines")
+      - You may need to authorize the Pipelines initially to use the Service Connection and deploy the target environments for the first time.
+      ![Release Pipeline](../../docs/images/ReleasePipeline.png?raw=true "Release Pipelines")
    4. **Optional**. Trigger the Data Factory Pipelines per environment.
       1. In the Data Factory portal of each environment, navigate to "Author", then select the `P_Ingest_MelbParkingData`.
       2. Select "Trigger > Trigger Now".
       3. To monitor the run, go to "Monitor > Pipeline runs".
-      ![Data Factory Run](../../docs/images/ADFRun.PNG?raw=true "Data Factory Run]")
+      ![Data Factory Run](../../docs/images/ADFRun.png?raw=true "Data Factory Run]")
       - Currently, the data pipeline is configured to use "on-demand" databricks clusters so it takes a few minutes to spin up. That said, it is not uncommon to change these to point to "existing" running clusters in Development for faster data pipeline runs.
 
-Congratulations!! 🥳 You have successfully deployed the solution and accompanying Build and Release Pipelines. For next steps, we recommend watching [this presentation](https://www.youtube.com/watch?v=Xs1-OU5cmsw) for a detailed walk-through of the running solution. If you've encountered any issues, please file a Github issue with the relevant error message and replication steps.
+5. **Optional. Visualize data in PowerBI**
+    > This requires [PowerBI Desktop App](https://powerbi.microsoft.com/en-us/desktop/) installed.
+    1. Open the provided PowerBi pbix (PowerBI_ParkingSensors.pbix) under `reports` folder.
+    2. Under Queries, select "Transform Data" > "Data source settings".
+    3. Select "Change Source..." and enter the Server and Database details of your SQL Dedicated Pool. Click "Ok".
+        > You can retrieve these from the Azure Portal under "Connection Strings" of your SQL Dedicated Pool Instance.
+    4. Select "Edit Permissions...". Under "Credentials", select "Edit...". Select the "Database" tab. Enter the User name and password of your SQL Dedicated Pool Instance.
+        > You can retrieve these from the Secrets in your KeyVault instance.
+    5. Close the Data Source tabs.
+    6. Click on Refresh data.
+        > Your Dashboard will initially be empty. You will need your data pipeline to run a few times for the data in your SQL Dedicated Pool to populate.
+
+Congratulations!! 🥳 You have successfully deployed the solution and accompanying Build and Release Pipelines. For next steps, we recommend watching [this presentation](https://www.youtube.com/watch?v=Xs1-OU5cmsw) for a detailed walk-through of the running solution.
+
+If you've encountered any issues, please review the [Troubleshooting](../../docs/parking_sensors_troubleshooting.md) section. If you are still stuck, please file a Github issue with the relevant error message, error screenshots, and replication steps.
 
 #### Deployed Resources
 
@@ -318,7 +332,10 @@ After a successful deployment, you should have the following resources:
     - SparkSQL tables created
     - ADLS Gen2 mounted at `dbfs:/mnt/datalake` using the Storage Service Principal.
     - Databricks KeyVault secrets scope created
-  - **Azure Synapse (formerly SQLDW)** - currently, empty. The Release Pipeline will deploy the SQL Database objects.
+  - **Log Analytics Workspace** - including a kusto query on Query explorer -> Saved queries, to verify results that will be looged on Synapse notebooks (notebooks are not deployed yet).
+  - **Azure Synapse SQL Dedicated Pool (formerly SQLDW)** - currently, empty. The Release Pipeline will deploy the SQL Database objects.
+  - **Azure Synapse Spark Pool** - currently, empty. Configured to point the deployed Log Analytics workspace, under "Apache Spark Configuration".
+  - **Azure Synapse Workspace** - currently, empty.
   - **Application Insights**
   - **KeyVault** with all relevant secrets stored.
 - In Azure DevOps
@@ -341,10 +358,12 @@ After a successful deployment, you should have the following resources:
       - mdwdops-serviceconnection-prod
     - **Github Service Connection** for retrieving code from Github
       - mdwdops-github
+  - **Three additional Service Principals** (one per environment) with Data Factory Contributor role for running Integration Tests
 
 Notes:
 
 - *These variable groups are currently not linked to KeyVault due to limitations of creating these programmatically. See [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
+- Environments and Approval Gates are not deployed as part of this solution. See [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
 
 #### Clean up
 

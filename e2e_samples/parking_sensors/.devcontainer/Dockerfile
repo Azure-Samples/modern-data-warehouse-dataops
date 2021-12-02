@@ -23,9 +23,9 @@ RUN az extension add --name azure-devops
 # Install Databricks CLI
 RUN pip install databricks-cli
 
-# Install jq
+# Install jq & makepasswd for some frequently used utility
 RUN apt-get update \
-    && apt-get -y install jq
+    && apt-get -y install jq makepasswd
 
 # Install java
 RUN apt-get install -y openjdk-8-jdk

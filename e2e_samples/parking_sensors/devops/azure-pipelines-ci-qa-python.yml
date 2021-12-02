@@ -13,7 +13,7 @@ variables:
   pythonWorkingDir: 'e2e_samples/parking_sensors/src/ddo_transform'
 
 pool:
-  vmImage: 'Ubuntu-16.04'
+  vmImage: 'ubuntu-latest'
 
 steps:
 - task: UsePythonVersion@0

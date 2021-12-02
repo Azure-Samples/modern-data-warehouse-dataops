@@ -42,8 +42,11 @@ The samples are either focused on a single azure service (**Single Tech Samples*
 
 ## End to End samples
 
-- [**Parking Sensor Solution**](e2e_samples/parking_sensors/) - This demonstrates batch, end-to-end data pipeline following the MDW architecture, along with a corresponding CI/CD process. See [here](https://www.youtube.com/watch?v=Xs1-OU5cmsw) for the presentation which includes a detailed walk-through of the solution.
-![Architecture](docs/images/CI_CD_process_simplified.PNG?raw=true "Architecture")
+- **Parking Sensor Solution** - This demonstrates batch, end-to-end data pipeline following the MDW architecture, along with a corresponding CI/CD process.
+![Architecture](docs/images/CI_CD_process_simplified.png?raw=true "Architecture")
+  This has two version of the solution:
+  - [Azure Data Factory and Azure Databricks Version](e2e_samples/parking_sensors/)
+  - [Azure Synapse Version](e2e_samples/parking_sensors_synapse/)
 - [**Temperature Events Solution**](e2e_samples/temperature_events) - This demonstrate a high-scale event-driven data pipeline with a focus on how to implement Observability and Load Testing.
 ![Architecture](e2e_samples/temperature_events/images/temperature-events-architecture.png?raw=true "Architecture")
 - [**Dataset Versioning Solution**](e2e_samples/dataset_versioning) - This demonstrates how to use DataFactory to Orchestrate DataFlow, to do DeltaLoads into DeltaLake On DataLake(DoDDDoD).

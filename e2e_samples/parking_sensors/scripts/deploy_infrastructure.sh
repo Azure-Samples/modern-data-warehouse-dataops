@@ -128,7 +128,7 @@ az storage blob upload --container-name $storage_file_system --account-name "$az
 # Set Keyvault secrets
 az keyvault secret set --vault-name "$kv_name" --name "datalakeAccountName" --value "$azure_storage_account"
 az keyvault secret set --vault-name "$kv_name" --name "datalakeKey" --value "$azure_storage_key"
-
+az keyvault secret set --vault-name "$kv_name" --name "datalakeurl" --value "https://$azure_storage_account.dfs.core.windows.net"
 
 ###################
 # SQL
@@ -168,7 +168,6 @@ appinsights_key=$(az monitor app-insights component show \
 
 # Store in Keyvault
 az keyvault secret set --vault-name "$kv_name" --name "applicationInsightsKey" --value "$appinsights_key"
-
 
 # ###########################
 # # RETRIEVE DATABRICKS INFORMATION AND CONFIGURE WORKSPACE
@@ -261,7 +260,6 @@ az keyvault secret set --vault-name "$kv_name" --name "spAdfName" --value "$sp_a
 az keyvault secret set --vault-name "$kv_name" --name "spAdfId" --value "$sp_adf_id"
 az keyvault secret set --vault-name "$kv_name" --name "spAdfPass" --value "$sp_adf_pass"
 az keyvault secret set --vault-name "$kv_name" --name "spAdfTenantId" --value "$sp_adf_tenant"
-
 
 ####################
 # AZDO Azure Service Connection and Variables Groups
