@@ -76,13 +76,13 @@ uploadSynapsePackagesToWorkspace(){
     fi
 
     az rest --method put --headers "Authorization=Bearer ${token}" "Content-Type=application/json;charset=utf-8" --url "${synapseLibraryUri}"
-    sleep 5s
+    sleep 5
 
     # Step 3: upload package content to workspace placeholder
     #az synapse workspace wait --resource-group "${RESOURCE_GROUP_NAME}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --updated
     synapseLibraryUriForAppend="${SYNAPSE_DEV_ENDPOINT}/libraries/${name}?comp=appendblock&api-version=${dataPlaneApiVersion}"
     curl -i -X PUT -H "Authorization: Bearer ${token}" -H "Content-Type: application/octet-stream" --data-binary @./synapse/libs/"${name}" "${synapseLibraryUriForAppend}"
-    sleep 15s
+    sleep 15
   
     # Step4: Completing Package creation/Flush the library
     #az synapse workspace wait --resource-group "${RESOURCE_GROUP_NAME}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --updated
@@ -183,6 +183,7 @@ getProvisioningState(){
     --name "$BIG_DATAPOOL_NAME" \
     --workspace-name "$SYNAPSE_WORKSPACE_NAME" \
     --resource-group "$RESOURCE_GROUP_NAME" \
+    --only-show-errors \
     --output json |
     jq -r '.provisioningState')
 }
@@ -224,7 +225,7 @@ UploadSql () {
     }
     }"    
     curl -X PUT -H "Content-Type: application/json" -H "Authorization:Bearer $token" --data-raw "$json_body" --url $synapseSqlApiUri
-    sleep 5s
+    sleep 5
 }
 
 getProvisioningState
@@ -232,16 +233,15 @@ echo "$provision_state"
 
 while [ "$provision_state" != "Succeeded" ]
 do
-    if [ "$provision_state" == "Failed" ]; then break ; else sleep 10s; fi
+    if [ "$provision_state" == "Failed" ]; then break ; else sleep 10; fi
     getProvisioningState
-    echo "$provision_state"
+    echo "$provision_state: checking again in 10 seconds..."
 done
 
 # Build requirement.txt string to upload in the Spark Configuration
 configurationList=""
 while read -r p; do 
-    #line="${p//'[\r\n]'/''}"
-    line=$(echo $p | sed -e 's/[\r\n]//g')
+    line=$(echo "$p" | tr -d '\r' | tr -d '\n')
     if [ "$configurationList" != "" ]; then configurationList="$configurationList$line\r\n" ; else configurationList="$line\r\n"; fi
 done < $requirementsFileName
 
@@ -261,6 +261,14 @@ done
 customlibraryList="customLibraries:[$libraryList],"
 uploadSynapseArtifactsToSparkPool "${configurationList}" "${customlibraryList}"
 
+getProvisioningState
+echo "$provision_state"
+while [ "$provision_state" != "Succeeded" ]
+do
+    if [ "$provision_state" == "Failed" ]; then break ; else sleep 30; fi
+    getProvisioningState
+    echo "$provision_state: checking again in 30 seconds..."
+done
 
 # Deploy all Linked Services
 # Auxiliary string to parametrize the keyvault name on the ls json file
@@ -275,15 +283,6 @@ keyVaultLsContent="{
     }
 }"
 echo "$keyVaultLsContent" > ./synapse/workspace/linkedService/Ls_KeyVault_01.json
-
-getProvisioningState
-echo $provision_state
-while [ "$provision_state" != "Succeeded" ]
-do
-    if [ "$provision_state" == "Failed" ]; then break ; else sleep 10s; fi
-    getProvisioningState
-    echo "$provision_state"
-done
 
 createLinkedService "Ls_KeyVault_01"
 createLinkedService "Ls_AdlsGen2_01"

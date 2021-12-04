@@ -244,13 +244,20 @@ Please check the details [here](docs/observability.md).
     2. Under "manage" > Source Control - Git configuration, select "Configure". For more information, see [here](https://docs.microsoft.com/en-us/azure/synapse-analytics/cicd/source-control).
     3. Fill in the repository settings with the following:
         - Repository type: **Github**
+        - Use GitHub Enterprise Server: **Unselected, unless you are using GitHub Enterprise Server**
+        - GitHub repository owner: **your_Github_account**
         - Github Account: **your_Github_account**
         - Git repository (select *Use repository link*, if forked): **forked Github repository url**
         - Collaboration branch: **main**
+        - Publish branch: **workspace_publish**
         - Root folder: **/e2e_samples/parking_sensors_synapse/synapse/workspace**
-        - Import Existing Data Factory resource to repository: **Selected**
-        - Branch to import resource into: **Use Collaboration**
-    4. When prompted to select a working branch, select **main**
+        - Import existing resources to repository: **Selected**
+        - Import resource into this branch: **main**
+    4. When prompted to select a working branch, check **Use existing** and select **main**
+
+  The final settings should look like as below:
+
+  ![Synapse Github Integration](docs/images/SynapseGithubIntegration.png?raw=true "Synapse Github Integration")
 
    > **Ensure you Import Existing Synapse resources to repository**. The deployment script deployed Synapse Workspace objects with Linked Service configurations in line with the newly deployed environments. Importing existing Synapse Workspace resources definitions to the repository overrides any default Linked Services values so they are correctly in sync with your DEV environment.
 4. **Run setup notebook in Synapse workspace per environment**
