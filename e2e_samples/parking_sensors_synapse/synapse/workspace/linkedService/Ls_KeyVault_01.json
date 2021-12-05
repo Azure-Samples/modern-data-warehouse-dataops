@@ -4,7 +4,7 @@
         "annotations": [],
         "type": "AzureKeyVault",
         "typeProperties": {
-            "baseUrl": "https://mdwdops-kv-prod-s1202.vault.azure.net/"
+            "baseUrl": "https://mdwdops-kv-prod-s1205.vault.azure.net/"
         }
     }
 }
