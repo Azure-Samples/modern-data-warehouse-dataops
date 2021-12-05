@@ -138,3 +138,11 @@ This fails because the pipeline is attempting to upload the same package with th
 **Solution**:
 
 To resolve this, rerun the CI pipeline (`mdwdops-ci-artifacts`) to generate a new package with a new version for the CD pipeline to pickup, then rerun CD pipeline.
+
+## General Troubleshooting
+
+Still encountering errors? Uncomment the `set -o xtrace` in the deployments scripts for full logging of the deployment.
+
+![set -o xtrace](images/troubleshooting/set_o_xtrace.png)
+
+If you are still stuck, please file a [Github Issue](https://github.com/Azure-Samples/modern-data-warehouse-dataops/issues/new?assignees=&labels=bug&template=bug.md&title=) with environment details and repro steps.
