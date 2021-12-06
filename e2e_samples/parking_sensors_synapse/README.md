@@ -260,7 +260,9 @@ Please check the details [here](docs/observability.md).
   ![Synapse Github Integration](docs/images/SynapseGithubIntegration.png?raw=true "Synapse Github Integration")
 
    > **Ensure you Import Existing Synapse resources to repository**. The deployment script deployed Synapse Workspace objects with Linked Service configurations in line with the newly deployed environments. Importing existing Synapse Workspace resources definitions to the repository overrides any default Linked Services values so they are correctly in sync with your DEV environment.
+
 4. **Run setup notebook in Synapse workspace per environment**
+
    1. Grant yourself *Storage Data Blob Contributor* to the Synapse main storage (`mdwdopsst2<ENV><DEPLOYMENT_ID>`).
    2. Navigate into DEV Synapse workspace notebooks tab and select the *00_setup* notebook.
    3. Run this notebook, attaching to the created Spark Pool.
