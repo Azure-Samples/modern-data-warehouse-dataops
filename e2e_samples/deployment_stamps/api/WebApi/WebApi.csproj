@@ -18,10 +18,14 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Cosmos" Version="5.0.7" />
 <<<<<<< HEAD
+<<<<<<< HEAD
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.9" />
 =======
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.7" />
 >>>>>>> 0c3e3b7 (Merge pull request #404 from Azure-Samples/e2e/deployment_stamps)
+=======
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.9" />
+>>>>>>> 4e16332 (Merge pull request #443 from Azure-Samples/dependabot/nuget/e2e_samples/deployment_stamps/api/WebApi/Microsoft.AspNetCore.Authentication.JwtBearer-5.0.9)
     <PackageReference Include="Microsoft.Identity.Web" Version="1.14.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
