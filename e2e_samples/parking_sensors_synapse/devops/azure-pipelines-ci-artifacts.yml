@@ -12,6 +12,7 @@ pr: none
 variables:
   basePath: 'e2e_samples/parking_sensors_synapse'
   pythonWorkingDir: '$(basePath)/src/ddo_transform'
+  synapseConfigDir: '$(basePath)/synapse/config'
   pythonPackageMajorVersion:  1
   pythonPackageMinorVersion:  1
   pythonPackagePatchVersion:  $(Build.BuildId)
@@ -53,9 +54,9 @@ stages:
 
     - task: PublishBuildArtifacts@1
       inputs:
-        PathtoPublish: '$(pythonWorkingDir)/requirements.txt'
+        PathtoPublish: '$(synapseConfigDir)/requirements.txt'
         ArtifactName: 'synapse_pool_requirements'
-      displayName: 'Publish requirement.txt to Artifacts'
+      displayName: 'Publish requirements.txt to Artifacts'
 
   - job: 'publish_static_artifacts'
     displayName: 'Publish Static Artifacts'

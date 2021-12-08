@@ -79,7 +79,7 @@ wait_service_principal_creation () {
     until az ad sp list --show-mine --query "[].appId" -o tsv | grep "$sp_app_id"
     do
         echo "waiting for service principal to finish creating..."
-        sleep 10s
+        sleep 10
     done
     # Now, try to retrieve it
     retry 10 az ad sp show --id "$sp_app_id" --query "objectId"
