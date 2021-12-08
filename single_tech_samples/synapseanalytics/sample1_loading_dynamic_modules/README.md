@@ -136,8 +136,12 @@ The following steps can be performed to validate the correct deployment and exec
 
 - Detail steps on how to execute the sample:
 
-    1. Launch the Azure synapse workspace & open the synapse pipelines
-    2. You'll see the pipeline with activities and some default parameters values. Click on debug or trigger to run the pipeline.
+    1. Launch the Azure synapse workspace & open the synapse pipelines.
+    2. Select on `DataProcessPipeline` and click on edit configurations for `IterateFiles`(ForEach) activity.
+     ![alt text](../Common_Assets/Images/spark-pool1.png "Synapse pipeline")
+    3. Select `InvokeOrchestratorNotebook` activity and then click on `Setttings` tab and set the Spark pool to `SparkPool1`
+     ![alt text](../Common_Assets/Images/spark-pool2.png "Synapse spark pool")
+    4. Click on debug or trigger to run the pipeline.
     >Note:  As part of deployment, 2 modules have already been uploaded to Azure synapse.
 
     ![alt text](../Common_Assets/Images/pipeline_run.png "Logo Title Text 1")
