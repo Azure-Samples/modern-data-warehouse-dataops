@@ -2,7 +2,7 @@
 
 set -o errexit
 set -o nounset
-set -o xtrace # For debugging
+# set -o xtrace # For debugging
 
 
 DEPLOYMENT_PREFIX=${DEPLOYMENT_PREFIX:-}
