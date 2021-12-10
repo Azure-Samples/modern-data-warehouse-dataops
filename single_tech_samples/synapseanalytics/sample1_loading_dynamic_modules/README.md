@@ -12,7 +12,7 @@
     - [2.1.1 Software Prerequisites](#211-software-prerequisites)
   - [2.2. Setup and deployment](#22-setup-and-deployment)
   - [2.3. Deployed Resources](#23-deployed-resources)
-  - [2.4. Deployment validation](#24-deployment-validation-and-execution)
+  - [2.4. Deployment validation and Execution](#24-deployment-validation-and-execution)
   - [2.5. Clean-up](#25-clean-up)
 
 ## 1. Solution Overview
@@ -95,13 +95,13 @@ Below listed are the steps to deploy this sample :
 
 1. Fork and clone this repository. Navigate to  `single_tech_samples/synapseanalytics/sample1_loading_dynamic_modules/setup/`.
 
-1. The sample depends on the variables to be set before the deployment script is run; Script will prompt you to provide input for following variables.
+1. The sample depends on the variables to be set before the deployment script is run; You can set these as environment variables, otherwise the deploy script will prompt you to provide input for following variables.
   
-    > - `DEPLOYMENT_PREFIX` - Prefix for the resource names which will be created as a part of this deployment
-    > - `AZURE_SUBSCRIPTION_ID` - Subscription ID of the Azure subscription where the resources should be deployed.
-    > - `AZURE_RESOURCE_GROUP_LOCATION` - Azure region where the resources will be deployed. (e.g. australiaeast, eastus, etc.)
+    > - `DEPLOYMENT_PREFIX` - Prefix for the resource names which will be created as a part of this deployment. Default: *syndyn*.
+    > - `AZURE_SUBSCRIPTION_ID` - Subscription ID of the Azure subscription where the resources should be deployed. Default: *your default Azure subscription*.
+    > - `AZURE_RESOURCE_GROUP_LOCATION` - Azure region where the resources will be deployed (e.g. australiaeast, eastus, etc.). Default: *eastus*.
 
-1. Run '/deploy.sh'
+1. Run `/deploy.sh`
    > Note: The script will prompt you to log in to the Azure account for authorization to deploy resources.
 
    The script will create the Synapse analytics workspace, Azure storage, Synapse pipelines & Synapse notebook. This script will also upload the sample file to blob storage and wheel packages to the Azure synapse.
@@ -160,11 +160,11 @@ The following steps can be performed to validate the correct deployment and exec
     ![alt text](../Common_Assets/Images/Spark_table_full.png "spark table")
 
     1. Now let's run the same pipeline with another module, keeping everything same except the module name, module coinfiguration and target tables.
-![alt text](../Common_Assets/Images/pipeline_run_asia.png "Logo Title Text 1")
+![alt text](../Common_Assets/Images/pipeline_run_asia.png "Pipeline run")
 
     1. Run the pipeline again with the moduleName as `data_filter` & this module will filter the data based on the filter criteria provided in the moduleConfig parameter, which in our case is "Asia" on `region` column.
     1. Once pipeline finished, you'll see a new spark table named `country_list_asia` created successfully.
-![alt text](../Common_Assets/Images/spark_table_asia.png "Logo Title Text 1")
+![alt text](../Common_Assets/Images/spark_table_asia.png "Spark Table")
 
    With this you can have generic pipelines which can load transformation modules dynamically based on configurations to process your data.
 
@@ -176,4 +176,4 @@ The clean-up script can be executed to clean up the resources provisioned in thi
 
 1. Navigate to `single_tech_samples/synapseanalytics/sample1_loading_dynamic_modules/setup/`.
 
-2. Run '/destroy.sh'
+2. Run `/destroy.sh`
