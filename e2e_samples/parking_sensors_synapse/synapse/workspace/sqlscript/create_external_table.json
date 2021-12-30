@@ -1,0 +1,17 @@
+{
+	"name": "create_external_table",
+	"properties": {
+		"description": "create_external_table",
+		"content": {
+			"query": "-- CREATE DATABASE\r\nIF NOT EXISTS(SELECT * FROM sys.databases WHERE name = 'external_db')\r\nBEGIN\r\n    CREATE DATABASE external_db\r\nEND\r\nGO\r\nUSE external_db\r\n-- Create MASTER KEY \r\nIF NOT EXISTS\r\n    (SELECT * FROM sys.symmetric_keys\r\n        WHERE symmetric_key_id = 101)\r\nBEGIN\r\n    CREATE MASTER KEY\r\nEND\r\nGO\r\n-- Create Database Scope Credential [Managed Identity]\r\nIF NOT EXISTS\r\n    (SELECT * FROM sys.database_scoped_credentials\r\n         WHERE name = 'SynapseIdentity')\r\n    CREATE DATABASE SCOPED CREDENTIAL SynapseIdentity\r\n    WITH IDENTITY = 'Managed Identity'\r\nGO\r\nIF NOT EXISTS\r\n    (SELECT * FROM sys.database_scoped_credentials\r\n         WHERE name = 'WorkspaceIdentity')\r\n    CREATE DATABASE SCOPED CREDENTIAL WorkspaceIdentity\r\n    WITH IDENTITY = 'Managed Identity'\r\nGO\r\n-- Create Parquet Format [SynapseParquetFormat]\r\nIF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'SynapseParquetFormat')\r\n\tCREATE EXTERNAL FILE FORMAT [SynapseParquetFormat]\r\n\tWITH ( FORMAT_TYPE = parquet)\r\nGO\r\n-- DROP EXTERNAL DATA SOURCE INTERIM_Zone\r\n-- Create External Data Source\r\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'INTERIM_Zone')\r\n\tCREATE EXTERNAL DATA SOURCE INTERIM_Zone\r\n\tWITH (  LOCATION   =  'https://mdwdopsstdevimops.dfs.core.windows.net/datalake/data/interim/'\r\n    ,CREDENTIAL = WorkspaceIdentity )\r\nGo\r\n-- Create parking_bay View \r\nIF EXISTS(select * FROM sys.views where name = 'parking_bay_view')\r\n    DROP VIEW IF EXISTS parking_bay_view;\r\nGO\r\nCREATE VIEW parking_bay_view AS\r\nSELECT * \r\nFROM OPENROWSET(\r\n        BULK 'interim.parking_bay/*.parquet',\r\n        DATA_SOURCE = 'INTERIM_Zone',\r\n        FORMAT = 'PARQUET'\r\n    )\r\nAS [r];\r\nGO\r\n-- Create sensor View \r\nIF EXISTS(select * FROM sys.views where name = 'sensor_view')\r\n    DROP VIEW IF EXISTS sensor_view;\r\nGO\r\nCREATE VIEW sensor_view AS\r\nSELECT * \r\nFROM OPENROWSET(\r\n        BULK 'interim.sensor/*.parquet',\r\n        DATA_SOURCE = 'INTERIM_Zone',\r\n        FORMAT = 'PARQUET'\r\n    )\r\nAS [r];\r\nGO",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"name": "master",
+				"type": "SqlOnDemand"
+			}
+		},
+		"type": "SqlQuery"
+	}
+}

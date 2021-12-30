@@ -1,0 +1,218 @@
+{
+	"name": "01b_explore_sqlserverless",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "synspdevimops",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2
+		},
+		"metadata": {
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			}
+		},
+		"cells": [
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# 1. Get dynamic pipeline parameters"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"outputs_hidden": false,
+						"source_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"tags": [
+						"parameters"
+					]
+				},
+				"source": [
+					"keyvaultlsname = 'Ls_KeyVault_01'\n",
+					"db_user_key='synapseSQLPoolAdminUsername'\n",
+					"db_pwd_key='synapseSQLPoolAdminPassword'"
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# 2. Get username password from keyvault"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"outputs_hidden": false,
+						"source_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"from pyspark.sql import SparkSession\n",
+					"workspace_name=mssparkutils.env.getWorkspaceName()\n",
+					"print(workspace_name)"
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# 3. Get username password from keyvault"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"outputs_hidden": false,
+						"source_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# Make sure user has been created through create_db_user.sql before reading the data\n",
+					"sc = SparkSession.builder.getOrCreate()\n",
+					"token_library = sc._jvm.com.microsoft.azure.synapse.tokenlibrary.TokenLibrary\n",
+					"username = token_library.getSecretWithLS(keyvaultlsname, db_user_key)\n",
+					"password = token_library.getSecretWithLS(keyvaultlsname, db_pwd_key)\n"
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# 4. Get Data from external Table"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"outputs_hidden": false,
+						"source_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# Read Top 5 lines from the parking data\n",
+					"hostname = f\"{workspace_name}-ondemand.sql.azuresynapse.net\"\n",
+					"print(hostname)\n",
+					"port = 1433\n",
+					"database = \"external_db\" \n",
+					"jdbcUrl = f\"jdbc:sqlserver://{hostname}:{port};database={database}\"\n",
+					"dbtable = \"dbo.parking_bay_view\"\n",
+					"\n",
+					"#Parking Data\n",
+					"parking_data = spark.read \\\n",
+					"    .format(\"com.microsoft.sqlserver.jdbc.spark\") \\\n",
+					"    .option(\"url\", jdbcUrl) \\\n",
+					"    .option(\"dbtable\", dbtable) \\\n",
+					"    .option(\"user\", username) \\\n",
+					"    .option(\"password\", password) \\\n",
+					"    .load()\n",
+					"print(parking_data.count())\n",
+					"parking_data.show(5)\n"
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"outputs_hidden": false,
+						"source_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# Read Top 5 lines from the sensor data\n",
+					"dbtable = \"sensor_view\"\n",
+					"sensor_data = spark.read \\\n",
+					"    .format(\"com.microsoft.sqlserver.jdbc.spark\") \\\n",
+					"    .option(\"url\", jdbcUrl) \\\n",
+					"    .option(\"dbtable\", dbtable) \\\n",
+					"    .option(\"user\", username) \\\n",
+					"    .option(\"password\", password) \\\n",
+					"    .load()\n",
+					"print(sensor_data.count())\n",
+					"sensor_data.show(5)"
+				],
+				"attachments": null,
+				"execution_count": null
+			}
+		]
+	}
+}
