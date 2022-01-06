@@ -1,0 +1,20 @@
+{
+	"name": "parking_bay_view",
+	"properties": {
+		"folder": {
+			"name": "Serverless"
+		},
+		"content": {
+			"query": "-- Create parking_bay View \nIF EXISTS(select * FROM sys.views where name = 'parking_bay_view')\n    DROP VIEW IF EXISTS parking_bay_view;\nGO\nCREATE VIEW parking_bay_view AS\nSELECT * \nFROM OPENROWSET(\n        BULK 'interim.parking_bay/*.parquet',\n        DATA_SOURCE = 'INTERIM_Zone',\n        FORMAT = 'PARQUET'\n    )\nAS [r];\nGO",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
