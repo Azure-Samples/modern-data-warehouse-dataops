@@ -77,11 +77,11 @@ stages:
 
     - task: PowerShell@2
       inputs:
-        filePath: '$(Agent.BuildDirectory)/s/workspace/_scripts/parsingSQLJson.ps1'
+        filePath: '$(Agent.BuildDirectory)/s/e2e_samples/parking_sensors_synapse/scripts/parsingSQLJson.ps1'
       displayName: 'Parsing SQL Scripts'
 
     - script: dir
-      workingDirectory: $(Agent.BuildDirectory)/s/workspace/sqlscript/
+      workingDirectory: $(Agent.BuildDirectory)/s/e2e_samples/parking_sensors_synapse/scripts/
       displayName: List contents of a folder
 
     - task: PublishBuildArtifacts@1
