@@ -1,6 +1,6 @@
 param
 (
-    [parameter(Mandatory = $false)] [String] $rootFolder='/home/vsts/work/1/s//e2e_samples/parking_sensors_synapse/synapse/workspace/sqlscript',
+    [parameter(Mandatory = $false)] [String] $rootFolder='/home/vsts/work/1/s/e2e_samples/parking_sensors_synapse/synapse/workspace/sqlscript',
     [parameter(Mandatory = $false)] [String] $armTemplate
 )
 

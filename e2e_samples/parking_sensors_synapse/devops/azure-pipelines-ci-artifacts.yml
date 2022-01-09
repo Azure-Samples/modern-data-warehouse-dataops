@@ -81,16 +81,15 @@ stages:
       displayName: 'Parsing SQL Scripts'
 
     - script: dir
-      workingDirectory: $(Agent.BuildDirectory)/s/e2e_samples/parking_sensors_synapse/scripts/
+      workingDirectory: $(Agent.BuildDirectory)/s/e2e_samples/parking_sensors_synapse/synapse/workspace/sqlscript/extracted_sql
       displayName: List contents of a folder
 
     - task: PublishBuildArtifacts@1
       inputs:
-        PathtoPublish: 'workspace/sqlscript/extracted_sql/'
+        PathtoPublish: 'e2e_samples/parking_sensors_synapse/synapse/workspace/sqlscript/extracted_sql/'
         ArtifactName: 'serverless_sql_scripts'
       displayName: 'Publish SQL Scripts'
     
-
   - job: 'publish_sql_packages'
     displayName: 'Publish SQL Packages'
     pool:
