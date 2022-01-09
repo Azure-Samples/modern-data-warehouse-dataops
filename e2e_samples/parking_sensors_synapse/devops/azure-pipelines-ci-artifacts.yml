@@ -68,6 +68,28 @@ stages:
         PathtoPublish: '$(basePath)/synapse'
         ArtifactName: 'synapse'
       displayName: 'Publish Synapse Artifacts'
+    
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(basePath)/scripts/parsingSQLJson.ps1'
+        ArtifactName: 'serverless_scripts'
+      displayName: 'Publish SQL Serverless Json Parsing Scripts'
+
+    - task: PowerShell@2
+      inputs:
+        filePath: '$(Agent.BuildDirectory)/s/workspace/_scripts/parsingSQLJson.ps1'
+      displayName: 'Parsing SQL Scripts'
+
+    - script: dir
+      workingDirectory: $(Agent.BuildDirectory)/s/workspace/sqlscript/
+      displayName: List contents of a folder
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: 'workspace/sqlscript/extracted_sql/'
+        ArtifactName: 'serverless_sql_scripts'
+      displayName: 'Publish SQL Scripts'
+    
 
   - job: 'publish_sql_packages'
     displayName: 'Publish SQL Packages'

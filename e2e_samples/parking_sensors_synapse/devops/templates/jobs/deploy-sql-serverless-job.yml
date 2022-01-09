@@ -1,0 +1,43 @@
+parameters:
+- name: environmentName
+  type: string
+- name: serviceConnection
+  type: string
+
+jobs:
+- deployment: deploy_synapse_sql_serverless
+  displayName: 'Deploy to synapse sql serverless'
+  pool:
+    vmImage: 'windows-latest'
+  variables:
+    sqlProjName: ddo_azuresqldw_dw
+  environment: ${{ parameters.environmentName }}
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - task: PowerShell@2
+          displayName: 'Listing SQL Scripts'
+          inputs:
+            targetType: 'inline'
+            script: Write-Host "##vso[task.setvariable variable=sqlfiles]$(Get-ChildItem -PATH '$(Pipeline.Workspace)/ciartifacts/serverless_sql_scripts/*.sql')"
+                    Write-Host $sqlfiles
+        
+        - bash: |
+            echo "##vso[task.setvariable variable=sqlfiles2]$(ls '$(Pipeline.Workspace)/ciartifacts/serverless_sql_scripts/' )" 
+          displayName: "Set new variable value"
+
+        # https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/deploy/sql-azure-dacpac-deployment?view=azure-devops
+
+        - task: SqlAzureDacpacDeployment@1
+          inputs:
+            azureSubscription: ${{ parameters.serviceConnection }}
+            AuthenticationType: 'server'
+            ServerName: $(sqlsrvrName)-ondemand.database.windows.net
+            DatabaseName: $(sqlServerlessDatabaseName)
+            SqlUsername: '$(sqlsrvrUsername)'
+            SqlPassword: '$(sqlsrvrPassword)'
+            deployType: 'sqlTask'
+            SqlFile: '$(Pipeline.Workspace)/ciartifacts/serverless_sql_scripts/deploy_sql.sql'
+            #SqlAdditionalArguments: '/Variables:ADLSCredentialKey=$(datalakeKey)'
+          displayName: 'Azure Synapse SQL Serverless'
