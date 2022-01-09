@@ -52,6 +52,10 @@ stages:
       serviceConnection: 'mdwdops-serviceconnection-stg'
   # Integration tests
   - template: templates/jobs/integration-tests-job.yml
+  - template: templates/jobs/deploy-sql-serverless-job.yml
+    parameters:
+      environmentName: 'STG'
+      serviceConnection: 'mdwdops-serviceconnection-stg'
 
 # - stage: deploy_to_prod
 #   displayName: 'Deploy to Prod'

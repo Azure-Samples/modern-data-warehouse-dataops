@@ -33,10 +33,10 @@ jobs:
           inputs:
             azureSubscription: ${{ parameters.serviceConnection }}
             AuthenticationType: 'server'
-            ServerName: $(sqlsrvrName)-ondemand.database.windows.net
-            DatabaseName: $(sqlServerlessDatabaseName)
-            SqlUsername: '$(sqlsrvrUsername)'
-            SqlPassword: '$(sqlsrvrPassword)'
+            ServerName: $(synapseSqlPoolServer)-ondemand.database.windows.net
+            DatabaseName: $(synapsedSqlSeverlessDBName)
+            SqlUsername: '$(synapseSqlPoolAdminUsername)'
+            SqlPassword: '$(synapseSqlPoolAdminPassword)'
             deployType: 'sqlTask'
             SqlFile: '$(Pipeline.Workspace)/ciartifacts/serverless_sql_scripts/deploy_sql.sql'
             #SqlAdditionalArguments: '/Variables:ADLSCredentialKey=$(datalakeKey)'
