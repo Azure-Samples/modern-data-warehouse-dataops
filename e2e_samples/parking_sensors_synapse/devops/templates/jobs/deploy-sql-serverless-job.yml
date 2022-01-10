@@ -34,7 +34,7 @@ jobs:
             azureSubscription: ${{ parameters.serviceConnection }}
             AuthenticationType: 'server'
             ServerName: $(synapseSqlPoolServer)-ondemand.database.windows.net
-            DatabaseName: $(synapseSqlSeverlessDBName)
+            DatabaseName: $(synapseSqlServerlessDBName)
             SqlUsername: '$(synapseSqlPoolAdminUsername)'
             SqlPassword: '$(synapseSqlPoolAdminPassword)'
             deployType: 'sqlTask'
