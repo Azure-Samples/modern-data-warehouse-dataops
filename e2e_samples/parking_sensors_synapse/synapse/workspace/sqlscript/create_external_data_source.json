@@ -5,12 +5,12 @@
 			"name": "Serverless/External Resources"
 		},
 		"content": {
-			"query": "-- DROP EXTERNAL DATA SOURCE INTERIM_Zone\n-- Create External Data Source\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'INTERIM_Zone')\n\tCREATE EXTERNAL DATA SOURCE INTERIM_Zone\n\tWITH (  LOCATION   =  'https://mdwdopsstdevimops.dfs.core.windows.net/datalake/data/interim/'\n    ,CREDENTIAL = WorkspaceIdentity )\nGo",
+			"query": "-- DROP EXTERNAL DATA SOURCE INTERIM_Zone\n-- Create External Data Source\n--https://mdwdopsstdevimops.dfs.core.windows.net/datalake/data/interim/\n--declare @ADLSLocation varchar(300)\n--set @ADLSLocation = 'https://mdwdopsstdevimops.dfs.core.windows.net/datalake/data/interim/'\n\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'INTERIM_Zone')\n\tCREATE EXTERNAL DATA SOURCE INTERIM_Zone\n\tWITH (  LOCATION   =  N'$(ADLSLocation)'\n    ,CREDENTIAL = WorkspaceIdentity )\nGo",
 			"metadata": {
 				"language": "sql"
 			},
 			"currentConnection": {
-				"databaseName": "master",
+				"databaseName": "external_db",
 				"poolName": "Built-in"
 			},
 			"resultLimit": 5000
