@@ -39,5 +39,5 @@ jobs:
             SqlPassword: '$(synapseSqlPoolAdminPassword)'
             deployType: 'sqlTask'
             SqlFile: '$(Pipeline.Workspace)/ciartifacts/serverless_sql_scripts/deploy_sql.sql'
-            SqlAdditionalArguments: '/Variables:ADLSLocation=abfss://datalake@$(datalakeAccountName).dfs.core.windows.net/datalake/data/interim/'
+            SqlAdditionalArguments: '-Variable ADLSLocation=abfss://datalake@$(datalakeAccountName).dfs.core.windows.net/datalake/data/interim/'
           displayName: 'Azure Synapse SQL Serverless'
