@@ -1,0 +1,20 @@
+{
+	"name": "drop_extenal_tables",
+	"properties": {
+		"folder": {
+			"name": "Serverless/Drop Statements"
+		},
+		"content": {
+			"query": "IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[parking_bay_ext]') AND type in (N'U'))\n    DROP EXTERNAL TABLE [dbo].[parking_bay_ext]\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

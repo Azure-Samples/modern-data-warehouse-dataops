@@ -1,0 +1,20 @@
+{
+	"name": "drop_external_datasources",
+	"properties": {
+		"folder": {
+			"name": "Serverless/Drop Statements"
+		},
+		"content": {
+			"query": "/****** Object:  ExternalDataSource [tpcds_msi]    Script Date: 24/08/2021 10:20:34 ******/\nIF  EXISTS (Select * from sys.external_data_sources WHERE name = 'INTERIM_Zone')\n    DROP EXTERNAL DATA SOURCE [INTERIM_Zone]",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "external_db",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
