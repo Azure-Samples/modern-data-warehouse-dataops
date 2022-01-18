@@ -9,7 +9,7 @@ if (Test-Path -Path "$rootFolder/extracted_sql"){
     Clear-Content "$rootFolder/extracted_sql/deploy_sql.sql"
 }
 
-$sqlfiles = Get-ChildItem -PATH "$rootFolder/"Drop_External_Tables.json
+$sqlfiles = Get-ChildItem -PATH "$rootFolder/"drop_external_tables.json
 write-host $($sqlfiles)
 foreach ( $filename in $sqlfiles.name)
 {   
@@ -30,7 +30,7 @@ foreach ( $filename in $sqlfiles.name)
     
 }
 
-$sqlfiles = Get-ChildItem -PATH "$rootFolder/"Drop_External_DataSources.json
+$sqlfiles = Get-ChildItem -PATH "$rootFolder/"drop_external_datasources.json
 write-host $($sqlfiles)
 foreach ( $filename in $sqlfiles.name)
 {   
@@ -51,7 +51,7 @@ foreach ( $filename in $sqlfiles.name)
     
 }
 
-$sqlfiles = Get-ChildItem -PATH "$rootFolder/"Drop_Database_Scoped_Credential.json
+$sqlfiles = Get-ChildItem -PATH "$rootFolder/"drop_database_scoped_credentials.json
 write-host $($sqlfiles)
 foreach ( $filename in $sqlfiles.name)
 {   
@@ -71,7 +71,7 @@ foreach ( $filename in $sqlfiles.name)
      
 }
 
-$sqlfiles = Get-ChildItem -PATH "$rootFolder/"Drop_External_File_Format.json
+$sqlfiles = Get-ChildItem -PATH "$rootFolder/"drop_external_file_formats.json
 write-host $($sqlfiles)
 foreach ( $filename in $sqlfiles.name)
 {   
