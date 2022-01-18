@@ -1,5 +1,5 @@
 {
-	"name": "drop_extenal_tables",
+	"name": "drop_external_tables",
 	"properties": {
 		"folder": {
 			"name": "Serverless/Drop Statements"
