@@ -198,6 +198,7 @@ UpdateExternalTableScript () {
 UploadSql () {
     echo "Try to upload sql script"
     declare name=$1
+    declare foldername="${2:-}"
     echo "Uploading sql script to Workspace: $name"
 
     #az synapse workspace wait --resource-group "${RESOURCE_GROUP_NAME}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --created
@@ -206,10 +207,13 @@ UploadSql () {
     # Step 2: create workspace package placeholder
     synapseSqlBaseUri=${SYNAPSE_DEV_ENDPOINT}/sqlScripts
     synapseSqlApiUri="${synapseSqlBaseUri}/$name?api-version=${apiVersion}"
-    body_content="$(sed 'N;s/\n/\\n/' ./synapse/workspace/scripts/$name.sql)"
+    body_content="$(sed 'N;s/\n/\\n/' ./synapse/workspace/scripts$foldername/$name.sql)"
     json_body="{
     \"name\": \"$name\",
     \"properties\": {
+        \"folder\": {
+            \"name\": \"$foldername\"
+        },
         \"description\": \"$name\",        
         \"content\":{ 
             \"query\": \"$body_content\",
@@ -228,85 +232,85 @@ UploadSql () {
     sleep 5
 }
 
-getProvisioningState
-echo "$provision_state"
+# getProvisioningState
+# echo "$provision_state"
 
-while [ "$provision_state" != "Succeeded" ]
-do
-    if [ "$provision_state" == "Failed" ]; then break ; else sleep 10; fi
-    getProvisioningState
-    echo "$provision_state: checking again in 10 seconds..."
-done
+# while [ "$provision_state" != "Succeeded" ]
+# do
+#     if [ "$provision_state" == "Failed" ]; then break ; else sleep 10; fi
+#     getProvisioningState
+#     echo "$provision_state: checking again in 10 seconds..."
+# done
 
 # Build requirement.txt string to upload in the Spark Configuration
-configurationList=""
-while read -r p; do 
-    line=$(echo "$p" | tr -d '\r' | tr -d '\n')
-    if [ "$configurationList" != "" ]; then configurationList="$configurationList$line\r\n" ; else configurationList="$line\r\n"; fi
-done < $requirementsFileName
+# configurationList=""
+# while read -r p; do 
+#     line=$(echo "$p" | tr -d '\r' | tr -d '\n')
+#     if [ "$configurationList" != "" ]; then configurationList="$configurationList$line\r\n" ; else configurationList="$line\r\n"; fi
+# done < $requirementsFileName
 
-# Build packages list to upload in the Spark Pool, upload packages to synapse workspace
-libraryList=""
-for file in "$packagesDirectory"*.whl; do
-    filename=${file##*/}
-    librariesToUpload="{
-        \"name\": \"${filename}\",
-        \"path\": \"${SYNAPSE_WORKSPACE_NAME}/libraries/${filename}\",
-        \"containerName\": \"prep\",
-        \"type\": \"whl\"
-    }"
-    if [ "$libraryList" != "" ]; then libraryList=${libraryList}","${librariesToUpload}; else libraryList=${librariesToUpload};fi
-    uploadSynapsePackagesToWorkspace "${filename}"
-done
-customlibraryList="customLibraries:[$libraryList],"
-uploadSynapseArtifactsToSparkPool "${configurationList}" "${customlibraryList}"
+# # Build packages list to upload in the Spark Pool, upload packages to synapse workspace
+# libraryList=""
+# for file in "$packagesDirectory"*.whl; do
+#     filename=${file##*/}
+#     librariesToUpload="{
+#         \"name\": \"${filename}\",
+#         \"path\": \"${SYNAPSE_WORKSPACE_NAME}/libraries/${filename}\",
+#         \"containerName\": \"prep\",
+#         \"type\": \"whl\"
+#     }"
+#     if [ "$libraryList" != "" ]; then libraryList=${libraryList}","${librariesToUpload}; else libraryList=${librariesToUpload};fi
+#     uploadSynapsePackagesToWorkspace "${filename}"
+# done
+# customlibraryList="customLibraries:[$libraryList],"
+# uploadSynapseArtifactsToSparkPool "${configurationList}" "${customlibraryList}"
 
-getProvisioningState
-echo "$provision_state"
-while [ "$provision_state" != "Succeeded" ]
-do
-    if [ "$provision_state" == "Failed" ]; then break ; else sleep 30; fi
-    getProvisioningState
-    echo "$provision_state: checking again in 30 seconds..."
-done
+# getProvisioningState
+# echo "$provision_state"
+# while [ "$provision_state" != "Succeeded" ]
+# do
+#     if [ "$provision_state" == "Failed" ]; then break ; else sleep 30; fi
+#     getProvisioningState
+#     echo "$provision_state: checking again in 30 seconds..."
+# done
 
-# Deploy all Linked Services
-# Auxiliary string to parametrize the keyvault name on the ls json file
-keyVaultLsContent="{
-    \"name\": \"Ls_KeyVault_01\",
-    \"properties\": {
-        \"annotations\": [],
-        \"type\": \"AzureKeyVault\",
-        \"typeProperties\": {
-            \"baseUrl\": \"https://${KEYVAULT_NAME}.vault.azure.net/\"
-        }
-    }
-}"
-echo "$keyVaultLsContent" > ./synapse/workspace/linkedService/Ls_KeyVault_01.json
+# # Deploy all Linked Services
+# # Auxiliary string to parametrize the keyvault name on the ls json file
+# keyVaultLsContent="{
+#     \"name\": \"Ls_KeyVault_01\",
+#     \"properties\": {
+#         \"annotations\": [],
+#         \"type\": \"AzureKeyVault\",
+#         \"typeProperties\": {
+#             \"baseUrl\": \"https://${KEYVAULT_NAME}.vault.azure.net/\"
+#         }
+#     }
+# }"
+# echo "$keyVaultLsContent" > ./synapse/workspace/linkedService/Ls_KeyVault_01.json
 
-createLinkedService "Ls_KeyVault_01"
-createLinkedService "Ls_AdlsGen2_01"
-createLinkedService "Ls_Rest_MelParkSensors_01"
+#createLinkedService "Ls_KeyVault_01"
+#createLinkedService "Ls_AdlsGen2_01"
+#createLinkedService "Ls_Rest_MelParkSensors_01"
 
 # Deploy all Datasets
-createDataset "Ds_AdlsGen2_MelbParkingData"
-createDataset "Ds_REST_MelbParkingData"
+#createDataset "Ds_AdlsGen2_MelbParkingData"
+#createDataset "Ds_REST_MelbParkingData"
 
 # Deploy all Notebooks
 # This line allows the spark pool to be available to attach to the notebooks
-az synapse spark session list --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spark-pool-name "${BIG_DATAPOOL_NAME}"
-createNotebook "00_setup"
-createNotebook "01a_explore"
-createNotebook "01b_explore_sqlserverless"
-createNotebook "02_standardize"
-createNotebook "03_transform"
+#az synapse spark session list --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spark-pool-name "${BIG_DATAPOOL_NAME}"
+#createNotebook "00_setup"
+#createNotebook "01a_explore"
+#createNotebook "01b_explore_sqlserverless"
+#createNotebook "02_standardize"
+#createNotebook "03_transform"
 
 
 # Deploy all Pipelines
-createPipeline "P_Ingest_MelbParkingData"
+#createPipeline "P_Ingest_MelbParkingData"
 
 # Deploy triggers
-createTrigger "T_Sched"
+#createTrigger "T_Sched"
 
 # Upload SQL script
 UpdateExternalTableScript
@@ -315,4 +319,19 @@ UpdateExternalTableScript
 # TODO: will replace and run this sql in deploying
 UploadSql "create_db_user_template"
 UploadSql "create_external_table"
+UploadSql "sensor_view" "/Serverless"
+UploadSql "parking_bay_view" "/Serverless"
+UploadSql "parking_bay_externaltable" "/Serverless"
+
+UploadSql "create_database_scope_credentials" "/Serverless/Security"
+
+UploadSql "create_external_data_source" "/Serverless/ExternalResources"
+UploadSql "create_external_file_format" "/Serverless/ExternalResources"
+
+UploadSql "drop_database_scoped_credentials" "/Serverless/DropStatements"
+UploadSql "drop_external_datasources" "/Serverless/DropStatements"
+UploadSql "drop_external_file_formats" "/Serverless/DropStatements"
+UploadSql "drop_external_tables" "/Serverless/DropStatements"
+
+
 echo "Completed deploying Synapse artifacts."
