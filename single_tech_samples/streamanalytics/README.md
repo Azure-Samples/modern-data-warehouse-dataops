@@ -10,7 +10,7 @@
 
 1. __Azure Cli__ Will be necessary for various tasks. Please follow the instructions found [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli).
 
-1. __Bicep__  This project uses `Bicep` templates to setup `Azure` infrastructure. Please follow the steps under [Install and manage via Azure CLI (easiest)](https://github.com/Azure/bicep/blob/main/docs/installing.md#install-and-manage-via-azure-cli-easiest) to install the `Azure Cli` extension.
+1. __Bicep__  This project uses `Bicep` templates to setup `Azure` infrastructure. Please follow the steps under [Install Bicep Tools](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/install) to install the `Azure Cli` extension.
 
    For an introduction to `Bicep`, you can find more information in the `Bicep` repo under [Get started with Bicep](https://github.com/Azure/bicep/#get-started-with-bicep).
 
