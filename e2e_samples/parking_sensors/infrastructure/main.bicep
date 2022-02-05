@@ -147,6 +147,22 @@ module alerts './modules/alerts.bicep' = if (enable_monitoring) {
   ]
 }
 
+module data_quality_workbook './modules/data_quality_workbook.bicep' = if (enable_monitoring) {
+  name: 'wb_${deployment_id}'
+  params: {
+    project: project
+    env: env
+    deployment_id: deployment_id
+    appinsights_name: appinsights.outputs.appinsights_name
+  }
+  dependsOn: [
+    loganalytics
+    appinsights    
+  ]
+}
+
+
+
 output storage_account_name string = storage.outputs.storage_account_name
 output synapse_sql_pool_output object = synapse_sql_pool.outputs.synapse_sql_pool_output
 output databricks_output object = databricks.outputs.databricks_output
