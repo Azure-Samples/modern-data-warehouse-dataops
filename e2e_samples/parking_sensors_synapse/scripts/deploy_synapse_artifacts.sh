@@ -177,6 +177,14 @@ createTrigger () {
     az synapse trigger create --file @./synapse/workspace/trigger/"${name}".json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}"
 }
 
+createSqlDatabase(){
+    echo "Creating the external_db sql database using Synapse Serverless SQL..."
+
+    # Create a external_db database using Synapse Serverless SQL
+    sqlcmd -U ${synapseAnalyticsSQLAdmin} -P ${SYNAPSE_SQL_PASSWORD} -S tcp:${SYNAPSE_WORKSPACE_NAME}-ondemand.sql.azuresynapse.net -d master -I -Q "CREATE DATABASE external_db;"
+
+
+}
 
 getProvisioningState(){
     provision_state=$(az synapse spark pool show \
@@ -242,7 +250,7 @@ do
     echo "$provision_state: checking again in 10 seconds..."
 done
 
-Build requirement.txt string to upload in the Spark Configuration
+# Build requirement.txt string to upload in the Spark Configuration
 configurationList=""
 while read -r p; do 
     line=$(echo "$p" | tr -d '\r' | tr -d '\n')
@@ -292,12 +300,12 @@ createLinkedService "Ls_KeyVault_01"
 createLinkedService "Ls_AdlsGen2_01"
 createLinkedService "Ls_Rest_MelParkSensors_01"
 
-Deploy all Datasets
+# Deploy all Datasets
 createDataset "Ds_AdlsGen2_MelbParkingData"
 createDataset "Ds_REST_MelbParkingData"
 
-Deploy all Notebooks
-This line allows the spark pool to be available to attach to the notebooks
+# Deploy all Notebooks
+# This line allows the spark pool to be available to attach to the notebooks
 az synapse spark session list --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spark-pool-name "${BIG_DATAPOOL_NAME}"
 createNotebook "00_setup"
 createNotebook "01a_explore"
@@ -306,10 +314,10 @@ createNotebook "02_standardize"
 createNotebook "03_transform"
 
 
-Deploy all Pipelines
+# Deploy all Pipelines
 createPipeline "P_Ingest_MelbParkingData"
 
-Deploy triggers
+# Deploy triggers
 createTrigger "T_Sched"
 
 # Upload SQL script
@@ -333,5 +341,6 @@ UploadSql "drop_external_datasources" "/Serverless/DropStatements"
 UploadSql "drop_external_file_formats" "/Serverless/DropStatements"
 UploadSql "drop_external_tables" "/Serverless/DropStatements"
 
+createSqlDatabase
 
 echo "Completed deploying Synapse artifacts."
