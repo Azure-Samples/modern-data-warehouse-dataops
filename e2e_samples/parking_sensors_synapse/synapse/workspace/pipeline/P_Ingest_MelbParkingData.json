@@ -260,7 +260,7 @@
         },
         "userProperties": [],
         "sqlPool": {
-          "referenceName": "syndpdevimnew",
+          "referenceName": "syndpstgimdmo",
           "type": "SqlPoolReference"
         },
         "typeProperties": {
