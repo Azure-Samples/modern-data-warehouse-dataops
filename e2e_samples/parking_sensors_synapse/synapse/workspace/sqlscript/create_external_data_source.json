@@ -1,8 +1,9 @@
 {
 	"name": "create_external_data_source",
 	"properties": {
+		"description": "create_external_data_source",
 		"folder": {
-			"name": "Serverless/External Resources"
+			"name": "/Serverless/ExternalResources"
 		},
 		"content": {
 			"query": "-- DROP EXTERNAL DATA SOURCE INTERIM_Zone\n-- Create External Data Source\n--https://mdwdopsstdevimops.dfs.core.windows.net/datalake/data/interim/\n--declare @ADLSLocation varchar(300)\n--set @ADLSLocation = 'https://mdwdopsstdevimops.dfs.core.windows.net/datalake/data/interim/'\n\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'INTERIM_Zone')\n\tCREATE EXTERNAL DATA SOURCE INTERIM_Zone\n\tWITH (  LOCATION   =  N'$(ADLSLocation)'\n    ,CREDENTIAL = WorkspaceIdentity )\nGo",
@@ -10,10 +11,9 @@
 				"language": "sql"
 			},
 			"currentConnection": {
-				"databaseName": "external_db",
-				"poolName": "Built-in"
-			},
-			"resultLimit": 5000
+				"name": "master",
+				"type": "SqlOnDemand"
+			}
 		},
 		"type": "SqlQuery"
 	}

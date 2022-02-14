@@ -1,8 +1,9 @@
 {
 	"name": "create_external_file_format",
 	"properties": {
+		"description": "create_external_file_format",
 		"folder": {
-			"name": "Serverless/External Resources"
+			"name": "/Serverless/ExternalResources"
 		},
 		"content": {
 			"query": "-- Create Parquet Format [SynapseParquetFormat]\nIF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'SynapseParquetFormat')\n\tCREATE EXTERNAL FILE FORMAT [SynapseParquetFormat]\n\tWITH ( FORMAT_TYPE = parquet)",
@@ -10,10 +11,9 @@
 				"language": "sql"
 			},
 			"currentConnection": {
-				"databaseName": "master",
-				"poolName": "Built-in"
-			},
-			"resultLimit": 5000
+				"name": "master",
+				"type": "SqlOnDemand"
+			}
 		},
 		"type": "SqlQuery"
 	}
