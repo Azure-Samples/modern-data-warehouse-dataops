@@ -1,8 +1,9 @@
 {
 	"name": "drop_external_file_formats",
 	"properties": {
+		"description": "drop_external_file_formats",
 		"folder": {
-			"name": "Serverless/Drop Statements"
+			"name": "/Serverless/DropStatements"
 		},
 		"content": {
 			"query": "IF  EXISTS (Select * from sys.external_file_formats WHERE name = 'SynapseParquetFormat')\n    DROP EXTERNAL FILE FORMAT [SynapseParquetFormat]",
@@ -10,10 +11,9 @@
 				"language": "sql"
 			},
 			"currentConnection": {
-				"databaseName": "master",
-				"poolName": "Built-in"
-			},
-			"resultLimit": 5000
+				"name": "master",
+				"type": "SqlOnDemand"
+			}
 		},
 		"type": "SqlQuery"
 	}

@@ -1,19 +1,19 @@
 {
 	"name": "sensor_view",
 	"properties": {
+		"description": "sensor_view",
 		"folder": {
-			"name": "Serverless"
+			"name": "/Serverless"
 		},
 		"content": {
-			"query": "-- Create sensor View \nIF EXISTS(select * FROM sys.views where name = 'sensor_view')\n    DROP VIEW IF EXISTS sensor_view;\nGO\nCREATE VIEW sensor_view AS\nSELECT * \nFROM OPENROWSET(\n        BULK 'interim.sensor/*.parquet',\n        DATA_SOURCE = 'INTERIM_Zone',\n        FORMAT = 'PARQUET'\n    )\nWITH (\n    [bay_id] BIGINT \n    ,[st_marker_id] VARCHAR(100)\n    ,[lat] REAL\n    ,[lon] REAL\n    ,[location] VARCHAR(300)\n    ,[status] VARCHAR(10)\n    ,[load_id] VARCHAR(100)\n    ,[loaded_on] VARCHAR(200)\n)\nAS [r];\nGO",
+			"query": "-- Create sensor View now with variables\nIF EXISTS(select * FROM sys.views where name = 'sensor_view')\n    DROP VIEW IF EXISTS sensor_view;\nGO\nCREATE VIEW sensor_view AS\nSELECT * \nFROM OPENROWSET(\n        BULK 'interim.sensor/*.parquet',\n        DATA_SOURCE = 'INTERIM_Zone',\n        FORMAT = 'PARQUET'\n    )\nWITH (\n    [bay_id] BIGINT \n    ,[st_marker_id] VARCHAR(100)\n    ,[lat] REAL\n    ,[lon] REAL\n    ,[location] VARCHAR(300)\n    ,[status] VARCHAR(10)\n    ,[load_id] VARCHAR(100)\n    ,[loaded_on] VARCHAR(200)\n)\nAS [r];\nGO",
 			"metadata": {
 				"language": "sql"
 			},
 			"currentConnection": {
-				"databaseName": "external_db",
-				"poolName": "Built-in"
-			},
-			"resultLimit": 5000
+				"name": "master",
+				"type": "SqlOnDemand"
+			}
 		},
 		"type": "SqlQuery"
 	}

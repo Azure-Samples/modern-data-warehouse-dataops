@@ -4,7 +4,7 @@
 		"nbformat": 4,
 		"nbformat_minor": 2,
 		"bigDataPool": {
-			"referenceName": "synspdevimops",
+			"referenceName": "synspdevimdmo",
 			"type": "BigDataPoolReference"
 		},
 		"sessionProperties": {

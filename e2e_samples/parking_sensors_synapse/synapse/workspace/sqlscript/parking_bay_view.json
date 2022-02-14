@@ -1,8 +1,9 @@
 {
 	"name": "parking_bay_view",
 	"properties": {
+		"description": "parking_bay_view",
 		"folder": {
-			"name": "Serverless"
+			"name": "/Serverless"
 		},
 		"content": {
 			"query": "-- Create parking_bay View \nIF EXISTS(select * FROM sys.views where name = 'parking_bay_view')\n    DROP VIEW IF EXISTS parking_bay_view;\nGO\nCREATE VIEW parking_bay_view AS\nSELECT * \nFROM OPENROWSET(\n        BULK 'interim.parking_bay/*.parquet',\n        DATA_SOURCE = 'INTERIM_Zone',\n        FORMAT = 'PARQUET'\n    )\nWITH ( \n [bay_id] BIGINT\n,[last_edit] VARCHAR(50)\n,[marker_id] VARCHAR(50)\n,[meter_id] VARCHAR(50)\n,[rd_seg_dsc] VARCHAR(500)\n,[rd_seg_id] VARCHAR(50)\n,[the_geom] VARCHAR(MAX)\n,[load_id] VARCHAR(50)\n,[loaded_on] VARCHAR(50))\nAS [r];\nGO",
@@ -10,10 +11,9 @@
 				"language": "sql"
 			},
 			"currentConnection": {
-				"databaseName": "external_db",
-				"poolName": "Built-in"
-			},
-			"resultLimit": 5000
+				"name": "master",
+				"type": "SqlOnDemand"
+			}
 		},
 		"type": "SqlQuery"
 	}
