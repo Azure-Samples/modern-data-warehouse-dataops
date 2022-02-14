@@ -102,7 +102,7 @@ foreach ( $filename in $sqlfiles.name)
     $scriptFolderName = $($jsonfile.properties.folder.name)
     #Serverless/Drop_Statements
 
-    if ($scriptFolderName -eq 'Serverless/Security')
+    if ($scriptFolderName -eq '/Serverless/Security')
     {
         write-host $($filename)
         $scriptName = $($jsonfile.name)
@@ -129,7 +129,7 @@ foreach ( $filename in $sqlfiles.name)
     $scriptFolderName = $($jsonfile.properties.folder.name)
     #Serverless/Drop_Statements
 
-    if ($scriptFolderName -eq 'Serverless/External Resources')
+    if ($scriptFolderName -eq '/Serverless/ExternalResources')
     {
         write-host $($filename)
         $scriptName = $($jsonfile.name)
@@ -156,7 +156,7 @@ foreach ( $filename in $sqlfiles.name)
     $scriptFolderName = $($jsonfile.properties.folder.name)
     #Serverless/Drop_Statements
 
-    if ($scriptFolderName -eq 'Serverless')
+    if ($scriptFolderName -eq '/Serverless')
     {
         write-host $($filename)
         $scriptName = $($jsonfile.name)
