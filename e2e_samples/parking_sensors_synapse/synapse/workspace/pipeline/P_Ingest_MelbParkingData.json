@@ -260,7 +260,7 @@
 				},
 				"userProperties": [],
 				"sqlPool": {
-					"referenceName": "syndpdevimdmo",
+					"referenceName": "syndpdevimops",
 					"type": "SqlPoolReference"
 				},
 				"typeProperties": {
