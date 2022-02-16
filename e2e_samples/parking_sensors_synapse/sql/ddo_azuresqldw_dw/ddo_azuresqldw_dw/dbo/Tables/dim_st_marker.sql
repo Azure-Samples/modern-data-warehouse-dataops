@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[dim_st_marker] (
     [dim_st_marker_id] UNIQUEIDENTIFIER NULL,
-    [st_marker_id]     NVARCHAR (100)    NULL,
+    [st_marker_id]     NVARCHAR (50)    NULL,
     [load_id]          NVARCHAR (50)    NULL,
     [loaded_on]        DATETIME         NULL
 )
