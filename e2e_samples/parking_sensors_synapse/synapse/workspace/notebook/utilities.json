@@ -1,19 +1,26 @@
 {
 	"name": "utilities",
 	"properties": {
+		"folder": {
+			"name": "Delta/pipelines/includes"
+		},
 		"nbformat": 4,
 		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "imsparkpool3",
+			"type": "BigDataPoolReference"
+		},
 		"sessionProperties": {
-			"driverMemory": "28g",
-			"driverCores": 4,
-			"executorMemory": "28g",
-			"executorCores": 4,
-			"numExecutors": 2,
+			"driverMemory": "56g",
+			"driverCores": 8,
+			"executorMemory": "56g",
+			"executorCores": 8,
+			"numExecutors": 1,
 			"conf": {
-				"spark.dynamicAllocation.enabled": "false",
-				"spark.dynamicAllocation.minExecutors": "2",
-				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "8e42e385-b273-4123-8a59-7dafabdb009d"
+				"spark.dynamicAllocation.enabled": "true",
+				"spark.dynamicAllocation.minExecutors": "1",
+				"spark.dynamicAllocation.maxExecutors": "1",
+				"spark.autotune.trackingId": "0ea356ff-c9c1-48f9-b835-3a5b7b7a79f4"
 			}
 		},
 		"metadata": {
@@ -21,10 +28,25 @@
 			"enableDebugMode": false,
 			"kernelspec": {
 				"name": "synapse_pyspark",
-				"display_name": "python"
+				"display_name": "Synapse PySpark"
 			},
 			"language_info": {
 				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/356cc0b4-92be-42c1-8585-6182d784d5eb/resourceGroups/mdwdops-imdmo-dev-rg/providers/Microsoft.Synapse/workspaces/sywsdevimdmo/bigDataPools/imsparkpool3",
+				"name": "imsparkpool3",
+				"type": "Spark",
+				"endpoint": "https://sywsdevimdmo.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/imsparkpool3",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.1",
+				"nodeCount": 4,
+				"cores": 8,
+				"memory": 56,
+				"automaticScaleJobs": true
 			},
 			"sessionKeepAliveTimeout": 30
 		},
@@ -89,7 +111,7 @@
 					"    print(\"The stream {} is active and ready.\".format(namedStream))\n",
 					"    return True"
 				],
-				"execution_count": null
+				"execution_count": 1
 			}
 		]
 	}
