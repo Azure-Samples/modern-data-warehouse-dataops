@@ -6,17 +6,21 @@
 		},
 		"nbformat": 4,
 		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "imsparkpool3",
+			"type": "BigDataPoolReference"
+		},
 		"sessionProperties": {
-			"driverMemory": "28g",
-			"driverCores": 4,
-			"executorMemory": "28g",
-			"executorCores": 4,
-			"numExecutors": 2,
+			"driverMemory": "56g",
+			"driverCores": 8,
+			"executorMemory": "56g",
+			"executorCores": 8,
+			"numExecutors": 1,
 			"conf": {
-				"spark.dynamicAllocation.enabled": "false",
-				"spark.dynamicAllocation.minExecutors": "2",
-				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "3096c4d8-4944-4671-8845-49fd0c3510ba"
+				"spark.dynamicAllocation.enabled": "true",
+				"spark.dynamicAllocation.minExecutors": "1",
+				"spark.dynamicAllocation.maxExecutors": "1",
+				"spark.autotune.trackingId": "4cc390e4-4b14-4842-b815-808d60d445d4"
 			}
 		},
 		"metadata": {
@@ -24,10 +28,25 @@
 			"enableDebugMode": false,
 			"kernelspec": {
 				"name": "synapse_pyspark",
-				"display_name": "python"
+				"display_name": "Synapse PySpark"
 			},
 			"language_info": {
 				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/356cc0b4-92be-42c1-8585-6182d784d5eb/resourceGroups/mdwdops-imdmo-dev-rg/providers/Microsoft.Synapse/workspaces/sywsdevimdmo/bigDataPools/imsparkpool3",
+				"name": "imsparkpool3",
+				"type": "Spark",
+				"endpoint": "https://sywsdevimdmo.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/imsparkpool3",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.1",
+				"nodeCount": 4,
+				"cores": 8,
+				"memory": 56,
+				"automaticScaleJobs": true
 			},
 			"sessionKeepAliveTimeout": 30
 		},
@@ -42,14 +61,42 @@
 				"cell_type": "code",
 				"source": [
 					"# ANSWER\n",
-					"username = \"dbacademy\""
+					"username = \"irfanmaroof\"\n",
+					"keyvaultlsname = 'Ls_KeyVault_01'\n",
+					"adls2lsname = 'Ls_AdlsGen2_01'"
 				],
-				"execution_count": null
+				"execution_count": 3
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"from pyspark.sql import SparkSession\r\n",
+					"\r\n",
+					"sc = SparkSession.builder.getOrCreate()\r\n",
+					"token_library = sc._jvm.com.microsoft.azure.synapse.tokenlibrary.TokenLibrary\r\n",
+					"storage_account = token_library.getSecretWithLS(keyvaultlsname, \"datalakeaccountname\")\r\n",
+					"\r\n",
+					"spark.conf.set(\"spark.storage.synapse.linkedServiceName\", adls2lsname)\r\n",
+					"spark.conf.set(\"fs.azure.account.oauth.provider.type\", \"com.microsoft.azure.synapse.tokenlibrary.LinkedServiceBasedTokenProvider\")"
+				],
+				"execution_count": 4
 			},
 			{
 				"cell_type": "code",
 				"source": [
-					"plusPipelinePath = f\"/dbacademy/{username}/dataengineering/plus/\"\n",
+					"plusPipelinePath = f\"abfss://datalake@{storage_account}.dfs.core.windows.net//dataengineering/plus/\"\n",
+					"\n",
 					"\n",
 					"rawPath = plusPipelinePath + \"raw/\"\n",
 					"bronzePath = plusPipelinePath + \"bronze/\"\n",
@@ -61,7 +108,7 @@
 					"silverCheckpoint = checkpointPath + \"silver/\"\n",
 					"goldCheckpoint = checkpointPath + \"gold/\""
 				],
-				"execution_count": null
+				"execution_count": 5
 			},
 			{
 				"cell_type": "markdown",
@@ -72,10 +119,10 @@
 			{
 				"cell_type": "code",
 				"source": [
-					"spark.sql(f\"CREATE DATABASE IF NOT EXISTS dbacademy_{username}\")\n",
-					"spark.sql(f\"USE dbacademy_{username}\")"
+					"spark.sql(f\"CREATE DATABASE IF NOT EXISTS demo_delta\")\n",
+					"spark.sql(f\"USE demo_delta\")"
 				],
-				"execution_count": null
+				"execution_count": 6
 			},
 			{
 				"cell_type": "markdown",
@@ -85,10 +132,28 @@
 			},
 			{
 				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
 				"source": [
-					"%run ./utilities"
+					"mssparkutils.notebook.help()"
 				],
-				"execution_count": null
+				"execution_count": 8
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"mssparkutils.notebook.run('utilities')"
+				],
+				"execution_count": 21
 			},
 			{
 				"cell_type": "code",
@@ -100,7 +165,7 @@
 					"else:\n",
 					"    print(\"No running streams.\")"
 				],
-				"execution_count": null
+				"execution_count": 16
 			}
 		]
 	}

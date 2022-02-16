@@ -1,9 +1,6 @@
 {
 	"name": "utilities",
 	"properties": {
-		"folder": {
-			"name": "Delta/pipelines/includes"
-		},
 		"nbformat": 4,
 		"nbformat_minor": 2,
 		"sessionProperties": {
@@ -16,7 +13,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "23a371fb-e488-4df0-ab74-bd87df4bc57c"
+				"spark.autotune.trackingId": "8e42e385-b273-4123-8a59-7dafabdb009d"
 			}
 		},
 		"metadata": {
