@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 1",
+	"properties": {
+		"content": {
+			"query": "SELECT TOP (100) [dim_date_id]\n,[date]\n,[day]\n,[day_suffix]\n,[week_day]\n,[week_day_name]\n,[DOW_in_month]\n,[day_of_year]\n,[week_of_month]\n,[week_of_year]\n,[ISO_week_of_year]\n,[month]\n,[month_name]\n,[quarter]\n,[quarter_name]\n,[year]\n,[MMYYYY]\n,[month_year]\n,[first_day_of_month]\n,[last_day_of_month]\n,[first_day_of_quarter]\n,[last_day_of_quarter]\n,[first_day_of_year]\n,[last_day_of_year]\n,[first_day_of_next_month]\n,[first_day_of_next_year]\n FROM [dbo].[dim_date]",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "syndpdevimdmo",
+				"poolName": "syndpdevimdmo"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
