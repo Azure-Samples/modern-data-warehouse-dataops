@@ -1,0 +1,340 @@
+{
+	"name": "05_schema_enforcement",
+	"properties": {
+		"folder": {
+			"name": "Delta/pipelines"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "7bc263d5-5e24-4c6f-9379-634af362d6c6"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "python"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"\n",
+					"%md-sandbox\n",
+					"\n",
+					"<div style=\"text-align: center; line-height: 0; padding-top: 9px;\">\n",
+					"  <img src=\"https://databricks.com/wp-content/uploads/2018/03/db-academy-rgb-1200px.png\" alt=\"Databricks Learning\" style=\"width: 600px\">\n",
+					"</div>"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"# Schema Enforcement\n",
+					"\n",
+					"😲 The health tracker changed how it records data, which means that the raw data schema has changed."
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Notebook Objective\n",
+					"\n",
+					"In this notebook we:\n",
+					"1. Observe how schema enforcement deals with schema changes"
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Step Configuration"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"%run ./includes/configuration"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Import Operation Functions"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"%run ./includes/main/python/operations_v2"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"❗️Note that we have loaded our operation functions from the file `includes/main/python/operations_v2`. This updated operations file has been modified to transform the bronze table using the new schema.\n",
+					"\n",
+					"The new schema has been loaded as `json_schema_v2`."
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"### Display the Files in the Raw Paths"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"display(dbutils.fs.ls(rawPath))"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Start Streams\n",
+					"\n",
+					"Before we add new streams, let's start the streams we have previously engineered.\n",
+					"\n",
+					"We will start two named streams:\n",
+					"\n",
+					"- `write_raw_to_bronze`\n",
+					"- `write_bronze_to_silver`"
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"### Current Delta Architecture\n",
+					"\n",
+					"Next, we demonstrate everything we have built up to this point in our\n",
+					"Delta Architecture.\n",
+					"\n",
+					"Again, we do so with composable functions included in the\n",
+					"file `includes/main/python/operations`."
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"rawDF = read_stream_raw(spark, rawPath)\n",
+					"transformedRawDF = transform_raw(rawDF)\n",
+					"rawToBronzeWriter = create_stream_writer(\n",
+					"    dataframe=transformedRawDF,\n",
+					"    checkpoint=bronzeCheckpoint,\n",
+					"    name=\"write_raw_to_bronze\",\n",
+					"    partition_column=\"p_ingestdate\",\n",
+					")\n",
+					"rawToBronzeWriter.start(bronzePath)\n",
+					"\n",
+					"bronzeDF = read_stream_delta(spark, bronzePath)\n",
+					"transformedBronzeDF = transform_bronze(bronzeDF)\n",
+					"bronzeToSilverWriter = create_stream_writer(\n",
+					"    dataframe=transformedBronzeDF,\n",
+					"    checkpoint=silverCheckpoint,\n",
+					"    name=\"write_bronze_to_silver\",\n",
+					"    partition_column=\"p_eventdate\",\n",
+					")\n",
+					"bronzeToSilverWriter.start(silverPath)"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Update the Silver Table\n",
+					"\n",
+					"We periodically run the `update_silver_table` function to update the Silver table based on the known issue of negative readings being ingested."
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"update_silver_table(spark, silverPath)"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Show Running Streams"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"for stream in spark.streams.active:\n",
+					"    print(stream.name)"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Retrieve Third Month of Data\n",
+					"\n",
+					"Next, we use the utility function, `retrieve_data` to retrieve another file.\n",
+					"\n",
+					"After you ingest the file, view the streams above."
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"retrieve_data(2020, 3, rawPath)"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Exercise:Write an Assertion Statement to Verify File Ingestion"
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"### Expected File\n",
+					"\n",
+					"The expected file has the following name:"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"file_2020_3 = \"health_tracker_data_2020_3.json\""
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"# ANSWER\n",
+					"assert file_2020_3 in [item.name for item in dbutils.fs.ls(rawPath)]"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "sparksql"
+					}
+				},
+				"source": [
+					"%%sql\n",
+					"\n",
+					"SELECT COUNT(*) FROM health_tracker_plus_bronze"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "sparksql"
+					}
+				},
+				"source": [
+					"%%sql\n",
+					"\n",
+					"SELECT COUNT(*) FROM health_tracker_plus_silver"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "sparksql"
+					}
+				},
+				"source": [
+					"%%sql\n",
+					"\n",
+					"DESCRIBE health_tracker_plus_silver"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## What Is Schema Enforcement?\n",
+					"Schema enforcement, also known as schema validation, is a safeguard in Delta Lake that ensures data quality by rejecting writes to a table that do not match the table’s schema. Like the front desk manager at a busy restaurant that only accepts reservations, it checks to see whether each column in data inserted into the table is on its list of expected columns (in other words, whether each one has a “reservation”), and rejects any writes with columns that aren’t on the list."
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Show Running Streams"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"for stream in spark.streams.active:\n",
+					"    print(stream.name)"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"Note that the `write_bronze_to_silver` stream has died. If you navigate back up to the cell in which we started the streams, you should see the following error:\n",
+					"\n",
+					"`org.apache.spark.sql.AnalysisException: A schema mismatch detected when writing to the Delta table`.\n",
+					"\n",
+					"The stream has died because the schema of the incoming data did not match the schema of the table being written to."
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Stop All Streams\n",
+					"\n",
+					"In the next notebook, we will take a look at schema evolution with Delta Lake.\n",
+					"\n",
+					"Before we do so, let's shut down all streams in this notebook."
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"stop_all_streams()\n",
+					""
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"%md-sandbox\n",
+					"&copy; 2020 Databricks, Inc. All rights reserved.<br/>\n",
+					"Apache, Apache Spark, Spark and the Spark logo are trademarks of the <a href=\"http://www.apache.org/\">Apache Software Foundation</a>.<br/>\n",
+					"<br/>\n",
+					"<a href=\"https://databricks.com/privacy-policy\">Privacy Policy</a> | <a href=\"https://databricks.com/terms-of-use\">Terms of Use</a> | <a href=\"http://help.databricks.com/\">Support</a>"
+				],
+				"execution_count": null
+			}
+		]
+	}
+}
