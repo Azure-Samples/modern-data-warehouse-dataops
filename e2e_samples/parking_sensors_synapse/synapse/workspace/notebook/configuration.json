@@ -20,7 +20,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "1",
-				"spark.autotune.trackingId": "2dd7e1e1-681f-48cb-9628-e97b22188c31"
+				"spark.autotune.trackingId": "4bceb8d1-0d39-451b-9c0d-61642caaf075"
 			}
 		},
 		"metadata": {
@@ -153,7 +153,7 @@
 				"source": [
 					"%run utilities"
 				],
-				"execution_count": 1
+				"execution_count": 2
 			},
 			{
 				"cell_type": "code",
@@ -165,7 +165,7 @@
 					"else:\n",
 					"    print(\"No running streams.\")"
 				],
-				"execution_count": 16
+				"execution_count": 3
 			}
 		]
 	}
