@@ -1,0 +1,200 @@
+{
+	"name": "operations_v2",
+	"properties": {
+		"folder": {
+			"name": "Delta/pipelines/includes/main/python"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "22f6101e-6e17-4016-a9fd-43e423d22127"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "python"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"from delta.tables import DeltaTable\n",
+					"from pyspark.sql import DataFrame\n",
+					"from pyspark.sql.functions import (\n",
+					"    col,\n",
+					"    current_timestamp,\n",
+					"    from_json,\n",
+					"    from_unixtime,\n",
+					"    lag,\n",
+					"    lead,\n",
+					"    lit,\n",
+					"    mean,\n",
+					"    stddev,\n",
+					"    max,\n",
+					")\n",
+					"from pyspark.sql.session import SparkSession\n",
+					"from pyspark.sql.streaming import DataStreamWriter\n",
+					"from pyspark.sql.window import Window"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"def create_stream_writer(\n",
+					"    dataframe: DataFrame,\n",
+					"    checkpoint: str,\n",
+					"    name: str,\n",
+					"    partition_column: str,\n",
+					"    mode: str = \"append\",\n",
+					"    mergeSchema: bool = False,\n",
+					") -> DataStreamWriter:\n",
+					"\n",
+					"    stream_writer = (\n",
+					"        dataframe.writeStream.format(\"delta\")\n",
+					"        .outputMode(mode)\n",
+					"        .option(\"checkpointLocation\", checkpoint)\n",
+					"        .partitionBy(partition_column)\n",
+					"        .queryName(name)\n",
+					"    )\n",
+					"\n",
+					"    if mergeSchema:\n",
+					"        stream_writer = stream_writer.option(\"mergeSchema\", True)\n",
+					"    if partition_column is not None:\n",
+					"        stream_writer = stream_writer.partitionBy(partition_column)\n",
+					"    return stream_writer\n",
+					""
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"def read_stream_delta(spark: SparkSession, deltaPath: str) -> DataFrame:\n",
+					"    return spark.readStream.format(\"delta\").load(deltaPath)\n",
+					""
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"def read_stream_raw(spark: SparkSession, rawPath: str) -> DataFrame:\n",
+					"    kafka_schema = \"value STRING\"\n",
+					"    return spark.readStream.format(\"text\").schema(kafka_schema).load(rawPath)\n",
+					""
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"def update_silver_table(spark: SparkSession, silverPath: str) -> bool:\n",
+					"\n",
+					"    update_match = \"\"\"\n",
+					"    health_tracker.eventtime = updates.eventtime\n",
+					"    AND\n",
+					"    health_tracker.device_id = updates.device_id\n",
+					"  \"\"\"\n",
+					"\n",
+					"    update = {\"heartrate\": \"updates.heartrate\"}\n",
+					"\n",
+					"    dateWindow = Window.orderBy(\"p_eventdate\")\n",
+					"\n",
+					"    interpolatedDF = spark.read.table(\"health_tracker_plus_silver\").select(\n",
+					"        \"*\",\n",
+					"        lag(col(\"heartrate\")).over(dateWindow).alias(\"prev_amt\"),\n",
+					"        lead(col(\"heartrate\")).over(dateWindow).alias(\"next_amt\"),\n",
+					"    )\n",
+					"\n",
+					"    updatesDF = interpolatedDF.where(col(\"heartrate\") < 0).select(\n",
+					"        \"device_id\",\n",
+					"        ((col(\"prev_amt\") + col(\"next_amt\")) / 2).alias(\"heartrate\"),\n",
+					"        \"eventtime\",\n",
+					"        \"name\",\n",
+					"        \"p_eventdate\",\n",
+					"    )\n",
+					"\n",
+					"    silverTable = DeltaTable.forPath(spark, silverPath)\n",
+					"\n",
+					"    (\n",
+					"        silverTable.alias(\"health_tracker\")\n",
+					"        .merge(updatesDF.alias(\"updates\"), update_match)\n",
+					"        .whenMatchedUpdate(set=update)\n",
+					"        .execute()\n",
+					"    )\n",
+					"\n",
+					"    return True\n",
+					""
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"def transform_bronze(bronze: DataFrame) -> DataFrame:\n",
+					"\n",
+					"    json_schema = \"device_id INTEGER, heartrate DOUBLE, device_type STRING, name STRING, time FLOAT\"\n",
+					"\n",
+					"    return (\n",
+					"        bronze.select(from_json(col(\"value\"), json_schema).alias(\"nested_json\"))\n",
+					"        .select(\"nested_json.*\")\n",
+					"        .select(\n",
+					"            \"device_id\",\n",
+					"            \"device_type\",\n",
+					"            \"heartrate\",\n",
+					"            from_unixtime(\"time\").cast(\"timestamp\").alias(\"eventtime\"),\n",
+					"            \"name\",\n",
+					"            from_unixtime(\"time\").cast(\"date\").alias(\"p_eventdate\"),\n",
+					"        )\n",
+					"    )\n",
+					""
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"def transform_raw(raw: DataFrame) -> DataFrame:\n",
+					"    return raw.select(\n",
+					"        lit(\"files.training.databricks.com\").alias(\"datasource\"),\n",
+					"        current_timestamp().alias(\"ingesttime\"),\n",
+					"        \"value\",\n",
+					"        current_timestamp().cast(\"date\").alias(\"p_ingestdate\"),\n",
+					"    )\n",
+					""
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"def transform_silver_mean_agg(silver: DataFrame) -> DataFrame:\n",
+					"    return silver.groupBy(\"device_id\").agg(\n",
+					"        mean(col(\"heartrate\")).alias(\"mean_heartrate\"),\n",
+					"        stddev(col(\"heartrate\")).alias(\"std_heartrate\"),\n",
+					"        max(col(\"heartrate\")).alias(\"max_heartrate\"),\n",
+					"    )"
+				],
+				"execution_count": null
+			}
+		]
+	}
+}

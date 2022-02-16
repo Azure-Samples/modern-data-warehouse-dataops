@@ -1,0 +1,172 @@
+{
+	"name": "configuration",
+	"properties": {
+		"folder": {
+			"name": "Delta/pipelines/includes"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "imsparkpool3",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "56g",
+			"driverCores": 8,
+			"executorMemory": "56g",
+			"executorCores": 8,
+			"numExecutors": 1,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "true",
+				"spark.dynamicAllocation.minExecutors": "1",
+				"spark.dynamicAllocation.maxExecutors": "1",
+				"spark.autotune.trackingId": "2bb9353e-260f-4ef5-8cb2-0196ce44fe54"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/356cc0b4-92be-42c1-8585-6182d784d5eb/resourceGroups/mdwdops-imdmo-dev-rg/providers/Microsoft.Synapse/workspaces/sywsdevimdmo/bigDataPools/imsparkpool3",
+				"name": "imsparkpool3",
+				"type": "Spark",
+				"endpoint": "https://sywsdevimdmo.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/imsparkpool3",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.1",
+				"nodeCount": 4,
+				"cores": 8,
+				"memory": 56,
+				"automaticScaleJobs": true
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "markdown",
+				"source": [
+					"Define Data Paths."
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"# ANSWER\n",
+					"username = \"irfanmaroof\"\n",
+					"keyvaultlsname = 'Ls_KeyVault_01'\n",
+					"adls2lsname = 'Ls_AdlsGen2_01'"
+				],
+				"execution_count": 3
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"from pyspark.sql import SparkSession\r\n",
+					"\r\n",
+					"sc = SparkSession.builder.getOrCreate()\r\n",
+					"token_library = sc._jvm.com.microsoft.azure.synapse.tokenlibrary.TokenLibrary\r\n",
+					"storage_account = token_library.getSecretWithLS(keyvaultlsname, \"datalakeaccountname\")\r\n",
+					"\r\n",
+					"spark.conf.set(\"spark.storage.synapse.linkedServiceName\", adls2lsname)\r\n",
+					"spark.conf.set(\"fs.azure.account.oauth.provider.type\", \"com.microsoft.azure.synapse.tokenlibrary.LinkedServiceBasedTokenProvider\")"
+				],
+				"execution_count": 4
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"plusPipelinePath = f\"abfss://datalake@{storage_account}.dfs.core.windows.net//dataengineering/plus/\"\n",
+					"\n",
+					"\n",
+					"rawPath = plusPipelinePath + \"raw/\"\n",
+					"bronzePath = plusPipelinePath + \"bronze/\"\n",
+					"silverPath = plusPipelinePath + \"silver/\"\n",
+					"goldPath = plusPipelinePath + \"gold/\"\n",
+					"\n",
+					"checkpointPath = plusPipelinePath + \"checkpoints/\"\n",
+					"bronzeCheckpoint = checkpointPath + \"bronze/\"\n",
+					"silverCheckpoint = checkpointPath + \"silver/\"\n",
+					"goldCheckpoint = checkpointPath + \"gold/\""
+				],
+				"execution_count": 5
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"Configure Database"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"spark.sql(f\"CREATE DATABASE IF NOT EXISTS demo_delta\")\n",
+					"spark.sql(f\"USE demo_delta\")"
+				],
+				"execution_count": 6
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"Import Utility Functions"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"mssparkutils.notebook.help()"
+				],
+				"execution_count": 8
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"%run utilities"
+				],
+				"execution_count": 28
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"streams_stopped = stop_all_streams()\n",
+					"\n",
+					"if streams_stopped:\n",
+					"    print(\"All streams stopped.\")\n",
+					"else:\n",
+					"    print(\"No running streams.\")"
+				],
+				"execution_count": 16
+			}
+		]
+	}
+}

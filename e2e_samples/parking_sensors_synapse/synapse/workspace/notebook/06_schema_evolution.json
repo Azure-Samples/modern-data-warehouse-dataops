@@ -1,0 +1,252 @@
+{
+	"name": "06_schema_evolution",
+	"properties": {
+		"folder": {
+			"name": "Delta/pipelines"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "b0c85eba-2e42-44b4-90c7-fc3969e1aa58"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "python"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"\n",
+					"%md-sandbox\n",
+					"\n",
+					"<div style=\"text-align: center; line-height: 0; padding-top: 9px;\">\n",
+					"  <img src=\"https://databricks.com/wp-content/uploads/2018/03/db-academy-rgb-1200px.png\" alt=\"Databricks Learning\" style=\"width: 600px\">\n",
+					"</div>"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"# Schema Evolution\n",
+					"\n",
+					"😲 The health tracker changed how it records data, which means that the\n",
+					"raw data schema has changed. In this notebook, we show how to build our\n",
+					"streams to merge the changes to the schema.\n",
+					"\n",
+					"**TODO** *Discussion on what kinds of changes will work with the merge option.*"
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Notebook Objective\n",
+					"\n",
+					"In this notebook we:\n",
+					"1. Use schema evolution to deal with schema changes"
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Step Configuration"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"%run ./includes/configuration"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Import Operation Functions"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"%run ./includes/main/python/operations_v2"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"### Display the Files in the Raw Paths"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"display(dbutils.fs.ls(rawPath))"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Start Streams\n",
+					"\n",
+					"Before we add new streams, let's start the streams we have previously engineered.\n",
+					"\n",
+					"We will start two named streams:\n",
+					"\n",
+					"- `write_raw_to_bronze`\n",
+					"- `write_bronze_to_silver`\n",
+					"\n",
+					"❗️Note that we have loaded our operation functions from the file `includes/main/python/operations_v2`. This updated operations file has been modified to transform the bronze table using the new schema.\n",
+					"\n",
+					"The new schema has been loaded as `json_schema_v2`."
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"### Current Delta Architecture\n",
+					"**TODO**\n",
+					"Next, we demonstrate everything we have built up to this point in our\n",
+					"Delta Architecture.\n",
+					"\n",
+					"Again, we do so with composable functions included in the\n",
+					"file `includes/main/python/operations`.\n",
+					"\n",
+					"Add the `mergeSchema=True` argument to the Silver table stream writer."
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"# ANSWER\n",
+					"rawDF = read_stream_raw(spark, rawPath)\n",
+					"transformedRawDF = transform_raw(rawDF)\n",
+					"rawToBronzeWriter = create_stream_writer(\n",
+					"    dataframe=transformedRawDF,\n",
+					"    checkpoint=bronzeCheckpoint,\n",
+					"    name=\"write_raw_to_bronze\",\n",
+					"    partition_column=\"p_ingestdate\",\n",
+					")\n",
+					"rawToBronzeWriter.start(bronzePath)\n",
+					"\n",
+					"bronzeDF = read_stream_delta(spark, bronzePath)\n",
+					"transformedBronzeDF = transform_bronze(bronzeDF)\n",
+					"bronzeToSilverWriter = create_stream_writer(\n",
+					"    dataframe=transformedBronzeDF,\n",
+					"    checkpoint=silverCheckpoint,\n",
+					"    name=\"write_bronze_to_silver\",\n",
+					"    partition_column=\"p_eventdate\",\n",
+					"    mergeSchema=True,\n",
+					")\n",
+					"bronzeToSilverWriter.start(silverPath)"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Show Running Streams"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"for stream in spark.streams.active:\n",
+					"    print(stream.name)"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "sparksql"
+					}
+				},
+				"source": [
+					"%%sql\n",
+					"\n",
+					"SELECT COUNT(*) FROM health_tracker_plus_bronze"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "sparksql"
+					}
+				},
+				"source": [
+					"%%sql\n",
+					"\n",
+					"SELECT COUNT(*) FROM health_tracker_plus_silver"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "sparksql"
+					}
+				},
+				"source": [
+					"%%sql\n",
+					"\n",
+					"DESCRIBE health_tracker_plus_silver"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Stop All Streams\n",
+					"\n",
+					"In the next notebook in this course, we will take a look at schema enforcement and evolution with Delta Lake.\n",
+					"\n",
+					"Before we do so, let's shut down all streams in this notebook."
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"stop_all_streams()\n",
+					""
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"%md-sandbox\n",
+					"&copy; 2020 Databricks, Inc. All rights reserved.<br/>\n",
+					"Apache, Apache Spark, Spark and the Spark logo are trademarks of the <a href=\"http://www.apache.org/\">Apache Software Foundation</a>.<br/>\n",
+					"<br/>\n",
+					"<a href=\"https://databricks.com/privacy-policy\">Privacy Policy</a> | <a href=\"https://databricks.com/terms-of-use\">Terms of Use</a> | <a href=\"http://help.databricks.com/\">Support</a>"
+				],
+				"execution_count": null
+			}
+		]
+	}
+}
