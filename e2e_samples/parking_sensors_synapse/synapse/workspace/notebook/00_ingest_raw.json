@@ -16,7 +16,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "70740b77-bdbf-4002-a5f9-b2a14bc6c00b"
+				"spark.autotune.trackingId": "563076dd-82b6-4952-b415-338707d909e0"
 			}
 		},
 		"metadata": {
@@ -32,18 +32,6 @@
 			"sessionKeepAliveTimeout": 30
 		},
 		"cells": [
-			{
-				"cell_type": "code",
-				"source": [
-					"\n",
-					"%md-sandbox\n",
-					"\n",
-					"<div style=\"text-align: center; line-height: 0; padding-top: 9px;\">\n",
-					"  <img src=\"https://databricks.com/wp-content/uploads/2018/03/db-academy-rgb-1200px.png\" alt=\"Databricks Learning\" style=\"width: 600px\">\n",
-					"</div>"
-				],
-				"execution_count": null
-			},
 			{
 				"cell_type": "markdown",
 				"source": [

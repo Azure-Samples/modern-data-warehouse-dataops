@@ -1,0 +1,107 @@
+{
+	"name": "configuration",
+	"properties": {
+		"folder": {
+			"name": "Delta/pipelines/includes"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "3096c4d8-4944-4671-8845-49fd0c3510ba"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "python"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "markdown",
+				"source": [
+					"Define Data Paths."
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"# ANSWER\n",
+					"username = \"dbacademy\""
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"plusPipelinePath = f\"/dbacademy/{username}/dataengineering/plus/\"\n",
+					"\n",
+					"rawPath = plusPipelinePath + \"raw/\"\n",
+					"bronzePath = plusPipelinePath + \"bronze/\"\n",
+					"silverPath = plusPipelinePath + \"silver/\"\n",
+					"goldPath = plusPipelinePath + \"gold/\"\n",
+					"\n",
+					"checkpointPath = plusPipelinePath + \"checkpoints/\"\n",
+					"bronzeCheckpoint = checkpointPath + \"bronze/\"\n",
+					"silverCheckpoint = checkpointPath + \"silver/\"\n",
+					"goldCheckpoint = checkpointPath + \"gold/\""
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"Configure Database"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"spark.sql(f\"CREATE DATABASE IF NOT EXISTS dbacademy_{username}\")\n",
+					"spark.sql(f\"USE dbacademy_{username}\")"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"Import Utility Functions"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"%run ./utilities"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"streams_stopped = stop_all_streams()\n",
+					"\n",
+					"if streams_stopped:\n",
+					"    print(\"All streams stopped.\")\n",
+					"else:\n",
+					"    print(\"No running streams.\")"
+				],
+				"execution_count": null
+			}
+		]
+	}
+}

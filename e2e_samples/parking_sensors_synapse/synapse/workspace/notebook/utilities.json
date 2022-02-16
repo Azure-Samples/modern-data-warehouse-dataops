@@ -1,0 +1,99 @@
+{
+	"name": "utilities",
+	"properties": {
+		"folder": {
+			"name": "Delta/pipelines/includes"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "23a371fb-e488-4df0-ab74-bd87df4bc57c"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "python"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"from pyspark.sql.session import SparkSession\n",
+					"from urllib.request import urlretrieve\n",
+					"import time\n",
+					"\n",
+					"BASE_URL = \"https://files.training.databricks.com/static/data/health-tracker/\"\n",
+					"\n",
+					"\n",
+					"def retrieve_data(year: int, month: int, raw_path: str, is_late: bool = False) -> bool:\n",
+					"    file, dbfsPath, driverPath = _generate_file_handles(year, month, raw_path, is_late)\n",
+					"    uri = BASE_URL + file\n",
+					"\n",
+					"    urlretrieve(uri, file)\n",
+					"    dbutils.fs.mv(driverPath, dbfsPath)\n",
+					"    return True\n",
+					"\n",
+					"\n",
+					"def _generate_file_handles(year: int, month: int, raw_path: str, is_late: bool):\n",
+					"    late = \"\"\n",
+					"    if is_late:\n",
+					"        late = \"_late\"\n",
+					"    file = f\"health_tracker_data_{year}_{month}{late}.json\"\n",
+					"\n",
+					"    dbfsPath = raw_path\n",
+					"    if is_late:\n",
+					"        dbfsPath += \"late/\"\n",
+					"    dbfsPath += file\n",
+					"\n",
+					"    driverPath = \"file:/databricks/driver/\" + file\n",
+					"\n",
+					"    return file, dbfsPath, driverPath\n",
+					"\n",
+					"\n",
+					"def stop_all_streams() -> bool:\n",
+					"    stopped = False\n",
+					"    for stream in spark.streams.active:\n",
+					"        stopped = True\n",
+					"        stream.stop()\n",
+					"    return stopped\n",
+					"\n",
+					"\n",
+					"def stop_named_stream(spark: SparkSession, namedStream: str) -> bool:\n",
+					"    stopped = False\n",
+					"    for stream in spark.streams.active:\n",
+					"        if stream.name == namedStream:\n",
+					"            stopped = True\n",
+					"            stream.stop()\n",
+					"    return stopped\n",
+					"\n",
+					"\n",
+					"def untilStreamIsReady(namedStream: str, progressions: int = 3) -> bool:\n",
+					"    queries = list(filter(lambda query: query.name == namedStream, spark.streams.active))\n",
+					"    while len(queries) == 0 or len(queries[0].recentProgress) < progressions:\n",
+					"        time.sleep(5)\n",
+					"        queries = list(filter(lambda query: query.name == namedStream, spark.streams.active))\n",
+					"    print(\"The stream {} is active and ready.\".format(namedStream))\n",
+					"    return True"
+				],
+				"execution_count": null
+			}
+		]
+	}
+}
