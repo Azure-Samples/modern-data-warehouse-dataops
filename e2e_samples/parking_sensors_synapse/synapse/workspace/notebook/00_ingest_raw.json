@@ -20,7 +20,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "1",
-				"spark.autotune.trackingId": "0e9d8578-e988-43a5-9c09-a8e99458240e"
+				"spark.autotune.trackingId": "be589fc8-299d-433d-bc05-bd250357eab6"
 			}
 		},
 		"metadata": {
@@ -85,7 +85,7 @@
 				"source": [
 					"%run Delta/pipelines/includes/configuration"
 				],
-				"execution_count": 22
+				"execution_count": 28
 			},
 			{
 				"cell_type": "markdown",
@@ -149,11 +149,11 @@
 					"    file, dbfsPath, driverPath = _generate_file_handles(year, month, raw_path, is_late)\r\n",
 					"    uri = BASE_URL + file\r\n",
 					"\r\n",
-					"    urlretrieve(uri, file)\r\n",
-					"    mssparkutils.fs.mv(driverPath, dbfsPath)\r\n",
+					"    urlretrieve(uri, dbfsPath)\r\n",
+					"    #mssparkutils.fs.mv(driverPath, dbfsPath)\r\n",
 					"    return True"
 				],
-				"execution_count": 24
+				"execution_count": 44
 			},
 			{
 				"cell_type": "code",
@@ -169,16 +169,48 @@
 					}
 				},
 				"source": [
-					"mssparkutils.fs.ls('/')"
+					"def _generate_file_handles(year: int, month: int, raw_path: str, is_late: bool):\r\n",
+					"    late = \"\"\r\n",
+					"    if is_late:\r\n",
+					"        late = \"_late\"\r\n",
+					"    file = f\"health_tracker_data_{year}_{month}{late}.json\"\r\n",
+					"\r\n",
+					"    dbfsPath = raw_path\r\n",
+					"    if is_late:\r\n",
+					"        dbfsPath += \"late/\"\r\n",
+					"    dbfsPath += file\r\n",
+					"\r\n",
+					"    driverPath = \"abfss://synapsedefaultfs@mdwdopsst2devimdmo.dfs.core.windows.net/synapse/\" + file\r\n",
+					"\r\n",
+					"    return file, dbfsPath, driverPath\r\n",
+					""
 				],
-				"execution_count": 27
+				"execution_count": 47
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"mssparkutils.fs.ls('/synapse/workspaces/sywsdevimdmo/sparkpools/imsparkpool3/sparkpoolinstances/')"
+				],
+				"execution_count": 38
 			},
 			{
 				"cell_type": "code",
 				"source": [
 					"retrieve_data(2020, 1, rawPath)"
 				],
-				"execution_count": 25
+				"execution_count": 48
 			},
 			{
 				"cell_type": "code",

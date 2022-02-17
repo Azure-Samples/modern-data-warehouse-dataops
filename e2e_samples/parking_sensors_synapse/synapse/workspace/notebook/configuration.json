@@ -20,7 +20,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "1",
-				"spark.autotune.trackingId": "7cf712c0-7e4c-49c7-9879-9dd11c2aba41"
+				"spark.autotune.trackingId": "dabe62fb-7172-48d3-92c3-8a6986ece7fc"
 			}
 		},
 		"metadata": {
@@ -94,7 +94,7 @@
 			{
 				"cell_type": "code",
 				"source": [
-					"plusPipelinePath = f\"abfss://datalake@{storage_account}.dfs.core.windows.net//dataengineering/plus/\"\n",
+					"plusPipelinePath = f\"abfss://datalake@{storage_account}.dfs.core.windows.net/dataengineering/plus/\"\n",
 					"\n",
 					"\n",
 					"rawPath = plusPipelinePath + \"raw/\"\n",
