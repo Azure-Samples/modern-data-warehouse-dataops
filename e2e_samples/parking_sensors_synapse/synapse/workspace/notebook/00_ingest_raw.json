@@ -20,7 +20,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "1",
-				"spark.autotune.trackingId": "56ba4cf3-98fe-4ac4-959a-a2f8486b16bd"
+				"spark.autotune.trackingId": "429c81f6-91c2-4e8c-97b3-b54aa5a75d95"
 			}
 		},
 		"metadata": {
@@ -85,7 +85,7 @@
 				"source": [
 					"%run Delta/pipelines/includes/configuration"
 				],
-				"execution_count": 9
+				"execution_count": 15
 			},
 			{
 				"cell_type": "markdown",
