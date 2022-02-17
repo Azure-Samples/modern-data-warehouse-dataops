@@ -20,7 +20,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "1",
-				"spark.autotune.trackingId": "fbb97c49-2f87-4bc8-be0d-3a978a603b9d"
+				"spark.autotune.trackingId": "0e9d8578-e988-43a5-9c09-a8e99458240e"
 			}
 		},
 		"metadata": {
@@ -85,7 +85,7 @@
 				"source": [
 					"%run Delta/pipelines/includes/configuration"
 				],
-				"execution_count": 18
+				"execution_count": 22
 			},
 			{
 				"cell_type": "markdown",
@@ -133,10 +133,52 @@
 			},
 			{
 				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"def retrieve_data(year: int, month: int, raw_path: str, is_late: bool = False) -> bool:\r\n",
+					"    file, dbfsPath, driverPath = _generate_file_handles(year, month, raw_path, is_late)\r\n",
+					"    uri = BASE_URL + file\r\n",
+					"\r\n",
+					"    urlretrieve(uri, file)\r\n",
+					"    mssparkutils.fs.mv(driverPath, dbfsPath)\r\n",
+					"    return True"
+				],
+				"execution_count": 24
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"mssparkutils.fs.ls('/')"
+				],
+				"execution_count": 27
+			},
+			{
+				"cell_type": "code",
 				"source": [
 					"retrieve_data(2020, 1, rawPath)"
 				],
-				"execution_count": 21
+				"execution_count": 25
 			},
 			{
 				"cell_type": "code",

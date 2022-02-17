@@ -20,7 +20,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "1",
-				"spark.autotune.trackingId": "0914f290-d2aa-40c9-9163-ae3339bec967"
+				"spark.autotune.trackingId": "94ce0d85-42e8-405e-9fe1-fb066a84d3af"
 			}
 		},
 		"metadata": {
@@ -81,7 +81,7 @@
 					"        dbfsPath += \"late/\"\n",
 					"    dbfsPath += file\n",
 					"\n",
-					"    driverPath = \"file:/databricks/driver/\" + file\n",
+					"    driverPath = \"abfss://synapsedefaultfs@mdwdopsst2devimdmo.dfs.core.windows.net/synapse/\" + file\n",
 					"\n",
 					"    return file, dbfsPath, driverPath\n",
 					"\n",
