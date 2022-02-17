@@ -20,7 +20,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "1",
-				"spark.autotune.trackingId": "be589fc8-299d-433d-bc05-bd250357eab6"
+				"spark.autotune.trackingId": "31ada46c-1cd1-4ccd-b05b-6a05d33fd578"
 			}
 		},
 		"metadata": {
@@ -85,7 +85,7 @@
 				"source": [
 					"%run Delta/pipelines/includes/configuration"
 				],
-				"execution_count": 28
+				"execution_count": 50
 			},
 			{
 				"cell_type": "markdown",
@@ -109,7 +109,7 @@
 				"source": [
 					"mssparkutils.fs.help()"
 				],
-				"execution_count": 16
+				"execution_count": 49
 			},
 			{
 				"cell_type": "code",
@@ -153,7 +153,7 @@
 					"    #mssparkutils.fs.mv(driverPath, dbfsPath)\r\n",
 					"    return True"
 				],
-				"execution_count": 44
+				"execution_count": 51
 			},
 			{
 				"cell_type": "code",
@@ -185,7 +185,7 @@
 					"    return file, dbfsPath, driverPath\r\n",
 					""
 				],
-				"execution_count": 47
+				"execution_count": 52
 			},
 			{
 				"cell_type": "code",
@@ -210,7 +210,7 @@
 				"source": [
 					"retrieve_data(2020, 1, rawPath)"
 				],
-				"execution_count": 48
+				"execution_count": 53
 			},
 			{
 				"cell_type": "code",
