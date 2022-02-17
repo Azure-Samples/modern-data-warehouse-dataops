@@ -20,7 +20,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "1",
-				"spark.autotune.trackingId": "4bceb8d1-0d39-451b-9c0d-61642caaf075"
+				"spark.autotune.trackingId": "7cf712c0-7e4c-49c7-9879-9dd11c2aba41"
 			}
 		},
 		"metadata": {
@@ -60,7 +60,6 @@
 			{
 				"cell_type": "code",
 				"source": [
-					"# ANSWER\n",
 					"username = \"irfanmaroof\"\n",
 					"keyvaultlsname = 'Ls_KeyVault_01'\n",
 					"adls2lsname = 'Ls_AdlsGen2_01'"

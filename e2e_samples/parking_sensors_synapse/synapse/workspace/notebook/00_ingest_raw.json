@@ -20,7 +20,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "1",
-				"spark.autotune.trackingId": "929de8b3-fef0-494f-b731-88f864f28dd3"
+				"spark.autotune.trackingId": "3bf7c256-b808-4ba9-b4d1-abbba2488d99"
 			}
 		},
 		"metadata": {
@@ -85,20 +85,38 @@
 				"source": [
 					"%run Delta/pipelines/includes/configuration"
 				],
-				"execution_count": 3
+				"execution_count": 9
 			},
 			{
 				"cell_type": "markdown",
 				"source": [
-					"## Make Notebook Idempotent"
+					"## Introduction to Microsoft Spark Utilities"
 				]
 			},
 			{
 				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
 				"source": [
-					"dbutils.fs.rm(rawPath, recurse=True)"
+					"mssparkutils.fs.help()"
 				],
-				"execution_count": null
+				"execution_count": 4
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"mssparkutils.fs.rm(rawPath, recurse=True)"
+				],
+				"execution_count": 7
 			},
 			{
 				"cell_type": "markdown",
@@ -118,7 +136,25 @@
 				"source": [
 					"retrieve_data(2020, 1, rawPath)"
 				],
-				"execution_count": 4
+				"execution_count": 11
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					""
+				],
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",

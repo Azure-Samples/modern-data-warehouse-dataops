@@ -20,7 +20,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "1",
-				"spark.autotune.trackingId": "0ea356ff-c9c1-48f9-b835-3a5b7b7a79f4"
+				"spark.autotune.trackingId": "02cbbd6f-34e1-4c7c-a9a2-96a85e9fa699"
 			}
 		},
 		"metadata": {
@@ -66,7 +66,7 @@
 					"    uri = BASE_URL + file\n",
 					"\n",
 					"    urlretrieve(uri, file)\n",
-					"    dbutils.fs.mv(driverPath, dbfsPath)\n",
+					"    mssparkutils.fs.mv(driverPath, dbfsPath)\n",
 					"    return True\n",
 					"\n",
 					"\n",
