@@ -20,7 +20,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "1",
-				"spark.autotune.trackingId": "31ada46c-1cd1-4ccd-b05b-6a05d33fd578"
+				"spark.autotune.trackingId": "6a73a873-7f2c-4104-8494-b9ddbeec5971"
 			}
 		},
 		"metadata": {
@@ -85,7 +85,7 @@
 				"source": [
 					"%run Delta/pipelines/includes/configuration"
 				],
-				"execution_count": 50
+				"execution_count": 1
 			},
 			{
 				"cell_type": "markdown",
@@ -109,14 +109,14 @@
 				"source": [
 					"mssparkutils.fs.help()"
 				],
-				"execution_count": 49
+				"execution_count": 2
 			},
 			{
 				"cell_type": "code",
 				"source": [
 					"mssparkutils.fs.rm(rawPath, recurse=True)"
 				],
-				"execution_count": 20
+				"execution_count": 3
 			},
 			{
 				"cell_type": "markdown",
@@ -153,7 +153,7 @@
 					"    #mssparkutils.fs.mv(driverPath, dbfsPath)\r\n",
 					"    return True"
 				],
-				"execution_count": 51
+				"execution_count": 4
 			},
 			{
 				"cell_type": "code",
@@ -185,7 +185,7 @@
 					"    return file, dbfsPath, driverPath\r\n",
 					""
 				],
-				"execution_count": 52
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
@@ -203,14 +203,14 @@
 				"source": [
 					"mssparkutils.fs.ls('/synapse/workspaces/sywsdevimdmo/sparkpools/imsparkpool3/sparkpoolinstances/')"
 				],
-				"execution_count": 38
+				"execution_count": 6
 			},
 			{
 				"cell_type": "code",
 				"source": [
 					"retrieve_data(2020, 1, rawPath)"
 				],
-				"execution_count": 53
+				"execution_count": 7
 			},
 			{
 				"cell_type": "code",
