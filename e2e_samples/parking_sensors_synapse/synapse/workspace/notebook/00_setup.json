@@ -4,7 +4,7 @@
 		"nbformat": 4,
 		"nbformat_minor": 2,
 		"bigDataPool": {
-			"referenceName": "synspdevimdmo",
+			"referenceName": "synspdevimgbb",
 			"type": "BigDataPoolReference"
 		},
 		"sessionProperties": {
@@ -16,7 +16,7 @@
 		},
 		"metadata": {
 			"kernelspec": {
-				"name": "synapse_pyspark",
+				"name": "python3",
 				"display_name": "Synapse PySpark"
 			},
 			"language_info": {
