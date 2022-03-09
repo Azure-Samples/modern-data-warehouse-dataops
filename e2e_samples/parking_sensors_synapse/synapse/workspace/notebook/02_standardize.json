@@ -4,7 +4,7 @@
 		"nbformat": 4,
 		"nbformat_minor": 2,
 		"bigDataPool": {
-			"referenceName": "synspdevimdmo",
+			"referenceName": "synspdevimgbb",
 			"type": "BigDataPoolReference"
 		},
 		"sessionProperties": {
@@ -12,40 +12,16 @@
 			"driverCores": 4,
 			"executorMemory": "28g",
 			"executorCores": 4,
-			"numExecutors": 1,
-			"conf": {
-				"spark.dynamicAllocation.enabled": "true",
-				"spark.dynamicAllocation.minExecutors": "1",
-				"spark.dynamicAllocation.maxExecutors": "1",
-				"spark.autotune.trackingId": "2a65d8f2-befe-4b34-bc42-23ac9561024e"
-			}
+			"numExecutors": 2
 		},
 		"metadata": {
-			"saveOutput": true,
-			"enableDebugMode": false,
 			"kernelspec": {
 				"name": "synapse_pyspark",
 				"display_name": "Synapse PySpark"
 			},
 			"language_info": {
 				"name": "python"
-			},
-			"a365ComputeOptions": {
-				"id": "/subscriptions/356cc0b4-92be-42c1-8585-6182d784d5eb/resourceGroups/mdwdops-imdmo-dev-rg/providers/Microsoft.Synapse/workspaces/sywsdevimdmo/bigDataPools/synspdevimdmo",
-				"name": "synspdevimdmo",
-				"type": "Spark",
-				"endpoint": "https://sywsdevimdmo.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/synspdevimdmo",
-				"auth": {
-					"type": "AAD",
-					"authResource": "https://dev.azuresynapse.net"
-				},
-				"sparkVersion": "2.4",
-				"nodeCount": 10,
-				"cores": 4,
-				"memory": 28,
-				"automaticScaleJobs": true
-			},
-			"sessionKeepAliveTimeout": 30
+			}
 		},
 		"cells": [
 			{
@@ -59,7 +35,8 @@
 				},
 				"source": [
 					"# 1. Get dynamic pipeline parameters"
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -91,7 +68,8 @@
 					"# Get keyvault linked service name\n",
 					"keyvaultlsname = 'Ls_KeyVault_01'"
 				],
-				"execution_count": 2
+				"attachments": null,
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -104,7 +82,8 @@
 				},
 				"source": [
 					"# 2. Load file path variables"
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -143,7 +122,8 @@
 					"sensors_filepath = os.path.join(base_path, \"MelbParkingSensorData.json\")\n",
 					"print(sensors_filepath)"
 				],
-				"execution_count": 3
+				"attachments": null,
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -156,7 +136,8 @@
 				},
 				"source": [
 					"# 3. Transform: Standardize"
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -207,7 +188,8 @@
 					"parkingbay_malformed_count = t_parkingbay_malformed_sdf.count()\n",
 					"sensordata_malformed_count = t_sensordata_malformed_sdf.count()"
 				],
-				"execution_count": 4
+				"attachments": null,
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -220,7 +202,8 @@
 				},
 				"source": [
 					"# 4. Observability: Logging to Azure Application Insights using OpenCensus Library"
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -266,9 +249,9 @@
 					"#    sensordataCount          = customDimensions.sensordata_count,\n",
 					"#    parkingbayMalformedCount = customDimensions.parkingbay_malformed_count,\n",
 					"#    sensordataMalformedCount = customDimensions.sensordata_malformed_count,\n",
-					"#    dimParkingbayCount       = customDimensions.new_parkingbay_count\n",
-					""
+					"#    dimParkingbayCount       = customDimensions.new_parkingbay_count\n"
 				],
+				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -282,7 +265,8 @@
 				},
 				"source": [
 					"# 5. Observability: Logging to Log Analytics workspace using log4j"
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -331,6 +315,7 @@
 					"#    SparkPoolName   = split(Message, '~', 3),\n",
 					"#    UserId          = split(Message, '~', 5)"
 				],
+				"attachments": null,
 				"execution_count": null
 			}
 		]

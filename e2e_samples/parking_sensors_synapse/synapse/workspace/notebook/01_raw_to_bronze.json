@@ -1,0 +1,447 @@
+{
+	"name": "01_raw_to_bronze",
+	"properties": {
+		"folder": {
+			"name": "Delta/pipelines"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "d512a90e-29a0-463c-8f69-1c5e1cd0e522"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "python"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"\n",
+					"%md-sandbox\n",
+					"\n",
+					"<div style=\"text-align: center; line-height: 0; padding-top: 9px;\">\n",
+					"  <img src=\"https://databricks.com/wp-content/uploads/2018/03/db-academy-rgb-1200px.png\" alt=\"Databricks Learning\" style=\"width: 600px\">\n",
+					"</div>"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"# Raw to Bronze Pattern"
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Notebook Objective\n",
+					"\n",
+					"In this notebook we:\n",
+					"1. Ingest Raw Data\n",
+					"2. Augment the data with Ingestion Metadata\n",
+					"3. Stream write the augmented data to a Bronze Table"
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Step Configuration"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"%run ./includes/configuration"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"### Display the Files in the Raw Path"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"display(dbutils.fs.ls(rawPath))"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Make Notebook Idempotent"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"dbutils.fs.rm(bronzePath, recurse=True)\n",
+					"dbutils.fs.rm(bronzeCheckpoint, recurse=True)"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Ingest raw data\n",
+					"\n",
+					"Next, we will stream files from the source directory and write each line as a string to the Bronze table."
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"kafka_schema = \"value STRING\"\n",
+					"\n",
+					"raw_health_tracker_data_df = (\n",
+					"    spark.readStream.format(\"text\").schema(kafka_schema).load(rawPath)\n",
+					")"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"**Exercise:** Write an Assertion Statement to Verify the Schema of the Raw Data\n",
+					"\n",
+					"At this point, we write an assertion statement to verify that our streaming DataFrame has the schema we expect.\n",
+					"\n",
+					"Your assertion should make sure that the `raw_health_tracker_data_df` DataFrame has the correct schema.\n",
+					"\n",
+					"🤠 The function `_parse_datatype_string` (read more [here](http://spark.apache.org/docs/2.1.2/api/python/_modules/pyspark/sql/types.html)) converts a DDL format schema string into a Spark schema."
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"# ANSWER\n",
+					"from pyspark.sql.types import _parse_datatype_string\n",
+					"\n",
+					"assert raw_health_tracker_data_df.schema == _parse_datatype_string(\n",
+					"    kafka_schema\n",
+					"), \"File not present in Raw Path\"\n",
+					"print(\"Assertion passed.\")"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Display the Raw Data\n",
+					"\n",
+					"🤓 Each row here is a raw string in JSON format, as would be passed by a stream server like Kafka."
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"display(raw_health_tracker_data_df, streamName=\"display_raw\")"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"❗️ To prevent the `display` function from continuously streaming, run the following utility function."
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"stop_named_stream(spark, \"display_raw\")"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Ingestion Metadata\n",
+					"\n",
+					"As part of the ingestion process, we record metadata for the ingestion. In this case, we track the data sources, the ingestion time (`ingesttime`), and the ingest date (`ingestdate`) using the `pyspark.sql` functions `current_timestamp` and `lit`."
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"from pyspark.sql.functions import current_timestamp, lit\n",
+					"\n",
+					"raw_health_tracker_data_df = raw_health_tracker_data_df.select(\n",
+					"    lit(\"files.training.databricks.com\").alias(\"datasource\"),\n",
+					"    current_timestamp().alias(\"ingesttime\"),\n",
+					"    \"value\",\n",
+					"    current_timestamp().cast(\"date\").alias(\"ingestdate\"),\n",
+					")"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## WRITE Stream to a Bronze Table\n",
+					"\n",
+					"Finally, we write to the Bronze Table using Structured Streaming.\n",
+					"\n",
+					"🙅🏽‍♀️ While we _can_ write directly to tables using the `.table()` notation, this will create fully managed tables by writing output to a default location on DBFS. This is not best practice and should be avoided in nearly all cases."
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"### Partitioning\n",
+					"This course uses a dataset that is extremely small relative to an actual production system. Still we demonstrate the best practice of partitioning by date and partition on the ingestion date, column `p_ingestdate`.\n",
+					"\n",
+					"😲 Note that we have aliased the `ingestdate` column to be `p_ingestdate`. We have done this in order to inform anyone who looks at the schema for this table that it has been partitioned by the ingestion date."
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"from pyspark.sql.functions import col\n",
+					"\n",
+					"(\n",
+					"    raw_health_tracker_data_df.select(\n",
+					"        \"datasource\", \"ingesttime\", \"value\", col(\"ingestdate\").alias(\"p_ingestdate\")\n",
+					"    )\n",
+					"    .writeStream.format(\"delta\")\n",
+					"    .outputMode(\"append\")\n",
+					"    .option(\"checkpointLocation\", bronzeCheckpoint)\n",
+					"    .partitionBy(\"p_ingestdate\")\n",
+					"    .queryName(\"write_raw_to_bronze\")\n",
+					"    .start(bronzePath)\n",
+					")"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"### Checkpointing\n",
+					"\n",
+					"When defining a Delta Lake streaming query, one of the options that you need to specify is the location of a checkpoint directory.\n",
+					"\n",
+					"`.writeStream.format(\"delta\").option(\"checkpointLocation\", <path-to-checkpoint-directory>) ...`\n",
+					"\n",
+					"This is actually a structured streaming feature. It stores the current state of your streaming job.\n",
+					"\n",
+					"Should your streaming job stop for some reason and you restart it, it will continue from where it left off.\n",
+					"\n",
+					"💀 If you do not have a checkpoint directory, when the streaming job stops, you lose all state around your streaming job and upon restart, you start from scratch.\n",
+					"\n",
+					"✋🏽 Also note that every streaming job should have its own checkpoint directory: no sharing."
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Create a Reference to the Delta table files\n",
+					"\n",
+					"In this command we create a Spark DataFrame via a reference to the Delta file in DBFS."
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"# ANSWER\n",
+					"\n",
+					"untilStreamIsReady(\"write_raw_to_bronze\")"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"bronze_health_tracker = spark.readStream.format(\"delta\").load(bronzePath)"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"### Troubleshooting\n",
+					"\n",
+					"😫 If you try to run this before the `writeStream` above has been created, you may see the following error:\n",
+					"\n",
+					"`\n",
+					"AnalysisException: Table schema is not set.  Write data into it or use CREATE TABLE to set the schema.;`\n",
+					"\n",
+					"If this happens, wait a moment for the `writeStream` to instantiate and run the command again."
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Display the files in the Delta table\n",
+					"\n",
+					"These files can be viewed using the `dbutils.fs.ls` function."
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"display(dbutils.fs.ls(bronzePath))"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"**Exercise:** Write an Assertion Statement to Verify the Schema of the Bronze Delta Table\n",
+					"\n",
+					"At this point, we write an assertion statement to verify that our Bronze Delta table has the schema we expect.\n",
+					"\n",
+					"Your assertion should make sure that the `bronze_health_tracker` DataFrame has the correct schema.\n",
+					"\n",
+					"💪🏼 Remember, the function `_parse_datatype_string` converts a DDL format schema string into a Spark schema."
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"# ANSWER\n",
+					"assert bronze_health_tracker.schema == _parse_datatype_string(\n",
+					"    \"datasource STRING, ingesttime TIMESTAMP, value STRING, p_ingestdate DATE\"\n",
+					"), \"File not present in Bronze Path\"\n",
+					"print(\"Assertion passed.\")"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Display Running Streams\n",
+					"\n",
+					"You can use the following code to display all streams that are currently running."
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"for stream in spark.streams.active:\n",
+					"    print(stream.name)"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Register the Bronze Table in the Metastore\n",
+					"\n",
+					"Recall that a Delta table registered in the Metastore is a reference to a physical table created in object storage.\n",
+					"\n",
+					"We just created a Bronze Delta table in object storage by writing data to a specific location. If we register that location with the Metastore as a table, we can query the tables using SQL.\n",
+					"\n",
+					"(Because we will never directly query the Bronze table, it is not strictly necessary to register this table in the Metastore, but we will do so for demonstration purposes.)\n",
+					"\n",
+					"At Delta table creation, the Delta files in Object Storage define the schema, partitioning, and table properties. For this reason, it is not necessary to specify any of these when registering the table with the Metastore. Furthermore, no table repair is required. The transaction log stored with the Delta files contains all metadata needed for an immediate query."
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"spark.sql(\n",
+					"    \"\"\"\n",
+					"DROP TABLE IF EXISTS health_tracker_plus_bronze\n",
+					"\"\"\"\n",
+					")\n",
+					"\n",
+					"spark.sql(\n",
+					"    f\"\"\"\n",
+					"CREATE TABLE health_tracker_plus_bronze\n",
+					"USING DELTA\n",
+					"LOCATION \"{bronzePath}\"\n",
+					"\"\"\"\n",
+					")"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"display(\n",
+					"    spark.sql(\n",
+					"        \"\"\"\n",
+					"  DESCRIBE DETAIL health_tracker_plus_bronze\n",
+					"  \"\"\"\n",
+					"    )\n",
+					")"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Delta Lake Python API\n",
+					"Delta Lake provides programmatic APIs to examine and manipulate Delta tables.\n",
+					"\n",
+					"Here, we create a reference to the Bronze table using the Delta Lake Python API."
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"from delta.tables import DeltaTable\n",
+					"\n",
+					"bronzeTable = DeltaTable.forPath(spark, bronzePath)"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"display(bronzeTable.history())"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Stop All Streams\n",
+					"\n",
+					"In the next notebook, we will stream data from the Bronze table to a Silver Delta table.\n",
+					"\n",
+					"Before we do so, let's shut down all streams in this notebook."
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"stop_all_streams()\n",
+					""
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"%md-sandbox\n",
+					"&copy; 2020 Databricks, Inc. All rights reserved.<br/>\n",
+					"Apache, Apache Spark, Spark and the Spark logo are trademarks of the <a href=\"http://www.apache.org/\">Apache Software Foundation</a>.<br/>\n",
+					"<br/>\n",
+					"<a href=\"https://databricks.com/privacy-policy\">Privacy Policy</a> | <a href=\"https://databricks.com/terms-of-use\">Terms of Use</a> | <a href=\"http://help.databricks.com/\">Support</a>"
+				],
+				"execution_count": null
+			}
+		]
+	}
+}

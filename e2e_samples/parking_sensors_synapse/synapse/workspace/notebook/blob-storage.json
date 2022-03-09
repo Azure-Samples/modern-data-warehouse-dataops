@@ -1,0 +1,352 @@
+{
+	"name": "blob-storage",
+	"properties": {
+		"folder": {
+			"name": "Delta/resources"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "358e4890-b455-4d3c-95f8-d507495e7ee7"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "python"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"\n",
+					"%md-sandbox\n",
+					"\n",
+					"<div style=\"text-align: center; line-height: 0; padding-top: 9px;\">\n",
+					"  <img src=\"https://databricks.com/wp-content/uploads/2018/03/db-academy-rgb-1200px.png\" alt=\"Databricks Learning\" style=\"width: 600px\">\n",
+					"</div>"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"#![Spark Logo Tiny](https://files.training.databricks.com/images/105/logo_spark_tiny.png) Key Vault-Backed Secret Scopes\n",
+					"\n",
+					"## Learning Objectives\n",
+					"By the end of these lessons, you should be able to:\n",
+					"* Configure Databricks to access Key Vault secrets\n",
+					"* Read and write data directly from Blob Storage using secrets stored in Key Vault\n",
+					"* Set different levels of access permission using SAS at the Storage service level\n",
+					"* Mount Blob Storage into DBFS\n",
+					"* Describe how mounting impacts secure access to data\n",
+					"\n",
+					"The overall goal of these three notebooks is to read and write data directly from Blob Storage using secrets stored in a Key Vault, accessed securely through the Databricks Secrets utility.\n",
+					"\n",
+					"This goal has been broken into 3 notebooks to make each step more digestible:\n",
+					"1. 03a - Blob Storage - In the first notebook, we will add a file to a Blob on a Storage Account and generate SAS tokens with different permissions levels\n",
+					"1. 03b - Key Vault - In the second notebook, we will configure an Azure Key Vault Access Policy and add text-based credentials as secrets\n",
+					"1. 03c - Key Vault Backed Secret Scopes - In the third notebook, we will define a Secret Scope in Databircks by linking to the Key Vault and use the previously stored credentials to read and write from the Storage Container"
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"##![Spark Logo Tiny](https://files.training.databricks.com/images/105/logo_spark_tiny.png) 03a - Blob Storage\n",
+					"\n",
+					"This notebook is focused on configuring the blob storage required for the ADB Core partner training, but should provide general enough instructions to be useful in other settings.\n",
+					"\n",
+					"\n",
+					" ### Learning Objectives\n",
+					" By the end of this lesson, you should be able to:\n",
+					"\n",
+					" - Create blob storage containers\n",
+					" - Load data into a container\n",
+					" - Create a read/list SAS token\n",
+					" - Create a SAS token with full privileges"
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"\n",
+					"## Create container and upload a file\n",
+					"\n",
+					"Follow the screenshots below to create a container and upload a file.\n",
+					"\n",
+					"You will be using the Azure Portal for these operations.\n",
+					"\n",
+					"The Azure Portal can be accessed from your workspace by clicking on the **PORTAL** link, top right next to your name."
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"\n",
+					"## Access your Storage Account in the Azure Portal\n",
+					"\n",
+					"\n",
+					"A storage account has been provided for you, but you can follow instruction here to [create a new Storage Account in your Resource Group](https://docs.microsoft.com/en-us/azure/storage/common/storage-quickstart-create-account?tabs=azure-portal).\n",
+					"\n",
+					"1. Click on \"All resources\"\n",
+					"2. Click on the storage account starting with `g1`\n",
+					"\n",
+					"\n",
+					"<img src=\"https://files.training.databricks.com/images/adbcore/config-blob/resources.png\" width=800px />"
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"\n",
+					"## View the Blobs, if any stored with this storage account\n",
+					"\n",
+					"A storage account can have multiple containers.\n",
+					"\n",
+					"We will upload our file as a blob into a Container for this storage account.\n",
+					"\n",
+					"First, see what containers -- if any -- exist in this storage account.\n",
+					"\n",
+					"<img src=\"https://files.training.databricks.com/images/adbcore/config-blob/storage1.png\" width=800px />"
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"\n",
+					"## Add a Container to hold Blobs\n",
+					"\n",
+					"Currently, we have no containers defined in our blob. Click the indicated button to add a container.\n",
+					"\n",
+					"<img src=\"https://files.training.databricks.com/images/adbcore/config-blob/blobs-empty.png\" width=800px />"
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"\n",
+					"## Name the container\n",
+					"\n",
+					"We'll name our first container `commonfiles`.\n",
+					"\n",
+					"Note that the container name is hardcoded in the following notebooks, if you use a name besides `commonfiles` you will have to edit the following notebooks to reflect the name you chose in place of `commonfiles`\n",
+					"\n",
+					"Click \"OK\" to continue.\n",
+					"\n",
+					"<img src=\"https://files.training.databricks.com/images/adbcore/config-blob/new-blob.png\" width=800px />"
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"\n",
+					"## Download a file to your computer\n",
+					"\n",
+					"Now that we have created a container named `commonfiles`, let's upload a file to the container.\n",
+					"\n",
+					"Click the following link to download a csv to your computer:\n",
+					"### Download [this file](https://files.training.databricks.com/courses/adbcore/commonfiles/sales.csv) to your local machine."
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"\n",
+					"## Select the container and upload some data\n",
+					"\n",
+					"We will upload the sales.csv file we just downloaded.\n",
+					"\n",
+					"#### Select the container commonfiles\n",
+					"\n",
+					"<img src=\"https://files.training.databricks.com/images/adbcore/config-blob/blobs-1.png\" width=800px />\n",
+					"\n",
+					"#### Select Upload to prepare to upload Data\n",
+					"\n",
+					"<img src=\"https://files.training.databricks.com/images/adbcore/config-blob/blob-empty.png\" width=800px />\n",
+					"\n",
+					"#### Upload the file into the container\n",
+					"\n",
+					"1. Select the downloaded file \"sales.csv\" from the file picker.\n",
+					"2. Click \"Upload\"\n",
+					"\n",
+					"<img src=\"https://files.training.databricks.com/images/adbcore/config-blob/file-upload.png\"/>"
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"\n",
+					"## Congratulations! You have uploaded a file into Azure Blob Storage\n",
+					"\n",
+					"Once you have content in Azure Blob Storage you can access that content in an Azure Databricks Notebook.\n",
+					"\n",
+					"For further reading you can see the [Documentation](https://docs.databricks.com/data/data-sources/azure/azure-storage.html)\n",
+					"\n",
+					"One way to access the content in a container is to generate an SAS Token\n",
+					"\n",
+					"**In the next steps you will generate an SAS Token for this container**"
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"# Copy Down Variables to Be Used in Next Lesson\n",
+					"\n",
+					"You'll need a few values that we'll be loading into a Key Vault in the next lesson. We'll copy them into cells below."
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Record Storage Account Name\n",
+					"\n",
+					"Copy/paste the name of your storage account below.\n",
+					"\n",
+					"<img src=\"https://files.training.databricks.com/images/adbcore/config-blob/account-name.png\"/>"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"## YOUR STORAGE ACCOUNT NAME HERE ####\n",
+					"## NOTE WE DO NOT RUN ANY CODE HERE, THIS IS JUST SAVED FOR USE IN THE FOLLOWING NOTEBOOK"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"\n",
+					"## Generate a SAS token with all privileges\n",
+					"\n",
+					"In the Storage Container View in the Azure Portal\n",
+					"\n",
+					"1. Click \"Shared access signature\"\n",
+					"2. Select all the permissions\n",
+					"3. Click \"Generate SAS and connection string\" to generate the SAS Token.\n",
+					"\n",
+					"<img src=\"https://files.training.databricks.com/images/adbcore/config-blob/sas-write.png\"/>"
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"\n",
+					"## Retrieve the SAS Token generated\n",
+					"\n",
+					"You will use the SAS token in a later notebook.\n",
+					"\n",
+					"For now copy and paste the SAS token into the cell below.\n",
+					"\n",
+					"<img src=\"https://files.training.databricks.com/images/adbcore/config-blob/sas-write-secrets.png\" />"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"## YOUR FULL PERMISSIONS TOKEN HERE ####\n",
+					"## NOTE WE DO NOT RUN ANY CODE HERE, THIS IS JUST SAVED FOR USE IN THE FOLLOWING NOTEBOOK"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"\n",
+					"## Generate a SAS token with only Read and List privileges\n",
+					"\n",
+					"An SAS token is one way to gain access to data in your container.\n",
+					"\n",
+					"You will create an SAS token with read and list permissions for the container.\n",
+					"\n",
+					"In the Storage Container View in the Azure Portal\n",
+					"\n",
+					"1. Click \"Shared access signature\"\n",
+					"2. Deselect the appropriate permissions to create a \"Read-Only\" Token.\n",
+					"3. Make sure you retained the list permission, the list permission is useful to view the contents of the container\n",
+					"3. Click \"Generate SAS and connection string\" to generate the SAS Token.\n",
+					"\n",
+					"#### **Warning a common mistake is to fail to select the list privilege, please verify you have selected read and list checkbox**\n",
+					"\n",
+					"<img src=\"https://files.training.databricks.com/images/adbcore/config-blob/sas-read.png\" width=800px />"
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"\n",
+					"## Retrieve the SAS Token generated\n",
+					"\n",
+					"You will use the SAS token in a later notebook.\n",
+					"\n",
+					"For now copy and paste the SAS token into the cell below.\n",
+					"\n",
+					"<img src=\"https://files.training.databricks.com/images/adbcore/config-blob/sas-write-secrets.png\" />"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"## YOUR READ ONLY TOKEN HERE ####\n",
+					"## NOTE WE DO NOT RUN ANY CODE HERE, THIS IS JUST SAVED FOR USE IN THE FOLLOWING NOTEBOOK"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"\n",
+					"# Obscuring your SAS Tokens\n",
+					"\n",
+					"In this series of Notebooks we use our SAS Token to access the blob store. In the cells above you store the SAS token in plain text, this is **bad practice and only done for educational purposes**. Your SAS Token in a production environment should be stored in Secrets/KeyVault to prevent it from being displayed in plain text inside a notebook.\n",
+					"\n",
+					"We will see how to do this in the next notebook."
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"\n",
+					"## Congratulations!\n",
+					"\n",
+					"You have:\n",
+					"\n",
+					" - Created a blob storage container\n",
+					" - Loaded data into a container\n",
+					" - Created a read/list SAS token\n",
+					" - Created a SAS token with full permissions\n",
+					" - Saved the SAS tokens for later use\n",
+					"\n",
+					"In this notebook, we uploaded a file to a blob storage container and generated SAS tokens with different access permissions to the storage account. In the next notebook we will see how to store the SAS tokens securely in the Key Vault."
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"%md-sandbox\n",
+					"&copy; 2020 Databricks, Inc. All rights reserved.<br/>\n",
+					"Apache, Apache Spark, Spark and the Spark logo are trademarks of the <a href=\"http://www.apache.org/\">Apache Software Foundation</a>.<br/>\n",
+					"<br/>\n",
+					"<a href=\"https://databricks.com/privacy-policy\">Privacy Policy</a> | <a href=\"https://databricks.com/terms-of-use\">Terms of Use</a> | <a href=\"http://help.databricks.com/\">Support</a>"
+				],
+				"execution_count": null
+			}
+		]
+	}
+}
