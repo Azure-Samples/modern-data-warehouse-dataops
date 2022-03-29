@@ -1,5 +1,6 @@
 # Databricks notebook source
-# MAGIC %pip install great-expectations==0.14.4
+# MAGIC %pip install great-expectations==0.14.12
+# MAGIC %pip install opencensus-ext-azure==1.1.3
 
 # COMMAND ----------
 
@@ -66,6 +67,9 @@ nr_fact_parking.write.mode("append").insertInto("dw.fact_parking")
 
 # MAGIC %md
 # MAGIC ### Data Quality
+# MAGIC The following uses the [Great Expectations](https://greatexpectations.io/) library. See [Great Expectation Docs](https://docs.greatexpectations.io/docs/) for more info.
+# MAGIC 
+# MAGIC **Note**: for simplication purposes, the [Expectation Suite](https://docs.greatexpectations.io/docs/terms/expectation_suite) is created inline. Generally this should be created prior to data pipeline execution, and only loaded during runtime and executed against a data [Batch](https://docs.greatexpectations.io/docs/terms/batch/) via [Checkpoint](https://docs.greatexpectations.io/docs/terms/checkpoint/).
 
 # COMMAND ----------
 
@@ -75,43 +79,39 @@ from great_expectations.core.batch import RuntimeBatchRequest
 from great_expectations.data_context import BaseDataContext
 from great_expectations.data_context.types.base import (
     DataContextConfig,
+    DatasourceConfig,
     FilesystemStoreBackendDefaults,
 )
 from pyspark.sql import SparkSession, Row
 
-#  Configure root directory
 root_directory = "/dbfs/great_expectations/"
+
+# 1. Configure DataContext
+# https://docs.greatexpectations.io/docs/terms/data_context
 data_context_config = DataContextConfig(
-    store_backend_defaults=FilesystemStoreBackendDefaults(
-        root_directory=root_directory
-    ),
+    datasources={
+        "parkingbay_data_source": DatasourceConfig(
+            class_name="Datasource",
+            execution_engine={"class_name": "SparkDFExecutionEngine"},
+            data_connectors={
+                "parkingbay_data_connector": {
+                    "module_name": "great_expectations.datasource.data_connector",
+                    "class_name": "RuntimeDataConnector",
+                    "batch_identifiers": [
+                        "environment",
+                        "pipeline_run_id",
+                    ],
+                }
+            }
+        )
+    },
+    store_backend_defaults=FilesystemStoreBackendDefaults(root_directory=root_directory)
 )
 context = BaseDataContext(project_config=data_context_config)
 
-# Datasource configuration
-my_spark_datasource_config = {
-    "name": "transformed_data_source",
-    "class_name": "Datasource",
-    "execution_engine": {"class_name": "SparkDFExecutionEngine"},
-    "data_connectors": {
-        "transformed_data_connector": {
-            "module_name": "great_expectations.datasource.data_connector",
-            "class_name": "RuntimeDataConnector",
-            "batch_identifiers": [
-                "environment",
-                "pipeline_run_id",
-            ],
-        }
-    },
-}
 
-# create a BatchRequest using the DataAsset we configured earlier to use as a sample of data when creating# Check the Datasource:
-context.test_yaml_config(yaml.dump(my_spark_datasource_config)) 
-
-# Add the Datasource
-context.add_datasource(**my_spark_datasource_config)
-
-# create a BatchRequest using the DataAsset (parkingbay_sdf) we configured earlier from parkingbay data
+# 2. Create a BatchRequest based on parkingbay_sdf dataframe.
+# https://docs.greatexpectations.io/docs/terms/batch
 batch_request = RuntimeBatchRequest(
     datasource_name="transformed_data_source",
     data_connector_name="transformed_data_connector",
@@ -123,21 +123,18 @@ batch_request = RuntimeBatchRequest(
     runtime_parameters={"batch_data": nr_fact_parking},  # Your dataframe goes here
 )
 
-# Define Data Quality metric and run Verification
-# create the suite and get a Validator
 
+# 3. Define Expecation Suite and corresponding Data Expectations
+# https://docs.greatexpectations.io/docs/terms/expectation_suite
 expectation_suite_name = "Transfomed_data_exception_suite_basic"
 context.create_expectation_suite(expectation_suite_name=expectation_suite_name, overwrite_existing=True)
 validator = context.get_validator(
     batch_request=batch_request,
     expectation_suite_name=expectation_suite_name,
 )
-#print(validator.head())
-
-# validator.list_available_expectation_types()
+# Add Validatons to suite
+# Check available expectations: validator.list_available_expectation_types()
 # https://legacy.docs.greatexpectations.io/en/latest/autoapi/great_expectations/expectations/index.html
-
-# Add Validatons 
 # https://legacy.docs.greatexpectations.io/en/latest/reference/core_concepts/expectations/standard_arguments.html#meta
 validator.expect_column_values_to_not_be_null(column="status")
 validator.expect_column_values_to_be_of_type(column="status", type_="StringType")
@@ -145,13 +142,12 @@ validator.expect_column_values_to_not_be_null(column="dim_time_id")
 validator.expect_column_values_to_be_of_type(column="dim_time_id", type_="IntegerType")
 validator.expect_column_values_to_not_be_null(column="dim_parking_bay_id")
 validator.expect_column_values_to_be_of_type(column="dim_parking_bay_id", type_="StringType")
-#validator.validate()
-
-#validator.list_available_expectation_types() # Check all available expectations
-validator.save_expectation_suite(discard_failed_expectations=False)
 #validator.validate() # To run run validations without checkpoint
+validator.save_expectation_suite(discard_failed_expectations=False)
 
-# Configure Checkpoint
+
+# 4. Configure a checkpoint and run Expectation suite using checkpoint
+# https://docs.greatexpectations.io/docs/terms/checkpoint
 my_checkpoint_name = "Transformed Data"
 checkpoint_config = {
     "name": my_checkpoint_name,
@@ -159,11 +155,9 @@ checkpoint_config = {
     "class_name": "SimpleCheckpoint",
     "run_name_template": "%Y%m%d-%H%M%S-my-run-name-template",
 }
-
 my_checkpoint = context.test_yaml_config(yaml.dump(checkpoint_config,default_flow_style=False))
 context.add_checkpoint(**checkpoint_config)
-
-# Run Checkpoint 
+# Run Checkpoint passing in expectation suite
 checkpoint_result = context.run_checkpoint(
     checkpoint_name=my_checkpoint_name,
     validations=[
@@ -177,7 +171,9 @@ checkpoint_result = context.run_checkpoint(
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ### Data Quality Monitoring
+# MAGIC ### Data Quality Metric Reporting
+# MAGIC 
+# MAGIC This parses the results of the checkpoint and sends it to AppInsights / Azure Monitor for reporting.
 
 # COMMAND ----------
 
@@ -187,11 +183,11 @@ import time
 from opencensus.ext.azure.log_exporter import AzureLogHandler
 
 logger = logging.getLogger(__name__)
-logger.addHandler(AzureLogHandler(connection_string=dbutils.secrets.get(scope = "storage_scope", key = "applicationInsightsKey")))
+logger.addHandler(AzureLogHandler(connection_string=dbutils.secrets.get(scope = "storage_scope", key = "applicationInsightsConnectionString")))
 
 result_dic = checkpoint_result.to_json_dict()
-key_name=[key for key in result_dic['_run_results'].keys()][0]
-results = result_dic['_run_results'][key_name]['validation_result']['results']
+key_name=[key for key in result_dic['run_results'].keys()][0]
+results = result_dic['run_results'][key_name]['validation_result']['results']
 
 checks = {'check_name':checkpoint_result['checkpoint_config']['name'],'pipelinerunid':loadid}
 for i in range(len(results)):
