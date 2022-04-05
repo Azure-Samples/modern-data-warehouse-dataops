@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
     "name": "Ls_KeyVault_01",
     "properties": {
         "annotations": [],
@@ -8,3 +9,15 @@
         }
     }
 }
+=======
+	"name": "Ls_KeyVault_01",
+	"type": "Microsoft.Synapse/workspaces/linkedservices",
+	"properties": {
+		"type": "AzureKeyVault",
+		"annotations": [],
+		"typeProperties": {
+			"baseUrl": "https://mdwdops-kv-dev-gbbim.vault.azure.net/"
+		}
+	}
+}
+>>>>>>> faa64c59bea086de953f9ea26dbd26fb6a479207
