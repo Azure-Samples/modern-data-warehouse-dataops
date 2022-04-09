@@ -13,6 +13,7 @@ Executing scripts using PowerShell
 
 Extracting SQL scripts from JSON is not an issue but we need to make sure the final SQL script is in a specific order so that we can execute without any error. Here again, we are missing the capabilities of DACPAC which does all the dependencies check out of the box.
 Example Json file.
+![deploy](./images/sample_json_file.jpg)
 
 Without going into too much complexity here is how I am solving this dependency problem. In the workspace, I have a separate folder for serverless scripts which will help for filtering all the scripts related to serverless SQL. Under this folder, I have one folder for Drop_statements and this is important because you can’t have altered statements for external objects .e.g. External Data Sources, External Tables, etc 
 
