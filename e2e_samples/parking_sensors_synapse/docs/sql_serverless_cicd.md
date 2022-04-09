@@ -1,36 +1,3 @@
-# External View in SQL Serverless
-
-## Check deployment successfully
-
-![deploy](./images/tableview_deploy.png)
-
-## Setup Pipeline
-
-- To be able to create view with schema less, need to have data in the target location.
-- Thus, need to run pipeline once before running the "create_external_table"
-
-## Run SQL script to create view
-
-- Make sure you are in the synapse sql admin role
-- Execute "create_external_table.sql"
-- Right click view and select query
-- Check result can be queried successfully
-  ![query](./images/tableview_run_queryview.png)
-
-## Query from notebook
-
-- Need to either get ADToken or use username and password to connect to SQL Serverless
-- clone "create_db_user_template.sql" to a new sql "create_db_user.sql"
-- Update "create_db_user.sql". Replace `[<your sql login user name>]` and `[<your database name>]` with the setting in the keyvault of secret synapseSQLPoolAdminUsername
-![sqladmin](./images/tableview_sqladmin.png)
-- Replace `<your password>` with the password setting in the keyvault of secret synapseSQLPoolAdminPassword
-- Replace `<your password>` with the password setting in the keyvault of secret synapseSQLPoolAdminPassword
-- Replace `[<your database name>]` to the database name created in previous step. Default is 'external_db'
-- Execute the script "create_db_user.sql"
-![deploy](./images/tableview_create_db_user.png)
-- Run Notebook `[01b_explore_sqlserverless]` to query from SQL Serverless View
-![deploy](./images/tableview_run_notebook.png)
-
 ## SQL Server Operationalization and CI/CD
 At the moment when I am writing this article Serverless SQL pool currently doesn’t have SSDT support. The best practice currently is to have a git repository with all the definitions of Views/External tables/Data Sources and other objects in SQL scripts inside git. 
 
@@ -40,9 +7,9 @@ There are few options to achieve this thing.
 First Approach: Code your SQL serverless code as SQL scripts in the azure synapse workspace and saved them in the workspace. Now if you haven’t already configured your workspace to connect Azure DevOps repo or Git Hub repo then you have to do it now. Here this document helps you to do this. Once your workspace is connected to the Azure DevOps repository [in this article I am only considering Azure DevOps repos] then you can commit your code and your SQL scripts will be available as JSON files in the git repo. So we are halfway done only concern is our code is not available as SQL Scripts. 
 The next thing we need to do is write a Power Shell script to extract these SQL commands from JSON files and build one SQL script which we can execute through one of the following power shell utilities. 
 Executing scripts using PowerShell 
-# •	Via PowerShell 
-## 1.	Invoke-Sqlcmd (Invoke-Sqlcmd (SqlServer) | Microsoft Docs Invoke-Sqlcmd (SqlServer) | Microsoft Docs) 
-## 2.	Sqlcmd utility (sqlcmd Utility - SQL Server | Microsoft Docs) 
+-	Via PowerShell 
+ 1.	Invoke-Sqlcmd ([Invoke-Sqlcmd (SqlServer) | Microsoft Docs Invoke-Sqlcmd (SqlServer) | Microsoft Docs](https://docs.microsoft.com/en-us/powershell/module/sqlserver/invoke-sqlcmd?view=sqlserver-ps)) 
+ 2.	Sqlcmd utility ([sqlcmd Utility - SQL Server | Microsoft Docs](https://docs.microsoft.com/en-us/sql/tools/sqlcmd-utility?view=sql-server-ver15)) 
 
 Extracting SQL scripts from JSON is not an issue but we need to make sure the final SQL script is in a specific order so that we can execute without any error. Here again, we are missing the capabilities of DACPAC which does all the dependencies check out of the box.
 Example Json file.
@@ -55,12 +22,13 @@ For every creates statement you have to create a drop statement with IF exists t
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[call_center_tpcds]') AND type in (N'U'))
 DROP EXTERNAL TABLE [dbo].[call_center_tpcds]
 
-You have to extract the SQL script in the following order and then save it into the target .sql file.
-- 1.	Drop External Table statements
-- 2.	Drop External Data Sources 
-- 3.	Drop Database Scope Credentials
-- 4.	Drop File Formats
-If you save your scripts in specific folders and hierarchy as shown in the above screenshot you can use the below PowerShell script and generate a .sql file which your azure DevOps pipelines can use for execution.
+- You have to extract the SQL script in the following order and then save it into the target .sql file.
+ 1.	Drop External Table statements
+ 2.	Drop External Data Sources 
+ 3.	Drop Database Scope Credentials
+ 4.	Drop File Formats
+
+- If you save your scripts in specific folders and hierarchy as shown in the above screenshot you can use the below PowerShell script and generate a .sql file which your azure DevOps pipelines can use for execution.
 You can save the below PowerShell script in your git repo with the name parsingSQLJson.ps1. It only expects the root folder relative path as parameter which contains all the JSON files with SQL Script.
 
 ```powershell
