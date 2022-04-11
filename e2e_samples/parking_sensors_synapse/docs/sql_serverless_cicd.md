@@ -20,8 +20,10 @@ Without going into too much complexity here is how I am solving this dependency 
 ![deploy](./images/serverless_folder_structure.jpg)
 
 For every creates statement you have to create a drop statement with IF exists to check.
+```sql
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[call_center_tpcds]') AND type in (N'U'))
 DROP EXTERNAL TABLE [dbo].[call_center_tpcds]
+```
 
 - You have to extract the SQL script in the following order and then save it into the target .sql file.
  1.	Drop External Table statements
