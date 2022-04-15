@@ -71,7 +71,7 @@ stages:
 
   - template: templates/jobs/extract_and_publish_sql_serverless_sql.yml
     parameters:
-      environmentName: '$(basePath)'
+      basePath: '$(basePath)'
     
     # - task: PublishBuildArtifacts@1
     #   inputs:
