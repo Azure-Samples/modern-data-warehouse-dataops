@@ -3,6 +3,10 @@ parameters:
   type: string
 
 jobs:
+- job: Build SQL Serveless and Publish
+  displayName: My First Job
+  continueOnError: true
+  steps:
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: '$(basePath)/scripts/parsingSQLJson.ps1'
