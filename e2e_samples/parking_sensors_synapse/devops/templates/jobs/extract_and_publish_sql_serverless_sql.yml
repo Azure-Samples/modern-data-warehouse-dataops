@@ -3,6 +3,7 @@ parameters:
   type: string
 
 jobs:
+- job:
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: '$(basePath)/scripts/parsingSQLJson.ps1'
