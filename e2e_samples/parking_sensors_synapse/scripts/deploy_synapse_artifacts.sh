@@ -41,6 +41,7 @@ set -o nounset
 # LOG_ANALYTICS_WS_KEY
 # KEYVAULT_NAME
 # AZURE_STORAGE_ACCOUNT
+# SYNAPSE_ANALYTICS_SQL_ADMIN
 
 # Consts
 apiVersion="2020-12-01&force=true"
@@ -181,7 +182,7 @@ createSqlDatabase(){
     echo "Creating the external_db sql database using Synapse Serverless SQL..."
 
     # Create a external_db database using Synapse Serverless SQL
-    sqlcmd -U ${synapseAnalyticsSQLAdmin} -P ${SYNAPSE_SQL_PASSWORD} -S tcp:${SYNAPSE_WORKSPACE_NAME}-ondemand.sql.azuresynapse.net -d master -I -Q "CREATE DATABASE external_db;"
+    sqlcmd -U ${SYNAPSE_ANALYTICS_SQL_ADMIN} -P ${SYNAPSE_SQL_PASSWORD} -S tcp:${SYNAPSE_WORKSPACE_NAME}-ondemand.sql.azuresynapse.net -d master -I -Q "CREATE DATABASE external_db;"
 
 
 }
