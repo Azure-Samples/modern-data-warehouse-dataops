@@ -72,28 +72,7 @@ stages:
   - template: templates/jobs/extract_and_publish_sql_serverless_sql.yml
     parameters:
       basePath: '$(basePath)'
-    
-    # - task: PublishBuildArtifacts@1
-    #   inputs:
-    #     PathtoPublish: '$(basePath)/scripts/parsingSQLJson.ps1'
-    #     ArtifactName: 'serverless_scripts'
-    #   displayName: 'Publish SQL Serverless Json Parsing Scripts'
-
-    # - task: PowerShell@2
-    #   inputs:
-    #     filePath: '$(Agent.BuildDirectory)/s/e2e_samples/parking_sensors_synapse/scripts/parsingSQLJson.ps1'
-    #   displayName: 'Parsing SQL Scripts'
-
-    # - script: dir
-    #   workingDirectory: $(Agent.BuildDirectory)/s/e2e_samples/parking_sensors_synapse/synapse/workspace/sqlscript/extracted_sql
-    #   displayName: List contents of a folder
-
-    # - task: PublishBuildArtifacts@1
-    #   inputs:
-    #     PathtoPublish: 'e2e_samples/parking_sensors_synapse/synapse/workspace/sqlscript/extracted_sql/'
-    #     ArtifactName: 'serverless_sql_scripts'
-    #   displayName: 'Publish SQL Scripts'
-    
+         
   - job: 'publish_sql_packages'
     displayName: 'Publish SQL Packages'
     pool:
