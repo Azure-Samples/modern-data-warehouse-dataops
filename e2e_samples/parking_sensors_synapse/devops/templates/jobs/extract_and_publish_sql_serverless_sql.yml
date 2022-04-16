@@ -4,7 +4,7 @@ parameters:
 
 jobs:
 - job: build_publish_sql_serverless_artifacts
-  displayName: 'build_publish_sql_serverless_artifacts'
+  displayName: 'Build and Publish Sql Serverless Artifacts'
   continueOnError: true
   steps:
     - task: PublishBuildArtifacts@1
