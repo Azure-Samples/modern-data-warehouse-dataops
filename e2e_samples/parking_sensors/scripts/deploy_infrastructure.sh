@@ -49,7 +49,7 @@ echo "Deploying to Subscription: $AZURE_SUBSCRIPTION_ID"
 az account set --subscription "$AZURE_SUBSCRIPTION_ID"
 
 # Create resource group
-resource_group_name="$PROJECT-$DEPLOYMENT_ID-$ENV_NAME-rg"
+resource_group_name="chan-bigdatademo7-$ENV_NAME"
 echo "Creating resource group: $resource_group_name"
 az group create --name "$resource_group_name" --location "$AZURE_LOCATION" --tags Environment="$ENV_NAME"
 
