@@ -90,11 +90,11 @@ root_directory = "/dbfs/great_expectations/"
 # https://docs.greatexpectations.io/docs/terms/data_context
 data_context_config = DataContextConfig(
     datasources={
-        "parkingbay_data_source": DatasourceConfig(
+        "transformed_data_source": DatasourceConfig(
             class_name="Datasource",
             execution_engine={"class_name": "SparkDFExecutionEngine"},
             data_connectors={
-                "parkingbay_data_connector": {
+                "transformed_data_connector": {
                     "module_name": "great_expectations.datasource.data_connector",
                     "class_name": "RuntimeDataConnector",
                     "batch_identifiers": [
