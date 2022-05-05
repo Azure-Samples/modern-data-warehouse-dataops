@@ -27,6 +27,10 @@ RUN pip install databricks-cli
 RUN apt-get update \
     && apt-get -y install jq makepasswd
 
+# Install dos2unix
+RUN apt-get update \
+    && apt-get -y install dos2unix
+
 # Install java
 RUN apt-get install -y openjdk-8-jdk
 ENV JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
