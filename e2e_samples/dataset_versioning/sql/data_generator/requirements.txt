@@ -12,7 +12,7 @@ isodate==0.6.0
 msal==1.11.0
 msal-extensions==0.3.0
 msrest==0.6.21
-numpy==1.20.2
+numpy==1.21.0
 oauthlib==3.1.0
 pandas==1.2.4
 portalocker==1.7.1
