@@ -57,7 +57,7 @@ GITHUB_REPO_URL=$github_repo_url \
 sed -i "s+devlace/mdw-dataops-clone+$GITHUB_REPO+" devops/azure-pipelines-cd-release.yml
 
 # azure-pipelines-cd-release.yml pipeline require DEV_DATAFACTORY_NAME set, retrieve this value from .env.dev file
-declare DEV_"$(grep -e '^DATAFACTORY_NAME' .env.dev | tail -1 | xargs)"
+declare DEV_"$(grep -e '^DATAFACTORY_NAME' .env.a-dev | tail -1 | xargs)"
 
 # Deploy all pipelines
 PROJECT=$project \
