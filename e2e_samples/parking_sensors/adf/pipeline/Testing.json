@@ -1,0 +1,109 @@
+{
+	"name": "Testing",
+	"properties": {
+		"description": "Hello from NDC Sydney!!!",
+		"activities": [
+			{
+				"name": "Set infilefolder",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "infilefolder",
+					"value": {
+						"value": "2022_05_19_06_29_30",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "TransformData",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "Set infilefolder",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/notebooks/03_transform",
+					"baseParameters": {
+						"loadid": {
+							"value": "2853c062-1a63-40e8-86c9-b76b7cbdc82a",
+							"type": "Expression"
+						}
+					},
+					"libraries": [
+						{
+							"egg": "dbfs:/mnt/datalake/sys/databricks/libs/ddo_transform-localdev-py2.py3-none-any.whl"
+						},
+						{
+							"pypi": {
+								"package": "applicationinsights"
+							}
+						}
+					]
+				},
+				"linkedServiceName": {
+					"referenceName": "Ls_AzureDatabricks_01",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Load SQLDW",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "TransformData",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 11,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[load_dw]",
+					"storedProcedureParameters": {
+						"load_id": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "Ls_AzureSQLDW_01",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"variables": {
+			"infilefolder": {
+				"type": "String",
+				"defaultValue": "lnd"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-05-18T10:02:46Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
