@@ -34,7 +34,7 @@ stages:
   - template: templates/jobs/deploy-azuresqldb-job.yml
     parameters:
       environmentName: 'DEV'
-      serviceConnection: 'mdwdops-serviceconnection-dev'
+      serviceConnection: 'mdwdops-serviceconnection-a-dev'
 
 - stage: deploy_to_stg
   displayName: 'Deploy to Stage'
@@ -48,11 +48,11 @@ stages:
   - template: templates/jobs/deploy-azuresqldb-job.yml
     parameters:
       environmentName: 'STG'
-      serviceConnection: 'mdwdops-serviceconnection-stg'
+      serviceConnection: 'mdwdops-serviceconnection-b-stg'
   - template: templates/jobs/deploy-adf-job.yml
     parameters:
       environmentName: 'STG'
-      serviceConnection: 'mdwdops-serviceconnection-stg'
+      serviceConnection: 'mdwdops-serviceconnection-b-stg'
   # Integration tests
   - template: templates/jobs/integration-tests-job.yml
 
@@ -68,8 +68,8 @@ stages:
   - template: templates/jobs/deploy-azuresqldb-job.yml
     parameters:
       environmentName: 'PROD'
-      serviceConnection: 'mdwdops-serviceconnection-prod'
+      serviceConnection: 'mdwdops-serviceconnection-c-prd'
   - template: templates/jobs/deploy-adf-job.yml
     parameters:
       environmentName: 'PROD'
-      serviceConnection: 'mdwdops-serviceconnection-prod'
+      serviceConnection: 'mdwdops-serviceconnection-c-prd'
