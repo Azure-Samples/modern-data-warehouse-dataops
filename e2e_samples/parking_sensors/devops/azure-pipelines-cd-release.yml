@@ -25,8 +25,8 @@ stages:
 - stage: deploy_to_dev
   displayName: 'Deploy to DEV'  # In DEV, excludes publishing to ADF as this is a manual publish step
   variables:
-  - group: mdwdops-release-dev
-  - group: mdwdops-secrets-dev
+  - group: mdwdops-release-a-dev
+  - group: mdwdops-secrets-a-dev
   jobs:
   - template: templates/jobs/deploy-databricks-job.yml
     parameters:
@@ -39,8 +39,8 @@ stages:
 - stage: deploy_to_stg
   displayName: 'Deploy to Stage'
   variables:
-  - group: mdwdops-release-stg
-  - group: mdwdops-secrets-stg
+  - group: mdwdops-release-b-stg
+  - group: mdwdops-secrets-b-stg
   jobs: 
   - template: templates/jobs/deploy-databricks-job.yml
     parameters:
@@ -59,8 +59,8 @@ stages:
 - stage: deploy_to_prod
   displayName: 'Deploy to Prod'
   variables:
-  - group: mdwdops-release-prod
-  - group: mdwdops-secrets-prod
+  - group: mdwdops-release-c-prd
+  - group: mdwdops-secrets-c-prd
   jobs: 
   - template: templates/jobs/deploy-databricks-job.yml
     parameters:
