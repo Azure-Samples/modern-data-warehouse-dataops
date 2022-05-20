@@ -30,10 +30,10 @@ stages:
   jobs:
   - template: templates/jobs/deploy-databricks-job.yml
     parameters:
-      environmentName: 'DEV'
+      environmentName: 'testing'
   - template: templates/jobs/deploy-azuresqldb-job.yml
     parameters:
-      environmentName: 'DEV'
+      environmentName: 'testing'
       serviceConnection: 'mdwdops-serviceconnection-a-dev'
 
 - stage: deploy_to_stg
