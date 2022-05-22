@@ -260,7 +260,7 @@
 				},
 				"userProperties": [],
 				"sqlPool": {
-					"referenceName": "syndpdevgbbim",
+					"referenceName": "syndpdevimgbb",
 					"type": "SqlPoolReference"
 				},
 				"typeProperties": {
@@ -284,7 +284,7 @@
 			}
 		},
 		"annotations": [],
-		"lastPublishTime": "2022-04-04T22:02:35Z"
+		"lastPublishTime": "2022-05-22T21:14:27Z"
 	},
 	"type": "Microsoft.Synapse/workspaces/pipelines"
 }
