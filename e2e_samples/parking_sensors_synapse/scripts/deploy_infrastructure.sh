@@ -222,6 +222,7 @@ SYNAPSE_ANALYTICS_SQL_ADMIN=$synapse_sqlpool_admin_username \
  sp_synapse_name="${PROJECT}-syn-${ENV_NAME}-${DEPLOYMENT_ID}-sp"
  sp_synapse_out=$(az ad sp create-for-rbac \
      --skip-assignment \
+     --role Contributor \
      --scopes "/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$resource_group_name/providers/Microsoft.Synapse/workspaces/$synapseworkspace_name" \
      --name "$sp_synapse_name" \
      --output json)
