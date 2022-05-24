@@ -25,6 +25,12 @@ stages:
 - stage: 'publish_artifacts'
   displayName: 'Publish Build Artifacts'
   jobs:
+  - job: RunsOnServer
+    pool: Server
+    steps:
+    - task: Delay@1
+      inputs:
+        delayForMinutes: '1' 
   - job: 'publish_python_packages'
     displayName: 'Publish Python Packages'
     pool:
