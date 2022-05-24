@@ -63,7 +63,7 @@
 			},
 			{
 				"name": "Load SQLDW",
-				"description": "tokens with new branch ",
+				"description": "doing publish after mdwdops-ci-artifacts pipeline complete",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
