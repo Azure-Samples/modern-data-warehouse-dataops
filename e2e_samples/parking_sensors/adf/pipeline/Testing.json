@@ -5,7 +5,7 @@
 		"activities": [
 			{
 				"name": "Set infilefolder",
-				"description": "tokens credential ",
+				"description": "tokens with new branch ",
 				"type": "SetVariable",
 				"dependsOn": [],
 				"userProperties": [],
@@ -19,7 +19,7 @@
 			},
 			{
 				"name": "TransformData",
-				"description": "",
+				"description": "tokens with new branch ",
 				"type": "DatabricksNotebook",
 				"dependsOn": [
 					{
@@ -63,7 +63,7 @@
 			},
 			{
 				"name": "Load SQLDW",
-				"description": "This is for testing purpose ",
+				"description": "tokens with new branch ",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
