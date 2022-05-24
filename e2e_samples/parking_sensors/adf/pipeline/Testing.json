@@ -5,7 +5,7 @@
 		"activities": [
 			{
 				"name": "Set infilefolder",
-				"description": "",
+				"description": "tokens credential ",
 				"type": "SetVariable",
 				"dependsOn": [],
 				"userProperties": [],
@@ -19,7 +19,7 @@
 			},
 			{
 				"name": "TransformData",
-				"description": "This is for testing purpose ",
+				"description": "",
 				"type": "DatabricksNotebook",
 				"dependsOn": [
 					{
