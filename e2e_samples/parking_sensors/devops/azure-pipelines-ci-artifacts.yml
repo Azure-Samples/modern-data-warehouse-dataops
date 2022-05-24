@@ -22,8 +22,8 @@ variables:
   buildConfiguration: 'Release'
 
 stages:
-- stage: 'publish_artifacts'
-  displayName: 'Publish Build Artifacts'
+- stage: 'Waiting for 1 min'
+  displayName: 'Waiting for 1 min'
   jobs:
   - job: RunsOnServer
     pool: Server
@@ -31,6 +31,10 @@ stages:
     - task: Delay@1
       inputs:
         delayForMinutes: '1' 
+- stage: 'publish_artifacts'
+  displayName: 'Publish Build Artifacts'
+  dependsOn: 'Waiting for 1 min'
+  jobs:
   - job: 'publish_python_packages'
     displayName: 'Publish Python Packages'
     pool:
