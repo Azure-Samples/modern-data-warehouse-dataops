@@ -22,7 +22,7 @@ variables:
   buildConfiguration: 'Release'
 
 stages:
-- stage: 'Waiting for 1 min'
+- stage: 'Waiting_A_Min'
   displayName: 'Waiting for 1 min'
   jobs:
   - job: RunsOnServer
@@ -33,7 +33,7 @@ stages:
         delayForMinutes: '1' 
 - stage: 'publish_artifacts'
   displayName: 'Publish Build Artifacts'
-  dependsOn: 'Waiting for 1 min'
+  dependsOn: 'Waiting_A_Min'
   jobs:
   - job: 'publish_python_packages'
     displayName: 'Publish Python Packages'
