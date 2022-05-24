@@ -5,7 +5,7 @@
 		"activities": [
 			{
 				"name": "Set infilefolder",
-				"description": "This is for testing purpose ",
+				"description": "",
 				"type": "SetVariable",
 				"dependsOn": [],
 				"userProperties": [],
