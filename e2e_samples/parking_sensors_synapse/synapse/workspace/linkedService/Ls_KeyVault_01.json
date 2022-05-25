@@ -1,15 +1,4 @@
 {
-<<<<<<< HEAD
-    "name": "Ls_KeyVault_01",
-    "properties": {
-        "annotations": [],
-        "type": "AzureKeyVault",
-        "typeProperties": {
-            "baseUrl": "https://mdwdops-kv-stg-imgbb.vault.azure.net/"
-        }
-    }
-}
-=======
 	"name": "Ls_KeyVault_01",
 	"type": "Microsoft.Synapse/workspaces/linkedservices",
 	"properties": {
@@ -20,4 +9,3 @@
 		}
 	}
 }
->>>>>>> af00211597c5e76ab00b14e9c790e7b6ebd690c4
