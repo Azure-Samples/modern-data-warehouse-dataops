@@ -11,6 +11,8 @@
     [day_time_bucket_group_key] INT NOT NULL,
     [day_time_bucket] VARCHAR (100) NOT NULL
 )
+
+
     WITH (
     DATA_SOURCE = [AzureDataLakeStorage],
     LOCATION = N'data/seed/dim_time/',
