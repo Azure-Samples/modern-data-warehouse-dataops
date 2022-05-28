@@ -1,6 +1,18 @@
+<<<<<<< HEAD
 # Azure Databricks CI/CD template <!-- omit in toc -->
 
 ## Contents <!-- omit in toc -->
+=======
+<<<<<<< HEAD
+# Azure Databricks CI/CD template <!-- omit in toc -->
+
+## Contents <!-- omit in toc -->
+=======
+# Azure Databricks CI/CD template
+
+## Contents
+>>>>>>> 38da4d8 (Single tech/databricks ops (#371))
+>>>>>>> Azure-Samples-main
 
 - [1. Solution Overview](#1-solution-overview)
   - [1.1. Scope](#11-scope)
@@ -8,6 +20,10 @@
   - [1.3. Technologies used](#13-technologies-used)
 - [2. How to use this template](#2-how-to-use-this-template)
   - [2.1. Prerequisites](#21-prerequisites)
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> Azure-Samples-main
   - [2.2. Infrastructure as Code (IaC)](#22-infrastructure-as-code-iac)
   - [2.3. Project Structure](#23-project-structure)
   - [2.4. The Notebook Approach](#24-the-notebook-approach)
@@ -25,6 +41,26 @@
       - [2.5.3.2 Run tests in your local environment](#2532-run-tests-in-your-local-environment)
     - [2.5.4 Run test with pipelines](#254-run-test-with-pipelines)
     - [2.5.5 Deployment](#255-deployment)
+<<<<<<< HEAD
+=======
+=======
+  - [2.2. Infrastructure as Code](#22-Infrastructure-as-Code)
+  - [2.3. Project Structure](#23-Project-Structure)
+  - [2.4. The Notebook Approach](#24-The-Notebook-Approach)
+    - [2.4.1 Repository setup](#241-multiple-notebooks)
+    - [2.4.2 DevOps pipeline setup](#242-devops-pipeline-setup)
+    - [2.4.3 Import into DEV Databricks workspace](#243-Import-into-DEV-databricks-workspace)
+    - [2.4.4 Implement and run tests in DEV Databricks workspace](#244-Implement-and-run-tests-in-DEV-databricks-workspace)
+    - [2.4.5 Run test with pipelines and Deployment](#245-Run-test-with-pipelines-and-Deployment)
+    - [2.4.6 Deployment](#246-Deployment)
+  - [2.5. The Spark Python Approach](#25-The-Spark-Python-Approach)
+    - [2.5.1 Repository setup](#251-Repository-setup)
+    - [2.5.2 DevOps pipeline setup](#252-DevOps-pipeline-setup)
+    - [2.5.3 Implement and run tests in VSCode](#253-Implement-and-run-tests-in-VSCode)
+    - [2.5.4 Run test with pipelines](#254-Run-test-with-pipelines)
+    - [2.5.5 Deployment](#255-Deployment)
+>>>>>>> 38da4d8 (Single tech/databricks ops (#371))
+>>>>>>> Azure-Samples-main
 
 ## 1. Solution Overview
 
@@ -394,9 +430,21 @@ In this repo, there are several yaml files, which are the pipelines to support t
 #### 2.5.3 Implement and run tests in VSCode
 
 - Clone the repo into your local folder and open the folder with VSCode
+<<<<<<< HEAD
 
 ##### 2.5.3.1 Run tests using devcontainer
 
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+
+##### 2.5.3.1 Run tests using devcontainer
+
+=======
+
+##### 2.5.3.1 Run tests using devcontainer
+>>>>>>> bf774e5 (Merge pull request #441 from Azure-Samples/garyw/single-tech-dbx-devcon)
+>>>>>>> Azure-Samples-main
 - If needed, install Microsoft VSCode Remote-Containers extension
 - In VSCode, open Command Pallete and type ```Remote-Containers: Open Folder in Container...```
 - Choose the folder named ```***\sample4_ci_cd```
@@ -408,9 +456,21 @@ pytest spark_python_jobs/tests/unit
 ```
 
 ![pytest-output-devcon](images/pytest-output-devcon.png "pytest-output-devcon")
+<<<<<<< HEAD
 
 ##### 2.5.3.2 Run tests in your local environment
 
+=======
+<<<<<<< HEAD
+
+##### 2.5.3.2 Run tests in your local environment
+
+=======
+>>>>>>> 38da4d8 (Single tech/databricks ops (#371))
+=======
+##### 2.5.3.2 Run tests in your local environment
+>>>>>>> bf774e5 (Merge pull request #441 from Azure-Samples/garyw/single-tech-dbx-devcon)
+>>>>>>> Azure-Samples-main
 - Setup local Spark with this [document](https://sigdelta.com/blog/how-to-install-pyspark-locally/)
 - Open a cmd terminal window and run the script below to setup the project development.
 
@@ -428,7 +488,18 @@ pytest spark_python_jobs/tests/unit
 ```
 
   ![pytest-output](images/pytest-output.png "pytest-output")
+<<<<<<< HEAD
   
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+  
+=======
+
+>>>>>>> 38da4d8 (Single tech/databricks ops (#371))
+=======
+>>>>>>> bf774e5 (Merge pull request #441 from Azure-Samples/garyw/single-tech-dbx-devcon)
+>>>>>>> Azure-Samples-main
 #### 2.5.4 Run test with pipelines
 
 - Commit and push the changes to **develop branch**.

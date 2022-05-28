@@ -32,6 +32,7 @@ The samples are either focused on a single azure service (**Single Tech Samples*
   - [CI/CD - AzureSQL](single_tech_samples/azuresql/)
 - [Data Factory](single_tech_samples/datafactory/)
   - [CI/CD - ADF](single_tech_samples/datafactory/)
+- [Azure Synapse Analytics](single_tech_samples/synapseanalytics)
 - [Azure Databricks](single_tech_samples/databricks/)
   - [IaC - Basic Azure Databricks deployment](single_tech_samples/databricks/sample1_basic_azure_databricks_environment/)
   - [IaC - Enterprise Security and Data Exfiltration Protection Deployment](single_tech_samples/databricks/sample2_enterprise_azure_databricks_environment/)

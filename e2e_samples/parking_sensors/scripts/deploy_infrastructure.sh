@@ -128,7 +128,19 @@ az storage blob upload --container-name $storage_file_system --account-name "$az
 # Set Keyvault secrets
 az keyvault secret set --vault-name "$kv_name" --name "datalakeAccountName" --value "$azure_storage_account"
 az keyvault secret set --vault-name "$kv_name" --name "datalakeKey" --value "$azure_storage_key"
+<<<<<<< HEAD
 az keyvault secret set --vault-name "$kv_name" --name "datalakeurl" --value "https://$azure_storage_account.dfs.core.windows.net"
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+az keyvault secret set --vault-name "$kv_name" --name "datalakeurl" --value "https://$azure_storage_account.dfs.core.windows.net"
+=======
+
+>>>>>>> e15dc70 (E2E Parking Sensor: Convert ARM templates to Bicep, Improve Deployment script, and bugfix #370 (#378))
+=======
+az keyvault secret set --vault-name "$kv_name" --name "datalakeurl" --value "https://$azure_storage_account.dfs.core.windows.net"
+>>>>>>> f06c799 (fix(parking_sensors_synapse): clarity in README in parking sensor synapse sample, add requirement for Synapse extension, comment out debugging in script by default, add general troubleshooting section (#466))
+>>>>>>> Azure-Samples-main
 
 ###################
 # SQL
@@ -137,7 +149,14 @@ echo "Retrieving SQL Server information from the deployment."
 # Retrieve SQL creds
 sql_server_name=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_sql_pool_output.value.name')
 sql_server_username=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_sql_pool_output.value.username')
+<<<<<<< HEAD
 sql_server_password=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_sql_pool_output.value.password')
+=======
+<<<<<<< HEAD
+=======
+sql_server_password=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_sql_pool_output.value.password')
+>>>>>>> e15dc70 (E2E Parking Sensor: Convert ARM templates to Bicep, Improve Deployment script, and bugfix #370 (#378))
+>>>>>>> Azure-Samples-main
 sql_dw_database_name=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_sql_pool_output.value.synapse_pool_name')
 
 # SQL Connection String
@@ -145,12 +164,28 @@ sql_dw_connstr_nocred=$(az sql db show-connection-string --client ado.net \
     --name "$sql_dw_database_name" --server "$sql_server_name" --output json |
     jq -r .)
 sql_dw_connstr_uname=${sql_dw_connstr_nocred/<username>/$sql_server_username}
+<<<<<<< HEAD
 sql_dw_connstr_uname_pass=${sql_dw_connstr_uname/<password>/$sql_server_password}
+=======
+<<<<<<< HEAD
+sql_dw_connstr_uname_pass=${sql_dw_connstr_uname/<password>/$AZURESQL_SERVER_PASSWORD}
+=======
+sql_dw_connstr_uname_pass=${sql_dw_connstr_uname/<password>/$sql_server_password}
+>>>>>>> e15dc70 (E2E Parking Sensor: Convert ARM templates to Bicep, Improve Deployment script, and bugfix #370 (#378))
+>>>>>>> Azure-Samples-main
 
 # Store in Keyvault
 az keyvault secret set --vault-name "$kv_name" --name "sqlsrvrName" --value "$sql_server_name"
 az keyvault secret set --vault-name "$kv_name" --name "sqlsrvUsername" --value "$sql_server_username"
+<<<<<<< HEAD
 az keyvault secret set --vault-name "$kv_name" --name "sqlsrvrPassword" --value "$sql_server_password"
+=======
+<<<<<<< HEAD
+az keyvault secret set --vault-name "$kv_name" --name "sqlsrvrPassword" --value "$AZURESQL_SERVER_PASSWORD"
+=======
+az keyvault secret set --vault-name "$kv_name" --name "sqlsrvrPassword" --value "$sql_server_password"
+>>>>>>> e15dc70 (E2E Parking Sensor: Convert ARM templates to Bicep, Improve Deployment script, and bugfix #370 (#378))
+>>>>>>> Azure-Samples-main
 az keyvault secret set --vault-name "$kv_name" --name "sqldwDatabaseName" --value "$sql_dw_database_name"
 az keyvault secret set --vault-name "$kv_name" --name "sqldwConnectionString" --value "$sql_dw_connstr_uname_pass"
 
@@ -165,10 +200,26 @@ appinsights_key=$(az monitor app-insights component show \
     --resource-group "$resource_group_name" \
     --output json |
     jq -r '.instrumentationKey')
+appinsights_connstr=$(az monitor app-insights component show \
+    --app "$appinsights_name" \
+    --resource-group "$resource_group_name" \
+    --output json |
+    jq -r '.connectionString')
 
 # Store in Keyvault
 az keyvault secret set --vault-name "$kv_name" --name "applicationInsightsKey" --value "$appinsights_key"
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+az keyvault secret set --vault-name "$kv_name" --name "applicationInsightsConnectionString" --value "$appinsights_connstr"
+=======
+>>>>>>> Azure-Samples-main
 
+<<<<<<< HEAD
+>>>>>>> e15dc70 (E2E Parking Sensor: Convert ARM templates to Bicep, Improve Deployment script, and bugfix #370 (#378))
+
+=======
+>>>>>>> f06c799 (fix(parking_sensors_synapse): clarity in README in parking sensor synapse sample, add requirement for Synapse extension, comment out debugging in script by default, add general troubleshooting section (#466))
 # ###########################
 # # RETRIEVE DATABRICKS INFORMATION AND CONFIGURE WORKSPACE
 
@@ -232,6 +283,13 @@ tmpfile=.tmpfile
 adfLsDir=$adfTempDir/linkedService
 jq --arg kvurl "$kv_dns_name" '.properties.typeProperties.baseUrl = $kvurl' $adfLsDir/Ls_KeyVault_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_KeyVault_01.json
 jq --arg databricksWorkspaceUrl "$databricks_host" '.properties.typeProperties.domain = $databricksWorkspaceUrl' $adfLsDir/Ls_AzureDatabricks_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AzureDatabricks_01.json
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+jq --arg databricksWorkspaceResourceId "$databricks_workspace_resource_id" '.properties.typeProperties.workspaceResourceId = $databricksWorkspaceResourceId' $adfLsDir/Ls_AzureDatabricks_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AzureDatabricks_01.json
+=======
+>>>>>>> e15dc70 (E2E Parking Sensor: Convert ARM templates to Bicep, Improve Deployment script, and bugfix #370 (#378))
+>>>>>>> Azure-Samples-main
 jq --arg datalakeUrl "https://$azure_storage_account.dfs.core.windows.net" '.properties.typeProperties.url = $datalakeUrl' $adfLsDir/Ls_AdlsGen2_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AdlsGen2_01.json
 
 datafactory_name=$(echo "$arm_output" | jq -r '.properties.outputs.datafactory_name.value')
@@ -260,7 +318,17 @@ az keyvault secret set --vault-name "$kv_name" --name "spAdfName" --value "$sp_a
 az keyvault secret set --vault-name "$kv_name" --name "spAdfId" --value "$sp_adf_id"
 az keyvault secret set --vault-name "$kv_name" --name "spAdfPass" --value "$sp_adf_pass"
 az keyvault secret set --vault-name "$kv_name" --name "spAdfTenantId" --value "$sp_adf_tenant"
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
 
+<<<<<<< HEAD
+>>>>>>> e15dc70 (E2E Parking Sensor: Convert ARM templates to Bicep, Improve Deployment script, and bugfix #370 (#378))
+>>>>>>> Azure-Samples-main
+
+=======
+>>>>>>> f06c799 (fix(parking_sensors_synapse): clarity in README in parking sensor synapse sample, add requirement for Synapse extension, comment out debugging in script by default, add general troubleshooting section (#466))
 ####################
 # AZDO Azure Service Connection and Variables Groups
 
@@ -283,7 +351,15 @@ DATABRICKS_HOST=$databricks_host \
 DATABRICKS_WORKSPACE_RESOURCE_ID=$databricks_workspace_resource_id \
 SQL_SERVER_NAME=$sql_server_name \
 SQL_SERVER_USERNAME=$sql_server_username \
+<<<<<<< HEAD
 SQL_SERVER_PASSWORD=$sql_server_password \
+=======
+<<<<<<< HEAD
+SQL_SERVER_PASSWORD=$AZURESQL_SERVER_PASSWORD \
+=======
+SQL_SERVER_PASSWORD=$sql_server_password \
+>>>>>>> e15dc70 (E2E Parking Sensor: Convert ARM templates to Bicep, Improve Deployment script, and bugfix #370 (#378))
+>>>>>>> Azure-Samples-main
 SQL_DW_DATABASE_NAME=$sql_dw_database_name \
 AZURE_STORAGE_KEY=$azure_storage_key \
 AZURE_STORAGE_ACCOUNT=$azure_storage_account \
@@ -306,7 +382,15 @@ RESOURCE_GROUP_NAME=${resource_group_name}
 AZURE_LOCATION=${AZURE_LOCATION}
 SQL_SERVER_NAME=${sql_server_name}
 SQL_SERVER_USERNAME=${sql_server_username}
+<<<<<<< HEAD
 SQL_SERVER_PASSWORD=${sql_server_password}
+=======
+<<<<<<< HEAD
+SQL_SERVER_PASSWORD=${AZURESQL_SERVER_PASSWORD}
+=======
+SQL_SERVER_PASSWORD=${sql_server_password}
+>>>>>>> e15dc70 (E2E Parking Sensor: Convert ARM templates to Bicep, Improve Deployment script, and bugfix #370 (#378))
+>>>>>>> Azure-Samples-main
 SQL_DW_DATABASE_NAME=${sql_dw_database_name}
 AZURE_STORAGE_ACCOUNT=${azure_storage_account}
 AZURE_STORAGE_KEY=${azure_storage_key}

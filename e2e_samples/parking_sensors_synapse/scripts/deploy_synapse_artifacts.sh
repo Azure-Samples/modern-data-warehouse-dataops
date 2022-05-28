@@ -76,13 +76,29 @@ uploadSynapsePackagesToWorkspace(){
     fi
 
     az rest --method put --headers "Authorization=Bearer ${token}" "Content-Type=application/json;charset=utf-8" --url "${synapseLibraryUri}"
+<<<<<<< HEAD
     sleep 5s
+=======
+<<<<<<< HEAD
+    sleep 5
+=======
+    sleep 5s
+>>>>>>> f06c799 (fix(parking_sensors_synapse): clarity in README in parking sensor synapse sample, add requirement for Synapse extension, comment out debugging in script by default, add general troubleshooting section (#466))
+>>>>>>> Azure-Samples-main
 
     # Step 3: upload package content to workspace placeholder
     #az synapse workspace wait --resource-group "${RESOURCE_GROUP_NAME}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --updated
     synapseLibraryUriForAppend="${SYNAPSE_DEV_ENDPOINT}/libraries/${name}?comp=appendblock&api-version=${dataPlaneApiVersion}"
     curl -i -X PUT -H "Authorization: Bearer ${token}" -H "Content-Type: application/octet-stream" --data-binary @./synapse/libs/"${name}" "${synapseLibraryUriForAppend}"
+<<<<<<< HEAD
     sleep 15s
+=======
+<<<<<<< HEAD
+    sleep 15
+=======
+    sleep 15s
+>>>>>>> f06c799 (fix(parking_sensors_synapse): clarity in README in parking sensor synapse sample, add requirement for Synapse extension, comment out debugging in script by default, add general troubleshooting section (#466))
+>>>>>>> Azure-Samples-main
   
     # Step4: Completing Package creation/Flush the library
     #az synapse workspace wait --resource-group "${RESOURCE_GROUP_NAME}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --updated
@@ -183,6 +199,13 @@ getProvisioningState(){
     --name "$BIG_DATAPOOL_NAME" \
     --workspace-name "$SYNAPSE_WORKSPACE_NAME" \
     --resource-group "$RESOURCE_GROUP_NAME" \
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+    --only-show-errors \
+=======
+>>>>>>> f06c799 (fix(parking_sensors_synapse): clarity in README in parking sensor synapse sample, add requirement for Synapse extension, comment out debugging in script by default, add general troubleshooting section (#466))
+>>>>>>> Azure-Samples-main
     --output json |
     jq -r '.provisioningState')
 }
@@ -224,7 +247,15 @@ UploadSql () {
     }
     }"    
     curl -X PUT -H "Content-Type: application/json" -H "Authorization:Bearer $token" --data-raw "$json_body" --url $synapseSqlApiUri
+<<<<<<< HEAD
     sleep 5s
+=======
+<<<<<<< HEAD
+    sleep 5
+=======
+    sleep 5s
+>>>>>>> f06c799 (fix(parking_sensors_synapse): clarity in README in parking sensor synapse sample, add requirement for Synapse extension, comment out debugging in script by default, add general troubleshooting section (#466))
+>>>>>>> Azure-Samples-main
 }
 
 getProvisioningState
@@ -232,16 +263,37 @@ echo "$provision_state"
 
 while [ "$provision_state" != "Succeeded" ]
 do
+<<<<<<< HEAD
     if [ "$provision_state" == "Failed" ]; then break ; else sleep 10s; fi
     getProvisioningState
     echo "$provision_state"
+=======
+<<<<<<< HEAD
+    if [ "$provision_state" == "Failed" ]; then break ; else sleep 10; fi
+    getProvisioningState
+    echo "$provision_state: checking again in 10 seconds..."
+=======
+    if [ "$provision_state" == "Failed" ]; then break ; else sleep 10s; fi
+    getProvisioningState
+    echo "$provision_state"
+>>>>>>> f06c799 (fix(parking_sensors_synapse): clarity in README in parking sensor synapse sample, add requirement for Synapse extension, comment out debugging in script by default, add general troubleshooting section (#466))
+>>>>>>> Azure-Samples-main
 done
 
 # Build requirement.txt string to upload in the Spark Configuration
 configurationList=""
 while read -r p; do 
+<<<<<<< HEAD
     #line="${p//'[\r\n]'/''}"
     line=$(echo $p | sed -e 's/[\r\n]//g')
+=======
+<<<<<<< HEAD
+    line=$(echo "$p" | tr -d '\r' | tr -d '\n')
+=======
+    #line="${p//'[\r\n]'/''}"
+    line=$(echo $p | sed -e 's/[\r\n]//g')
+>>>>>>> f06c799 (fix(parking_sensors_synapse): clarity in README in parking sensor synapse sample, add requirement for Synapse extension, comment out debugging in script by default, add general troubleshooting section (#466))
+>>>>>>> Azure-Samples-main
     if [ "$configurationList" != "" ]; then configurationList="$configurationList$line\r\n" ; else configurationList="$line\r\n"; fi
 done < $requirementsFileName
 
@@ -261,6 +313,20 @@ done
 customlibraryList="customLibraries:[$libraryList],"
 uploadSynapseArtifactsToSparkPool "${configurationList}" "${customlibraryList}"
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+getProvisioningState
+echo "$provision_state"
+while [ "$provision_state" != "Succeeded" ]
+do
+    if [ "$provision_state" == "Failed" ]; then break ; else sleep 30; fi
+    getProvisioningState
+    echo "$provision_state: checking again in 30 seconds..."
+done
+=======
+>>>>>>> f06c799 (fix(parking_sensors_synapse): clarity in README in parking sensor synapse sample, add requirement for Synapse extension, comment out debugging in script by default, add general troubleshooting section (#466))
+>>>>>>> Azure-Samples-main
 
 # Deploy all Linked Services
 # Auxiliary string to parametrize the keyvault name on the ls json file
@@ -276,6 +342,11 @@ keyVaultLsContent="{
 }"
 echo "$keyVaultLsContent" > ./synapse/workspace/linkedService/Ls_KeyVault_01.json
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+>>>>>>> Azure-Samples-main
 getProvisioningState
 echo $provision_state
 while [ "$provision_state" != "Succeeded" ]
@@ -285,6 +356,10 @@ do
     echo "$provision_state"
 done
 
+<<<<<<< HEAD
+=======
+>>>>>>> f06c799 (fix(parking_sensors_synapse): clarity in README in parking sensor synapse sample, add requirement for Synapse extension, comment out debugging in script by default, add general troubleshooting section (#466))
+>>>>>>> Azure-Samples-main
 createLinkedService "Ls_KeyVault_01"
 createLinkedService "Ls_AdlsGen2_01"
 createLinkedService "Ls_Rest_MelParkSensors_01"

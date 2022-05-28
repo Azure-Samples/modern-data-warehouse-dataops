@@ -133,8 +133,9 @@ The following summarizes key learnings and best practices demonstrated by this s
 
 ### 7. Monitor infrastructure, pipelines and data
 
-- A proper monitoring solution should be in-place to ensure failures are identified, diagnosed and addressed in a timely manner. Aside from the base infrastructure and pipeline runs, data should also be monitored. A common area that should have data monitoring is the malformed record store.
-
+- A proper monitoring solution should be in-place to ensure failures are identified, diagnosed and addressed in a timely manner. Aside from the base infrastructure and pipeline runs, data quality should also be monitored. A common area that should have data monitoring is the malformed record store.
+- As an example this repository showcases how to use open source framework [Great Expectations](https://docs.greatexpectations.io/docs/) to define, measure and report data quality metrics at different stages of the data pipeline. Captured Data Quality metrics are reported to Azure Monitor for further visualizing and alerting. Take a look at sample [Data Quality report](docs/images/data_quality_report.png) generated with Azure Monitor workbook. Great Expectations can be configured to generate HTML reports and host directly as static site on Azure Blob Storage. Read more on [How to host and share Data Docs on Azure Blob Storage](https://legacy.docs.greatexpectations.io/en/latest/guides/how_to_guides/configuring_data_docs/how_to_host_and_share_data_docs_on_azure_blob_storage.html).
+  
 ## Key Concepts
 
 ### Build and Release Pipeline
@@ -193,6 +194,8 @@ More resources:
 - [nutter testing framework](https://github.com/microsoft/nutter) - Testing framework for Databricks notebooks.
 
 ### Observability / Monitoring
+
+ **Observability-as-Code** - Few key components of Observability and Monitoring are deployed and configured through Observability-as-Code at the time on Azure resources deployment. This includes log analytics workspace to collect monitoring data from key resources, central Azure dashboard to monitor key metrics and alerts to monitor the data pipelines. To learn more on monitoring specific service read below.
 
 #### Databricks
 
@@ -260,9 +263,17 @@ More resources:
        - **DEPLOYMENT_ID** - string appended to all resource names. This is to ensure uniqueness of azure resource names. *Default*: random five character string.
        - **AZDO_PIPELINES_BRANCH_NAME** - git branch where Azure DevOps pipelines definitions are retrieved from. *Default*: main.
        - **AZURESQL_SERVER_PASSWORD** - Password of the SQL Server instance. *Default*: random string.
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+   4. To further customize the solution, set parameters in `arm.parameters` files located in the `infrastructure` folder.
+       - To enable Observability and Monitoring components through code(Observability-as-code), please set enable_monitoring parameter to true in  `arm.parameters` files located in the `infrastructure` folder. This will deploy log analytics workspace to collect monitoring data from key resources, setup an Azure dashboards to monitor key metrics and configure alerts for ADF pipelines.
+=======
+>>>>>>> Azure-Samples-main
 
       To further customize the solution, set parameters in `arm.parameters` files located in the `infrastructure` folder.
 
+>>>>>>> f06c799 (fix(parking_sensors_synapse): clarity in README in parking sensor synapse sample, add requirement for Synapse extension, comment out debugging in script by default, add general troubleshooting section (#466))
 2. **Deploy Azure resources**
    1. Clone locally the imported Github Repo, then `cd` into the `e2e_samples/parking_sensors` folder of the repo
    2. Run `./deploy.sh`.
@@ -275,9 +286,28 @@ More resources:
 
     > **IMPORTANT NOTE**: Only the **DEV** Data Factory should be setup with Git integration. Do **not** setup git integration in the STG and PROD Data Factories.
 
+<<<<<<< HEAD
     1. In the Azure Portal, navigate to the Data Factory in the **DEV** environment and launch the Data Factory portal.
     2. On the landing page, select "Set up code repository". For more information, see [here](https://docs.microsoft.com/en-us/azure/data-factory/source-control).
     3. Fill in the repository settings with the following:
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+    1. In the Azure Portal, navigate to the Data Factory in the **DEV** environment and launch the Data Factory portal.
+    2. On the landing page, select "Set up code repository". For more information, see [here](https://docs.microsoft.com/en-us/azure/data-factory/source-control).
+    3. Fill in the repository settings with the following:
+=======
+    1. In the Azure Portal, navigate to the Data Factory in the **DEV** environment.
+    2. Click "Author & Monitor" to launch the Data Factory portal.
+    3. On the landing page, select "Set up code repository". For more information, see [here](https://docs.microsoft.com/en-us/azure/data-factory/source-control).
+    4. Fill in the repository settings with the following:
+>>>>>>> e15dc70 (E2E Parking Sensor: Convert ARM templates to Bicep, Improve Deployment script, and bugfix #370 (#378))
+=======
+    1. In the Azure Portal, navigate to the Data Factory in the **DEV** environment and launch the Data Factory portal.
+    2. On the landing page, select "Set up code repository". For more information, see [here](https://docs.microsoft.com/en-us/azure/data-factory/source-control).
+    3. Fill in the repository settings with the following:
+>>>>>>> f06c799 (fix(parking_sensors_synapse): clarity in README in parking sensor synapse sample, add requirement for Synapse extension, comment out debugging in script by default, add general troubleshooting section (#466))
+>>>>>>> Azure-Samples-main
         - Repository type: **Github**
         - Github Account: **your_Github_account**
         - Git repository (select *Use repository link*, if forked): **forked Github repository url**
@@ -332,10 +362,27 @@ After a successful deployment, you should have the following resources:
     - SparkSQL tables created
     - ADLS Gen2 mounted at `dbfs:/mnt/datalake` using the Storage Service Principal.
     - Databricks KeyVault secrets scope created
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+  - **Log Analytics Workspace** - including a kusto query on Query explorer -> Saved queries, to verify results that will be logged on Synapse notebooks (notebooks are not deployed yet).
+  - **Azure Synapse SQL Dedicated Pool (formerly SQLDW)** - currently, empty. The Release Pipeline will deploy the SQL Database objects.
+  - **Azure Synapse Spark Pool** - currently, empty. Configured to point the deployed Log Analytics workspace, under "Apache Spark Configuration".
+  - **Azure Synapse Workspace** - currently, empty.
+=======
+  - **Azure Synapse (formerly SQLDW)** - currently, empty. The Release Pipeline will deploy the SQL Database objects.
+>>>>>>> e15dc70 (E2E Parking Sensor: Convert ARM templates to Bicep, Improve Deployment script, and bugfix #370 (#378))
+=======
+>>>>>>> Azure-Samples-main
   - **Log Analytics Workspace** - including a kusto query on Query explorer -> Saved queries, to verify results that will be looged on Synapse notebooks (notebooks are not deployed yet).
   - **Azure Synapse SQL Dedicated Pool (formerly SQLDW)** - currently, empty. The Release Pipeline will deploy the SQL Database objects.
   - **Azure Synapse Spark Pool** - currently, empty. Configured to point the deployed Log Analytics workspace, under "Apache Spark Configuration".
   - **Azure Synapse Workspace** - currently, empty.
+<<<<<<< HEAD
+=======
+>>>>>>> f06c799 (fix(parking_sensors_synapse): clarity in README in parking sensor synapse sample, add requirement for Synapse extension, comment out debugging in script by default, add general troubleshooting section (#466))
+>>>>>>> Azure-Samples-main
   - **Application Insights**
   - **KeyVault** with all relevant secrets stored.
 - In Azure DevOps
@@ -358,12 +405,34 @@ After a successful deployment, you should have the following resources:
       - mdwdops-serviceconnection-prod
     - **Github Service Connection** for retrieving code from Github
       - mdwdops-github
+<<<<<<< HEAD
   - **Three additional Service Principals** (one per environment) with Data Factory Contributor role for running Integration Tests
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+  - **Three additional Service Principals** (one per environment) with Data Factory Contributor role for running Integration Tests
+=======
+>>>>>>> e15dc70 (E2E Parking Sensor: Convert ARM templates to Bicep, Improve Deployment script, and bugfix #370 (#378))
+=======
+  - **Three additional Service Principals** (one per environment) with Data Factory Contributor role for running Integration Tests
+>>>>>>> f06c799 (fix(parking_sensors_synapse): clarity in README in parking sensor synapse sample, add requirement for Synapse extension, comment out debugging in script by default, add general troubleshooting section (#466))
+>>>>>>> Azure-Samples-main
 
 Notes:
 
 - *These variable groups are currently not linked to KeyVault due to limitations of creating these programmatically. See [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
+<<<<<<< HEAD
 - Environments and Approval Gates are not deployed as part of this solution. See [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+- Environments and Approval Gates are not deployed as part of this solution. See [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
+=======
+>>>>>>> e15dc70 (E2E Parking Sensor: Convert ARM templates to Bicep, Improve Deployment script, and bugfix #370 (#378))
+=======
+- Environments and Approval Gates are not deployed as part of this solution. See [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
+>>>>>>> f06c799 (fix(parking_sensors_synapse): clarity in README in parking sensor synapse sample, add requirement for Synapse extension, comment out debugging in script by default, add general troubleshooting section (#466))
+>>>>>>> Azure-Samples-main
 
 #### Clean up
 

@@ -238,6 +238,36 @@ Please check the details [here](docs/observability.md).
 
 3. **Setup Synapse git integration in DEV Synapse workspace**
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+   > **IMPORTANT NOTE**: Only the **DEV** Synapse workspace should be setup with Git integration. Do **not** setup git integration in the STG and PROD Data Factories.
+
+   1. In the Azure Portal, navigate to the Synapse workspace in the **DEV** environment and launch the Synapse workspace portal.
+   2. Under "manage" > Source Control - Git configuration, select "Configure". For more information, see [here](https://docs.microsoft.com/en-us/azure/synapse-analytics/cicd/source-control).
+   3. Fill in the repository settings with the following:
+      - Repository type: **Github**
+      - Use GitHub Enterprise Server: **Unselected, unless you are using GitHub Enterprise Server**
+      - GitHub repository owner: **your_Github_account**
+      - Github Account: **your_Github_account**
+      - Git repository (select *Use repository link*, if forked): **forked Github repository url**
+      - Collaboration branch: **main**
+      - Publish branch: **workspace_publish**
+      - Root folder: **/e2e_samples/parking_sensors_synapse/synapse/workspace**
+      - Import existing resources to repository: **Selected**
+      - Import resource into this branch: **main**
+   4. When prompted to select a working branch, check **Use existing** and select **main**
+
+   The final settings should look like as below:
+
+   ![Synapse Github Integration](docs/images/SynapseGithubIntegration.png?raw=true "Synapse Github Integration")
+
+    > **Ensure you Import Existing Synapse resources to repository**. The deployment script deployed Synapse Workspace objects with Linked Service configurations in line with the newly deployed environments. Importing existing Synapse Workspace resources definitions to the repository overrides any default Linked Services values so they are correctly in sync with your DEV environment.
+
+4. **Run setup notebook in Synapse workspace per environment**
+
+=======
+>>>>>>> Azure-Samples-main
     > **IMPORTANT NOTE**: Only the **DEV** Synapse workspace should be setup with Git integration. Do **not** setup git integration in the STG and PROD Data Factories.
 
     1. In the Azure Portal, navigate to the Synapse workspace in the **DEV** environment and launch the Synapse workspace portal.
@@ -254,6 +284,10 @@ Please check the details [here](docs/observability.md).
 
    > **Ensure you Import Existing Synapse resources to repository**. The deployment script deployed Synapse Workspace objects with Linked Service configurations in line with the newly deployed environments. Importing existing Synapse Workspace resources definitions to the repository overrides any default Linked Services values so they are correctly in sync with your DEV environment.
 4. **Run setup notebook in Synapse workspace per environment**
+<<<<<<< HEAD
+=======
+>>>>>>> f06c799 (fix(parking_sensors_synapse): clarity in README in parking sensor synapse sample, add requirement for Synapse extension, comment out debugging in script by default, add general troubleshooting section (#466))
+>>>>>>> Azure-Samples-main
    1. Grant yourself *Storage Data Blob Contributor* to the Synapse main storage (`mdwdopsst2<ENV><DEPLOYMENT_ID>`).
    2. Navigate into DEV Synapse workspace notebooks tab and select the *00_setup* notebook.
    3. Run this notebook, attaching to the created Spark Pool.
@@ -274,6 +308,21 @@ Please check the details [here](docs/observability.md).
       ![Pipeline Run](docs/images/SynapseRun.png?raw=true "Pipeline Run]")
 
 6. **Optional. Visualize data in PowerBI**
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+   > This requires [PowerBI Desktop App](https://powerbi.microsoft.com/en-us/desktop/) installed.
+   1. Open the provided PowerBi pbix (PowerBI_ParkingSensors.pbix) under `reports` folder.
+   2. Under Queries, select "Transform Data" > "Data source settings".
+   3. Select "Change Source..." and enter the Server and Database details of your SQL Dedicated Pool. Click "Ok".
+      > You can retrieve these from the Azure Portal under "Connection Strings" of your SQL Dedicated Pool Instance.
+   4. Select "Edit Permissions...". Under "Credentials", select "Edit...". Select the "Database" tab. Enter the User name and password of your SQL Dedicated Pool Instance.
+      > You can retrieve these from the Secrets in your KeyVault instance.
+   5. Close the Data Source tabs.
+   6. Click on Refresh data.
+      > Your Dashboard will initially be empty. You will need your data pipeline to run a few times for the data in your SQL Dedicated Pool to populate.
+=======
+>>>>>>> Azure-Samples-main
     > This requires [PowerBI Desktop App](https://powerbi.microsoft.com/en-us/desktop/) installed.
     1. Open the provided PowerBi pbix (PowerBI_ParkingSensors.pbix) under `reports` folder.
     2. Under Queries, select "Transform Data" > "Data source settings".
@@ -284,6 +333,10 @@ Please check the details [here](docs/observability.md).
     5. Close the Data Source tabs.
     6. Click on Refresh data.
         > Your Dashboard will initially be empty. You will need your data pipeline to run a few times for the data in your SQL Dedicated Pool to populate.
+<<<<<<< HEAD
+=======
+>>>>>>> f06c799 (fix(parking_sensors_synapse): clarity in README in parking sensor synapse sample, add requirement for Synapse extension, comment out debugging in script by default, add general troubleshooting section (#466))
+>>>>>>> Azure-Samples-main
 
 Congratulations!! 🥳 You have successfully deployed the solution and accompanying Build and Release Pipelines.
 

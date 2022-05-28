@@ -235,9 +235,26 @@ AZURE_STORAGE_ACCOUNT=$azure_storage_account \
 
 # Grant Synapse Administrator to this SP so that it can trigger Synapse pipelines
 wait_service_principal_creation "$sp_synapse_id"
+<<<<<<< HEAD
 sp_synapse_object_id=$(az ad sp show --id "$sp_synapse_id" --query "objectId" -o tsv)
 assign_synapse_role_if_not_exists "$synapseworkspace_name" "Synapse Administrator" "$sp_synapse_object_id"
 assign_synapse_role_if_not_exists "$synapseworkspace_name" "Synapse SQL Administrator" "$sp_synapse_object_id"
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+sp_synapse_object_id=$(az ad sp show --id "$sp_synapse_id" --query "objectId" -o tsv)
+assign_synapse_role_if_not_exists "$synapseworkspace_name" "Synapse Administrator" "$sp_synapse_object_id"
+assign_synapse_role_if_not_exists "$synapseworkspace_name" "Synapse SQL Administrator" "$sp_synapse_object_id"
+=======
+assign_synapse_role_if_not_exists "$synapseworkspace_name" "Synapse Administrator" "$sp_synapse_name"
+assign_synapse_role_if_not_exists "$synapseworkspace_name" "Synapse SQL Administrator" "$sp_synapse_name"
+>>>>>>> f06c799 (fix(parking_sensors_synapse): clarity in README in parking sensor synapse sample, add requirement for Synapse extension, comment out debugging in script by default, add general troubleshooting section (#466))
+=======
+sp_synapse_object_id=$(az ad sp show --id "$sp_synapse_id" --query "objectId" -o tsv)
+assign_synapse_role_if_not_exists "$synapseworkspace_name" "Synapse Administrator" "$sp_synapse_object_id"
+assign_synapse_role_if_not_exists "$synapseworkspace_name" "Synapse SQL Administrator" "$sp_synapse_object_id"
+>>>>>>> 4e16332 (Merge pull request #443 from Azure-Samples/dependabot/nuget/e2e_samples/deployment_stamps/api/WebApi/Microsoft.AspNetCore.Authentication.JwtBearer-5.0.9)
+>>>>>>> Azure-Samples-main
 
 
 ####################
