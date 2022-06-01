@@ -1,4 +1,4 @@
-CREATE EXTERNAL TABLE [ext].[dim_time] (
+CREATE EXTERNAL TABLE [ext].[dim_time_test] (
     [dim_time_id] INT NOT NULL,
     [time_alt_key] INT NOT NULL,
     [time] VARCHAR (18) NULL,
