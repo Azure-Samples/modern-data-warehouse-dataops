@@ -94,6 +94,7 @@
     <Build Include="dbo\Stored Procedures\load_dim_date.sql" />
     <Build Include="External Resources\CSVSkipHeaderFileFormat.sql" />
     <Build Include="ext\External Tables\dim_time.sql">
+    <Build Include="ext\External Tables\dim_time_test.sql">
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
     <Build Include="ext\External Tables\dim_date.sql">
