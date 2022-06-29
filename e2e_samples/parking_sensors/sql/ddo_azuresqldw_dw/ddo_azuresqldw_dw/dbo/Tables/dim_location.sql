@@ -4,7 +4,7 @@
     [lon]             REAL             NULL,
     [load_id]         NVARCHAR (50)    NULL,
     [loaded_on]       DATETIME         NULL
-)
+)  
 WITH (CLUSTERED COLUMNSTORE INDEX, DISTRIBUTION = REPLICATE);
 
 
