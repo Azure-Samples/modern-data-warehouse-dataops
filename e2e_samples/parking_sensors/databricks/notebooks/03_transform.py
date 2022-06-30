@@ -27,7 +27,7 @@ sensordata_sdf = spark.read.table("interim.sensor").filter(col('load_id') == lit
 sensordata_non_functional_bay = spark.read.table("interim.sensor").filter(col('load_id') == lit(load_id))
 sensordata_non_functional_bay.createOrReplaceTempView("sensordata_non_functional_bay")
 non_functional_bay=sql("""select distinct bay_id, 'non-functional' as status from sensordata_non_functional_bay order by bay_id desc limit 100""")
-save_overwrite_unmanaged_table(spark, non_functional_bay, table_name="dw.non_functional_bay", path=os.path.join(base_path, "non_functional_bay"))
+util.save_overwrite_unmanaged_table(spark, non_functional_bay, table_name="dw.non_functional_bay", path=os.path.join(base_path, "non_functional_bay"))
 
 # COMMAND ----------
 
