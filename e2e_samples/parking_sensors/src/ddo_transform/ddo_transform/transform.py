@@ -278,7 +278,7 @@ def process_fact_parking(sensordata_sdf: DataFrame,
                          dim_parkingbay_sdf: DataFrame,
                          dim_location_sdf: DataFrame,
                          dim_st_marker_sdf: DataFrame,
-                         load_id, loaded_on):
+                         load_id, loaded_on, non_functional_bay):
     """Transform sensordata into fact_parking"""
 
     dim_date_id = loaded_on.strftime("%Y%m%d")
@@ -286,8 +286,9 @@ def process_fact_parking(sensordata_sdf: DataFrame,
     dim_time_id = (midnight - loaded_on).seconds
 
     # Build fact
-    fact_parking = sensordata_sdf\
+    fact_parking = sensordata_sdf.alias("sb")\
         .join(dim_parkingbay_sdf.alias("pb"), "bay_id", "left_outer")\
+        .join(non_functional_bay.alias("nf"), "bay_id", "left_outer")\
         .join(dim_location_sdf.alias("l"), ["lat", "lon"], "left_outer")\
         .join(dim_st_marker_sdf.alias("st"), "st_marker_id", "left_outer")\
         .select(
@@ -299,7 +300,8 @@ def process_fact_parking(sensordata_sdf: DataFrame,
             .otherwise(col("l.dim_location_id")).alias("dim_location_id"),
             when(col("st.dim_st_marker_id").isNull(), lit(EMPTY_UUID))
             .otherwise(col("st.dim_st_marker_id")).alias("dim_st_marker_id"),
-            "status",
+            when(col("nf.status").isNotNull(), col("nf.status"))
+            .otherwise(col("sb.status")).alias("status"),
             lit(load_id).alias("load_id"),
             lit(loaded_on.isoformat()).cast("timestamp").alias("loaded_on")
         )
