@@ -21,9 +21,10 @@ variables:
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
+
 stages:
 - stage: 'Waiting_A_Min'
-  displayName: 'Waiting for 1 min'
+  displayName: 'Waiting for 1 Min'
   jobs:
   - job: RunsOnServer
     pool: Server
