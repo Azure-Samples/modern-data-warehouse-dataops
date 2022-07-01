@@ -1,0 +1,48 @@
+{
+	"name": "P_Ingest_non_functional_bay",
+	"properties": {
+		"description": "Hello from NDC Sydney!!!",
+		"activities": [
+			{
+				"name": "non_functional_bay",
+				"description": "",
+				"type": "DatabricksNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/notebooks/non_functional_bay",
+					"libraries": [
+						{
+							"egg": "dbfs:/mnt/datalake/sys/databricks/libs/ddo_transform-localdev-py2.py3-none-any.whl"
+						},
+						{
+							"pypi": {
+								"package": "applicationinsights"
+							}
+						}
+					]
+				},
+				"linkedServiceName": {
+					"referenceName": "Ls_AzureDatabricks_01",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"variables": {
+			"infilefolder": {
+				"type": "String",
+				"defaultValue": "lnd"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-05-18T10:02:46Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
