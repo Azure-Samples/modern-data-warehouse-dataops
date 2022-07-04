@@ -7,7 +7,20 @@
 				"name": "non_functional_bay",
 				"description": "",
 				"type": "DatabricksNotebook",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "DownloadBayData",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "DownloadSensorData",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,
@@ -33,6 +46,128 @@
 					"referenceName": "Ls_AzureDatabricks_01",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "Set infilefolder",
+				"description": "testing",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "infilefolder",
+					"value": {
+						"value": "@utcnow('yyyy_MM_dd_hh_mm_ss')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "DownloadSensorData",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Set infilefolder",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "RestSource",
+						"httpRequestTimeout": "00:01:40",
+						"requestInterval": "00.00:00:00.010"
+					},
+					"sink": {
+						"type": "AzureBlobFSSink"
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "Ds_REST_MelbParkingData",
+						"type": "DatasetReference",
+						"parameters": {
+							"relativeurl": "dtpv-d4pf.json"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Ds_AdlsGen2_MelbParkingData",
+						"type": "DatasetReference",
+						"parameters": {
+							"infilefolder": {
+								"value": "@variables('infilefolder')",
+								"type": "Expression"
+							},
+							"infilename": "MelbParkingSensorData.json",
+							"container": "datalake/data/lnd"
+						}
+					}
+				]
+			},
+			{
+				"name": "DownloadBayData",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Set infilefolder",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "RestSource",
+						"httpRequestTimeout": "00:01:40",
+						"requestInterval": "00.00:00:00.010"
+					},
+					"sink": {
+						"type": "AzureBlobFSSink"
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "Ds_REST_MelbParkingData",
+						"type": "DatasetReference",
+						"parameters": {
+							"relativeurl": "wuf8-susg.json"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Ds_AdlsGen2_MelbParkingData",
+						"type": "DatasetReference",
+						"parameters": {
+							"infilefolder": {
+								"value": "@variables('infilefolder')",
+								"type": "Expression"
+							},
+							"infilename": "MelbParkingBayData.json",
+							"container": "datalake/data/lnd"
+						}
+					}
+				]
 			}
 		],
 		"variables": {
