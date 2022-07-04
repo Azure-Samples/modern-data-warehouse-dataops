@@ -5,7 +5,7 @@
 		"activities": [
 			{
 				"name": "non_functional_bay",
-				"description": "",
+				"description": "a",
 				"type": "DatabricksNotebook",
 				"dependsOn": [
 					{
