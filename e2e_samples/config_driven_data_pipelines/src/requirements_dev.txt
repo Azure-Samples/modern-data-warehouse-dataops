@@ -1,0 +1,12 @@
+-r requirements.txt
+pyarrow
+fastparquet
+pytest
+pytest-cov
+mock
+numpy>=1.23.0
+twine
+flake8
+build
+jupyter
+jupyterlab

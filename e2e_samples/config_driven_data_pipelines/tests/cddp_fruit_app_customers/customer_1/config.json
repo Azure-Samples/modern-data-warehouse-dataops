@@ -1,0 +1,77 @@
+{
+  "customer_id": "customer_1",
+  "application_name": "fruit_app",
+  "bad_data_storage_name": "bad_data",
+  "checkpoint_name": "checkpoint",
+  "serving_data_storage_path": "Serving",
+  "event_data_storage_path": "Standard",
+  "event_data_curation": [
+    {
+      "sql": "select m.ID, m.Fruit, count(m.ID) as sales_count, sum(m.Price*m.amount) as sales_total from fruits_events m   group by m.ID, m.Fruit",
+      "target": "fruits_sales",
+      "partition_keys": ""
+    }
+  ],
+  "event_data_source": [
+    {
+      "name": "event-hub",
+      "type": "event-hub",
+      "table_name": "events",
+      "timestamp_col": "ts",
+      "partition_keys": "ID",
+      "secret": "eventhubs.connectionString"
+    }
+  ],
+  "event_data_transform": [
+    {
+      "sql": "\n select m.ID, m.Fruit, m.Price, e.amount, e.ts, e.rz_create_ts, e.lz_filename from events e\n left outer join fruits m\n ON e.id=m.ID \n and m.row_active_start_ts<=e.ts\n and m.row_active_end_ts>e.ts\n ",
+      "target": "fruits_events",
+      "timestamp_col": "ts",
+      "storage_path": "Standard",
+      "partition_keys": "ID"
+    }
+  ],
+  "master_data_source": [
+    {
+      "name": "raw_data",
+      "type": "csv",
+      "data": "ID,shuiguo,yanse,jiage\n1,Red Grape,Red, 2.5\n2,Peach,Yellow,3.5\n3,Orange,Orange, 2.3\n4,Green Apple,Green, 3.5\n5,Fiji Apple,Red, 3.4 \n6,Banana,Yellow, 1.2\n7,Green Grape, Green,2.2",
+      "table_name": "raw_fruits",
+      "partition_keys": "",
+      "key_cols": "ID"
+    }
+  ],
+  "master_data_validate": [
+    {
+      "valid_sql": "\n select * from raw_fruits where shuiguo != 'Orange' or jiage >= 2.2\n ",
+      "valid_target": "valid_master_data",
+      "retry_sql": "\n select * from master_data_retry_view where shuiguo != 'Orange' or jiage >= 0 \n ",
+      "retry_temp_view": "master_data_retry_view",
+      "invalid_target": "invalid_master_data",
+      "reason": "Business validation error: Orange price lower than minimum."
+    }
+  ],
+  "master_data_storage_path": "master_data_storage",
+  "staging_data_storage_path": "staging_data_storage",
+  "master_data_transform": [
+    {
+      "sql": "SELECT rz_create_ts, lz_filename, md5_hash, ID, shuiguo as Fruit, jiage as Price FROM raw_fruits",
+      "replay-sql": "SELECT ID, shuiguo as Fruit, jiage + 10 as Price, key_hash, system_created_stamp as row_active_start_ts,LAG(system_created_stamp, -1, cast('9999-12-31 00:00:00.000000+00:00' as timestamp)) OVER(PARTITION BY key_hash ORDER BY key_hash, system_created_stamp) AS row_active_end_ts FROM raw_fruits",
+      "replay-pre-check": "cddp_fruit_app_customers.customer_1.master_replay_pre_check",
+      "target": "fruits",
+      "partition_keys": "ID",
+      "key_cols": "ID",
+      "mandatory_cols": "row_active_start_ts,row_active_end_ts"
+    }
+  ],
+  "export_target_type": "csv",
+  "export_file_name": "fruits",
+  "export_data_storage_csv_path": "export_data_storage",
+  "export_postgres_schema_name": "schemaname",
+  "export_postgres_tablename": "new_table",
+  "export_postgres_database": "postgres",
+  "export_postgres_user_key": "export_postgres_user",
+  "export_postgres_password_key": "export_postgres_password",
+  "export_postgres_host": "bopostgrsql.postgres.database.azure.com",
+  "export_postgres_if_exists": "replace"
+}
