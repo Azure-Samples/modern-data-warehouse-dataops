@@ -1,0 +1,5 @@
+assembly-versioning-scheme: Major
+mode: Mainline
+branches: {}
+ignore:
+  sha: []
