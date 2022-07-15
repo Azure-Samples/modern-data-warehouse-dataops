@@ -352,7 +352,6 @@ class AbstractSparkJob(ABC):
         self.spark.sql(f"CREATE SCHEMA IF NOT EXISTS {schema_name}")
         return schema_name
 
-
     def add_audit_columns(self, dataframe,
                           data_processing_phase: DataProcessingPhase):
         """Add different audit columns to target dataframe according to

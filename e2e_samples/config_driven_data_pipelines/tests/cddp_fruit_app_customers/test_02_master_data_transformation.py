@@ -12,9 +12,9 @@ class TestMasterDataTransformation():
     APPLICATION_NAME = "fruit_app"
     CUSTOMER_ID = "customer_2"
     STAGING_STORAGE_BASE_PATH = (f"{tempfile.gettempdir()}/__data_storage__/{CUSTOMER_ID}"
-                             f"/Staging/{APPLICATION_NAME}")
+                                 f"/Staging/{APPLICATION_NAME}")
     STANDARD_STORAGE_BASE_PATH = (f"{tempfile.gettempdir()}/__data_storage__/{CUSTOMER_ID}"
-                                   f"/Standard/{APPLICATION_NAME}")
+                                  f"/Standard/{APPLICATION_NAME}")
     EXPECTED_TRANSFORMED_ROWS = [
         ('Red Grape', 2.5),
         ('Peach', 3.5),

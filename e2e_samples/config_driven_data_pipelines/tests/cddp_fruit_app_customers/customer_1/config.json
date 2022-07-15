@@ -64,6 +64,7 @@
       "mandatory_cols": "row_active_start_ts,row_active_end_ts"
     }
   ],
+
   "raw_data_storage_path": "Raw",
   "master_data_storage_path": "Processed",
   "export_target_type": "postgresql",
