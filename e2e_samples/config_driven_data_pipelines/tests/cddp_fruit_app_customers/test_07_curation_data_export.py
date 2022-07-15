@@ -69,7 +69,7 @@ def test_postgreSQL_export(load_config, monkeypatch):
     assert curation_export.export_action.export_data_to_postgreSQL.called
 
 
-def test_csv_export(load_config):
+def test_csv_export(load_config, cleanup_datalake):
     config = load_config("tests.cddp_fruit_app", "customer_2")
     clz = find_class("tests.cddp_fruit_app.curation_data_export", "CurationDataExport")
     curation_export = clz(config)
