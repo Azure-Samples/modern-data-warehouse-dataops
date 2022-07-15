@@ -38,7 +38,7 @@ def prepare_test_data(transform, config):
 
 
 def test_postgreSQL_export_with_error(load_config, monkeypatch):
-    config = load_config("tests.cddp_fruit_app", "customer_with_bad_records")
+    config = load_config("tests.cddp_fruit_app", "customer_1")
     clz = find_class("tests.cddp_fruit_app.curation_data_export", "CurationDataExport")
     curation_export = clz(config)
     prepare_test_data(curation_export, config)
@@ -57,7 +57,7 @@ def test_postgreSQL_export(load_config, monkeypatch):
     monkeypatch.setenv("export_postgres_user", "mock_user")
     monkeypatch.setenv("export_postgres_password", "mock_pwd")
 
-    config = load_config("tests.cddp_fruit_app", "customer_with_bad_records")
+    config = load_config("tests.cddp_fruit_app", "customer_1")
     clz = find_class("tests.cddp_fruit_app.curation_data_export", "CurationDataExport")
     curation_export = clz(config)
     prepare_test_data(curation_export, config)

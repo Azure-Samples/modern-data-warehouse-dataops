@@ -1,0 +1,13 @@
+[run]
+source = src/
+omit =
+    src/setup.py
+    src/_version.py
+    src/cddp_solution/common/utils/onboarding.py
+    src/cddp_solution/common/utils/publish_event_data.py
+    src/cddp_solution/common/curation_data_export_runner.py
+[report]
+precision = 1
+skip_empty = True
+[xml]
+output = cov.xml

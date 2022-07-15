@@ -50,7 +50,7 @@ RUN apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Add path for pytest
-ENV PYTHONPATH /workspaces/config_driven_data_pipelines/src:/workspaces/config_driven_data_pipelines/tests
+ENV PYTHONPATH /workspaces/modern-data-warehouse-dataops/e2e_samples/config_driven_data_pipelines/src:/workspaces/modern-data-warehouse-dataops/e2e_samples/config_driven_data_pipelines/tests
 
 # Add env variable for pyspark
 ENV PYSPARK_PYTHON python3.9
