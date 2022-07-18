@@ -6,7 +6,7 @@ import sys
 
 
 class TestMasterDataCuration():
-    SOURCE_SYSTEM = "tests.cddp_fruit_app"
+    SOURCE_SYSTEM = "cddp_fruit_app"
     APPLICATION_NAME = "fruit_app"
     CUSTOMER_ID = "customer_2"
     SERVING_STORAGE_BASE_PATH = (f"{tempfile.gettempdir()}/__data_storage__/{CUSTOMER_ID}"

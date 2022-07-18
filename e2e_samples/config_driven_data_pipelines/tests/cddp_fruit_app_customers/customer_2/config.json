@@ -13,7 +13,7 @@
       "partition_keys": ""
     },
     {
-      "function": "tests.cddp_fruit_app_customers.customer_2.event_data_curation",
+      "function": "cddp_fruit_app_customers.customer_2.event_data_curation",
       "target": "fruits_sales_2",
       "partition_keys": "ID"
     }    
@@ -24,7 +24,7 @@
       "type": "local",
       "format": "json",
       "table_name": "events_1",
-      "schema": "tests.cddp_fruit_app_customers.customer_2.event_data_schema",
+      "schema": "cddp_fruit_app_customers.customer_2.event_data_schema",
       "timestamp_col": "ts",
       "partition_keys": "ID",
       "location": "customer_2/mock_events/events_1/"
@@ -48,7 +48,7 @@
       "partition_keys": "ID"
     },
     {
-      "function": "tests.cddp_fruit_app_customers.customer_2.event_transformation",
+      "function": "cddp_fruit_app_customers.customer_2.event_transformation",
       "source": "events_2",
       "target": "fruits_events_2",
       "timestamp_col": "ts",
@@ -61,7 +61,7 @@
     {
       "name": "raw_data_1",
       "type": "csv",
-      "schema": "tests.cddp_fruit_app_customers.customer_2.raw_data_schema",
+      "schema": "cddp_fruit_app_customers.customer_2.raw_data_schema",
       "data": "ID,shuiguo,yanse,jiage\n1,Red Grape,Red,2.5\n2,Peach,Yellow,3.5\n3,Orange,Orange,2.3\n4,Green Apple,Green,3.5\n5,Fiji Apple,Red,3.4 \n6,Banana,Yellow,1.2\n7,Green Grape,Green,2.2",
       "table_name": "raw_fruits_1",
       "partition_keys": "",
@@ -70,7 +70,7 @@
     {
       "name": "raw_data_2",
       "type": "csv-file",
-      "schema": "tests.cddp_fruit_app_customers.customer_2.raw_data_schema",
+      "schema": "cddp_fruit_app_customers.customer_2.raw_data_schema",
       "location": "customer_2/master_data/fruits.csv",
       "table_name": "raw_fruits_2",
       "partition_keys": "ID",
@@ -79,7 +79,7 @@
     {
       "name": "raw_data_3",
       "type": "parquet",
-      "schema": "tests.cddp_fruit_app_customers.customer_2.raw_data_schema",
+      "schema": "cddp_fruit_app_customers.customer_2.raw_data_schema",
       "location": "customer_2/master_data/fruits.parquet",
       "table_name": "raw_fruits_3",
       "partition_keys": "",
@@ -91,14 +91,14 @@
     {
       "sql": "SELECT rz_create_ts, lz_filename, md5_hash, ID, shuiguo as Fruit, yanse as Colour, jiage as Price FROM raw_fruits_1",
       "replay-sql": "SELECT ID, shuiguo as Fruit, jiage + 10 as Price, yanse as Colour, md5_hash, rz_create_ts as row_active_start_ts,LAG(rz_create_ts, -1, cast('9999-12-31 00:00:00.000000+00:00' as timestamp)) OVER(PARTITION BY md5_hash ORDER BY md5_hash, rz_create_ts) AS row_active_end_ts FROM raw_fruits_1",
-      "replay-pre-check": "tests.cddp_fruit_app_customers.customer_2.master_data_replay_pre_check",
+      "replay-pre-check": "cddp_fruit_app_customers.customer_2.master_data_replay_pre_check",
       "target": "fruits_1",
       "partition_keys": "ID,Fruit",
       "key_cols": "ID",
       "mandatory_cols": "row_active_start_ts,row_active_end_ts"
     },
     {
-      "function": "tests.cddp_fruit_app_customers.customer_2.master_transformation",
+      "function": "cddp_fruit_app_customers.customer_2.master_transformation",
       "target": "fruits_2"
     },
     {
@@ -117,7 +117,7 @@
       "partition_keys": "ID"
     },
     {
-      "function": "tests.cddp_fruit_app_customers.customer_2.master_curation",
+      "function": "cddp_fruit_app_customers.customer_2.master_curation",
       "target": "green_fruits_2"
     }
   ],

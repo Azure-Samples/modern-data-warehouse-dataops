@@ -100,15 +100,15 @@ class AbstractEventDataTransformation(AbstractSparkJob):
         # if type is cloudFiles we will have cloudFiles specific readstream()
         type = data_source["type"]
         format = data_source["format"]
-        # Update current timestamp to mock events in events.json file
-        if format == "json":
-            location = self.__prepare_events_data(location)
 
         # Set ADLS landing path when running on Databricks cluster
         if isRunningOnDatabricks():
             location = f"{self.landing_data_storage_path}/{table_name}/"
             self.logger.log(logging.INFO, f"Fact/Event data will be picked up from Landing: {location}")
         else:
+            # Update current timestamp to mock events in events.json file
+            if format == "json":
+                location = self.__prepare_events_data(location)                    
             self.logger.log(logging.INFO, f"Fact/Event data will be picked up from Landing <local system>: {location}")
 
         schema = self.get_event_schema(data_source)
