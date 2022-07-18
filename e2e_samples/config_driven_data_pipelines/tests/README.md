@@ -34,9 +34,5 @@ pytest tests/ --ignore=integration --junitxml=test_report.xml
 pytest --cov=src/ tests/ --ignore=integration --cov-report term
 
 # Generate unit tests coverage report
-pytest --cov=src/ tests/ --ignore=integration --cov-report xml:test_coverage.xml
-
-# Run tests with converage config, and the .coveragerc file is in root folder,
-# we could set [run], [report], [xml] configs there
-pytest --cov --cov-config=.coveragerc --cov-report xml --cov-report term
+pytest --cov=src/ tests/ --ignore=integration --cov-report xml:cov.xml
 ```

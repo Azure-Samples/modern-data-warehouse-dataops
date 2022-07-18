@@ -6,11 +6,11 @@ import sys
 
 
 class TestMasterDataIngestion():
-    SOURCE_SYSTEM = "tests.cddp_fruit_app"
+    SOURCE_SYSTEM = "cddp_fruit_app"
     APPLICATION_NAME = "fruit_app"
     CUSTOMER_ID = "customer_2"
     STAGING_STORAGE_BASE_PATH = (f"{tempfile.gettempdir()}/__data_storage__/{CUSTOMER_ID}"
-                             f"/Staging/{APPLICATION_NAME}")
+                                 f"/Staging/{APPLICATION_NAME}")
     EXPECTED_INGESTED_ROWS = [
         ('Red Grape', 'Red', 2.5),
         ('Peach', 'Yellow', 3.5),

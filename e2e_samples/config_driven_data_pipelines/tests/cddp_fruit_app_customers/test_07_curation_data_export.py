@@ -1,6 +1,6 @@
 from cddp_solution.common.utils.module_helper import find_class
 import pandas as pd
-from ..utils.test_utils import assert_rows
+from tests.utils.test_utils import assert_rows
 import mock
 import tempfile
 import pytest
@@ -38,8 +38,8 @@ def prepare_test_data(transform, config):
 
 
 def test_postgreSQL_export_with_error(load_config, monkeypatch):
-    config = load_config("tests.cddp_fruit_app", "customer_with_bad_records")
-    clz = find_class("tests.cddp_fruit_app.curation_data_export", "CurationDataExport")
+    config = load_config("cddp_fruit_app", "customer_1")
+    clz = find_class("cddp_fruit_app.curation_data_export", "CurationDataExport")
     curation_export = clz(config)
     prepare_test_data(curation_export, config)
     curation_export.export_action.export_data_to_postgreSQL = mock.Mock()
@@ -57,8 +57,8 @@ def test_postgreSQL_export(load_config, monkeypatch):
     monkeypatch.setenv("export_postgres_user", "mock_user")
     monkeypatch.setenv("export_postgres_password", "mock_pwd")
 
-    config = load_config("tests.cddp_fruit_app", "customer_with_bad_records")
-    clz = find_class("tests.cddp_fruit_app.curation_data_export", "CurationDataExport")
+    config = load_config("cddp_fruit_app", "customer_1")
+    clz = find_class("cddp_fruit_app.curation_data_export", "CurationDataExport")
     curation_export = clz(config)
     prepare_test_data(curation_export, config)
     curation_export.export_action.export_data_to_postgreSQL = mock.Mock()
@@ -70,8 +70,8 @@ def test_postgreSQL_export(load_config, monkeypatch):
 
 
 def test_csv_export(load_config):
-    config = load_config("tests.cddp_fruit_app", "customer_2")
-    clz = find_class("tests.cddp_fruit_app.curation_data_export", "CurationDataExport")
+    config = load_config("cddp_fruit_app", "customer_2")
+    clz = find_class("cddp_fruit_app.curation_data_export", "CurationDataExport")
     curation_export = clz(config)
     prepare_test_data(curation_export, config)
     curation_export.serving_data_storage_path = serving_data_storage_path

@@ -64,7 +64,10 @@
       "mandatory_cols": "row_active_start_ts,row_active_end_ts"
     }
   ],
-  "export_target_type": "csv",
+
+  "raw_data_storage_path": "Raw",
+  "master_data_storage_path": "Processed",
+  "export_target_type": "postgresql",
   "export_file_name": "fruits",
   "export_data_storage_csv_path": "export_data_storage",
   "export_postgres_schema_name": "schemaname",

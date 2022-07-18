@@ -1,25 +1,20 @@
 from cddp_solution.common import event_data_curation_runner
 from pyspark.sql import SparkSession
-from ..utils.test_utils import assert_rows
+from tests.utils.test_utils import assert_rows
 import tempfile
 import sys
 
 
 class TestEventDataCuration():
-    SOURCE_SYSTEM = "tests.cddp_fruit_app"
+    SOURCE_SYSTEM = "cddp_fruit_app"
     APPLICATION_NAME = "fruit_app"
     CUSTOMER_ID = "customer_2"
     SERVING_STORAGE_BASE_PATH = (f"{tempfile.gettempdir()}/__data_storage__/{CUSTOMER_ID}"
                                  f"/Serving/{APPLICATION_NAME}")
-    EXPECTED_CURATED_1_ROWS = [
-        (5, "Fiji Apple", 184, 2465.6),
-        (1, "Red Grape", 194, 2425.0),
-        (2, "Peach", 142, 1917.0)
-    ]
-    EXPECTED_CURATED_2_ROWS = [
-        (5, "Fiji Apple", 184, 1251.2),
-        (2, "Peach", 142, 994.0),
-        (1, "Red Grape", 194, 970.0)
+    EXPECTED_CURATED_ROWS = [
+        (5, "Fiji Apple", 184, 625.6),
+        (2, "Peach", 142, 497.0),
+        (1, "Red Grape", 194, 485.0)
     ]
 
     def test_event_data_curation(self,
@@ -40,7 +35,7 @@ class TestEventDataCuration():
                                     .load((f"{self.SERVING_STORAGE_BASE_PATH}/fruits_sales_2"))
 
         assert fruits_events_1.count() == 3
-        assert_rows(fruits_events_1, ("ID", "Fruit", "sales_count", "sales_total"), self.EXPECTED_CURATED_1_ROWS)
+        assert_rows(fruits_events_1, ("ID", "Fruit", "sales_count", "sales_total"), self.EXPECTED_CURATED_ROWS)
 
         assert fruits_events_1.count() == 3
-        assert_rows(fruits_events_2, ("ID", "Fruit", "sales_count", "sales_total"), self.EXPECTED_CURATED_2_ROWS)
+        assert_rows(fruits_events_2, ("ID", "Fruit", "sales_count", "sales_total"), self.EXPECTED_CURATED_ROWS)
