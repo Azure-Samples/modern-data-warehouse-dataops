@@ -126,9 +126,9 @@ az storage fs directory create -n '/data/dw/dim_location' -f $storage_file_syste
 
 echo "Uploading seed data to data/seed"
 az storage blob upload --container-name $storage_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key" \
-    --file data/seed/dim_date.csv --name "data/seed/dim_date/dim_date.csv"
+    --file data/seed/dim_date.csv --name "data/seed/dim_date/dim_date.csv" --overwrite
 az storage blob upload --container-name $storage_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key" \
-    --file data/seed/dim_time.csv --name "data/seed/dim_time/dim_time.csv"
+    --file data/seed/dim_time.csv --name "data/seed/dim_time/dim_time.csv" --overwrite
 
 # Set Keyvault secrets
 az keyvault secret set --vault-name "$kv_name" --name "datalakeAccountName" --value "$azure_storage_account"
@@ -216,10 +216,10 @@ AZURE_STORAGE_ACCOUNT=$azure_storage_account \
 
 
 # SERVICE PRINCIPAL IN SYNAPSE INTEGRATION TESTS
-# Synapse SP for integration tests 
+# Synapse SP for integration tests
  sp_synapse_name="${PROJECT}-syn-${ENV_NAME}-${DEPLOYMENT_ID}-sp"
  sp_synapse_out=$(az ad sp create-for-rbac \
-     --skip-assignment \
+     --role Contributor \
      --scopes "/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$resource_group_name/providers/Microsoft.Synapse/workspaces/$synapseworkspace_name" \
      --name "$sp_synapse_name" \
      --output json)
