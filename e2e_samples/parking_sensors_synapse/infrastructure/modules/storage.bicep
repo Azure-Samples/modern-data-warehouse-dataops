@@ -81,9 +81,6 @@ resource synapseStorage 'Microsoft.Storage/storageAccounts@2021-04-01' = {
     properties: {
       isVersioningEnabled: false
     }
-    dependsOn: [
-      synapseStorage
-    ]
 
     resource synapseStorageFileSystem2  'containers@2021-04-01' = {
       name: 'synapsedefaultfs'
