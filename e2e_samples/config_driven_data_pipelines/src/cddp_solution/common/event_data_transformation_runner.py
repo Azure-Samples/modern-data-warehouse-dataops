@@ -19,7 +19,6 @@ def main():
     transform = clz(config)
     transform.load_master_data()
     transform.load_event_data()
-    transform.validate_event_data()
     queries = transform.transform()
     for query in queries:
         query.awaitTermination(30)
