@@ -7,7 +7,7 @@
             "pattern": "^https://adb-[0-9]+.[0-9].azuredatabricks.net"
         },
         {
-            "pattern": "https://docs.github.com/en/get-started/importing-your-projects-to-github/importing-source-code-to-github/importing-a-repository-with-github-importer"
+            "pattern": "^https://docs.github.com/en/get-started/importing-your-projects-to-github/importing-source-code-to-github/importing-a-repository-with-github-importer"
         }
     ]
 }
