@@ -28,7 +28,7 @@ The sample demonstrate how DevOps principles can be applied end to end Data Pipe
   - [Prerequisites](#prerequisites)
     - [Software pre-requisites if you use dev container](#software-pre-requisites-if-you-use-dev-container)
   - [Setup and Deployment](#setup-and-deployment)
-    - [Deployed Resources](#deployed-resources)
+  - [Deployed Resources](#deployed-resources)
     - [Clean up](#clean-up)
   - [Data Lake Physical layout](#data-lake-physical-layout)
   - [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
@@ -226,7 +226,7 @@ More resources:
 - [Azure DevOps CLI](https://marketplace.visualstudio.com/items?itemName=ms-vsts.cli)
   - To install, run `az extension add --name azure-devops`
 - [Python 3+](https://www.python.org/)
-- [databricks-cli](https://docs.azuredatabricks.net/dev-tools/databricks-cli.html)
+- [databricks-cli](https://docs.microsoft.com/en-us/azure/databricks/dev-tools/cli/)
 - [jq](https://stedolan.github.io/jq/)
 - [makepasswd](https://manpages.debian.org/stretch/makepasswd/makepasswd.1.en.html)
 
