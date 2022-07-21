@@ -305,13 +305,14 @@ More resources:
    - On the landing page, select "Set up code repository". For more information, see [here](https://docs.microsoft.com/en-us/azure/data-factory/source-control).
    - Fill in the repository settings with the following:
       - Repository type: **Github**
+      - Use GitHub Enterprise Server: **Unselected, unless you are using GitHub Enterprise Server**
       - Github Account: **your_Github_account**
       - Git repository (select *Use repository link*, if forked): **forked Github repository url**
       - Collaboration branch: **main**
       - Root folder: **/e2e_samples/parking_sensors/adf**
-      - Import Existing Data Factory resource to repository: **Selected**
-      - Branch to import resource into: **Use Collaboration**
-   - When prompted to select a working branch, select **main**
+      - Import existing resources to repository: **Selected**
+      - Import resource into this branch: **main**
+   - When prompted to select a working branch, check **Use existing** and select **main**
 
    > **Ensure you Import Existing Data Factory resources to repository**. The deployment script deployed ADF objects with Linked Service configurations in line with the newly deployed environments. Importing existing ADF resources definitions to the repository overrides any default Linked Services values so they are correctly in sync with your DEV environment.
 
