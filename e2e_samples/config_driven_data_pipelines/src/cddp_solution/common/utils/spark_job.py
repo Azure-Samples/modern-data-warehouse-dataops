@@ -98,12 +98,6 @@ class AbstractSparkJob(ABC):
             self.event_data_storage_path = Path(
                 self.storage_dir_path, config["event_data_storage_path"],
                 config["application_name"]).as_posix()
-            self.event_data_bad_records_storage_path = Path(
-                self.event_data_storage_path,
-                self.bad_data_storage_name).as_posix()
-            self.event_data_invalid_records_storage_path = Path(
-                self.event_data_storage_path,
-                self.invalid_data_storage_name).as_posix()
         if "serving_data_storage_path" in config:
             self.serving_data_storage_path = Path(
                 self.storage_dir_path, config["serving_data_storage_path"],

@@ -54,10 +54,6 @@ class AbstractEventDataTransformation(AbstractSparkJob):
         table_name = data_source["table_name"]
         partition_keys = data_source["partition_keys"]
 
-        # Assign default event data bad records path if it's not set explicitly in config.json
-        bad_records_path = data_source.get("badRecordsPath",
-                                           f'{self.event_data_bad_records_storage_path}/{table_name}')
-
         sc = self.spark.sparkContext
         connectionString = getEnv(secret)
         ehConf = {
@@ -68,7 +64,6 @@ class AbstractEventDataTransformation(AbstractSparkJob):
 
         df = self.spark \
             .readStream \
-            .option('badRecordsPath', bad_records_path)\
             .format("eventhubs") \
             .options(**ehConf) \
             .load() \
@@ -94,8 +89,6 @@ class AbstractEventDataTransformation(AbstractSparkJob):
         resources_base_path = self.config["resources_base_path"]
 
         location = Path(resources_base_path, f"{source_system}_customers", location).as_posix()
-        bad_records_path = data_source.get("badRecordsPath",
-                                           f'{self.event_data_bad_records_storage_path}/{table_name}')
 
         # if type is cloudFiles we will have cloudFiles specific readstream()
         type = data_source["type"]
@@ -115,9 +108,9 @@ class AbstractEventDataTransformation(AbstractSparkJob):
 
         # Based on the data source specif readstream will be applied
         if data_source['type'].lower() == 'local':
-            df = self.get_events_from_local_files(format, bad_records_path, schema, location)
+            df = self.get_events_from_local_files(format, schema, location)
         elif data_source['type'].lower() == 'cloudfiles':
-            df = self.get_events_from_cloud_files(type, format, bad_records_path, schema, location)
+            df = self.get_events_from_cloud_files(type, format, schema, location)
 
         # Add audit columns
         df = self.add_audit_columns(df, DataProcessingPhase.EVENT_LANDING_TO_STAGING)
@@ -130,65 +123,6 @@ class AbstractEventDataTransformation(AbstractSparkJob):
         self.logger.log(logging.INFO, f"Events streaming data is saving to staging zone '{db_tablename}' properly")
         self.logger.log(logging.INFO, f"## Job Ended: {inspect.currentframe().f_code.co_name}")
         return
-
-    def save_invalid_records(self, df, data_validate):
-        """ Save the invalid records into delta table
-            Parameters
-                df: invalid records dataframe
-                data_validate: data validation config read from config.json
-        """
-        self.logger.log(logging.INFO, "Saving invalid records for retry")
-        invalid_target = data_validate["invalid_target"]
-
-        # Concat columns into one 'record' column
-        columns = []
-        for sf in df.schema.fields:
-            columns.append(sf.name)
-
-        df = df.withColumn('record', F.to_json(F.struct(F.col("*"))))
-        # Add additional information
-        invalid_data = df.drop(*columns) \
-                         .withColumn("rule", F.lit(data_validate["valid_sql"])) \
-                         .withColumn("reason", F.lit(data_validate["reason"])) \
-                         .withColumn("status", F.lit("retryable")) \
-                         .withColumn("retry_attempt", F.lit(0)) \
-                         .withColumn("retry_attempt_limit", F.lit(3)) \
-                         .withColumn("created_at", F.current_timestamp())
-
-        db_tablename = f"{self.pz_dbname}.{invalid_target}"
-        target_table_path = Path(self.event_data_invalid_records_storage_path, invalid_target).as_posix()
-        target_table_checkpoint_path = Path(self.event_data_storage_path,
-                                            self.checkpoint_name,
-                                            f"{invalid_target}_chkpt").as_posix()
-
-        sink_data_helper.save_as_streaming_delta_table(
-            invalid_data,
-            target_table_path,
-            target_table_checkpoint_path,
-            db_tablename,
-            data_validate["partition_keys"]
-            )
-
-        self.logger.log(logging.INFO, f"Data updated to {db_tablename} | Path: {target_table_path}")
-
-    def validate_event_data(self):
-        """
-        Valide invalid_data records
-
-        """
-        if "event_data_validate" not in self.config:
-            return
-        for event_data_validate in self.config["event_data_validate"]:
-            if 'valid_sql' in event_data_validate and 'invalid_sql' in event_data_validate:
-                # Get the valid records
-                valid_records = self.spark.sql(event_data_validate["valid_sql"])
-
-                valid_records.createOrReplaceTempView(event_data_validate["valid_target"])
-                # Get and save the invalid records
-                invalid_records = self.spark.sql(event_data_validate["invalid_sql"])
-                # Add Audit Columns
-                valid_records = self.add_audit_columns(valid_records, DataProcessingPhase.EVENT_LANDING_TO_STAGING)
-                self.save_invalid_records(invalid_records, event_data_validate)
 
     def get_event_schema(self, data_source):
         """
@@ -316,7 +250,7 @@ class AbstractEventDataTransformation(AbstractSparkJob):
 
         return events, db_tablename
 
-    def get_events_from_local_files(self, format, bad_records_path, schema, location):
+    def get_events_from_local_files(self, format, schema, location):
         """
         vanila spark structured streaming to support(UT) CI/CD automate pipeline which will return a dataframe
 
@@ -324,8 +258,6 @@ class AbstractEventDataTransformation(AbstractSparkJob):
         ----------
         format : str
             file format such as parquet , csv, avro etc
-
-        bad_records_path : str
 
         schema : DataStructure
             custom schmea for data present in landing location
@@ -344,7 +276,6 @@ class AbstractEventDataTransformation(AbstractSparkJob):
         self.logger.log(logging.INFO, f"Event data processing in local mode:- Format: {format} | Location: {location}")
 
         df = self.spark.readStream\
-            .option('badRecordsPath', bad_records_path)\
             .format(format) \
             .schema(schema) \
             .option("multiline", "true") \
@@ -353,7 +284,7 @@ class AbstractEventDataTransformation(AbstractSparkJob):
         self.logger.log(logging.INFO, f"## Job Ended: {inspect.currentframe().f_code.co_name}")
         return df
 
-    def get_events_from_cloud_files(self, type, format, bad_records_path, schema, location):
+    def get_events_from_cloud_files(self, type, format, schema, location):
         """
         databricks auto loader with structured streaming which will return a dataframe
 
@@ -364,8 +295,6 @@ class AbstractEventDataTransformation(AbstractSparkJob):
 
         format : str
             file format such as parquet, csv, avro etc
-
-        bad_records_path : str
 
         schema : DataStructure
             custom schmea for data present in landing location
@@ -388,7 +317,6 @@ class AbstractEventDataTransformation(AbstractSparkJob):
               .format(type)
               .option('cloudFiles.format', format)
               .option('header', 'true')
-              .option('badRecordsPath', bad_records_path)
               .schema(schema)
               .option("multiline", "true")
               .load(location))
