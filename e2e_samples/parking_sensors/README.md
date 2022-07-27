@@ -28,7 +28,7 @@ The sample demonstrate how DevOps principles can be applied end to end Data Pipe
   - [Prerequisites](#prerequisites)
     - [Software pre-requisites if you use dev container](#software-pre-requisites-if-you-use-dev-container)
   - [Setup and Deployment](#setup-and-deployment)
-    - [Deployed Resources](#deployed-resources)
+  - [Deployed Resources](#deployed-resources)
     - [Clean up](#clean-up)
   - [Data Lake Physical layout](#data-lake-physical-layout)
   - [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
@@ -226,7 +226,7 @@ More resources:
 - [Azure DevOps CLI](https://marketplace.visualstudio.com/items?itemName=ms-vsts.cli)
   - To install, run `az extension add --name azure-devops`
 - [Python 3+](https://www.python.org/)
-- [databricks-cli](https://docs.azuredatabricks.net/dev-tools/databricks-cli.html)
+- [databricks-cli](https://docs.microsoft.com/en-us/azure/databricks/dev-tools/cli/)
 - [jq](https://stedolan.github.io/jq/)
 - [makepasswd](https://manpages.debian.org/stretch/makepasswd/makepasswd.1.en.html)
 
@@ -305,13 +305,14 @@ More resources:
    - On the landing page, select "Set up code repository". For more information, see [here](https://docs.microsoft.com/en-us/azure/data-factory/source-control).
    - Fill in the repository settings with the following:
       - Repository type: **Github**
+      - Use GitHub Enterprise Server: **Unselected, unless you are using GitHub Enterprise Server**
       - Github Account: **your_Github_account**
       - Git repository (select *Use repository link*, if forked): **forked Github repository url**
       - Collaboration branch: **main**
       - Root folder: **/e2e_samples/parking_sensors/adf**
-      - Import Existing Data Factory resource to repository: **Selected**
-      - Branch to import resource into: **Use Collaboration**
-   - When prompted to select a working branch, select **main**
+      - Import existing resources to repository: **Selected**
+      - Import resource into this branch: **main**
+   - When prompted to select a working branch, check **Use existing** and select **main**
 
    > **Ensure you Import Existing Data Factory resources to repository**. The deployment script deployed ADF objects with Linked Service configurations in line with the newly deployed environments. Importing existing ADF resources definitions to the repository overrides any default Linked Services values so they are correctly in sync with your DEV environment.
 

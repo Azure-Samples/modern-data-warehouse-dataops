@@ -180,7 +180,7 @@ Please check the details [here](docs/observability.md).
 - [Azure DevOps CLI](https://marketplace.visualstudio.com/items?itemName=ms-vsts.cli)
   - To install, run `az extension add --name azure-devops`
 - [Python 3+](https://www.python.org/)
-- [databricks-cli](https://docs.azuredatabricks.net/dev-tools/databricks-cli.html)
+- [databricks-cli](https://docs.microsoft.com/en-us/azure/databricks/dev-tools/cli/)
 - [jq](https://stedolan.github.io/jq/)
 - [makepasswd](https://manpages.debian.org/stretch/makepasswd/makepasswd.1.en.html)
 

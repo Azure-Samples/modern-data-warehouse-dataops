@@ -180,7 +180,7 @@ This deployment was tested using WSL 2 (Ubuntu 20.04)
          - To set target Azure Subscription, run `az account set -s <AZURE_SUBSCRIPTION_ID>`
       - Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to.
          - To set target Azure DevOps project, run `az devops configure --defaults organization=https://dev.azure.com/<MY_ORG>/ project=<MY_PROJECT>`
-   2. **Import** this repository into a new Github repo. See [here](https://help.github.com/en/github/importing-your-projects-to-github/importing-a-repository-with-github-importer) on how to import a github repo. Importing is necessary for setting up git integration with Azure Data Factory.
+   2. **Fork** this repository into a new Github repo.
    3. Set the following **required** environment variables:
        - **GITHUB_REPO** - Name of your imported github repo in this form `<my_github_handle>/<repo>`
        - **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). This requires "repo" scope.
@@ -195,7 +195,7 @@ This deployment was tested using WSL 2 (Ubuntu 20.04)
       To further customize the solution, set parameters in `arm.parameters` files located in the `infrastructure` folder.
 
 2. **Deploy Azure resources**
-   1. Clone locally the imported Github Repo, then `cd` into the `single_tech_samples/datafactory` folder of the repo
+   1. `cd` into the `single_tech_samples/datafactory` folder of the repo
    2. Run `./deploy.sh`.
       - After a successful deployment, you will find `.env.{environment_name}` files containing essential configuration information per environment. See [here](#deployed-resources) for list of deployed resources.
    3. As part of the deployment script, this updated the Azure DevOps Release Pipeline YAML definition to point to your Github repository. **Commit and push up these changes.**

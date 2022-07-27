@@ -5,7 +5,7 @@
 3. Copy the `.envtemplate` to `devcontainer.env` within this folder `e2e_samples/parking_sensors/.devcontainer`
 and update the values like described [here](../README.md#software-pre-requisites-if-you-use-dev-container)
 4. Open the Command Palette (`Ctrl+Shift+P`) and search for `Remote-Containers: Open Folder in Container...`
-5. Select `e2e_samples/parking_sensors/.devcontainer` and confirm
+5. Select `e2e_samples/parking_sensors/` and confirm
 
 ![OpenFolderInContainer](images/parking_sensors_dev_container_start.gif)
 
