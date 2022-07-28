@@ -28,7 +28,7 @@ The sample demonstrate how DevOps principles can be applied end to end Data Pipe
   - [Prerequisites](#prerequisites)
     - [Software pre-requisites if you use dev container](#software-pre-requisites-if-you-use-dev-container)
   - [Setup and Deployment](#setup-and-deployment)
-    - [Deployed Resources](#deployed-resources)
+  - [Deployed Resources](#deployed-resources)
     - [Clean up](#clean-up)
   - [Data Lake Physical layout](#data-lake-physical-layout)
   - [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
@@ -133,8 +133,9 @@ The following summarizes key learnings and best practices demonstrated by this s
 
 ### 7. Monitor infrastructure, pipelines and data
 
-- A proper monitoring solution should be in-place to ensure failures are identified, diagnosed and addressed in a timely manner. Aside from the base infrastructure and pipeline runs, data should also be monitored. A common area that should have data monitoring is the malformed record store.
-
+- A proper monitoring solution should be in-place to ensure failures are identified, diagnosed and addressed in a timely manner. Aside from the base infrastructure and pipeline runs, data quality should also be monitored. A common area that should have data monitoring is the malformed record store.
+- As an example this repository showcases how to use open source framework [Great Expectations](https://docs.greatexpectations.io/docs/) to define, measure and report data quality metrics at different stages of the data pipeline. Captured Data Quality metrics are reported to Azure Monitor for further visualizing and alerting. Take a look at sample [Data Quality report](docs/images/data_quality_report.png) generated with Azure Monitor workbook. Great Expectations can be configured to generate HTML reports and host directly as static site on Azure Blob Storage. Read more on [How to host and share Data Docs on Azure Blob Storage](https://legacy.docs.greatexpectations.io/en/latest/guides/how_to_guides/configuring_data_docs/how_to_host_and_share_data_docs_on_azure_blob_storage.html).
+  
 ## Key Concepts
 
 ### Build and Release Pipeline
@@ -194,6 +195,8 @@ More resources:
 
 ### Observability / Monitoring
 
+ **Observability-as-Code** - Few key components of Observability and Monitoring are deployed and configured through Observability-as-Code at the time on Azure resources deployment. This includes log analytics workspace to collect monitoring data from key resources, central Azure dashboard to monitor key metrics and alerts to monitor the data pipelines. To learn more on monitoring specific service read below.
+
 #### Databricks
 
 - [Monitoring Azure Databricks with Azure Monitor](https://docs.microsoft.com/en-us/azure/architecture/databricks-monitoring/)
@@ -223,7 +226,7 @@ More resources:
 - [Azure DevOps CLI](https://marketplace.visualstudio.com/items?itemName=ms-vsts.cli)
   - To install, run `az extension add --name azure-devops`
 - [Python 3+](https://www.python.org/)
-- [databricks-cli](https://docs.azuredatabricks.net/dev-tools/databricks-cli.html)
+- [databricks-cli](https://docs.microsoft.com/en-us/azure/databricks/dev-tools/cli/)
 - [jq](https://stedolan.github.io/jq/)
 - [makepasswd](https://manpages.debian.org/stretch/makepasswd/makepasswd.1.en.html)
 
@@ -233,9 +236,7 @@ More resources:
 - [VSCode](https://code.visualstudio.com/)
 - [Visual Studio Code Remote Development Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
 
-1. Rename `.envtemplate` to `devcontainer.env` and update the values as explained in **Initial Setup** section.
-2. Open the project inside the vscode dev container (see details [here](docs/devcontainer.md))
-3. `cd` into the `e2e_samples/parking_sensors` folder and run `./deploy.sh` inside the dev container terminal.
+  It is strongly recommended to use dev container for the deployment to avoid environment related issues.
 
 ### Setup and Deployment
 
@@ -243,84 +244,110 @@ More resources:
 *NOTE: This deployment was tested using WSL 2 (Ubuntu 18.04) and Debian GNU/Linux 9.9 (stretch)*
 
 1. **Initial Setup**
-   1. Ensure that:
-      - You are logged in to the Azure CLI. To login, run `az login`.
-      - Azure CLI is targeting the Azure Subscription you want to deploy the resources to.
-         - To set target Azure Subscription, run `az account set -s <AZURE_SUBSCRIPTION_ID>`
-      - Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to.
-         - To set target Azure DevOps project, run `az devops configure --defaults organization=https://dev.azure.com/<MY_ORG>/ project=<MY_PROJECT>`
-   2. **Fork** this repository into a new Github repo.
-   3. Set the following **required** environment variables:
-       - **GITHUB_REPO** - Name of your imported github repo in this form `<my_github_handle>/<repo>`. (ei. "devlace/mdw-dataops-import")
-       - **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). This requires "repo" scope.
+   - Ensure that:
+      - You are logged in to the Azure CLI. To login, run
 
-       Optionally, set the following environment variables:
-       - **AZURE_LOCATION** - Azure location to deploy resources. *Default*: `westus`.
-       - **AZURE_SUBSCRIPTION_ID** - Azure subscription id to use to deploy resources. *Default*: default azure subscription. To see your default, run `az account list`.
-       - **DEPLOYMENT_ID** - string appended to all resource names. This is to ensure uniqueness of azure resource names. *Default*: random five character string.
-       - **AZDO_PIPELINES_BRANCH_NAME** - git branch where Azure DevOps pipelines definitions are retrieved from. *Default*: main.
-       - **AZURESQL_SERVER_PASSWORD** - Password of the SQL Server instance. *Default*: random string.
+        ```bash
+        az login
+        ```
 
-      To further customize the solution, set parameters in `arm.parameters` files located in the `infrastructure` folder.
+      - Azure CLI is targeting the Azure Subscription you want to deploy the resources to. To set target Azure Subscription, run
+
+        ```bash
+        az account set -s <AZURE_SUBSCRIPTION_ID>
+        ```
+
+      - Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to. To set target Azure DevOps project, run
+
+        ```bash
+        az devops configure --defaults organization=https://dev.azure.com/<MY_ORG>/ project=<MY_PROJECT>
+        ```
+
+   - **Fork** this repository into a new Github repo.
+   - Set the following **required** environment variables:
+      - **GITHUB_REPO** - Name of your forked github repo in this form `<my_github_handle>/<repo>`. (ei. "devlace/mdw-dataops-import")
+      - **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). This requires "repo" scope.
+
+      Optionally, set the following environment variables:
+      - **AZURE_LOCATION** - Azure location to deploy resources. *Default*: `westus`.
+      - **AZURE_SUBSCRIPTION_ID** - Azure subscription id to use to deploy resources. *Default*: default azure subscription. To see your default, run `az account list`.
+      - **DEPLOYMENT_ID** - string appended to all resource names. This is to ensure uniqueness of azure resource names. *Default*: random five character string.
+      - **AZDO_PIPELINES_BRANCH_NAME** - git branch where Azure DevOps pipelines definitions are retrieved from. *Default*: main.
+      - **AZURESQL_SERVER_PASSWORD** - Password of the SQL Server instance. *Default*: random string.
+
+   - If you are using **dev container**, follow the below steps:
+      - Rename `.envtemplate` under ".devcontainer" folder to `devcontainer.env` and update the values as mentioned above instead of setting those as environment variables.
+      - Open the project inside the vscode dev container (see details [here](docs/devcontainer.md)).
+
+   - To further customize the solution, set parameters in `arm.parameters` files located in the `infrastructure` folder.
+      - To enable Observability and Monitoring components through code(Observability-as-code), please set enable_monitoring parameter to true in  `arm.parameters` files located in the `infrastructure` folder. This will deploy log analytics workspace to collect monitoring data from key resources, setup an Azure dashboards to monitor key metrics and configure alerts for ADF pipelines.
 
 2. **Deploy Azure resources**
-   1. Clone locally the imported Github Repo, then `cd` into the `e2e_samples/parking_sensors` folder of the repo
-   2. Run `./deploy.sh`.
+   - `cd` into the `e2e_samples/parking_sensors` folder of the repo.
+   - Configure your default AzDo Organization and Project
+
+      ```bash
+      az devops configure --defaults organization="$AZDO_ORGANIZATION_URL" project="$AZDO_PROJECT"
+      ```
+
+   - Run `./deploy.sh`.
       - This may take around **~30mins or more** to run end to end. So grab yourself a cup of coffee... ☕
       - After a successful deployment, you will find `.env.{environment_name}` files containing essential configuration information per environment. See [here](#deployed-resources) for list of deployed resources.
-   3. As part of the deployment script, this updated the Azure DevOps Release Pipeline YAML definition to point to your Github repository. **Commit and push up these changes.**
+      - Note that if you are using **dev container**, you would run the same script but inside the dev container terminal.
+   - As part of the deployment script, this updated the Azure DevOps Release Pipeline YAML definition to point to your Github repository. **Commit and push up these changes.**
       - This will trigger a Build and Release which will fail due to a lacking `adf_publish` branch -- this is expected. This branch will be created once you've setup git integration with your DEV Data Factory and publish a change.
 
 3. **Setup ADF git integration in DEV Data Factory**
 
-    > **IMPORTANT NOTE**: Only the **DEV** Data Factory should be setup with Git integration. Do **not** setup git integration in the STG and PROD Data Factories.
+   > **IMPORTANT NOTE**: Only the **DEV** Data Factory should be setup with Git integration. Do **not** setup git integration in the STG and PROD Data Factories.
 
-    1. In the Azure Portal, navigate to the Data Factory in the **DEV** environment and launch the Data Factory portal.
-    2. On the landing page, select "Set up code repository". For more information, see [here](https://docs.microsoft.com/en-us/azure/data-factory/source-control).
-    3. Fill in the repository settings with the following:
-        - Repository type: **Github**
-        - Github Account: **your_Github_account**
-        - Git repository (select *Use repository link*, if forked): **forked Github repository url**
-        - Collaboration branch: **main**
-        - Root folder: **/e2e_samples/parking_sensors/adf**
-        - Import Existing Data Factory resource to repository: **Selected**
-        - Branch to import resource into: **Use Collaboration**
-    4. When prompted to select a working branch, select **main**
+   - In the Azure Portal, navigate to the Data Factory in the **DEV** environment and launch the Data Factory portal.
+   - On the landing page, select "Set up code repository". For more information, see [here](https://docs.microsoft.com/en-us/azure/data-factory/source-control).
+   - Fill in the repository settings with the following:
+      - Repository type: **Github**
+      - Use GitHub Enterprise Server: **Unselected, unless you are using GitHub Enterprise Server**
+      - Github Account: **your_Github_account**
+      - Git repository (select *Use repository link*, if forked): **forked Github repository url**
+      - Collaboration branch: **main**
+      - Root folder: **/e2e_samples/parking_sensors/adf**
+      - Import existing resources to repository: **Selected**
+      - Import resource into this branch: **main**
+   - When prompted to select a working branch, check **Use existing** and select **main**
 
    > **Ensure you Import Existing Data Factory resources to repository**. The deployment script deployed ADF objects with Linked Service configurations in line with the newly deployed environments. Importing existing ADF resources definitions to the repository overrides any default Linked Services values so they are correctly in sync with your DEV environment.
 
 4. **Trigger an initial Release**
 
-   1. In the **DEV** Data Factory portal, navigate to "Manage > Triggers". Select the `T_Sched` trigger and activate it by clicking on the "Play" icon next to it. Click `Publish` to publish changes.
+   - In the **DEV** Data Factory portal, navigate to "Manage > Triggers". Select the `T_Sched` trigger and activate it by clicking on the "Play" icon next to it. Click `Publish` to publish changes.
       - Publishing a change is **required** to generate the `adf_publish` branch which is used in the Release pipelines.
-   2. In Azure DevOps, notice a new run of the Build Pipeline (**mdw-park-ci-artifacts**) off `main`. This will build the Python package and SQL DACPAC, then publish these as Pipeline Artifacts.
-   3. After completion, this should automatically trigger the Release Pipeline (**mdw-park-cd-release**). This will deploy the artifacts across environments.
+   - In Azure DevOps, notice a new run of the Build Pipeline (**mdw-park-ci-artifacts**) off `main`. This will build the Python package and SQL DACPAC, then publish these as Pipeline Artifacts.
+   - After completion, this should automatically trigger the Release Pipeline (**mdw-park-cd-release**). This will deploy the artifacts across environments.
       - You may need to authorize the Pipelines initially to use the Service Connection and deploy the target environments for the first time.
       ![Release Pipeline](../../docs/images/ReleasePipeline.png?raw=true "Release Pipelines")
-   4. **Optional**. Trigger the Data Factory Pipelines per environment.
-      1. In the Data Factory portal of each environment, navigate to "Author", then select the `P_Ingest_MelbParkingData`.
-      2. Select "Trigger > Trigger Now".
-      3. To monitor the run, go to "Monitor > Pipeline runs".
+   - **Optional**. Trigger the Data Factory Pipelines per environment.
+      - In the Data Factory portal of each environment, navigate to "Author", then select the `P_Ingest_MelbParkingData`.
+      - Select "Trigger > Trigger Now".
+      - To monitor the run, go to "Monitor > Pipeline runs".
       ![Data Factory Run](../../docs/images/ADFRun.png?raw=true "Data Factory Run]")
       - Currently, the data pipeline is configured to use "on-demand" databricks clusters so it takes a few minutes to spin up. That said, it is not uncommon to change these to point to "existing" running clusters in Development for faster data pipeline runs.
 
 5. **Optional. Visualize data in PowerBI**
     > This requires [PowerBI Desktop App](https://powerbi.microsoft.com/en-us/desktop/) installed.
-    1. Open the provided PowerBi pbix (PowerBI_ParkingSensors.pbix) under `reports` folder.
-    2. Under Queries, select "Transform Data" > "Data source settings".
-    3. Select "Change Source..." and enter the Server and Database details of your SQL Dedicated Pool. Click "Ok".
+    - Open the provided PowerBi pbix (PowerBI_ParkingSensors.pbix) under `reports` folder.
+    - Under Queries, select "Transform Data" > "Data source settings".
+    - Select "Change Source..." and enter the Server and Database details of your SQL Dedicated Pool. Click "Ok".
         > You can retrieve these from the Azure Portal under "Connection Strings" of your SQL Dedicated Pool Instance.
-    4. Select "Edit Permissions...". Under "Credentials", select "Edit...". Select the "Database" tab. Enter the User name and password of your SQL Dedicated Pool Instance.
+    - Select "Edit Permissions...". Under "Credentials", select "Edit...". Select the "Database" tab. Enter the User name and password of your SQL Dedicated Pool Instance.
         > You can retrieve these from the Secrets in your KeyVault instance.
-    5. Close the Data Source tabs.
-    6. Click on Refresh data.
+    - Close the Data Source tabs.
+    - Click on Refresh data.
         > Your Dashboard will initially be empty. You will need your data pipeline to run a few times for the data in your SQL Dedicated Pool to populate.
 
 Congratulations!! 🥳 You have successfully deployed the solution and accompanying Build and Release Pipelines. For next steps, we recommend watching [this presentation](https://www.youtube.com/watch?v=Xs1-OU5cmsw) for a detailed walk-through of the running solution.
 
 If you've encountered any issues, please review the [Troubleshooting](../../docs/parking_sensors_troubleshooting.md) section. If you are still stuck, please file a Github issue with the relevant error message, error screenshots, and replication steps.
 
-#### Deployed Resources
+### Deployed Resources
 
 After a successful deployment, you should have the following resources:
 
@@ -332,7 +359,7 @@ After a successful deployment, you should have the following resources:
     - SparkSQL tables created
     - ADLS Gen2 mounted at `dbfs:/mnt/datalake` using the Storage Service Principal.
     - Databricks KeyVault secrets scope created
-  - **Log Analytics Workspace** - including a kusto query on Query explorer -> Saved queries, to verify results that will be looged on Synapse notebooks (notebooks are not deployed yet).
+  - **Log Analytics Workspace** - including a kusto query on Query explorer -> Saved queries, to verify results that will be logged on Synapse notebooks (notebooks are not deployed yet).
   - **Azure Synapse SQL Dedicated Pool (formerly SQLDW)** - currently, empty. The Release Pipeline will deploy the SQL Database objects.
   - **Azure Synapse Spark Pool** - currently, empty. Configured to point the deployed Log Analytics workspace, under "Apache Spark Configuration".
   - **Azure Synapse Workspace** - currently, empty.
@@ -373,14 +400,14 @@ This sample comes with an [optional, interactive clean-up script](./scripts/clea
 
 ADLS Gen2 is structured as the following:
 
----------------------
+```text
     datalake                    <- filesystem
         /sys/databricks/libs    <- contains all libs, jars, wheels needed for processing
         /data
             /lnd                <- Bronze - landing folder where all data files are ingested into.
             /interim            <- Silver - interim (cleansed) tables
             /dw                 <- Gold - final tables 
----------------------
+```
 
 ### Known Issues, Limitations and Workarounds
 

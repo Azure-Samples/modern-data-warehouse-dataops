@@ -20,8 +20,6 @@ We are beginning to port the Parking Sensor solution to use Azure Synapse instea
 
 This builds on the existing work of the Parking Sensor E2E sample and incorporating the Synapse-specific code into the existing code base.
 
-> NOTE: There is already current work by Yennifer to build this out using this option. See branch [e2e/parking-sensors-synapse](https://github.com/Azure-Samples/modern-data-warehouse-dataops/tree/e2e/parking-sensors-synapse). I've created a branch with a quick spike on how to build on Yennifer's work to demonstrate how deployment of **Option 1** might work -- captured in this [branch](https://github.com/Azure-Samples/modern-data-warehouse-dataops/tree/lace/spike-parking-sensors-synapse/e2e_samples/parking_sensors).
-
 **End-user experience to deploy sample:**
 
 Run the existing `./deploy.sh` and prompt for choice of `databricks` or `synapse`. Alternatively, have them set a required environment variable (ei. `FLAVOUR`) to determine which sample to deploy. User will then need to follow a set of required manual steps specific to each sample.

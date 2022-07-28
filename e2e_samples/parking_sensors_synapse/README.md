@@ -181,7 +181,7 @@ Please check the details [here](docs/observability.md).
 - [Azure DevOps CLI](https://marketplace.visualstudio.com/items?itemName=ms-vsts.cli)
   - To install, run `az extension add --name azure-devops`
 - [Python 3+](https://www.python.org/)
-- [databricks-cli](https://docs.azuredatabricks.net/dev-tools/databricks-cli.html)
+- [databricks-cli](https://docs.microsoft.com/en-us/azure/databricks/dev-tools/cli/)
 - [jq](https://stedolan.github.io/jq/)
 - [makepasswd](https://manpages.debian.org/stretch/makepasswd/makepasswd.1.en.html)
 
@@ -191,9 +191,7 @@ Please check the details [here](docs/observability.md).
 - [VSCode](https://code.visualstudio.com/)
 - [Visual Studio Code Remote Development Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
 
-1. Rename `.envtemplate` to `devcontainer.env` and update the values as explained in **Initial Setup** section.
-2. Open the project inside the vscode dev container (see details [here](docs/devcontainer.md))
-3. `cd` into the `e2e_samples/parking_sensors_synapse` folder and run `./deploy.sh` inside the dev container terminal.
+  It is strongly recommended to use dev container for the deployment to avoid environment related issues.
 
 ### Setup and Deployment
 
@@ -201,49 +199,73 @@ Please check the details [here](docs/observability.md).
 > This deployment was tested using WSL 2 (Ubuntu 20.04) and Debian GNU/Linux 9.9 (stretch)
 
 1. **Initial Setup**
-   1. Ensure that:
-      - You are logged in to the Azure CLI. To login, run `az login`.
-      - Azure CLI is targeting the Azure Subscription you want to deploy the resources to.
-         - To set target Azure Subscription, run `az account set -s <AZURE_SUBSCRIPTION_ID>`
-      - Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to.
-         - To set target Azure DevOps project, run `az devops configure --defaults organization=https://dev.azure.com/<MY_ORG>/ project=<MY_PROJECT>`
-      - Azure DevOps organization has the [Synapse workspace deployment](https://marketplace.visualstudio.com/items?itemName=AzureSynapseWorkspace.synapsecicd-deploy) extension installed. For more information on how to install Azure DevOps extensions, see [here](https://docs.microsoft.com/en-us/azure/devops/marketplace/install-extension).
-         - To install extension, run `az devops extension install --extension-id "synapsecicd-deploy" --publisher-id "AzureSynapseWorkspace" --org "<MY_ORG>"`. Note that this requires [the Project Collection Administrator role or organization Owner](https://docs.microsoft.com/en-us/azure/devops/marketplace/faq-extensions?view=azure-devops) role.
-   2. **Fork** this repository into a new Github repo.
-   3. Set the following **required** environment variables:
-       - **GITHUB_REPO** - Name of your forked github repo in this form `<my_github_handle>/<repo>`. (ei. "devlace/mdw-dataops-import")
-       - **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). This requires "repo" scope.
+   - Ensure that:
+      - You are logged in to the Azure CLI. To login, run
+
+        ```bash
+        az login
+        ```
+
+      - Azure CLI is targeting the Azure Subscription you want to deploy the resources to. To set target Azure Subscription, run
+
+        ```bash
+        az account set -s <AZURE_SUBSCRIPTION_ID>
+        ```
+
+      - Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to. To set target Azure DevOps project, run
+
+        ```bash
+        az devops configure --defaults organization=https://dev.azure.com/<MY_ORG>/ project=<MY_PROJECT>
+        ```
+
+      - Azure DevOps organization has the [Synapse workspace deployment](https://marketplace.visualstudio.com/items?itemName=AzureSynapseWorkspace.synapsecicd-deploy) extension installed. For more information on how to install Azure DevOps extensions, see [here](https://docs.microsoft.com/en-us/azure/devops/marketplace/install-extension). To install extension, run
+
+        ```bash
+        az devops extension install --extension-id "synapsecicd-deploy" --publisher-id "AzureSynapseWorkspace" --org "<MY_ORG>"`
+        ```
+
+        Note that this requires [the Project Collection Administrator role or organization Owner](https://docs.microsoft.com/en-us/azure/devops/marketplace/faq-extensions?view=azure-devops) role.
+
+   - **Fork** this repository into a new Github repo.
+   - Set the following **required** environment variables:
+      - **GITHUB_REPO** - Name of your forked github repo in this form `<my_github_handle>/<repo>`. (ei. "devlace/mdw-dataops-import")
+      - **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). This requires "repo" scope.
 
        Optionally, set the following environment variables:
-       - **AZURE_LOCATION** - Azure location to deploy resources. *Default*: `westus`.
-       - **AZURE_SUBSCRIPTION_ID** - Azure subscription id to use to deploy resources. *Default*: default azure subscription. To see your default, run `az account list`.
-       - **DEPLOYMENT_ID** - string appended to all resource names. This is to ensure uniqueness of azure resource names. *Default*: random five character string.
-       - **AZDO_PIPELINES_BRANCH_NAME** - git branch where Azure DevOps pipelines definitions are retrieved from. *Default*: main.
-       - **SYNAPSE_SQL_PASSWORD** - Password of the Synapse SQL instance. *Default*: random string.
+      - **AZURE_LOCATION** - Azure location to deploy resources. *Default*: `westus`.
+      - **AZURE_SUBSCRIPTION_ID** - Azure subscription id to use to deploy resources. *Default*: default azure subscription. To see your default, run `az account list`.
+      - **DEPLOYMENT_ID** - string appended to all resource names. This is to ensure uniqueness of azure resource names. *Default*: random five character string.
+      - **AZDO_PIPELINES_BRANCH_NAME** - git branch where Azure DevOps pipelines definitions are retrieved from. *Default*: main.
+      - **SYNAPSE_SQL_PASSWORD** - Password of the Synapse SQL instance. *Default*: random string.
 
-      To further customize the solution, set parameters in `arm.parameters` files located in the `infrastructure` folder.
+   - If you are using **dev container**, follow the below steps:
+      - Rename `.envtemplate` under ".devcontainer" folder to `devcontainer.env` and update the values as mentioned above instead of setting those as environment variables.
+      - Open the project inside the vscode dev container (see details [here](docs/devcontainer.md)).
+
+     To further customize the solution, set parameters in `arm.parameters` files located in the `infrastructure` folder.
 
 2. **Deploy Azure resources**
-   1. Clone locally the imported Github Repo, then `cd` into the `e2e_samples/parking_sensors_synapse` folder of the repo
-   2. Configure your default AzDo Organization and Project
+   - `cd` into the `e2e_samples/parking_sensors_synapse` folder of the repo
+   - Configure your default AzDo Organization and Project
 
       ```bash
       az devops configure --defaults organization="$AZDO_ORGANIZATION_URL" project="$AZDO_PROJECT"
       ```
 
-   3. Run `./deploy.sh`.
+   - Run `./deploy.sh`.
       - This may take around **~30mins or more** to run end to end. So grab yourself a cup of coffee... ☕
       - After a successful deployment, you will find `.env.{environment_name}` files containing essential configuration information per environment. See [here](#deployed-resources) for list of deployed resources.
-   4. As part of the deployment script, this updated the Azure DevOps Release Pipeline YAML definition to point to your Github repository. **Commit and push up these changes.**
+      - Note that if you are using **dev container**, you would run the same script but inside the dev container terminal.
+   - As part of the deployment script, this updated the Azure DevOps Release Pipeline YAML definition to point to your Github repository. **Commit and push up these changes.**
       - This will trigger a Build and Release which will fail due to a lacking `workspace_publish` branch -- this is expected. This branch will be created once you've setup git integration with your DEV Synapse workspace and publish a change.
 
 3. **Setup Synapse git integration in DEV Synapse workspace**
 
    > **IMPORTANT NOTE**: Only the **DEV** Synapse workspace should be setup with Git integration. Do **not** setup git integration in the STG and PROD Data Factories.
 
-   1. In the Azure Portal, navigate to the Synapse workspace in the **DEV** environment and launch the Synapse workspace portal.
-   2. Under "manage" > Source Control - Git configuration, select "Configure". For more information, see [here](https://docs.microsoft.com/en-us/azure/synapse-analytics/cicd/source-control).
-   3. Fill in the repository settings with the following:
+   - In the Azure Portal, navigate to the Synapse workspace in the **DEV** environment and launch the Synapse workspace portal.
+   - Under "manage" > Source Control - Git configuration, select "Configure". For more information, see [here](https://docs.microsoft.com/en-us/azure/synapse-analytics/cicd/source-control).
+   - Fill in the repository settings with the following:
       - Repository type: **Github**
       - Use GitHub Enterprise Server: **Unselected, unless you are using GitHub Enterprise Server**
       - GitHub repository owner: **your_Github_account**
@@ -254,45 +276,46 @@ Please check the details [here](docs/observability.md).
       - Root folder: **/e2e_samples/parking_sensors_synapse/synapse/workspace**
       - Import existing resources to repository: **Selected**
       - Import resource into this branch: **main**
-   4. When prompted to select a working branch, check **Use existing** and select **main**
+   - When prompted to select a working branch, check **Use existing** and select **main**
 
    The final settings should look like as below:
 
    ![Synapse Github Integration](docs/images/SynapseGithubIntegration.png?raw=true "Synapse Github Integration")
 
-    > **Ensure you Import Existing Synapse resources to repository**. The deployment script deployed Synapse Workspace objects with Linked Service configurations in line with the newly deployed environments. Importing existing Synapse Workspace resources definitions to the repository overrides any default Linked Services values so they are correctly in sync with your DEV environment.
+      > **Ensure you Import Existing Synapse resources to repository**. The deployment script deployed Synapse Workspace objects with Linked Service configurations in line with the newly deployed environments. Importing existing Synapse Workspace resources definitions to the repository overrides any default Linked Services values so they are correctly in sync with your DEV environment.
 
 4. **Run setup notebook in Synapse workspace per environment**
 
-   1. Grant yourself *Storage Data Blob Contributor* to the Synapse main storage (`mdwdopsst2<ENV><DEPLOYMENT_ID>`).
-   2. Navigate into DEV Synapse workspace notebooks tab and select the *00_setup* notebook.
-   3. Run this notebook, attaching to the created Spark Pool.
-   4. Repeat this in the STG and PROD Synapse workspace.
+   - Grant yourself *Storage Data Blob Contributor* to the Synapse main storage (`mdwdopsst2<ENV><DEPLOYMENT_ID>`).
+   - Navigate into DEV Synapse workspace notebooks tab and select the *00_setup* notebook.
+   - Run this notebook, attaching to the created Spark Pool.
+   - Repeat this in the STG and PROD Synapse workspace.
 
 5. **Trigger an initial Release**
 
-   1. In the **DEV** Synapse workspace, navigate to "Manage > Triggers". Select the `T_Sched` trigger and activate it by clicking on the "Play" icon next to it. Click `Publish` to publish changes.
+   - In the **DEV** Synapse workspace, navigate to "Manage > Triggers". Select the `T_Sched` trigger and activate it by clicking on the "Play" icon next to it. Click `Publish` to publish changes.
       > Publishing a change is **required** to generate the `workspace_publish` branch which is used in the Release pipelines. Note that publishing changes in a Synapse workspace currently cannot be automated. See [Known Issues](#known-issues-limitations-and-workarounds).
-   2. In Azure DevOps, notice a new run of the Build Pipeline (**mdwdops-ci-artifacts**) off `main`. This will build the Python package and SQL DACPAC, then publish these as Pipeline Artifacts.
-   3. After completion, this should automatically trigger the Release Pipeline (**mdwdops-cd-release**). This will deploy the artifacts across environments.
+   - In Azure DevOps, notice a new run of the Build Pipeline (**mdwdops-ci-artifacts**) off `main`. This will build the Python package and SQL DACPAC, then publish these as Pipeline Artifacts.
+   - After completion, this should automatically trigger the Release Pipeline (**mdwdops-cd-release**). This will deploy the artifacts across environments.
       - You may need to authorize the Pipelines initially to use the Service Connection and deploy the target environments for the first time.
       ![Release Pipeline](docs/images/ReleasePipelineSynapse.png?raw=true "Release Pipelines")
-   4. **Optional**. Trigger the Synapse Data Pipelines per environment.
-      1. In the Synapse workspace of each environment, navigate to "Author", then select the `P_Ingest_MelbParkingData`.
-      2. Select "Trigger > Trigger Now".
-      3. To monitor the run, go to "Monitor > Pipeline runs".
+   - **Optional**. Trigger the Synapse Data Pipelines per environment.
+      - In the Synapse workspace of each environment, navigate to "Author", then select the `P_Ingest_MelbParkingData`.
+      - Select "Trigger > Trigger Now".
+      - To monitor the run, go to "Monitor > Pipeline runs".
       ![Pipeline Run](docs/images/SynapseRun.png?raw=true "Pipeline Run]")
 
 6. **Optional. Visualize data in PowerBI**
+
    > This requires [PowerBI Desktop App](https://powerbi.microsoft.com/en-us/desktop/) installed.
-   1. Open the provided PowerBi pbix (PowerBI_ParkingSensors.pbix) under `reports` folder.
-   2. Under Queries, select "Transform Data" > "Data source settings".
-   3. Select "Change Source..." and enter the Server and Database details of your SQL Dedicated Pool. Click "Ok".
+   - Open the provided PowerBi pbix (PowerBI_ParkingSensors.pbix) under `reports` folder.
+   - Under Queries, select "Transform Data" > "Data source settings".
+   - Select "Change Source..." and enter the Server and Database details of your SQL Dedicated Pool. Click "Ok".
       > You can retrieve these from the Azure Portal under "Connection Strings" of your SQL Dedicated Pool Instance.
-   4. Select "Edit Permissions...". Under "Credentials", select "Edit...". Select the "Database" tab. Enter the User name and password of your SQL Dedicated Pool Instance.
+   - Select "Edit Permissions...". Under "Credentials", select "Edit...". Select the "Database" tab. Enter the User name and password of your SQL Dedicated Pool Instance.
       > You can retrieve these from the Secrets in your KeyVault instance.
-   5. Close the Data Source tabs.
-   6. Click on Refresh data.
+   - Close the Data Source tabs.
+   - Click on Refresh data.
       > Your Dashboard will initially be empty. You will need your data pipeline to run a few times for the data in your SQL Dedicated Pool to populate.
 
 Congratulations!! 🥳 You have successfully deployed the solution and accompanying Build and Release Pipelines.

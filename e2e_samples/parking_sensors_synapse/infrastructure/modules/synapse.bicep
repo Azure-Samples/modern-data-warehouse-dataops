@@ -168,7 +168,6 @@ output synapseDefaultStorageAccountName string = synStorage.name
 output synapseBigdataPoolName string = synapse_spark_sql_pool.name
 output synapse_sql_pool_output object = {
   username: synapseWorkspace.properties.sqlAdministratorLogin
-  password: synapse_sqlpool_admin_password
   synapse_pool_name: synapse_sql_pool.name
 }
 
