@@ -1,11 +1,11 @@
 {
 	"name": "Ls_AdlsGen2_01",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
 	"properties": {
 		"annotations": [],
 		"type": "AzureBlobFS",
 		"typeProperties": {
-			"url": "https://mdwdopsstdev16.dfs.core.windows.net"
+			"url": "https://mdwdopsstdevzyxpf.dfs.core.windows.net"
 		}
-	},
-	"type": "Microsoft.DataFactory/factories/linkedservices"
+	}
 }
