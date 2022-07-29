@@ -92,6 +92,12 @@ resource synapse_spark_sql_pool 'Microsoft.Synapse/workspaces/bigDataPools@2021-
   }
 }
 
+// resource synapse_sql_serverless_db 'Microsoft.Synapse/workspaces/sqlDatabases@2020-04-01-preview' = {
+//   name: 'sqlsyndp${env}${deployment_id}'
+//   location: location
+//   parent: synapseWorkspace
+// }
+
 resource synapse_sql_pool 'Microsoft.Synapse/workspaces/sqlPools@2021-03-01' = {
   parent: synapseWorkspace
   name: 'syndp${env}${deployment_id}'

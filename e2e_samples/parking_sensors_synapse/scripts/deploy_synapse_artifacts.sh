@@ -41,6 +41,7 @@ set -o nounset
 # LOG_ANALYTICS_WS_KEY
 # KEYVAULT_NAME
 # AZURE_STORAGE_ACCOUNT
+# SYNAPSE_ANALYTICS_SQL_ADMIN
 
 # Consts
 apiVersion="2020-12-01&force=true"
@@ -177,6 +178,14 @@ createTrigger () {
     az synapse trigger create --file @./synapse/workspace/trigger/"${name}".json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}"
 }
 
+createSqlDatabase(){
+    echo "Creating the external_db sql database using Synapse Serverless SQL..."
+
+    # Create a external_db database using Synapse Serverless SQL
+    sqlcmd -U ${SYNAPSE_ANALYTICS_SQL_ADMIN} -P ${SYNAPSE_SQL_PASSWORD} -S tcp:${SYNAPSE_WORKSPACE_NAME}-ondemand.sql.azuresynapse.net -d master -I -Q "CREATE DATABASE external_db;"
+
+
+}
 
 getProvisioningState(){
     provision_state=$(az synapse spark pool show \
@@ -198,6 +207,7 @@ UpdateExternalTableScript () {
 UploadSql () {
     echo "Try to upload sql script"
     declare name=$1
+    declare foldername="${2:-}"
     echo "Uploading sql script to Workspace: $name"
 
     #az synapse workspace wait --resource-group "${RESOURCE_GROUP_NAME}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --created
@@ -206,10 +216,13 @@ UploadSql () {
     # Step 2: create workspace package placeholder
     synapseSqlBaseUri=${SYNAPSE_DEV_ENDPOINT}/sqlScripts
     synapseSqlApiUri="${synapseSqlBaseUri}/$name?api-version=${apiVersion}"
-    body_content="$(sed 'N;s/\n/\\n/' ./synapse/workspace/scripts/$name.sql)"
+    body_content="$(sed 'N;s/\n/\\n/' ./synapse/workspace/scripts$foldername/$name.sql)"
     json_body="{
     \"name\": \"$name\",
     \"properties\": {
+        \"folder\": {
+            \"name\": \"$foldername\"
+        },
         \"description\": \"$name\",        
         \"content\":{ 
             \"query\": \"$body_content\",
@@ -315,4 +328,20 @@ UpdateExternalTableScript
 # TODO: will replace and run this sql in deploying
 UploadSql "create_db_user_template"
 UploadSql "create_external_table"
+UploadSql "sensor_view" "/Serverless"
+UploadSql "parking_bay_view" "/Serverless"
+UploadSql "parking_bay_externaltable" "/Serverless"
+
+UploadSql "create_database_scope_credentials" "/Serverless/Security"
+
+UploadSql "create_external_data_source" "/Serverless/ExternalResources"
+UploadSql "create_external_file_format" "/Serverless/ExternalResources"
+
+UploadSql "drop_database_scoped_credentials" "/Serverless/DropStatements"
+UploadSql "drop_external_datasources" "/Serverless/DropStatements"
+UploadSql "drop_external_file_formats" "/Serverless/DropStatements"
+UploadSql "drop_external_tables" "/Serverless/DropStatements"
+
+createSqlDatabase
+
 echo "Completed deploying Synapse artifacts."

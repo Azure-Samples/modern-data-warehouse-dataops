@@ -1,0 +1,20 @@
+{
+	"name": "parking_bay_externaltable",
+	"properties": {
+		"description": "parking_bay_externaltable",
+		"folder": {
+			"name": "/Serverless"
+		},
+		"content": {
+			"query": "SET ANSI_NULLS ON\nGO\n\nSET QUOTED_IDENTIFIER OFF\nGO\n\nCREATE EXTERNAL TABLE [dbo].[parking_bay_ext]\n(\n [bay_id] BIGINT\n,[last_edit] VARCHAR(50)\n,[marker_id] VARCHAR(50)\n,[meter_id] VARCHAR(50)\n,[rd_seg_dsc] VARCHAR(500)\n,[rd_seg_id] VARCHAR(50)\n,[the_geom] VARCHAR(MAX)\n,[load_id] VARCHAR(50)\n,[loaded_on] VARCHAR(50)\n)\nWITH (DATA_SOURCE = [INTERIM_Zone],LOCATION = N'interim.parking_bay/*.parquet',FILE_FORMAT = [SynapseParquetFormat])\nGO",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"name": "master",
+				"type": "SqlOnDemand"
+			}
+		},
+		"type": "SqlQuery"
+	}
+}

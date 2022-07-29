@@ -148,6 +148,7 @@ More resources:
 
 - [Continuous Integration & Continuous Delivery for an Azure Synapse Analytics workspace](https://docs.microsoft.com/en-us/azure/synapse-analytics/cicd/continuous-integration-delivery)
 - [Devops for AzureSQL](https://devblogs.microsoft.com/azure-sql/devops-for-azure-sql/)
+- [Devops for Synapse SQL Serverless](docs/sql_serverless_cicd.md)
 
 ### Testing
 

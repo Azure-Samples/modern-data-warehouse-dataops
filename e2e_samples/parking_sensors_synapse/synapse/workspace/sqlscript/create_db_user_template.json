@@ -1,0 +1,17 @@
+{
+	"name": "create_db_user_template",
+	"properties": {
+		"description": "create_db_user_template",
+		"content": {
+			"query": "USE master\r\n-- CREATE SQL LOGIN USER  WITH PASSWORD \r\nIF NOT EXISTS(SELECT name FROM sys.server_principals WHERE name = '<your sql login user name>')\r\nBEGIN\r\n    CREATE LOGIN [<your sql login user name>] WITH PASSWORD = '<your password>'\r\nEND\r\nGO\r\n-- CREATE DATABASE\r\nIF NOT EXISTS(SELECT * FROM sys.databases WHERE name = '<your database name>')\r\nBEGIN\r\n    CREATE DATABASE [<your database name>]\r\nEND\r\nGO\r\nUSE <your database name> \r\n-- Create MASTER KEY\r\nIF NOT EXISTS\r\n    (SELECT * FROM sys.symmetric_keys\r\n        WHERE symmetric_key_id = 101)\r\nBEGIN\r\n    CREATE MASTER KEY\r\nEND\r\nGO\r\n-- Create Database Scope Credential [Managed Identity]\r\nIF NOT EXISTS\r\n    (SELECT * FROM sys.database_scoped_credentials\r\n         WHERE name = 'SynapseIdentity')\r\n    CREATE DATABASE SCOPED CREDENTIAL SynapseIdentity\r\n    WITH IDENTITY = 'Managed Identity'\r\nGO\r\n-- CREATE DB USER NAME\r\nIF NOT EXISTS(SELECT name FROM sys.database_principals WHERE name = '<your db user name>')\r\nBEGIN\r\n    CREATE USER [<your db user name>] \r\n    FOR LOGIN [<your sql login user name>] \r\n    WITH DEFAULT_SCHEMA = dbo; \r\nEND\r\nGO\r\n-- GRANT DB ROLES TO USER\r\nALTER ROLE db_datareader ADD MEMBER [<your db user name>]; \r\nALTER ROLE db_datawriter ADD MEMBER [<your db user name>]; \r\nGO\r\n-- grant user CREDENTIAL\r\n-- enable users to reference that credential so they can access storage.\r\ngrant references \r\n    on database scoped credential::SynapseIdentity\r\n    to  [<your db user name>]; \r\n-- grant CONTROL on Database \r\nGRANT CONTROL ON DATABASE SCOPED CREDENTIAL::SynapseIdentity TO  [<your db user name>]\r\nGO\r\nGRANT CONTROL ON DATABASE::<your database name> to  [<your db user name>];\r\n-- Note: the CONTROL permission includes such permissions as INSERT, UPDATE, DELETE, EXECUTE, and several others.  \r\nGO",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"name": "master",
+				"type": "SqlOnDemand"
+			}
+		},
+		"type": "SqlQuery"
+	}
+}

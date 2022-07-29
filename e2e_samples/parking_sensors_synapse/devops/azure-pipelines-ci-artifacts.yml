@@ -69,6 +69,10 @@ stages:
         ArtifactName: 'synapse'
       displayName: 'Publish Synapse Artifacts'
 
+  - template: templates/jobs/extract_and_publish_sql_serverless_sql.yml
+    parameters:
+      basePath: '$(basePath)'
+         
   - job: 'publish_sql_packages'
     displayName: 'Publish SQL Packages'
     pool:

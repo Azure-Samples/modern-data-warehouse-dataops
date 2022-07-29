@@ -37,4 +37,3 @@ GITHUB_PAT_TOKEN=
 # Password of the Synapse SQL instance. Default: random string
 # SYNAPSE_SQL_PASSWORD=
 
-

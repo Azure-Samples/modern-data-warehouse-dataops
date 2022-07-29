@@ -125,5 +125,11 @@ az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
     --secret "true" --name "spSynapseTenantId" --value "$SP_SYNAPSE_TENANT"
 
+# Synapse SQL Serverless
+# hard coding external db name. It should be acceptable as variable
+az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
+    --secret "true" --name "synapseSqlServerlessDBName" --value "external_db"
+
+
 # Delete dummy vars
 az pipelines variable-group variable delete --group-id "$vargroup_secrets_id" --name "foo" -y

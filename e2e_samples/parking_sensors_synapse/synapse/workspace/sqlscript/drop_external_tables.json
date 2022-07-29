@@ -1,0 +1,20 @@
+{
+	"name": "drop_external_tables",
+	"properties": {
+		"description": "drop_external_tables",
+		"folder": {
+			"name": "/Serverless/DropStatements"
+		},
+		"content": {
+			"query": "IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[parking_bay_ext]') AND type in (N'U'))\n    DROP EXTERNAL TABLE [dbo].[parking_bay_ext]",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"name": "master",
+				"type": "SqlOnDemand"
+			}
+		},
+		"type": "SqlQuery"
+	}
+}

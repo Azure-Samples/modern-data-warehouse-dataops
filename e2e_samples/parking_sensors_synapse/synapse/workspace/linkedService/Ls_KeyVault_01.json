@@ -5,7 +5,7 @@
 		"type": "AzureKeyVault",
 		"annotations": [],
 		"typeProperties": {
-			"baseUrl": ""
+			"baseUrl": "https://mdwdops-kv-dev-imgbb.vault.azure.net/"
 		}
 	}
 }
