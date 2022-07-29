@@ -1,106 +1,188 @@
 # Config Driven Data Pipelines
 
-**Build:**
+The sample demonstrate how an end to end data pipeline can be deployed by changing the configuration of an existing template implemented in Azure Databricks.
 
-## Getting Started
+## Contents <!-- omit in toc -->
 
-These instructions will allow you to build the Webapi component on your local machine for development and testing purposes.
+- [Solution Overview](#solution-overview)
+  - [Archictecture](#architecture)
+  - [Folder structure](#folder-structure)
+- [How to use the sample](#how-to-use-the-sample)
+  - [Prerequisites](#prerequisites)
 
-This code is built using the [Cake](https://cakebuild.net/) build framework and [Maven](https://maven.apache.org/) as packet manager. It can be built using locally installed components or a containerized environment.
-
-The recommended editor for working on this code is [Visual Studio Code](https://code.visualstudio.com/Download). The recommended extensions can be viewed by running the VSCode command "Extensions: Show Recommended Extensions". Once the Cake extension is installed, run the VSCode command "Cake: Install intellisense support" to make it easier to work on the build scripts.
-
-VSCode commands can be executed on _command pallete_ which can be launched using Ctrl+Shift+P key combination.
-
-### Containerized Enviornments
+  - [Run the example](#setup-and-deployment)
 
 
-
-### Building on Windows
-
-Install the following prerequisites:
-
-* [DotNetCore SDK](https://www.microsoft.com/net/download)
-* [DotNet Framework 4.7.2](https://dotnet.microsoft.com/download/dotnet-framework-runtime)
-* [Python version 3.7](https://www.python.org/downloads/)
-* [pip version 19.1.1](https://pip.pypa.io/en/stable/installing/)
+  - [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
+ 
+- [Key Learnings](#key-learnings)
+  
 
 
-#### Build on windows locally
 
-On domain joined developer machines, Enterprise IT has disabled unsigned Powershell script execution. 
-As a workaround there is a batch file that calls the required powershell file which is executed on the build machine.
+---------------------
+## Solution Overview
+The diagram below showed the overall architecture of the solution. 
 
+<img src= "./docs/images/architecture.png" width="800px"/>
+
+There are two data pipelines: the one handels the configuration or master data management, i.e., defines the source and target data schema, and the one handles the transformation of fact data or event data coming from the on premise system. 
+
+The architecture framework is buit based on Azure Databricks by spark batch job and spark streaming job. 
+
+### Archictecture (TBC)
+
+
+
+### Folder Structure
+* The ".devcontainer" and "dev" contains the the configuration files if you plan to develop using devcontainer or on your local environment. 
+* The "notebooks" are the folder contains the source notebooks files for databricks to create the controller for batch jobs (for master data processing) and streaming jobs (for event data processing). 
+* The "src' folder contains the template (classes) for the CDDP solution that could be used as a foundation by changing the configuration of the template to process other type of applications data. 
+* The 'test' folder contains the sample use case that developed based on the common solution template. 'fruit' is the sample application. You can refer to the example and develop your own application and define your data processing logic.  
+  * Under the test folder, the 'cddp_fruit_app' folders contains the customized code to define the rules for master data and event data processing, based on the common solution template. 
+  * 'cddp_fruit_app_customers' contains the different customer configurations using the same fruit application. 'config.json' is the configuration file that defines the specific information related with the customer, like customer_id, blob storage name, data transoformation rules,  etc., that the databricks job controller needs to run the pipeline for the specific customer. 
+
+## How to use the sample
+
+**Prerequisite**
+
+**Option1: Use DevContainer**
+* Install Microsoft VSCode Remote-Containers extension
+* In VSCode, open Command Pallete and type Remote-Containers: Open Folder in Container...
+* Choose the folder named ***\config_driven_data_pipelines
+* Wait for the devcontainer to start. It may take a couple of minustes for the first time. 
+* Recommend to use the DevContainer as it wont mess up your local environment and easily to rebuid the DevContainer when something goes terribly wrong. 
+  
+**Option2: Install Local Pyspark Environment**
+* If you prefer not using DevcContainer, but setup local Spark with this [document](https://sigdelta.com/blog/how-to-install-pyspark-locally/)
+* Open a cmd terminal window and run the script below to setup the project development. 
 ```
-.\bootstrap.bat
+pip install -r ./src/requirements.txt
 ```
 
-#### Build without build scripts
+**Run the test example locally**
 
-```cmd
-pip install -r ./src/requirements.txt --user
-python ./src/setup.py build
+The 'cddp_fruit_app_customers' under the 'tests' folder contains the sample customer data, and customer_2 will be the one used in the example, which contains a sample master data and mocked event data as well. 
+
+#### Step1: Master data ingestions and transformation
+
+Sample master data has been defined in "tests/cddp_fruit_app_customers/customer_2/config.json". 
+```shell
+python -m cddp_solution.common.master_data_ingestion_runner tests.cddp_fruit_app customer_2 tests
+python -m cddp_solution.common.master_data_transformation_runner tests.cddp_fruit_app customer_2 tests
 ```
 
-### Building on Linux and Mac using Docker
+#### Step2: Event data transformation
+Mock events are stroed in tests/cddp_fruit_app_customers/customer_2/mock_events. 
+```shell
+python -m cddp_solution.common.event_data_transformation_runner tests.cddp_fruit_app customer_2 tests
+```
+#### step3: Event curation
 
-Install the following prerequisites:
-
-* Docker version 18+
-* Powershell Core [Linux](<https://docs.microsoft.com/en-us/powershell/scripting/setup/installing-powershell-core-on-linux?view=powershell-6>)/[Mac](<https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-macos?view=powershell-6>)
-
-Then run the build
-
-```cmd
-pwsh bootstrap.ps1
+```shell
+python -m cddp_solution.common.event_data_curation_runner tests.cddp_fruit_app customer_2 tests
 ```
 
-### Building on Linux and Mac using Local Installs
+#### step4: Data Exoprt
 
-Install the following prerequisites:
+```shell
+python -m cddp_solution.common.curation_data_export_runner tests.cddp_fruit_app customer_2 tests
+```
+#### step5: check the results locally
+Copy the below codes into your local notebook file, e.g., query.ipynb: 
 
-* Powershell Core [Linux](<https://docs.microsoft.com/en-us/powershell/scripting/setup/installing-powershell-core-on-linux?view=powershell-6>)/[Mac](<https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-macos?view=powershell-6>)
-* Python version 3.7 [Linux](https://www.python.org/downloads/source/)/[Mac](https://www.python.org/downloads/mac-osx/)
-* Pip version 19.1.1 [Linux/Mac](https://pip.pypa.io/en/stable/installing/)
+```python
+# environment setup in local notebook
+from pyspark.sql import SparkSession
+from pyspark import SparkConf
+
+spark = SparkSession.getActiveSession()
+if not spark:
+    conf = SparkConf().setAppName("data-app").setMaster("local[*]")
+    spark = SparkSession.builder.config(conf=conf)\
+        .config("spark.jars.packages",
+                "io.delta:delta-core_2.12:1.2.0,com.microsoft.azure:azure-eventhubs-spark_2.12:2.3.21") \
+        .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")\
+        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")\
+        .config("spark.driver.memory", "24G")\
+        .config("spark.driver.maxResultSize", "24G")\
+        .enableHiveSupport()\
+        .getOrCreate()
+
+spark.sql(f"select * from customer_2_rz_fruit_app.raw_fruits_1")
+
+# to print the tables created in raw zone
+schema_name = "customer_2_rz_fruit_app"
+
+tables = spark.sql(f"show tables in {schema_name}")
+
+tables_collection = tables.collect()
+for table in tables_collection:
+    table_name = table['tableName']
+    print(f"{schema_name}.{table_name}")
+    
+
+# Uncomment and replace the <> with the table name printed from above and query on the table contents 
+# df = park.sql(f"select * from <table name>)
+df.show()
 
 
-### Build wheel solution packages (*nix)
+# to print the tables created in processed zone
+schema_name = "customer_2_pz_fruit_app"
 
+tables = spark.sql(f"show tables in {schema_name}")
+
+tables_collection = tables.collect()
+for table in tables_collection:
+    table_name = table['tableName']
+    print(f"{schema_name}.{table_name}")
+
+# Uncomment and replace the <> with the table name printed from above and query on the table contents 
+# df = park.sql(f"select * from <table name>)
+df.show()
+
+# shutdown the notebook spark session
+spark.sparkContext.stop()
+spark.stop()
+```
+The sample table is like below: 
+ <img src= "./docs/images/Sample table output.png" width="2000px"/>
+
+## Known Issues, Limitations and Workarounds
+
+### 1. Problem when developing with *cddp_solution* local package
+When import local developed module in your Python code, you'll normally pick one of below statements, both of them may introduce module-not-found errors if you run your code in wrong path, saying we run above batch job in other path than /src.
+```python
+from .utils.module_helper import find_class
+```
+```python
+from cddp_solution.common.utils.module_helper import find_class
+``` 
+
+To resolve above issues, we could install the local developed modules in editable mode.
+- Prepare *pyproject.toml* and *setup.cfg* files to define which Python files should be included in wheel package.
+- Run below command in path with the pyproject.toml file, to install local developed modules in editable mode.
 ```bash
-ls -ld src/cddp_solution tests/hon*/ | awk '{split($0, array); print array[9]}' | xargs -n 1 python -m build  -w
+pip install -e .
+```
+Once it's installed properly, we could achieve below two advantages.
+- We could run/test source code in any path
+- Any new chanages in source code lines of the local installed modules could take effect directly with out run the pip-install command again, as long as the *setup.cfg* file itself keeps the same, otherwise we need to execute the above pip-install command again.
+
+### 2. The Spark session running issue during local testing/debug
+If you are using the Devcontainer enviornment to run the sample locally, and if you refer to the test notebook above for local DB query, you might encounter the Spark running time issue and got errors like 
+```
+...
+Caused by: java.sql.SQLException: Failed to start database 'metastore_db' with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@5ffd2b27, see the next exception for details.
+...
+```
+Remember to close the test notebook spark session to avoid the spark session conflct with the local dev environment. 
+```
+spark.sparkContext.stop()
+spark.stop()
 ```
 
+## Key Learnings in development
 
-### Running the API template Locally
-
-#### From IDE
-
-ToDo
-
-#### From Command Line
-
-```cmd
-pip install -r ./src/requirements.txt --user
-python ./src/setup.py build
-python ./src/init_app.py --host 0.0.0.0
-```
-
-#### From Docker
-
-1. Run `.\bootstrap.ps1` to download and execute the build scripts, perform Build and Package
-2. Run `.\bootstrap.ps1 -Target Publish` to generate the docker image of the deployable application
-3. From a command/powershell prompt you should be able to see your newly created image. It should look something like this:
-
-    ```shell
-
-    $ docker image ls
-    REPOSITORY           TAG        IMAGE ID            CREATED             SIZE
-
-    <bitbucket-repo-name> 0.1.0     2d2cfc645c50       2 hours ago         1.45GB
-
-    ```
-4. Create and run the docker container from the image as follows:
-
-    ```shell
-      docker run -it --rm -p 80:8000/tcp --name <bitbucket-repo-name>.0.1.0 <bitbucket-repo-name>
-    ```
+### 1. [Monitoring the Azure Databricks spark jobs.](docs/Logging.md)
+### 2. [Adding unit test and integration test by Pytest framework.](tests/README.md) 
