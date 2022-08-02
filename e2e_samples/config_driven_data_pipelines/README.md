@@ -177,12 +177,13 @@ Caused by: java.sql.SQLException: Failed to start database 'metastore_db' with c
 ...
 ```
 Remember to close the test notebook spark session to avoid the spark session conflct with the local dev environment. 
-Or you can also clear the session by clicking the restart button of notebook kernel (see diagram below). 
-<img src= "./docs/images/Spark_session_restart.png" width="800px"/>
 ```
 spark.sparkContext.stop()
 spark.stop()
 ```
+Or you can also clear the session by clicking the restart button of notebook kernel (see diagram below). 
+<img src= "./docs/images/Spark_session_restart.png" width="800px"/>
+
 
 ## Key Learnings in development
 
