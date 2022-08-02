@@ -54,6 +54,8 @@ The samples are either focused on a single azure service (**Single Tech Samples*
 - [**MDW Data Governance and PII data detection**](e2e_samples/mdw_governance) - This sample demonstrates how to deploy the Infrastructure of an end-to-end MDW Pipeline using [Azure DevOps pipelines](https://azure.microsoft.com/en-au/services/devops/pipelines/) along with a focus around Data Governance and PII data detection.
   - *Technology stack*: Azure DevOps, Azure Data Factory, Azure Databricks, Azure Purview, [Presidio](https://github.com/microsoft/presidio)
 
+- [**Config Driven Data Pipeline**](e2e_samples/config_driven_data_pipelines) - This sample demonstrates how to deploy end-to-end MDW Pipeline by modifying the configurations of an existing template using [Azure Databricks](https://docs.microsoft.com/en-us/azure/databricks/scenarios/what-is-azure-databricks) along with the logging function backend by [Azure Log Analytics](https://docs.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overview). 
+
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
