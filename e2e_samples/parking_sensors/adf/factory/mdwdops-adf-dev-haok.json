@@ -1,0 +1,9 @@
+{
+	"name": "mdwdops-adf-dev-haok",
+	"location": "westus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "4fa9ba22-e269-4617-9cbd-55bc6e8104a4",
+		"tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47"
+	}
+}
