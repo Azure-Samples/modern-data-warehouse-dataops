@@ -222,7 +222,7 @@ The solution name is  showned in below diagram, 'cddp_solution' in our case.
 
 The entry points names are defined in the same file for the code running entry to start the corresponding databricks pipelines. In our sample repo, there are three demo code to run the 'master_data_ingest', 'master_data_transform' and 'event_data_tranform' pipelines seperatly. 
 
-<img src= "./docs/images/Entry_points_name.png" width="800px"/>
+<img src= "./docs/images/Entry_Points_name.png" width="800px"/>
 
 There are also system parameters orginiated from the common solution code base and need to be defined in Databriks job setting, shown in the diagram below. When you run the solution in local enviornment, the sample command already includes the parameters. 
 <img src= "./docs/images/System_env_parameters.png" width="800px"/> 
