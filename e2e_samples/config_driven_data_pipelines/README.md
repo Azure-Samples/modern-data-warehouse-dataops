@@ -189,6 +189,7 @@ As similiar in the first two steps, a wheel file naming like 'cddp_fruit_app_cus
 Refer to the [document](https://docs.microsoft.com/en-us/azure/databricks/clusters/create) to create a Azure Databricsk per your need. 
 
 Refer to the diagrams below to upload the generated three wheel files to the Databricks cluster's liberary, install them until they are in 'installed' status. 
+
 <img src= "./docs/images/Upload_Wheelfile_1.png" width="800px"/>
 <img src= "./docs/images/Upload_Wheelfile_2.png" width="800px"/>
 
