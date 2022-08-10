@@ -59,8 +59,9 @@ The architecture framework is buit based on Azure Databricks by spark batch job 
 ```
 pip install -r ./src/requirements.txt
 ```
+**Run the test example**
 
-**Run the test example locally**
+**option1: Run the test example locally**
 
 The 'cddp_fruit_app_customers' under the 'tests' folder contains the sample customer data, and customer_2 will be the one used in the example, which contains a sample master data and mocked event data as well. 
 
@@ -148,6 +149,117 @@ spark.stop()
 The sample table is like below: 
  <img src= "./docs/images/Sample table output.png" width="2000px"/>
 
+**Option2: Run the example on databricks**
+
+The below stpes are installing wheel files into Databricks cluster for running the jobs and tasks. Refer to the [doc](https://realpython.com/python-wheels/) here for what and why choose Python wheel files. 
+
+**Step1**: Create wheelfile for the common solution
+
+Change the dir to the cddp_solution folder. 
+```
+cd src/cddp_solution/
+```
+Run the command to create wheel file, which will refer to the setup.cfg in the folder for the related parameters and configurations. The setup.cfg file will be mentioned in later step also and that's how/where the parameters shall be referred when configure Databricks job. 
+```python
+python -m build . --wheel
+```
+After the successful run, there will be a 'dist' folder created in the same level, containing the wheel file naming like 'cddp_solution-0.0.1-py3-none-any.whl'. 
+
+**Stpe2**: Create wheelfile for the new application
+
+In this example, fruit is the sample application, so change to the folder containing the application code. 
+```
+cd tests/cddp_fruit_app 
+python -m build . --wheel
+```
+This will create a 'dist' folder in the same level containing the wheel naming like 'cddp_fruit_app-0.0.1-py3-none-any.whl'. 
+
+**Step3**: Create the wheel file for the specific customer
+
+Then change the dir to the folder containing the implementation for a specific customer on top of an application. 
+In this example, run 
+```
+cd cddp_fruit_app_customers/customer_2
+python -m build . --wheel
+```
+As similiar in the first two steps, a wheel file naming like 'cddp_fruit_app_customers.customer_2-0.0.1-py3-none-any.whl' will be created in the same folder level. 
+
+**Step4** Create Azure Databricks cluster and upload the 3 wheel files created. 
+
+Refer to the [document](https://docs.microsoft.com/en-us/azure/databricks/clusters/create) to create a Azure Databricsk per your need. 
+
+Refer to the diagrams below to upload the generated three wheel files to the Databricks cluster's liberary, install them until they are in 'installed' status. 
+<img src= "./docs/images/Upload_Wheelfile_1.png" width="800px"/>
+<img src= "./docs/images/Upload_Wheelfile_2.png" width="800px"/>
+
+<img src= "./docs/images/Wheel_Files_Installed.png" width="800px"/>
+
+Then [start the cluster](https://docs.microsoft.com/en-us/azure/databricks/clusters/clusters-manage#--start-a-cluster) just created. 
+
+**Step5** Mount the  customer config file
+
+If you remember the test running in the local environment, the data ingestion or transformation rules specific to a customer are defined in the config.json file under each customer folder. 
+<img src= "./docs/images/customer_config_file.png" width="800px"/>
+
+The same file needs to be uploaded to the Databricks DBFS folder. 
+
+**Note**: Your config.json file path  should be like /*/.../cddp_fruit_app_customer/customer_2/config.json. It does matter the last two level of the path name should be the same as mentioned. 
+
+<img src= "./docs/images/Upload_customer_config.png" width="800px"/>
+
+**Step6** Understand the parameters to be defined in the Databricks Job settings
+
+Finally, we can create the jobs to run the master data ingestion pipeine! 
+
+Before that, please be aware of some parameters that will be used in the job task setting. 
+
+The setup.cfg under the cddp_slutions defines the basic parameters to run the application. 
+
+The solution name is  showned in below diagram, 'cddp_solution' in our case. 
+
+<img src= "./docs/images/Package_Name.png" width="800px"/>
+
+The entry points names are defined in the same file for the code running entry to start the corresponding databricks pipelines. In our sample repo, there are three demo code to run the 'master_data_ingest', 'master_data_transform' and 'event_data_tranform' pipelines seperatly. 
+
+<img src= "./docs/images/Entry_points_name.png" width="800px"/>
+
+There are also system parameters orginiated from the common solution code base and need to be defined in Databriks job setting, shown in the diagram below. When you run the solution in local enviornment, the sample command already includes the parameters. 
+<img src= "./docs/images/System_env_parameters.png" width="800px"/> 
+
+**Step7** Create the Databricks job
+
+The example showed the required parameter to define one databricsk job to run the master data ingestion pipeline. 
+
+<img src= "./docs/images/Create_Master_ingestion_job.png" width="800px"/>
+
+**The package name and entry point** have been explained in step6. 
+
+**In the parameter field:**
+
+The first parameter is about the source system, and in our example is the 'cddep_fruit_app'. Customer ID used 'customer_2'. These two parameters are defined in the setup.cfg under the customer_2 folder, which has been included in the wheel file created in previous step. 
+
+The 3rd parameter is the customer config file path in DBFS, which has been uploaded in step5, and **only copy the patial path like shown in the diagram**. 
+
+**Save the task**. 
+
+**Step8** Run the job
+
+Exciting moments comes finally! 
+
+Run the job with the task just defined in step7. If no error occurs, a successful task run result will be shown as below. The length of the running time depends on the cluster size/memory/CPU/GPU selected in creation. 
+
+<img src= "./docs/images/Master_ingestion_job_run.png" width="800px"/>
+
+**Step9** Check the raw master data table created
+
+In the data folder under your running databricks cluster, there will be three tables created. Now, since only the master data ingestion pipeline has been executed, only the customer_2_rz_fruit_app has valid data. 
+<img src= "./docs/images/Raw_table_created.png" width="800px"/>
+<img src= "./docs/images/Master_data_in_raw_table.png" width="800px"/>
+
+Well DONE! Now it is your time to solve the reamaining puzzles, to complete the master data transoformation and event data transformation pipeline! 
+
+**Note**: The procedures are similar as master data ingestion pipeline, and the difference is on the entry point setting, which has been demonstrated in the step6. 
+
 ## Known Issues, Limitations and Workarounds
 
 ### 1. Problem when developing with *cddp_solution* local package
@@ -158,6 +270,7 @@ from .utils.module_helper import find_class
 ```python
 from cddp_solution.common.utils.module_helper import find_class
 ``` 
+
 
 To resolve above issues, we could install the local developed modules in editable mode.
 - Prepare *pyproject.toml* and *setup.cfg* files to define which Python files should be included in wheel package.
@@ -183,6 +296,7 @@ spark.stop()
 ```
 Or you can also clear the session by clicking the restart button of notebook kernel (see diagram below). 
 <img src= "./docs/images/Spark_session_restart.png" width="800px"/>
+
 
 
 ## Key Learnings in development
