@@ -44,3 +44,19 @@ pip install -e .
 Once it's installed properly, we could achieve below two advantages.
 - We could run/test source code in any path
 - Any new chanages in source code lines of the local installed modules could take effect directly with out run the pip-install command again, as long as the *setup.cfg* file itself keeps the same, otherwise we need to execute the above pip-install command again.
+
+### Create a new pipeline for a customer
+
+The python script **cddp_solution.common.utils.create_pipeline_from_template** is used to create a new application and customer from a template.
+It has four arguments:
+
+- *template_path*: the path of the template file.
+- *app_name*: the name of the new application.
+- *customer_name*: the name of the new customer.
+- *output_path*: the path of the output directory.
+
+Here is an example.
+
+```shell
+python -m cddp_solution.common.utils.create_pipeline_from_template simple_template app_1 customer_1 ./tmp
+```

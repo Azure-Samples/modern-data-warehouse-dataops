@@ -1,0 +1,70 @@
+{
+  "customer_id": "{{ customer_name }}",
+  "application_name": "{{ app_name }}",
+  "bad_data_storage_name": "bad_data",
+  "checkpoint_name": "checkpoint",
+  "serving_data_storage_path": "Serving",
+  "event_data_storage_path": "Standard",
+  "staging_data_storage_path": "Staging",
+  "master_data_storage_path": "Standard",
+  "export_target_type": "csv",
+  "export_file_name": "{{ app_name }}",
+  "export_data_storage_csv_path": "Exported",
+  
+  "event_data_curation": [
+    {
+      "sql": "select m.ID, m.Key, sum(m.amount) as count from enriched_events_1 m group by m.ID, m.Key order by count desc",
+      "target": "curated_events_1",
+      "partition_keys": ""
+    }  
+  ],
+  "event_data_source": [
+    {
+      "name": "events",
+      "type": "local",
+      "format": "json",
+      "table_name": "events_1",
+      "schema":"{{ app_name }}_customers.{{ customer_name }}.event_data_schema",
+      "location":"{{ customer_name }}/raw_data/mock_events",
+      "timestamp_col": "ts",
+      "partition_keys": "ID"
+    }
+  ],
+  "event_data_transform": [
+    {
+      "sql": "\n select m.ID, m.Key, m.Val, e.amount, e.ts, e.rz_create_ts, e.lz_filename from events_1 e\n left outer join data_1 m\n ON e.id=m.ID \n and m.row_active_start_ts<=e.ts\n and m.row_active_end_ts>e.ts\n ",
+      "target": "enriched_events_1",
+      "timestamp_col": "ts",
+      "storage_path": "Standard",
+      "partition_keys": "ID"
+    }
+  ],
+
+  "master_data_source": [
+    {
+      "name": "raw_data_1",
+      "type": "csv-file",
+      "schema":"{{ app_name }}_customers.{{ customer_name }}.raw_data_schema",
+      "location": "{{ customer_name }}/raw_data/data_1.csv",
+      "table_name": "raw_data_1",
+      "partition_keys": "ID",
+      "key_cols": "ID"
+    }
+  ],
+
+  "master_data_transform": [
+    {
+      "sql": "SELECT rz_create_ts, lz_filename, md5_hash, ID, Key, Val FROM raw_data_1",
+      "target": "data_1",
+      "partition_keys": "ID,Key",
+      "key_cols": "ID"
+    }
+  ],
+  "master_data_curation": [
+    {
+      "sql": "select ID, Key, Sum(Val) as SumVal from data_1 group by ID, Key",
+      "target": "curated_data_1",
+      "partition_keys": "ID,Key"
+    }
+  ]
+}
