@@ -41,16 +41,6 @@
       "key_cols": "ID"
     }
   ],
-  "master_data_validate": [
-    {
-      "valid_sql": "\n select * from raw_fruits where shuiguo != 'Orange' or jiage >= 2.2\n ",
-      "valid_target": "valid_master_data",
-      "retry_sql": "\n select * from master_data_retry_view where shuiguo != 'Orange' or jiage >= 0 \n ",
-      "retry_temp_view": "master_data_retry_view",
-      "invalid_target": "invalid_master_data",
-      "reason": "Business validation error: Orange price lower than minimum."
-    }
-  ],
   "master_data_storage_path": "master_data_storage",
   "staging_data_storage_path": "staging_data_storage",
   "master_data_transform": [

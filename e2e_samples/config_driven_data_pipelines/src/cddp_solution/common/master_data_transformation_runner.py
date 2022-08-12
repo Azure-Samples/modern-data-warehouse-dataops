@@ -26,7 +26,6 @@ def main():
     transform = clz(config)
 
     transform.load_data()
-    transform.validate_master_data()
     transform.transform(targets)
     transform.export()
     # data_list = transform.export()

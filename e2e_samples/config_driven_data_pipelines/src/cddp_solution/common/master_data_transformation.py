@@ -32,32 +32,7 @@ class AbstractMasterDataTransformation(AbstractSparkJob):
                 except Exception as e:
                     self.logger.log(logging.ERROR,
                                     f"## Job failed in load_data {data_source['table_name']} exception is\n{e}")
-
-    def validate_master_data(self):
-        """
-
-        Validate invalid_data records
-        Get valid data from loaded data then replace the dataframe in case of need filter out invalid records data
-        Last Save invalid data to the table
-
-        """
-
-        if "master_data_validate" not in self.config:
-            return
-        for master_data_validate in self.config["master_data_validate"]:
-            if 'valid_sql' in master_data_validate and 'table_name' in master_data_validate:
-                original_data = self.load_data_from_tempview(master_data_validate["table_name"])
-
-                # Get the valid records
-                valid_records = self.spark.sql(master_data_validate["valid_sql"])
-                # Get and save the invalid records
-                invalid_records = original_data.select(original_data.columns)\
-                                               .subtract(valid_records.select(original_data.columns))
-                if invalid_records.count() != 0:
-                    self.save_invalid_records(invalid_records, master_data_validate)
-
-                valid_records.createOrReplaceTempView(master_data_validate["valid_target"])
-
+                                    
     def save_invalid_records(self, df, data_validate):
         """
 
