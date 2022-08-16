@@ -121,11 +121,11 @@ class AbstractSparkJob(ABC):
                 .getOrCreate()
 
         self.rz_dbname = self.create_schema_if_not_exists(
-            self.config["master_data_rz_database_name"])
+            self.config["master_data_stg_database_name"])
         self.pz_dbname = self.create_schema_if_not_exists(
-            self.config["master_data_pz_database_name"])
+            self.config["master_data_std_database_name"])
         self.cz_dbname = self.create_schema_if_not_exists(
-            self.config["master_data_cz_database_name"])
+            self.config["master_data_srv_database_name"])
 
         self.logger.log(logging.INFO, "Package spark_job initialized")
 

@@ -104,9 +104,9 @@ class Config():
             config["resources_base_path"] = self.__resources_base_path
 
             # Define Schema Name here
-            config["master_data_rz_database_name"] = f'{self.__customer_id}_rz_{config["application_name"]}'
-            config["master_data_pz_database_name"] = f'{self.__customer_id}_pz_{config["application_name"]}'
-            config["master_data_cz_database_name"] = f'{self.__customer_id}_cz_{config["application_name"]}'
+            config["master_data_stg_database_name"] = f'{self.__customer_id}_stg_{config["application_name"]}'
+            config["master_data_std_database_name"] = f'{self.__customer_id}_std_{config["application_name"]}'
+            config["master_data_srv_database_name"] = f'{self.__customer_id}_srv_{config["application_name"]}'
 
             # Config validation check
             self.__validate_config(config)

@@ -109,10 +109,10 @@ if not spark:
         .enableHiveSupport()\
         .getOrCreate()
 
-spark.sql(f"select * from customer_2_rz_fruit_app.raw_fruits_1")
+spark.sql(f"select * from customer_2_stg_fruit_app.raw_fruits_1")
 
 # to print the tables created in raw zone
-schema_name = "customer_2_rz_fruit_app"
+schema_name = "customer_2_stg_fruit_app"
 
 tables = spark.sql(f"show tables in {schema_name}")
 
@@ -128,7 +128,7 @@ df.show()
 
 
 # to print the tables created in processed zone
-schema_name = "customer_2_pz_fruit_app"
+schema_name = "customer_2_std_fruit_app"
 
 tables = spark.sql(f"show tables in {schema_name}")
 
