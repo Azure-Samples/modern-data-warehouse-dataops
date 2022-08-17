@@ -33,41 +33,6 @@ class AbstractMasterDataTransformation(AbstractSparkJob):
                     self.logger.log(logging.ERROR,
                                     f"## Job failed in load_data {data_source['table_name']} exception is\n{e}")
                                     
-    def save_invalid_records(self, df, data_validate):
-        """
-
-        Save the invalid records into delta table
-
-        Parameters
-        ----------
-        df : dataframe
-            invalid records dataframe
-
-        data_validate : config
-            data validation config read from config.json
-
-        record_format : str
-            csv or json, by default 'json'
-
-        """
-
-        self.logger.log(logging.INFO, "Saving invalid records for retry.")
-        invalid_target = data_validate["invalid_target"]
-        df = df.withColumn("record", F.to_json(F.struct(df.columns))).select(F.col('record'))
-        df = df \
-            .withColumn("rule", F.lit(data_validate["valid_sql"])) \
-            .withColumn("reason", F.lit(data_validate["reason"])) \
-            .withColumn("status", F.lit("retryable")) \
-            .withColumn("retry_attempt", F.lit(0)) \
-            .withColumn("retry_attempt_limit", F.lit(3)) \
-            .withColumn("created_at", F.current_timestamp()) \
-
-        path = os.path.join(self.master_data_storage_path, invalid_target)
-
-        sink_data_helper.save_as_delta_table(df,
-                                             path,
-                                             f"{self.pz_dbname}.{invalid_target}")
-
     def transform(self, targets=None):
         """
 
