@@ -147,7 +147,7 @@ spark.sparkContext.stop()
 spark.stop()
 ```
 The sample table is like below: 
- <img src= "./docs/images/Sample table output.png" width="2000px"/>
+ <img src= "./docs/images/Sample table output.png"/>
 
 **Option2: Run the example on databricks**
 
@@ -263,27 +263,9 @@ Well DONE! Now it is your time to solve the reamaining puzzles, to complete the 
 
 ## Known Issues, Limitations and Workarounds
 
-### 1. Problem when developing with *cddp_solution* local package
-When import local developed module in your Python code, you'll normally pick one of below statements, both of them may introduce module-not-found errors if you run your code in wrong path, saying we run above batch job in other path than /src.
-```python
-from .utils.module_helper import find_class
-```
-```python
-from cddp_solution.common.utils.module_helper import find_class
-``` 
 
 
-To resolve above issues, we could install the local developed modules in editable mode.
-- Prepare *pyproject.toml* and *setup.cfg* files to define which Python files should be included in wheel package.
-- Run below command in path with the pyproject.toml file, to install local developed modules in editable mode.
-```bash
-pip install -e .
-```
-Once it's installed properly, we could achieve below two advantages.
-- We could run/test source code in any path
-- Any new chanages in source code lines of the local installed modules could take effect directly with out run the pip-install command again, as long as the *setup.cfg* file itself keeps the same, otherwise we need to execute the above pip-install command again.
-
-### 2. The Spark session running issue during local testing/debug
+### 1. The Spark session running issue during local testing/debug
 If you are using the Devcontainer enviornment to run the sample locally, and if you refer to the test notebook above for local DB query, you might encounter the Spark running time issue and got errors like 
 ```
 ...
