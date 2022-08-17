@@ -147,7 +147,7 @@ spark.sparkContext.stop()
 spark.stop()
 ```
 The sample table is like below: 
- <img src= “./docs/images/Sample table output.png =1000x”/>
+ <img src= “./docs/images/Sample_table_output.png =1000x”/>
 
 **Option2: Run the example on databricks**
 
