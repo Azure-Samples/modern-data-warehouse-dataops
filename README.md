@@ -2,16 +2,16 @@
 page_type: sample
 languages:
 - python
-- C#
-- TypeScript
+- csharp
+- typeScript
 - bicep
 products:
-- Azure
-- Azure-Data-factory
-- Azure-Databricks
-- Azure-Stream-Analytics
-- Azure-Data-Lake-Gen2
-- Azure-Functions
+- azure
+- azure-data-factory
+- azure-databricks
+- azure-stream-analytics
+- azure-data-lake-gen2
+- azure-functions
 description: "Code samples showcasing how to apply DevOps concepts to the Modern Data Warehouse Architecture leveraging different Azure Data Technologies."
 ---
 
