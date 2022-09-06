@@ -82,5 +82,5 @@ az devops service-endpoint update \
     --enable-for-all "true"
 
 wait_service_principal_creation "$service_principal_id"
-service_principal_object_id=$(az ad sp show --id "$service_principal_id" --query "objectId" -o tsv)
+service_principal_object_id=$(az ad sp show --id "$service_principal_id" --query "id" -o tsv)
 assign_synapse_role_if_not_exists "$SYNAPSE_WORKSPACE_NAME" "Synapse Administrator" "$service_principal_object_id"
