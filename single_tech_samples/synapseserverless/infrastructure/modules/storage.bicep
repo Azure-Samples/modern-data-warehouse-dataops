@@ -3,7 +3,7 @@ param location string = resourceGroup().location
 param deployment_id string
 
 // Data Lake Storage
-resource storage 'Microsoft.Storage/storageAccounts@2021-04-01' = {
+resource dataLakeStorage 'Microsoft.Storage/storageAccounts@2021-09-01' = {
   name: '${project}st1${deployment_id}'
   location: location
   tags: {
@@ -33,10 +33,24 @@ resource storage 'Microsoft.Storage/storageAccounts@2021-04-01' = {
     }
     accessTier: 'Hot'
   }
+
+  resource dataLakeStorageFileSystem 'blobServices@2021-09-01' = {
+    name: 'default'
+    properties: {
+      isVersioningEnabled: false
+    }
+
+    resource dataLakeStorageFileSystem2  'containers@2021-09-01' = {
+      name: 'datalake'
+      properties: {
+        publicAccess: 'None'
+      }
+    }
+  }
 }
 
 // Synapse Storage
-resource synapseStorage 'Microsoft.Storage/storageAccounts@2021-04-01' = {
+resource synapseStorage 'Microsoft.Storage/storageAccounts@2021-09-01' = {
   name: '${project}st2${deployment_id}'
   location: location
   tags: {
@@ -67,14 +81,14 @@ resource synapseStorage 'Microsoft.Storage/storageAccounts@2021-04-01' = {
     accessTier: 'Hot'
   }
 
-  resource synapseStorageFileSystem 'blobServices@2021-04-01' = {
+  resource synapseStorageFileSystem 'blobServices@2021-09-01' = {
     name: 'default'
     properties: {
       isVersioningEnabled: false
     }
 
-    resource synapseStorageFileSystem2  'containers@2021-04-01' = {
-      name: 'synapsedefaultfs'
+    resource synapseStorageFileSystem2  'containers@2021-09-01' = {
+      name: 'synapsedefaults'
       properties: {
         publicAccess: 'None'
       }
@@ -82,5 +96,5 @@ resource synapseStorage 'Microsoft.Storage/storageAccounts@2021-04-01' = {
   }
 }
 
-output storage_account_name string = storage.name
+output storage_account_name string = dataLakeStorage.name
 output storage_account_name_synapse string = synapseStorage.name

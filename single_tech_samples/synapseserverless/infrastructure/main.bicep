@@ -22,3 +22,4 @@ module synapse './modules/synapse.bicep' = {
 
 output storage_account_name string = storage.outputs.storage_account_name
 output synapseworskspace_name string = synapse.outputs.synapseWorkspaceName
+output synapse_output_spark_pool_name string = synapse.outputs.synapseSparkPoolName

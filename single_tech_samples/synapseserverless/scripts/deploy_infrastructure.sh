@@ -77,22 +77,34 @@ if [[ -z $arm_output ]]; then
     exit 1
 fi
 
-
 ####################
 # SYNAPSE ANALYTICS
 
 echo "Retrieving Synapse Analytics information from the deployment."
 synapseworkspace_name=$(echo "$arm_output" | jq -r '.properties.outputs.synapseworskspace_name.value')
+echo "$synapseworkspace_name"
 synapse_serverless_endpoint=$(az synapse workspace show \
     --name "$synapseworkspace_name" \
     --resource-group "$resource_group_name" \
     --output json |
     jq -r '.connectivityEndpoints | .sqlOnDemand')
+echo "$synapse_serverless_endpoint"
 
-# The server name of connection string will be the same as Synapse worspace name
-synapse_sqlpool_server=$(echo "$arm_output" | jq -r '.properties.outputs.synapseworskspace_name.value')
+synapse_sparkpool_name=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_output_spark_pool_name.value')
+echo "$synapse_sparkpool_name"
 
 echo "$owner_object_id"
+
 # Grant Synapse Administrator to the deployment owner
 assign_synapse_role_if_not_exists "$synapseworkspace_name" "Synapse Administrator" "$owner_object_id"
-#assign_synapse_role_if_not_exists "$synapseworkspace_name" "Synapse SQL Administrator" "$owner_object_id"
+assign_synapse_role_if_not_exists "$synapseworkspace_name" "Synapse Contributor" "$synapseworkspace_name"
+
+# Deploy Synapse artifacts
+#AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID \
+PROJECT_NAME=$PROJECT \
+DEPLOYMENT_ID=$DEPLOYMENT_ID \
+RESOURCE_GROUP_NAME=$resource_group_name \
+SYNAPSE_WORKSPACE_NAME=$synapseworkspace_name \
+BIG_DATAPOOL_NAME=$synapse_sparkpool_name \
+    bash -c "./scripts/deploy_synapse_artifacts.sh"
+

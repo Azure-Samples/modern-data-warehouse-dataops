@@ -1,0 +1,28 @@
+{
+    "name": "Ds_NYCTaxi_ADLS2",
+    "properties": {
+        "linkedServiceName": {
+            "referenceName": "Ls_NYCTaxi_ADLS2",
+            "type": "LinkedServiceReference"
+        },
+        "annotations": [],
+        "type": "Parquet",
+        "typeProperties": {
+            "location": {
+                "type": "AzureBlobFSLocation",
+                "fileName": {
+                    "value": "@concat(formatDateTime(utcNow(),'yyyy'), formatDateTime(utcNow(),'MM'),formatDateTime(utcNow(),'dd'),formatDateTime(utcNow(),'hh'),'.parquet')",
+                    "type": "Expression"
+                },
+                "folderPath": {
+                    "value": "@concat(formatDateTime(utcNow(),'yyyy'),'/', formatDateTime(utcNow(),'MM'),'/',formatDateTime(utcNow(),'dd'),'/', formatDateTime(utcNow(),'hh'),'/')",
+                    "type": "Expression"
+                },
+                "fileSystem": "datalake"
+            },
+            "compressionCodec": "snappy"
+        },
+        "schema": []
+    },
+    "type": "Microsoft.Synapse/workspaces/datasets"
+}
