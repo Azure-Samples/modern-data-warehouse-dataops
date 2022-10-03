@@ -35,6 +35,7 @@ resource databricks_roleassignment 'Microsoft.Authorization/roleAssignments@2020
   properties: {
     roleDefinitionId: contributor
     principalId: contributor_principal_id
+    principalType: 'ServicePrincipal'
   }
 }
 

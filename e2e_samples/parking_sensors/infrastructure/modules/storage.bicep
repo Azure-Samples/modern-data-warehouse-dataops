@@ -51,6 +51,7 @@ resource storage_roleassignment 'Microsoft.Authorization/roleAssignments@2020-08
   properties: {
     roleDefinitionId: storage_blob_data_contributor
     principalId: contributor_principal_id
+    principalType: 'ServicePrincipal'
   }
 }
 
