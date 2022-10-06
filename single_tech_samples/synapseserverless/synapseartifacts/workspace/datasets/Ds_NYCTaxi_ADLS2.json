@@ -5,17 +5,22 @@
             "referenceName": "Ls_NYCTaxi_ADLS2",
             "type": "LinkedServiceReference"
         },
+        "parameters": {
+            "sourcefilename": {
+                "type": "string"
+            }
+        },
         "annotations": [],
         "type": "Parquet",
         "typeProperties": {
             "location": {
                 "type": "AzureBlobFSLocation",
                 "fileName": {
-                    "value": "@concat(formatDateTime(utcNow(),'yyyy'), formatDateTime(utcNow(),'MM'),formatDateTime(utcNow(),'dd'),formatDateTime(utcNow(),'hh'),'.parquet')",
+                    "value": "@concat('yellow_tripdata_',dataset().sourcefilename,'.parquet')",
                     "type": "Expression"
                 },
                 "folderPath": {
-                    "value": "@concat(formatDateTime(utcNow(),'yyyy'),'/', formatDateTime(utcNow(),'MM'),'/',formatDateTime(utcNow(),'dd'),'/', formatDateTime(utcNow(),'hh'),'/')",
+                    "value": "@replace(dataset().sourcefilename,'-','/')",
                     "type": "Expression"
                 },
                 "fileSystem": "datalake"

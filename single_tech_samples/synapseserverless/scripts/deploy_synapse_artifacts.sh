@@ -28,21 +28,6 @@ set -o pipefail
 set -o nounset
 # set -o xtrace # For debugging
 
-
-# ENV
-# RESOURCE_GROUP_NAME
-# SYNAPSE_WORKSPACE_NAME
-# BIG_DATAPOOL_NAME
-
-getYTDYear(){
-    year=$(date --date='-1 year' +%Y)
-   
-}
-
-getYTDMonth(){
-    month=$(date --date='-1 year' +%m)
-}
-
 getProvisioningState(){
     provision_state=$(az synapse spark pool show \
     --name "$BIG_DATAPOOL_NAME" \
@@ -89,12 +74,12 @@ createPipeline () {
     echo "Creating Synapse Pipeline: $name"
 
     case $name in 
-        "P_NYCTaxi_1_Setup")
+        "Pl_NYCTaxi_1_Setup")
              # Replace sql script link to create external data source based on deployment info
             tmp=$(mktemp)
             jq --arg a "${sqlScript}" '.properties.activities[1].typeProperties.scripts[0].text = $a' ./synapseartifacts/workspace/pipelines/"${name}".json > "$tmp" && mv "$tmp" ./synapseartifacts/workspace/pipelines/"${name}".json
             ;;
-        "P_NYCTaxi_2_Main")
+        "Pl_NYCTaxi_2_Preparation")
             # Replace spark pool name based on deployment info
             tmp=$(mktemp)
             jq --arg a "${PROJECT_NAME}st1${DEPLOYMENT_ID}" '.properties.activities[1].typeProperties.parameters.stgAccountName.value = $a' ./synapseartifacts/workspace/pipelines/"${name}".json > "$tmp" && mv "$tmp" ./synapseartifacts/workspace/pipelines/"${name}".json
@@ -129,14 +114,7 @@ do
     echo "$provision_state: checking again in 10 seconds..."
 done
 
-# Deploy Linked Services
-# Getting data from 1 year ago as the more recent months are not yet available
-getYTDYear
-getYTDMonth
-echo "${year}"
-echo "${month}"
-
-createLinkedService "Ls_NYCTaxi_HTTP" "https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_${year}-${month}.parquet"
+createLinkedService "Ls_NYCTaxi_HTTP" "https://d37ci6vzurychx.cloudfront.net/trip-data/"
 createLinkedService "Ls_NYCTaxi_ADLS2" "https://${PROJECT_NAME}st1${DEPLOYMENT_ID}.dfs.core.windows.net/"
 createLinkedService "Ls_NYCTaxi_Synapse_Serverless_master" "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=${SYNAPSE_WORKSPACE_NAME}-ondemand.sql.azuresynapse.net;Initial Catalog=master"
 createLinkedService "Ls_NYCTaxi_Synapse_Serverless_db" "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=${SYNAPSE_WORKSPACE_NAME}-ondemand.sql.azuresynapse.net;Initial Catalog=db_serverless"
@@ -144,7 +122,6 @@ createLinkedService "Ls_NYCTaxi_Synapse_Serverless_db" "Integrated Security=Fals
 # Deploy Datasets
 createDataset "Ds_NYCTaxi_HTTP" 
 createDataset "Ds_NYCTaxi_ADLS2"
-createDataset "Ds_NYCTaxi_ADLS2_Delta"
 
 # Deploy all Notebooks
 # This line allows the spark pool to be available to attach to the notebooks
@@ -152,7 +129,16 @@ az synapse spark session list --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spa
 createNotebook "Nb_Convert_Parquet_to_Delta"
 
 # Deploy Setup Pipeline
-createPipeline "P_NYCTaxi_1_Setup" "CREATE EXTERNAL DATA SOURCE [ext_ds_datalake] WITH (LOCATION = N'https://${PROJECT_NAME}st1${DEPLOYMENT_ID}.blob.core.windows.net/datalake')"
+createPipeline "Pl_NYCTaxi_1_Setup" "CREATE EXTERNAL DATA SOURCE [ext_ds_datalake] WITH (LOCATION = N'https://${PROJECT_NAME}st1${DEPLOYMENT_ID}.blob.core.windows.net/datalake')"
 
 # Deploy main pipeline that transforms parquet to delta and created dynamic views on top of the delta structure
-createPipeline "P_NYCTaxi_2_Main" "${BIG_DATAPOOL_NAME}"
+createPipeline "Pl_NYCTaxi_2_Preparation" "${BIG_DATAPOOL_NAME}"
+
+# Deploy main pipeline that calls the setup and preparation pipelines
+createPipeline "Pl_NYCTaxi_0_Main" ""
+
+# Deploy trigger
+createTrigger "Tg_NYCTaxi_0_Main"
+
+# Deploy SQL Script
+createSQLScript "Sc_Column_Level_Security" 

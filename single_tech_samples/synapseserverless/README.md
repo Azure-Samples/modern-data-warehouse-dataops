@@ -2,11 +2,12 @@
 
 ## Objectives
 
-This sample aims to demonstrate the use of Synapse Serverless Pools with Delta Lake files. A second objective is to share findings and challenges around automating view creation for a large number of tables stored on the Data Lake, and finally demonstrate how to implement CLS (Column Level Security) on top of these delta tables.
+This sample aims to demonstrate the use of Synapse Serverless Pools with Delta Lake files.
+A second objective includes to share findings around the automation of view creation on top of the tables stored on the Data Lake, and additionaly to demonstrate how to implement CLS (Column Level Security) on top of these delta tables and views.
 
 ## Pre-requirements
 
-In order to run this sample these are the prerequisites:
+In order to run this sample these are the prerequisites, after cloning the repository.
 
 - Login to Azure az login
 - Install jq
@@ -21,6 +22,16 @@ In order to run this sample these are the prerequisites:
 
 NOTE: if you need to check the list of env variables use ```printenv```. If you need to delete an env variable use ```unset <NAME_USED_ON_THE_EXPORT>```
 
+## Running the Sample
+
+Navigate to the directory /modern-data-warehouse-dataops/single_tech_samples/synapseserverless and run the following command:
+
+```bash -c ./deploy.sh```
+
+Once the sample is deployed in the subscription of choice, navigate to Synapse Studio and either wait for the trigger to start the Pl_NYCTaxi_0_Main pipeline or you can trigger it manually. This pipeline is reponsible to call P_NYCTaxi_1_Setup and P_NYCTaxi_2_Preparation pipelines is sequence.
+
+Once the pipeline finishes successfully, you can navigate through the db_serveless database and check the views that were created and experiment the CLS scripts.
+
 ## Infrastructure deployment
 
 The script firstly deploys the infrastructure that is required to demonstrate the objectives of the sample.
@@ -30,6 +41,8 @@ The infrastructure is composed by:
   - one storage account for internal Synapse use, named <PROJECT_NAME>st2<DEPLOYMENT_ID>
   - one storage account that acts as the data lake to store the NYC Taxi Data, named <PROJECT_NAME>st1<DEPLOYMENT_ID>
   - a Synapse workspace that includes a Serverless pool and a Spark pool, named <PROJECT_NAME>st1<DEPLOYMENT_ID>
+  - one AAD group, named AADGR<PROJECT_NAME><DEPLOYMENT_ID>
+- one resource group named <PROJECT_NAME>-syn-mrg-<DEPLOYMENT_ID>, for  internal use of Synapse
 
 ## Synapse Artifacts
 
@@ -38,39 +51,42 @@ The synapse artifacts are uploaded immediately after the infrastructure is succe
 - Datasets
   - Ds_NYCTaxi_ADLS2
   - Ds_NYCTaxi_HTTP
-  - Ds_NYCTaxi_ADLS2_Delta
 - Linked Services
   - Ls_NYCTaxi_ADLS2
   - Ls_NYCTaxi_HTTP
   - Ls_NYCTaxi_Synapse_Serverless_master
   - Ls_NYCTaxi_Synapse_Serverless_db
 - Pipelines
-  - P_NYCTaxi_1_Setup
-  - P_NYCTaxi_2_Main
+  - Pl_NYCTaxi_0_Main
+  - Pl_NYCTaxi_1_Setup
+  - Pl_NYCTaxi_2_Preparation
+
+    ![Pipeline Hierachy](./images/pipeline_hierarchy.jpg)
 - Notebook
   - Nb_Convert_Parquet_to_Delta
-
-## Functional diagram
+- Trigger
+  - Tg_NYCTaxi_0_Main
+- Script
+  - Sc_Column_Level_Security
 
 ## Synapse Serverless with Delta files and Partitioned Views
 
 Is known that the Delta format is supported within Synapse Serverless pools (which is not the case for Dedicated pools). Not surprinsingly, using Serverless pools seems like the right choice when the goal is to use Delta lake format and there is a strong requirement to use T-SQL like syntax and maintaining the costs as low as possible. However, there are some limitations to be aware of.
 
-One natural choice is to use External tables on top of the Data Lake files, however External tables don't support partitioning on the Serverless pools, in this case when using Delta Lake files, Partitioned Views need to be used instead.
+One natural choice is to use External tables on top of the Data Lake files, however External tables don't support partitioning on the Serverless pools, in this case when using Delta Lake files, Partitioned Views need to be used instead:
 
-EXAMPLE OF CODE TO CREATE A PARTITIONED VIEW
+` CREATE   VIEW [dbo].[VW_202010] As SELECT * FROM OPENROWSET(BULK '2020/10',DATA_SOURCE = 'ext_ds_datalake',FORMAT = 'delta')as [VIEW_202010]
+`
 
 ### Dynamic view creation from ADLS Gen2 folder structure
 
-An extra challenge when dealing with Delta Files is to expect a large number of tables (or folders) in the Data Lake. A great choice is to dynamically create the partioned views based on the Delta lake folder structure - one view per delta table, and as we are using Synapse, a good choice is to use Synapse pipelines.
-
-IMAG WITH SYNAPSE PIPELINE and explanation on how to create the SP and use Stored procedure for a SQL instance
+An extra challenge when dealing with Delta Files is to expect a large number of tables (or folders) in the Data Lake. A great choice is to automatically create the partioned views on top of the Delta lake folders after they are created - one view per delta table, and as we are using Synapse, a good choice is to use Synapse pipelines.
 
 There are three main aspects to consider in this process:
 
-- Setup, that is responsible to create a database within the serverless pool, creates a external data source to the data lake and a stored procedure in the serverless database that will be triggered later. This functionality is also aligned with the pipelineP_NYCTaxi_1_Setup. This pipeline has an important particularity: after it's deployed on the workspace needs to run before the P_NYCTaxi_2_Main pipeline.
-- Get parquet data and transform it to delta format, in order to have testing data we are downloading some sample data from the NYC Taxi available open data to demonstrate the behaviour. The data is in parquet format and we take a second step to transform the same data to the delta format.
-- Dynamically create partitioned views based on the delta lake file structure, the third pillar of the process is responsible to navigate through the data lake folder structure and dynamically create the partitioned views on top of it. For that it uses the stored procedure that was created on the Setup pipeline as explained above.
+- Setup, that is responsible to automatically create a database within the serverless pool, creates a external data source to the data lake and a stored procedure in the serverless database that will be triggered later. This functionality is also aligned with the pipeline Pl_NYCTaxi_1_Setup. This pipeline needs to run before the P_NYCTaxi_2_Preparation pipeline.
+- Get parquet data and transform it to delta format. In order to have testing data we are downloading some sample data from the NYC Taxi available open data to demonstrate the behaviour. The data is in parquet format and we take a second step to transform the same data to the delta format. We are taking data from October 2019, 2020 and 2021 as the latest data from NYC Taxi is not completely up to date to the month.
+- Automatically creates partitioned views based on the delta lake file structure after its creation, the third pillar of the process is responsible to point to the data lake previously created folders and dynamically create the partitioned views on top of it. For that it uses the stored procedure that was created on the Setup pipeline as explained above.
 
 The Stored Procedure will be responsible to dynamically create the views and expects the following parameters:
 
@@ -78,6 +94,8 @@ The Stored Procedure will be responsible to dynamically create the views and exp
 - external_datasource (created in the Setup pipeline as well), and it has a fixed name: ext_ds_datalake.
 - format, on our case we are dealing with the delta format
 - view_alias, build as a concatenation of "VIEW_" and the name of the delta lake tables
+  
+![Stored Procedure Creation](./images/stored_procedure_details.jpg)
 
 There is an important information about this process, that is relevant to mention. The Stored procedure needs to be created against the Serverless pool, and this is done in the P_NYCTaxi_1_Setup pipeline, however the "Programability" folder won't be available to navigate through the defined stored procedures in Synapse Studio. If there is a need to check the success of the stored procedure deployment, or a need to explore or test further on the serverless pool, a connection needs to be established to the serverless synapse endpoint through SSMS (SQL Server Management Studio) and explore the "Programability" folder as showed below:
 
@@ -89,15 +107,23 @@ Column Level Security is one important requirement when it comes to data access 
 
 There is no out-of-the box mechanism in Azure to implement CLS in the files that are stored in the datalake, however there is a possibility to implement CLS though the use of views on top of the datalake files. Furthermore, we can take advantage of AD Groups to implement a one to many relationship (1 AD Group containing many users mapped to 1 DB User) that implements the access level at the AD Level and still be able to audit per individual user on the activity performed on the database.
 
-The diagram below illustrates the step-by-step process in order to successfully define
+The diagram below illustrates the step-by-step process in order to successfully define CLS on top of a datalake file through a view:
 
 ![CLS](./images/CLS.jpg)
 
-## Running the Sample
+The deployment script responsible to deploy a AAD group called AADGR<PROJECT_NAME><DEPLOYMENT_ID> and add the owner of the deployment as a member.
 
-Navigate to the directory /modern-data-warehouse-dataops/single_tech_samples/synapseserverless and run the following command:
+To successfully test the CLS functionality there are a couple of steps you need to execute manually. After the deployment is complete, procede with the following steps:
 
-```bash -c ./deploy.sh```
+- Add a second AD user to the AADGR <PROJECT_NAME><DEPLOYMENT_ID>
+- In Synapse Studio, navigate to the Scripts and open the Sc_Column_Level_Security.sql script and follow the 9 steps described in the file
+
+## Removing the Sample
+
+To remove the sample you need to remove the following assets:
+
+- the resource group: <PROJECT_NAME><DEPLOYMENT_ID>-rg, resource group
+- the aad group: AADGR<PROJECT_NAME><DEPLOYMENT_ID>
 
 ## Issues and Workarounds
 
@@ -118,3 +144,7 @@ Install jq as explained in the pre-requirements section.
 ### I require azure cli but it's not installed. See [Az CLI](https://bit.ly/2Gc8IsS)
 
 Install Azure CLI as explained in the pre-requirements section.
+
+### Other issues
+
+If issues are encountered when deploying or running the sample, please file an issue in GitHub so it can be addressed.

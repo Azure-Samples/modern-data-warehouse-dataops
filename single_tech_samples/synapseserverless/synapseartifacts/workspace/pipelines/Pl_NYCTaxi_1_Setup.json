@@ -1,5 +1,5 @@
 {
-  "name": "P_NYCTaxi_1_Setup",
+  "name": "Pl_NYCTaxi_1_Setup",
   "properties": {
     "activities": [
       {
@@ -22,7 +22,7 @@
           "scripts": [
             {
               "type": "Query",
-              "text": "create database db_serverless"
+              "text": "create database db_serverless COLLATE Latin1_General_100_BIN2_UTF8"
             }
           ]
         }
@@ -54,7 +54,7 @@
           "scripts": [
             {
               "type": "Query",
-              "text": "CREATE EXTERNAL DATA SOURCE [ext_ds_datalake] WITH (LOCATION = N'https://sintechst1dep7.blob.core.windows.net/datalake')"
+              "text": "CREATE EXTERNAL DATA SOURCE [ext_ds_datalake] WITH (LOCATION = N'https://sintechst1d16.blob.core.windows.net/datalake')"
             }
           ]
         }

@@ -95,10 +95,27 @@ echo "$synapse_sparkpool_name"
 
 echo "$owner_object_id"
 
+sleep 20
+
 # Grant Synapse Administrator to the deployment owner
 assign_synapse_role_if_not_exists "$synapseworkspace_name" "Synapse Administrator" "$owner_object_id"
 assign_synapse_role_if_not_exists "$synapseworkspace_name" "Synapse Contributor" "$synapseworkspace_name"
 
+####################
+# CLS
+
+#######################
+# RBAC - Control Plane
+# Create a AAD Group, if you have permissions to do it (otherwise you will need to request to the AAD admin and comment this line)
+echo "Creating AAD Group:AADGR${PROJECT}${DEPLOYMENT_ID}"
+az ad group create --display-name "AADGR${PROJECT}${DEPLOYMENT_ID}" --mail-nickname "AADGR${PROJECT}${DEPLOYMENT_ID}"
+
+#################
+# RBAC - Synapse 
+# Allow Synapse Reader access to the AADGroup
+assign_synapse_role_if_not_exists "$synapseworkspace_name" "Synapse User" "$owner_object_id"
+
+##########################
 # Deploy Synapse artifacts
 #AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID \
 PROJECT_NAME=$PROJECT \
@@ -107,4 +124,26 @@ RESOURCE_GROUP_NAME=$resource_group_name \
 SYNAPSE_WORKSPACE_NAME=$synapseworkspace_name \
 BIG_DATAPOOL_NAME=$synapse_sparkpool_name \
     bash -c "./scripts/deploy_synapse_artifacts.sh"
+
+
+####################
+# CLS
+# Get AAD Group ObjectID
+aadGroupObjectId=$(az ad group list --filter "(displayName eq 'AADGR${PROJECT}${DEPLOYMENT_ID}')" --query "[].id" --output tsv)
+echo "Get AAD Group id: ${aadGroupObjectId}"
+until [ -n "${aadGroupObjectId}" ]
+    do
+        echo "waiting for the aad group to be created..."
+        sleep 10
+    done
+
+# Add the owner of the deployment to the AAD Group, if you have permissions to do it (otherwise you will need to request to the AAD admin and comment this line)
+echo "Adding members to AAD Group:AADGR${PROJECT}${DEPLOYMENT_ID}"
+az ad group member add --group "AADGR${PROJECT}${DEPLOYMENT_ID}" --member-id $owner_object_id
+az role assignment create --role "Storage Blob Data Reader" --assignee-object-id "${aadGroupObjectId}" --assignee-principal-type "Group" --scope "/subscriptions/${AZURE_SUBSCRIPTION_ID}/resourceGroups/${resource_group_name}/providers/Microsoft.Storage/storageAccounts/${PROJECT}st1${DEPLOYMENT_ID}"
+# Allow Storage Blob Data Reader access to the AAD Group on the ADLS Stg account
+#az role assignment create --role "Storage Blob Data Reader" --assignee-object-id "${aadGroupObjectId}" --assignee-principal-type "Group" --scope "/subscriptions/${AZURE_SUBSCRIPTION_ID}/resourceGroups/${resource_group_name}/providers/Microsoft.Storage/storageAccounts/${PROJECT}st1${DEPLOYMENT_ID}/blobServices/default/containers/datalake"
+# Allow Contributor to the AAD Group on Synapse workspace
+az role assignment create --role "Contributor" --assignee-object-id "${aadGroupObjectId}" --assignee-principal-type "Group" --scope "/subscriptions/${AZURE_SUBSCRIPTION_ID}/resourceGroups/${resource_group_name}/providers/Microsoft.Synapse/workspaces/${synapseworkspace_name}"
+
 
