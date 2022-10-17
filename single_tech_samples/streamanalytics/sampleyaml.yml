@@ -1,0 +1,34 @@
+trigger:
+- main 
+pool:
+  name: Azure Pipelines
+  demands: npm
+steps:
+- task: AzureKeyVault@2
+  inputs:
+    azureSubscription: '{RESOURCE MANAGER CONNECTION}'
+    KeyVaultName: '{KEY VAULT NAME}'
+    SecretsFilter: '*'
+    RunAsPreJob: false
+- task: Npm@1
+  displayName: 'Install Azure stream analytics ci cd'
+  inputs:
+    command: custom
+    verbose: false
+    customCommand: 'install -g azure-streamanalytics-cicd'
+
+- script: 'azure-streamanalytics-cicd build -project streamanalytics/asaproj.json -outputpath streamanalytics/Output/Deploy' 
+  displayName: 'Build Stream Analytics proj'
+- task: AzureResourceManagerTemplateDeployment@3
+  inputs:
+    deploymentScope: 'Resource Group'
+    azureResourceManagerConnection: '{RESOURCE MANAGER CONNECTION}'
+    subscriptionId: '{SUBSCRIPTION ID}'
+    action: 'Create Or Update Resource Group'
+    resourceGroupName: '{RESOURCE GROUP}'
+    location: 'Southeast Asia'
+    templateLocation: 'Linked artifact'
+    csmFile: 'streamanalytics/Output/Deploy/streamanalytics.JobTemplate.json'
+    csmParametersFile: 'streamanalytics/Output/Deploy/streamanalytics.JobTemplate.parameters.json'
+    overrideParameters: '-Location "Southeast Asia" -Input_roboterrorhub_sharedAccessPolicyKey $(roboterrorhubkey) -Output_outputfunc_apiKey $(azurefunctionkey)'
+    deploymentMode: 'Incremental'
