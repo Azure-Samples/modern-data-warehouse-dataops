@@ -30,5 +30,5 @@ steps:
     templateLocation: 'Linked artifact'
     csmFile: 'streamanalytics/Output/Deploy/streamanalytics.JobTemplate.json'
     csmParametersFile: 'streamanalytics/Output/Deploy/streamanalytics.JobTemplate.parameters.json'
-    overrideParameters: '-Location "Southeast Asia" -Input_roboterrorhub_sharedAccessPolicyKey $(roboterrorhubkey) -Output_outputfunc_apiKey $(azurefunctionkey)'
+    overrideParameters: '-Location "Southeast Asia" -Input_example_accesskey $(key_vault_secret) -Output_example_accesskey $(key_vault_secret)'
     deploymentMode: 'Incremental'
