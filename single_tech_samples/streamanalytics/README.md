@@ -170,6 +170,7 @@ Within the test file [e2e/e2e.ts](e2e/e2e.ts) there is the `EXPECTED_E2E_LATENCY
 #### CI/CD
 
 A sample CI/CD Pipeline YAML file is present in this repo under "sampleyaml.yml". In order to use this file, please do the following:
-   1. Update the values in the curly braces with the current Azure subscription information
-   2. Run the build command (azure-streamanalytics-cicd build -project streamanalytics/asaproj.json -outputpath streamanalytics/Output/Deploy) locally, and find the fields where the value is "null". These fields need to be added to the overrideParameters section of the YAML file where it says "key_vault_secret". It is best to store them in a keyvault and reference the secrets as demonstrated in the sample, but it is also possible to reference them directly by removing the $()
-   3. For additional jobs, please copy the AzureResourceManagerTemplateDeployment@3 task and update where it says "streamanalytics" to the new job name. 
+
+   1. Update the values in the curly braces with the current Azure subscription information.
+   2. Run the build command (azure-streamanalytics-cicd build -project streamanalytics/asaproj.json -outputpath streamanalytics/Output/Deploy) locally, and find the fields where the value is "null". These fields need to be added to the overrideParameters section of the YAML file where it says "key_vault_secret". It is best to store them in a keyvault and reference the secrets as demonstrated in the sample, but it is also possible to reference them directly by removing the $().
+   3. For additional jobs, please copy the AzureResourceManagerTemplateDeployment@3 task and update where it says "streamanalytics" to the new job name.
