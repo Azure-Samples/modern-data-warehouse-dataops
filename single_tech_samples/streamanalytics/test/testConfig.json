@@ -34,8 +34,8 @@
       "ExpectedOutputs": [
         {
           "OutputAlias": "bloboutput",
-          "FilePath": "/dev/null",
-          "Required": true
+          "FilePath": "temperature_less_than_27_degrees.json",
+          "Required": false
         }
       ]
     },
@@ -53,8 +53,8 @@
       "ExpectedOutputs": [
         {
           "OutputAlias": "bloboutput",
-          "FilePath": "/dev/null",
-          "Required": true
+          "FilePath": "temperature_equal_to_27_degrees.json",
+          "Required": false
         }
       ]
     }
