@@ -16,8 +16,6 @@ steps:
     command: custom
     verbose: false
     customCommand: 'install -g azure-streamanalytics-cicd'
-- script: 'azure-streamanalytics-cicd test -project ./asaproj.json --testConfigPath test/testConfig.json -outputPath ./output/ 
-  displayName: 'Test Stream Analytics proj'
 - script: 'azure-streamanalytics-cicd build -project streamanalytics/asaproj.json -outputpath streamanalytics/Output/Deploy' 
   displayName: 'Build Stream Analytics proj'
 - task: AzureResourceManagerTemplateDeployment@3
