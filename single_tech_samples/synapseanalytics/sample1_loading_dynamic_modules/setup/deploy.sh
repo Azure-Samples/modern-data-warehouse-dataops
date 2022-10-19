@@ -48,7 +48,7 @@ AZURE_RESOURCE_GROUP_NAME="${DEPLOYMENT_PREFIX}-${unique_str}-rg"
 WORK_SPACE_NAME="${DEPLOYMENT_PREFIX}-${unique_str}-ws"
 STORAGE_ACCOUNT_NAME="${DEPLOYMENT_PREFIX}${unique_str}sa"
 SQL_ADMIN_LOGIN_USER="${DEPLOYMENT_PREFIX}_sql_admin"
-SQL_ADMIN_PASSWORD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 15 | head -n 1 | tr '[:upper:]' '[:lower:]')!
+SQL_ADMIN_PASSWORD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 15 | head -n 1 )!
 SPARK_POOL="SparkPool1"
 IP_ADDRESS=$(curl -s checkip.dyndns.org | sed -e 's/.*Current IP Address: //' -e 's/<.*$//')
 
