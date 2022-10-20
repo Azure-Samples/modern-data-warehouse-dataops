@@ -15,7 +15,7 @@
       "ExpectedOutputs": [
         {
           "OutputAlias": "bloboutput",
-          "FilePath": "temperature_greater_than_27_degrees_expected.json",
+          "FilePath": "temperature_greater_than_27_degrees.json",
           "Required": true
         }
       ]
@@ -35,7 +35,7 @@
         {
           "OutputAlias": "bloboutput",
           "FilePath": "temperature_less_than_27_degrees.json",
-          "Required": false
+          "Required": true
         }
       ]
     },
@@ -54,7 +54,7 @@
         {
           "OutputAlias": "bloboutput",
           "FilePath": "temperature_equal_to_27_degrees.json",
-          "Required": false
+          "Required": true
         }
       ]
     }
