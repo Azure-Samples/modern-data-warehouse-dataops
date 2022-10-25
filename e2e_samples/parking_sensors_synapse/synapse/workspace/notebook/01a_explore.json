@@ -1,0 +1,57 @@
+{
+	"name": "01a_explore",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "synspdevscogro",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"runAsWorkspaceSystemIdentity": false
+		},
+		"metadata": {
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			}
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"import os\n",
+					"import datetime\n",
+					"\n",
+					"# For testing\n",
+					"base_path = 'abfss://datalake@<YOUR_STORAGE_ACCOUNT>.dfs.core.windows.net/data/lnd/2021_XX_XX_X1_XX_XX'\n",
+					"parkingbay_filepath = os.path.join(base_path, \"MelbParkingBayData.json\")\n",
+					"sensors_filepath = os.path.join(base_path, \"MelbParkingSensorData.json\")\n",
+					"\n",
+					"\n",
+					"parkingbay_sdf = spark.read\\\n",
+					"  .option(\"multiLine\", True)\\\n",
+					"  .json(parkingbay_filepath)\n",
+					"sensordata_sdf = spark.read\\\n",
+					"  .option(\"multiLine\", True)\\\n",
+					"  .json(sensors_filepath)\n",
+					"\n",
+					"display(parkingbay_sdf)\n",
+					"display(sensordata_sdf)\n",
+					"display(sensordata_sdf)\n"
+				]
+			}
+		]
+	}
+}
