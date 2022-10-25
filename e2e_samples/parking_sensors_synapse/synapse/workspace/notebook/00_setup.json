@@ -13,16 +13,40 @@
 			"executorMemory": "28g",
 			"executorCores": 4,
 			"numExecutors": 2,
-			"runAsWorkspaceSystemIdentity": false
+			"runAsWorkspaceSystemIdentity": false,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "eb7a4734-6316-4899-a322-9ca4159ebccb"
+			}
 		},
 		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
 			"kernelspec": {
 				"name": "synapse_pyspark",
 				"display_name": "Synapse PySpark"
 			},
 			"language_info": {
 				"name": "python"
-			}
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/3f08b018-5d36-4171-926f-2384f3676e3d/resourceGroups/mdwdops-scogro-dev-rg/providers/Microsoft.Synapse/workspaces/sywsdevscogro/bigDataPools/synspdevscogro",
+				"name": "synspdevscogro",
+				"type": "Spark",
+				"endpoint": "https://sywsdevscogro.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/synspdevscogro",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "2.4",
+				"nodeCount": 3,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": false
+			},
+			"sessionKeepAliveTimeout": 30
 		},
 		"cells": [
 			{
@@ -58,7 +82,8 @@
 				"source": [
 					"keyvaultlsname = 'Ls_KeyVault_01'\n",
 					"adls2lsname = 'Ls_AdlsGen2_01'"
-				]
+				],
+				"execution_count": 1
 			},
 			{
 				"cell_type": "markdown",
@@ -95,8 +120,10 @@
 					"storage_account = token_library.getSecretWithLS(keyvaultlsname, \"datalakeaccountname\")\n",
 					"\n",
 					"spark.conf.set(\"spark.storage.synapse.linkedServiceName\", adls2lsname)\n",
-					"spark.conf.set(\"fs.azure.account.oauth.provider.type\", \"com.microsoft.azure.synapse.tokenlibrary.LinkedServiceBasedTokenProvider\")\n"
-				]
+					"spark.conf.set(\"fs.azure.account.oauth.provider.type\", \"com.microsoft.azure.synapse.tokenlibrary.LinkedServiceBasedTokenProvider\")\n",
+					""
+				],
+				"execution_count": 2
 			},
 			{
 				"cell_type": "markdown",
@@ -130,7 +157,8 @@
 					"spark.sql(f\"CREATE SCHEMA IF NOT EXISTS lnd LOCATION 'abfss://datalake@{storage_account}.dfs.core.windows.net/data'\")\n",
 					"spark.sql(f\"CREATE SCHEMA IF NOT EXISTS interim LOCATION 'abfss://datalake@{storage_account}.dfs.core.windows.net/data'\")\n",
 					"spark.sql(f\"CREATE SCHEMA IF NOT EXISTS malformed LOCATION 'abfss://datalake@{storage_account}.dfs.core.windows.net/data'\")"
-				]
+				],
+				"execution_count": 3
 			},
 			{
 				"cell_type": "markdown",
@@ -165,7 +193,8 @@
 					"spark.sql(f\"CREATE TABLE dw.fact_parking(dim_date_id STRING,dim_time_id STRING, dim_parking_bay_id STRING, dim_location_id STRING, dim_st_marker_id STRING, status STRING, load_id STRING, loaded_on TIMESTAMP) USING parquet LOCATION 'abfss://datalake@{storage_account}.dfs.core.windows.net/data/dw/fact_parking/'\")\n",
 					" \n",
 					"spark.sql(f\"REFRESH TABLE dw.fact_parking\")"
-				]
+				],
+				"execution_count": 4
 			},
 			{
 				"cell_type": "markdown",
@@ -208,7 +237,8 @@
 					"spark.sql(f\"DROP TABLE IF EXISTS dw.dim_parking_bay\")\n",
 					"spark.sql(f\"CREATE TABLE dw.dim_parking_bay(dim_parking_bay_id STRING, bay_id INT,`marker_id` STRING, `meter_id` STRING, `rd_seg_dsc` STRING, `rd_seg_id` STRING, load_id STRING, loaded_on TIMESTAMP) USING parquet LOCATION 'abfss://datalake@{storage_account}.dfs.core.windows.net/data/dw/dim_parking_bay/'\")\n",
 					"spark.sql(f\"REFRESH TABLE dw.dim_parking_bay\")"
-				]
+				],
+				"execution_count": 5
 			},
 			{
 				"cell_type": "markdown",
@@ -249,7 +279,8 @@
 					"# DimTime\n",
 					"dimtime = spark.read.csv(f\"abfss://datalake@{storage_account}.dfs.core.windows.net/data/seed/dim_time/dim_time.csv\", header=True)\n",
 					"dimtime.write.saveAsTable(\"dw.dim_time\")"
-				]
+				],
+				"execution_count": 6
 			},
 			{
 				"cell_type": "markdown",
@@ -295,7 +326,8 @@
 					"spark.sql(f\"DROP TABLE IF EXISTS malformed.sensor\")\n",
 					"spark.sql(f\"CREATE TABLE malformed.sensor(bay_id INT,`st_marker_id` STRING,`lat` FLOAT,`lon` FLOAT,`location` STRUCT<`coordinates`: ARRAY<DOUBLE>, `type`: STRING>,`status` STRING, load_id STRING, loaded_on TIMESTAMP) USING parquet LOCATION 'abfss://datalake@{storage_account}.dfs.core.windows.net/data/malformed/malformed.parking_bay/'\")\n",
 					"spark.sql(f\"REFRESH TABLE malformed.sensor\")"
-				]
+				],
+				"execution_count": 7
 			}
 		]
 	}
