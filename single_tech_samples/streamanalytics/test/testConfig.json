@@ -15,7 +15,7 @@
       "ExpectedOutputs": [
         {
           "OutputAlias": "bloboutput",
-          "FilePath": "temperature_greater_than_27_degrees_expected.json",
+          "FilePath": "temperature_greater_than_27_degrees.json",
           "Required": true
         }
       ]
@@ -31,13 +31,7 @@
           "ScriptType": "InputMock"
         }
       ],
-      "ExpectedOutputs": [
-        {
-          "OutputAlias": "bloboutput",
-          "FilePath": "/dev/null",
-          "Required": true
-        }
-      ]
+      "ExpectedOutputs": []
     },
     {
       "Name": "temperature_equal_to_27_degrees",
@@ -50,13 +44,7 @@
           "ScriptType": "InputMock"
         }
       ],
-      "ExpectedOutputs": [
-        {
-          "OutputAlias": "bloboutput",
-          "FilePath": "/dev/null",
-          "Required": true
-        }
-      ]
+      "ExpectedOutputs": []
     }
   ]
 }
