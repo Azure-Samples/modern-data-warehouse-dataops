@@ -13,16 +13,40 @@
 			"executorMemory": "28g",
 			"executorCores": 4,
 			"numExecutors": 2,
-			"runAsWorkspaceSystemIdentity": false
+			"runAsWorkspaceSystemIdentity": false,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "3f46ca0e-64c5-4933-819c-b67d092f1c94"
+			}
 		},
 		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
 			"kernelspec": {
 				"name": "synapse_pyspark",
 				"display_name": "Synapse PySpark"
 			},
 			"language_info": {
 				"name": "python"
-			}
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/3f08b018-5d36-4171-926f-2384f3676e3d/resourceGroups/mdwdops-scogro-dev-rg/providers/Microsoft.Synapse/workspaces/sywsdevscogro/bigDataPools/synspdevscogro",
+				"name": "synspdevscogro",
+				"type": "Spark",
+				"endpoint": "https://sywsdevscogro.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/synspdevscogro",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "2.4",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": false
+			},
+			"sessionKeepAliveTimeout": 30
 		},
 		"cells": [
 			{
@@ -67,7 +91,8 @@
 					"\n",
 					"# Get keyvault linked service name\n",
 					"keyvaultlsname = 'Ls_KeyVault_01'"
-				]
+				],
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -118,7 +143,8 @@
 					"print(parkingbay_filepath)\n",
 					"sensors_filepath = os.path.join(base_path, \"MelbParkingSensorData.json\")\n",
 					"print(sensors_filepath)"
-				]
+				],
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -166,6 +192,10 @@
 					"\n",
 					"# Standardize\n",
 					"t_parkingbay_sdf, t_parkingbay_malformed_sdf = s.standardize_parking_bay(parkingbay_sdf, load_id, loaded_on)\n",
+					"\n",
+					"# Bay_Id is not a unique key in the data but the project expects it to be. Remove dupes.\n",
+					"t_parkingbay_sdf = t_parkingbay_sdf.drop_duplicates(['Bay_Id'])\n",
+					"\n",
 					"t_sensordata_sdf, t_sensordata_malformed_sdf = s.standardize_sensordata(sensordata_sdf, load_id, loaded_on)\n",
 					"\n",
 					"# Insert new rows\n",
@@ -181,7 +211,8 @@
 					"sensordata_count = t_sensordata_sdf.count()\n",
 					"parkingbay_malformed_count = t_parkingbay_malformed_sdf.count()\n",
 					"sensordata_malformed_count = t_sensordata_malformed_sdf.count()"
-				]
+				],
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -240,8 +271,10 @@
 					"#    sensordataCount          = customDimensions.sensordata_count,\n",
 					"#    parkingbayMalformedCount = customDimensions.parkingbay_malformed_count,\n",
 					"#    sensordataMalformedCount = customDimensions.sensordata_malformed_count,\n",
-					"#    dimParkingbayCount       = customDimensions.new_parkingbay_count\n"
-				]
+					"#    dimParkingbayCount       = customDimensions.new_parkingbay_count\n",
+					""
+				],
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -302,7 +335,8 @@
 					"#    jobId           = split(Message, '~', 2),\n",
 					"#    SparkPoolName   = split(Message, '~', 3),\n",
 					"#    UserId          = split(Message, '~', 5)"
-				]
+				],
+				"execution_count": null
 			}
 		]
 	}
