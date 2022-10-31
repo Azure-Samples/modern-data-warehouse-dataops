@@ -43,6 +43,7 @@ def get_schema(schema_name):
 def standardize_parking_bay(parkingbay_sdf: DataFrame, load_id, loaded_on):
     t_parkingbay_sdf = (
         parkingbay_sdf
+        .drop_duplicates(["bay_id"])
         .withColumn("last_edit", to_timestamp("last_edit", "yyyyMMddHHmmss"))
         .select(
             col("bay_id").cast("int").alias("bay_id"),
