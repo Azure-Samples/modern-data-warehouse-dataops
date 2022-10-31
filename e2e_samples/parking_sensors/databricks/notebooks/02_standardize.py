@@ -49,6 +49,10 @@ sensordata_sdf = spark.read\
 
 # Standardize
 t_parkingbay_sdf, t_parkingbay_malformed_sdf = s.standardize_parking_bay(parkingbay_sdf, load_id, loaded_on)
+
+# Bay_Id is not a unique key in the data but the project expects it to be. Remove dupes.
+t_parkingbay_sdf = t_parkingbay_sdf.drop_duplicates(['Bay_Id'])
+
 t_sensordata_sdf, t_sensordata_malformed_sdf = s.standardize_sensordata(sensordata_sdf, load_id, loaded_on)
 
 # Insert new rows
