@@ -36,12 +36,17 @@ def test_standardize_parking_bay(spark):
     parkingbay_sdf = spark.read.json("./data/MelbParkingBayData.json", multiLine=True, schema=schema)
     load_id = 1
     loaded_on = datetime.datetime.now()
+
     # Act
     t_parkingbay_sdf, t_parkingbay_malformed_sdf = standardize.standardize_parking_bay(parkingbay_sdf, load_id, loaded_on)  # noqa: E501
+
     # Assert
     assert t_parkingbay_sdf.count() != 0
     assert t_parkingbay_malformed_sdf.count() == 0
     assert t_parkingbay_sdf.filter(isnull("bay_id")).count() == 0
+
+    # Ensure that each bay_id occurs only once
+    assert t_parkingbay_sdf.groupBy("bay_id").count().filter("count > 1").count() == 0
 
 
 def test_standardize_sensordata(spark):
