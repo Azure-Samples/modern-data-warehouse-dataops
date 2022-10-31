@@ -1,8 +1,0 @@
-export GITHUB_REPO=ScoGroMSFT/modern-data-warehouse-dataops
-#export GITHUB_PAT_TOKEN=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
-export GITHUB_PAT_TOKEN=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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
-export AZURE_LOCATION=westus
-export DEPLOYMENT_ID=scogro
-export SYNAPSE_SQL_PASSWORD=foobar_scogro_1234
-export AZDO_ORGANIZATION_URL="https://dev.azure.com/CseLionCrew/"
-export AZDO_PROJECT="scogromdw"
