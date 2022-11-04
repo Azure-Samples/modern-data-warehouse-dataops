@@ -25,7 +25,7 @@ In order to open the project in a container follow the following steps:
 - When prompted, select the directory \modern-data-warehouse-dataops\single_tech_samples\synapseserverless
 - Wait for the container to build, check the logs for more information:
   
-  ![Container Logs](.\images\container.jpg)
+  ![Container Logs](./images/container.jpg)
 
 ### Without using Dev Containers
 
