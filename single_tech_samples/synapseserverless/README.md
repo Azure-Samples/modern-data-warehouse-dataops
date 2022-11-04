@@ -8,7 +8,28 @@ And lastly, it demonstrates how to implement CLS (Column Level Security) on the 
 
 ## Pre-requirements
 
-After cloning the repository, this are prerequisites to be followed to run the sample:
+- Azure account
+- Visual Studio Code
+
+### Using Dev Containers
+
+To use a Dev Container, you need to have the following software in addition to the previous pre-requisites:
+
+- Docker
+- Visual Studio Code Remote Development Extension Pack
+
+In order to open the project in a container follow the following steps:
+
+- Open Visual Studio Code and clone the repository.
+- Hit Ctlr-Shift-P to open the command palette and type Dev Containers: Open Folder in Container ...
+- When prompted, select the directory \modern-data-warehouse-dataops\single_tech_samples\synapseserverless
+- Wait for the container to build, check the logs for more information:
+  
+  ![Container Logs](.\images\container.jpg)
+
+### Without using Dev Containers
+
+Clone the repository and follow this prerequisites in order to run the sample:
 
 - Login to Azure az login
 - Install jq
