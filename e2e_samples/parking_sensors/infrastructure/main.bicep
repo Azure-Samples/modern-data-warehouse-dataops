@@ -124,7 +124,6 @@ module actiongroup './modules/actiongroup.bicep' = if (enable_monitoring) {
   params: {
     project: project
     env: env
-    location: location
     deployment_id: deployment_id
     email_id: email_id
   }
@@ -151,6 +150,7 @@ module data_quality_workbook './modules/data_quality_workbook.bicep' = if (enabl
   name: 'wb_${deployment_id}'
   params: {
     appinsights_name: appinsights.outputs.appinsights_name
+    location: location
   }
   dependsOn: [
     loganalytics
