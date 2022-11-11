@@ -1,0 +1,30 @@
+{
+	"name": "SourceDataset_96b",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "scogro_adventureworks_db",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"cw_schema": {
+				"type": "String"
+			},
+			"cw_table": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": {
+				"value": "@dataset().cw_schema",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().cw_table",
+				"type": "Expression"
+			}
+		}
+	}
+}
