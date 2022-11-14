@@ -12,29 +12,28 @@ AZDO_ORGANIZATION_URL=
 # REQUIRED. Environment variables for deployment script
 
 # Name of your imported github repo in this form `<my_github_handle>/<repo>`. (ei. "devlace/mdw-dataops-import")
-GITHUB_REPO=
+GITHUB_REPO="paywang/modern-data-warehouse-dataops"
 
 # a Github PAT token. Generate them [here](https://github.com/settings/tokens). This requires "repo" scope.
-GITHUB_PAT_TOKEN=
-
+GITHUB_PAT_TOKEN="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"
 
 ###
 # OPTIONAL. Environment variables for deployment script.
 # Uncomment to set values.
 
 # Azure location to deploy resources. Default: westus
-# AZURE_LOCATION=
+AZURE_LOCATION="eastus2"
 
 # Azure subscription id to use to deploy resources. Default: default azure subscription.
-# AZURE_SUBSCRIPTION_ID=
+AZURE_SUBSCRIPTION_ID="671dfffc-3c26-439b-9715-7ee4e013a514"
 
 # String appended to all resource names to ensure uniqueness of azure resource names. Default: random five character string
-# DEPLOYMENT_ID=
+DEPLOYMENT_ID=peiwang
 
 # git branch where Azure DevOps pipelines definitions are retrieved from. Default: main
-# AZDO_PIPELINES_BRANCH_NAME=
+AZDO_PIPELINES_BRANCH_NAME="main"
 
 # Password of the Synapse SQL instance. Default: random string
-# SYNAPSE_SQL_PASSWORD=
+SYNAPSE_SQL_PASSWORD="ThisisAWE$ome9%"
 
 

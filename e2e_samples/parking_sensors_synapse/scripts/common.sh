@@ -76,13 +76,16 @@ function retry {
 # Usage: wait_service_principal_creation <SERVICE_PRINCIPAL_APP_ID>
 wait_service_principal_creation () {
     local sp_app_id=$1
-    until az ad sp list --show-mine --query "[].appId" -o tsv | grep "$sp_app_id"
+    # until az ad sp list --show-mine --query "[].appId" -o tsv | grep "$sp_app_id"
+    # troubleshooting by pei
+    until az ad sp list --all --query "[].appId" -o tsv | grep "$sp_app_id"
     do
         echo "waiting for service principal to finish creating..."
         sleep 10
     done
     # Now, try to retrieve it
-    retry 10 az ad sp show --id "$sp_app_id" --query "objectId"
+    #retry 10 az ad sp show --id "$sp_app_id" --query "objectId"
+    retry 10 az ad sp show --id "$sp_app_id" --query "appId"
 }
 
 # Assign an Azure Synapse role to an SP if not already assigned

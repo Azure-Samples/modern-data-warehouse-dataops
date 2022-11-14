@@ -218,6 +218,11 @@ AZURE_STORAGE_ACCOUNT=$azure_storage_account \
 # SERVICE PRINCIPAL IN SYNAPSE INTEGRATION TESTS
 # Synapse SP for integration tests
  sp_synapse_name="${PROJECT}-syn-${ENV_NAME}-${DEPLOYMENT_ID}-sp"
+ echo az ad sp create-for-rbac \
+     --role Contributor \
+     --scopes "/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$resource_group_name/providers/Microsoft.Synapse/workspaces/$synapseworkspace_name" \
+     --name "$sp_synapse_name" \
+     --output json
  sp_synapse_out=$(az ad sp create-for-rbac \
      --role Contributor \
      --scopes "/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$resource_group_name/providers/Microsoft.Synapse/workspaces/$synapseworkspace_name" \

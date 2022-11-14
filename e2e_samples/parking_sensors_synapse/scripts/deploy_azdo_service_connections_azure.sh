@@ -62,7 +62,9 @@ service_principal_id=$(echo "$az_sp" | jq -r '.appId')
 az_sp_tenant_id=$(echo "$az_sp" | jq -r '.tenant')
 
 # Create Azure Service connection in Azure DevOps
+echo "creating azure service connection"
 azure_devops_ext_azure_rm_service_principal_key=$(echo "$az_sp" | jq -r '.password')
+echo $azure_devops_ext_azure_rm_service_principal_key
 export AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY=$azure_devops_ext_azure_rm_service_principal_key
 
 if sc_id=$(az devops service-endpoint list -o tsv | grep "$az_service_connection_name" | awk '{print $3}'); then
@@ -70,12 +72,17 @@ if sc_id=$(az devops service-endpoint list -o tsv | grep "$az_service_connection
     az devops service-endpoint delete --id "$sc_id" -y
 fi
 echo "Creating Azure service connection Azure DevOps"
+    
 sc_id=$(az devops service-endpoint azurerm create \
     --name "$az_service_connection_name" \
     --azure-rm-service-principal-id "$service_principal_id" \
     --azure-rm-subscription-id "$az_sub_id" \
     --azure-rm-subscription-name "$az_sub_name" \
     --azure-rm-tenant-id "$az_sp_tenant_id" --output json | jq -r '.id')
+
+echo az devops service-endpoint update \
+    --id "$sc_id" \
+    --enable-for-all "true"
 
 az devops service-endpoint update \
     --id "$sc_id" \

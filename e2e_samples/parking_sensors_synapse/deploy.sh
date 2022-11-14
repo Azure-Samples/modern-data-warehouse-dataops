@@ -33,7 +33,9 @@ github_repo_url="https://github.com/$GITHUB_REPO"
 ###################
 # DEPLOY ALL FOR EACH ENVIRONMENT
 
-for env_name in dev stg prod; do  # dev stg prod
+#for env_name in dev stg prod; do  # dev stg prod
+for env_name in dev stg; do  # dev stg prod
+
     PROJECT=$project \
     DEPLOYMENT_ID=$DEPLOYMENT_ID \
     ENV_NAME=$env_name \

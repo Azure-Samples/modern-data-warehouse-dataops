@@ -72,7 +72,8 @@ stages:
   - job: 'publish_sql_packages'
     displayName: 'Publish SQL Packages'
     pool:
-      vmImage: 'windows-latest'
+      # vmImage: 'windows-latest'
+      vmImage: 'windows-2019'
     steps:
     - task: NuGetToolInstaller@1
 

@@ -13,7 +13,7 @@ resources:
   - repository: mdwdataops_workspace_publish
     type: github
     endpoint: mdwdops-github
-    name: your_github_handle/your_repo  # deploy script should replace this with your github repo
+    name: paywang/modern-data-warehouse-dataops  # deploy script should replace this with your github repo
     ref: workspace_publish
 
 stages:
