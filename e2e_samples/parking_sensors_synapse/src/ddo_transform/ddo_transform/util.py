@@ -13,11 +13,10 @@ def save_overwrite_unmanaged_table(spark: SparkSession, dataframe: DataFrame, ta
     temp_table_name = table_name + "___temp"
     spark.sql("DROP TABLE IF EXISTS " + temp_table_name).collect()
     # Save temp table
-    dataframe.write.saveAsTable(temp_table_name)
+    dataframe.write.saveAsTable(temp_table_name, overwrite=True)
     # Read temp table and overwrite original table
     spark.read.table(temp_table_name)\
-        .write.mode("overwrite")\
-        .option("path", path)\
-        .saveAsTable(table_name)
+        .write.option("path", path)\
+        .insertInto(table_name, overwrite=True)
     # Drop temp table
     spark.sql("DROP TABLE " + temp_table_name).collect()
