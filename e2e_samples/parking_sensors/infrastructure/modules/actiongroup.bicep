@@ -5,7 +5,6 @@ param project string
   'prod'
 ])
 param env string
-param location string = resourceGroup().location
 param deployment_id string
 param email_id string
 
