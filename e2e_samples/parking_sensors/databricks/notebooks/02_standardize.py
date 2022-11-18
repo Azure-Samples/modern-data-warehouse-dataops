@@ -1,6 +1,6 @@
 # Databricks notebook source
 # MAGIC %pip install great-expectations==0.14.12
-# MAGIC %pip install opencensus-ext-azure==1.1.3
+# MAGIC %pip install opencensus-ext-azure==1.1.7
 
 # COMMAND ----------
 

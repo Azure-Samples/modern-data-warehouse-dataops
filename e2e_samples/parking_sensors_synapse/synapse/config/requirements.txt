@@ -1,1 +1,1 @@
-opencensus==0.7.13
+opencensus==1.1.7
