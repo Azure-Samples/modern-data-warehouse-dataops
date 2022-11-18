@@ -8,7 +8,8 @@
 		"eamodio.gitlens",
 		"DavidAnson.vscode-markdownlint",
 		"yzhang.markdown-all-in-one",
-		"ms-azuretools.vscode-bicep"
+		"ms-azuretools.vscode-bicep",
+		"ms-vscode.azurecli"
 	],
 	"settings": {
 		"python.pythonPath": "/usr/local/bin/python"
