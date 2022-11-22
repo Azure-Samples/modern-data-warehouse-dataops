@@ -1,0 +1,24 @@
+{
+    "name": "Tg_NYCTaxi_0_Main",
+    "properties": {
+        "annotations": [],
+        "runtimeState": "Started",
+        "pipelines": [
+            {
+                "pipelineReference": {
+                    "referenceName": "Pl_NYCTaxi_0_Main",
+                    "type": "PipelineReference"
+                }
+            }
+        ],
+        "type": "ScheduleTrigger",
+        "typeProperties": {
+            "recurrence": {
+                "frequency": "Minute",
+                "interval": 15,
+                "startTime": "2022-09-29T09:18:00Z",
+                "timeZone": "UTC"
+            }
+        }
+    }
+}
