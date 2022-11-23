@@ -1,0 +1,17 @@
+{
+	"name": "create_db_user_template",
+	"properties": {
+		"description": "create_db_user_template",
+		"content": {
+			"query": "USE master\n-- CREATE SQL LOGIN USER  WITH PASSWORD \nIF NOT EXISTS(SELECT name FROM sys.server_principals WHERE name = '<your sql login user name>')\nBEGIN\n    CREATE LOGIN [<your sql login user name>] WITH PASSWORD = '<your password>'\nEND\nGO\n-- CREATE DATABASE\nIF NOT EXISTS(SELECT * FROM sys.databases WHERE name = '<your database name>')\nBEGIN\n    CREATE DATABASE [<your database name>]\nEND\nGO\nUSE <your database name> \n-- Create MASTER KEY\nIF NOT EXISTS\n    (SELECT * FROM sys.symmetric_keys\n        WHERE symmetric_key_id = 101)\nBEGIN\n    CREATE MASTER KEY\nEND\nGO\n-- Create Database Scope Credential [Managed Identity]\nIF NOT EXISTS\n    (SELECT * FROM sys.database_scoped_credentials\n         WHERE name = 'SynapseIdentity')\n    CREATE DATABASE SCOPED CREDENTIAL SynapseIdentity\n    WITH IDENTITY = 'Managed Identity'\nGO\n-- CREATE DB USER NAME\nIF NOT EXISTS(SELECT name FROM sys.database_principals WHERE name = '<your db user name>')\nBEGIN\n    CREATE USER [<your db user name>] \n    FOR LOGIN [<your sql login user name>] \n    WITH DEFAULT_SCHEMA = dbo; \nEND\nGO\n-- GRANT DB ROLES TO USER\nALTER ROLE db_datareader ADD MEMBER [<your db user name>]; \nALTER ROLE db_datawriter ADD MEMBER [<your db user name>]; \nGO\n-- grant user CREDENTIAL\n-- enable users to reference that credential so they can access storage.\ngrant references \n    on database scoped credential::SynapseIdentity\n    to  [<your db user name>]; \n-- grant CONTROL on Database \nGRANT CONTROL ON DATABASE SCOPED CREDENTIAL::SynapseIdentity TO  [<your db user name>]\nGO\nGRANT CONTROL ON DATABASE::<your database name> to  [<your db user name>];\n-- Note: the CONTROL permission includes such permissions as INSERT, UPDATE, DELETE, EXECUTE, and several others.  \nGO",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"name": "master",
+				"type": "SqlOnDemand"
+			}
+		},
+		"type": "SqlQuery"
+	}
+}
