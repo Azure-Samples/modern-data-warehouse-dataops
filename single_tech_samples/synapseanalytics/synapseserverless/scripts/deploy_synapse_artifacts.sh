@@ -79,7 +79,7 @@ createPipeline () {
             tmp=$(mktemp)
             jq --arg a "${sqlScript}" '.properties.activities[1].typeProperties.scripts[0].text = $a' ./synapseartifacts/workspace/pipelines/"${name}".json > "$tmp" && mv "$tmp" ./synapseartifacts/workspace/pipelines/"${name}".json
             ;;
-        "Pl_NYCTaxi_2_Preparation")
+        "Pl_NYCTaxi_2_CreateServerlessView")
             # Replace spark pool name based on deployment info
             tmp=$(mktemp)
             jq --arg a "${PROJECT_NAME}st1${DEPLOYMENT_ID}" '.properties.activities[1].typeProperties.parameters.stgAccountName.value = $a' ./synapseartifacts/workspace/pipelines/"${name}".json > "$tmp" && mv "$tmp" ./synapseartifacts/workspace/pipelines/"${name}".json
@@ -102,6 +102,12 @@ createSQLScript(){
     declare name=$1
     echo "Creating Synapse SQL Script: $name"
     az synapse sql-script create --workspace-name $SYNAPSE_WORKSPACE_NAME --name "${name}" --file ./synapseartifacts/workspace/scripts/"$name".sql
+}
+
+startTrigger(){
+    declare name=$1
+    echo "Starting Synapse Trigger: $name"
+    az synapse trigger start --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --name "${name}"
 }
 
 getProvisioningState
@@ -132,7 +138,7 @@ createNotebook "Nb_Convert_Parquet_to_Delta"
 createPipeline "Pl_NYCTaxi_1_Setup" "CREATE EXTERNAL DATA SOURCE [ext_ds_datalake] WITH (LOCATION = N'https://${PROJECT_NAME}st1${DEPLOYMENT_ID}.blob.core.windows.net/datalake')"
 
 # Deploy main pipeline that transforms parquet to delta and created dynamic views on top of the delta structure
-createPipeline "Pl_NYCTaxi_2_Preparation" "${BIG_DATAPOOL_NAME}"
+createPipeline "Pl_NYCTaxi_2_CreateServerlessView" "${BIG_DATAPOOL_NAME}"
 
 # Deploy main pipeline that calls the setup and preparation pipelines
 createPipeline "Pl_NYCTaxi_0_Main" ""
@@ -142,3 +148,6 @@ createTrigger "Tg_NYCTaxi_0_Main"
 
 # Deploy SQL Script
 createSQLScript "Sc_Column_Level_Security" 
+
+# Start trigger
+startTrigger "Tg_NYCTaxi_0_Main"

@@ -22,7 +22,7 @@
           "scripts": [
             {
               "type": "Query",
-              "text": "create database db_serverless COLLATE Latin1_General_100_BIN2_UTF8"
+              "text": "IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'db_serverless')\nBEGIN\n    create database db_serverless COLLATE Latin1_General_100_BIN2_UTF8\nEND"
             }
           ]
         }
@@ -54,7 +54,7 @@
           "scripts": [
             {
               "type": "Query",
-              "text": "CREATE EXTERNAL DATA SOURCE [ext_ds_datalake] WITH (LOCATION = N'https://syntechst1d18.blob.core.windows.net/datalake')"
+              "text": "IF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'ext_ds_datalake')\r\nBEGIN\r\n    CREATE EXTERNAL DATA SOURCE [ext_ds_datalake] WITH (LOCATION = N'https://sintechst1d16.blob.core.windows.net/datalake')\r\nEND"
             }
           ]
         }
@@ -86,7 +86,7 @@
           "scripts": [
             {
               "type": "Query",
-              "text": "CREATE PROC [dbo].[CreateDynamicSQLServerlessView]  @viewName varchar(50), @deltaTableName varchar(50), @externalDataSourceName varchar(50), @viewAliasName varchar(50), @format varchar(30)\nAS \nBEGIN\nDECLARE @sql_statement varchar(MAX)\nSET @sql_statement = N'CREATE OR ALTER VIEW ' + @viewName + ' \n\tAs SELECT * \n\tFROM\n\t\tOPENROWSET(\n\t\tBULK ''' + @deltaTableName + ''',\n\t\tDATA_SOURCE = ''' +  @externalDataSourceName + ''',\n\t\tFORMAT = ''' + @format + '''\n\t)as [' + @viewAliasName + '] \n\t'\nEXEC (@sql_statement)\nEND"
+              "text": "CREATE OR ALTER PROC [dbo].[CreateDynamicSQLServerlessView]  @viewName varchar(50), @deltaTableName varchar(50), @externalDataSourceName varchar(50), @viewAliasName varchar(50), @format varchar(30)\nAS \nBEGIN\nDECLARE @sql_statement varchar(MAX)\nSET @sql_statement = N'CREATE OR ALTER VIEW ' + @viewName + ' \n\tAs SELECT * \n\tFROM\n\t\tOPENROWSET(\n\t\tBULK ''' + @deltaTableName + ''',\n\t\tDATA_SOURCE = ''' +  @externalDataSourceName + ''',\n\t\tFORMAT = ''' + @format + '''\n\t)as [' + @viewAliasName + '] \n\t'\nEXEC (@sql_statement)\nEND"
             }
           ]
         }

@@ -1,5 +1,5 @@
 {
-  "name": "Pl_NYCTaxi_2_Preparation",
+  "name": "Pl_NYCTaxi_2_CreateServerlessView",
   "properties": {
     "activities": [
       {
@@ -106,12 +106,12 @@
               "type": "string"
             },
             "stgAccountName": {
-              "value": "syntechst1d18",
+              "value": "syntechst1d20",
               "type": "string"
             }
           },
           "sparkPool": {
-            "referenceName": "sysparkpoold18",
+            "referenceName": "sysparkpoold20",
             "type": "BigDataPoolReference"
           },
           "conf": {

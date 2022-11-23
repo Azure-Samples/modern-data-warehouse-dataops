@@ -21,13 +21,13 @@
                     },
                     "activities": [
                         {
-                            "name": "Execute Pl_NYCTaxi_2_Preparation",
+                            "name": "Execute Pl_NYCTaxi_2_CreateServerlessView",
                             "type": "ExecutePipeline",
                             "dependsOn": [],
                             "userProperties": [],
                             "typeProperties": {
                                 "pipeline": {
-                                    "referenceName": "Pl_NYCTaxi_2_Preparation",
+                                    "referenceName": "Pl_NYCTaxi_2_CreateServerlessView",
                                     "type": "PipelineReference"
                                 },
                                 "waitOnCompletion": true,
