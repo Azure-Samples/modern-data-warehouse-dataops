@@ -13,12 +13,12 @@ jobs:
       deploy:
         steps:
         # - script: |
-        #     # az upgrade and apt-get command both failed for updating to 2.29.0 
-        #     # version on ubuntu at this point
         #     curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
         #   name: az_upgrade
         #   displayName: 'upgrade az cli to latest version'
 
+        # TEMP: Fix az cli viersion to 2.40 due to this bug:
+        # https://github.com/Azure-Samples/modern-data-warehouse-dataops/issues/562
         - script: |
             sudo apt-get update
             sudo apt-get install ca-certificates curl apt-transport-https lsb-release gnupg
@@ -32,7 +32,7 @@ jobs:
             apt-cache policy azure-cli
             sudo apt-get install azure-cli=2.40.0-1~focal --allow-downgrades
           name: az_upgrade
-          displayName: 'set az cli to 2.40.0'
+          displayName: 'Set az cli to 2.40.0'
 
         - bash: az --version
           displayName: 'Show Azure CLI version'
