@@ -19,6 +19,11 @@ jobs:
         #   name: az_upgrade
         #   displayName: 'upgrade az cli to latest version'
 
+        - script: |
+            sudo apt-get install azure-cli=2.40.0-1~bullseye
+          name: az_upgrade
+          displayName: 'set az cli to 2.40.0'
+
         - bash: az --version
           displayName: 'Show Azure CLI version'
 
