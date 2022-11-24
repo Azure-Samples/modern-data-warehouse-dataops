@@ -1,0 +1,17 @@
+{
+	"name": "create_external_table",
+	"properties": {
+		"description": "create_external_table",
+		"content": {
+			"query": "-- CREATE DATABASE\nIF NOT EXISTS(SELECT * FROM sys.databases WHERE name = 'external_db')\nBEGIN\n    CREATE DATABASE external_db\nEND\nGO\nUSE external_db\n-- Create MASTER KEY \nIF NOT EXISTS\n    (SELECT * FROM sys.symmetric_keys\n        WHERE symmetric_key_id = 101)\nBEGIN\n    CREATE MASTER KEY\nEND\nGO\n-- Create Database Scope Credential [Managed Identity]\nIF NOT EXISTS\n    (SELECT * FROM sys.database_scoped_credentials\n         WHERE name = 'SynapseIdentity')\n    CREATE DATABASE SCOPED CREDENTIAL SynapseIdentity\n    WITH IDENTITY = 'Managed Identity'\nGO\nIF NOT EXISTS\n    (SELECT * FROM sys.database_scoped_credentials\n         WHERE name = 'WorkspaceIdentity')\n    CREATE DATABASE SCOPED CREDENTIAL WorkspaceIdentity\n    WITH IDENTITY = 'Managed Identity'\nGO\n-- Create Parquet Format [SynapseParquetFormat]\nIF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'SynapseParquetFormat')\n\tCREATE EXTERNAL FILE FORMAT [SynapseParquetFormat]\n\tWITH ( FORMAT_TYPE = parquet)\nGO\n-- DROP EXTERNAL DATA SOURCE INTERIM_Zone\n-- Create External Data Source\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'INTERIM_Zone')\n\tCREATE EXTERNAL DATA SOURCE INTERIM_Zone\n\tWITH (  LOCATION   =  'https://mdwdopsstdevsyn1.dfs.core.windows.net/datalake/data/interim/'\n    ,CREDENTIAL = WorkspaceIdentity )\nGo\n-- Create parking_bay View \nIF EXISTS(select * FROM sys.views where name = 'parking_bay_view')\n    DROP VIEW IF EXISTS parking_bay_view;\nGO\nCREATE VIEW parking_bay_view AS\nSELECT * \nFROM OPENROWSET(\n        BULK 'interim.parking_bay/*.parquet',\n        DATA_SOURCE = 'INTERIM_Zone',\n        FORMAT = 'PARQUET'\n    )\nAS [r];\nGO\n-- Create sensor View \nIF EXISTS(select * FROM sys.views where name = 'sensor_view')\n    DROP VIEW IF EXISTS sensor_view;\nGO\nCREATE VIEW sensor_view AS\nSELECT * \nFROM OPENROWSET(\n        BULK 'interim.sensor/*.parquet',\n        DATA_SOURCE = 'INTERIM_Zone',\n        FORMAT = 'PARQUET'\n    )\nAS [r];\nGO",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"name": "master",
+				"type": "SqlOnDemand"
+			}
+		},
+		"type": "SqlQuery"
+	}
+}
