@@ -30,7 +30,7 @@ jobs:
               sudo tee /etc/apt/sources.list.d/azure-cli.list
             sudo apt-get update
             apt-cache policy azure-cli
-            sudo apt-get install azure-cli=2.40.0-1~bullseye
+            sudo apt-get install azure-cli=2.40.0-1~focal
           name: az_upgrade
           displayName: 'set az cli to 2.40.0'
 
