@@ -20,6 +20,15 @@ jobs:
         #   displayName: 'upgrade az cli to latest version'
 
         - script: |
+            sudo apt-get update
+            sudo apt-get install ca-certificates curl apt-transport-https lsb-release gnupg
+            curl -sL https://packages.microsoft.com/keys/microsoft.asc |
+              gpg --dearmor |
+              sudo tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null
+            AZ_REPO=$(lsb_release -cs)
+            echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" |
+              sudo tee /etc/apt/sources.list.d/azure-cli.list
+            sudo apt-get update
             sudo apt-get install azure-cli=2.40.0-1~bullseye
           name: az_upgrade
           displayName: 'set az cli to 2.40.0'
