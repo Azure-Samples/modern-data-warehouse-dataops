@@ -29,6 +29,7 @@ jobs:
             echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" |
               sudo tee /etc/apt/sources.list.d/azure-cli.list
             sudo apt-get update
+            apt-cache policy azure-cli
             sudo apt-get install azure-cli=2.40.0-1~bullseye
           name: az_upgrade
           displayName: 'set az cli to 2.40.0'
