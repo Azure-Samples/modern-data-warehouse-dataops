@@ -1,4 +1,24 @@
-# Synapse Analytics Serverless Pools Best Practices using Delta Lake
+# Synapse Analytics Serverless Pools Best Practices using Delta Lake <!-- omit in toc -->
+
+## Table of Contents <!-- omit in toc -->
+- [Objectives](#objectives)
+- [Key Learnings](#key-learnings)
+- [Synapse Serverless with Delta files and Partitioned Views](#synapse-serverless-with-delta-files-and-partitioned-views)
+  - [Dynamic view creation on top of delta files](#dynamic-view-creation-on-top-of-delta-files)
+  - [Implementing CLS at the Delta Lake level](#implementing-cls-at-the-delta-lake-level)
+- [Working with the Sample](#working-with-the-sample)
+  - [Pre-requisites](#pre-requisites)
+  - [Using Dev Containers](#using-dev-containers)
+  - [Without using Dev Containers](#without-using-dev-containers)
+  - [Running the Sample](#running-the-sample)
+  - [Infrastructure deployment considerations](#infrastructure-deployment-considerations)
+  - [Synapse Artifacts deployment considerations](#synapse-artifacts-deployment-considerations)
+- [Removing the Sample](#removing-the-sample)
+- [Issues and Workarounds](#issues-and-workarounds)
+  - [Customer subscription \<SUBSCRIPTION\_ID\> needs to be registered with Microsoft.Sql resource provider](#customer-subscription-subscription_id-needs-to-be-registered-with-microsoftsql-resource-provider)
+  - [I require jq but it's not installed. See jq](#i-require-jq-but-its-not-installed-see-jq)
+  - [I require azure cli but it's not installed. See Az CLI](#i-require-azure-cli-but-its-not-installed-see-az-cli)
+  - [Other issues](#other-issues)
 
 ## Objectives
 
@@ -81,7 +101,7 @@ In order to open the project in a container follow the following steps:
 - Open Visual Studio Code and clone the repository.
 - Use the .envtemplate file to create a synapsecontainer.env file with your values
 - Hit Ctlr-Shift-P to open the command palette and type Dev Containers: Open Folder in Container ...
-- When prompted, select the directory \modern-data-warehouse-dataops\single_tech_samples\synapseanalytics\synapseserverless
+- When prompted, select the directory \modern-data-warehouse-dataops\single_tech_samples\synapseanalytics\sample2_synapseserverless
 - Wait for the container to build, check the logs for more information:
   
   ![Container Logs](./images/container.jpg)
@@ -105,7 +125,7 @@ NOTE: if you need to check the list of env variables use ```printenv```. If you 
 
 ### Running the Sample
 
-Navigate to the directory /modern-data-warehouse-dataops/single_tech_samples/synapseanalytics/synapseserverless and run the following command:
+Navigate to the directory /modern-data-warehouse-dataops/single_tech_samples/synapseanalytics/sample2_synapseserverless and run the following command:
 
 ```bash -c ./deploy.sh```
 

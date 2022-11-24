@@ -1,7 +1,7 @@
 {
 "name": "Synapse Serverless with Delta and CLS",
 "dockerComposeFile": "docker-compose.yml",
-"workspaceFolder": "/workspace/single_tech_samples/synapseanalytics/synapseserverless",
+"workspaceFolder": "/workspace/single_tech_samples/synapseanalytics/sample2_synapseserverless",
 "service": "synapse_serverless_sample_dc",
 "extensions": [
     "ms-python.python",
