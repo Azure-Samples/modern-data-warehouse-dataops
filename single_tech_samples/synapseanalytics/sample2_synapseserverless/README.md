@@ -1,6 +1,7 @@
 # Synapse Analytics Serverless Pools Best Practices using Delta Lake <!-- omit in toc -->
 
 ## Table of Contents <!-- omit in toc -->
+
 - [Objectives](#objectives)
 - [Key Learnings](#key-learnings)
 - [Synapse Serverless with Delta files and Partitioned Views](#synapse-serverless-with-delta-files-and-partitioned-views)
