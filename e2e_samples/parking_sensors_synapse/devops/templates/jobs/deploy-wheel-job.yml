@@ -12,12 +12,15 @@ jobs:
     runOnce:
       deploy:
         steps:
-        - script: |
-            # az upgrade and apt-get command both failed for updating to 2.29.0 
-            # version on ubuntu at this point
-            curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-          name: az_upgrade
-          displayName: 'upgrade az cli to latest version'
+        # - script: |
+        #     # az upgrade and apt-get command both failed for updating to 2.29.0 
+        #     # version on ubuntu at this point
+        #     curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+        #   name: az_upgrade
+        #   displayName: 'upgrade az cli to latest version'
+
+        - bash: az --version
+          displayName: 'Show Azure CLI version'
 
         - script: |
             packageWheelName=$(ls ${WHEEL_FILE_PATH} | grep '^ddo_transform.*.whl$' | head -n 1)
