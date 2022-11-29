@@ -23,10 +23,5 @@ RUN curl -SsL "https://github.com/mvdan/sh/releases/download/v3.2.4/shfmt_v3.2.4
 # Install Azure CLI
 RUN curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
-# Install Databricks CLI
-RUN pip3 install setuptools \
-    && pip3 install wheel \
-    && pip3 install databricks-cli
-
 # Install markdown-link-check
 RUN npm install -g markdown-link-check

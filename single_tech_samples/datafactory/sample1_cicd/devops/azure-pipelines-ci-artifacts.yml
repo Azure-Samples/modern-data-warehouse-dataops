@@ -6,7 +6,7 @@ trigger:
       - release/*
   paths:
     include:
-      - single_tech_samples/datafactory/*
+      - single_tech_samples/datafactory/sample1_cicd/*
 
 pr: none
 

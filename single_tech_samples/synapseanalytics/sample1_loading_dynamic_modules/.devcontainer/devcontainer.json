@@ -1,7 +1,7 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.163.1/containers/debian
 {
-	"name": "single-tech databricks sample",
+	"name": "single-tech Azure Synapse sample - Loading dynamic modules",
 	"build": {
 		"dockerfile": "Dockerfile",
 		// Update 'VARIANT' to pick an Debian version: buster, stretch
@@ -25,7 +25,7 @@
 		"yzhang.markdown-all-in-one",
 		"davidanson.vscode-markdownlint"
 	],
-	"postCreateCommand": "az extension add --name databricks --yes --output none && az extension add --name azure-firewall --yes --output none",
+	"postCreateCommand": "az extension add --name azure-firewall --yes --output none",
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 	// Uncomment to use the Docker CLI from inside the container. See https://aka.ms/vscode-remote/samples/docker-from-docker.
