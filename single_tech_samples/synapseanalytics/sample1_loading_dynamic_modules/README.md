@@ -190,7 +190,7 @@ If you run the /deploy.sh script on Mac OS, you may run into the following error
 >Message: Workspace request validation failed, check error details for more information </br>
 >Exception Details:(SqlServerPasswordTooShort) Sql Server password must be atleast 8 characters long. </br>
 >Code: SqlServerPasswordTooShort </br>
->Message: Sql Server password must be atleast 8 characters long. 
+>Message: Sql Server password must be atleast 8 characters long.
 
 This is usually preceded by this error earlier up in the log: `tr: Illegal byte sequence`. The core issue behind this is the script generates a random password and Mac OS can use non-binary characters which causes the command to fail.
 
