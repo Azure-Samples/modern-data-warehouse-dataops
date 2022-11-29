@@ -2,7 +2,8 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See LICENSE in the project root for license information.
 #-----------------------------------------------------------------------------------------
-FROM mcr.microsoft.com/devcontainers/python:3.10
+ARG PYTHON_VERSION=3.10
+FROM --platform=linux/amd64 mcr.microsoft.com/devcontainers/python:${PYTHON_VERSION}
 
 # Configure apt
 ENV DEBIAN_FRONTEND=noninteractive

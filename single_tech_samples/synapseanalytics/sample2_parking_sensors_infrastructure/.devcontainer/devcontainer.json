@@ -1,7 +1,7 @@
 {
 	"name": "Parking Sensors Synapse Infrastructure",
 	"dockerComposeFile": "docker-compose.yml",
-	"workspaceFolder": "/workspace/synapseanalytics/sample2_parking_sensors_infrastructure",
+	"workspaceFolder": "/workspace",
 	"service": "parking_sensor_synapse_dc",
 	"extensions": [
 		"ms-python.python",

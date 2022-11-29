@@ -29,19 +29,18 @@ set -o nounset
 project=mdwdops # CONSTANT - this is prefixes to all resources of the Parking Sensor sample
 
 ###################
-# DEPLOY ALL FOR EACH ENVIRONMENT
+# DEPLOY FOR DEV ENVIRONMENT
+env_name = dev
 
-for env_name in dev stg prod; do  # dev stg prod
-    PROJECT=$project \
-    DEPLOYMENT_ID=$DEPLOYMENT_ID \
-    ENV_NAME=$env_name \
-    AZURE_LOCATION=$AZURE_LOCATION \
-    AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID \
-    bash -c "./scripts/deploy_infrastructure.sh"
-done
+PROJECT=$project \
+DEPLOYMENT_ID=$DEPLOYMENT_ID \
+ENV_NAME=$env_name \
+AZURE_LOCATION=$AZURE_LOCATION \
+AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID \
+bash -c "./scripts/deploy_infrastructure.sh"
 
 
 print_style "DEPLOYMENT SUCCESSFUL
-Details of the deployment can be found in local .env.* files.\n\n" "success"
+Details of the deployment can be found in local .env.dev file.\n\n" "success"
 
 echo "See README > Setup and Deployment for more details and next steps." 

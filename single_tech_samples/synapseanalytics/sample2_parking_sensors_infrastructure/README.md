@@ -49,13 +49,11 @@ It makes use of the following azure services:
    - DataLake Gen2 - a "sandbox" file system is created. Each developer creates their own folder within this Sandbox filesystem.
    - AzureSQL or SQLDW - A transient database (restored from DEV) is spun up per developer on demand, if required.
    - Azure Synapse - git integration allows them to make changes to their own branches and debug runs independently.
-2. **Stage** - the STG resource group is used to test deployments prior to going to production in a production-like environment. Integration tests are run in this environment.
-3. **Production** - the PROD resource group is the final Production environment.
 
 ### Testing
 
-- Integration Testing - These are run to ensure integration points of the solution function as expected. In this demo solution, an actual Synapse Data Pipeline run is automatically triggered and its output verified as part of the Release to the Staging Environment.
-  - See here for the [integration tests](./tests/integrationtests/) and the corresponding [Release Pipeline Job Definition](./devops/templates/jobs/integration-tests-job.yml) for running them as part of the Release pipeline.
+- Integration Testing - These can be ran manually to ensure integration points of the solution function as expected. In this demo solution, an actual Synapse Data Pipeline run is automatically triggered and its output verified.
+  - See here for the [integration tests](./tests/integrationtests/).
 
 ### Observability / Monitoring
 
@@ -66,7 +64,7 @@ Please check the details [here](docs/observability.md).
 ### Prerequisites
 
 1. [Azure Account](https://azure.microsoft.com/en-au/free/search/?&ef_id=Cj0KCQiAr8bwBRD4ARIsAHa4YyLdFKh7JC0jhbxhwPeNa8tmnhXciOHcYsgPfNB7DEFFGpNLTjdTPbwaAh8bEALw_wcB:G:s&OCID=AID2000051_SEM_O2ShDlJP&MarinID=O2ShDlJP_332092752199_azure%20account_e_c__63148277493_aud-390212648371:kwd-295861291340&lnkd=Google_Azure_Brand&dclid=CKjVuKOP7uYCFVapaAoddSkKcA)
-   - *Permissions needed*: ability to create and deploy to an azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
+   - *Permissions needed*: ability to create and deploy to an Azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
 
 #### Software pre-requisites if you don't use dev container<!-- omit in toc -->
 
@@ -142,21 +140,22 @@ Please check the details [here](docs/observability.md).
 
    - Run `./deploy.sh`.
       - This may take around **~30mins or more** to run end to end. So grab yourself a cup of coffee... ☕
-      - After a successful deployment, you will find `.env.{environment_name}` files containing essential configuration information per environment. See [here](#deployed-resources) for list of deployed resources.
+      - After a successful deployment, you will find `.env.dev` files containing essential configuration information per environment. See [here](#deployed-resources) for list of deployed resources.
       - Note that if you are using **dev container**, you would run the same script but inside the dev container terminal.
 
 1. **Run Setup notebook in Synapse workspace per environment**
 
-   - Grant yourself *Storage Data Blob Contributor* to the Synapse main storage (`mdwdopsst2<ENV><DEPLOYMENT_ID>`).
    - Navigate into DEV Synapse workspace notebooks tab and select the *00_setup* notebook.
+   - Open the settings for the Spark pool and select the checkbox to "Run as Managed Identity" and save the changes.
+     - [Optional] Or you can grant yourself *Storage Data Blob Contributor* to the Synapse main storage (`mdwdopsst2dev<DEPLOYMENT_ID>`).
    - Run this notebook, attaching to the created Spark Pool.
    - Repeat this in the STG and PROD Synapse workspace.
 
 1. **Trigger the Synapse Pipeline**
 
    - In the **DEV** Synapse workspace, navigate to "Manage > Triggers". Select the `T_Sched` trigger and activate it by clicking on the "Play" icon next to it. Click `Publish` to publish changes.
-   - **Optional**. Trigger the Synapse Data Pipelines per environment.
-      - In the Synapse workspace of each environment, navigate to "Author", then select the `P_Ingest_MelbParkingData`.
+   - **Optional**. Trigger the Synapse Data Pipelines in the dev environment.
+      - In the Synapse workspace of the dev environment, navigate to "Author", then select the `P_Ingest_MelbParkingData`.
       - Select "Trigger > Trigger Now".
       - To monitor the run, go to "Monitor > Pipeline runs".
       ![Pipeline Run](docs/images/SynapseRun.png?raw=true "Pipeline Run]")
@@ -169,9 +168,9 @@ If you've encountered any issues, please review the [Troubleshooting](../../docs
 
 After a successful deployment, you should have the following resources:
 
-- In Azure, **three (3) Resource Groups** (one per environment) each with the following Azure resources.
+- In Azure, **one Resource Group** with the following Azure resources.
   - **Azure Synapse Workspace** including:
-    - **Data Pipelines** - with pipelines, datasets, linked services, triggers deployed and configured correctly per environment.
+    - **Data Pipelines** - with pipelines, datasets, linked services, triggers deployed and configured correctly.
     - **Notebooks** - Spark, SQL Serverless
     - **Workspace package** (ei. Python Wheel package)
     - **Spark Pool**
