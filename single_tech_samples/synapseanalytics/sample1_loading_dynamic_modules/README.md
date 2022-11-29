@@ -180,22 +180,23 @@ The clean-up script can be executed to clean up the resources provisioned in thi
 2. Run `/destroy.sh`
 
 ## 3. Troubleshooting
+
 ### SqlServerPasswordTooShort
 
 If you run the /deploy.sh script on Mac OS, you may run into the following error:
-``` 
-(ValidationFailed) Workspace request validation failed, check error details for more information
-Code: ValidationFailed
-Message: Workspace request validation failed, check error details for more information
-Exception Details:      (SqlServerPasswordTooShort) Sql Server password must be atleast 8 characters long.
-        Code: SqlServerPasswordTooShort
-        Message: Sql Server password must be atleast 8 characters long. 
-```
 
-This is usually preceded by this error earlier up in the log: ``` tr: Illegal byte sequence ```. The core issue behind this is the script generates a random password and Mac OS can use non-binary characters which causes the command to fail.
+>(ValidationFailed) Workspace request validation failed, check error details for more information </br>
+>Code: ValidationFailed </br>
+>Message: Workspace request validation failed, check error details for more information </br>
+>Exception Details:(SqlServerPasswordTooShort) Sql Server password must be atleast 8 characters long. </br>
+>Code: SqlServerPasswordTooShort </br>
+>Message: Sql Server password must be atleast 8 characters long. 
+
+This is usually preceded by this error earlier up in the log: `tr: Illegal byte sequence`. The core issue behind this is the script generates a random password and Mac OS can use non-binary characters which causes the command to fail.
 
 In order to fix this you must set the following environment variables:
-```
+
+```bash
 export LC_ALL=C
 export LC_CTYPE=C 
 ```
