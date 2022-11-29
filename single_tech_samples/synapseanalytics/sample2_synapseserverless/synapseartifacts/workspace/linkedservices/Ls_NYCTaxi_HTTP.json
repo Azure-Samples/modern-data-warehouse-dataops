@@ -1,0 +1,17 @@
+{
+  "name": "Ls_NYCTaxi_HTTP",
+  "properties": {
+    "annotations": [],
+    "type": "HttpServer",
+    "typeProperties": {
+      "url": "https://d37ci6vzurychx.cloudfront.net/trip-data/",
+      "enableServerCertificateValidation": true,
+      "authenticationType": "Anonymous"
+    },
+    "connectVia": {
+      "referenceName": "AutoResolveIntegrationRuntime",
+      "type": "IntegrationRuntimeReference"
+    }
+  },
+  "type": "Microsoft.Synapse/workspaces/linkedservices"
+}

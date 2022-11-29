@@ -1,0 +1,15 @@
+{
+  "name": "Ls_NYCTaxi_Synapse_Serverless_master",
+  "properties": {
+    "annotations": [],
+    "type": "AzureSqlDatabase",
+    "typeProperties": {
+      "connectionString": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=sywsd20-ondemand.sql.azuresynapse.net;Initial Catalog=master",
+      "url": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=sywsdep3-ondemand.sql.azuresynapse.net;Initial Catalog=master"
+    },
+    "connectVia": {
+      "referenceName": "AutoResolveIntegrationRuntime",
+      "type": "IntegrationRuntimeReference"
+    }
+  }
+}

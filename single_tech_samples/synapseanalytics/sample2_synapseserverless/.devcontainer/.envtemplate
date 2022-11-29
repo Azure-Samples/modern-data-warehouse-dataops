@@ -1,0 +1,14 @@
+###
+# Uncomment to set values.
+
+# Azure location to deploy resources
+# AZURE_LOCATION=
+
+# Azure subscription id to use to deploy resources. Default: default azure subscription.
+# AZURE_SUBSCRIPTION_ID=
+
+# Project name to use in combination with deployment ID to uniquely identify resources
+# PROJECT=
+
+# String appended to all resource names to ensure uniqueness of azure resource names. Default: random five character string
+# DEPLOYMENT_ID=

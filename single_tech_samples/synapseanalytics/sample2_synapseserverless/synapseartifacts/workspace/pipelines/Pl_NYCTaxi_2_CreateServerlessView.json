@@ -1,0 +1,193 @@
+{
+  "name": "Pl_NYCTaxi_2_CreateServerlessView",
+  "properties": {
+    "activities": [
+      {
+        "name": "Copy parquet from url to adls",
+        "type": "Copy",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "userProperties": [],
+        "typeProperties": {
+          "source": {
+            "type": "ParquetSource",
+            "storeSettings": {
+              "type": "HttpReadSettings",
+              "requestMethod": "GET"
+            }
+          },
+          "sink": {
+            "type": "ParquetSink",
+            "storeSettings": {
+              "type": "AzureBlobFSWriteSettings"
+            },
+            "formatSettings": {
+              "type": "ParquetWriteSettings"
+            }
+          },
+          "enableStaging": false,
+          "translator": {
+            "type": "TabularTranslator",
+            "typeConversion": true,
+            "typeConversionSettings": {
+              "allowDataTruncation": true,
+              "treatBooleanAsNumber": false
+            }
+          }
+        },
+        "inputs": [
+          {
+            "referenceName": "Ds_NYCTaxi_HTTP",
+            "type": "DatasetReference",
+            "parameters": {
+              "sourcefile": {
+                "value": "@pipeline().parameters.sourcefilename",
+                "type": "Expression"
+              }
+            }
+          }
+        ],
+        "outputs": [
+          {
+            "referenceName": "Ds_NYCTaxi_ADLS2",
+            "type": "DatasetReference",
+            "parameters": {
+              "sourcefilename": {
+                "value": "@pipeline().parameters.sourcefilename",
+                "type": "Expression"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Transform parquet to delta",
+        "type": "SynapseNotebook",
+        "dependsOn": [
+          {
+            "activity": "Copy parquet from url to adls",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "userProperties": [],
+        "typeProperties": {
+          "notebook": {
+            "referenceName": "Nb_Convert_Parquet_to_Delta",
+            "type": "NotebookReference"
+          },
+          "parameters": {
+            "dynamicyear": {
+              "value": {
+                "value": "@substring(pipeline().parameters.sourcefilename,0,4)\n",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "dynamicmonth": {
+              "value": {
+                "value": "@substring(pipeline().parameters.sourcefilename,5,2)",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "stgAccountName": {
+              "value": "syntechst1d20",
+              "type": "string"
+            }
+          },
+          "sparkPool": {
+            "referenceName": "sysparkpoold20",
+            "type": "BigDataPoolReference"
+          },
+          "conf": {
+            "spark.dynamicAllocation.enabled": null,
+            "spark.dynamicAllocation.minExecutors": null,
+            "spark.dynamicAllocation.maxExecutors": null
+          },
+          "numExecutors": null
+        }
+      },
+      {
+        "name": "CreateServerlessDynamicView",
+        "type": "SqlServerStoredProcedure",
+        "dependsOn": [
+          {
+            "activity": "Transform parquet to delta",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "userProperties": [],
+        "typeProperties": {
+          "storedProcedureName": "[dbo].[CreateDynamicSQLServerlessView]",
+          "storedProcedureParameters": {
+            "viewName": {
+              "value": {
+                "value": "@concat('VW_',replace(pipeline().parameters.sourcefilename,'-',''))\n\n",
+                "type": "Expression"
+              },
+              "type": "String"
+            },
+            "deltaTableName": {
+              "value": {
+                "value": "@replace(pipeline().parameters.sourcefilename,'-','/')",
+                "type": "Expression"
+              },
+              "type": "String"
+            },
+            "externalDataSourceName": {
+              "value": "ext_ds_datalake",
+              "type": "String"
+            },
+            "viewAliasName": {
+              "value": {
+                "value": "@concat('VIEW_',replace(pipeline().parameters.sourcefilename,'-',''))",
+                "type": "Expression"
+              },
+              "type": "String"
+            },
+            "format": {
+              "value": "delta",
+              "type": "String"
+            }
+          }
+        },
+        "linkedServiceName": {
+          "referenceName": "Ls_NYCTaxi_Synapse_Serverless_db",
+          "type": "LinkedServiceReference"
+        }
+      }
+    ],
+    "parameters": {
+      "sourcefilename": {
+        "type": "string"
+      }
+    },
+    "annotations": [],
+    "lastPublishTime": "2022-10-03T17:47:09Z"
+  },
+  "type": "Microsoft.Synapse/workspaces/pipelines"
+}
