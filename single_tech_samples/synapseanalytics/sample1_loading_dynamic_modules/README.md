@@ -14,6 +14,7 @@
   - [2.3. Deployed Resources](#23-deployed-resources)
   - [2.4. Deployment validation and Execution](#24-deployment-validation-and-execution)
   - [2.5. Clean-up](#25-clean-up)
+- [3. Troubleshooting](#3-troubleshooting)
 
 ## 1. Solution Overview
 
@@ -177,3 +178,25 @@ The clean-up script can be executed to clean up the resources provisioned in thi
 1. Navigate to `single_tech_samples/synapseanalytics/sample1_loading_dynamic_modules/setup/`.
 
 2. Run `/destroy.sh`
+
+## 3. Troubleshooting
+
+### SqlServerPasswordTooShort
+
+If you run the /deploy.sh script on Mac OS, you may run into the following error:
+
+>(ValidationFailed) Workspace request validation failed, check error details for more information </br>
+>Code: ValidationFailed </br>
+>Message: Workspace request validation failed, check error details for more information </br>
+>Exception Details:(SqlServerPasswordTooShort) Sql Server password must be atleast 8 characters long. </br>
+>Code: SqlServerPasswordTooShort </br>
+>Message: Sql Server password must be atleast 8 characters long.
+
+This is usually preceded by this error earlier up in the log: `tr: Illegal byte sequence`. The core issue behind this is the script generates a random password and Mac OS can use non-binary characters which causes the command to fail.
+
+In order to fix this you must set the following environment variables:
+
+```bash
+export LC_ALL=C
+export LC_CTYPE=C 
+```
