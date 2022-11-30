@@ -2,4 +2,4 @@ SELECT
     * INTO bloboutput
 FROM 
     iothub
-HAVING Temperature > 27 
+WHERE TEMPERATURE > 27

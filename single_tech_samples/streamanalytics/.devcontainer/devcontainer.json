@@ -1,0 +1,19 @@
+{
+	"name": "Azure Stream Analytics",
+	"image": "mcr.microsoft.com/devcontainers/typescript-node:18-bullseye",
+	"features": {
+		"ghcr.io/devcontainers/features/azure-cli:1": {},
+		"ghcr.io/devcontainers/features/dotnet:1": {
+			"version": "6",
+			"runtimeOnly": true,
+			"installUsingApt": true			
+		},
+		"ghcr.io/rchaganti/vsc-devcontainer-features/azurebicep:1": {}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": ["ms-bigdatatools.vscode-asa@1.4.4"]
+		}
+	},
+	"postCreateCommand": "npm i -g azure-streamanalytics-cicd@2.3.2 && az config set extension.use_dynamic_install=yes_without_prompt && sed -i 's/export PROMPT_DIRTRIM=4/export PROMPT_DIRTRIM=1/g' /home/node/.bashrc"
+}
