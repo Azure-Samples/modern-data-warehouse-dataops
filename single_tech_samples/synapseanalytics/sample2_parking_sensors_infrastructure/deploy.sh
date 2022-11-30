@@ -30,7 +30,7 @@ project=mdwdops # CONSTANT - this is prefixes to all resources of the Parking Se
 
 ###################
 # DEPLOY FOR DEV ENVIRONMENT
-env_name = dev
+env_name="dev"
 
 PROJECT=$project \
 DEPLOYMENT_ID=$DEPLOYMENT_ID \
