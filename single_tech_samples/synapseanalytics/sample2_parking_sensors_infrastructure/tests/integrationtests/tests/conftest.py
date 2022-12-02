@@ -4,8 +4,9 @@ import os
 import pytest
 from azure.identity import ClientSecretCredential
 from azure.identity import DefaultAzureCredential
+from azure.synapse.artifacts import ArtifactsClient
 
-pytest_plugins = ['tests.dataconnectors.blob_storage', 'tests.dataconnectors.sql']
+pytest_plugins = ['dataconnectors.blob_storage', 'dataconnectors.sql', 'dataconnectors.adls', 'dataconnectors.local_file']
 
 @pytest.fixture(scope="session")
 def config():
@@ -19,6 +20,7 @@ def config():
         "AZ_SERVICE_PRINCIPAL_SECRET": os.getenv("AZ_SERVICE_PRINCIPAL_SECRET"),
         "AZ_SERVICE_PRINCIPAL_TENANT_ID": os.getenv("AZ_SERVICE_PRINCIPAL_TENANT_ID"),
         "AZ_SYNAPSE_NAME": os.getenv("AZ_SYNAPSE_NAME"),
+        "AZ_SYNAPSE_URI": os.getenv("AZ_SYNAPSE_URI"),
         "AZURE_SYNAPSE_POLL_INTERVAL": os.getenv("AZURE_SYNAPSE_POLL_INTERVAL",
             DEFAULT_AZ_SYNAPSE_POLL_INTERVAL_SEC)
     }
@@ -41,11 +43,17 @@ def azure_credential(config):
 
 @pytest.fixture(scope="module")
 def synapse_endpoint(config) -> str:
-    synapse_name = config["AZ_SYNAPSE_NAME"] 
-    endpoint = f"https://{synapse_name}"
+    synapse_name = config["AZ_SYNAPSE_NAME"]
+    synapse_uri = config["AZ_SYNAPSE_URI"] 
+    endpoint = f"https://{synapse_name}.{synapse_uri}"
     return endpoint
 
 
 @pytest.fixture(scope="module")
 def synapse_status_poll_interval(config) -> int:
     return int(config["AZURE_SYNAPSE_POLL_INTERVAL"])
+
+
+@pytest.fixture(autouse=True)
+def synapse_client(azure_credential, synapse_endpoint) -> ArtifactsClient:
+    return ArtifactsClient(azure_credential, synapse_endpoint)

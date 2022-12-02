@@ -105,7 +105,7 @@ az keyvault secret set --vault-name "$kv_name" --name "subscriptionId" --value "
 
 
 #########################
-# CREATE AND CONFIGURE SERVICE PRINCIPAL FOR ADLA GEN2
+# CREATE AND CONFIGURE SERVICE PRINCIPAL FOR ADLS GEN2
 
 # Retrive account and key
 azure_storage_account=$(echo "$arm_output" | jq -r '.properties.outputs.storage_account_name.value')
@@ -247,7 +247,7 @@ wait_service_principal_creation "$sp_synapse_id"
 sp_synapse_object_id=$(az ad sp show --id "$sp_synapse_id" --query "id" -o tsv)
 assign_synapse_role_if_not_exists "$synapseworkspace_name" "Synapse Administrator" "$sp_synapse_object_id"
 assign_synapse_role_if_not_exists "$synapseworkspace_name" "Synapse SQL Administrator" "$sp_synapse_object_id"
-
+assign_storage_role "$azure_storage_account" "$resource_group_name" "Storage Blob Data Contributor" "$sp_synapse_object_id"
 
 ####################
 # BUILD ENV FILE FROM CONFIG INFORMATION

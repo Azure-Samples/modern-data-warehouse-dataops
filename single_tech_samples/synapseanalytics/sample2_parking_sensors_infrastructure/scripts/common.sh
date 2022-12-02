@@ -102,3 +102,18 @@ assign_synapse_role_if_not_exists() {
         echo "$syn_role_name role exists for service principal with object id: $sp_obj_id"
     fi
 }
+
+# Assign an Azure Storage role to an SP if not already assigned
+# Sample usage: assign_storage_role "<STORAGE_ACCOUNT_NAME>" "<RESOUCE_GROUP_NAME>" "Storage Blob Data Contributor" "<SERVICE_PRINCIPAL_OBJECT_ID>"
+assign_storage_role() {
+    local storage_account_name=$1
+    local resource_group_name=$2
+    local stor_role_name=$3
+    local sp_obj_id=$4
+
+    # Get Storage Account scope
+    storage_account_scope=$(az storage account show -g "$resource_group_name" -n "$storage_account_name" --query id -o tsv)
+
+    # Assign Role Assignment
+    az role assignment create --role "$stor_role_name" --assignee "$sp_obj_id" --scope "$storage_account_scope"
+}

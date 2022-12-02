@@ -1,26 +1,35 @@
 ###
-# REQUIRED. Service principal account details used to connect to Azure, if its STG environment, fill in corresponding ENV's Service Principal Info
+# REQUIRED. Service principal account details used to connect to Azure, fill in:
 AZ_SERVICE_PRINCIPAL_ID=
 AZ_SERVICE_PRINCIPAL_SECRET=
 AZ_SERVICE_PRINCIPAL_TENANT_ID=
 
 ###
-# REQUIRED. For Azure related resource like Azure Synapse, fill in corresponding ENV(ex: stg)'s info:
+# REQUIRED. For Azure related resource like Azure Synapse, fill in:
 AZ_SUBSCRIPTION_ID=
 AZ_RESOURCE_GROUP_NAME=
 AZ_SYNAPSE_NAME={synapseName}.dev.{synapseURI}
 
 ###
-# REQUIRED. Azure Synapse output(s) connection information, fill in corresponding ENV(ex: stg)'s info::
+# REQUIRED. Azure Synapse output(s) connection information, fill in:
 AZ_SYNAPSE_DEDICATED_SQLPOOL_NAME={synapseDedicatedSqlPoolName}.{synapseDedicatedSqlPoolEndpoint}
 AZ_SYNAPSE_SQLPOOL_ADMIN_USERNAME=
 AZ_SYNAPSE_SQLPOOL_ADMIN_PASSWORD=
 AZ_SYNAPSE_DEDICATED_SQLPOOL_DATABASE_NAME=
 
-
-###
-# OPTIONAL. Environment variables for other non-required configuration.
-# Uncomment to set values.
-
 # Poll interval in seconds for checking for pipeline status. *Default*: 5.
 # AZURE_SYNAPSE_POLL_INTERVAL=
+
+PIPELINE_NAME=""
+TRIGGER_NAME=""
+
+###
+# REQUIRED. For Azure storage related resources, fill in:
+ADLS_ACCOUNT_NAME=""
+ADLS_ACCOUNT_URI=""
+ADLS_DESTINATION_CONTAINER=""
+SOURCE_FILE_PATH=""
+SOURCE_FILE_NAME=""
+ADLS_PROCESSED_ACCOUNT_NAME=""
+ADLS_PROCESSED_ACCOUNT_URI=""
+ADLS_PROCESSED_CONTAINER=""

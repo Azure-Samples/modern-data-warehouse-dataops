@@ -258,36 +258,38 @@ keyVaultLsContent="{
 }"
 echo "$keyVaultLsContent" > ./synapse/workspace/linkedService/Ls_KeyVault_01.json
 
-createLinkedService "Ls_KeyVault_01"
+# createLinkedService "Ls_KeyVault_01"
 createLinkedService "Ls_AdlsGen2_01"
-createLinkedService "Ls_Rest_MelParkSensors_01"
+# createLinkedService "Ls_Rest_MelParkSensors_01"
 
 # Deploy all Datasets
-createDataset "Ds_AdlsGen2_MelbParkingData"
-createDataset "Ds_REST_MelbParkingData"
+# createDataset "Ds_AdlsGen2_MelbParkingData"
+# createDataset "Ds_REST_MelbParkingData"
+createDataset "Ds_Ingest_CSV"
+createDataset "Ds_Egress_Parquet"
 
 # Deploy all Notebooks
 # This line allows the spark pool to be available to attach to the notebooks
 az synapse spark session list --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spark-pool-name "${BIG_DATAPOOL_NAME}"
 createNotebook "00_setup"
-createNotebook "01a_explore"
-createNotebook "01b_explore_sqlserverless"
+# createNotebook "01a_explore"
+# createNotebook "01b_explore_sqlserverless"
 createNotebook "02_standardize"
 createNotebook "03_transform"
 
 
 # Deploy all Pipelines
-createPipeline "P_Ingest_MelbParkingData"
+# createPipeline "P_Ingest_MelbParkingData"
+createPipeline "P_Sample2_MelbParkingData"
 
 # Deploy triggers
-createTrigger "T_Sched"
+# createTrigger "T_Sched"
+createTrigger "T_Stor"
 
 # Upload SQL script
-UpdateExternalTableScript
+# UpdateExternalTableScript
 # Upload create_db_user_template for now. 
 # TODO: will replace and run this sql in deploying
-UploadSql "./synapse/workspace/scripts" "create_db_user_template"
-UploadSql "./synapse/workspace/scripts" "create_external_table"
+# UploadSql "./synapse/workspace/scripts" "create_db_user_template"
+# UploadSql "./synapse/workspace/scripts" "create_external_table"
 echo "Completed deploying Synapse artifacts."
-
-
