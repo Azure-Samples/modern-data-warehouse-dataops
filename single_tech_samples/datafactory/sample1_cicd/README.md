@@ -195,7 +195,7 @@ This deployment was tested using WSL 2 (Ubuntu 20.04)
       To further customize the solution, set parameters in `arm.parameters` files located in the `infrastructure` folder.
 
 2. **Deploy Azure resources**
-   1. `cd` into the `single_tech_samples/sample1_cicd/datafactory` folder of the repo
+   1. `cd` into the `single_tech_samples/datafactory/sample1_cicd` folder of the repo
    2. Run `./deploy.sh`.
       - After a successful deployment, you will find `.env.{environment_name}` files containing essential configuration information per environment. See [here](#deployed-resources) for list of deployed resources.
    3. As part of the deployment script, this updated the Azure DevOps Release Pipeline YAML definition to point to your Github repository. **Commit and push up these changes.**
