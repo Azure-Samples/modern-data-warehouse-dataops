@@ -22,7 +22,7 @@ This solution demonstrates how we can separate our business logic transformation
 
 We can define the metadata in a separate database, a json configuration file or provide them as synapse pipeline parameters. To keep this sample simple and light weighted we are using pipeline parameters to store metadata for running our pipelines.
 
-This sample will focus on provisioning a synapse work space and required resources where you can run the synapse pipeline to see how the same pipeline can be used with multiple datasets to perform data sepecific transformations by loading the module dynamically at run time.
+This sample will focus on provisioning a synapse work space and required resources where you can run the synapse pipeline to see how the same pipeline can be used with multiple datasets to perform data specific transformations by loading the module dynamically at run time.
 
 ### 1.1. Scope
 
@@ -46,7 +46,7 @@ We have two sample transformation modules:
 - md5: This module calculates the hash of all the columns and adds that as a separate column to the country list data.
 - data_filter: This module returns a filtered dataset based on what condition we pass to the module. E.g get the countries where region is **Asia**
 
-Synpase pipeline will be run twice to demonstrate how the two different transformations will be applied to the country list data.
+Synapse pipeline will be run twice to demonstrate how the two different transformations will be applied to the country list data.
 
 Details about [how to run the pipeline](#24-deployment-validation-and-execution) can be found in the later sections of this document.
 
@@ -85,7 +85,7 @@ The following are the prerequisites for deploying this sample:
    - *Installation instructions* can be found [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 1. For Windows users,
    1. Option 1: [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
-   2. Option 2: Use the devcontainer published [here](../.devcontainer) as a host for the bash shell.
+   2. Option 2: Use the devcontainer published [here](./.devcontainer) as a host for the bash shell.
       For more information about Devcontainers, see [here](https://code.visualstudio.com/docs/remote/containers).
 
 ### 2.2. Setup and deployment

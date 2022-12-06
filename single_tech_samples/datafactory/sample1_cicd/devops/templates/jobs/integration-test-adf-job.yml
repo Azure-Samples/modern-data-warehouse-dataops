@@ -55,12 +55,12 @@ jobs:
       python -m pip install --upgrade pip
       pip install -r requirements.txt
     displayName: 'Install dependencies'
-    workingDirectory: 'single_tech_samples/datafactory/tests/integrationtests/'
+    workingDirectory: 'single_tech_samples/datafactory/sample1_cicd/tests/integrationtests/'
 
   # Run pytest test cases
   - script: |
       pytest tests/test_pipeline_ingest_to_bronze.py -s --doctest-modules --junitxml=test_adf_ingest.xml
-    workingDirectory: 'single_tech_samples/datafactory/tests/integrationtests/'
+    workingDirectory: 'single_tech_samples/datafactory/sample1_cicd/tests/integrationtests/'
     env:
       AZ_SERVICE_PRINCIPAL_ID: $AZ_SERVICE_PRINCIPAL_ID
       AZ_SERVICE_PRINCIPAL_SECRET: $AZ_SERVICE_PRINCIPAL_SECRET
