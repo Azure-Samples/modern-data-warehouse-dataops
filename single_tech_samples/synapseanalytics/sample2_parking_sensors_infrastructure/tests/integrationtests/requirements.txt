@@ -17,3 +17,4 @@ azure-synapse-artifacts
 azure-identity
 azure-storage-file-datalake
 pandas
+pyarrow

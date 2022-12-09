@@ -62,7 +62,7 @@ def observe_pipeline(
     synapse_client: ArtifactsClient,
     run_id: str,
     until_status: List[str] = ["Succeeded", "TimedOut", "Failed", "Cancelled"],
-    poll_interval=15,
+    poll_interval=10,
 ) -> str:
     """Get the status of the pipeline run
 
@@ -155,11 +155,11 @@ def get_pipeline_by_request_id(
                 .get("data")
                 .get("requestId")
             ) == (request_id):
-                triggered_pipeline_name = trigger_run.triggered_pipelines.get(
+                pipeline_run_id = trigger_run.triggered_pipelines.get(
                     pipeline_name
                 )
-                print(f'GOT THE TRIGGERED PIPELINE NAME "{triggered_pipeline_name}"')
-                return triggered_pipeline_name
+                print(f'GOT THE TRIGGERED PIPELINE RUN ID "{pipeline_run_id}"')
+                return pipeline_run_id
 
     except Exception as e:
         print(e)

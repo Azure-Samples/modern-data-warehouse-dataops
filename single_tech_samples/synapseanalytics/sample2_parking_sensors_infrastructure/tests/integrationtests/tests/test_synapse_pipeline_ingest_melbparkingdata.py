@@ -5,7 +5,7 @@ import time
 import os
 from azure.identity import ClientSecretCredential
 from azure.synapse.artifacts import ArtifactsClient
-from dataconnectors import adls
+from dataconnectors import adls, local_file
 from utils import pipelineutils
 
 PIPELINE_NAME = os.getenv("PIPELINE_NAME")
@@ -16,22 +16,30 @@ def test_synapse_pipeline_succeeded(azure_credential, synapse_client, sql_connec
 
     # Upload file
     container = os.getenv("ADLS_DESTINATION_CONTAINER")
+    filepath = os.getenv("SOURCE_FILE_PATH")
     filename = os.getenv("SOURCE_FILE_NAME")
+    processed_container = os.getenv("ADLS_PROCESSED_CONTAINER")
 
-    request_id = adls.upload_to_ADLS(adls_connection_client, container, filename, "")
+    request_id = adls.upload_to_ADLS(adls_connection_client, container, filepath, filename, "")
     pipeline_run_id = pipelineutils.get_pipeline_by_request_id(synapse_client, request_id, PIPELINE_NAME, TRIGGER_NAME)
+
     this_run_status = pipelineutils.observe_pipeline(synapse_client, pipeline_run_id)
 
-    # adls.download_from_ADLS() TODO
+    processed_parquet_file = adls.read_parquet_file_from_ADLS(
+        adls_connection_client, processed_container, f"{pipeline_run_id}.parquet")
+
+    local_processed_parquet_file = local_file.read_parquet_file("files", "processed_parquet_file.parquet")
+
+    assert len(processed_parquet_file) == len(local_processed_parquet_file)
 
     # Assert
-    # cursor = sql_connection.cursor()
-    # cursor.execute(
-    #     "SELECT COUNT(*) AS COUNT FROM dbo.fact_parking WHERE load_id='{load_id}'"
-    #     .format(load_id=this_run_id))
-    # row = cursor.fetchone()
+    cursor = sql_connection.cursor()
+    cursor.execute(
+        "SELECT COUNT(*) AS COUNT FROM dbo.status WHERE dim_date_id='20130908'"
+    )
+    row = cursor.fetchone()
     assert this_run_status == "Succeeded"
-    # assert row is not None
-    # # In some rare scenarios, it might so happen that the dataset gets aggregated but still manages to produce one row.
-    # # For avoiding such an edge case, the assertion is checking for more than one row.
-    # assert int(row.COUNT) > 1
+    assert row is not None
+    # In some rare scenarios, it might so happen that the dataset gets aggregated but still manages to produce one row.
+    # For avoiding such an edge case, the assertion is checking for more than one row.
+    assert int(row.COUNT) > 1

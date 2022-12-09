@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def read_local_file(file_name: str):
+def read_local_file(file_path: str, file_name: str):
     """Read local file
 
     Args:
@@ -12,7 +12,7 @@ def read_local_file(file_name: str):
         file_contents (bytes): Contents of the file
     """
 
-    sample_data = f"data/{file_name}"
+    sample_data = f"{file_path}/{file_name}"
 
     print(f'READING LOCAL FILE: "{sample_data}"...')
 
@@ -26,7 +26,7 @@ def read_local_file(file_name: str):
         raise
 
 
-def read_parquet_file(file_name: str):
+def read_parquet_file(file_path: str, file_name: str):
     """Read local parquet file
 
     Args:
@@ -36,7 +36,7 @@ def read_parquet_file(file_name: str):
         df (DataFrame): Data Frame Of the file
     """
 
-    sample_data = f"data/{file_name}"
+    sample_data = f"{file_path}/{file_name}"
 
     print("GETTING PARQUET DATA FRAME...")
 
@@ -47,27 +47,3 @@ def read_parquet_file(file_name: str):
     except Exception as e:
         print(e)
         raise
-
-
-def create_parquet_file(file_name: str, data=None):
-    """Create local parquet file
-
-    Args:
-        file_name (str): File Name to Read
-        data (ndarray (structured or homogeneous), Iterable, dict, or DataFrame): the contents of
-            the file
-    """
-    if data is None:
-
-        # sample data
-        data = {
-            "FirstName": ["Hello1", "Hello2"],
-            "LastName": ["World1", "World2"],
-            "PhoneNumber": ["123-456-7890", "123-456-7890"],
-            "EmailAddress": ["hello1@world.com", "hello2@world.com"],
-            "Priority": ["2", "1"],
-            "CreateDate": ["2020-04-03 14:00:45", "2022-04-03 14:00:45"],
-        }
-
-    df = pd.DataFrame(data)
-    df.to_parquet(file_name)

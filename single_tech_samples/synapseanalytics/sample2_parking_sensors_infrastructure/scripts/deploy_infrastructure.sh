@@ -248,6 +248,7 @@ sp_synapse_object_id=$(az ad sp show --id "$sp_synapse_id" --query "id" -o tsv)
 assign_synapse_role_if_not_exists "$synapseworkspace_name" "Synapse Administrator" "$sp_synapse_object_id"
 assign_synapse_role_if_not_exists "$synapseworkspace_name" "Synapse SQL Administrator" "$sp_synapse_object_id"
 assign_storage_role "$azure_storage_account" "$resource_group_name" "Storage Blob Data Contributor" "$sp_synapse_object_id"
+assign_storage_role "$azure_storage_account" "$resource_group_name" "Storage Blob Data Contributor" "$sp_synapse_object_id"
 
 ####################
 # BUILD ENV FILE FROM CONFIG INFORMATION

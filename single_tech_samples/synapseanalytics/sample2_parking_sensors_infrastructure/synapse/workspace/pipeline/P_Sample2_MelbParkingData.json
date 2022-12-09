@@ -58,6 +58,66 @@
                 "outputs": [
                     {
                         "referenceName": "Ds_Egress_Parquet",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "filename": {
+                                "value": "@pipeline().RunId",
+                                "type": "Expression"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "Copy Egress Data",
+                "type": "Copy",
+                "dependsOn": [
+                    {
+                        "activity": "Copy Ingest Data",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "ParquetSource",
+                        "storeSettings": {
+                            "type": "AzureBlobFSReadSettings",
+                            "recursive": true,
+                            "enablePartitionDiscovery": false
+                        }
+                    },
+                    "sink": {
+                        "type": "SqlPoolSink",
+                        "allowCopyCommand": true,
+                        "tableOption": "autoCreate"
+                    },
+                    "enableStaging": false
+                },
+                "inputs": [
+                    {
+                        "referenceName": "Ds_Egress_Parquet",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "filename": {
+                                "value": "@pipeline().RunId",
+                                "type": "Expression"
+                            }
+                        }
+                    }
+                ],
+                "outputs": [
+                    {
+                        "referenceName": "SqlPoolTable1",
                         "type": "DatasetReference"
                     }
                 ]
@@ -70,7 +130,7 @@
             }
         },
         "annotations": [],
-        "lastPublishTime": "2022-12-01T17:48:57Z"
+        "lastPublishTime": "2022-12-08T16:29:56Z"
     },
     "type": "Microsoft.Synapse/workspaces/pipelines"
 }

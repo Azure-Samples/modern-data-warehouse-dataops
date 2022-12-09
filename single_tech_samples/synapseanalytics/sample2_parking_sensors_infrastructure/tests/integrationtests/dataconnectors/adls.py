@@ -28,6 +28,7 @@ def adls_connection_client(azure_credential, adls_account_endpoint):
 def upload_to_ADLS(
     adls_connection_client: DataLakeServiceClient,
     container: str,
+    file_path: str,
     file_name: str,
     base_path: str = None,
     file_contents: bytes = None,
@@ -38,7 +39,8 @@ def upload_to_ADLS(
     Args:
         adls_connection_client (DataLakeServiceClient): ADLS Connection Object
         container (str): Container Name where file needs to be uploaded
-        file_name (str): File Name to Upload
+        file_path (str): File Path of local file to upload
+        file_name (str): File Name of local file to upload
         base_path (str): Base Folder Path in ADLS where file will be uploaded
         file_contents (bytes): Contents of the file
     Returns:
@@ -63,7 +65,7 @@ def upload_to_ADLS(
             ).create_file(f"{file_name}")
 
         if file_contents is None:
-            file_name, file_contents = local_file.read_local_file(file_name)
+            file_name, file_contents = local_file.read_local_file(file_path, file_name)
 
         file_client.append_data(data=file_contents, offset=0, length=len(file_contents))
         response = file_client.flush_data(
@@ -80,8 +82,8 @@ def upload_to_ADLS(
 def download_from_ADLS(
     adls_connection_client: DataLakeServiceClient,
     container: str,
-    base_path: str,
     file_name: str,
+    base_path: str = None
 ):
     """Download file from ADLS
 
@@ -105,19 +107,17 @@ def download_from_ADLS(
         file_system_client = adls_connection_client.get_file_system_client(
             file_system=container
         )
-        if file_system_client.get_directory_client(base_path).exists():
-            paths = file_system_client.get_paths(path=base_path)
-            parent_directory_client = file_system_client.get_directory_client(base_path)
-            for path in paths:
-                if path.name.endswith(f"{file_name}"):
-                    print("READING CONTENT FROM ADLS...")
-                    file_client = parent_directory_client.get_file_client(
-                        path.name.split("/")[-1]
-                    )
-                    download = file_client.download_file()
-                    downloaded_bytes = download.readall()
-                    print(f"SUCCESSFULLY READ {file_name} FROM ADLS")
-                    return downloaded_bytes
+        if not base_path:
+            directory_client = file_system_client.get_directory_client("/")
+        else:
+            directory_client = file_system_client.get_directory_client(base_path)
+        
+        file_client = directory_client.get_file_client(file_name)
+
+        download = file_client.download_file()
+        downloaded_bytes = download.readall()
+        print(f"SUCCESSFULLY READ {file_name} FROM ADLS")
+        return downloaded_bytes
     except Exception as e:
         print(e)
         raise
@@ -142,7 +142,7 @@ def get_parquet_df_from_contents(downloaded_bytes: bytes):
 
 
 def read_parquet_file_from_ADLS(
-    adls_connection_client, container: str, base_path: str, file_name: str
+    adls_connection_client, container: str, file_name: str,  base_path: str = None
 ):
     """Download file from ADLS and convert to parquet data frame
 
@@ -156,7 +156,7 @@ def read_parquet_file_from_ADLS(
         processed_df (bytes): DataFrame Of Read File
     """
     downloaded_bytes = download_from_ADLS(
-        adls_connection_client, container, base_path, file_name
+        adls_connection_client, container, file_name, base_path
     )
     processed_df = get_parquet_df_from_contents(downloaded_bytes)
     return processed_df

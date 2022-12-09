@@ -6,7 +6,7 @@ from azure.identity import ClientSecretCredential
 from azure.identity import DefaultAzureCredential
 from azure.synapse.artifacts import ArtifactsClient
 
-pytest_plugins = ['dataconnectors.blob_storage', 'dataconnectors.sql', 'dataconnectors.adls', 'dataconnectors.local_file']
+pytest_plugins = ['dataconnectors.sql', 'dataconnectors.adls', 'dataconnectors.local_file']
 
 @pytest.fixture(scope="session")
 def config():
