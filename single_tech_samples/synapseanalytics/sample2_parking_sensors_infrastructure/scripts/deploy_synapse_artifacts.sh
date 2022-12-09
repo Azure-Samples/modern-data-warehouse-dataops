@@ -37,6 +37,7 @@ set -o nounset
 # SYNAPSE_WORKSPACE_NAME
 # SYNAPSE_DEV_ENDPOINT
 # BIG_DATAPOOL_NAME
+# SQL_POOL_NAME
 # LOG_ANALYTICS_WS_ID
 # LOG_ANALYTICS_WS_KEY
 # KEYVAULT_NAME
@@ -182,33 +183,6 @@ getProvisioningState(){
     jq -r '.provisioningState')
 }
 
-UpdateExternalTableScript () {
-    echo "Replace SQL script with: $AZURE_STORAGE_ACCOUNT"
-    sed -e "s/<data storage account endpoint>/$storageEndpoint/" \
-    -e "s/<data storage account>/$AZURE_STORAGE_ACCOUNT/" \
-    ./synapse/workspace/scripts/create_external_table_template.sql \
-    > ./synapse/workspace/scripts/create_external_table.sql
-}
-
-UploadSql () {
-    echo "Try to upload sql script"
-    declare path="$1"
-    declare name="$2"
-    echo "Uploading sql script to Workspace: $name"
-
-    az synapse sql-script create --file "$path/$name.sql" --name $name --workspace-name "${SYNAPSE_WORKSPACE_NAME}"
-}
-
-getProvisioningState
-echo "$provision_state"
-
-while [ "$provision_state" != "Succeeded" ]
-do
-    if [ "$provision_state" == "Failed" ]; then break ; else sleep 10; fi
-    getProvisioningState
-    echo "$provision_state: checking again in 10 seconds..."
-done
-
 # Build requirement.txt string to upload in the Spark Configuration
 configurationList=""
 while read -r p; do 
@@ -216,30 +190,30 @@ while read -r p; do
     if [ "$configurationList" != "" ]; then configurationList="$configurationList$line\r\n" ; else configurationList="$line\r\n"; fi
 done < $requirementsFileName
 
-# Build packages list to upload in the Spark Pool, upload packages to synapse workspace
-libraryList=""
-for file in "$packagesDirectory"*.whl; do
-    filename=${file##*/}
-    librariesToUpload="{
-        \"name\": \"${filename}\",
-        \"path\": \"${SYNAPSE_WORKSPACE_NAME}/libraries/${filename}\",
-        \"containerName\": \"prep\",
-        \"type\": \"whl\"
-    }"
-    if [ "$libraryList" != "" ]; then libraryList=${libraryList}","${librariesToUpload}; else libraryList=${librariesToUpload};fi
-    uploadSynapsePackagesToWorkspace "${filename}"
-done
-customlibraryList="customLibraries:[$libraryList],"
-uploadSynapseArtifactsToSparkPool "${configurationList}" "${customlibraryList}"
+# # Build packages list to upload in the Spark Pool, upload packages to synapse workspace
+# libraryList=""
+# for file in "$packagesDirectory"*.whl; do
+#     filename=${file##*/}
+#     librariesToUpload="{
+#         \"name\": \"${filename}\",
+#         \"path\": \"${SYNAPSE_WORKSPACE_NAME}/libraries/${filename}\",
+#         \"containerName\": \"prep\",
+#         \"type\": \"whl\"
+#     }"
+#     if [ "$libraryList" != "" ]; then libraryList=${libraryList}","${librariesToUpload}; else libraryList=${librariesToUpload};fi
+#     uploadSynapsePackagesToWorkspace "${filename}"
+# done
+# customlibraryList="customLibraries:[$libraryList],"
+# uploadSynapseArtifactsToSparkPool "${configurationList}" "${customlibraryList}"
 
-getProvisioningState
-echo "$provision_state"
-while [ "$provision_state" != "Succeeded" ]
-do
-    if [ "$provision_state" == "Failed" ]; then break ; else sleep 30; fi
-    getProvisioningState
-    echo "$provision_state: checking again in 30 seconds..."
-done
+# getProvisioningState
+# echo "$provision_state"
+# while [ "$provision_state" != "Succeeded" ]
+# do
+#     if [ "$provision_state" == "Failed" ]; then break ; else sleep 30; fi
+#     getProvisioningState
+#     echo "$provision_state: checking again in 30 seconds..."
+# done
 
 keyVaultEndpoint=$(az cloud show --query suffixes.keyvaultDns -o tsv)
 keyVaultBaseURL="https://${KEYVAULT_NAME}${keyVaultEndpoint}/"
@@ -258,13 +232,32 @@ keyVaultLsContent="{
 }"
 echo "$keyVaultLsContent" > ./synapse/workspace/linkedService/Ls_KeyVault_01.json
 
-# createLinkedService "Ls_KeyVault_01"
+createLinkedService "Ls_KeyVault_01"
 createLinkedService "Ls_AdlsGen2_01"
-# createLinkedService "Ls_Rest_MelParkSensors_01"
+
+dsSQLPoolTableContent="{
+    \"name\": \"Ds_SqlPool_Table\",
+    \"properties\": {
+        \"annotations\": [],
+        \"type\": \"SqlPoolTable\",
+        \"schema\": [],
+        \"typeProperties\": {
+            \"schema\": \"dbo\",
+            \"table\": \"status\"
+        },
+        \"sqlPool\": {
+            \"referenceName\": \"${SQL_POOL_NAME}\",
+            \"type\": \"SqlPoolReference\"
+        }
+    },
+    \"type\": \"Microsoft.Synapse/workspaces/datasets\"
+}"
+
+echo "$dsSQLPoolTableContent" > ./synapse/workspace/dataset/Ds_SqlPool_Table.json
 
 # Deploy all Datasets
-# createDataset "Ds_AdlsGen2_MelbParkingData"
-# createDataset "Ds_REST_MelbParkingData"
+createDataset "Ds_AdlsGen2_MelbParkingData"
+createDataset "Ds_SqlPool_Table"
 createDataset "Ds_Ingest_CSV"
 createDataset "Ds_Egress_Parquet"
 
@@ -272,24 +265,43 @@ createDataset "Ds_Egress_Parquet"
 # This line allows the spark pool to be available to attach to the notebooks
 az synapse spark session list --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spark-pool-name "${BIG_DATAPOOL_NAME}"
 createNotebook "00_setup"
-# createNotebook "01a_explore"
-# createNotebook "01b_explore_sqlserverless"
-createNotebook "02_standardize"
-createNotebook "03_transform"
-
+createNotebook "ETL_sample"
 
 # Deploy all Pipelines
-# createPipeline "P_Ingest_MelbParkingData"
-createPipeline "P_Sample2_MelbParkingData"
+createPipeline "P_MelbParkingData"
+
+storageScope=$(az storage account show -g "$RESOURCE_GROUP_NAME" -n "$AZURE_STORAGE_ACCOUNT" --query id -o tsv)
+
+storageTriggerContent="{
+    \"name\": \"T_Stor\",
+    \"properties\": {
+        \"annotations\": [],
+        \"runtimeState\": \"Started\",
+        \"pipelines\": [
+            {
+                \"pipelineReference\": {
+                    \"referenceName\": \"P_MelbParkingData\",
+                    \"type\": \"PipelineReference\"
+                },
+                \"parameters\": {
+                    \"filename\": \"@trigger().outputs.body.fileName\"
+                }
+            }
+        ],
+        \"type\": \"BlobEventsTrigger\",
+        \"typeProperties\": {
+            \"blobPathBeginsWith\": \"/datalake/blobs/\",
+            \"ignoreEmptyBlobs\": true,
+            \"scope\": \"${storageScope}\",
+            \"events\": [
+                \"Microsoft.Storage.BlobCreated\"
+            ]
+        }
+    }
+}"
+echo "$storageTriggerContent" > ./synapse/workspace/trigger/T_Stor.json
 
 # Deploy triggers
-# createTrigger "T_Sched"
 createTrigger "T_Stor"
 
-# Upload SQL script
-# UpdateExternalTableScript
-# Upload create_db_user_template for now. 
-# TODO: will replace and run this sql in deploying
-# UploadSql "./synapse/workspace/scripts" "create_db_user_template"
-# UploadSql "./synapse/workspace/scripts" "create_external_table"
 echo "Completed deploying Synapse artifacts."

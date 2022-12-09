@@ -1,0 +1,17 @@
+{
+    "name": "Ds_SqlPool_Table",
+    "properties": {
+        "annotations": [],
+        "type": "SqlPoolTable",
+        "schema": [],
+        "typeProperties": {
+            "schema": "dbo",
+            "table": "status"
+        },
+        "sqlPool": {
+            "referenceName": "",
+            "type": "SqlPoolReference"
+        }
+    },
+    "type": "Microsoft.Synapse/workspaces/datasets"
+}

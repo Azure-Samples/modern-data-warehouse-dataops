@@ -2,52 +2,28 @@
     "name": "Ds_Egress_Parquet",
     "properties": {
         "linkedServiceName": {
-            "referenceName": "AzureDataLakeStorage1",
+            "referenceName": "Ls_AdlsGen2_01",
             "type": "LinkedServiceReference"
+        },
+        "parameters": {
+            "filename": {
+                "type": "string"
+            }
         },
         "annotations": [],
         "type": "Parquet",
         "typeProperties": {
             "location": {
                 "type": "AzureBlobFSLocation",
+                "fileName": {
+                    "value": "@concat(dataset().filename, '.parquet')",
+                    "type": "Expression"
+                },
                 "fileSystem": "saveddata"
             },
             "compressionCodec": "snappy"
         },
-        "schema": [
-            {
-                "name": "dim_date_id",
-                "type": "UTF8"
-            },
-            {
-                "name": "dim_time_id",
-                "type": "UTF8"
-            },
-            {
-                "name": "dim_parking_bay_id",
-                "type": "UTF8"
-            },
-            {
-                "name": "dim_location_id",
-                "type": "UTF8"
-            },
-            {
-                "name": "dim_st_marker_id",
-                "type": "UTF8"
-            },
-            {
-                "name": "status",
-                "type": "UTF8"
-            },
-            {
-                "name": "load_id",
-                "type": "UTF8"
-            },
-            {
-                "name": "loaded_on",
-                "type": "INT96"
-            }
-        ]
+        "schema": []
     },
     "type": "Microsoft.Synapse/workspaces/datasets"
 }

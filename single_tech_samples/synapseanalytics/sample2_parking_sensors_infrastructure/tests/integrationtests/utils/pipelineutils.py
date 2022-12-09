@@ -62,7 +62,7 @@ def observe_pipeline(
     synapse_client: ArtifactsClient,
     run_id: str,
     until_status: List[str] = ["Succeeded", "TimedOut", "Failed", "Cancelled"],
-    poll_interval=10,
+    poll_interval=15,
 ) -> str:
     """Get the status of the pipeline run
 

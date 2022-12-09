@@ -1,5 +1,5 @@
 {
-    "name": "P_Sample2_MelbParkingData",
+    "name": "P_MelbParkingData",
     "properties": {
         "activities": [
             {
@@ -69,11 +69,11 @@
                 ]
             },
             {
-                "name": "Copy Egress Data",
+                "name": "Update SQL",
                 "type": "Copy",
                 "dependsOn": [
                     {
-                        "activity": "Copy Ingest Data",
+                        "activity": "ETL Sample Notebook",
                         "dependencyConditions": [
                             "Succeeded"
                         ]
@@ -117,10 +117,46 @@
                 ],
                 "outputs": [
                     {
-                        "referenceName": "SqlPoolTable1",
+                        "referenceName": "Ds_SqlPool_Table",
                         "type": "DatasetReference"
                     }
                 ]
+            },
+            {
+                "name": "ETL Sample Notebook",
+                "type": "SynapseNotebook",
+                "dependsOn": [
+                    {
+                        "activity": "Copy Ingest Data",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "notebook": {
+                        "referenceName": "ETL_sample",
+                        "type": "NotebookReference"
+                    },
+                    "parameters": {
+                        "pipeline_run_id": {
+                            "value": {
+                                "value": "@pipeline().RunId",
+                                "type": "Expression"
+                            },
+                            "type": "string"
+                        }
+                    },
+                    "snapshot": true
+                }
             }
         ],
         "parameters": {
@@ -130,7 +166,7 @@
             }
         },
         "annotations": [],
-        "lastPublishTime": "2022-12-08T16:29:56Z"
+        "lastPublishTime": "2022-12-09T17:34:51Z"
     },
     "type": "Microsoft.Synapse/workspaces/pipelines"
 }

@@ -120,6 +120,9 @@ storage_file_system=datalake
 echo "Creating ADLS Gen2 File system: $storage_file_system"
 az storage container create --name $storage_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key"
 
+processed_file_system=saveddata
+az storage container create --name $processed_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key"
+
 echo "Creating folders within the file system."
 # Create folders for databricks libs
 az storage fs directory create -n '/sys/databricks/libs' -f $storage_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key"
