@@ -6,7 +6,7 @@
         "pipelines": [
             {
                 "pipelineReference": {
-                    "referenceName": "P_Sample2_MelbParkingData",
+                    "referenceName": "P_MelbParkingData",
                     "type": "PipelineReference"
                 },
                 "parameters": {
@@ -18,7 +18,7 @@
         "typeProperties": {
             "blobPathBeginsWith": "/datalake/blobs/",
             "ignoreEmptyBlobs": true,
-            "scope": "/subscriptions/50ff9458-6372-4522-8227-327043deaef5/resourceGroups/mdwdops-posei-dev-rg/providers/Microsoft.Storage/storageAccounts/mdwdopsstdevposei",
+            "scope": "",
             "events": [
                 "Microsoft.Storage.BlobCreated"
             ]
