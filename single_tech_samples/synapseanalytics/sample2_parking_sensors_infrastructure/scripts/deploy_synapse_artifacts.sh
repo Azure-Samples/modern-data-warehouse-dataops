@@ -190,30 +190,30 @@ while read -r p; do
     if [ "$configurationList" != "" ]; then configurationList="$configurationList$line\r\n" ; else configurationList="$line\r\n"; fi
 done < $requirementsFileName
 
-# # Build packages list to upload in the Spark Pool, upload packages to synapse workspace
-# libraryList=""
-# for file in "$packagesDirectory"*.whl; do
-#     filename=${file##*/}
-#     librariesToUpload="{
-#         \"name\": \"${filename}\",
-#         \"path\": \"${SYNAPSE_WORKSPACE_NAME}/libraries/${filename}\",
-#         \"containerName\": \"prep\",
-#         \"type\": \"whl\"
-#     }"
-#     if [ "$libraryList" != "" ]; then libraryList=${libraryList}","${librariesToUpload}; else libraryList=${librariesToUpload};fi
-#     uploadSynapsePackagesToWorkspace "${filename}"
-# done
-# customlibraryList="customLibraries:[$libraryList],"
-# uploadSynapseArtifactsToSparkPool "${configurationList}" "${customlibraryList}"
+# Build packages list to upload in the Spark Pool, upload packages to synapse workspace
+libraryList=""
+for file in "$packagesDirectory"*.whl; do
+    filename=${file##*/}
+    librariesToUpload="{
+        \"name\": \"${filename}\",
+        \"path\": \"${SYNAPSE_WORKSPACE_NAME}/libraries/${filename}\",
+        \"containerName\": \"prep\",
+        \"type\": \"whl\"
+    }"
+    if [ "$libraryList" != "" ]; then libraryList=${libraryList}","${librariesToUpload}; else libraryList=${librariesToUpload};fi
+    uploadSynapsePackagesToWorkspace "${filename}"
+done
+customlibraryList="customLibraries:[$libraryList],"
+uploadSynapseArtifactsToSparkPool "${configurationList}" "${customlibraryList}"
 
-# getProvisioningState
-# echo "$provision_state"
-# while [ "$provision_state" != "Succeeded" ]
-# do
-#     if [ "$provision_state" == "Failed" ]; then break ; else sleep 30; fi
-#     getProvisioningState
-#     echo "$provision_state: checking again in 30 seconds..."
-# done
+getProvisioningState
+echo "$provision_state"
+while [ "$provision_state" != "Succeeded" ]
+do
+    if [ "$provision_state" == "Failed" ]; then break ; else sleep 30; fi
+    getProvisioningState
+    echo "$provision_state: checking again in 30 seconds..."
+done
 
 keyVaultEndpoint=$(az cloud show --query suffixes.keyvaultDns -o tsv)
 keyVaultBaseURL="https://${KEYVAULT_NAME}${keyVaultEndpoint}/"
@@ -235,35 +235,38 @@ echo "$keyVaultLsContent" > ./synapse/workspace/linkedService/Ls_KeyVault_01.jso
 createLinkedService "Ls_KeyVault_01"
 createLinkedService "Ls_AdlsGen2_01"
 
-dsSQLPoolTableContent="{
-    \"name\": \"Ds_SqlPool_Table\",
+dsSqlDWTableContent="{
+    \"name\": \"Ds_SqlDW_Table\",
     \"properties\": {
+        \"linkedServiceName\": {
+            \"referenceName\": \"${SYNAPSE_WORKSPACE_NAME}-WorkspaceDefaultSqlServer\",
+            \"type\": \"LinkedServiceReference\",
+            \"parameters\": {
+                \"DBName\": \"${SQL_POOL_NAME}\"
+            }
+        },
         \"annotations\": [],
-        \"type\": \"SqlPoolTable\",
+        \"type\": \"AzureSqlDWTable\",
         \"schema\": [],
         \"typeProperties\": {
             \"schema\": \"dbo\",
             \"table\": \"status\"
-        },
-        \"sqlPool\": {
-            \"referenceName\": \"${SQL_POOL_NAME}\",
-            \"type\": \"SqlPoolReference\"
         }
-    },
-    \"type\": \"Microsoft.Synapse/workspaces/datasets\"
+    }
 }"
 
-echo "$dsSQLPoolTableContent" > ./synapse/workspace/dataset/Ds_SqlPool_Table.json
+echo "$dsSqlDWTableContent" > ./synapse/workspace/dataset/Ds_SqlDW_Table.json
+
+# This line allows the spark pool to be available to attach to the notebooks
+az synapse spark session list --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spark-pool-name "${BIG_DATAPOOL_NAME}"
 
 # Deploy all Datasets
 createDataset "Ds_AdlsGen2_MelbParkingData"
-createDataset "Ds_SqlPool_Table"
 createDataset "Ds_Ingest_CSV"
 createDataset "Ds_Egress_Parquet"
+createDataset "Ds_SqlDW_Table"
 
 # Deploy all Notebooks
-# This line allows the spark pool to be available to attach to the notebooks
-az synapse spark session list --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spark-pool-name "${BIG_DATAPOOL_NAME}"
 createNotebook "00_setup"
 createNotebook "ETL_sample"
 

@@ -97,9 +97,10 @@
                         }
                     },
                     "sink": {
-                        "type": "SqlPoolSink",
+                        "type": "SqlDWSink",
                         "allowCopyCommand": true,
-                        "tableOption": "autoCreate"
+                        "tableOption": "autoCreate",
+                        "disableMetricsCollection": false
                     },
                     "enableStaging": false
                 },
@@ -117,7 +118,7 @@
                 ],
                 "outputs": [
                     {
-                        "referenceName": "Ds_SqlPool_Table",
+                        "referenceName": "Ds_SqlDW_Table",
                         "type": "DatasetReference"
                     }
                 ]
@@ -155,7 +156,12 @@
                             "type": "string"
                         }
                     },
-                    "snapshot": true
+                    "conf": {
+                        "spark.dynamicAllocation.enabled": null,
+                        "spark.dynamicAllocation.minExecutors": null,
+                        "spark.dynamicAllocation.maxExecutors": null
+                    },
+                    "numExecutors": null
                 }
             }
         ],
@@ -166,7 +172,7 @@
             }
         },
         "annotations": [],
-        "lastPublishTime": "2022-12-09T17:34:51Z"
+        "lastPublishTime": "2022-12-12T19:12:02Z"
     },
     "type": "Microsoft.Synapse/workspaces/pipelines"
 }

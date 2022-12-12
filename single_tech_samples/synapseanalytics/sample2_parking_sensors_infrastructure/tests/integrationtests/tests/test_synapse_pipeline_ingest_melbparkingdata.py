@@ -40,6 +40,3 @@ def test_synapse_pipeline_succeeded(azure_credential, synapse_client, sql_connec
     row = cursor.fetchone()
     assert this_run_status == "Succeeded"
     assert row is not None
-    # In some rare scenarios, it might so happen that the dataset gets aggregated but still manages to produce one row.
-    # For avoiding such an edge case, the assertion is checking for more than one row.
-    assert int(row.COUNT) > 1

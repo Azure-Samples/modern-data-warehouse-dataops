@@ -16,6 +16,7 @@
 	},
 	"features": {
 		"ghcr.io/devcontainers/features/azure-cli:1": {
+			"version": "2.43.0",
 			"extensions": ["application-insights"]
 		}
 	}
