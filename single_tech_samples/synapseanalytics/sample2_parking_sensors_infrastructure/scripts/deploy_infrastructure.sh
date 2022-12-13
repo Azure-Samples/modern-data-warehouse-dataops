@@ -113,7 +113,6 @@ azure_storage_account=$(echo "$arm_output" | jq -r '.properties.outputs.storage_
 azure_storage_key=$(az storage account keys list \
     --account-name "$azure_storage_account" \
     --resource-group "$resource_group_name" \
-    --output json |
     --query [0].value --output tsv)
 
 # Add file system storage account
