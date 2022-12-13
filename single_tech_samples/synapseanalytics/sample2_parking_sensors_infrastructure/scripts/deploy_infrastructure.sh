@@ -57,13 +57,14 @@ az group create --name "$resource_group_name" --location "$AZURE_LOCATION" --tag
 
 # By default, set all KeyVault permission to deployer
 # Retrieve KeyVault User Id
-kv_owner_object_id=$(az ad signed-in-user show --output json | jq -r '.id')
+kv_owner_object_id=$(az ad signed-in-user show --query id --output tsv)
 
 # Get endpoints for Azure resources
-export storageEndpoint=$(az cloud show --query suffixes.storageEndpoint -o tsv)
-export keyVaultEndpoint=$(az cloud show --query suffixes.keyvaultDns -o tsv)
-export managementEndpoint=$(az cloud show --query endpoints.resourceManager -o tsv)
-export synapseEndpoint="$(az cloud show --query endpoints.synapseAnalyticsResourceId -o tsv)"
+azcloud=$(az cloud show --output json)
+storageEndpoint=$(echo "$azcloud" | jq -r '.suffixes.storageEndpoint')
+keyVaultEndpoint=$(echo "$azcloud" | jq -r '.suffixes.keyvaultDns')
+managementEndpoint=$(echo "$azcloud" | jq -r '.endpoints.resourceManager')
+synapseEndpoint=$(echo "$azcloud" | jq -r '.endpoints.synapseAnalyticsResourceId')
 
 # Validate arm template
 
@@ -113,7 +114,7 @@ azure_storage_key=$(az storage account keys list \
     --account-name "$azure_storage_account" \
     --resource-group "$resource_group_name" \
     --output json |
-    jq -r '.[0].value')
+    --query [0].value --output tsv)
 
 # Add file system storage account
 storage_file_system=datalake
@@ -223,6 +224,7 @@ SQL_POOL_NAME=$synapse_sqlpool_name \
 LOG_ANALYTICS_WS_ID=$loganalytics_id \
 LOG_ANALYTICS_WS_KEY=$loganalytics_key \
 KEYVAULT_NAME=$kv_name \
+KEYVAULT_ENDPOINT=$keyVaultEndpoint \
 AZURE_STORAGE_ACCOUNT=$azure_storage_account \
     bash -c "./scripts/deploy_synapse_artifacts.sh"
 

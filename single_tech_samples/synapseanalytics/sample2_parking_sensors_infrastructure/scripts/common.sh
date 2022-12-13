@@ -92,7 +92,7 @@ assign_synapse_role_if_not_exists() {
     local syn_role_name=$2
     local sp_obj_id=$3
     # Retrieve roleDefinitionId
-    syn_role_id=$(az synapse role definition show --workspace-name "$syn_workspace_name" --role "$syn_role_name" -o json | jq -r '.id')
+    syn_role_id=$(az synapse role definition show --workspace-name "$syn_workspace_name" --role "$syn_role_name" --query id --output tsv)
     role_exists=$(az synapse role assignment list --workspace-name "$syn_workspace_name" \
         --query="[?principalId == '$sp_obj_id' && roleDefinitionId == '$syn_role_id']" -o tsv)
     if [[ -z $role_exists ]]; then

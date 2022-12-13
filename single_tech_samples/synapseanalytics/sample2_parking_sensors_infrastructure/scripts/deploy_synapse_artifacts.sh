@@ -41,6 +41,7 @@ set -o nounset
 # LOG_ANALYTICS_WS_ID
 # LOG_ANALYTICS_WS_KEY
 # KEYVAULT_NAME
+# KEYVAULT_ENDPOINT
 # AZURE_STORAGE_ACCOUNT
 
 
@@ -79,8 +80,7 @@ startTrigger () {
     az synapse trigger start --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}"
 }
 writeKeyVaultLSFile () {
-    keyVaultEndpoint=$(az cloud show --query suffixes.keyvaultDns -o tsv)
-    keyVaultBaseURL="https://${KEYVAULT_NAME}${keyVaultEndpoint}/"
+    keyVaultBaseURL="https://${KEYVAULT_NAME}${KEYVAULT_ENDPOINT}/"
 
     # Deploy all Linked Services
     # Auxiliary string to parametrize the keyvault name on the ls json file

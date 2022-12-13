@@ -21,7 +21,7 @@ fi
 AZURE_SUBSCRIPTION_ID=${AZURE_SUBSCRIPTION_ID:-}
 if [ -z "$AZURE_SUBSCRIPTION_ID" ]
 then
-    export AZURE_SUBSCRIPTION_ID=$(az account show --output json | jq -r '.id')
+    export AZURE_SUBSCRIPTION_ID=$(az account show --query id --output tsv)
     echo "No Azure subscription id [AZURE_SUBSCRIPTION_ID] specified. Using default subscription id."
 fi
 
