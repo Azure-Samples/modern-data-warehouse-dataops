@@ -43,103 +43,6 @@ set -o nounset
 # KEYVAULT_NAME
 # AZURE_STORAGE_ACCOUNT
 
-# Consts
-apiVersion="2020-12-01&force=true"
-dataPlaneApiVersion="2019-06-01-preview"
-baseUrl="${managementEndpoint}subscriptions/${AZURE_SUBSCRIPTION_ID}"
-synapseWorkspaceBaseUrl="$baseUrl/resourceGroups/${RESOURCE_GROUP_NAME}/providers/Microsoft.Synapse/workspaces/${SYNAPSE_WORKSPACE_NAME}"
-requirementsFileName='./synapse/config/requirements.txt'
-packagesDirectory='./synapse/libs/'
-
-synapse_ws_location=$(az group show \
-    --name "${RESOURCE_GROUP_NAME}" \
-    --output json |
-    jq -r '.location')
-
-# Function responsible to perform the 4 steps needed to upload a single package to the synapse workspace area
-uploadSynapsePackagesToWorkspace(){
-    declare name=$1
-    echo "Uploading Library Wheel Package to Workspace: $name"
-
-    #az synapse workspace wait --resource-group "${RESOURCE_GROUP_NAME}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --created
-    # Step 1: Get bearer token for the Data plane    
-    token=$(az account get-access-token --resource ${synapseEndpoint} --query accessToken --output tsv)    
-    # Step 2: create workspace package placeholder
-    synapseLibraryBaseUri=${SYNAPSE_DEV_ENDPOINT}/libraries
-    synapseLibraryUri="${synapseLibraryBaseUri}/${name}?api-version=${dataPlaneApiVersion}"
-
-    if [[ -n $(az rest --method get --headers "Authorization=Bearer ${token}" 'Content-Type=application/json;charset=utf-8' --url "${synapseLibraryBaseUri}?api-version=${dataPlaneApiVersion}" --query "value[?name == '${name}']" -o tsv) ]]; then
-        echo "Library exists: ${name}"
-        echo "Skipping creation"
-        return 0
-    fi
-
-    az rest --method put --headers "Authorization=Bearer ${token}" "Content-Type=application/json;charset=utf-8" --url "${synapseLibraryUri}"
-    sleep 5
-
-    # Step 3: upload package content to workspace placeholder
-    #az synapse workspace wait --resource-group "${RESOURCE_GROUP_NAME}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --updated
-    synapseLibraryUriForAppend="${SYNAPSE_DEV_ENDPOINT}/libraries/${name}?comp=appendblock&api-version=${dataPlaneApiVersion}"
-    curl -i -X PUT -H "Authorization: Bearer ${token}" -H "Content-Type: application/octet-stream" --data-binary @./synapse/libs/"${name}" "${synapseLibraryUriForAppend}"
-    sleep 15
-  
-    # Step4: Completing Package creation/Flush the library
-    #az synapse workspace wait --resource-group "${RESOURCE_GROUP_NAME}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --updated
-    synapseLibraryUriForFlush="${SYNAPSE_DEV_ENDPOINT}/libraries/${name}/flush?api-version=${dataPlaneApiVersion}"
-    az rest --method post --headers "Authorization=Bearer ${token}" "Content-Type=application/json;charset=utf-8" --url "${synapseLibraryUriForFlush}"
-}
-
-# Function responsible to perform the update of a spark pool on 3 configurations: requirements.txt, packages and spark configuration
-uploadSynapseArtifactsToSparkPool(){
-    declare requirementList=$1
-    declare customLibraryList=$2
-    echo "Uploading Synapse Artifacts to Spark Pool: ${BIG_DATAPOOL_NAME}"
-
-    json_body="{
-        \"location\": \"${synapse_ws_location}\",
-        \"properties\": {
-            \"nodeCount\": 10,
-            \"isComputeIsolationEnabled\": false,
-            \"nodeSizeFamily\": \"MemoryOptimized\",
-            \"nodeSize\": \"Small\",
-            \"autoScale\": {
-                \"enabled\": true,
-                \"minNodeCount\": 3,
-                \"maxNodeCount\": 10
-            },
-            \"cacheSize\": 0,
-            \"dynamicExecutorAllocation\": {
-                \"enabled\": false,
-                \"minExecutors\": 0,
-                \"maxExecutors\": 10
-            },
-            \"autoPause\": {
-                \"enabled\": true,
-                \"delayInMinutes\": 15
-            },
-            \"sparkVersion\": \"2.4\",
-            \"libraryRequirements\": {
-                \"filename\": \"requirements.txt\",
-                \"content\": \"${requirementList}\"
-            },
-            \"sessionLevelPackagesEnabled\": true,
-            ${customLibraryList}
-            \"sparkConfigProperties\": {
-                \"configurationType\": \"File\",
-                \"filename\": \"spark_loganalytics_conf.txt\",
-                \"content\": \"spark.synapse.logAnalytics.enabled true\r\nspark.synapse.logAnalytics.workspaceId ${LOG_ANALYTICS_WS_ID}\r\nspark.synapse.logAnalytics.secret ${LOG_ANALYTICS_WS_KEY}\"
-            },
-        }
-    }"
-    
-    #Get bearer token for the management API
-    managementApiUri="${synapseWorkspaceBaseUrl}/bigDataPools/${BIG_DATAPOOL_NAME}?api-version=${apiVersion}"
-    az account get-access-token
-    
-    #Update the Spark Pool with requirements.txt and sparkconfiguration
-    #az synapse spark pool wait --resource-group "${RESOURCE_GROUP_NAME}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --big-data-pool-name "${BIG_DATAPOOL_NAME}" --created
-    az rest --method put --headers "Content-Type=application/json" --url "${managementApiUri}" --body "$json_body"
-}
 
 createLinkedService () {
     declare name=$1
@@ -162,7 +65,6 @@ createNotebook() {
 createPipeline () {
     declare name=$1
     echo "Creating Synapse Pipeline: $name"
-
     # Deploy the pipeline
     az synapse pipeline create --file @./synapse/workspace/pipeline/"${name}".json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}"
 }
@@ -171,94 +73,95 @@ createTrigger () {
     echo "Creating Synapse Trigger: $name"
     az synapse trigger create --file @./synapse/workspace/trigger/"${name}".json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}"
 }
+startTrigger () {
+    declare name=$1
+    echo "Starting Synapse Trigger: $name"
+    az synapse trigger start --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}"
+}
+deployRequirements () {
+    az synapse spark pool update --name "${BIG_DATAPOOL_NAME}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --resource-group "${RESOURCE_GROUP_NAME}" --library-requirements "./synapse/config/requirements.txt"
+}
+writeKeyVaultLSFile () {
+    keyVaultEndpoint=$(az cloud show --query suffixes.keyvaultDns -o tsv)
+    keyVaultBaseURL="https://${KEYVAULT_NAME}${keyVaultEndpoint}/"
 
+    # Deploy all Linked Services
+    # Auxiliary string to parametrize the keyvault name on the ls json file
+    keyVaultLsContent="{
+        \"name\": \"Ls_KeyVault_01\",
+        \"properties\": {
+            \"annotations\": [],
+            \"type\": \"AzureKeyVault\",
+            \"typeProperties\": {
+                \"baseUrl\": \"${keyVaultBaseURL}\"
+            }
+        }
+    }"
+    echo "$keyVaultLsContent" > ./synapse/workspace/linkedService/Ls_KeyVault_01.json
+}
+writeDsSqlDWTableFile () {
+    dsSqlDWTableContent="{
+        \"name\": \"Ds_SqlDW_Table\",
+        \"properties\": {
+            \"linkedServiceName\": {
+                \"referenceName\": \"${SYNAPSE_WORKSPACE_NAME}-WorkspaceDefaultSqlServer\",
+                \"type\": \"LinkedServiceReference\",
+                \"parameters\": {
+                    \"DBName\": \"${SQL_POOL_NAME}\"
+                }
+            },
+            \"annotations\": [],
+            \"type\": \"AzureSqlDWTable\",
+            \"typeProperties\": {
+                \"schema\": \"dbo\",
+                \"table\": \"status\"
+            }
+        }
+    }"
 
-getProvisioningState(){
-    provision_state=$(az synapse spark pool show \
-    --name "$BIG_DATAPOOL_NAME" \
-    --workspace-name "$SYNAPSE_WORKSPACE_NAME" \
-    --resource-group "$RESOURCE_GROUP_NAME" \
-    --only-show-errors \
-    --output json |
-    jq -r '.provisioningState')
+    echo "$dsSqlDWTableContent" > ./synapse/workspace/dataset/Ds_SqlDW_Table.json
+}
+writeStorageTriggerFile () {
+    storageScope=$(az storage account show -g "$RESOURCE_GROUP_NAME" -n "$AZURE_STORAGE_ACCOUNT" --query id -o tsv)
+
+    storageTriggerContent="{
+        \"name\": \"T_Stor\",
+        \"properties\": {
+            \"annotations\": [],
+            \"runtimeState\": \"Started\",
+            \"pipelines\": [
+                {
+                    \"pipelineReference\": {
+                        \"referenceName\": \"P_MelbParkingData\",
+                        \"type\": \"PipelineReference\"
+                    },
+                    \"parameters\": {
+                        \"filename\": \"@trigger().outputs.body.fileName\"
+                    }
+                }
+            ],
+            \"type\": \"BlobEventsTrigger\",
+            \"typeProperties\": {
+                \"blobPathBeginsWith\": \"/datalake/blobs/\",
+                \"ignoreEmptyBlobs\": true,
+                \"scope\": \"${storageScope}\",
+                \"events\": [
+                    \"Microsoft.Storage.BlobCreated\"
+                ]
+            }
+        }
+    }"
+    echo "$storageTriggerContent" > ./synapse/workspace/trigger/T_Stor.json
 }
 
-# Build requirement.txt string to upload in the Spark Configuration
-configurationList=""
-while read -r p; do 
-    line=$(echo "$p" | tr -d '\r' | tr -d '\n')
-    if [ "$configurationList" != "" ]; then configurationList="$configurationList$line\r\n" ; else configurationList="$line\r\n"; fi
-done < $requirementsFileName
+writeKeyVaultLSFile
+writeDsSqlDWTableFile
+writeStorageTriggerFile
 
-# Build packages list to upload in the Spark Pool, upload packages to synapse workspace
-libraryList=""
-for file in "$packagesDirectory"*.whl; do
-    filename=${file##*/}
-    librariesToUpload="{
-        \"name\": \"${filename}\",
-        \"path\": \"${SYNAPSE_WORKSPACE_NAME}/libraries/${filename}\",
-        \"containerName\": \"prep\",
-        \"type\": \"whl\"
-    }"
-    if [ "$libraryList" != "" ]; then libraryList=${libraryList}","${librariesToUpload}; else libraryList=${librariesToUpload};fi
-    uploadSynapsePackagesToWorkspace "${filename}"
-done
-customlibraryList="customLibraries:[$libraryList],"
-uploadSynapseArtifactsToSparkPool "${configurationList}" "${customlibraryList}"
-
-getProvisioningState
-echo "$provision_state"
-while [ "$provision_state" != "Succeeded" ]
-do
-    if [ "$provision_state" == "Failed" ]; then break ; else sleep 30; fi
-    getProvisioningState
-    echo "$provision_state: checking again in 30 seconds..."
-done
-
-keyVaultEndpoint=$(az cloud show --query suffixes.keyvaultDns -o tsv)
-keyVaultBaseURL="https://${KEYVAULT_NAME}${keyVaultEndpoint}/"
-
-# Deploy all Linked Services
-# Auxiliary string to parametrize the keyvault name on the ls json file
-keyVaultLsContent="{
-    \"name\": \"Ls_KeyVault_01\",
-    \"properties\": {
-        \"annotations\": [],
-        \"type\": \"AzureKeyVault\",
-        \"typeProperties\": {
-            \"baseUrl\": \"${keyVaultBaseURL}\"
-        }
-    }
-}"
-echo "$keyVaultLsContent" > ./synapse/workspace/linkedService/Ls_KeyVault_01.json
+deployRequirements
 
 createLinkedService "Ls_KeyVault_01"
 createLinkedService "Ls_AdlsGen2_01"
-
-dsSqlDWTableContent="{
-    \"name\": \"Ds_SqlDW_Table\",
-    \"properties\": {
-        \"linkedServiceName\": {
-            \"referenceName\": \"${SYNAPSE_WORKSPACE_NAME}-WorkspaceDefaultSqlServer\",
-            \"type\": \"LinkedServiceReference\",
-            \"parameters\": {
-                \"DBName\": \"${SQL_POOL_NAME}\"
-            }
-        },
-        \"annotations\": [],
-        \"type\": \"AzureSqlDWTable\",
-        \"schema\": [],
-        \"typeProperties\": {
-            \"schema\": \"dbo\",
-            \"table\": \"status\"
-        }
-    }
-}"
-
-echo "$dsSqlDWTableContent" > ./synapse/workspace/dataset/Ds_SqlDW_Table.json
-
-# This line allows the spark pool to be available to attach to the notebooks
-az synapse spark session list --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spark-pool-name "${BIG_DATAPOOL_NAME}"
 
 # Deploy all Datasets
 createDataset "Ds_AdlsGen2_MelbParkingData"
@@ -266,45 +169,17 @@ createDataset "Ds_Ingest_CSV"
 createDataset "Ds_Egress_Parquet"
 createDataset "Ds_SqlDW_Table"
 
+# This line allows the spark pool to be available to attach to the notebooks
+az synapse spark session list --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spark-pool-name "${BIG_DATAPOOL_NAME}"
+
 # Deploy all Notebooks
-createNotebook "00_setup"
 createNotebook "ETL_sample"
 
 # Deploy all Pipelines
 createPipeline "P_MelbParkingData"
 
-storageScope=$(az storage account show -g "$RESOURCE_GROUP_NAME" -n "$AZURE_STORAGE_ACCOUNT" --query id -o tsv)
-
-storageTriggerContent="{
-    \"name\": \"T_Stor\",
-    \"properties\": {
-        \"annotations\": [],
-        \"runtimeState\": \"Started\",
-        \"pipelines\": [
-            {
-                \"pipelineReference\": {
-                    \"referenceName\": \"P_MelbParkingData\",
-                    \"type\": \"PipelineReference\"
-                },
-                \"parameters\": {
-                    \"filename\": \"@trigger().outputs.body.fileName\"
-                }
-            }
-        ],
-        \"type\": \"BlobEventsTrigger\",
-        \"typeProperties\": {
-            \"blobPathBeginsWith\": \"/datalake/blobs/\",
-            \"ignoreEmptyBlobs\": true,
-            \"scope\": \"${storageScope}\",
-            \"events\": [
-                \"Microsoft.Storage.BlobCreated\"
-            ]
-        }
-    }
-}"
-echo "$storageTriggerContent" > ./synapse/workspace/trigger/T_Stor.json
-
 # Deploy triggers
 createTrigger "T_Stor"
+startTrigger "T_Stor"
 
 echo "Completed deploying Synapse artifacts."

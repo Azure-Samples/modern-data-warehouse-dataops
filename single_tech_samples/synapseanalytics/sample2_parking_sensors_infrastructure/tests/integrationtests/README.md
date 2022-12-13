@@ -14,7 +14,7 @@ The following environment variables must be set:
 
 Service principal account details used to connect to Azure:
 
-- **AZ_SERVICE_PRINCIPAL_ID**
+- **AZ_SERVICE_PRINCIPAL_CLIENT_ID**
 - **AZ_SERVICE_PRINCIPAL_SECRET**
 - **AZ_SERVICE_PRINCIPAL_TENANT_ID**
 

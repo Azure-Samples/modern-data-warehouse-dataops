@@ -143,14 +143,6 @@ Please check the details [here](docs/observability.md).
       - After a successful deployment, you will find `.env.dev` files containing essential configuration information per environment. See [here](#deployed-resources) for list of deployed resources.
       - Note that if you are using **dev container**, you would run the same script but inside the dev container terminal.
 
-1. **Run Setup notebook in Synapse workspace per environment**
-
-   - Navigate into DEV Synapse workspace notebooks tab and select the *00_setup* notebook.
-   - Open the settings for the Spark pool and select the checkbox to "Run as Managed Identity" and save the changes.
-     - [Optional] Or you can grant yourself *Storage Data Blob Contributor* to the Synapse main storage (`mdwdopsst2dev<DEPLOYMENT_ID>`).
-   - Run this notebook, attaching to the created Spark Pool.
-   - Repeat this in the STG and PROD Synapse workspace.
-
 1. **Trigger the Synapse Pipeline**
 
    - In the **DEV** Synapse workspace, navigate to "Manage > Triggers". Select the `T_Sched` trigger and activate it by clicking on the "Play" icon next to it. Click `Publish` to publish changes.

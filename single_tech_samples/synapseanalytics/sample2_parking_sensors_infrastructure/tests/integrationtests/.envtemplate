@@ -1,6 +1,6 @@
 ###
 # REQUIRED. Service principal account details used to connect to Azure, fill in:
-AZ_SERVICE_PRINCIPAL_ID={Application (client) ID}
+AZ_SERVICE_PRINCIPAL_CLIENT_ID=
 AZ_SERVICE_PRINCIPAL_SECRET=
 AZ_SERVICE_PRINCIPAL_TENANT_ID=
 
