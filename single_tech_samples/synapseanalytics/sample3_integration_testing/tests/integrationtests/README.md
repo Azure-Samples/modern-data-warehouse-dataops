@@ -23,15 +23,26 @@ Azure Synapse Analytics:
 - **AZ_SUBSCRIPTION_ID**
 - **AZ_RESOURCE_GROUP_NAME**
 - **AZ_SYNAPSE_NAME**
+- **AZ_SYNAPSE_URI**
 
 Azure Synapse Analytics output(s) connection information:
 
 - **AZ_SYNAPSE_DEDICATED_SQLPOOL_NAME**
+- **AZ_SYNAPSE_DEDICATED_SQLPOOL_URI**
 - **AZ_SYNAPSE_SQLPOOL_ADMIN_USERNAME**
 - **AZ_SYNAPSE_SQLPOOL_ADMIN_PASSWORD**
 - **AZ_SYNAPSE_DEDICATED_SQLPOOL_DATABASE_NAME**
+- **PIPELINE_NAME**
+- **TRIGGER_NAME**
 
-Additional *optional* configuration:
+ADLS information:
+
+- **ADLS_ACCOUNT_NAME**
+- **ADLS_ACCOUNT_URI**
+- **ADLS_DESTINATION_CONTAINER**
+- **SOURCE_FILE_PATH**
+- **SOURCE_FILE_NAME**
+- **ADLS_PROCESSED_CONTAINER**
 
 ## Development setup
 
@@ -45,13 +56,16 @@ Additional *optional* configuration:
 1. Open VSCode from the **root of the Python project**. That is, the root of your VSCode workspace needs to be at `/tests/integrationtests`. It should have `.devcontainer` and `.vscode` folders.
 2. Copy `.envtemplate` file as new `.env` file. Set the environment variables as listed out in `.envtemplate` file.
 3. In VSCode command pallete (`ctrl+shift+p`), select `Remote-Containers: Reopen in container`. First time building the Devcontainer may take a while.
-4. Run `pytest` to run tests.
+4. IN VSCode, navigate to the "Run and Debug" blade and hit the "Play" button to start a test. Optionally, in the VSCode bash terminal, run `pytest` to start tests.
 
 ## Code structure
 
 The code is organized as follows:
 
+- `data/` - Files to upload to the ADLS account and trigger the pipeline
+- `dataconnectors/` - Data connector specific fixtures, subdivided into modules.
+- `files/` - Files to use after the pipeline has run for assertions
 - `tests/`
   - `conftest.py` - Common Pytest [Fixtures](https://docs.pytest.org/en/stable/fixture.html).
-  - `dataconnectors/` - Data connector specific fixtures, subdivided into modules.
   - `test_*.py` - contain all test cases
+- `utils/` - Methods related to the pipeline operations
