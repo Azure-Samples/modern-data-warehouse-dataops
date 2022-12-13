@@ -78,9 +78,6 @@ startTrigger () {
     echo "Starting Synapse Trigger: $name"
     az synapse trigger start --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}"
 }
-deployRequirements () {
-    az synapse spark pool update --name "${BIG_DATAPOOL_NAME}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --resource-group "${RESOURCE_GROUP_NAME}" --library-requirements "./synapse/config/requirements.txt"
-}
 writeKeyVaultLSFile () {
     keyVaultEndpoint=$(az cloud show --query suffixes.keyvaultDns -o tsv)
     keyVaultBaseURL="https://${KEYVAULT_NAME}${keyVaultEndpoint}/"
@@ -157,8 +154,6 @@ writeStorageTriggerFile () {
 writeKeyVaultLSFile
 writeDsSqlDWTableFile
 writeStorageTriggerFile
-
-deployRequirements
 
 createLinkedService "Ls_KeyVault_01"
 createLinkedService "Ls_AdlsGen2_01"
