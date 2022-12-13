@@ -2,12 +2,13 @@
         "name": "Ds_SqlDW_Table",
         "properties": {
             "linkedServiceName": {
-                "referenceName": "",
+                "referenceName": "s",
                 "type": "LinkedServiceReference",
                 "parameters": {
                     "DBName": ""
                 }
             },
+            "schema": [],
             "annotations": [],
             "type": "AzureSqlDWTable",
             "typeProperties": {

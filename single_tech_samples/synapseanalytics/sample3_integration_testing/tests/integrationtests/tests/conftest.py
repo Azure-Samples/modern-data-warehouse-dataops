@@ -10,7 +10,6 @@ pytest_plugins = ['dataconnectors.sql', 'dataconnectors.adls', 'dataconnectors.l
 
 @pytest.fixture(scope="session")
 def config():
-    DEFAULT_AZ_SYNAPSE_POLL_INTERVAL_SEC = 5
     return {
         "AZ_SYNAPSE_DEDICATED_SQLPOOL_NAME": os.getenv("AZ_SYNAPSE_DEDICATED_SQLPOOL_NAME"),
         "AZ_SYNAPSE_DEDICATED_SQLPOOL_URI": os.getenv("AZ_SYNAPSE_DEDICATED_SQLPOOL_URI"),
@@ -21,9 +20,7 @@ def config():
         "AZ_SERVICE_PRINCIPAL_SECRET": os.getenv("AZ_SERVICE_PRINCIPAL_SECRET"),
         "AZ_SERVICE_PRINCIPAL_TENANT_ID": os.getenv("AZ_SERVICE_PRINCIPAL_TENANT_ID"),
         "AZ_SYNAPSE_NAME": os.getenv("AZ_SYNAPSE_NAME"),
-        "AZ_SYNAPSE_URI": os.getenv("AZ_SYNAPSE_URI"),
-        "AZURE_SYNAPSE_POLL_INTERVAL": os.getenv("AZURE_SYNAPSE_POLL_INTERVAL",
-            DEFAULT_AZ_SYNAPSE_POLL_INTERVAL_SEC)
+        "AZ_SYNAPSE_URI": os.getenv("AZ_SYNAPSE_URI")
     }
 
 @pytest.fixture(scope="module")
@@ -48,11 +45,6 @@ def synapse_endpoint(config) -> str:
     synapse_uri = config["AZ_SYNAPSE_URI"] 
     endpoint = f"https://{synapse_name}.{synapse_uri}"
     return endpoint
-
-
-@pytest.fixture(scope="module")
-def synapse_status_poll_interval(config) -> int:
-    return int(config["AZURE_SYNAPSE_POLL_INTERVAL"])
 
 
 @pytest.fixture(autouse=True)

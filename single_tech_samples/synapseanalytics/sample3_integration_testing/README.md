@@ -1,6 +1,6 @@
-# DataOps - Parking Sensor (Synapse) <!-- omit in toc -->
+# DataOps - Synapse Integration Testing <!-- omit in toc -->
 
-The sample demonstrate how DevOps principles can be applied to an end to end Data Pipeline Solution built according to the [Modern Data Warehouse (MDW)](https://azure.microsoft.com/en-au/solutions/architecture/modern-data-warehouse/) pattern, implemented in Azure Synapse.
+This sample showcases additional integration tests for Azure Synapse. It includes the deployment of infrastructure based on the E2E sample [DataOps - Parking Sensor (Synapse)](https://github.com/Azure-Samples/modern-data-warehouse-dataops/tree/main/e2e_samples/parking_sensors_synapse).
 
 ## Contents <!-- omit in toc -->
 
@@ -10,7 +10,6 @@ The sample demonstrate how DevOps principles can be applied to an end to end Dat
 - [Key Concepts](#key-concepts)
   - [Environments](#environments)
   - [Testing](#testing)
-  - [Observability / Monitoring](#observability--monitoring)
 - [How to use the sample](#how-to-use-the-sample)
   - [Prerequisites](#prerequisites)
     - [Software pre-requisites if you use dev container](#software-pre-requisites-if-you-use-dev-container)
@@ -18,7 +17,6 @@ The sample demonstrate how DevOps principles can be applied to an end to end Dat
     - [Deployed Resources](#deployed-resources)
     - [Clean up](#clean-up)
   - [Data Lake Physical layout](#data-lake-physical-layout)
-  - [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
 
 ---------------------
 
@@ -55,10 +53,6 @@ It makes use of the following azure services:
 - Integration Testing - These can be ran manually to ensure integration points of the solution function as expected. In this demo solution, an actual Synapse Data Pipeline run is automatically triggered and its output verified.
   - See here for the [integration tests](./tests/integrationtests/).
 
-### Observability / Monitoring
-
-Please check the details [here](docs/observability.md).
-
 ## How to use the sample
 
 ### Prerequisites
@@ -69,7 +63,7 @@ Please check the details [here](docs/observability.md).
 #### Software pre-requisites if you don't use dev container<!-- omit in toc -->
 
 - For Windows users, [Windows Subsystem For Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
-- [az cli 2.6+](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
+- [az cli 2.43+](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
 - [az cli - application insights extension](https://docs.microsoft.com/en-us/cli/azure/ext/application-insights/monitor/app-insights?view=azure-cli-latest)
   - To install, run `az extension add --name application-insights`
 - [Azure DevOps CLI](https://marketplace.visualstudio.com/items?itemName=ms-vsts.cli)
@@ -136,7 +130,7 @@ Please check the details [here](docs/observability.md).
      To further customize the solution, set parameters in `arm.parameters` files located in the `infrastructure` folder.
 
 1. **Deploy Azure resources**
-   - `cd` into the `single_tech_samples/synapseanalytics/sample2_parking_sensors_infrastructure` folder of the repo
+   - `cd` into the `single_tech_samples/synapseanalytics/sample3_integration_testing` folder of the repo
 
    - Run `./deploy.sh`.
       - This may take around **~30mins or more** to run end to end. So grab yourself a cup of coffee... ☕
@@ -145,9 +139,9 @@ Please check the details [here](docs/observability.md).
 
 1. **Trigger the Synapse Pipeline**
 
-   - In the **DEV** Synapse workspace, navigate to "Manage > Triggers". Select the `T_Sched` trigger and activate it by clicking on the "Play" icon next to it. Click `Publish` to publish changes.
+   - This solution starts the Trigger as part of deployment. You can turn the trigger on or off by opening the **DEV** Synapse workspace, navigating to "Manage > Triggers", then select the `T_Stor` trigger and activate/deactive it by clicking on the "Play"/"Pause" icon next to it. Click `Publish` to publish changes.
    - **Optional**. Trigger the Synapse Data Pipelines in the dev environment.
-      - In the Synapse workspace of the dev environment, navigate to "Author", then select the `P_Ingest_MelbParkingData`.
+      - In the Synapse workspace of the dev environment, navigate to "Author", then select the `P_MelbParkingData`.
       - Select "Trigger > Trigger Now".
       - To monitor the run, go to "Monitor > Pipeline runs".
       ![Pipeline Run](docs/images/SynapseRun.png?raw=true "Pipeline Run]")
@@ -174,11 +168,6 @@ After a successful deployment, you should have the following resources:
   - **Application Insights**
   - **KeyVault** with all relevant secrets stored.
 
-Notes:
-
-- *These variable groups are currently not linked to KeyVault due to limitations of creating these programmatically. See [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
-- Environments and Approval Gates are not deployed as part of this solution. See [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
-
 #### Clean up
 
 This sample comes with an [optional, interactive clean-up script](./scripts/clean_up.sh) which will delete resources with `mdwdops` in its name. It will list resources to be deleted and will prompt before continuing.
@@ -196,11 +185,3 @@ ADLS Gen2 is structured as the following:
             /interim            <- Silver - interim (cleansed) tables
             /dw                 <- Gold - final tables 
 ```
-
-### Known Issues, Limitations and Workarounds
-
-The following lists some limitations of the solution and associated deployment script:
-
-- Azure Synapse SQL Serverless artifacts (ei. Tables, Views, etc) are not currently updated as part of the CICD pipeline.
-- Manually publishing the Synapse workspace is required. Currently, this cannot be automated. Failing to publish will mean potentially releasing a stale data pipeline definition in the release pipeline.
-  - **Mitigation**: Set Approval Gates between environments. This allows for an opportunity to verify whether the manual publish has been performed.

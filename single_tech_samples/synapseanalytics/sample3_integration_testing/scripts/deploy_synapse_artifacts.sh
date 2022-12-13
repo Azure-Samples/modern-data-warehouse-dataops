@@ -107,6 +107,7 @@ writeDsSqlDWTableFile () {
                     \"DBName\": \"${SQL_POOL_NAME}\"
                 }
             },
+            \"schema\": [],
             \"annotations\": [],
             \"type\": \"AzureSqlDWTable\",
             \"typeProperties\": {

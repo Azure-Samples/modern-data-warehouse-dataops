@@ -2,9 +2,9 @@
 
 1. Clone the repository
 2. Open the repository in vscode
-3. Copy the `.envtemplate` to `devcontainer.env` within this folder `single_tech_samples/synapseanalytics/sample2_parking_sensors_infrastructure/.devcontainer` and update the values like described [here](../README.md#software-pre-requisites-if-you-use-dev-container)
+3. Copy the `.envtemplate` to `devcontainer.env` within this folder `single_tech_samples/synapseanalytics/sample3_integration_testing/.devcontainer` and update the values like described [here](../README.md#software-pre-requisites-if-you-use-dev-container)
 4. Open the Command Palette (`Ctrl+Shift+P`) and search for `Remote-Containers: Open Folder in Container...`
-5. Select `single_tech_samples/synapseanalytics/sample2_parking_sensors_infrastructure` and confirm
+5. Select `single_tech_samples/synapseanalytics/sample3_integration_testing` and confirm
 
 Note: when pulling latest changes to the devcontainer, ensure you rebuild your container without cache to any changes to the devcontainer.
 
