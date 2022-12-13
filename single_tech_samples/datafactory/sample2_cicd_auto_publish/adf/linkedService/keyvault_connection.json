@@ -1,0 +1,10 @@
+{
+	"name": "keyvault_connection",
+	"properties": {
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://dataengspike.vault.azure.net/"
+		}
+	}
+}
