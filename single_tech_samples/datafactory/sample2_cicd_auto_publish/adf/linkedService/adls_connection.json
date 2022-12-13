@@ -1,0 +1,10 @@
+{
+	"name": "adls_connection",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobFS",
+		"typeProperties": {
+			"url": "https://synapseetlde.dfs.core.windows.net/"
+		}
+	}
+}
