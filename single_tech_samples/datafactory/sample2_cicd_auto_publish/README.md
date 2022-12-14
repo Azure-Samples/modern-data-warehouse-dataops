@@ -82,9 +82,9 @@ The Azure YAML Pipeline file will contain stages for CI and CD with required tas
 3) The variables needed in Variable groups are- azure_subscription_id, azure_service_connection_name, resource_group_name, azure_data_factory_name.
 4) There is two more variable present in pipeline-
 
-    `adf_code_path` which is the path in repo where our ADF code is stored. This is the same place that you choose as “Root folder” while linking Git with ADF.
+    `adf_code_path` which is the path in repo where our ADF code is stored. This is the same place that you choose as `Root folder` while linking Git with ADF.
 
-    `adf_package_file_path` -This is the path in repo where the `package.json` file is present. This variable will be used in generating the ARM Templates.
+    `adf_package_file_path` -This is the path in repo where the `package.json` file is present. This file is used to generate the ARM Templates.
 
 ```
 variables:
