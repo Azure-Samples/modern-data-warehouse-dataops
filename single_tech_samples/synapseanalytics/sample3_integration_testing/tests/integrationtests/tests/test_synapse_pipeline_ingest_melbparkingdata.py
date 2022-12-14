@@ -17,8 +17,7 @@ def test_synapse_pipeline_succeeded(synapse_client, sql_connection, adls_connect
     processed_container = os.getenv("ADLS_PROCESSED_CONTAINER")
 
     request_id = adls.upload_to_ADLS(adls_connection_client, container, filepath, filename, "")
-    # pipeline_run_id = pipelineutils.get_pipeline_by_request_id(synapse_client, request_id, PIPELINE_NAME, TRIGGER_NAME)
-    pipeline_run_id="5975d7b9-f089-4c36-a35a-02a0684a5a4d"
+    pipeline_run_id = pipelineutils.get_pipeline_by_request_id(synapse_client, request_id, PIPELINE_NAME, TRIGGER_NAME)
 
     this_run_status = pipelineutils.observe_pipeline(synapse_client, pipeline_run_id)
 
