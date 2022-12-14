@@ -123,21 +123,6 @@ az storage container create --name $storage_file_system --account-name "$azure_s
 processed_file_system=saveddata
 az storage container create --name $processed_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key"
 
-echo "Creating folders within the file system."
-# Create folders for databricks libs
-az storage fs directory create -n '/sys/databricks/libs' -f $storage_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key"
-# Create folders for SQL external tables
-az storage fs directory create -n '/data/dw/fact_parking' -f $storage_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key"
-az storage fs directory create -n '/data/dw/dim_st_marker' -f $storage_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key"
-az storage fs directory create -n '/data/dw/dim_parking_bay' -f $storage_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key"
-az storage fs directory create -n '/data/dw/dim_location' -f $storage_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key"
-
-echo "Uploading seed data to data/seed"
-az storage blob upload --container-name $storage_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key" \
-    --file data/seed/dim_date.csv --name "data/seed/dim_date/dim_date.csv" --overwrite
-az storage blob upload --container-name $storage_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key" \
-    --file data/seed/dim_time.csv --name "data/seed/dim_time/dim_time.csv" --overwrite
-
 datalakeabfssurl="abfss://datalake@${azure_storage_account}.dfs.${storageEndpoint}"
 
 # Set Keyvault secrets
