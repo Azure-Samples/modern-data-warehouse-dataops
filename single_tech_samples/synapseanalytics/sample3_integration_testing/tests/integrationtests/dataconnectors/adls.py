@@ -10,10 +10,11 @@ from dataconnectors import local_file
 
 LOG = logging.getLogger(__name__)
 
+
 @pytest.fixture(scope="module")
 def adls_account_endpoint():
-    ADLS_ACCOUNT_NAME=os.getenv("ADLS_ACCOUNT_NAME")
-    ADLS_ACCOUNT_URI=os.getenv("ADLS_ACCOUNT_URI")
+    ADLS_ACCOUNT_NAME = os.getenv("ADLS_ACCOUNT_NAME")
+    ADLS_ACCOUNT_URI = os.getenv("ADLS_ACCOUNT_URI")
     return f"https://{ADLS_ACCOUNT_NAME}.{ADLS_ACCOUNT_URI}/"
 
 
@@ -48,7 +49,8 @@ def upload_to_ADLS(
     """
 
     print(
-        f"STARTING TO UPLOAD FILE TO ADLS account: {adls_connection_client.url} "
+        "STARTING TO UPLOAD FILE TO ADLS"
+        f"account: {adls_connection_client.url} "
         f"and container: {container}..."
     )
 
@@ -83,7 +85,7 @@ def download_from_ADLS(
     adls_connection_client: DataLakeServiceClient,
     container: str,
     file_name: str,
-    base_path: str = None
+    base_path: str = None,
 ):
     """Download file from ADLS
 
@@ -111,7 +113,7 @@ def download_from_ADLS(
             directory_client = file_system_client.get_directory_client("/")
         else:
             directory_client = file_system_client.get_directory_client(base_path)
-        
+
         file_client = directory_client.get_file_client(file_name)
 
         download = file_client.download_file()
@@ -142,7 +144,7 @@ def get_parquet_df_from_contents(downloaded_bytes: bytes):
 
 
 def read_parquet_file_from_ADLS(
-    adls_connection_client, container: str, file_name: str,  base_path: str = None
+    adls_connection_client, container: str, file_name: str, base_path: str = None
 ):
     """Download file from ADLS and convert to parquet data frame
 

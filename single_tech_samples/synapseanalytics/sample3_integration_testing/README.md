@@ -5,7 +5,6 @@ This sample showcases additional integration tests for Azure Synapse. It include
 ## Contents <!-- omit in toc -->
 
 - [Solution Overview](#solution-overview)
-  - [Architecture](#architecture)
   - [Technologies used](#technologies-used)
 - [Key Concepts](#key-concepts)
   - [Environments](#environments)
@@ -23,12 +22,6 @@ This sample showcases additional integration tests for Azure Synapse. It include
 ## Solution Overview
 
 The solution runs a flow triggered on a storage file upload. It then runs a sample ETL process in a [Notebook](https://learn.microsoft.com/en-us/azure/synapse-analytics/spark/apache-spark-development-using-notebooks). Once completed, the data is loaded into [Azure Synapse - SQL Dedicated Pool (formerly SQLDW)](https://docs.microsoft.com/en-us/azure/synapse-analytics/sql-data-warehouse/sql-data-warehouse-overview-what-is?context=/azure/synapse-analytics/context/context). The entire pipeline is orchestrated with [Azure Synapse Data Pipelines](https://docs.microsoft.com/en-us/azure/data-factory/concepts-pipelines-activities?context=/azure/synapse-analytics/context/context&tabs=synapse-analytics).
-
-### Architecture
-
-The following shows the overall architecture of the solution.
-
-![Architecture](docs/images/architecture.png?raw=true "Architecture")
 
 ### Technologies used
 
@@ -148,7 +141,7 @@ It makes use of the following azure services:
 
 Congratulations!! 🥳 You have successfully deployed the solution.
 
-If you've encountered any issues, please review the [Troubleshooting](../../docs/parking_sensors_troubleshooting.md) section and the [Known Issues](#known-issues-limitations-and-workarounds) section. If you are still stuck, please file a Github issue with the relevant error message, error screenshots, and replication steps.
+If you are stuck, please file a Github issue with the relevant error message, error screenshots, and replication steps.
 
 #### Deployed Resources
 

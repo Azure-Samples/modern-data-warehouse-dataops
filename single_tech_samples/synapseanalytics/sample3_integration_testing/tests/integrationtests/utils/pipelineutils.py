@@ -155,9 +155,7 @@ def get_pipeline_by_request_id(
                 .get("data")
                 .get("requestId")
             ) == (request_id):
-                pipeline_run_id = trigger_run.triggered_pipelines.get(
-                    pipeline_name
-                )
+                pipeline_run_id = trigger_run.triggered_pipelines.get(pipeline_name)
                 print(f'GOT THE TRIGGERED PIPELINE RUN ID "{pipeline_run_id}"')
                 return pipeline_run_id
 
@@ -189,7 +187,7 @@ def get_activity_run_by_pipeline_run_id(
     print(
         f"GETTING the second pipeline run id from pipeline {pipeline_name}"
         f" where the Activity Name is '{second_pipeline_activity_name}'..."
-        )
+    )
 
     try:
         # Get a list of the activity runs for the pipeline run

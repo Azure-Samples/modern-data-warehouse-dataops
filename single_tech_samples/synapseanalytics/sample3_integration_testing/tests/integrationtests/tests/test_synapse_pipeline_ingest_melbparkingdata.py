@@ -8,7 +8,9 @@ PIPELINE_NAME = os.getenv("PIPELINE_NAME")
 TRIGGER_NAME = os.getenv("TRIGGER_NAME")
 
 
-def test_synapse_pipeline_succeeded(synapse_client, sql_connection, adls_connection_client):
+def test_synapse_pipeline_succeeded(
+    synapse_client, sql_connection, adls_connection_client
+):
 
     # Upload file
     container = os.getenv("ADLS_DESTINATION_CONTAINER")
@@ -16,15 +18,22 @@ def test_synapse_pipeline_succeeded(synapse_client, sql_connection, adls_connect
     filename = os.getenv("SOURCE_FILE_NAME")
     processed_container = os.getenv("ADLS_PROCESSED_CONTAINER")
 
-    request_id = adls.upload_to_ADLS(adls_connection_client, container, filepath, filename, "")
-    pipeline_run_id = pipelineutils.get_pipeline_by_request_id(synapse_client, request_id, PIPELINE_NAME, TRIGGER_NAME)
+    request_id = adls.upload_to_ADLS(
+        adls_connection_client, container, filepath, filename, ""
+    )
+    pipeline_run_id = pipelineutils.get_pipeline_by_request_id(
+        synapse_client, request_id, PIPELINE_NAME, TRIGGER_NAME
+    )
 
     this_run_status = pipelineutils.observe_pipeline(synapse_client, pipeline_run_id)
 
     processed_parquet_file = adls.read_parquet_file_from_ADLS(
-        adls_connection_client, processed_container, f"{pipeline_run_id}.parquet")
+        adls_connection_client, processed_container, f"{pipeline_run_id}.parquet"
+    )
 
-    local_processed_parquet_file = local_file.read_parquet_file("files", "processed_parquet_file.parquet")
+    local_processed_parquet_file = local_file.read_parquet_file(
+        "files", "processed_parquet_file.parquet"
+    )
 
     assert len(processed_parquet_file) == len(local_processed_parquet_file)
 
