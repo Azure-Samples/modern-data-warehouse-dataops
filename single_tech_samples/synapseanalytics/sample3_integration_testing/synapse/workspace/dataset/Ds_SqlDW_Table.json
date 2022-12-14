@@ -2,7 +2,7 @@
         "name": "Ds_SqlDW_Table",
         "properties": {
             "linkedServiceName": {
-                "referenceName": "s",
+                "referenceName": "",
                 "type": "LinkedServiceReference",
                 "parameters": {
                     "DBName": ""
