@@ -96,10 +96,10 @@ variables:
       - group: adf-pre-prod
 
   - name: adf_code_path
-    value: "$(Build.SourcesDirectory)/data_ops/adf"
+    value: "$(Build.SourcesDirectory)/data_ops/adf"        #replace with the ADF resources folder.
 
   - name: adf_package_file_path
-    value: "$(Build.SourcesDirectory)/build/"
+    value: "$(Build.SourcesDirectory)/build/"              #replace with the package.json folder.
 
 ```
 
@@ -130,7 +130,7 @@ The Build stage consists of 5 steps-
 - task: Npm@1
   inputs:
     command: 'install'
-    workingDir: '$(adf_package_file_path)' #replace with the package.json folder.
+    workingDir: '$(adf_package_file_path)'
     verbose: true
   displayName: 'Install NPM Package'
   
@@ -143,7 +143,7 @@ The Build stage consists of 5 steps-
   displayName: 'Validate ADF Code'
   inputs:
     command: 'custom'
-    workingDir: '$(adf_package_file_path)' #replace with the package.json folder. 
+    workingDir: '$(adf_package_file_path)' 
     customCommand: 'run build validate $(adf_code_path) /subscriptions/$(azure_subscription_id)/resourceGroups/$(resource_group_name)/providers/Microsoft.DataFactory/factories/$(azure_data_factory_name)' 
 ```
 
@@ -154,7 +154,7 @@ The Build stage consists of 5 steps-
   displayName: 'Validate and Generate ARM template'
   inputs:
     command: 'custom'
-    workingDir: '$(adf_package_file_path)' #replace with the package.json folder.
+    workingDir: '$(adf_package_file_path)'
     customCommand: 'run build export $(adf_code_path) /subscriptions/$(azure_subscription_id)/resourceGroups/$(resource_group_name)/providers/Microsoft.DataFactory/factories/$(azure_data_factory_name) "ArmTemplate"'
 ```
 
@@ -312,7 +312,7 @@ Sometimes the parameter that you want to override might not be present in the AR
 2) Under the ARM Template section, Click on `Edit parameter configuration` to load the JSON file.
 3) Go to the required section. For example- If your parameter was in Linked Service, then you can go to `Microsoft.DataFactory/factories/linkedServices` section.
 4) Under `typeProperties`, you will see many properties mentioned there. Add the parameter that you want to include in ARM Template parameter file.
-5) Click on Ok. This will generate a file called `arm-template-parameters-definition.json` in the repo where ADF code is present.
+5) Click on Ok. This will generate a file called **[`arm-template-parameters-definition.json`](./adf/arm-template-parameters-definition.json)** in the repo where ADF code is present.
 6) Run the Pipeline again, and you will see the new parameter in the Template Parameter file of Artifacts.
 
 ## **Summary**

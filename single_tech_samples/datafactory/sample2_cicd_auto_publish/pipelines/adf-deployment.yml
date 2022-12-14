@@ -23,10 +23,10 @@ variables:
       - group: adf-pre-prod
 
   - name: adf_code_path
-    value: "$(Build.SourcesDirectory)/single_tech_samples/datafactory/adf"
+    value: "$(Build.SourcesDirectory)/single_tech_samples/datafactory/adf"     # Path where all the ADF resources are stored.
     
   - name: adf_package_file_path
-    value: "$(Build.SourcesDirectory)/single_tech_samples/datafactory/build/"
+    value: "$(Build.SourcesDirectory)/single_tech_samples/datafactory/build/"  #Path of the package.json folder.
 
 
 # Installs Node and the npm packages saved in your package.json files in the .pipelines folder
