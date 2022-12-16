@@ -1,5 +1,5 @@
 {
-    "name": "P_MelbParkingData",
+    "name": "<pipelinename>",
     "properties": {
         "activities": [
             {
@@ -69,61 +69,6 @@
                 ]
             },
             {
-                "name": "Update SQL",
-                "type": "Copy",
-                "dependsOn": [
-                    {
-                        "activity": "ETL Sample Notebook",
-                        "dependencyConditions": [
-                            "Succeeded"
-                        ]
-                    }
-                ],
-                "policy": {
-                    "timeout": "0.12:00:00",
-                    "retry": 0,
-                    "retryIntervalInSeconds": 30,
-                    "secureOutput": false,
-                    "secureInput": false
-                },
-                "userProperties": [],
-                "typeProperties": {
-                    "source": {
-                        "type": "ParquetSource",
-                        "storeSettings": {
-                            "type": "AzureBlobFSReadSettings",
-                            "recursive": true,
-                            "enablePartitionDiscovery": false
-                        }
-                    },
-                    "sink": {
-                        "type": "SqlDWSink",
-                        "allowCopyCommand": true,
-                        "tableOption": "autoCreate",
-                        "disableMetricsCollection": false
-                    },
-                    "enableStaging": false
-                },
-                "inputs": [
-                    {
-                        "referenceName": "Ds_Egress_Parquet",
-                        "type": "DatasetReference",
-                        "parameters": {
-                            "filename": {
-                                "value": "@pipeline().RunId",
-                                "type": "Expression"
-                            }
-                        }
-                    }
-                ],
-                "outputs": [
-                    {
-                        "referenceName": "Ds_SqlDW_Table",
-                        "type": "DatasetReference"
-                    }
-                ]
-            },
-            {
                 "name": "ETL Sample Notebook",
                 "type": "SynapseNotebook",
                 "dependsOn": [
@@ -163,6 +108,51 @@
                     },
                     "numExecutors": null
                 }
+            },
+            {
+                "name": "SQL Status Update",
+                "type": "ExecuteDataFlow",
+                "dependsOn": [
+                    {
+                        "activity": "ETL Sample Notebook",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "dataflow": {
+                        "referenceName": "Df_SaveToSQL",
+                        "type": "DataFlowReference",
+                        "datasetParameters": {
+                            "source1": {
+                                "foldername": {
+                                    "value": "@pipeline().RunId",
+                                    "type": "Expression"
+                                }
+                            }
+                        }
+                    },
+                    "staging": {
+                        "folderPath": "synapsedefaultfs/synapse"
+                    },
+                    "compute": {
+                        "coreCount": 8,
+                        "computeType": "General"
+                    },
+                    "traceLevel": "None",
+                    "cacheSinks": {
+                        "firstRowOnly": true
+                    }
+                }
             }
         ],
         "parameters": {
@@ -172,7 +162,7 @@
             }
         },
         "annotations": [],
-        "lastPublishTime": "2022-12-12T19:12:02Z"
+        "lastPublishTime": "2022-12-14T22:10:19Z"
     },
     "type": "Microsoft.Synapse/workspaces/pipelines"
 }

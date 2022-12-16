@@ -61,10 +61,10 @@ kv_owner_object_id=$(az ad signed-in-user show --query id --output tsv)
 
 # Get endpoints for Azure resources
 azcloud=$(az cloud show --output json)
-storageEndpoint=$(echo "$azcloud" | jq -r '.suffixes.storageEndpoint')
-keyVaultEndpoint=$(echo "$azcloud" | jq -r '.suffixes.keyvaultDns')
-managementEndpoint=$(echo "$azcloud" | jq -r '.endpoints.resourceManager')
-synapseEndpoint=$(echo "$azcloud" | jq -r '.endpoints.synapseAnalyticsResourceId')
+storageEndpointSuffix=$(echo "$azcloud" | jq -r '.suffixes.storageEndpoint')
+keyVaultEndpointSuffix=$(echo "$azcloud" | jq -r '.suffixes.keyvaultDns')
+synapseEndpointSuffix=$(echo "$azcloud" | jq -r '.suffixes.synapseAnalyticsEndpoint')
+adlsStorageEndpointSuffix=".dfs.${storageEndpointSuffix}"
 
 # Validate arm template
 
@@ -97,7 +97,7 @@ fi
 echo "Retrieving KeyVault information from the deployment."
 
 kv_name=$(echo "$arm_output" | jq -r '.properties.outputs.keyvault_name.value')
-kv_dns_name="https://${kv_name}${keyVaultEndpoint}/"
+kv_dns_name="https://${kv_name}${keyVaultEndpointSuffix}/"
 
 
 # Store in KeyVault
@@ -123,29 +123,12 @@ az storage container create --name $storage_file_system --account-name "$azure_s
 processed_file_system=saveddata
 az storage container create --name $processed_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key"
 
-datalakeabfssurl="abfss://datalake@${azure_storage_account}.dfs.${storageEndpoint}"
-
 # Set Keyvault secrets
-datalakeurl="https://${azure_storage_account}.dfs.${storageEndpoint}"
+datalakeurl="https://${azure_storage_account}.dfs.${storageEndpointSuffix}"
 
 az keyvault secret set --vault-name "$kv_name" --name "datalakeAccountName" --value "$azure_storage_account"
 az keyvault secret set --vault-name "$kv_name" --name "datalakeKey" --value "$azure_storage_key"
 az keyvault secret set --vault-name "$kv_name" --name "datalakeurl" --value "$datalakeurl"
-
-
-####################
-# APPLICATION INSIGHTS
-
-echo "Retrieving ApplicationInsights information from the deployment."
-appinsights_name=$(echo "$arm_output" | jq -r '.properties.outputs.appinsights_name.value')
-appinsights_key=$(az monitor app-insights component show \
-    --app "$appinsights_name" \
-    --resource-group "$resource_group_name" \
-    --output json |
-    jq -r '.instrumentationKey')
-
-# Store in Keyvault
-az keyvault secret set --vault-name "$kv_name" --name "applicationInsightsKey" --value "$appinsights_key"
 
 
 ####################
@@ -174,16 +157,17 @@ az keyvault secret set --vault-name "$kv_name" --name "logAnalyticsKey" --value 
 
 echo "Retrieving Synapse Analytics information from the deployment."
 synapseworkspace_name=$(echo "$arm_output" | jq -r '.properties.outputs.synapseworskspace_name.value')
-synapse_dev_endpoint=$(az synapse workspace show \
+synapse_workspace=$(az synapse workspace show \
     --name "$synapseworkspace_name" \
     --resource-group "$resource_group_name" \
-    --output json |
-    jq -r '.connectivityEndpoints | .dev')
+    --output json)
+synapse_dev_endpoint=$(echo $synapse_workspace | jq -r '.connectivityEndpoints | .dev')
+sqlPoolServer=$(echo "$synapse_workspace" | jq -r '.connectivityEndpoints.sql')
 
 synapse_sparkpool_name=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_output_spark_pool_name.value')
 synapse_sqlpool_name=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_sql_pool_output.value.synapse_pool_name')
 
-# The server name of connection string will be the same as Synapse worspace name
+# The server name of connection string will be the same as Synapse workspace name
 synapse_sqlpool_server=$(echo "$arm_output" | jq -r '.properties.outputs.synapseworskspace_name.value')
 synapse_sqlpool_admin_username=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_sql_pool_output.value.username')
 # the database name of dedicated sql pool will be the same with dedicated sql pool by default
@@ -193,10 +177,14 @@ synapse_dedicated_sqlpool_db_name=$(echo "$arm_output" | jq -r '.properties.outp
 az keyvault secret set --vault-name "$kv_name" --name "synapseWorkspaceName" --value "$synapseworkspace_name"
 az keyvault secret set --vault-name "$kv_name" --name "synapseDevEndpoint" --value "$synapse_dev_endpoint"
 az keyvault secret set --vault-name "$kv_name" --name "synapseSparkPoolName" --value "$synapse_sparkpool_name"
-az keyvault secret set --vault-name "$kv_name" --name "synapseSqlPoolServer" --value "$synapse_sqlpool_server"
+az keyvault secret set --vault-name "$kv_name" --name "synapseSqlPoolServerName" --value "$synapse_sqlpool_server"
 az keyvault secret set --vault-name "$kv_name" --name "synapseSQLPoolAdminUsername" --value "$synapse_sqlpool_admin_username"
 az keyvault secret set --vault-name "$kv_name" --name "synapseSQLPoolAdminPassword" --value "$SYNAPSE_SQL_PASSWORD"
 az keyvault secret set --vault-name "$kv_name" --name "synapseDedicatedSQLPoolDBName" --value "$synapse_dedicated_sqlpool_db_name"
+
+# Create variables
+PIPELINE_NAME="P_$PROJECT-$DEPLOYMENT_ID-$ENV_NAME"
+TRIGGER_NAME="T_Stor_$PROJECT-$DEPLOYMENT_ID-$ENV_NAME"
 
 # Deploy Synapse artifacts
 AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID \
@@ -208,8 +196,10 @@ SQL_POOL_NAME=$synapse_sqlpool_name \
 LOG_ANALYTICS_WS_ID=$loganalytics_id \
 LOG_ANALYTICS_WS_KEY=$loganalytics_key \
 KEYVAULT_NAME=$kv_name \
-KEYVAULT_ENDPOINT=$keyVaultEndpoint \
+KEYVAULT_ENDPOINT=$keyVaultEndpointSuffix \
 AZURE_STORAGE_ACCOUNT=$azure_storage_account \
+PIPELINE_NAME=$PIPELINE_NAME \
+TRIGGER_NAME=$TRIGGER_NAME \
     bash -c "./scripts/deploy_synapse_artifacts.sh"
 
 
@@ -248,20 +238,23 @@ cat << EOF >> "$env_file"
 
 
 # ------ Configuration from deployment on ${TIMESTAMP} -----------
-RESOURCE_GROUP_NAME=${resource_group_name}
-AZURE_LOCATION=${AZURE_LOCATION}
-AZURE_STORAGE_ACCOUNT=${azure_storage_account}
-AZURE_STORAGE_KEY=${azure_storage_key}
-AZURE_STORAGE_LOCATION=${datalakeabfssurl}
-APPINSIGHTS_KEY=${appinsights_key}
-KV_URL=${kv_dns_name}
-LOG_ANALYTICS_WS_ID=${loganalytics_id}
-SYNAPSE_WORKSPACE_NAME=${synapseworkspace_name}
-SYNAPSE_SQLPOOL_SERVER=${synapse_sqlpool_name}
-SYNAPSE_SQLPOOL_ADMIN_USERNAME=${synapse_sqlpool_admin_username}
-SYNAPSE_DEDICATED_SQLPOOL_DATABASE_NAME=${synapse_dedicated_sqlpool_db_name}
-SP_SYNAPSE_ID=${sp_synapse_id}
-SP_SYNAPSE_NAME=${sp_synapse_name}
+AZ_SERVICE_PRINCIPAL_CLIENT_ID=${sp_synapse_id}
+AZ_SERVICE_PRINCIPAL_SECRET=${sp_synapse_pass}
+AZ_SERVICE_PRINCIPAL_TENANT_ID=${sp_synapse_tenant}
+AZ_SUBSCRIPTION_ID=${AZURE_SUBSCRIPTION_ID}
+AZ_RESOURCE_GROUP_NAME=${resource_group_name}
+AZ_SYNAPSE_NAME=${synapseworkspace_name}
+AZ_SYNAPSE_ENDPOINT_SUFFIX=${synapseEndpointSuffix}
+AZ_SYNAPSE_DEDICATED_SQLPOOL_SERVER=${sqlPoolServer}
+AZ_SYNAPSE_SQLPOOL_ADMIN_USERNAME=${synapse_sqlpool_admin_username}
+AZ_SYNAPSE_SQLPOOL_ADMIN_PASSWORD=${SYNAPSE_SQL_PASSWORD}
+AZ_SYNAPSE_DEDICATED_SQLPOOL_DATABASE_NAME=${synapse_dedicated_sqlpool_db_name}
+PIPELINE_NAME=$PIPELINE_NAME
+TRIGGER_NAME=$TRIGGER_NAME
+ADLS_ACCOUNT_NAME=${azure_storage_account}
+ADLS_ACCOUNT_ENDPOINT_SUFFIX=${adlsStorageEndpointSuffix}
+ADLS_DESTINATION_CONTAINER=${storage_file_system}
+ADLS_PROCESSED_CONTAINER=${processed_file_system}
 
 EOF
 echo "Completed deploying Azure resources $resource_group_name ($ENV_NAME)"

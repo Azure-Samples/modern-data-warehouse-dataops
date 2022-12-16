@@ -43,6 +43,8 @@ set -o nounset
 # KEYVAULT_NAME
 # KEYVAULT_ENDPOINT
 # AZURE_STORAGE_ACCOUNT
+# PIPELINE_NAME
+# TRIGGER_NAME
 
 
 createLinkedService () {
@@ -63,16 +65,21 @@ createNotebook() {
     echo "Creating Synapse Notebook: $name"
     az synapse notebook create --file @./synapse/notebook/"${name}".ipynb --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spark-pool-name "${BIG_DATAPOOL_NAME}"
 }
+createDataflow () {
+    declare name=$1
+    echo "Creating Synapse Dataflow: $name"
+    az synapse data-flow create --file @./synapse/workspace/dataflow/"${name}".json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}"
+}
 createPipeline () {
     declare name=$1
     echo "Creating Synapse Pipeline: $name"
     # Deploy the pipeline
-    az synapse pipeline create --file @./synapse/workspace/pipeline/"${name}".json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}"
+    az synapse pipeline create --file @./synapse/workspace/pipeline/P_Sample3.json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}"
 }
 createTrigger () {
     declare name=$1
     echo "Creating Synapse Trigger: $name"
-    az synapse trigger create --file @./synapse/workspace/trigger/"${name}".json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}"
+    az synapse trigger create --file @./synapse/workspace/trigger/T_Stor.json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}"
 }
 startTrigger () {
     declare name=$1
@@ -82,88 +89,66 @@ startTrigger () {
 writeKeyVaultLSFile () {
     keyVaultBaseURL="https://${KEYVAULT_NAME}${KEYVAULT_ENDPOINT}/"
 
-    # Deploy all Linked Services
-    # Auxiliary string to parametrize the keyvault name on the ls json file
-    keyVaultLsContent="{
-        \"name\": \"Ls_KeyVault_01\",
-        \"properties\": {
-            \"annotations\": [],
-            \"type\": \"AzureKeyVault\",
-            \"typeProperties\": {
-                \"baseUrl\": \"${keyVaultBaseURL}\"
-            }
-        }
-    }"
-    echo "$keyVaultLsContent" > ./synapse/workspace/linkedService/Ls_KeyVault_01.json
+    cp ./synapse/workspace/linkedService/Ls_KeyVault_01_template.json ./synapse/workspace/linkedService/Ls_KeyVault_01.json
+
+    echo "Replace Key Vault base url with: $keyVaultBaseURL"
+    sed -i "s+<baseurl>+$keyVaultBaseURL+g" \
+    ./synapse/workspace/linkedService/Ls_KeyVault_01.json
 }
 writeDsSqlDWTableFile () {
-    dsSqlDWTableContent="{
-        \"name\": \"Ds_SqlDW_Table\",
-        \"properties\": {
-            \"linkedServiceName\": {
-                \"referenceName\": \"${SYNAPSE_WORKSPACE_NAME}-WorkspaceDefaultSqlServer\",
-                \"type\": \"LinkedServiceReference\",
-                \"parameters\": {
-                    \"DBName\": \"${SQL_POOL_NAME}\"
-                }
-            },
-            \"schema\": [],
-            \"annotations\": [],
-            \"type\": \"AzureSqlDWTable\",
-            \"typeProperties\": {
-                \"schema\": \"dbo\",
-                \"table\": \"status\"
-            }
-        }
-    }"
+    serverName="${SYNAPSE_WORKSPACE_NAME}-WorkspaceDefaultSqlServer"
 
-    echo "$dsSqlDWTableContent" > ./synapse/workspace/dataset/Ds_SqlDW_Table.json
+    cp synapse/workspace/dataset/Ds_SqlDW_Table_template.json synapse/workspace/dataset/Ds_SqlDW_Table.json
+
+    echo "Replace SQL DB name with: $SQL_POOL_NAME"
+    sed -i "s/<sqldbname>/$SQL_POOL_NAME/g" \
+    synapse/workspace/dataset/Ds_SqlDW_Table.json
+
+    echo "Replace Server name with: $serverName"
+    sed -i "s/<servername>/$serverName/g" \
+    synapse/workspace/dataset/Ds_SqlDW_Table.json
 }
 writeStorageTriggerFile () {
     storageScope=$(az storage account show -g "$RESOURCE_GROUP_NAME" -n "$AZURE_STORAGE_ACCOUNT" --query id -o tsv)
 
-    storageTriggerContent="{
-        \"name\": \"T_Stor\",
-        \"properties\": {
-            \"annotations\": [],
-            \"runtimeState\": \"Started\",
-            \"pipelines\": [
-                {
-                    \"pipelineReference\": {
-                        \"referenceName\": \"P_MelbParkingData\",
-                        \"type\": \"PipelineReference\"
-                    },
-                    \"parameters\": {
-                        \"filename\": \"@trigger().outputs.body.fileName\"
-                    }
-                }
-            ],
-            \"type\": \"BlobEventsTrigger\",
-            \"typeProperties\": {
-                \"blobPathBeginsWith\": \"/datalake/blobs/\",
-                \"ignoreEmptyBlobs\": true,
-                \"scope\": \"${storageScope}\",
-                \"events\": [
-                    \"Microsoft.Storage.BlobCreated\"
-                ]
-            }
-        }
-    }"
-    echo "$storageTriggerContent" > ./synapse/workspace/trigger/T_Stor.json
+    cp synapse/workspace/trigger/T_Stor_template.json synapse/workspace/trigger/T_Stor.json
+
+    echo "Replace Trigger name with: $TRIGGER_NAME"
+    sed -i "s/<triggername>/$TRIGGER_NAME/g" \
+    synapse/workspace/trigger/T_Stor.json
+
+    echo "Replace Pipeline name with: $PIPELINE_NAME"
+    sed -i "s/<pipelinename>/$PIPELINE_NAME/g" \
+    synapse/workspace/trigger/T_Stor.json
+
+    echo "Replace Storage scope with: $storageScope"
+    sed -i "s+<storagescope>+$storageScope+g" \
+    synapse/workspace/trigger/T_Stor.json
+}
+writepipelineFile () {
+    cp synapse/workspace/pipeline/P_Sample3_template.json synapse/workspace/pipeline/P_Sample3.json
+
+    echo "Replace Pipeline name with: $PIPELINE_NAME"
+    sed -i "s/<pipelinename>/$PIPELINE_NAME/g" \
+    synapse/workspace/pipeline/P_Sample3.json
 }
 
+# Create the Synapse resources JSON files to prepare for deployment
 writeKeyVaultLSFile
 writeDsSqlDWTableFile
 writeStorageTriggerFile
+writepipelineFile
 
+# Deploy all Linked Services
 createLinkedService "Ls_KeyVault_01"
 createLinkedService "Ls_AdlsGen2_01"
 
 # Deploy all Datasets
-createDataset "Ds_AdlsGen2_MelbParkingData"
+createDataset "Ds_AdlsGen2_Data"
 createDataset "Ds_Ingest_CSV"
 createDataset "Ds_Egress_Parquet"
 createDataset "Ds_SqlDW_Table"
+createDataset "Ds_AdlsGen2_Interim"
 
 # This line allows the spark pool to be available to attach to the notebooks
 az synapse spark session list --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spark-pool-name "${BIG_DATAPOOL_NAME}"
@@ -171,11 +156,13 @@ az synapse spark session list --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spa
 # Deploy all Notebooks
 createNotebook "ETL_sample"
 
+createDataflow "Df_SaveToSQL"
+
 # Deploy all Pipelines
-createPipeline "P_MelbParkingData"
+createPipeline $PIPELINE_NAME
 
 # Deploy triggers
-createTrigger "T_Stor"
-startTrigger "T_Stor"
+createTrigger $TRIGGER_NAME
+startTrigger $TRIGGER_NAME
 
 echo "Completed deploying Synapse artifacts."

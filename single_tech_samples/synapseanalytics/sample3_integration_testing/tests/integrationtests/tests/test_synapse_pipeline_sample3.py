@@ -40,8 +40,10 @@ def test_synapse_pipeline_succeeded(
     # Assert
     cursor = sql_connection.cursor()
     cursor.execute(
-        "SELECT COUNT(*) AS COUNT FROM dbo.status WHERE dim_date_id='20130908'"
+        f"SELECT * FROM dbo.status WHERE pipeline_run_id='{pipeline_run_id}'"
     )
     row = cursor.fetchone()
+
+    assert row.count == len(local_processed_parquet_file)
+
     assert this_run_status == "Succeeded"
-    assert row is not None

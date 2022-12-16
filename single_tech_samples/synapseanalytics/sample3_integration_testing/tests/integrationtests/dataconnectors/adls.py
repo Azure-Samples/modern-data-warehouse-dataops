@@ -14,8 +14,8 @@ LOG = logging.getLogger(__name__)
 @pytest.fixture(scope="module")
 def adls_account_endpoint():
     ADLS_ACCOUNT_NAME = os.getenv("ADLS_ACCOUNT_NAME")
-    ADLS_ACCOUNT_URI = os.getenv("ADLS_ACCOUNT_URI")
-    return f"https://{ADLS_ACCOUNT_NAME}.{ADLS_ACCOUNT_URI}/"
+    ADLS_ACCOUNT_ENDPOINT_SUFFIX = os.getenv("ADLS_ACCOUNT_ENDPOINT_SUFFIX")
+    return f"https://{ADLS_ACCOUNT_NAME}{ADLS_ACCOUNT_ENDPOINT_SUFFIX}/"
 
 
 @pytest.fixture(scope="module")

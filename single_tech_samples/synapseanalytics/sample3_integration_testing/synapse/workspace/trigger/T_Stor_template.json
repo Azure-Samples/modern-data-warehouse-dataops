@@ -1,12 +1,12 @@
 {
-        "name": "T_Stor",
+        "name": "<triggername>",
         "properties": {
             "annotations": [],
             "runtimeState": "Started",
             "pipelines": [
                 {
                     "pipelineReference": {
-                        "referenceName": "P_MelbParkingData",
+                        "referenceName": "<pipelinename>",
                         "type": "PipelineReference"
                     },
                     "parameters": {
@@ -18,7 +18,7 @@
             "typeProperties": {
                 "blobPathBeginsWith": "/datalake/blobs/",
                 "ignoreEmptyBlobs": true,
-                "scope": "",
+                "scope": "<storagescope>",
                 "events": [
                     "Microsoft.Storage.BlobCreated"
                 ]

@@ -16,11 +16,8 @@ pytest_plugins = [
 @pytest.fixture(scope="session")
 def config():
     return {
-        "AZ_SYNAPSE_DEDICATED_SQLPOOL_NAME": os.getenv(
-            "AZ_SYNAPSE_DEDICATED_SQLPOOL_NAME"
-        ),
-        "AZ_SYNAPSE_DEDICATED_SQLPOOL_URI": os.getenv(
-            "AZ_SYNAPSE_DEDICATED_SQLPOOL_URI"
+        "AZ_SYNAPSE_DEDICATED_SQLPOOL_SERVER": os.getenv(
+            "AZ_SYNAPSE_DEDICATED_SQLPOOL_SERVER"
         ),
         "AZ_SYNAPSE_SQLPOOL_ADMIN_USERNAME": os.getenv(
             "AZ_SYNAPSE_SQLPOOL_ADMIN_USERNAME"
@@ -35,7 +32,7 @@ def config():
         "AZ_SERVICE_PRINCIPAL_SECRET": os.getenv("AZ_SERVICE_PRINCIPAL_SECRET"),
         "AZ_SERVICE_PRINCIPAL_TENANT_ID": os.getenv("AZ_SERVICE_PRINCIPAL_TENANT_ID"),
         "AZ_SYNAPSE_NAME": os.getenv("AZ_SYNAPSE_NAME"),
-        "AZ_SYNAPSE_URI": os.getenv("AZ_SYNAPSE_URI"),
+        "AZ_SYNAPSE_ENDPOINT_SUFFIX": os.getenv("AZ_SYNAPSE_ENDPOINT_SUFFIX"),
     }
 
 
@@ -58,8 +55,8 @@ def azure_credential(config):
 @pytest.fixture(scope="module")
 def synapse_endpoint(config) -> str:
     synapse_name = config["AZ_SYNAPSE_NAME"]
-    synapse_uri = config["AZ_SYNAPSE_URI"]
-    endpoint = f"https://{synapse_name}.{synapse_uri}"
+    synapse_endpoint_suffix = config["AZ_SYNAPSE_ENDPOINT_SUFFIX"]
+    endpoint = f"https://{synapse_name}{synapse_endpoint_suffix}"
     return endpoint
 
 

@@ -2,10 +2,10 @@
         "name": "Ds_SqlDW_Table",
         "properties": {
             "linkedServiceName": {
-                "referenceName": "",
+                "referenceName": "<servername>",
                 "type": "LinkedServiceReference",
                 "parameters": {
-                    "DBName": ""
+                    "DBName": "<sqldbname>"
                 }
             },
             "schema": [],

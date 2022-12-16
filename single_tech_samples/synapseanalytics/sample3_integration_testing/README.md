@@ -29,7 +29,6 @@ It makes use of the following azure services:
 
 - [Azure Synapse Analytics](https://azure.microsoft.com/en-au/services/synapse-analytics/)
 - [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction)
-- [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)
 - [Log Analytics](https://docs.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overview)
 
 ## Key Concepts
@@ -57,8 +56,6 @@ It makes use of the following azure services:
 
 - For Windows users, [Windows Subsystem For Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
 - [az cli 2.43+](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
-- [az cli - application insights extension](https://docs.microsoft.com/en-us/cli/azure/ext/application-insights/monitor/app-insights?view=azure-cli-latest)
-  - To install, run `az extension add --name application-insights`
 - [Azure DevOps CLI](https://marketplace.visualstudio.com/items?itemName=ms-vsts.cli)
   - To install, run `az extension add --name azure-devops`
 - [Python 3+](https://www.python.org/)
@@ -126,7 +123,6 @@ It makes use of the following azure services:
    - `cd` into the `single_tech_samples/synapseanalytics/sample3_integration_testing` folder of the repo
 
    - Run `./deploy.sh`.
-      - This may take around **~30mins or more** to run end to end. So grab yourself a cup of coffee... ☕
       - After a successful deployment, you will find `.env.dev` files containing essential configuration information per environment. See [here](#deployed-resources) for list of deployed resources.
       - Note that if you are using **dev container**, you would run the same script but inside the dev container terminal.
 
@@ -134,8 +130,9 @@ It makes use of the following azure services:
 
    - This solution starts the Trigger as part of deployment. You can turn the trigger on or off by opening the **DEV** Synapse workspace, navigating to "Manage > Triggers", then select the `T_Stor` trigger and activate/deactive it by clicking on the "Play"/"Pause" icon next to it. Click `Publish` to publish changes.
    - **Optional**. Trigger the Synapse Data Pipelines in the dev environment.
-      - In the Synapse workspace of the dev environment, navigate to "Author", then select the `P_MelbParkingData`.
+      - In the Synapse workspace of the dev environment, navigate to "Integrate", then select the pipeline.
       - Select "Trigger > Trigger Now".
+      - Enter the name of a file in the storage account in the `datalake` container (upload this file before starting the trigger).
       - To monitor the run, go to "Monitor > Pipeline runs".
       ![Pipeline Run](docs/images/SynapseRun.png?raw=true "Pipeline Run]")
 
@@ -158,7 +155,6 @@ After a successful deployment, you should have the following resources:
     - **SQL Dedicated Pool (formerly SQLDW)** - Initally empty. Release Pipeline should deploy SQL Database objects using the SQL DACPAC.
   - **Data Lake Store Gen2** and a **Service Principal (SP)** with Storage Contributor rights assigned.
   - **Log Analytics Workspace** - including a kusto query on Query explorer -> Saved queries, to verify results that will be looged on Synapse notebooks (notebooks are not deployed yet).
-  - **Application Insights**
   - **KeyVault** with all relevant secrets stored.
 
 #### Clean up
