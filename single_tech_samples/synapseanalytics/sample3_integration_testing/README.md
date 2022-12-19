@@ -149,6 +149,7 @@ After a successful deployment, you should have the following resources:
     - **Notebooks** - Spark, SQL Serverless
     - **Spark Pool**
     - **SQL Dedicated Pool (formerly SQLDW)** - Initally empty. Synapse Pipeline will create a table and content.
+    - Note: The Synapse workspace deploys with a firewall rule granting access to all IP addresses.
   - **Data Lake Store Gen2** and a **Service Principal (SP)** with Storage Contributor rights assigned.
   - **KeyVault** with all relevant secrets stored.
 
