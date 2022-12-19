@@ -132,27 +132,6 @@ az keyvault secret set --vault-name "$kv_name" --name "datalakeurl" --value "$da
 
 
 ####################
-# LOG ANALYTICS 
-
-echo "Retrieving Log Analytics information from the deployment."
-loganalytics_name=$(echo "$arm_output" | jq -r '.properties.outputs.loganalytics_name.value')
-loganalytics_id=$(az monitor log-analytics workspace show \
-    --workspace-name "$loganalytics_name" \
-    --resource-group "$resource_group_name" \
-    --output json |
-    jq -r '.customerId')
-loganalytics_key=$(az monitor log-analytics workspace get-shared-keys \
-    --workspace-name "$loganalytics_name" \
-    --resource-group "$resource_group_name" \
-    --output json |
-    jq -r '.primarySharedKey')
-
-# Store in Keyvault
-az keyvault secret set --vault-name "$kv_name" --name "logAnalyticsId" --value "$loganalytics_id"
-az keyvault secret set --vault-name "$kv_name" --name "logAnalyticsKey" --value "$loganalytics_key"
-
-
-####################
 # SYNAPSE ANALYTICS
 
 echo "Retrieving Synapse Analytics information from the deployment."
@@ -193,8 +172,6 @@ SYNAPSE_WORKSPACE_NAME=$synapseworkspace_name \
 SYNAPSE_DEV_ENDPOINT=$synapse_dev_endpoint \
 BIG_DATAPOOL_NAME=$synapse_sparkpool_name \
 SQL_POOL_NAME=$synapse_sqlpool_name \
-LOG_ANALYTICS_WS_ID=$loganalytics_id \
-LOG_ANALYTICS_WS_KEY=$loganalytics_key \
 KEYVAULT_NAME=$kv_name \
 KEYVAULT_ENDPOINT=$keyVaultEndpointSuffix \
 AZURE_STORAGE_ACCOUNT=$azure_storage_account \

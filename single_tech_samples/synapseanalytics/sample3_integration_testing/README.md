@@ -29,7 +29,6 @@ It makes use of the following azure services:
 
 - [Azure Synapse Analytics](https://azure.microsoft.com/en-au/services/synapse-analytics/)
 - [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction)
-- [Log Analytics](https://docs.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overview)
 
 ## Key Concepts
 
@@ -108,7 +107,7 @@ It makes use of the following azure services:
         ```
 
        Set the following environment variables:
-      - **AZURE_LOCATION** - Azure location to deploy resources. *Default*: `westus`.
+      - **AZURE_LOCATION** - Azure location to deploy resources. *Default*: default azure location.
       - **AZURE_SUBSCRIPTION_ID** - Azure subscription id to use to deploy resources. *Default*: default azure subscription. To see your default, run `az account list`.
       - **DEPLOYMENT_ID** - string appended to all resource names. This is to ensure uniqueness of azure resource names. *Default*: random five character string.
       - **SYNAPSE_SQL_PASSWORD** - Password of the Synapse SQL instance. *Default*: random string.
@@ -116,8 +115,7 @@ It makes use of the following azure services:
    - If you are using **dev container**, follow the below steps:
       - Rename `.envtemplate` under ".devcontainer" folder to `devcontainer.env` and update the values as mentioned above instead of setting those as environment variables.
       - Open the project inside the vscode dev container (see details [here](docs/devcontainer.md)).
-
-     To further customize the solution, set parameters in `arm.parameters` files located in the `infrastructure` folder.
+      - **Alternatively**. You can export the environment variables in the bash terminal. For example: `export DEPLOYMENT_ID="xxxxx"`.
 
 1. **Deploy Azure resources**
    - `cd` into the `single_tech_samples/synapseanalytics/sample3_integration_testing` folder of the repo
@@ -135,6 +133,7 @@ It makes use of the following azure services:
       - Enter the name of a file in the storage account in the `datalake` container (upload this file before starting the trigger).
       - To monitor the run, go to "Monitor > Pipeline runs".
       ![Pipeline Run](docs/images/SynapseRun.png?raw=true "Pipeline Run]")
+   - If a redeployment is required of the Trigger and it has been activated, it will need to be manually deactivated before redeployment will be successful.
 
 Congratulations!! 🥳 You have successfully deployed the solution.
 
@@ -148,13 +147,9 @@ After a successful deployment, you should have the following resources:
   - **Azure Synapse Workspace** including:
     - **Data Pipelines** - with pipelines, datasets, linked services, triggers deployed and configured correctly.
     - **Notebooks** - Spark, SQL Serverless
-    - **Workspace package** (ei. Python Wheel package)
     - **Spark Pool**
-      - Workspace package installed
-      - Configured to point the deployed Log Analytics workspace, under "Apache Spark Configuration".
-    - **SQL Dedicated Pool (formerly SQLDW)** - Initally empty. Release Pipeline should deploy SQL Database objects using the SQL DACPAC.
+    - **SQL Dedicated Pool (formerly SQLDW)** - Initally empty. Synapse Pipeline will create a table and content.
   - **Data Lake Store Gen2** and a **Service Principal (SP)** with Storage Contributor rights assigned.
-  - **Log Analytics Workspace** - including a kusto query on Query explorer -> Saved queries, to verify results that will be looged on Synapse notebooks (notebooks are not deployed yet).
   - **KeyVault** with all relevant secrets stored.
 
 #### Clean up
@@ -168,9 +163,5 @@ ADLS Gen2 is structured as the following:
 
 ```text
     datalake                    <- filesystem
-        /sys/databricks/libs    <- contains all libs, jars, wheels needed for processing
-        /data
-            /lnd                <- Bronze - landing folder where all data files are ingested into.
-            /interim            <- Silver - interim (cleansed) tables
-            /dw                 <- Gold - final tables 
+    saveddata                   <- filesystem
 ```

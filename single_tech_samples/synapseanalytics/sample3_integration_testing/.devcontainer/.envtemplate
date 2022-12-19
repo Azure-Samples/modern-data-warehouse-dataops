@@ -2,7 +2,7 @@
 # OPTIONAL. Environment variables for deployment script.
 # Uncomment to set values.
 
-# Azure location to deploy resources. Default: westus
+# Azure location to deploy resources. Default: default azure region.
 # AZURE_LOCATION=
 
 # Azure subscription id to use to deploy resources. Default: default azure subscription.
