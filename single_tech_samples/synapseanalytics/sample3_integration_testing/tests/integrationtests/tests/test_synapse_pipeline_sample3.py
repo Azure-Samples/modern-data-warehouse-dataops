@@ -1,4 +1,4 @@
-"""Tests for Synapse pipeline: process_covid_results"""
+"""Tests for Synapse pipeline"""
 
 import os
 from dataconnectors import adls, local_file
