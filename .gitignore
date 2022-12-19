@@ -471,3 +471,6 @@ package-lock.json
 package.json
 __azurite_db_queue__.json
 __azurite_db_queue_extent__.json
+
+# Single Tech Sample 3
+!single_tech_samples/synapseanalytics/sample3_integration_testing/tests/integrationtests/.vscode/
