@@ -83,11 +83,12 @@ It makes use of the following azure services:
 
     -Set the following environment variables:
       - **AZURE_LOCATION** - Azure location to deploy resources. *Default*: default azure location.
+        > Note: You can see all available locations (after setting the Azure cloud shown in the following step if required) with the bash command `az account list-locations --query [].name --output tsv`.
       - **AZURE_SUBSCRIPTION_ID** - Azure subscription id to use to deploy resources. *Default*: default azure subscription. To see your default, run `az account list`.
       - **DEPLOYMENT_ID** - string appended to all resource names. This is to ensure uniqueness of azure resource names. *Default*: random five character string.
       - **SYNAPSE_SQL_PASSWORD** - Password of the Synapse SQL instance. *Default*: random string.
 
-1. **Initial Setup**
+2. **Initial Setup**
    - Ensure that:
       - You have the desired Azure Cloud set. To change from the default (`AzureCloud`), run
 
@@ -119,14 +120,12 @@ It makes use of the following azure services:
         az account set -s <AZURE_SUBSCRIPTION_ID>
         ```
 
-1. **Deploy Azure resources**
-   - `cd` into the `single_tech_samples/synapseanalytics/sample3_integration_testing` folder of the repo
-
+3. **Deploy Azure resources**
    - Run `./deploy.sh`.
       - After a successful deployment, you will find `.env.dev` files containing essential configuration information per environment. See [here](#deployed-resources) for list of deployed resources.
       - Note that if you are using **dev container**, you would run the same script but inside the dev container terminal.
 
-1. **Trigger the Synapse Pipeline**
+4. **Trigger the Synapse Pipeline**
 
    - This solution starts the Trigger as part of deployment. You can turn the trigger on or off by opening the **DEV** Synapse workspace, navigating to "Manage > Triggers", then select the `T_Stor` trigger and activate/deactive it by clicking on the "Play"/"Pause" icon next to it. Click `Publish` to publish changes.
    - **Optional**. Trigger the Synapse Data Pipelines in the dev environment.
@@ -153,7 +152,8 @@ After a successful deployment, you should have the following resources:
     - **SQL Dedicated Pool (formerly SQLDW)** - Initally empty. Synapse Pipeline will create a table and content.
     - Note: The Synapse workspace deploys with a firewall rule granting access to all IP addresses.
   - **Data Lake Store Gen2** and a **Service Principal (SP)** with Storage Contributor rights assigned.
-  - **KeyVault** with all relevant secrets stored.
+  - **KeyVault** with relevant secrets stored.
+- Locally, a file `dev.env` that contains the environment variables and values needed for the integration test suite. Please take care of this file as it contains secrets.
 
 #### Integration Tests
 

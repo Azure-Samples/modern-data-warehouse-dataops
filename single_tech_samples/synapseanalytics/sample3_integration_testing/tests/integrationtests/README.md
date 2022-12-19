@@ -1,4 +1,4 @@
-# Integration test suite for ADF
+# Integration Test Suite for Synapse <!-- omit in toc -->
 
 This makes use of [PyTest framework](https://docs.pytest.org/en/latest/) to execute integration tests. In general, the tests do the following:
 
@@ -7,6 +7,14 @@ This makes use of [PyTest framework](https://docs.pytest.org/en/latest/) to exec
 3. Verify pipeline run has succeeded and data outputs are valid.
 
 Note, this package does **not** deploy the actual integration test environment and assumes an integration tests environment is already provisioned.
+
+## Contents <!-- omit in toc -->
+
+- [Environment Variables](#environment-variables)
+- [Development setup](#development-setup)
+  - [Pre-requisites](#pre-requisites)
+  - [Steps to setup Development environment](#steps-to-setup-development-environment)
+- [Code structure](#code-structure)
 
 ## Environment Variables
 
@@ -39,9 +47,12 @@ ADLS information:
 - **ADLS_ACCOUNT_NAME**
 - **ADLS_ACCOUNT_ENDPOINT_SUFFIX**
 - **ADLS_DESTINATION_CONTAINER**
+- **ADLS_PROCESSED_CONTAINER**
+
+Local file information:
+
 - **SOURCE_FILE_PATH**
 - **SOURCE_FILE_NAME**
-- **ADLS_PROCESSED_CONTAINER**
 
 ## Development setup
 
@@ -55,7 +66,8 @@ ADLS information:
 1. Open VSCode from the **root of the Python project**. That is, the root of your VSCode workspace needs to be at `/tests/integrationtests`. It should have `.devcontainer` and `.vscode` folders.
 2. Copy `.envtemplate` file as new `.env` file. Set the environment variables as listed out in `.envtemplate` file.
 3. In VSCode command pallete (`ctrl+shift+p`), select `Remote-Containers: Reopen in container`. First time building the Devcontainer may take a while.
-4. IN VSCode, navigate to the "Run and Debug" blade and hit the "Play" button to start a test. Optionally, in the VSCode bash terminal, run `pytest` to start tests.
+4. In VSCode, navigate to the "Run and Debug" blade and hit the "Play" button to start a test. Optionally, in the VSCode bash terminal, run `pytest` to start tests.
+5. Confirm a successful test run in the output of the terminal showing "1 passed". You can also check each Azure resource manually (Synapse, ADLS, SQL) and check for new content there.
 
 ## Code structure
 
