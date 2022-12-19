@@ -1,5 +1,5 @@
 {
-	"name": "Parking Sensors Synapse Infrastructure",
+	"name": "Synapse Infrastructure",
 	"dockerComposeFile": "docker-compose.yml",
 	"workspaceFolder": "/workspace",
 	"service": "parking_sensor_synapse_dc",

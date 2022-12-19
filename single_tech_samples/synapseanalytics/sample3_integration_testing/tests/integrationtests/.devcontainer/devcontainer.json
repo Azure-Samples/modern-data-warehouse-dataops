@@ -1,5 +1,5 @@
 {
-	"name": "Python",
+	"name": "Synapse Integration Test Suite",
 	"dockerComposeFile": "docker-compose.yml",
 	"workspaceFolder": "/workspace",
 	"service": "python",
