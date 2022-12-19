@@ -74,6 +74,18 @@ It makes use of the following azure services:
 > **IMPORTANT NOTE:** As with all Azure Deployments, this will **incur associated costs**. Remember to teardown all related resources after use to avoid unnecessary costs. See [here](#deployed-resources) for list of deployed resources. See [here](#clean-up) for information on the clean_up script.
 > This deployment was tested using WSL 2 (Ubuntu 20.04) and Debian GNU/Linux 9.9 (stretch)
 
+1. **Environment Setup**
+   - Open the project folder in VS Code.
+   - Rename the file `.envtemplate` under ".devcontainer" folder to `devcontainer.env` and update the values as mentioned below.
+   - Open the project in the Dev Container (see details [here](docs/devcontainer.md)).
+   - **Alternatively**. You can export the environment variables in the bash terminal after opening the Dev Container or if not using a Dev Contaienr. For example: `export DEPLOYMENT_ID="xxxxx"`.
+
+    -Set the following environment variables:
+      - **AZURE_LOCATION** - Azure location to deploy resources. *Default*: default azure location.
+      - **AZURE_SUBSCRIPTION_ID** - Azure subscription id to use to deploy resources. *Default*: default azure subscription. To see your default, run `az account list`.
+      - **DEPLOYMENT_ID** - string appended to all resource names. This is to ensure uniqueness of azure resource names. *Default*: random five character string.
+      - **SYNAPSE_SQL_PASSWORD** - Password of the Synapse SQL instance. *Default*: random string.
+
 1. **Initial Setup**
    - Ensure that:
       - You have the desired Azure Cloud set. To change from the default (`AzureCloud`), run
@@ -105,17 +117,6 @@ It makes use of the following azure services:
         ```bash
         az account set -s <AZURE_SUBSCRIPTION_ID>
         ```
-
-       Set the following environment variables:
-      - **AZURE_LOCATION** - Azure location to deploy resources. *Default*: default azure location.
-      - **AZURE_SUBSCRIPTION_ID** - Azure subscription id to use to deploy resources. *Default*: default azure subscription. To see your default, run `az account list`.
-      - **DEPLOYMENT_ID** - string appended to all resource names. This is to ensure uniqueness of azure resource names. *Default*: random five character string.
-      - **SYNAPSE_SQL_PASSWORD** - Password of the Synapse SQL instance. *Default*: random string.
-
-   - If you are using **dev container**, follow the below steps:
-      - Rename `.envtemplate` under ".devcontainer" folder to `devcontainer.env` and update the values as mentioned above instead of setting those as environment variables.
-      - Open the project inside the vscode dev container (see details [here](docs/devcontainer.md)).
-      - **Alternatively**. You can export the environment variables in the bash terminal. For example: `export DEPLOYMENT_ID="xxxxx"`.
 
 1. **Deploy Azure resources**
    - `cd` into the `single_tech_samples/synapseanalytics/sample3_integration_testing` folder of the repo
