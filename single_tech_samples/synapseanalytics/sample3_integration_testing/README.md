@@ -14,6 +14,7 @@ This sample showcases additional integration tests for Azure Synapse. It include
     - [Software pre-requisites if you use dev container](#software-pre-requisites-if-you-use-dev-container)
   - [Setup and Deployment](#setup-and-deployment)
     - [Deployed Resources](#deployed-resources)
+    - [Integration Tests](#integration-tests)
     - [Clean up](#clean-up)
   - [Data Lake Physical layout](#data-lake-physical-layout)
 
@@ -67,7 +68,7 @@ It makes use of the following azure services:
 - [VSCode](https://code.visualstudio.com/)
 - [Visual Studio Code Remote Development Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
 
-  It is strongly recommended to use dev container for the deployment to avoid environment related issues.
+  The Dev Container will automatically install all required technologies. It is strongly recommended to use dev container for the deployment to avoid environment related issues.
 
 ### Setup and Deployment
 
@@ -153,6 +154,12 @@ After a successful deployment, you should have the following resources:
     - Note: The Synapse workspace deploys with a firewall rule granting access to all IP addresses.
   - **Data Lake Store Gen2** and a **Service Principal (SP)** with Storage Contributor rights assigned.
   - **KeyVault** with all relevant secrets stored.
+
+#### Integration Tests
+
+- Feel free to jump to the [Integration Tests](./tests/integrationtests/README.md) suite section to test the solution in your Azure environment!
+
+> Note: Friendly suggestion: open that section in a new window in VS Code and keep this one open so you can easily copy/paste the environment variables and come back to run the clean up script.
 
 #### Clean up
 
