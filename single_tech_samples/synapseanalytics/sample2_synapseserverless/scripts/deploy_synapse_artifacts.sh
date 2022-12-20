@@ -135,7 +135,7 @@ az synapse spark session list --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spa
 createNotebook "Nb_Convert_Parquet_to_Delta"
 
 # Deploy Setup Pipeline
-createPipeline "Pl_NYCTaxi_1_Setup" "CREATE EXTERNAL DATA SOURCE [ext_ds_datalake] WITH (LOCATION = N'https://${PROJECT_NAME}st1${DEPLOYMENT_ID}.blob.core.windows.net/datalake')"
+createPipeline "Pl_NYCTaxi_1_Setup" "IF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'ext_ds_datalake') BEGIN CREATE EXTERNAL DATA SOURCE [ext_ds_datalake] WITH (LOCATION = N'https://${PROJECT_NAME}st1${DEPLOYMENT_ID}.blob.core.windows.net/datalake') END"
 
 # Deploy main pipeline that transforms parquet to delta and created dynamic views on top of the delta structure
 createPipeline "Pl_NYCTaxi_2_CreateServerlessView" "${BIG_DATAPOOL_NAME}"
