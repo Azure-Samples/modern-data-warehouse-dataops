@@ -42,8 +42,8 @@ def upload_to_ADLS(
         container (str): Container Name where file needs to be uploaded
         file_path (str): File Path of local file to upload
         file_name (str): File Name of local file to upload
-        base_path (str): Base Folder Path in ADLS where file will be uploaded
-        file_contents (bytes): Contents of the file
+        base_path (str) [optional - default is None]: Base Folder Path in ADLS where file will be uploaded
+        file_contents (bytes) [optional - default is None]: Contents of the file
     Returns:
         request_id (str): Id of the ADLS upload request
     """
@@ -92,8 +92,8 @@ def download_from_ADLS(
     Args:
         adls_connection_client (DataLakeServiceClient): ADLS Connection Object
         container (str): Container Name where file needs to be uploaded
-        base_path (str): Base Folder Path in ADLS where file will be uploaded
         file_name (str): File Name to Upload
+        base_path (str) [optional - default is None]: Base Folder Path in ADLS where file will be uploaded
 
     Returns:
         downloaded_bytes (bytes): Contents of the file
@@ -151,8 +151,8 @@ def read_parquet_file_from_ADLS(
     Args:
         adls_connection_client (DataLakeServiceClient): ADLS Connection Object
         container (str): Container Name where file needs to be uploaded
-        base_path (str): Base Folder Path in ADLS where file will be uploaded
         file_name (str): File Name to Upload
+        base_path (str) [optional - default is None]: Base Folder Path in ADLS where file will be uploaded
 
     Returns:
         processed_df (bytes): DataFrame Of Read File
