@@ -109,7 +109,7 @@ def download_from_ADLS(
         file_system_client = adls_connection_client.get_file_system_client(
             file_system=container
         )
-        
+
         directory_client = file_system_client.get_directory_client(base_path)
 
         file_client = directory_client.get_file_client(file_name)
