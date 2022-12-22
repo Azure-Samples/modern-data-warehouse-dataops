@@ -88,7 +88,7 @@ writeKeyVaultLSFile () {
     echo "Writing Key Vault Linked Service File locally for deployment"
     keyVaultBaseURL="https://${KEYVAULT_NAME}${KEYVAULT_ENDPOINT}/"
 
-    cp ./synapse/workspace/linkedService/Ls_KeyVault_01_template.json ./synapse/workspace/linkedService/Ls_KeyVault_01.json
+    cp ./synapse/templates/linkedService/Ls_KeyVault_01_template.json ./synapse/workspace/linkedService/Ls_KeyVault_01.json
 
     echo "Replace Key Vault base url with: $keyVaultBaseURL"
     sed -i "s+<baseurl>+$keyVaultBaseURL+g" \
@@ -98,7 +98,7 @@ writeDsSqlDWTableFile () {
     echo "Writing SQL DW DataSet File locally for deployment"
     serverName="${SYNAPSE_WORKSPACE_NAME}-WorkspaceDefaultSqlServer"
 
-    cp synapse/workspace/dataset/Ds_SqlDW_Table_template.json synapse/workspace/dataset/Ds_SqlDW_Table.json
+    cp synapse/templates/dataset/Ds_SqlDW_Table_template.json synapse/workspace/dataset/Ds_SqlDW_Table.json
 
     echo "Replace SQL DB name with: $SQL_POOL_NAME"
     sed -i "s/<sqldbname>/$SQL_POOL_NAME/g" \
@@ -112,7 +112,7 @@ writeStorageTriggerFile () {
     echo "Writing Storage Trigger File locally for deployment"
     storageScope=$(az storage account show -g "$RESOURCE_GROUP_NAME" -n "$AZURE_STORAGE_ACCOUNT" --query id -o tsv)
 
-    cp synapse/workspace/trigger/T_Stor_template.json synapse/workspace/trigger/T_Stor.json
+    cp synapse/templates/trigger/T_Stor_template.json synapse/workspace/trigger/T_Stor.json
 
     echo "Replace Trigger name with: $TRIGGER_NAME"
     sed -i "s/<triggername>/$TRIGGER_NAME/g" \
@@ -128,7 +128,7 @@ writeStorageTriggerFile () {
 }
 writepipelineFile () {
     echo "Writing Pipeline File locally for deployment"
-    cp synapse/workspace/pipeline/P_Sample3_template.json synapse/workspace/pipeline/P_Sample3.json
+    cp synapse/templates/pipeline/P_Sample3_template.json synapse/workspace/pipeline/P_Sample3.json
 
     echo "Replace Pipeline name with: $PIPELINE_NAME"
     sed -i "s/<pipelinename>/$PIPELINE_NAME/g" \
