@@ -299,6 +299,7 @@ The Deployment stage consists of following steps-
             TriggerFilter: 'Dataload_Trigger'
             TriggerStatus: 'start'
 ```
+
 ![ADF Deployment to Pre Prod](./docs/images/adf_deploy_to_preprod_env.png)
 
 **[Here is the link to full YAML Pipeline.](./pipelines/adf-deployment.yml)**

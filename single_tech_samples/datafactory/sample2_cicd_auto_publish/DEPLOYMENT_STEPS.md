@@ -1,4 +1,6 @@
-# Deployment of the ADF Automated Deployment Sample
+# Sample Steps for Deployment of ADF
+
+In this sample, we will do the CI/CD for Azure Data Factory using Automatic Publish method. This sample eliminates the manual step of clicking the `Publish` button in ADF to publish the changes.
 
 ## Creating the Infra
 
@@ -48,4 +50,4 @@ Once the Pipeline is created, you can run the pipeline to deploy the ADF on `Dev
 
 ## Deploy To NEW Environment
 
-If you want to deploy the ADF to a new environment(stage), add a new stage in the YAML Pipleine file. For reference, check the [ADF Deployment YAML Pipleine for Multi Env file](./pipelines/adf-deployment-multi-env.yml).
+If you want to deploy the ADF to a new environment(stage), add a new stage in the YAML Pipleine file. For reference, check the [ADF Deployment YAML Pipeline for Multi Env file.](./pipelines/adf-deployment-multi-env.yml)
