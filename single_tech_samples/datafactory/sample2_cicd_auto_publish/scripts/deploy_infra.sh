@@ -102,6 +102,7 @@ do
     az storage fs directory create --account-name $dl_storage_account --account-key $dl_storage_key -n $zone -f $storage_file_system
 done
 
+az storage blob directory upload -c datalake --account-name $DL_STORAGE_ACCOUNT -s "cereals.csv" -d bronze --recursive
 # Get Azure Data Factory managed service identity
 export DATAFACTORY_NAME=$(echo $arm_output | jq -r '.properties.outputs.datafactory_name.value')
 adf_msi=$(az resource show \

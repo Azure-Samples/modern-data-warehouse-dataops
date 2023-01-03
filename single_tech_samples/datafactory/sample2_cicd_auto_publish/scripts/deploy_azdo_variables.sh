@@ -46,7 +46,7 @@ set -o nounset
 # FS_STORAGE_KEY
 
 # Create vargroup
-vargroup_name="mdws-adf-release-$ENV_NAME"
+vargroup_name="mdws-adf-$ENV_NAME"
 echo "Creating variable group: $vargroup_name"
 az pipelines variable-group create \
     --name "$vargroup_name" \
@@ -57,4 +57,5 @@ az pipelines variable-group create \
         azure_data_factory_name="$DATAFACTORY_NAME" \
         azure_subscription_id="$AZURE_SUBSCRIPTION_ID" \
         azure_service_connection_name="$AZ_SERVICE_CONNECTION_NAME" \
+        azure_storage_account_name="$DL_STORAGE_ACCOUNT" \
     --output json

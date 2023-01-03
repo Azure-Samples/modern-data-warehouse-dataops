@@ -16,7 +16,7 @@
             ]
         },
         "deployment_id": {
-            "defaultValue": "[substring(uniqueString(resourceGroup().id), 0, 5)]",
+            "defaultValue": "2w4",
             "type": "String"
         },
         "keyvault_name": {

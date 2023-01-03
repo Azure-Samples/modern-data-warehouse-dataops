@@ -17,10 +17,7 @@ pool:
 
 variables:
   - ${{ if eq(variables['build.SourceBranchName'], 'develop') }}:
-      - group: adf-dev
-      
-  - ${{ if eq(variables['build.SourceBranchName'], 'main') }}:
-      - group: adf-pre-prod
+      - group: mdws-adf-dev
 
   - name: adf_code_path
     value: "$(Build.SourcesDirectory)/data_ops/adf"
@@ -109,7 +106,7 @@ stages:
             azureSubscription: '$(azure_service_connection_name)'
             ResourceGroupName: '$(resource_group_name)'
             DatafactoryName: '$(azure_data_factory_name)'
-            TriggerFilter: 'Dataload_Trigger'
+            TriggerFilter: 'trigger1'
             TriggerStatus: 'stop'
 
         - task: AzureResourceManagerTemplateDeployment@3
@@ -131,5 +128,5 @@ stages:
             azureSubscription: '$(azure_service_connection_name)'
             ResourceGroupName: '$(resource_group_name)'
             DatafactoryName: '$(azure_data_factory_name)'
-            TriggerFilter: 'Dataload_Trigger'
+            TriggerFilter: 'trigger1'
             TriggerStatus: 'start'
