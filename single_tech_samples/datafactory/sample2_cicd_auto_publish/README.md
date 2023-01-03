@@ -52,7 +52,6 @@ In the CI stage, the following steps  happens-
 
 > NOTE: We will be following Gitflow based model instead of Trunk Based to deploy the ADF resources. That means, we will have a separate dedicated branch to deploy into an environment.
 
-
 ### **Pre-requisites- Adding the package.json**
 
 Before you start creating the pipeline, you will have to create a `package.json` file. This file will contain the details to obtain the ADFUtilities package. You have to manually create this file. The content of the file is given below:
@@ -62,7 +61,7 @@ Before you start creating the pipeline, you will have to create a `package.json`
 3) Paste the below code block in package.json file.
 This NPM package will use this JSON file find the ADFUtilities package.
 
-```
+```json
 {
     "scripts":{
         "build":"node node_modules/@microsoft/azure-data-factory-utilities/lib/index"
@@ -82,11 +81,11 @@ The Azure YAML Pipeline file will contain stages for CI and CD with required tas
 3) The variables needed in Variable groups are- azure_subscription_id, azure_service_connection_name, resource_group_name, azure_data_factory_name.
 4) There is two more variable present in pipeline-
 
-    `adf_code_path` which is the path in repo where our ADF code is stored. This is the same place that you choose as “Root folder” while linking Git with ADF.
+    `adf_code_path` which is the path in repo where our ADF code is stored. This is the same place that you choose as `Root folder` while linking Git with ADF.
 
-    `adf_package_file_path` -This is the path in repo where the `package.json` file is present. This variable will be used in generating the ARM Templates.
+    `adf_package_file_path` -This is the path in repo where the `package.json` file is present. This file is used to generate the ARM Templates.
 
-```
+```yaml
 variables:
 
   - ${{ if eq(variables['build.SourceBranchName'], 'develop') }}:
@@ -96,10 +95,10 @@ variables:
       - group: adf-pre-prod
 
   - name: adf_code_path
-    value: "$(Build.SourcesDirectory)/data_ops/adf"
+    value: "$(Build.SourcesDirectory)/data_ops/adf"        #replace with the ADF resources folder.
 
   - name: adf_package_file_path
-    value: "$(Build.SourcesDirectory)/build/"
+    value: "$(Build.SourcesDirectory)/build/"              #replace with the package.json folder.
 
 ```
 
@@ -109,9 +108,9 @@ In the Build stage, the goal is to validate the ADF Code, retrieve the files fro
 
 The Build stage consists of 5 steps-
 
-1) Declare a stage “Build_And_Publish_ADF_Artifacts” which will contain the Build steps.
+1)Declare a stage “Build_And_Publish_ADF_Artifacts” which will contain the Build steps.
 
-```
+```yaml
     - stage: Build_And_Publish_ADF_Artifacts
       jobs:
         - job: Build_Adf_Arm_Template
@@ -119,9 +118,9 @@ The Build stage consists of 5 steps-
           steps:
 ```
 
-2) Next, you need to install the dependencies. Azure provides a tool ADFUtilities. This package is used to validate and create the deployment template. In order to install this package, we need to install Node.js and NPM package management.
+2)Next, you need to install the dependencies. Azure provides a tool ADFUtilities. This package is used to validate and create the deployment template. In order to install this package, we need to install Node.js and NPM package management.
 
-```
+```yaml
 - task: NodeTool@0
   inputs:
     versionSpec: '10.x'
@@ -130,37 +129,37 @@ The Build stage consists of 5 steps-
 - task: Npm@1
   inputs:
     command: 'install'
-    workingDir: '$(adf_package_file_path)' #replace with the package.json folder.
+    workingDir: '$(adf_package_file_path)'
     verbose: true
   displayName: 'Install NPM Package'
   
   ```
 
-3) Validate the Data Factory resource code in the repository. This calls the `validate` function along with the path where the ADF code is stored in repo. The working directory is where the ADFUtilities is installed.
+3)Validate the Data Factory resource code in the repository. This calls the `validate` function along with the path where the ADF code is stored in repo. The working directory is where the ADFUtilities is installed.
 
-```
+```yaml
 - task: Npm@1
   displayName: 'Validate ADF Code'
   inputs:
     command: 'custom'
-    workingDir: '$(adf_package_file_path)' #replace with the package.json folder. 
+    workingDir: '$(adf_package_file_path)' 
     customCommand: 'run build validate $(adf_code_path) /subscriptions/$(azure_subscription_id)/resourceGroups/$(resource_group_name)/providers/Microsoft.DataFactory/factories/$(azure_data_factory_name)' 
 ```
 
-4) The next step is to Generate ARM template from Azure Data Factory source code. The ‘export’ function is used to output the ARM template in the ‘ArmTemplate’ folder inside the working Directory.
+4)The next step is to Generate ARM template from Azure Data Factory source code. The ‘export’ function is used to output the ARM template in the ‘ArmTemplate’ folder inside the working Directory.
 
-```
+```yaml
 - task: Npm@1
   displayName: 'Validate and Generate ARM template'
   inputs:
     command: 'custom'
-    workingDir: '$(adf_package_file_path)' #replace with the package.json folder.
+    workingDir: '$(adf_package_file_path)'
     customCommand: 'run build export $(adf_code_path) /subscriptions/$(azure_subscription_id)/resourceGroups/$(resource_group_name)/providers/Microsoft.DataFactory/factories/$(azure_data_factory_name) "ArmTemplate"'
 ```
 
-5) Finally, ARM template is generated and Published as a Pipeline artifact. This will create an artifact with name name ‘adf-artifact-$(Build.BuildNumber)’.
+5)Finally, ARM template is generated and Published as a Pipeline artifact. This will create an artifact with name name ‘adf-artifact-$(Build.BuildNumber)’.
 
-```
+```yaml
 - task: PublishPipelineArtifact@1
   displayName: Download Build Artifacts - ADF ARM templates
   inputs:
@@ -175,12 +174,12 @@ The main goal of Deployment stage is to deploy the ADF resources. This process i
 
 The Deployment stage consists of following steps-
 
-1) Create a new stage ‘Deploy_to_Dev’. Ensure this stage only runs if
+1.Create a new stage ‘Deploy_to_Dev’. Ensure this stage only runs if
     - the CI Build stage is successful;
     - code is merged on PR;
     - The pipeline is triggered from develop branch.
 
-```
+```yaml
 - stage: Deploy_to_Dev
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), eq(variables['build.SourceBranchName'], 'develop'))
   displayName: Deploy To Development Environment
@@ -191,9 +190,9 @@ The Deployment stage consists of following steps-
       steps:
 ```
 
-2) Download the ARM artifacts that was Published in the Build stage. By default, the Pipeline artifacts are published in $(Pipeline.Workspace) folder.
+2.Download the ARM artifacts that was Published in the Build stage. By default, the Pipeline artifacts are published in $(Pipeline.Workspace) folder.
 
-```
+```yaml
 - task: DownloadPipelineArtifact@2
   displayName: Download Build Artifacts - ADF ARM templates
   inputs: 
@@ -201,9 +200,9 @@ The Deployment stage consists of following steps-
     targetPath: '$(Pipeline.Workspace)/adf-artifact-$(Build.BuildNumber)'
 ```
 
-3) ADF can contain Triggers to run the ADF Pipelines according to some condition or schedule. It’s a best practice to STOP the triggers during deployment so that ADF pipeline does not get triggered while Deployment is running. This is an optional but an important step.
+3)ADF can contain Triggers to run the ADF Pipelines according to some condition or schedule. It’s a best practice to STOP the triggers during deployment so that ADF pipeline does not get triggered while Deployment is running. This is an optional but an important step.
 
-```
+```yaml
 - task: toggle-adf-trigger@2
   displayName: STOP ADF Triggers before Deployment
   inputs:
@@ -214,9 +213,9 @@ The Deployment stage consists of following steps-
     TriggerStatus: 'stop'
 ```
 
-4) This is the step where the deployment happens. The ARM Templates are deployed from the artifacts. The overrideParameterscontains the custom values like the linked service where we override the default values with the custom values.
+4)This is the step where the deployment happens. The ARM Templates are deployed from the artifacts. The overrideParameterscontains the custom values like the linked service where we override the default values with the custom values.
 
-```
+```yaml
 - task: AzureResourceManagerTemplateDeployment@3
   displayName: 'Deploying to Production'
   inputs:
@@ -233,9 +232,9 @@ The Deployment stage consists of following steps-
     deploymentMode: 'Incremental'
 ```
 
-5) After deployment is completed, Start the ADF triggers which was stopped in Step-3, so that ADF Pipelines can continue to run according to their configured schedule.
+5)After deployment is completed, Start the ADF triggers which was stopped in Step-3, so that ADF Pipelines can continue to run according to their configured schedule.
 
-```
+```yaml
  - task: toggle-adf-trigger@2
    displayName: START ADF Triggers after Deployment
    inputs:
@@ -255,7 +254,7 @@ The Deployment stage consists of following steps-
 - In the above section, we saw the Development flow and the deployment happening on same ADF Dev Environment(Development on Git Mode and Deployment on Live Mode).
 - In this section, we will deploy the ADF to a completely new environment(Pre-Prod). It will make use of the same artifacts that are generated in Build stage, and then the `overrideParameters` will be used to override the values corresponding to new environment.
 
-```
+```yaml
 - stage: Deploy_to_PreProd
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), eq(variables['build.SourceBranchName'], 'main'))
   displayName: Deploy Pre Prod Stage
@@ -312,7 +311,7 @@ Sometimes the parameter that you want to override might not be present in the AR
 2) Under the ARM Template section, Click on `Edit parameter configuration` to load the JSON file.
 3) Go to the required section. For example- If your parameter was in Linked Service, then you can go to `Microsoft.DataFactory/factories/linkedServices` section.
 4) Under `typeProperties`, you will see many properties mentioned there. Add the parameter that you want to include in ARM Template parameter file.
-5) Click on Ok. This will generate a file called `arm-template-parameters-definition.json` in the repo where ADF code is present.
+5) Click on Ok. This will generate a file called **[`arm-template-parameters-definition.json`](./adf/arm-template-parameters-definition.json)** in the repo where ADF code is present.
 6) Run the Pipeline again, and you will see the new parameter in the Template Parameter file of Artifacts.
 
 ## **Summary**
