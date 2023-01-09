@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"name": "dataops-playbook",
+			"path": "../../../../../../dataops-playbook"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {}
+}

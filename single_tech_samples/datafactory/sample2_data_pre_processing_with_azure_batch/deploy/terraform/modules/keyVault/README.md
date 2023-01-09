@@ -1,0 +1,1 @@
+This module is for creating new Azure Key Vault with a private endpoint.

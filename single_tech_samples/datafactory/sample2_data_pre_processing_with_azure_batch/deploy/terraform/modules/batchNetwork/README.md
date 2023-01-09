@@ -1,0 +1,1 @@
+This module is for retrieveing the virtual network subnet id of the batch subnet.
