@@ -124,7 +124,7 @@ resource "azurerm_batch_pool" "exec_pool" {
   container_configuration {
     type = var.container_configuration_exec_pool
     container_registries {
-      registry_server = "docker.io"
+      registry_server           = var.registry_server
       user_assigned_identity_id = var.batch_uami_id
     }
   }

@@ -124,6 +124,7 @@ module "azure_batch" {
   endpoint_configuration              = var.endpoint_configuration
   container_configuration_exec_pool   = var.container_configuration_exec_pool
   node_placement_exec_pool            = var.node_placement_exec_pool
+  registry_server                     = module.container_registry.login_server
 }
 
 # ------------------------------------------------------------------------------------------------------

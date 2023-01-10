@@ -145,3 +145,8 @@ variable "node_placement_exec_pool" {
   type        = string
   description = "The placement policy for allocating nodes in the pool."
 }
+
+variable "registry_server" {
+  description = "The URL that can be used to log into the container registry."
+  type        = string
+}
