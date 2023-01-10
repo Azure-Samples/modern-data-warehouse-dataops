@@ -57,10 +57,6 @@ variable "virtual_network_subnet_id" {
   description = "virtual_network_subnet_ids"
 }
 
-variable "private_link_subnet_id" {
-  description = "private links subnet id to be used for creation of private links of storage account"
-}
-
 variable "bypass" {
   description = "Specifies whether traffic is bypassed for Logging/Metrics/AzureServices."
   type        = set(string)

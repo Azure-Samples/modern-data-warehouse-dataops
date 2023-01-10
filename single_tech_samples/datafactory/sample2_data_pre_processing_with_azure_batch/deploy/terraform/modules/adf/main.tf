@@ -37,7 +37,7 @@ resource "azurerm_private_endpoint" "adf-private-endpoint" {
 }
 
 resource "azurerm_data_factory_linked_service_data_lake_storage_gen2" "linked_service_storage" {
-  name                     = ""
+  name                     = "${var.stoarge_linked_service}_LS"
   data_factory_id          = azurerm_data_factory.data_factory_avops.id
   integration_runtime_name = azurerm_data_factory_integration_runtime_azure.managed_integeration_runtime.name
   url                      = var.storage_account_primary_dfs_url

@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "3.22.0"
+      version = ">= 3.37.0"
     }
   }
 }
@@ -52,7 +52,7 @@ resource "azurerm_resource_group_template_deployment" "storage-containers" {
 
   parameters_content = jsonencode({
     "location"             = { value = var.location }
-    "storageAccountName"   = { value = var.data_lake_store_name }
+    "storageAccountName"   = { value = azurerm_storage_account.storage_account.name }
     "defaultContainerName" = { value = var.container_name }
   })
 
@@ -65,7 +65,7 @@ resource "azurerm_private_endpoint" "storage-private-endpoint" {
   location            = var.location
   tags                = var.tags
 
-  subnet_id = var.private_link_subnet_id
+  subnet_id = var.virtual_network_subnet_id
 
   private_service_connection {
     name                           = "${var.data_lake_store_name}-private-service-connection"

@@ -55,3 +55,8 @@ variable "node_size" {
   description = "The size of the nodes on which the Managed Integration Runtime runs."
   type        = string
 }
+
+variable "stoarge_linked_service" {
+  description = "Name of the storage account linked service"
+  type        = string
+}

@@ -9,6 +9,7 @@ module "virtual_network" {
   address_space       = var.address_space
   address_prefix      = var.address_prefix
   tags                = var.tags
+  service_endpoints   = var.service_endpoints
 }
 
 
@@ -44,8 +45,7 @@ module "adls" {
   nfsv3_enabled             = var.nfsv3_enabled
   default_action            = var.default_action
   is_manual_connection      = var.is_manual_connection
-  virtual_network_subnet_id = module.virtual_network.virtual_network_id
-  private_link_subnet_id    = module.virtual_network.subnet_id
+  virtual_network_subnet_id = module.virtual_network.subnet_id
   last_access_time_enabled  = var.last_access_time_enabled
   bypass                    = var.bypass
   blob_storage_cors_origins = var.blob_storage_cors_origins
@@ -61,10 +61,10 @@ module "storage_account" {
   resource_group_name       = var.resource_group_name
   tags                      = var.tags
   location                  = var.location
-  account_tier              = var.account_tier
-  account_replication_type  = var.account_replication_type
-  account_kind              = var.account_kind
-  virtual_network_subnet_id = module.virtual_network.virtual_network_id
+  account_tier              = var.batch_storage_account_tier
+  account_replication_type  = var.batch_storage_account_replication_type
+  account_kind              = var.batch_storage_account_kind
+  virtual_network_subnet_id = module.virtual_network.subnet_id
 }
 
 # ------------------------------------------------------------------------------------------------------
@@ -144,6 +144,7 @@ module "data_factory" {
   storage_account_primary_dfs_url = module.adls.storage_account_primary_dfs_url
   key_vault_id                    = module.key_vault.key_vault_id
   key_vault_name                  = module.key_vault.key_vault_name
+  stoarge_linked_service          = module.adls.storage_account_name
 }
 
 # ------------------------------------------------------------------------------------------------------
@@ -151,6 +152,10 @@ module "data_factory" {
 # ------------------------------------------------------------------------------------------------------
 
 module "role_assignments" {
+  depends_on = [
+    module.azure_batch,
+    module.data_factory
+  ]
   source                   = "./modules/role_assignments"
   adls_id                  = module.adls.storage_account_id
   batch_storage_account_id = module.storage_account.storage_account_id

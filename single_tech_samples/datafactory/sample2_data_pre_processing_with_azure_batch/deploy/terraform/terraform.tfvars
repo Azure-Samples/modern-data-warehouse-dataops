@@ -1,17 +1,18 @@
-resource_group_name = "av-dataops-azure-dev"
+resource_group_name = "avops-sample"
 address_space       = "10.0.0.0/16"
 address_prefix      = "10.0.0.0/24"
+service_endpoints   = ["Microsoft.KeyVault", "Microsoft.Storage"]
 location            = "centralindia"
 adf_name            = "adf"
 node_size           = "Standard_D8_v3"
-acr_name = "avopsregistry"
-acr_sku = "Premium"
-container_name = "data"
+acr_name            = "avopsregistry"
+acr_sku             = "Premium"
+container_name      = "data"
 tags = {
   environment = "dev",
 }
 name_suffix                       = "batch-identity"
-batch_account_name                = "adaintbatchaccount"
+batch_account_name                = "avopssamplebatch"
 exec_pool_name                    = "executionpool"
 orch_pool_name                    = "orchestratorpool"
 node_placement_exec_pool          = "Regional"
@@ -36,12 +37,11 @@ endpoint_configuration = {
   priority              = "150"
   source_address_prefix = "*"
 }
-data_lake_store_name = "avopsdata"
+data_lake_store_name      = "avopsdata"
 blob_storage_cors_origins = ["https://*.av.electric.com", "http://*.av.corp.electric.com", "https://*.av.corp.electric.com"]
-is_hns_enabled           = true
-nfsv3_enabled            = true
-last_access_time_enabled = true
-bypass                   = ["AzureServices"]
-key_vault_name = "avopskv"
-storage_account_name       = "avbatch"
-
+is_hns_enabled            = true
+nfsv3_enabled             = true
+last_access_time_enabled  = true
+bypass                    = ["AzureServices"]
+key_vault_name            = "avopskv"
+storage_account_name      = "avbatch"

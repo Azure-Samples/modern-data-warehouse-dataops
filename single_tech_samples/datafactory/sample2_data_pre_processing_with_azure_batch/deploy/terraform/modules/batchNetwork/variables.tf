@@ -22,3 +22,7 @@ variable "tags" {
   description = "Resource tags"
   type        = map(string)
 }
+
+variable "service_endpoints" {
+  description = "Service Endpoints associated with the subnet"
+}

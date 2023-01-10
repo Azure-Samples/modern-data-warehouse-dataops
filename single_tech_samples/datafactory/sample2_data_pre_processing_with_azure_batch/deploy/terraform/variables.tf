@@ -41,6 +41,24 @@ variable "container_name" {
   type        = string
 }
 
+variable "batch_storage_account_kind" {
+  description = "Defines the Kind of account."
+  type        = string
+  default     = "StorageV2"
+}
+
+variable "batch_storage_account_tier" {
+  description = "Defines the Tier to use for this storage account."
+  type        = string
+  default     = "Standard"
+}
+
+variable "batch_storage_account_replication_type" {
+  description = "Defines the type of replication to use for this storage account. "
+  type        = string
+  default     = "LRS"
+}
+
 variable "account_kind" {
   description = "Defines the Kind of account."
   type        = string
@@ -215,4 +233,8 @@ variable "acr_sku" {
 variable "acr_name" {
   description = "Name of the Azure Container Registry"
   type        = string
+}
+
+variable "service_endpoints" {
+  description = "Service Endpoints associated with the subnet"
 }

@@ -47,19 +47,26 @@ resource "azurerm_role_assignment" "batch_blob_data_contributor_role_managed_ide
 }
 
 # Role assignment for keyvault are handled by key vault access policy
-# resource "azurerm_key_vault_access_policy" "kv_access_policy" {
-#   for_each = { for kv_access_policy in local.kv_access_policies: kv_access_policy.object_id => kv_access_policy }
+resource "azurerm_key_vault_access_policy" "kv_access_policy_batch" {
+  key_vault_id = var.key_vault_id
+  tenant_id    = var.tenant_id
+  object_id    = local.kv_access_policies[0].object_id
+  key_permissions = local.kv_access_policies[0].key_permissions
+  secret_permissions = local.kv_access_policies[0].secret_permissions
+  certificate_permissions = local.kv_access_policies[0].certificate_permissions
+}
 
-#   key_vault_id = var.key_vault_id
-#   tenant_id    = var.tenant_id
-#   object_id    = each.key
-#   key_permissions = each.value.key_permissions
-#   secret_permissions = each.value.secret_permissions
-#   certificate_permissions = each.value.certificate_permissions
-# }
+resource "azurerm_key_vault_access_policy" "kv_access_policy_adf" {
+  key_vault_id = var.key_vault_id
+  tenant_id    = var.tenant_id
+  object_id    = local.kv_access_policies[1].object_id
+  key_permissions = local.kv_access_policies[1].key_permissions
+  secret_permissions = local.kv_access_policies[1].secret_permissions
+  certificate_permissions = local.kv_access_policies[1].certificate_permissions
+}
 
 # Give Batch access to ACR
-resource "azurerm_role_assignment" "example" {
+resource "azurerm_role_assignment" "batch_uami_acrpull_role" {
   principal_id                     = var.batch_uami_principal_id
   role_definition_name             = "AcrPull"
   scope                            = var.acr_id

@@ -112,9 +112,9 @@ resource "azurerm_batch_pool" "exec_pool" {
     type         = "UserAssigned"
     identity_ids = [var.batch_uami_id]
   }
-  # node_placement {
-  #   policy = var.node_placement_exec_pool
-  # }
+  node_placement {
+    policy = var.node_placement_exec_pool
+  }
   storage_image_reference {
     publisher = var.storage_image_reference_exec_pool.publisher
     offer     = var.storage_image_reference_exec_pool.offer
@@ -124,6 +124,7 @@ resource "azurerm_batch_pool" "exec_pool" {
   container_configuration {
     type = var.container_configuration_exec_pool
     container_registries {
+      registry_server = "docker.io"
       user_assigned_identity_id = var.batch_uami_id
     }
   }
