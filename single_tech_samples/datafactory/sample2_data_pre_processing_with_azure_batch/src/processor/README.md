@@ -1,6 +1,6 @@
 ## Steps To Build a docker image
 
-* Go to the folder : sample-processor ```cd sample-processor```
+* Go to the folder : sample-processor ```cd src/processor```
 * Make sure you have a dockerfile and the requirements.txt in the sample-processor folder.
 * Make sure that docker is running in your machine.
 * Build a docker image by running : ```docker build . -t sample-processor:latest```
