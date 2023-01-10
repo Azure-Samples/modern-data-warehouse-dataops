@@ -10,32 +10,36 @@ import string
 import os  # for file management make directory
 import shutil  # for file management, copy file
 import argparse
+import subprocess
 
 
-def initialize(cargs):
-    listOfBagFiles = [args.inputPath]
+def extractbagintocsv(cargs):
+    listOfBagFiles = [args.rawPath]
     bagNamePath = '/' + \
-        args.inputPath.split(
-            '/')[len(args.inputPath.split('/'))-1].split('.bag')[0]
+        args.rawPath.split(
+            '/')[len(args.rawPath.split('/'))-1].split('.bag')[0]
     numberOfFiles = "1"
     count = 0
     for bagFile in listOfBagFiles:
         count += 1
-        print("reading file " + str(count) +
+        print("Reading file " + str(count) +
               " of  " + numberOfFiles + ": " + bagFile)
-    # print(args.inputPath)
-        # access bag
 
+        # access bag
         bag = rosbag.Bag(bagFile)
         bagContents = bag.read_messages()
         bagName = bag.filename
 
-        if os.path.exists(args.outputPath + bagNamePath):
-            continue
-        else:
-            os.mkdir(args.outputPath + bagNamePath)
+        try:
+            if os.path.exists(args.extractedPath + bagNamePath):
+                continue
+            else:
+                os.mkdir(args.extractedPath + bagNamePath)
+        except Exception as e:
+            raise RuntimeError(f"Error: {e.__class__()}")
+            
 
-        folder = args.outputPath + bagNamePath
+        folder = args.extractedPath + bagNamePath
 
         # get list of topics from the bag
         listOfTopics = []
@@ -77,14 +81,19 @@ def initialize(cargs):
                             values.append(pair[1])
                     filewriter.writerow(values)
         bag.close()
-    print("Done extracting all topics into respectice csv files")
+    print("Extraction Successful! \nDone extracting all topics into respectice csv files")
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--inputPath", "-ipDir",
+    try:
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--rawPath", "-rPath",
                         help="Set the input file path")
-    parser.add_argument("--outputPath", "-opDir",
+        parser.add_argument("--extractedPath", "-ePath",
                         help="Set the input file path")
-    args = parser.parse_args()
-    initialize(args)
+        args = parser.parse_args()
+        extractbagintocsv(args)
+
+    except Exception as e:
+        raise RuntimeError(f"Error: {e.__class__}\n Error Extracting the Bag File!")
+

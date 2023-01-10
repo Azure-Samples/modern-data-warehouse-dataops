@@ -6,3 +6,4 @@ pydantic==1.10.2
 python-dotenv==0.21.0
 requests==2.28.1
 azure-storage-blob==12.14.1
+rosbags
