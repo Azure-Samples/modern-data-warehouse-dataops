@@ -61,9 +61,9 @@ if __name__ == '__main__':
     try:
         parser = argparse.ArgumentParser()
         parser.add_argument("--rawPath", "-rPath",
-                            help="Set the input file path")
+                            help="Set the file path for the raw bag file")
         parser.add_argument("--extractedPath", "-ePath",
-                            help="Set the input file path")
+                            help="Set the file path for the extracted file")
 
         args = parser.parse_args()
         extract(args)

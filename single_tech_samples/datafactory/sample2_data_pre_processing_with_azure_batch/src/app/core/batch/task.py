@@ -14,6 +14,7 @@ class Task:
 
     def __init__(self, settings: Settings = getSettings()) -> None:
         self.settings = settings
+        # The Raw zone container is simply the directory where we have our raw and extracted folders. It is nfs mounted with below configs
         self.mountConfig = f"--mount source=/{self.settings.RAW_ZONE_CONTAINER},target=/{self.settings.RAW_ZONE_CONTAINER},type=bind"
 
     def createTask(

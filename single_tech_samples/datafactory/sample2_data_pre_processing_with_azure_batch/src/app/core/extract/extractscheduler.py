@@ -22,15 +22,16 @@ class ExtractScheduler:
         self.taskBuilder = TaskBuilder(settings=settings, task=task)
 
     def scheduleExtraction(self, rawPath: str, extractedPath: str, poolId: str) -> list:
-        """This method schedules jobs/tasks for measurement extraction.
+        """This method schedules jobs/tasks for sample rosbag extraction.
 
         Args:
-            measurement (Measurement): Measurement Object
+            rawPath (str): Actual path of the bag file to be extracted
+            extractedPath (str): Destination path of extracted topics of bags in csv format
             poolId (str): Pool Id which will run the extraction jobs
 
         Returns:
-            list: List of jobs created for the given measurement.
-            Create 1 job, i task
+            list: List of jobs created for the extracttion of the bag file. Currently the list has just one job.
+           
         """
         jobs = []
 

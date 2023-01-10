@@ -3,7 +3,7 @@
 
 
 def getTaskDefinitions() -> list:
-    """Creates a map of extraction tasks required for a measurement.
+    """Creates a map of extraction tasks required for the rosbag topics extraction.
 
     The command key has 2 commands separated by && :
     First part, Calls the rosscript which takes 2 input parameters rawPath and extractedPath
