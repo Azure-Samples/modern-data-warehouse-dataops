@@ -7,11 +7,16 @@ terraform {
   }
 }
 
-# Looping and creating multiple stoarge accounts based on the 
-# keys and values of var.storage_account_map
+resource "random_string" "storage_suffix" {
+  keepers = {
+    "data_lake_store_name" = var.data_lake_store_name
+  }
+  length  = 8
+  special = false
+}
 
 resource "azurerm_storage_account" "storage_account" {
-  name                     = "${var.data_lake_store_name}${var.tags.environment}"
+  name                     = "${var.data_lake_store_name}${var.tags.environment}${random_string.storage_suffix.id}"
   resource_group_name      = var.resource_group_name
   location                 = var.location
   account_tier             = var.account_tier

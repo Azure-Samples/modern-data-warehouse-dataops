@@ -25,7 +25,7 @@ variable "key_vault_name" {
   type        = string
 }
 
-variable "virtual_network_subnet_ids" {
+variable "virtual_network_subnet_id" {
   description = "Virtual network subnet ID"
 }
 

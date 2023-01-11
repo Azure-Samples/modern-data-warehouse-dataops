@@ -65,6 +65,7 @@ variable "identity_type" {
 variable "orch_pool_name" {
   description = "Specifies the name of the Batch pool."
   type        = string
+  default     = "orchestratorpool"
 }
 
 variable "vm_size_orch_pool" {
@@ -82,11 +83,18 @@ variable "node_agent_sku_id_orch_pool" {
 variable "storage_image_reference_orch_pool" {
   description = "A storage_image_reference for the virtual machines that will compose the Batch pool."
   type        = map(string)
+  default = {
+    publisher = "canonical"
+    offer     = "0001-com-ubuntu-server-focal"
+    sku       = "20_04-lts"
+    version   = "latest"
+  }
 }
 
 variable "exec_pool_name" {
   description = "Specifies the name of the Batch pool."
   type        = string
+  default     = "executionpool"
 }
 
 variable "vm_size_exec_pool" {
@@ -104,6 +112,12 @@ variable "node_agent_sku_id_exec_pool" {
 variable "storage_image_reference_exec_pool" {
   description = "A storage_image_reference for the virtual machines that will compose the Batch pool."
   type        = map(string)
+  default = {
+    publisher = "microsoft-azure-batch"
+    offer     = "ubuntu-server-container"
+    sku       = "20-04-lts"
+    version   = "latest"
+  }
 }
 
 variable "storage_account_name" {
@@ -128,6 +142,14 @@ variable "batch_uami_principal_id" {
 
 variable "endpoint_configuration" {
   type = map(string)
+  default = {
+    backend_port          = 22
+    frontend_port_range   = "1-49999"
+    protocol              = "TCP"
+    access                = "Deny"
+    priority              = "150"
+    source_address_prefix = "*"
+  }
 }
 
 variable "ip_sku" {
@@ -138,12 +160,14 @@ variable "ip_sku" {
 
 variable "container_configuration_exec_pool" {
   type        = string
-  description = "The type of container configuration. "
+  description = "The type of container configuration."
+  default     = "DockerCompatible"
 }
 
 variable "node_placement_exec_pool" {
   type        = string
   description = "The placement policy for allocating nodes in the pool."
+  default     = "Regional"
 }
 
 variable "registry_server" {

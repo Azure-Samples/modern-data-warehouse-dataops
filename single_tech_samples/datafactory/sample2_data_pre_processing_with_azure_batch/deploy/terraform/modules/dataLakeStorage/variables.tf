@@ -54,12 +54,13 @@ variable "nfsv3_enabled" {
 }
 
 variable "virtual_network_subnet_id" {
-  description = "virtual_network_subnet_ids"
+  description = "virtual network subnet ID"
 }
 
 variable "bypass" {
   description = "Specifies whether traffic is bypassed for Logging/Metrics/AzureServices."
   type        = set(string)
+  default     = ["AzureServices"]
 }
 
 variable "default_action" {

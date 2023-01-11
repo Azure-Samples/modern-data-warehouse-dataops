@@ -1,5 +1,3 @@
-# data "azurerm_client_config" "current" {}
-
 resource "random_string" "kv_suffix" {
   keepers = {
     "kv_name" = var.key_vault_name
@@ -19,7 +17,7 @@ resource "azurerm_key_vault" "kv" {
   tags = var.tags
 
   network_acls {
-    virtual_network_subnet_ids = [var.virtual_network_subnet_ids]
+    virtual_network_subnet_ids = [var.virtual_network_subnet_id]
     default_action             = "Deny"
     bypass                     = "AzureServices"
   }
@@ -30,7 +28,7 @@ resource "azurerm_private_endpoint" "kv-private-endpoint" {
   resource_group_name = var.resource_group_name
   location            = var.location
   tags                = var.tags
-  subnet_id           = var.virtual_network_subnet_ids
+  subnet_id           = var.virtual_network_subnet_id
 
   private_service_connection {
     name                           = "${var.key_vault_name}-private-service-connection"

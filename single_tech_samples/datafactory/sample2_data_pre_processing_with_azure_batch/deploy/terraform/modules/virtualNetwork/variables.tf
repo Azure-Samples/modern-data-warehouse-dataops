@@ -9,13 +9,13 @@ variable "location" {
 }
 
 variable "address_space" {
-  description = "value"
-  type        = string
+  description = "Address Space for the VNET"
+  default     = "10.0.0.0/16"
 }
 
 variable "address_prefix" {
-  description = "value"
-  type        = string
+  description = "Address Prefix for the subnet"
+  default     = "10.0.0.0/24"
 }
 
 variable "tags" {

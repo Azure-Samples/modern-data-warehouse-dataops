@@ -21,6 +21,7 @@ variable "tags" {
 variable "managed_virtual_network_enabled" {
   description = "Is Managed Virtual Network enabled?"
   type        = bool
+  default = true
 }
 
 variable "subnet_id" {
@@ -38,10 +39,6 @@ variable "key_vault_name" {
   type        = string
 }
 
-variable "storage_account_ids" {
-  description = "storage account resource ids"
-}
-
 variable "storage_account_primary_dfs_url" {
   description = "Storage account primary dfs url"
 }
@@ -54,6 +51,7 @@ variable "key_vault_id" {
 variable "node_size" {
   description = "The size of the nodes on which the Managed Integration Runtime runs."
   type        = string
+  default = "Standard_D8_v3"
 }
 
 variable "stoarge_linked_service" {

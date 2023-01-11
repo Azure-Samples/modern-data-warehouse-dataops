@@ -1,5 +1,5 @@
 variable "adls_id" {
-  description = "ADLS storage account resource ids"
+  description = "ADLS storage account resource id"
 }
 
 variable "batch_storage_account_id" {

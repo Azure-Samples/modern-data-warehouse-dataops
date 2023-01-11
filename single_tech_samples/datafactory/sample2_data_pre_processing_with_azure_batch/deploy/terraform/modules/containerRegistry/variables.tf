@@ -21,6 +21,7 @@ variable "batch_uami_id" {
 variable "acr_sku" {
   description = "value"
   type        = string
+  default     = "Premium"
 }
 
 variable "tags" {

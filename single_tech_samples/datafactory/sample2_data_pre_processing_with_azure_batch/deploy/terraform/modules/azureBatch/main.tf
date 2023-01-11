@@ -1,5 +1,12 @@
+resource "random_string" "batch_account_suffix" {
+  keepers = {
+    "batch_account_name" = var.batch_account_name
+  }
+  length  = 8
+  special = false
+}
 resource "azurerm_batch_account" "batch_account" {
-  name                                = var.batch_account_name
+  name                                = "${var.batch_account_name}${random_string.batch_account_suffix.id}"
   resource_group_name                 = var.resource_group_name
   location                            = var.location
   pool_allocation_mode                = var.pool_allocation_mode
