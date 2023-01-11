@@ -13,7 +13,7 @@ import argparse
 import subprocess
 
 
-def extractbagintocsv(cargs):
+def extractSampleBagFile(cargs):
     listOfBagFiles = [args.rawPath]
     bagNamePath = '/' + \
         args.rawPath.split(
@@ -92,7 +92,7 @@ if __name__ == '__main__':
         parser.add_argument("--extractedPath", "-ePath",
                             help="Set the file path for the extracted file")
         args = parser.parse_args()
-        extractbagintocsv(args)
+        extractSampleBagFile(args)
 
     except Exception as e:
         raise RuntimeError(f"Error: {e.__class__}\n Error Extracting the Bag File!")
