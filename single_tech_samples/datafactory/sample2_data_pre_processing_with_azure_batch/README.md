@@ -85,26 +85,63 @@ The following are the prerequisites for deploying this sample:
 
 ### 2.1.1 Software Prerequisites
 
+1. Terraform (any version >1.2.8)
+2. AZ CLI
 
 ### 2.2. Setup and deployment
+1. Clone this repository
+2. Go to the directory containing all the terraform scripts to setup a new environment
 
+`
+  sample2_data_pre_processing_with_azure_batch\deploy\terraform 
+`
+
+3. Login to the Azure Account you wish to use for the deployment. 
+4. Create a resource group for the new environemnt in your subscription named - avops-sample in centralindia location. This can be done using the following az cli command 
+
+```
+az group create --name avops-sample --location centralindia
+```
+
+5. After the resource group has been successfully set up, run the following terraform commands to deploy all the resources in your resource group. 
+
+```
+terraform init
+terraform plan 
+terraform apply
+```
 
 ### 2.3. Deployed Resources
 
 The following resources will be deployed as a part of this sample once the script is executed:
-
+- Azure Data Factory
+- Azure Batch
+- Azure Data Lake Storage
+- Azure Blob Store
+- Virtual Network with a subnet
+- Azure Container Registry
+- Azure Key Vault
+- Managed Idnetity dedicated to Azure batch 
 
 ### 2.4. Deployment validation and Execution
 
 The following steps can be performed to validate the correct deployment and execution of the sample:
 
 
-
 ### 2.5. Clean-up
 
 Please follow the below steps to clean up your environment :
 
+1. Run the following command from the directory - 
 
+`
+sample2_data_pre_processing_with_azure_batch\deploy\terraform
+`
+ 
+to clean up your environment 
+```
+terraform destroy
+```
 ## 3. Troubleshooting
 
 
