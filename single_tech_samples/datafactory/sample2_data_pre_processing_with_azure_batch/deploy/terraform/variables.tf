@@ -15,10 +15,12 @@ variable "tags" {
 
 variable "address_space" {
   description = "Address Space for the VNET"
+  default     = "10.0.0.0/16"
 }
 
 variable "address_prefix" {
   description = "Address Prefix for the subnet"
+  default     = "10.0.0.0/24"
 }
 
 variable "batch_account_name" {
@@ -98,6 +100,7 @@ variable "identity_type" {
 variable "orch_pool_name" {
   description = "Specifies the name of the Batch pool."
   type        = string
+  default     = "orchestratorpool"
 }
 
 variable "vm_size_orch_pool" {
@@ -115,11 +118,18 @@ variable "node_agent_sku_id_orch_pool" {
 variable "storage_image_reference_orch_pool" {
   description = "A storage_image_reference for the virtual machines that will compose the Batch pool."
   type        = map(string)
+  default = {
+    publisher = "canonical"
+    offer     = "0001-com-ubuntu-server-focal"
+    sku       = "20_04-lts"
+    version   = "latest"
+  }
 }
 
 variable "exec_pool_name" {
   description = "Specifies the name of the Batch pool."
   type        = string
+  default     = "executionpool"
 }
 
 variable "vm_size_exec_pool" {
@@ -137,6 +147,12 @@ variable "node_agent_sku_id_exec_pool" {
 variable "storage_image_reference_exec_pool" {
   description = "A storage_image_reference for the virtual machines that will compose the Batch pool."
   type        = map(string)
+  default = {
+    publisher = "microsoft-azure-batch"
+    offer     = "ubuntu-server-container"
+    sku       = "20-04-lts"
+    version   = "latest"
+  }
 }
 
 variable "name_suffix" {
@@ -146,16 +162,26 @@ variable "name_suffix" {
 
 variable "endpoint_configuration" {
   type = map(string)
+  default = {
+    backend_port          = 22
+    frontend_port_range   = "1-49999"
+    protocol              = "TCP"
+    access                = "Deny"
+    priority              = "150"
+    source_address_prefix = "*"
+  }
 }
 
 variable "container_configuration_exec_pool" {
   type        = string
-  description = "The type of container configuration. "
+  description = "The type of container configuration."
+  default     = "DockerCompatible"
 }
 
 variable "node_placement_exec_pool" {
   type        = string
   description = "The placement policy for allocating nodes in the pool."
+  default     = "Regional"
 }
 
 variable "adf_name" {
@@ -177,6 +203,7 @@ variable "key_vault_name" {
 variable "node_size" {
   description = "The size of the nodes on which the Managed Integration Runtime runs."
   type        = string
+  default     = "Standard_D8_v3"
 }
 
 variable "is_hns_enabled" {
@@ -194,6 +221,7 @@ variable "nfsv3_enabled" {
 variable "bypass" {
   description = "Specifies whether traffic is bypassed for Logging/Metrics/AzureServices."
   type        = set(string)
+  default     = ["AzureServices"]
 }
 
 variable "default_action" {
@@ -217,6 +245,7 @@ variable "last_access_time_enabled" {
 variable "blob_storage_cors_origins" {
   description = "Blob storage cors origins"
   type        = set(string)
+  default     = ["https://*.av.electric.com", "http://*.av.corp.electric.com", "https://*.av.corp.electric.com"]
 }
 
 variable "kv_sku_name" {
@@ -228,6 +257,7 @@ variable "kv_sku_name" {
 variable "acr_sku" {
   description = "ACR sku type"
   type        = string
+  default     = "Premium"
 }
 
 variable "acr_name" {
@@ -237,4 +267,5 @@ variable "acr_name" {
 
 variable "service_endpoints" {
   description = "Service Endpoints associated with the subnet"
+  default     = ["Microsoft.KeyVault", "Microsoft.Storage"]
 }
