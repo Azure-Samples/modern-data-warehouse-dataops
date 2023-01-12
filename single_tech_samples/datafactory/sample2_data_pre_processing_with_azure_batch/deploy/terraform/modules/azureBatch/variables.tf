@@ -36,7 +36,7 @@ variable "account_replication_type" {
 }
 
 variable "batch_subnet_id" {
-  description = "virtual_network_subnet_ids"
+  description = "Virtual Network Subnet ID"
 }
 
 variable "storage_account_id" {
