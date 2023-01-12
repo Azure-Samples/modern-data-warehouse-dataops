@@ -1,4 +1,4 @@
-"""
+extract.py"""
 Load environment configurations to Settings class.
 """
 from functools import lru_cache

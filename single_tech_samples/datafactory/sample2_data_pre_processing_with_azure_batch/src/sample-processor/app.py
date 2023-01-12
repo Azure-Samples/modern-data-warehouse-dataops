@@ -3,40 +3,25 @@ This script saves each topic in a bagfile as a csv.
 Accepts inputfilename with full path and output folder path.
 '''
 import rosbag
-import sys
 import csv
-import time
-import string
-import os  # for file management make directory
-import shutil  # for file management, copy file
+import os
 import argparse
-import subprocess
 
-
-def extractSampleBagFile(cargs):
-    
-    bagFile = args.rawPath
-    bagNamePath = '/' + \
-        args.rawPath.split(
-            '/')[len(args.rawPath.split('/'))-1].split('.bag')[0]
- 
-
+def extractSampleBagFile(cargs):  
     #Access the bag file
-    bag = rosbag.Bag(bagFile)
+    bag = rosbag.Bag(args.rawPath)
     bagContents = bag.read_messages()
     print("Started reading The Bag file")
+    outputFolder = args.extractedPath+"/output"
 
     try:
-        if os.path.exists(args.extractedPath + bagNamePath):
+        if os.path.exists(outputFolder):
             pass
         else:
-            os.mkdir(args.extractedPath + bagNamePath)
+            os.mkdir(outputFolder)
     except Exception as e:
         raise RuntimeError(f"Error: {e.__class__()}")
             
-
-    folder = args.extractedPath + bagNamePath
-
     # get list of topics from the bag
     listOfTopics = []
     for topic, msg, t in bagContents:
@@ -45,7 +30,7 @@ def extractSampleBagFile(cargs):
 
     for topicName in listOfTopics:
         # Create a new CSV file for each topic
-        filename = folder + '/' + \
+        filename = outputFolder + '/' + \
             topicName.replace('/', '_slash_') + '.csv'
         with open(filename, 'w+') as csvfile:
             filewriter = csv.writer(csvfile, delimiter=',')
@@ -79,7 +64,6 @@ def extractSampleBagFile(cargs):
     bag.close()
     print("Extraction Successful! \nDone extracting all topics into respective csv files")
 
-
 if __name__ == '__main__':
     try:
         parser = argparse.ArgumentParser()
@@ -89,7 +73,5 @@ if __name__ == '__main__':
                             help="Set the file path for the extracted file")
         args = parser.parse_args()
         extractSampleBagFile(args)
-
     except Exception as e:
         raise RuntimeError(f"Error: {e.__class__}\n Error Extracting the Bag File!")
-
