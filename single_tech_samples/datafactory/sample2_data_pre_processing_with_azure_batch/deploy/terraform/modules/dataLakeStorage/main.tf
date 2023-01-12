@@ -12,6 +12,8 @@ resource "random_string" "storage_suffix" {
     "data_lake_store_name" = var.data_lake_store_name
   }
   length  = 8
+  numeric = false
+  upper   = false
   special = false
 }
 

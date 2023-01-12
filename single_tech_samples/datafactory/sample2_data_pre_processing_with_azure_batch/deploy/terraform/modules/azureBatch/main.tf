@@ -3,6 +3,8 @@ resource "random_string" "batch_account_suffix" {
     "batch_account_name" = var.batch_account_name
   }
   length  = 8
+  numeric = true
+  upper   = false
   special = false
 }
 resource "azurerm_batch_account" "batch_account" {
@@ -35,7 +37,7 @@ resource "azurerm_batch_pool" "orch_pool" {
   ]
   name                = "${var.resource_group_name}-${var.orch_pool_name}"
   resource_group_name = var.resource_group_name
-  account_name        = var.batch_account_name
+  account_name        = azurerm_batch_account.batch_account.name
   display_name        = var.orch_pool_name
   vm_size             = var.vm_size_orch_pool
   node_agent_sku_id   = var.node_agent_sku_id_orch_pool
@@ -110,7 +112,7 @@ resource "azurerm_batch_pool" "exec_pool" {
   ]
   name                = "${var.resource_group_name}-${var.exec_pool_name}"
   resource_group_name = var.resource_group_name
-  account_name        = var.batch_account_name
+  account_name        = azurerm_batch_account.batch_account.name
   display_name        = var.exec_pool_name
   vm_size             = var.vm_size_exec_pool
   node_agent_sku_id   = var.node_agent_sku_id_exec_pool
