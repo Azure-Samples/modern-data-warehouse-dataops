@@ -1,7 +1,7 @@
 locals {
   kv_access_policies = [
-    { object_id = var.batch_uami_principal_id, key_permissions = [], secret_permissions = ["Get", "List"], certificate_permissions = []},
-    { object_id = var.adf_sami_principal_id, key_permissions = [], secret_permissions = ["Get", "List"], certificate_permissions = []}
+    { object_id = var.batch_uami_principal_id, key_permissions = [], secret_permissions = ["Get", "List"], certificate_permissions = [] },
+    { object_id = var.adf_sami_principal_id, key_permissions = [], secret_permissions = ["Get", "List"], certificate_permissions = [] }
   ]
 }
 
@@ -37,7 +37,7 @@ resource "azurerm_role_assignment" "adf_contributor_role" {
 resource "azurerm_role_assignment" "adf_batch_blob_data_contributor_role" {
   scope                = var.batch_storage_account_id
   role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = var.adf_sami_principal_id 
+  principal_id         = var.adf_sami_principal_id
 }
 
 resource "azurerm_role_assignment" "batch_blob_data_contributor_role_managed_identity" {
@@ -48,21 +48,13 @@ resource "azurerm_role_assignment" "batch_blob_data_contributor_role_managed_ide
 
 # Role assignment for keyvault are handled by key vault access policy
 resource "azurerm_key_vault_access_policy" "kv_access_policy_batch" {
-  key_vault_id = var.key_vault_id
-  tenant_id    = var.tenant_id
-  object_id    = local.kv_access_policies[0].object_id
-  key_permissions = local.kv_access_policies[0].key_permissions
-  secret_permissions = local.kv_access_policies[0].secret_permissions
-  certificate_permissions = local.kv_access_policies[0].certificate_permissions
-}
-
-resource "azurerm_key_vault_access_policy" "kv_access_policy_adf" {
-  key_vault_id = var.key_vault_id
-  tenant_id    = var.tenant_id
-  object_id    = local.kv_access_policies[1].object_id
-  key_permissions = local.kv_access_policies[1].key_permissions
-  secret_permissions = local.kv_access_policies[1].secret_permissions
-  certificate_permissions = local.kv_access_policies[1].certificate_permissions
+  count                   = length(local.kv_access_policies)
+  key_vault_id            = var.key_vault_id
+  tenant_id               = var.tenant_id
+  object_id               = local.kv_access_policies[count.index].object_id
+  key_permissions         = local.kv_access_policies[count.index].key_permissions
+  secret_permissions      = local.kv_access_policies[count.index].secret_permissions
+  certificate_permissions = local.kv_access_policies[count.index].certificate_permissions
 }
 
 # Give Batch access to ACR
