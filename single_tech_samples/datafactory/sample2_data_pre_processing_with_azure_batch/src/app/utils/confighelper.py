@@ -7,6 +7,7 @@ class ConfigHelper:
     settings: Settings = getSettings()
     
     def getConfigKeyValue(self, key: str) -> str:
+        print("Env is equal to : "+self.settings.RUN_ENVIRONMENT)
         if self.settings.RUN_ENVIRONMENT==RunEnvironment.LOCAL.value:
             return key        
         elif self.settings.RUN_ENVIRONMENT==RunEnvironment.CLOUD.value:

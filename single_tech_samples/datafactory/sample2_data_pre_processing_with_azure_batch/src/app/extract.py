@@ -24,6 +24,9 @@ settings = getSettings()
 configHelper = ConfigHelper()
 
 def extract(cargs):
+    logger.info(settings.RUN_ENVIRONMENT)
+    logger.info(settings.AZ_BATCH_ACCOUNT_URL)
+    logger.info(f"Extraction start time: {start_time}")
     task = Task()
     job = Job()
     configHelper = ConfigHelper()
@@ -31,7 +34,7 @@ def extract(cargs):
     logger = logging.getLogger(__name__)
 
     start_time = datetime.datetime.now().replace(microsecond=0)
-    logger.info(f"Extraction start time: {start_time}")
+
     # Process rosbag for extraction.
     extractionScheduler = ExtractScheduler(
         job=job, task=task, settings=settings)

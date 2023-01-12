@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     AZ_BATCH_ORCHESTRATOR_POOL_ID: str = None
     AZ_BATCH_KEY: str = None
     RAW_ZONE_CONTAINER: str = None 
-    TASK_RETRY_COUNT: int
+    TASK_RETRY_COUNT: int = 2
 
     class Config:
         """
