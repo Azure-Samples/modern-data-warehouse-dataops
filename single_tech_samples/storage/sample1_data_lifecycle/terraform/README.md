@@ -18,7 +18,6 @@
 
 ## 1. Solution Overview
 
-
 With wide scale adaptation of Infrastructure As Code (IAC), many a times we would need to create storage accounts and corresponding entities dynamically using Infra As Code (IAC) Scripts.
 
 This solution demonstrates how we can create data storage accounts, containers and data lifecycle rules in Azure using Terraform scripting.
@@ -125,7 +124,6 @@ Configure as many storage accounts, containers and lifecycle rules as needed and
 
    > Note: The script would expect that you are logged in to the Azure account using az login command, before you deploy resources to Azure.
 
-
     ![alt text](../common_assets/images/IAC_Script_Deploy.png "Logo Title Text 1")
 
 ### 2.3. Deployed Resources
@@ -186,7 +184,6 @@ The clean-up script can be executed to clean up the resources provisioned in thi
 ### Error Building AzureRM Client
 
 If you run the terraform plan command, you may run into the following error:
-
 >
 > Error: building AzureRM Client: obtain subscription() from Azure CLI: parsing json result from the Azure CLI: waiting for the Azure CLI: >exit status 1: ERROR: No subscription found. Run 'az account set' to select a subscription.
 > 
