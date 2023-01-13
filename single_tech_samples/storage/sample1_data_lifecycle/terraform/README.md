@@ -5,8 +5,7 @@
 - [1. Solution Overview](#1-solution-overview)
   - [1.1. Scope](#11-scope)
   - [1.2. Use Case](#12-use-case)
-  - [1.3. Architecture](#13-architecture)
-  - [1.4. Technologies used](#14-technologies-used)
+  - [1.3. Technologies used](#14-technologies-used)
 - [2. How to use this sample](#2-how-to-use-this-sample)
   - [2.1. Prerequisites](#21-prerequisites)
     - [2.1.1 Software Prerequisites](#211-software-prerequisites)
@@ -47,12 +46,7 @@ We can define data lifecycle rules to move data from one tier to other. The curr
 
 Details about [how to run the pipeline](#24-deployment-validation-and-execution) can be found in the later sections of this document.
 
-### 1.3. Architecture
-
-The below diagram illustrates the design and the flow of the system:
-![alt text](../Common_Assets/Images/Architecture_design.png "Design Diagram")
-
-### 1.4. Technologies used
+### 1.3. Technologies used
 
 The following technologies are used to build this sample:
 
@@ -119,12 +113,12 @@ Configure as many storage accounts, containers and lifecycle rules as needed and
 1. Run below commands in the sequence:
 
 > terraform init
+
 > terraform plan
+
 > terraform apply
 
    > Note: The script would expect that you are logged in to the Azure account using az login command, before you deploy resources to Azure.
-
-    ![alt text](../common_assets/images/IAC_Script_Deploy.png "Logo Title Text 1")
 
 ### 2.3. Deployed Resources
 
@@ -139,7 +133,7 @@ You can observe the appended random strings to make the storage accounts’ name
 
 ![alt text](../../common_assets/images/storage_containers.png "Logo Title Text 1")
 
-2.Azure data lifecycle rules. Sample view is shown below.
+3.Azure data lifecycle rules. Sample view is shown below.
 
 ![alt text](../../common_assets/images/data_lifecycle_rules.png "Logo Title Text 1")
 
