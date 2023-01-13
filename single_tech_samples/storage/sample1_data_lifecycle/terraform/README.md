@@ -187,6 +187,5 @@ This is usually happen when terraform is unable to find Azure Subscription. The 
 
 In order to fix this you must login to Azure using the following command:
 
-```bash
-az login
-```
+> az login
+
