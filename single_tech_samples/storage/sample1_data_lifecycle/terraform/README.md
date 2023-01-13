@@ -29,7 +29,7 @@ The solution is flexible,extensible and scalable to accommodate any number of st
 The following list captures the scope of this sample:
 
 The following items will be provisioned as a part of this sample setup:
-   1. Azure Storage Accounts (ADLS Gen2).
+   1. Azure Storage Accounts.
    2. Storage Containers.
    3. Data lifecycle rules.
 
@@ -118,9 +118,9 @@ Configure as many storage accounts, containers and lifecycle rules as needed and
 
 1. Run below commands in the sequence:
 
-* terraform init
-* terraform plan
-* terraform apply
+> terraform init
+> terraform plan
+> terraform apply
 
    > Note: The script would expect that you are logged in to the Azure account using az login command, before you deploy resources to Azure.
 
@@ -186,10 +186,9 @@ The clean-up script can be executed to clean up the resources provisioned in thi
 If you run the terraform plan command, you may run into the following error:
 >
 > Error: building AzureRM Client: obtain subscription() from Azure CLI: parsing json result from the Azure CLI: waiting for the Azure CLI: >exit status 1: ERROR: No subscription found. Run 'az account set' to select a subscription.
-> 
->   with provider["registry.terraform.io/hashicorp/azurerm"],
->   on provider.tf line 14, in provider "azurerm":
->   14: provider "azurerm" {
+>with provider["registry.terraform.io/hashicorp/azurerm"],
+>on provider.tf line 14, in provider "azurerm":
+>14: provider "azurerm" {
 
 This is usually happen when terraform is unable to find Azure Subscription. The core issue behind this is that user is not logged to Azure account.
 
