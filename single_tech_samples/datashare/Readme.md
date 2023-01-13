@@ -130,11 +130,11 @@ az ad sp list --display-name <insert_sp_name> --query []."id" -o tsv
 
 These values will be used by the scripts through environment variables:
 
-- `source.py` will send the invitation to our service principal using the following environment variables: 
+- `source.py` will send the invitation to our service principal using the following environment variables:
   - `DESTINATION_OBJECT_ID`: objectId
   - `DESTINATION_TENANT_ID`: tenant
 
-* `dest.py` will execute with the service principal identity so it can accept the invitation. This is accomplished by defining the following environment variables:
+- `dest.py` will execute with the service principal identity so it can accept the invitation. This is accomplished by defining the following environment variables:
   - `AZURE_CLIENT_ID`: appId
   - `AZURE_CLIENT_SECRET`: password
   - `AZURE_TENANT_ID`: tenant
