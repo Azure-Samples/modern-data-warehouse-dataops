@@ -14,6 +14,11 @@ variable "data_lake_store_name" {
   default     = "datalakestore"
 }
 
+variable "adls_suffix" {
+  description = "Suffix for name of the data lake storage account"
+  type        = string
+}
+
 variable "container_name" {
   description = "Name of the storage container"
   type        = string

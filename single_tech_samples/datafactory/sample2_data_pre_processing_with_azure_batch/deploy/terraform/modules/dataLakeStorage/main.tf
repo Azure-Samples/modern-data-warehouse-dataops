@@ -7,18 +7,8 @@ terraform {
   }
 }
 
-resource "random_string" "storage_suffix" {
-  keepers = {
-    "data_lake_store_name" = var.data_lake_store_name
-  }
-  length  = 8
-  numeric = false
-  upper   = false
-  special = false
-}
-
 resource "azurerm_storage_account" "adls" {
-  name                     = "${var.data_lake_store_name}${var.tags.environment}${random_string.storage_suffix.id}"
+  name                     = "${var.data_lake_store_name}${var.tags.environment}${var.adls_suffix}"
   resource_group_name      = var.resource_group_name
   location                 = var.location
   account_tier             = var.account_tier

@@ -20,6 +20,11 @@ variable "key_vault_name" {
   default     = "keyvault"
 }
 
+variable "kv_suffix" {
+  description = "Suffix for key vault name"
+  type        = string
+}
+
 variable "virtual_network_subnet_id" {
   description = "Virtual network subnet ID"
 }

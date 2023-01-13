@@ -1,4 +1,18 @@
 # ------------------------------------------------------------------------------------------------------
+# Generate a random suffix
+# ------------------------------------------------------------------------------------------------------
+
+resource "random_string" "common_suffix" {
+  keepers = {
+    "resource_group_name" = var.resource_group_name
+  }
+  length  = 8
+  numeric = false
+  upper   = false
+  special = false
+}
+
+# ------------------------------------------------------------------------------------------------------
 # Deploy VNET
 # ------------------------------------------------------------------------------------------------------
 
@@ -7,19 +21,20 @@ module "virtual_network" {
   resource_group_name = var.resource_group_name
   location            = var.location
   tags                = var.tags
+  vnet_suffix         = random_string.common_suffix.id
   service_endpoints   = var.service_endpoints
 }
-
 
 # ------------------------------------------------------------------------------------------------------
 # Deploy key vault
 # ------------------------------------------------------------------------------------------------------
 
 module "key_vault" {
-  source                     = "./modules/keyVault"
-  resource_group_name        = var.resource_group_name
-  location                   = var.location
-  tags                       = var.tags
+  source                    = "./modules/keyVault"
+  resource_group_name       = var.resource_group_name
+  location                  = var.location
+  tags                      = var.tags
+  kv_suffix                 = random_string.common_suffix.id
   virtual_network_subnet_id = module.virtual_network.subnet_id
 }
 
@@ -32,6 +47,7 @@ module "adls" {
   resource_group_name       = var.resource_group_name
   tags                      = var.tags
   location                  = var.location
+  adls_suffix               = random_string.common_suffix.id
   virtual_network_subnet_id = module.virtual_network.subnet_id
   blob_storage_cors_origins = var.blob_storage_cors_origins
 }
@@ -45,6 +61,7 @@ module "batch_storage_account" {
   resource_group_name       = var.resource_group_name
   tags                      = var.tags
   location                  = var.location
+  storage_suffix            = random_string.common_suffix.id
   virtual_network_subnet_id = module.virtual_network.subnet_id
 }
 
@@ -53,10 +70,11 @@ module "batch_storage_account" {
 # ------------------------------------------------------------------------------------------------------
 
 module "batch_managed_identity" {
-  source              = "./modules/managedIdentity"
-  resource_group_name = var.resource_group_name
-  location            = var.location
-  tags                = var.tags
+  source                  = "./modules/managedIdentity"
+  resource_group_name     = var.resource_group_name
+  location                = var.location
+  managed_identity_suffix = random_string.common_suffix.id
+  tags                    = var.tags
 }
 
 # ------------------------------------------------------------------------------------------------------
@@ -68,6 +86,7 @@ module "container_registry" {
   resource_group_name = var.resource_group_name
   location            = var.location
   tags                = var.tags
+  acr_suffix          = random_string.common_suffix.id
   batch_uami_id       = module.batch_managed_identity.managed_identity_id
 }
 
@@ -80,6 +99,7 @@ module "azure_batch" {
   resource_group_name     = var.resource_group_name
   location                = var.location
   tags                    = var.tags
+  batch_account_suffix    = random_string.common_suffix.id
   batch_subnet_id         = module.virtual_network.subnet_id
   storage_account_id      = module.batch_storage_account.storage_account_id
   storage_account_name    = module.batch_storage_account.storage_account_name
@@ -99,6 +119,7 @@ module "data_factory" {
   resource_group_name             = var.resource_group_name
   location                        = var.location
   tags                            = var.tags
+  adf_suffix                      = random_string.common_suffix.id
   virtual_network_id              = module.virtual_network.virtual_network_id
   subnet_id                       = module.virtual_network.subnet_id
   storage_account_primary_dfs_url = module.adls.adls_account_primary_dfs_url

@@ -8,6 +8,18 @@ variable "location" {
   type        = string
 }
 
+variable "vnet_name" {
+  description = "Name of the virtual network"
+  type        = string
+  default     = "virtualnet"
+}
+
+variable "vnet_suffix" {
+  description = "Suffix for name of the virtual network"
+  type        = string
+
+}
+
 variable "address_space" {
   description = "Address Space for the VNET"
   default     = "10.0.0.0/16"

@@ -1,15 +1,8 @@
-resource "random_string" "kv_suffix" {
-  keepers = {
-    "kv_name" = var.key_vault_name
-  }
-  length  = 8
-  special = false
-}
 
 data "azurerm_client_config" "current" {}
 
 resource "azurerm_key_vault" "kv" {
-  name                = "${var.key_vault_name}${var.tags.environment}${random_string.kv_suffix.id}"
+  name                = "${var.key_vault_name}${var.tags.environment}${var.kv_suffix}"
   resource_group_name = var.resource_group_name
   location            = var.location
   tenant_id           = data.azurerm_client_config.current.tenant_id

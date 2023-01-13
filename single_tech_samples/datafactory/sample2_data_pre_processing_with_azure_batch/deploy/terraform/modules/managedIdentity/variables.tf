@@ -9,12 +9,17 @@ variable "location" {
 }
 
 variable "tags" {
-  description = "(Optional) Specifies the tags of the resource"
+  description = "Specifies the tags of the resource"
   default     = {}
 }
 
-variable "name_suffix" {
+variable "managed_identity_name" {
+  description = "Name of the Managed Identity"
+  type        = string
+  default     = "batchmanagedidentity"
+}
+
+variable "managed_identity_suffix" {
   description = "Suffix of Managed Identity name"
   type        = string
-  default     = "batch"
 }

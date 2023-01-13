@@ -14,6 +14,11 @@ variable "acr_name" {
   default     = "containerregistry"
 }
 
+variable "acr_suffix" {
+  description = "Suffix for the ACR Name"
+  type        = string
+}
+
 variable "batch_uami_id" {
   type        = string
   description = "Managed identity ID"

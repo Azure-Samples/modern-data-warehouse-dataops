@@ -14,6 +14,11 @@ variable "storage_account_name" {
   default     = "batchstore"
 }
 
+variable "storage_suffix" {
+  description = "Suffix for batch storage account name"
+  type        = string
+}
+
 variable "account_replication_type" {
   description = "Defines the type of replication to use for this storage account. "
   type        = string

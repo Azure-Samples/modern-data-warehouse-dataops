@@ -16,7 +16,12 @@ variable "tags" {
 variable "batch_account_name" {
   description = "Name of the Azure Batch Account"
   type        = string
-  default = "batchaccount"
+  default     = "batchaccount"
+}
+
+variable "batch_account_suffix" {
+  description = "Suffix for batch account name"
+  type        = string
 }
 
 variable "adls_account_name" {

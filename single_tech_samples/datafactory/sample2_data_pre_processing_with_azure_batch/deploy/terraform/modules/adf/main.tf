@@ -2,16 +2,8 @@ locals {
   adf_integration_runtime_azure_name = "IntegrationRuntime"
 }
 
-resource "random_string" "adf_suffix" {
-  keepers = {
-    "adf_name" = var.adf_name
-  }
-  length  = 8
-  special = false
-}
-
 resource "azurerm_data_factory" "data_factory" {
-  name                            = "${var.adf_name}${var.tags.environment}${random_string.adf_suffix.id}"
+  name                            = "${var.adf_name}${var.tags.environment}${var.adf_suffix}"
   location                        = var.location
   resource_group_name             = var.resource_group_name
   managed_virtual_network_enabled = var.managed_virtual_network_enabled
