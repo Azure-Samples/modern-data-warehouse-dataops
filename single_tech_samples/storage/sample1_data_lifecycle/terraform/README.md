@@ -113,11 +113,9 @@ Configure as many storage accounts, containers and lifecycle rules as needed and
 
 1. Run below commands in the sequence:
 
-> terraform init
-
-> terraform plan
-
-> terraform apply
+I. terraform init
+II. terraform plan
+III. terraform apply
 
    > Note: The script would expect that you are logged in to the Azure account using az login command, before you deploy resources to Azure.
 
@@ -150,7 +148,7 @@ The following steps can be performed to validate the correct deployment and exec
 
 - Detail steps on how to execute the sample:
 
-  I. Checkout the code.
+I. Checkout the code.
 
 II. Configure the variables as needed under the files variables.tf and terraform.auto.tfvars
 
