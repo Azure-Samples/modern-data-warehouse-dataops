@@ -1,16 +1,24 @@
 # Data Share Automation
 
-- [Data Share Automation](#data-share-automation)
-  - [Description](#description)
-    - [source.py](#sourcepy)
-    - [dest.py](#destpy)
-    - [Azure Function](#azure-function)
-    - [Dev Container](#dev-container)
+[Azure Data Share](https://azure.microsoft.com/en-us/services/data-share/) setup requires a number of steps to establish the connection between the source data and the destination. One of those steps is sending an invitation from a source data share account and accepting the invitation in a destination data share account.
+
+Through the portal UI, invitations can only be sent to email addresses and that requires the email recipient to perform some manual steps to accept the invitation and map the incoming data to the destination. However, the Azure Data Share SDK allows invitations to be sent to *service principals* as well, which opens up the opportunity to fully automate the process, even between different subscriptions and tenants.
+
+This code illustrates how to perform a fully automated data sharing process between two pre-existing Data Share accounts.
+
+## Contents
+
+- [Working with the sample](#working-with-the-sample)
+  - [source.py](#sourcepy)
+  - [dest.py](#destpy)
+  - [Azure Function](#azure-function)
+  - [Dev Container](#dev-container)
   - [Prerequisites](#prerequisites)
     - [Bash](#bash)
     - [Powershell](#powershell)
   - [Creating the service principal](#creating-the-service-principal)
   - [Role Assignments](#role-assignments)
+- [Running the sample](#running-the-sample)
   - [Sharing data](#sharing-data)
     - [Source script configuration](#source-script-configuration)
     - [Source script authentication](#source-script-authentication)
@@ -20,20 +28,15 @@
     - [Destination script authentication](#destination-script-authentication)
     - [Running the destination script](#running-the-destination-script)
   - [Triggering the scan](#triggering-the-scan)
-  - [Using an Azure Function](#using-an-azure-function)
+  - [Using the Azure Function](#using-the-azure-function)
     - [Azure Function requirements](#azure-function-requirements)
     - [F5 experience](#f5-experience)
     - [Azure function authentication](#azure-function-authentication)
+- [Removing the sample assets](#removing-the-sample-assets)
 
-## Description
+## Working with the sample
 
-[Azure Data Share](https://azure.microsoft.com/en-us/services/data-share/) setup requires a number of steps to establish the connection between the source data and the destination. One of those steps is sending an invitation from a source data share account and accepting the invitation in a destination data share account.
-
-Through the portal UI, invitations can only be sent to email addresses and that requires the email recipient to perform some manual steps to accept the invitation and map the incoming data to the destination. However, the Azure Data Share SDK allows invitations to be sent to *service principals* as well, which opens up the opportunity to fully automate the process, even between different subscriptions and tenants.
-
-This code illustrates how to perform a fully automated data sharing process between two pre-existing Data Share accounts.
-
-It includes two separate Python scripts and an azure function:
+This sample includes two Python scripts and an azure function:
 
 ### source.py
 
@@ -56,9 +59,9 @@ This code can be found on the `azure_function` folder but it's recommended that 
 
 ### Dev Container
 
-A dev container is included to allow for an easier setup of your local dev environment. It includes all the required dependencies to execute the code and is the recommended way of testing this sample. For more information, please refer to <https://code.visualstudio.com/docs/devcontainers/containers> for more information.
+A dev container is included to allow for an easier setup of your local dev environment. It includes all the required dependencies to execute the code and is the recommended way of testing this sample. For more information, please refer to <https://code.visualstudio.com/docs/devcontainers/containers>.
 
-## Prerequisites
+### Prerequisites
 
 - A *source* Azure Data Share account
 - A *source* Azure Storage Data Lake account (Gen2)
@@ -75,7 +78,7 @@ The `infra` folder includes bash and powershell scripts to setup these 4 assets 
 > - [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/) is required to execute these scripts.
 > - Datashare commands in Azure CLI are still in preview at the time of this writing so you may be prompted to install the extension when executing this script
 
-### Bash
+#### Bash
 
 ```bash
 # login
@@ -86,7 +89,7 @@ az account set -s <SUBSCRIPTION_ID>
 ./infra/bash_setup_infra.sh <suffix>
 ```
 
-### Powershell
+#### Powershell
 
 ```powershell
 # login
@@ -97,7 +100,7 @@ az account set -s <SUBSCRIPTION_ID>
 ./infra/ps_setup_infra.ps1 <suffix>
 ```
 
-## Creating the service principal
+### Creating the service principal
 
 To automate the acceptance of the invitation, a service principal must be created in the **destination** Azure AD tenant.
 
@@ -125,15 +128,22 @@ Additionally, we need the **objectId** of the service principal, which can be ob
 az ad sp list --display-name <insert_sp_name> --query []."id" -o tsv
 ```
 
-These values will be referenced in the scripts through environment variables:
+These values will be used by the scripts through environment variables:
 
-- AZURE_CLIENT_ID: appId
-- AZURE_CLIENT_SECRET: password
-- AZURE_TENANT_ID: tenant
+- `source.py` will send the invitation to our service principal using the following environment variables: 
+  - `DESTINATION_OBJECT_ID`: objectId
+  - `DESTINATION_TENANT_ID`: tenant
 
-The objectId will be used in the `source.py` script as the target of the invitation. You will need to add the object_id
+* `dest.py` will execute with the service principal identity so it can accept the invitation. This is accomplished by defining the following environment variables:
+  - `AZURE_CLIENT_ID`: appId
+  - `AZURE_CLIENT_SECRET`: password
+  - `AZURE_TENANT_ID`: tenant
 
-## Role Assignments
+The scripts are prepared to read `.env` files that include these values. Detailed instructions on how to create these files can be found further down.
+
+### Role Assignments
+
+> Note: If you used the *infra* scripts in this repo to create the resources, the role assignements have been setup automatically.
 
 - The **source** data share MSI must have the **Storage Blob Data Reader** role in the source storage account
 
@@ -142,13 +152,13 @@ The objectId will be used in the `source.py` script as the target of the invitat
 
 - The **destination** data share MSI must have the **Storage Blob Data Contributor** role in the destination storage account.
 
-If you used the *infra* scripts in this repo to create the resources, the role assignements have been setup automatically.
+## Running the sample
 
-## Sharing data
+### Sharing data
 
 First we need to create the share, select the data we want to share and send an invitation. Those tasks are all automated in the `python\source.py` script.
 
-### Source script configuration
+#### Source script configuration
 
 In the `python` folder, add a `source.env` file with the following content and update the settings to match your configuration. These should point to the **source** storage and data share accounts.
 
@@ -173,7 +183,7 @@ DESTINATION_OBJECT_ID=<destination_object_id>
 
 These values are used in the `python/source.py` script.
 
-### Source script authentication
+#### Source script authentication
 
 The *source* script uses the DefaultAzureCredential class for authenticating on Azure. It uses one of several authentication mechanisms:
 
@@ -208,12 +218,14 @@ AZURE_TENANT_ID=tenant_id
 
 The script is prepared to read this file if it exists and will default to using service principal credentials if these values are included.
 
-### Running the source script
+#### Running the source script
 
 Execute the following commands:
 
 ```bash
 cd python
+
+# not required if running in the dev container
 pip install -r requirements.txt
 
 # if using az cli credentials
@@ -238,11 +250,11 @@ Finally, an invitation should exist for the service principal:
 
 ![invitation](./media/invitation.png)
 
-## Receiving data
+### Receiving data
 
 Now, we need to accept the sent invitation, map the incoming data to the destination storage account and setup the schedule. Those tasks are automated in the `python\dest.py` script.
 
-### Destination script configuration
+#### Destination script configuration
 
 In the `python` folder, add a `dest.env` file with the following content and update the settings to match your configuration. These should point to the *destination* storage and data share accounts.
 
@@ -265,7 +277,7 @@ AZURE_TENANT_ID=<service_principal_tenant>
 
 > Note: while in the source.env file we used the **object_id** of the service principal as the target of the invitation, here we use the **app_id** for authentication purposes.
 
-### Destination script authentication
+#### Destination script authentication
 
 To automate the acceptance of the invitation sent to the service principal, you must run the `dest.py` script under that identity. The `dest.env` file must include the AZURE_CLIENT_ID, AZURE_CLIENT_SECRET and AZURE_TENANT_ID values.
 
@@ -302,12 +314,14 @@ az account set -s <SUBSCRIPTION_ID>
 ./infra/ps_setup_sp_permissions.ps1 <object_id_of_service_principal>
 ```
 
-### Running the destination script
+#### Running the destination script
 
 Execute the following commands:
 
 ```bash
 cd python
+
+# not required if running in the dev container
 pip install -r requirements.txt
 
 python dest.py
@@ -327,7 +341,7 @@ Finally, you can see the scheduling setup for the incoming data share:
 
 ![trigger](./media/trigger.png)
 
-## Triggering the scan
+### Triggering the scan
 
 You can now wait for the scheduled time on the data share subscription or force a snapshot sync in the destination data share account:
 
@@ -335,7 +349,7 @@ You can now wait for the scheduled time on the data share subscription or force 
 
 Soon you will see the Readme.md file in the *destination* storage account, inside the mapped container.
 
-## Using an Azure Function
+### Using the Azure Function
 
 We can take the destination script and code it as an Azure Function with a timer trigger. This way, we have a reliable way to automate the process of accepting invitations.
 
@@ -362,12 +376,12 @@ The `azure_function` folder includes the code required. To execute the code loca
 
 > Note: update these settings to match the values created for `source.env` pointing at the destination storage and data share accounts.
 
-### Azure Function requirements
+#### Azure Function requirements
 
 - [Azure Function Core Tools](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=v4%2Cwindows%2Ccsharp%2Cportal%2Cbash) must be installed
 - [Azurite extension](https://marketplace.visualstudio.com/items?itemName=Azurite.azurite) is required for local debugging - alternatively, the AzureWebJobsStorage must be configured to use a real Azure Storage account
 
-### F5 experience
+#### F5 experience
 
 The `.vscode/launch.json` includes the required configuration to debug the Azure Function. Make sure the *Debug Azure Function* configuration is selected on the *Run and Debug* (Ctrl+Shift+D) options.
 
@@ -377,7 +391,7 @@ The function will go through the same steps as the `dest.py` script detailed abo
 
 > Note: the function will quickly exit if no invitations are found. You can use the `source.py` file on the `python` folder to setup an invitation before running the function to test the behavior.
 
-### Azure function authentication
+#### Azure function authentication
 
 Note that the function is also using the service principal created before. This will allow the function to accept the invitation but also to authenticate against the Data Share service and the destination storage account to setup the share subscription.
 
@@ -404,3 +418,11 @@ However, a good option might be to use Azure Managed Identities instead once the
 
 - Finally, ensure the managed identity is given the right permissions over the storage account and data share resources.
 - Remember that permissions can be granted by using the `bash_setup_sp_permissions.sh` or `ps_setup_sp_permissions.sh` script in the `infra` folder.
+
+## Removing the sample assets
+
+If you used the scripts included in the `infra` folder to setup the infrastructure, you can simply delete the created resource group `data-share-automation` to clean up all the assets and avoid additional costs.
+
+```bash
+az group delete --resource-group data-share-automation
+```
