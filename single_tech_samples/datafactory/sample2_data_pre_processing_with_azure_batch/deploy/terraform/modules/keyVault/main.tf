@@ -9,7 +9,7 @@ resource "random_string" "kv_suffix" {
 data "azurerm_client_config" "current" {}
 
 resource "azurerm_key_vault" "kv" {
-  name                = "${var.key_vault_name}${random_string.kv_suffix.id}"
+  name                = "${var.key_vault_name}${var.tags.environment}${random_string.kv_suffix.id}"
   resource_group_name = var.resource_group_name
   location            = var.location
   tenant_id           = data.azurerm_client_config.current.tenant_id
@@ -20,20 +20,5 @@ resource "azurerm_key_vault" "kv" {
     virtual_network_subnet_ids = [var.virtual_network_subnet_id]
     default_action             = "Deny"
     bypass                     = "AzureServices"
-  }
-}
-
-resource "azurerm_private_endpoint" "kv-private-endpoint" {
-  name                = "${var.key_vault_name}-private-endpoint"
-  resource_group_name = var.resource_group_name
-  location            = var.location
-  tags                = var.tags
-  subnet_id           = var.virtual_network_subnet_id
-
-  private_service_connection {
-    name                           = "${var.key_vault_name}-private-service-connection"
-    private_connection_resource_id = azurerm_key_vault.kv.id
-    subresource_names              = ["vault"]
-    is_manual_connection           = false
   }
 }

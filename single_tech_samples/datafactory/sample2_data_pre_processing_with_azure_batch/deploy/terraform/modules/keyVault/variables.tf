@@ -1,17 +1,11 @@
 variable "resource_group_name" {
-  description = "Resource Group name to host keyvault"
+  description = "Resource Group name"
   type        = string
 }
 
 variable "location" {
-  description = "key vault location"
+  description = "Loaction where the resources are to be deployed"
   type        = string
-}
-
-variable "keyvault_sku_name" {
-  description = "keyvault sku - potential values Standard and Premium"
-  type        = string
-  default     = "standard"
 }
 
 variable "kv_sku_name" {
@@ -23,6 +17,7 @@ variable "kv_sku_name" {
 variable "key_vault_name" {
   description = "Key vault name"
   type        = string
+  default     = "keyvault"
 }
 
 variable "virtual_network_subnet_id" {

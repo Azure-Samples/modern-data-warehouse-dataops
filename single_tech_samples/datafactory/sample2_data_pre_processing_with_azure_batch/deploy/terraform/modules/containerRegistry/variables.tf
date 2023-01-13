@@ -11,6 +11,7 @@ variable "location" {
 variable "acr_name" {
   description = "Name of the Azure Container Registry"
   type        = string
+  default     = "containerregistry"
 }
 
 variable "batch_uami_id" {

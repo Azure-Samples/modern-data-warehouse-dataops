@@ -17,7 +17,7 @@ resource "random_string" "storage_suffix" {
   special = false
 }
 
-resource "azurerm_storage_account" "storage_account" {
+resource "azurerm_storage_account" "adls" {
   name                     = "${var.data_lake_store_name}${var.tags.environment}${random_string.storage_suffix.id}"
   resource_group_name      = var.resource_group_name
   location                 = var.location
@@ -54,30 +54,14 @@ resource "azurerm_resource_group_template_deployment" "storage-containers" {
   deployment_mode     = "Incremental"
 
   depends_on = [
-    azurerm_storage_account.storage_account
+    azurerm_storage_account.adls
   ]
 
   parameters_content = jsonencode({
     "location"             = { value = var.location }
-    "storageAccountName"   = { value = azurerm_storage_account.storage_account.name }
+    "storageAccountName"   = { value = azurerm_storage_account.adls.name }
     "defaultContainerName" = { value = var.container_name }
   })
 
   template_content = file("${path.module}/storage-container.json")
-}
-
-resource "azurerm_private_endpoint" "storage-private-endpoint" {
-  name                = "${var.data_lake_store_name}-private-endpoint"
-  resource_group_name = var.resource_group_name
-  location            = var.location
-  tags                = var.tags
-
-  subnet_id = var.virtual_network_subnet_id
-
-  private_service_connection {
-    name                           = "${var.data_lake_store_name}-private-service-connection"
-    private_connection_resource_id = azurerm_storage_account.storage_account.id
-    subresource_names              = ["blob"]
-    is_manual_connection           = var.is_manual_connection
-  }
 }

@@ -4,13 +4,14 @@ variable "resource_group_name" {
 }
 
 variable "location" {
-  description = "location of the storage account"
+  description = "Loaction where the resources are to be deployed"
   type        = string
 }
 
 variable "storage_account_name" {
   description = "Storage account names and containers"
   type        = string
+  default     = "batchstore"
 }
 
 variable "account_replication_type" {

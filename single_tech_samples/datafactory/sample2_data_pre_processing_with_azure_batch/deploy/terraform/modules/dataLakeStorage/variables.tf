@@ -4,18 +4,20 @@ variable "resource_group_name" {
 }
 
 variable "location" {
-  description = "location of the storage account"
+  description = "Loaction where the resources are to be deployed"
   type        = string
 }
 
 variable "data_lake_store_name" {
   description = "Name of the storage account"
   type        = string
+  default     = "datalakestore"
 }
 
 variable "container_name" {
   description = "Name of the storage container"
   type        = string
+  default     = "data"
 }
 
 variable "account_replication_type" {

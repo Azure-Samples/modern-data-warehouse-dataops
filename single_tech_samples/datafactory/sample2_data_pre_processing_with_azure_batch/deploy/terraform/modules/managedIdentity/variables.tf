@@ -1,21 +1,20 @@
 variable "resource_group_name" {
   description = "(Required) Specifies the name of the resource group."
   type        = string
-  default     = "avops-sample"
 }
 
 variable "location" {
-  description = "(Required) Specifies the location where the AKS cluster will be deployed."
+  description = "Loaction where the resources are to be deployed"
   type        = string
-  default     = "Central India"
 }
 
 variable "tags" {
-  description = "(Optional) Specifies the tags of the bastion host"
+  description = "(Optional) Specifies the tags of the resource"
   default     = {}
 }
 
 variable "name_suffix" {
   description = "Suffix of Managed Identity name"
   type        = string
+  default     = "batch"
 }

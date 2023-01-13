@@ -4,7 +4,7 @@ variable "resource_group_name" {
 }
 
 variable "location" {
-  description = "key vault location"
+  description = "Loaction where the resources are to be deployed"
   type        = string
 }
 
@@ -16,6 +16,7 @@ variable "tags" {
 variable "batch_account_name" {
   description = "Name of the Azure Batch Account"
   type        = string
+  default = "batchaccount"
 }
 
 variable "adls_account_name" {

@@ -7,8 +7,9 @@ resource "random_string" "batch_account_suffix" {
   upper   = false
   special = false
 }
+
 resource "azurerm_batch_account" "batch_account" {
-  name                                = "${var.batch_account_name}${random_string.batch_account_suffix.id}"
+  name                                = "${var.batch_account_name}${var.tags.environment}${random_string.batch_account_suffix.id}"
   resource_group_name                 = var.resource_group_name
   location                            = var.location
   pool_allocation_mode                = var.pool_allocation_mode
@@ -22,7 +23,7 @@ resource "azurerm_batch_account" "batch_account" {
 }
 
 resource "azurerm_public_ip" "orch_pool_ip" {
-  name                = "${var.resource_group_name}-${var.orch_pool_name}-ip"
+  name                = "${var.orch_pool_name}-ip"
   resource_group_name = var.resource_group_name
   location            = var.location
   allocation_method   = "Static"
@@ -35,7 +36,7 @@ resource "azurerm_batch_pool" "orch_pool" {
   depends_on = [
     azurerm_batch_account.batch_account
   ]
-  name                = "${var.resource_group_name}-${var.orch_pool_name}"
+  name                = var.orch_pool_name
   resource_group_name = var.resource_group_name
   account_name        = azurerm_batch_account.batch_account.name
   display_name        = var.orch_pool_name
@@ -61,7 +62,6 @@ resource "azurerm_batch_pool" "orch_pool" {
     common_environment_properties = {
       storage_account_name        = var.adls_account_name
       container_name              = var.container_name
-      env                         = var.tags.environment
       BATCH_INSIGHTS_DOWNLOAD_URL = "https://github.com/Azure/batch-insights/releases/download/v1.3.0/batch-insights"
       AZCOPY_CONCURRENCY_VALUE    = "AUTO"
     }
@@ -97,7 +97,7 @@ resource "azurerm_batch_pool" "orch_pool" {
 }
 
 resource "azurerm_public_ip" "exec_pool_ip" {
-  name                = "${var.resource_group_name}-${var.exec_pool_name}-ip"
+  name                = "${var.exec_pool_name}-ip"
   resource_group_name = var.resource_group_name
   location            = var.location
   allocation_method   = "Static"
@@ -110,7 +110,7 @@ resource "azurerm_batch_pool" "exec_pool" {
   depends_on = [
     azurerm_batch_account.batch_account
   ]
-  name                = "${var.resource_group_name}-${var.exec_pool_name}"
+  name                = "${var.exec_pool_name}"
   resource_group_name = var.resource_group_name
   account_name        = azurerm_batch_account.batch_account.name
   display_name        = var.exec_pool_name
@@ -144,7 +144,6 @@ resource "azurerm_batch_pool" "exec_pool" {
     common_environment_properties = {
       storage_account_name        = var.adls_account_name
       container_name              = var.container_name
-      env                         = var.tags.environment
       BATCH_INSIGHTS_DOWNLOAD_URL = "https://github.com/Azure/batch-insights/releases/download/v1.3.0/batch-insights"
       AZCOPY_CONCURRENCY_VALUE    = "AUTO"
     }

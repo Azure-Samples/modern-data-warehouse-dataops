@@ -3,7 +3,7 @@ resource "azurerm_user_assigned_identity" "managed_identity" {
   location            = var.location
   tags                = var.tags
 
-  name = "${var.resource_group_name}-${var.name_suffix}"
+  name = "${var.name_suffix}-managed-identity"
 
   lifecycle {
     ignore_changes = [

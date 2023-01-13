@@ -1,6 +1,7 @@
 variable "adf_name" {
   description = "Name of the Azure Data Factory"
   type        = string
+  default = "datafactory"
 }
 
 variable "resource_group_name" {
