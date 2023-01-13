@@ -327,7 +327,7 @@ pip install -r requirements.txt
 python dest.py
 ```
 
-After the invitation is accepted, the script can't be run again. If you need to re-run it, please create a new invitation using the `dest.py` python script.
+After the invitation is accepted, the script can't be run again. If you need to re-run it, please create a new invitation using the `source.py` python script.
 
 After the script executes you should see a subscription setup on the Received Shares on the *destination* azure data share account:
 
