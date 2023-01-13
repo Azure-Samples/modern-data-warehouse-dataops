@@ -89,7 +89,7 @@ The following are the prerequisites for deploying this sample:
 2. [AZ CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli)
 
 ### 2.2. Setup and deployment
-1. Refer [this](single_tech_samples\datafactory\sample2_data_pre_processing_with_azure_batch\deploy\terraform\README.md) documentaion for steps to setup a new environment.
+1. Refer [this](./deploy/terraform/README.md) documentaion for steps to setup a new environment.
 
 ### 2.3. Deployment validation and Execution
 
