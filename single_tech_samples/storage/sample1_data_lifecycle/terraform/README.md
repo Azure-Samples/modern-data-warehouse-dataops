@@ -28,6 +28,7 @@ The solution is flexible,extensible and scalable to accommodate any number of st
 The following list captures the scope of this sample:
 
 The following items will be provisioned as a part of this sample setup:
+
    1. Azure Storage Accounts.
    2. Storage Containers.
    3. Data lifecycle rules.
