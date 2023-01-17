@@ -33,3 +33,7 @@ variable "key_vault_id" {
 variable "tenant_id" {
   description = "tenant id"
 }
+
+variable "object_id" {
+  description = "object id"
+}

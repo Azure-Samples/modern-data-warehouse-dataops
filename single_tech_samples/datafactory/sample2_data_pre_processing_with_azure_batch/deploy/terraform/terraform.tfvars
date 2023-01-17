@@ -1,4 +1,4 @@
-resource_group_name = "avops-sample"
+resource_group_name = "dataops-sample"
 location            = "centralindia"
 tags = {
   environment = "dev",

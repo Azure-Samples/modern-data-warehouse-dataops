@@ -147,4 +147,15 @@ module "role_assignments" {
   key_vault_id             = module.key_vault.key_vault_id
   acr_id                   = module.container_registry.acr_id
   tenant_id                = module.key_vault.tenant_id
+  object_id                = module.key_vault.object_id
+}
+
+module "kv_secrets" {
+  depends_on = [
+    module.role_assignments
+  ]
+  source                   = "./modules/kvSecerets"
+  key_vault_id             = module.key_vault.key_vault_id
+  batch_key_secret         = module.azure_batch.batch_account_primary_access_key
+  batch_storage_key_secret = module.batch_storage_account.storage_account_primary_access_key
 }

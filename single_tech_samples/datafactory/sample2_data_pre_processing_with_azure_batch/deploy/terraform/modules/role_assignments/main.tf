@@ -1,7 +1,8 @@
 locals {
   kv_access_policies = [
     { object_id = var.batch_uami_principal_id, key_permissions = [], secret_permissions = ["Get", "List"], certificate_permissions = [] },
-    { object_id = var.adf_sami_principal_id, key_permissions = [], secret_permissions = ["Get", "List"], certificate_permissions = [] }
+    { object_id = var.adf_sami_principal_id, key_permissions = [], secret_permissions = ["Get", "List"], certificate_permissions = [] },
+    { object_id = var.object_id, key_permissions = [], secret_permissions = ["Get", "List", "Delete", "Recover", "Backup", "Restore", "Set"], certificate_permissions = [] }
   ]
 }
 

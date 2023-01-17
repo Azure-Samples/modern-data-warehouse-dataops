@@ -1,4 +1,3 @@
-
 data "azurerm_client_config" "current" {}
 
 resource "azurerm_key_vault" "kv" {
@@ -11,7 +10,7 @@ resource "azurerm_key_vault" "kv" {
 
   network_acls {
     virtual_network_subnet_ids = [var.virtual_network_subnet_id]
-    default_action             = "Deny"
+    default_action             = "Allow"
     bypass                     = "AzureServices"
   }
 }
