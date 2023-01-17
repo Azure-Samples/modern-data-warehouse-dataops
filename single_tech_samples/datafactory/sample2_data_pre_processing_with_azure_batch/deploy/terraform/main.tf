@@ -150,6 +150,10 @@ module "role_assignments" {
   object_id                = module.key_vault.object_id
 }
 
+# ------------------------------------------------------------------------------------------------------
+# Deploy key vault secrets
+# ------------------------------------------------------------------------------------------------------
+
 module "kv_secrets" {
   depends_on = [
     module.role_assignments
