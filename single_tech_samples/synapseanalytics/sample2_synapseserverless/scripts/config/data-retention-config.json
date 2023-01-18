@@ -1,0 +1,14 @@
+{
+    "datalakeProperties" : [
+        {
+            "year": "2019",
+            "month": "10",
+            "retention": "x"
+        },
+        {
+            "year": "2019",
+            "month": "09",
+            "retention": "y"
+        }
+    ]
+}

@@ -77,6 +77,23 @@ if [[ -z $arm_output ]]; then
     exit 1
 fi
 
+
+##########################################
+# Upload Data Retention Configuration File
+
+# Retrive account and key
+azure_storage_account=$(echo "$arm_output" | jq -r '.properties.outputs.storage_account_name.value')
+azure_storage_key=$(az storage account keys list \
+    --account-name "$azure_storage_account" \
+    --resource-group "$resource_group_name" \
+    --output json | jq -r '.[0].value')
+
+echo "Uploading Data Retention config file within the file system."
+# Upload Configuration file
+az storage blob upload --container-name 'config' --account-name "$azure_storage_account" --account-key "$azure_storage_key" \
+    --file scripts/config/data-retention-config.json --name "data-retention/config.json" --overwrite
+
+
 ####################
 # SYNAPSE ANALYTICS
 
