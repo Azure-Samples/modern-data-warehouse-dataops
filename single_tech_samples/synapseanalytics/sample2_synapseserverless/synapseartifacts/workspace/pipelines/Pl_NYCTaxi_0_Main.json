@@ -3,11 +3,11 @@
     "properties": {
         "activities": [
             {
-                "name": "ForEachYear",
+                "name": "ForEachProperty",
                 "type": "ForEach",
                 "dependsOn": [
                     {
-                        "activity": "Execute Pl_NYCTaxi_1_Setup",
+                        "activity": "Read Configuration File",
                         "dependencyConditions": [
                             "Succeeded"
                         ]
@@ -16,30 +16,148 @@
                 "userProperties": [],
                 "typeProperties": {
                     "items": {
-                        "value": "@variables('year')",
+                        "value": "@activity('Read Configuration File').output.value[0].datalakeProperties",
                         "type": "Expression"
                     },
                     "activities": [
                         {
-                            "name": "Execute Pl_NYCTaxi_2_CreateServerlessView",
-                            "type": "ExecutePipeline",
+                            "name": "If New Or Updated",
+                            "type": "IfCondition",
                             "dependsOn": [],
                             "userProperties": [],
                             "typeProperties": {
-                                "pipeline": {
-                                    "referenceName": "Pl_NYCTaxi_2_CreateServerlessView",
-                                    "type": "PipelineReference"
+                                "expression": {
+                                    "value": "@or(if(equals(item().lastUpdatedDataLake,''),true,false),if(greater(div(sub(ticks(item().lastUpdatedDataLake),ticks(item().lastUpdatedSourceSystem)),36000000000),2),true,false))",
+                                    "type": "Expression"
                                 },
-                                "waitOnCompletion": true,
-                                "parameters": {
-                                    "sourcefilename": {
-                                        "value": "@concat(item(),'-','10')",
-                                        "type": "Expression"
+                                "ifTrueActivities": [
+                                    {
+                                        "name": "Execute Pl_NYCTaxi_2_IngestData",
+                                        "type": "ExecutePipeline",
+                                        "dependsOn": [],
+                                        "userProperties": [],
+                                        "typeProperties": {
+                                            "pipeline": {
+                                                "referenceName": "Pl_NYCTaxi_2_IngestData",
+                                                "type": "PipelineReference"
+                                            },
+                                            "waitOnCompletion": true,
+                                            "parameters": {
+                                                "sourcefilename": {
+                                                    "value": "@concat('yellow_tripdata_',item().year,'-',item().month,'.parquet')",
+                                                    "type": "Expression"
+                                                },
+                                                "dynamicmonth": {
+                                                    "value": "@item().month",
+                                                    "type": "Expression"
+                                                },
+                                                "dynamicyear": {
+                                                    "value": "@item().year",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "CreateServerlessDynamicView",
+                                        "type": "SqlServerStoredProcedure",
+                                        "dependsOn": [
+                                            {
+                                                "activity": "Execute Pl_NYCTaxi_2_IngestData",
+                                                "dependencyConditions": [
+                                                    "Succeeded"
+                                                ]
+                                            }
+                                        ],
+                                        "policy": {
+                                            "timeout": "0.12:00:00",
+                                            "retry": 0,
+                                            "retryIntervalInSeconds": 30,
+                                            "secureOutput": false,
+                                            "secureInput": false
+                                        },
+                                        "userProperties": [],
+                                        "typeProperties": {
+                                            "storedProcedureName": "[dbo].[CreateDynamicSQLServerlessView]",
+                                            "storedProcedureParameters": {
+                                                "viewName": {
+                                                    "value": {
+                                                        "value": "@concat('VW_', item().year, item().month)",
+                                                        "type": "Expression"
+                                                    },
+                                                    "type": "String"
+                                                },
+                                                "deltaTableName": {
+                                                    "value": {
+                                                        "value": "@concat(item().year,'/',item().month)",
+                                                        "type": "Expression"
+                                                    },
+                                                    "type": "String"
+                                                },
+                                                "externalDataSourceName": {
+                                                    "value": "ext_ds_datalake",
+                                                    "type": "String"
+                                                },
+                                                "viewAliasName": {
+                                                    "value": {
+                                                        "value": "@concat('VIEW_',item().year, item().month)",
+                                                        "type": "Expression"
+                                                    },
+                                                    "type": "String"
+                                                },
+                                                "format": {
+                                                    "value": "delta",
+                                                    "type": "String"
+                                                }
+                                            }
+                                        },
+                                        "linkedServiceName": {
+                                            "referenceName": "Ls_NYCTaxi_Synapse_Serverless_db",
+                                            "type": "LinkedServiceReference"
+                                        }
                                     }
-                                }
+                                ]
                             }
                         }
                     ]
+                }
+            },
+            {
+                "name": "Read Configuration File",
+                "type": "Lookup",
+                "dependsOn": [
+                    {
+                        "activity": "Execute Pl_NYCTaxi_1_Setup",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "JsonSource",
+                        "storeSettings": {
+                            "type": "AzureBlobFSReadSettings",
+                            "recursive": true,
+                            "enablePartitionDiscovery": false
+                        },
+                        "formatSettings": {
+                            "type": "JsonReadSettings"
+                        }
+                    },
+                    "dataset": {
+                        "referenceName": "Ds_NYCTaxi_Json_Config",
+                        "type": "DatasetReference"
+                    },
+                    "firstRowOnly": false
                 }
             },
             {
@@ -57,15 +175,18 @@
             }
         ],
         "variables": {
+            "testvar": {
+                "type": "String"
+            },
             "year": {
-                "type": "Array",
-                "defaultValue": [
-                    "2019",
-                    "2020",
-                    "2021"
-                ]
+                "type": "String"
+            },
+            "lastUpdatedDataLake": {
+                "type": "String"
             }
         },
-        "annotations": []
-    }
+        "annotations": [],
+        "lastPublishTime": "2023-01-18T09:58:06Z"
+    },
+    "type": "Microsoft.Synapse/workspaces/pipelines"
 }

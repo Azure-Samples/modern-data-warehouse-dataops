@@ -79,7 +79,7 @@ createPipeline () {
             tmp=$(mktemp)
             jq --arg a "${sqlScript}" '.properties.activities[1].typeProperties.scripts[0].text = $a' ./synapseartifacts/workspace/pipelines/"${name}".json > "$tmp" && mv "$tmp" ./synapseartifacts/workspace/pipelines/"${name}".json
             ;;
-        "Pl_NYCTaxi_2_CreateServerlessView")
+        "Pl_NYCTaxi_2_IngestData")
             # Replace spark pool name based on deployment info
             tmp=$(mktemp)
             jq --arg a "${PROJECT_NAME}st1${DEPLOYMENT_ID}" '.properties.activities[1].typeProperties.parameters.stgAccountName.value = $a' ./synapseartifacts/workspace/pipelines/"${name}".json > "$tmp" && mv "$tmp" ./synapseartifacts/workspace/pipelines/"${name}".json
@@ -124,10 +124,12 @@ createLinkedService "Ls_NYCTaxi_HTTP" "https://d37ci6vzurychx.cloudfront.net/tri
 createLinkedService "Ls_NYCTaxi_ADLS2" "https://${PROJECT_NAME}st1${DEPLOYMENT_ID}.dfs.core.windows.net/"
 createLinkedService "Ls_NYCTaxi_Synapse_Serverless_master" "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=${SYNAPSE_WORKSPACE_NAME}-ondemand.sql.azuresynapse.net;Initial Catalog=master"
 createLinkedService "Ls_NYCTaxi_Synapse_Serverless_db" "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=${SYNAPSE_WORKSPACE_NAME}-ondemand.sql.azuresynapse.net;Initial Catalog=db_serverless"
+createLinkedService "Ls_NYCTaxi_Json_Config" "https://${PROJECT_NAME}st1${DEPLOYMENT_ID}.dfs.core.windows.net/"
 
 # Deploy Datasets
 createDataset "Ds_NYCTaxi_HTTP" 
 createDataset "Ds_NYCTaxi_ADLS2"
+createDataset "Ds_NYCTaxi_Json_Config"
 
 # Deploy all Notebooks
 # This line allows the spark pool to be available to attach to the notebooks
@@ -138,7 +140,7 @@ createNotebook "Nb_Convert_Parquet_to_Delta"
 createPipeline "Pl_NYCTaxi_1_Setup" "IF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'ext_ds_datalake') BEGIN CREATE EXTERNAL DATA SOURCE [ext_ds_datalake] WITH (LOCATION = N'https://${PROJECT_NAME}st1${DEPLOYMENT_ID}.blob.core.windows.net/datalake') END"
 
 # Deploy main pipeline that transforms parquet to delta and created dynamic views on top of the delta structure
-createPipeline "Pl_NYCTaxi_2_CreateServerlessView" "${BIG_DATAPOOL_NAME}"
+createPipeline "Pl_NYCTaxi_2_IngestData" "${BIG_DATAPOOL_NAME}"
 
 # Deploy main pipeline that calls the setup and preparation pipelines
 createPipeline "Pl_NYCTaxi_0_Main" ""
