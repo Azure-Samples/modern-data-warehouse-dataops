@@ -1,6 +1,7 @@
-extract.py"""
+"""
 Load environment configurations to Settings class.
 """
+import os
 from functools import lru_cache
 from typing import Optional
 
@@ -15,16 +16,12 @@ class Settings(BaseSettings):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    RUN_ENVIRONMENT: str = None
+    RUN_ENVIRONMENT: str = os.getenv("RUN_ENVIRONMENT",default="CLOUD")
     AZ_KEYVAULT_NAME: str = None
-    AZ_BATCH_KEY_NAME: str = None
-    AZ_BATCH_ACCOUNT_URL: str = None
-    AZ_BATCH_ACCOUNT_NAME: str = None
-    AZ_BATCH_EXECUTION_POOL_ID: str = None
-    AZ_BATCH_ORCHESTRATOR_POOL_ID: str = None
-    AZ_BATCH_KEY: str = None
-    RAW_ZONE_CONTAINER: str = None 
-    TASK_RETRY_COUNT: int = 2
+    AZ_BATCH_ACCOUNT_URL: str = os.getenv("AZ_BATCH_ACCOUNT_URL",default=None)
+    AZ_BATCH_ACCOUNT_NAME: str = os.getenv("AZ_BATCH_ACCOUNT_NAME",default=None)
+    AZ_BATCH_EXECUTION_POOL_ID: str = os.getenv("AZ_BATCH_EXECUTION_POOL_ID",default="execution-pool")
+    AZ_BATCH_KEY: str = "azurebatchkey"
 
     class Config:
         """

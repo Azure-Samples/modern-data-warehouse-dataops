@@ -7,21 +7,13 @@ import csv
 import os
 import argparse
 
-def extractSampleBagFile(cargs):  
+def extractSampleBagFile(inputFile, outputPath):  
     #Access the bag file
-    bag = rosbag.Bag(args.rawPath)
-    bagContents = bag.read_messages()
-    print("Started reading The Bag file")
-    outputFolder = args.extractedPath+"/output"
-
-    try:
-        if os.path.exists(outputFolder):
-            pass
-        else:
-            os.mkdir(outputFolder)
-    except Exception as e:
-        raise RuntimeError(f"Error: {e.__class__()}")
-            
+    inputFile = rosbag.Bag(args.rawPath)
+    bagContents = inputFile.read_messages()
+    print(f"Started extracting {inputFile}")
+    
+    outputFolder = createOutputFolder(outputPath)        
     # get list of topics from the bag
     listOfTopics = []
     for topic, msg, t in bagContents:
@@ -36,7 +28,7 @@ def extractSampleBagFile(cargs):
             filewriter = csv.writer(csvfile, delimiter=',')
             firstIteration = True  # allows header row
             # for each instant in time that has data for topicName
-            for subtopic, msg, t in bag.read_messages(topicName):
+            for subtopic, msg, t in inputFile.read_messages(topicName):
                 # parse data from this instant, which is of the form of multiple lines of "Name: value\n"
                 # - put it in the form of a list of 2-element lists
                 msgString = str(msg)
@@ -64,13 +56,25 @@ def extractSampleBagFile(cargs):
     bag.close()
     print("Extraction Successful! \nDone extracting all topics into respective csv files")
 
+createOutputFolder(outputPath:str):
+    outputFolder = f"{outputPath}/output"
+
+    try:
+        if os.path.exists(outputFolder):
+            pass
+        else:
+            os.mkdir(outputFolder)
+    except Exception as e:
+        raise RuntimeError(f"Error: {e.__class__()}")
+    return outputFolder
+
 if __name__ == '__main__':
     try:
         parser = argparse.ArgumentParser()
-        parser.add_argument("--rawPath", "-rPath",
-                            help="Set the file path for the raw bag file")
-        parser.add_argument("--extractedPath", "-ePath",
-                            help="Set the file path for the extracted file")
+        parser.add_argument("--inputFilePath", "-i",
+                            help="Set the file path for the raw bag file.")
+        parser.add_argument("--outputPath", "-o",
+                            help="Set the output path for the extracted contents.")
         args = parser.parse_args()
         extractSampleBagFile(args)
     except Exception as e:

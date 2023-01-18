@@ -9,13 +9,10 @@ import azure.batch.models._batch_service_client_enums as batchEnums
 class Task:
     """This class is for managing batch task operations."""
 
-    settings: Settings
     mountConfig: str
 
-    def __init__(self, settings: Settings = getSettings()) -> None:
-        self.settings = settings
-        # The Raw zone container is simply the directory where we have our raw and extracted folders. It is nfs mounted with below configs
-        self.mountConfig = f"--mount source=/{self.settings.RAW_ZONE_CONTAINER},target=/{self.settings.RAW_ZONE_CONTAINER},type=bind"
+    def __init__(self) -> None:        
+        self.mountConfig = f"--mount source=/data,target=/data,type=bind"
 
     def createTask(
         self,
@@ -39,11 +36,12 @@ class Task:
         Returns:
             _type_: A TaskAddParameter object.
         """
+        
         task = batchModels.TaskAddParameter(
             id=name,
             required_slots=requiredSlots,
             constraints=batchModels.TaskConstraints(
-                max_task_retry_count=self.settings.TASK_RETRY_COUNT
+                max_task_retry_count=2
             ),
             command_line=f"/bin/bash -c '{command}'",
             user_identity=batchModels.UserIdentity(
@@ -57,7 +55,7 @@ class Task:
         if image is not None:
             task.container_settings = batchModels.TaskContainerSettings(
                 image_name=image,
-                container_run_options=f"{self.mountConfig}",
+                container_run_options=self.mountConfig,
             )
         # Add task dependency if the dependent tasks are provided.
         if dependentTaskIds is not None:

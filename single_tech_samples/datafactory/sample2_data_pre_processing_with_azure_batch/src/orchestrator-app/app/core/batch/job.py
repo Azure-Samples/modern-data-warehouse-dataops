@@ -33,6 +33,7 @@ class Job:
             useTaskDependency (bool, optional): A boolean value for dependent tasks in the job
             onTaskFailure (batchEnums.OnTaskFailure, optional): An action to be taken on the running job if task fails.
         """
+        self.log.info(f'Creating job [{jobId}]...')
 
         job = batchModels.JobAddParameter(
             id=jobId,
@@ -40,7 +41,6 @@ class Job:
             on_task_failure= onTaskFailure,
             on_all_tasks_complete=batchEnums.OnAllTasksComplete.terminate_job,
             pool_info=batchModels.PoolInformation(pool_id=poolId))
-        
 
         self.batchServiceClient.job.add(job)
 
@@ -54,6 +54,7 @@ class Job:
         if taskList is None or len(taskList)==0:
             raise RuntimeError("Expected one or more tasks to be added.")
         
+        self.log.info(f'Adding {len(taskList)} tasks to job [{jobId}]...')
         self.batchServiceClient.task.add_collection(jobId, taskList)
     
     def getFailedTasks(self, jobId: str):
@@ -101,20 +102,19 @@ class Job:
         """
         timeout_expiration = datetime.datetime.now() + timeout
 
-       # self.#log.info(f"Monitoring all tasks for 'Completed' state, timeout in {timeout}")
+        self.log.info(f"Monitoring all tasks for 'Completed' state, timeout in {timeout}")
 
         while datetime.datetime.now() < timeout_expiration:
+            print('.',end='')
+            
             # Get all tasks from all jobs
             allIncompleteTasks=[]
             for job in jobs:
                 # Check if job is completed then skip its task monitoring
                 isCompleted = self.checkIfJobisCompleted(job)
-
-
                 if isCompleted:
                     continue
-                tasks = self.batchServiceClient.task.list(job)
- 
+                tasks = self.batchServiceClient.task.list(job)    
                 incompleteTasks = [task for task in tasks if
                                 task.state != batchModels.TaskState.completed]
                 if len(incompleteTasks) > 0:
@@ -123,6 +123,6 @@ class Job:
             if not allIncompleteTasks:
                 return True
             time.sleep(5)
-      
-        raise RuntimeError("\n\nERROR: Tasks did not reach 'Completed' state within "
+
+        raise RuntimeError("ERROR: Tasks did not reach 'Completed' state within "
                           "timeout period of " + str(timeout))

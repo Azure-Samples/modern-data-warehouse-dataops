@@ -13,38 +13,35 @@ class ExtractScheduler:
     job: Job
     task: Task
     taskBuilder: TaskBuilder
-    settings: Settings
 
-    def __init__(self, job: Job, task: Task, settings: Settings) -> None:
+    def __init__(self, job: Job, task: Task) -> None:
         self.job = job
         self.task = task
-        self.settings = settings
-        self.taskBuilder = TaskBuilder(settings=settings, task=task)
+        self.taskBuilder = TaskBuilder(task=task)
 
-    def scheduleExtraction(self, rawPath: str, extractedPath: str, poolId: str) -> list:
-        """This method schedules jobs/tasks for sample rosbag extraction.
+    def scheduleExtraction(self,inputFile:str, outputPath:str, poolId: str) -> list:
+        """This method schedules jobs/tasks for measurement extraction.
 
         Args:
-            rawPath (str): Actual path of the bag file to be extracted
-            extractedPath (str): Destination path of extracted topics of bags in csv format
+            inputFile (str): Input bag file path which is to be extracted
+            outputPath (str): Output path where extracted contents of bag file will be stored.
             poolId (str): Pool Id which will run the extraction jobs
 
         Returns:
-            list: List of jobs created for the extracttion of the bag file. Currently the list has just one job.
-           
+            list: List of jobs created for the given measurement.
         """
         jobs = []
-
+        
         timestamp = time.strftime("%Y%m%d-%H%M%S")
-        jobId = f"Ext_Bag_{timestamp}"  # name of job
+        jobId = f"extraction_job_{timestamp}"
 
         # Create a job that will run the tasks for extracting a bag file.
         self.job.createJob(jobId=jobId, poolId=poolId, useTaskDependency=True)
 
         # Create extraction tasks for the job
         tasks = self.taskBuilder.createExtractionTasks(
-            rawPath=rawPath,
-            extractedPath=extractedPath
+            fileName=inputFile,
+            outputPath=outputPath
         )
 
         # Add the tasks to the job.

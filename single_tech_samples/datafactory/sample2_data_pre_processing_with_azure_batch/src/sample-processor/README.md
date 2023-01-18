@@ -1,5 +1,5 @@
-## Sample Rosbag Processor
-This is a sample image which is buid from ros:noetic base image. It extracts the contents of a given bag file to an output path dircetory. Both the input file path and the output path are provided as parameters.
+## Sample Processor
+This is a sample image which is buid from ros:noetic base image. It extracts the contents of a given bag file to an output path dirctory. Both the input file path and the output path are provided as parameters.
 
 ### Steps To build a docker image
 
