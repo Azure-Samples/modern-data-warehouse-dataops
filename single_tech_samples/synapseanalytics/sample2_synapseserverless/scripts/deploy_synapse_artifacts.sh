@@ -124,12 +124,12 @@ createLinkedService "Ls_NYCTaxi_HTTP" "https://d37ci6vzurychx.cloudfront.net/tri
 createLinkedService "Ls_NYCTaxi_ADLS2" "https://${PROJECT_NAME}st1${DEPLOYMENT_ID}.dfs.core.windows.net/"
 createLinkedService "Ls_NYCTaxi_Synapse_Serverless_master" "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=${SYNAPSE_WORKSPACE_NAME}-ondemand.sql.azuresynapse.net;Initial Catalog=master"
 createLinkedService "Ls_NYCTaxi_Synapse_Serverless_db" "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=${SYNAPSE_WORKSPACE_NAME}-ondemand.sql.azuresynapse.net;Initial Catalog=db_serverless"
-createLinkedService "Ls_NYCTaxi_Json_Config" "https://${PROJECT_NAME}st1${DEPLOYMENT_ID}.dfs.core.windows.net/"
+createLinkedService "Ls_NYCTaxi_Config" "https://${PROJECT_NAME}st1${DEPLOYMENT_ID}.dfs.core.windows.net/"
 
 # Deploy Datasets
 createDataset "Ds_NYCTaxi_HTTP" 
 createDataset "Ds_NYCTaxi_ADLS2"
-createDataset "Ds_NYCTaxi_Json_Config"
+createDataset "Ds_NYCTaxi_Config"
 
 # Deploy all Notebooks
 # This line allows the spark pool to be available to attach to the notebooks

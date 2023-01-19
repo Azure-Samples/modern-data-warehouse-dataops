@@ -2,7 +2,7 @@
     "name": "Ds_NYCTaxi_Json_Config",
     "properties": {
         "linkedServiceName": {
-            "referenceName": "Ls_NYCTaxi_Json_Config",
+            "referenceName": "Ls_NYCTaxi_Config",
             "type": "LinkedServiceReference"
         },
         "annotations": [],

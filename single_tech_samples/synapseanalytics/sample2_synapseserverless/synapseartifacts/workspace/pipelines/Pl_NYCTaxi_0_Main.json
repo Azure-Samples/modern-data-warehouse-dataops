@@ -154,7 +154,7 @@
                         }
                     },
                     "dataset": {
-                        "referenceName": "Ds_NYCTaxi_Json_Config",
+                        "referenceName": "Ds_NYCTaxi_Config",
                         "type": "DatasetReference"
                     },
                     "firstRowOnly": false
