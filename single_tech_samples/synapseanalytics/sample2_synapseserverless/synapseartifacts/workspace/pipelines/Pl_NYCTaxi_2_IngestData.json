@@ -5,7 +5,14 @@
       {
         "name": "Copy parquet from url to adls",
         "type": "Copy",
-        "dependsOn": [],
+        "dependsOn": [
+          {
+            "activity": "Delete Previous Versions",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
         "policy": {
           "timeout": "0.12:00:00",
           "retry": 0,
@@ -110,12 +117,12 @@
               "type": "string"
             },
             "stgAccountName": {
-              "value": "dhdst1d7",
+              "value": "ysst1de1",
               "type": "string"
             }
           },
           "sparkPool": {
-            "referenceName": "sysparkpoold7",
+            "referenceName": "sysparkpoolde1",
             "type": "BigDataPoolReference"
           },
           "conf": {
@@ -124,6 +131,41 @@
             "spark.dynamicAllocation.maxExecutors": null
           },
           "numExecutors": null
+        }
+      },
+      {
+        "name": "Delete Previous Versions",
+        "type": "Delete",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "userProperties": [],
+        "typeProperties": {
+          "dataset": {
+            "referenceName": "Ds_NYCTaxi_ADLS2_Folder",
+            "type": "DatasetReference",
+            "parameters": {
+              "year": {
+                "value": "@pipeline().parameters.dynamicyear",
+                "type": "Expression"
+              },
+              "month": {
+                "value": "@pipeline().parameters.dynamicmonth",
+                "type": "Expression"
+              }
+            }
+          },
+          "enableLogging": false,
+          "storeSettings": {
+            "type": "AzureBlobFSReadSettings",
+            "recursive": true,
+            "enablePartitionDiscovery": false
+          }
         }
       }
     ],
@@ -136,7 +178,7 @@
       }
     },
     "annotations": [],
-    "lastPublishTime": "2023-01-18T15:32:19Z"
+    "lastPublishTime": "2023-01-19T12:10:56Z"
   },
   "type": "Microsoft.Synapse/workspaces/pipelines"
 }
