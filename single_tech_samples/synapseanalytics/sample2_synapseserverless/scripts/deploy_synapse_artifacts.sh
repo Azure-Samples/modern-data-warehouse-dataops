@@ -129,6 +129,7 @@ createLinkedService "Ls_NYCTaxi_Config" "https://${PROJECT_NAME}st1${DEPLOYMENT_
 # Deploy Datasets
 createDataset "Ds_NYCTaxi_HTTP" 
 createDataset "Ds_NYCTaxi_ADLS2"
+createDataset "Ds_NYCTaxi_ADLS2_Folder"
 createDataset "Ds_NYCTaxi_Config"
 
 # Deploy all Notebooks
