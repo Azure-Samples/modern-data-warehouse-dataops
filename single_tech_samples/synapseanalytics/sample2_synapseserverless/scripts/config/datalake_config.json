@@ -1,40 +1,58 @@
 {
-    "datalakeProperties": [
+	"datalakeProperties":[
         {
-            "year": "2019",
-            "month": "09",
-            "filename": "yellow_tripdata_2019-09.parquet",
-            "aclPermissions": [
+            "year":"2019",
+            "month":"08",
+            "aclPermissions":[
+
                 {
-                    "type": "read",
-                    "userOrGroup": "aadgr<project_name><deployment_id>"
+                "type":"read",
+                "groups": ["aadgrhddep1"]
                 },
                 {
-                    "type": "execute",
-                    "userOrGroup": "aadgr<project_name><deployment_id>"
+                "type":"execute",
+                "groups": ["aadgrhddep1", "aadgrhddep2"]
                 }
             ],
-            "created": "",
-            "lastUpdated": "",
-            "retention": ""
+            "created":"2019-08-01T00:00:00.0000000Z",
+            "lastUpdatedSourceSystem": "2019-08-01T00:00:00.0000000Z",
+		    "lastUpdatedDatalake": ""
         },
         {
-            "year": "2019",
-            "month": "10",
-            "filename": "yellow_tripdata_2019-10.parquet",
-            "aclPermissions": [
+            "year":"2019",
+            "month":"09",
+            "aclPermissions":[
+
                 {
-                    "type": "read",
-                    "userOrGroup": "aadgr<project_name><deployment_id>"
+                "type":"read",
+                "groups": ["aadgrhddep1"]
                 },
                 {
-                    "type": "execute",
-                    "userOrGroup": "aadgr<project_name><deployment_id>"
+                "type":"execute",
+                "groups": ["aadgrhddep1"]
                 }
             ],
-            "created": "",
-            "lastUpdated": "",
-            "retention": ""
+            "created":"2019-09-01T00:00:00.0000000Z",
+            "lastUpdatedSourceSystem": "2019-09-30T00:00:00.0000000Z",
+		    "lastUpdatedDatalake": ""
+        },
+        {
+            "year":"2019",
+            "month":"10",
+            "aclPermissions":[
+
+                {
+                "type":"read",
+                "groups": ["aadgrhddep1"]
+                },
+                {
+                "type":"execute",
+                "groups": ["aadgrhddep1"]
+                }
+            ],
+            "created":"2019-10-01T00:00:00.0000000Z",
+            "lastUpdatedSourceSystem": "2019-10-30T00:00:00.0000000Z",
+		    "lastUpdatedDatalake": "2019-10-15T00:00:00.0000000Z"
         }
     ]
 }
