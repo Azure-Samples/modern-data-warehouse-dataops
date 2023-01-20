@@ -44,21 +44,29 @@ createLinkedService () {
     echo "Creating Synapse LinkedService: $name"
     tmp=$(mktemp)
 
-    if [ "$name" == "Ls_NYCTaxi_Synapse_Serverless_master" ] || [ "$name" == "Ls_NYCTaxi_Synapse_Serverless_db" ]
-    then  
-        # Replace connection string
-        jq --arg a "${url}" '.properties.typeProperties.connectionString = $a' ./synapseartifacts/workspace/linkedservices/"${name}".json > "$tmp" && mv "$tmp" ./synapseartifacts/workspace/linkedservices/"${name}".json
-    else
-        # Replace url
-        jq --arg a "${url}" '.properties.typeProperties.url = $a' ./synapseartifacts/workspace/linkedservices/"${name}".json > "$tmp" && mv "$tmp" ./synapseartifacts/workspace/linkedservices/"${name}".json
-    fi
-    az synapse linked-service create --file @./synapseartifacts/workspace/linkedservices/"${name}".json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}"
+    case "$name" in
+        "Ls_NYCTaxi_Synapse_Serverless_master" | "Ls_NYCTaxi_Synapse_Serverless_db")
+            # Replace connection string
+            jqfilter=".properties.typeProperties.connectionString = \"${url}\""
+            ;;
+        "Ls_NYCTaxi_KeyVault")
+            # Replace baseurl
+            jqfilter=".properties.typeProperties.baseUrl = \"${url}\""
+            ;;
+        *)
+            jqfilter=".properties.typeProperties.url = \"${url}\""
+            ;;
+    esac
+
+    jq "$jqfilter" ./synapseartifacts/workspace/linkedservices/"${name}".json > "$tmp" && mv "$tmp" ./synapseartifacts/workspace/linkedservices/"${name}".json
+
+    az synapse linked-service create --file @./synapseartifacts/workspace/linkedservices/"${name}".json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" -o none
 }
 
 createDataset () {
     declare name=$1
     echo "Creating Synapse Dataset: $name"
-    az synapse dataset create --file @./synapseartifacts/workspace/datasets/"${name}".json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}"
+    az synapse dataset create --file @./synapseartifacts/workspace/datasets/"${name}".json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" -o none
 }
 createNotebook() {
     declare name=$1
@@ -66,7 +74,7 @@ createNotebook() {
     # Thus, we are resorting to deploying notebooks in .ipynb format.
     # See here: https://github.com/Azure/azure-cli/issues/20037
     echo "Creating Synapse Notebook: $name"
-    az synapse notebook create --file @./synapseartifacts/notebooks/"${name}".ipynb --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spark-pool-name "${BIG_DATAPOOL_NAME}"
+    az synapse notebook create --file @./synapseartifacts/notebooks/"${name}".ipynb --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spark-pool-name "${BIG_DATAPOOL_NAME}" -o none
 }
 createPipeline () {
     declare name=$1
@@ -90,18 +98,18 @@ createPipeline () {
     esac
 
     # Deploy the pipeline
-    az synapse pipeline create --file @./synapseartifacts/workspace/pipelines/"${name}".json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}"
+    az synapse pipeline create --file @./synapseartifacts/workspace/pipelines/"${name}".json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" -o none
 }
 createTrigger () {
     declare name=$1
     echo "Creating Synapse Trigger: $name"
-    az synapse trigger create --file @./synapseartifacts/workspace/triggers/"${name}".json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}"
+    az synapse trigger create --file @./synapseartifacts/workspace/triggers/"${name}".json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" -o none
 }
 
 createSQLScript(){
     declare name=$1
     echo "Creating Synapse SQL Script: $name"
-    az synapse sql-script create --workspace-name $SYNAPSE_WORKSPACE_NAME --name "${name}" --file ./synapseartifacts/workspace/scripts/"$name".sql
+    az synapse sql-script create --workspace-name $SYNAPSE_WORKSPACE_NAME --name "${name}" --file ./synapseartifacts/workspace/scripts/"$name".sql -o none
 }
 
 startTrigger(){
@@ -120,6 +128,9 @@ do
     echo "$provision_state: checking again in 10 seconds..."
 done
 
+# Deploy all Linked Services
+
+createLinkedService "Ls_NYCTaxi_KeyVault" "https://${KEYVAULT_NAME}.vault.azure.net/"
 createLinkedService "Ls_NYCTaxi_HTTP" "https://d37ci6vzurychx.cloudfront.net/trip-data/"
 createLinkedService "Ls_NYCTaxi_ADLS2" "https://${PROJECT_NAME}st1${DEPLOYMENT_ID}.dfs.core.windows.net/"
 createLinkedService "Ls_NYCTaxi_Synapse_Serverless_master" "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=${SYNAPSE_WORKSPACE_NAME}-ondemand.sql.azuresynapse.net;Initial Catalog=master"

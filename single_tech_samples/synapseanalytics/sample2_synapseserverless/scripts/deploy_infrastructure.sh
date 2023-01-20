@@ -54,6 +54,7 @@ echo "Creating resource group: $resource_group_name"
 az group create --name "$resource_group_name" --location "$AZURE_LOCATION"
 
 # By default retrieve signed-in-user
+# The signed-in user will also receive all KeyVault persmissions
 owner_object_id=$(az ad signed-in-user show --output json | jq -r '.id')
 
 # Validate arm template
@@ -61,7 +62,7 @@ echo "Validating deployment"
 arm_output=$(az deployment group validate \
     --resource-group "$resource_group_name" \
     --template-file "./infrastructure/main.bicep" \
-    --parameters project="${PROJECT}" deployment_id="${DEPLOYMENT_ID}" \
+    --parameters project="${PROJECT}" deployment_id="${DEPLOYMENT_ID}" keyvault_owner_object_id="${owner_object_id}"  \
     --output json)
 
 # Deploy arm template
@@ -69,7 +70,7 @@ echo "Deploying resources into $resource_group_name"
 arm_output=$(az deployment group create \
     --resource-group "$resource_group_name" \
     --template-file "./infrastructure/main.bicep" \
-    --parameters project="${PROJECT}" deployment_id="${DEPLOYMENT_ID}" \
+    --parameters project="${PROJECT}" deployment_id="${DEPLOYMENT_ID}" keyvault_owner_object_id="${owner_object_id}" \
     --output json)
 
 if [[ -z $arm_output ]]; then
@@ -92,6 +93,8 @@ echo "Uploading Data Retention config file within the file system."
 # Upload Configuration file
 az storage blob upload --container-name 'config' --account-name "$azure_storage_account" --account-key "$azure_storage_key" \
     --file scripts/config/datalake_config.json --name "datalake_config.json" --overwrite
+kv_name=$(echo "$arm_output" | jq -r '.properties.outputs.keyvault_name.value')
+az keyvault secret set --vault-name "$kv_name" --name "datalakeKey" --value "$azure_storage_key" -o none
 
 
 ####################
@@ -125,7 +128,12 @@ assign_synapse_role_if_not_exists "$synapseworkspace_name" "Synapse Contributor"
 # RBAC - Control Plane
 # Create a AAD Group, if you have permissions to do it (otherwise you will need to request to the AAD admin and comment this line)
 echo "Creating AAD Group:AADGR${PROJECT}${DEPLOYMENT_ID}"
-az ad group create --display-name "AADGR${PROJECT}${DEPLOYMENT_ID}" --mail-nickname "AADGR${PROJECT}${DEPLOYMENT_ID}"
+aad_group_name=AADGR${PROJECT}${DEPLOYMENT_ID}
+aad_group_output=$(az ad group create --display-name "${aad_group_name}" --mail-nickname "${aad_group_name}")
+aad_group_id=$(echo $aad_group_output | jq -r '.id')
+
+echo "Adding the AAD Group id to the KeyVault"
+az keyvault secret set --vault-name "$kv_name" --name "$aad_group_name" --value "$aad_group_id" -o none
 
 #################
 # RBAC - Synapse 
@@ -140,6 +148,7 @@ DEPLOYMENT_ID=$DEPLOYMENT_ID \
 RESOURCE_GROUP_NAME=$resource_group_name \
 SYNAPSE_WORKSPACE_NAME=$synapseworkspace_name \
 BIG_DATAPOOL_NAME=$synapse_sparkpool_name \
+KEYVAULT_NAME=$kv_name \
     bash -c "./scripts/deploy_synapse_artifacts.sh"
 
 
