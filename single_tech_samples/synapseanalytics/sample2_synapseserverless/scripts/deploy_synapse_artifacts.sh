@@ -44,31 +44,23 @@ createLinkedService () {
     echo "Creating Synapse LinkedService: $name"
     tmp=$(mktemp)
 
-    token=""
-
     case "$name" in
-        "Ls_NYCTaxi_Synapse_Serverless_master" |"Ls_NYCTaxi_Synapse_Serverless_db")
+        "Ls_NYCTaxi_Synapse_Serverless_master" | "Ls_NYCTaxi_Synapse_Serverless_db")
             # Replace connection string
-            token="connectionString";;
+            jqfilter=".properties.typeProperties.connectionString = \"${url}\""
+            ;;
         "Ls_NYCTaxi_KeyVault")
             # Replace baseurl
-            token="baseUrl";;
+            jqfilter=".properties.typeProperties.baseUrl = \"${url}\""
+            ;;
         *)
-            token="url";;
+            jqfilter=".properties.typeProperties.url = \"${url}\""
+            ;;
     esac
 
-    # if [ "$name" == "Ls_NYCTaxi_Synapse_Serverless_master" ] || [ "$name" == "Ls_NYCTaxi_Synapse_Serverless_db" ]
-    # then  
-    #     # Replace connection string
-    #     jq --arg a "${url}" --arg b "${token}" '.properties.typeProperties.connectionString = $a' ./synapseartifacts/workspace/linkedservices/"${name}".json > "$tmp" && mv "$tmp" ./synapseartifacts/workspace/linkedservices/"${name}".json
-    # else
-    #     # Replace url
-    #     jq --arg a "${url}" '.properties.typeProperties.url = $a' ./synapseartifacts/workspace/linkedservices/"${name}".json > "$tmp" && mv "$tmp" ./synapseartifacts/workspace/linkedservices/"${name}".json
-    # fi
+    jq "$jqfilter" ./synapseartifacts/workspace/linkedservices/"${name}".json > "$tmp" && mv "$tmp" ./synapseartifacts/workspace/linkedservices/"${name}".json
 
-    jq --arg a "${url}" --arg b "${token}" '.properties.typeProperties.[$b] = $a' ./synapseartifacts/workspace/linkedservices/"${name}".json > "$tmp" && mv "$tmp" ./synapseartifacts/workspace/linkedservices/"${name}".json
-
-    az synapse linked-service create --file @./synapseartifacts/workspace/linkedservices/"${name}".json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}"
+    az synapse linked-service create --file @./synapseartifacts/workspace/linkedservices/"${name}".json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" -o none
 }
 
 createDataset () {
