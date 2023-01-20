@@ -136,10 +136,12 @@ createLinkedService "Ls_NYCTaxi_ADLS2" "https://${PROJECT_NAME}st1${DEPLOYMENT_I
 createLinkedService "Ls_NYCTaxi_Synapse_Serverless_master" "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=${SYNAPSE_WORKSPACE_NAME}-ondemand.sql.azuresynapse.net;Initial Catalog=master"
 createLinkedService "Ls_NYCTaxi_Synapse_Serverless_db" "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=${SYNAPSE_WORKSPACE_NAME}-ondemand.sql.azuresynapse.net;Initial Catalog=db_serverless"
 createLinkedService "Ls_NYCTaxi_Config" "https://${PROJECT_NAME}st1${DEPLOYMENT_ID}.dfs.core.windows.net/"
+createLinkedService "Ls_NYCTaxi_ADLS2_Folder" "https://${PROJECT_NAME}st1${DEPLOYMENT_ID}.dfs.core.windows.net/"
 
 # Deploy Datasets
 createDataset "Ds_NYCTaxi_HTTP" 
 createDataset "Ds_NYCTaxi_ADLS2"
+createDataset "Ds_NYCTaxi_ADLS2_Folder"
 createDataset "Ds_NYCTaxi_Config"
 
 # Deploy all Notebooks
@@ -155,6 +157,8 @@ createPipeline "Pl_NYCTaxi_2_IngestData" "${BIG_DATAPOOL_NAME}"
 
 # Deploy main pipeline that calls the setup and preparation pipelines
 createPipeline "Pl_NYCTaxi_0_Main" ""
+
+#createPipeline "Pl_NYCTaxi_Run_Data_Retention" "${BIG_DATAPOOL_NAME}"
 
 # Deploy trigger
 createTrigger "Tg_NYCTaxi_0_Main"

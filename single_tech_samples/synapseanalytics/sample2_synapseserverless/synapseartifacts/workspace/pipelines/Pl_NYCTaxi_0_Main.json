@@ -27,7 +27,7 @@
                             "userProperties": [],
                             "typeProperties": {
                                 "expression": {
-                                    "value": "@or(if(equals(item().lastUpdatedDataLake,''),true,false),if(greater(div(sub(ticks(item().lastUpdatedDataLake),ticks(item().lastUpdatedSourceSystem)),36000000000),2),true,false))",
+                                    "value": "@or(equals(item().lastUpdatedDatalake,''),greaterOrEquals(item().lastUpdatedSourceSystem,addSeconds(item().lastUpdatedDatalake,-1)))",
                                     "type": "Expression"
                                 },
                                 "ifTrueActivities": [
@@ -43,10 +43,6 @@
                                             },
                                             "waitOnCompletion": true,
                                             "parameters": {
-                                                "sourcefilename": {
-                                                    "value": "@concat('yellow_tripdata_',item().year,'-',item().month,'.parquet')",
-                                                    "type": "Expression"
-                                                },
                                                 "dynamicmonth": {
                                                     "value": "@item().month",
                                                     "type": "Expression"
@@ -186,7 +182,7 @@
             }
         },
         "annotations": [],
-        "lastPublishTime": "2023-01-18T09:58:06Z"
+        "lastPublishTime": "2023-01-19T12:11:06Z"
     },
     "type": "Microsoft.Synapse/workspaces/pipelines"
 }
