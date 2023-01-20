@@ -103,6 +103,7 @@ resource roleAssignmentSynStorage2 'Microsoft.Authorization/roleAssignments@2022
 output synapseWorkspaceName string = synapseWorkspace.name
 output synapseDefaultStorageAccountName string = synStorage.name
 output synapseSparkPoolName string = synapse_spark_sql_pool.name
+output synapseManagedIdentity string = synapseWorkspace.identity.principalId
 
 
 
