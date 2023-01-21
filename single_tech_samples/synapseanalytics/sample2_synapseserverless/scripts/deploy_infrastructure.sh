@@ -89,8 +89,10 @@ azure_storage_key=$(az storage account keys list \
     --resource-group "$resource_group_name" \
     --output json | jq -r '.[0].value')
 
+echo "Generating Data config file using the template"
+cat ./scripts/config/datalake_config_template.json|sed -e "s/<project_name>/${PROJECT}/g" -e "s/<deployment_id>/${DEPLOYMENT_ID}/g" > ./scripts/config/datalake_config.json
+
 echo "Uploading Data Retention config file within the file system."
-# Upload Configuration file
 az storage blob upload --container-name 'config' --account-name "$azure_storage_account" --account-key "$azure_storage_key" \
     --file scripts/config/datalake_config.json --name "datalake_config.json" --overwrite
 kv_name=$(echo "$arm_output" | jq -r '.properties.outputs.keyvault_name.value')
@@ -128,8 +130,8 @@ assign_synapse_role_if_not_exists "$synapseworkspace_name" "Synapse Contributor"
 # RBAC - Control Plane
 # Create a AAD Group, if you have permissions to do it (otherwise you will need to request to the AAD admin and comment this line)
 echo "Creating AAD Group:AADGR${PROJECT}${DEPLOYMENT_ID}"
-aad_group_name=AADGR${PROJECT}${DEPLOYMENT_ID}
-aad_group_output=$(az ad group create --display-name "${aad_group_name}" --mail-nickname "${aad_group_name}")
+aad_group_name="AADGR${PROJECT}${DEPLOYMENT_ID}"
+aad_group_output=$(az ad group create --display-name "${aad_group_name}" --mail-nickname "${aad_group_name}" --output json)
 aad_group_id=$(echo $aad_group_output | jq -r '.id')
 
 echo "Adding the AAD Group id to the KeyVault"
