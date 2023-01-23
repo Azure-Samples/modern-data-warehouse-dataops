@@ -70,10 +70,10 @@ The following are the prerequisites for deploying this sample:
 #### 2.1.1 Software Prerequisites
 
 - [Azure CLI](https://docs.microsoft.com/cli/azure) installed on the local machine
-    - *Installation instructions* can be found [here](https://docs.microsoft.com/cli/azure/install-azure-cli)
+  - *Installation instructions* can be found [here](https://docs.microsoft.com/cli/azure/install-azure-cli)
 - [Terraform](https://www.terraform.io) installed on the local machine
-    - *Installation instructions* can be found [here](https://developer.hashicorp.com/terraform/downloads)
-    - Minimum required version is 1.3.x or later
+  - *Installation instructions* can be found [here](https://developer.hashicorp.com/terraform/downloads)
+  - Minimum required version is 1.3.x or later
 
 ### 2.2. Setup and deployment
 
