@@ -17,7 +17,6 @@
 - [4. Notes](#4-notes)
 - [5. References](#5-references)
 
-
 ## 1. Solution Overview
 
 The purpose of this solution is to demonstrate the creation of Azure storage accounts/containers and configuring the data lifecycle rules at scale using Terraform based IaC templates.
@@ -61,21 +60,20 @@ This section holds the information about usage instructions of this sample.
 
 The following are the prerequisites for deploying this sample:
 
--  [Github account](https://github.com)
+- [Github account](https://github.com)
 - [Azure Account](https://azure.microsoft.com/free/search/?&ef_id=Cj0KCQiAr8bwBRD4ARIsAHa4YyLdFKh7JC0jhbxhwPeNa8tmnhXciOHcYsgPfNB7DEFFGpNLTjdTPbwaAh8bEALw_wcB:G:s&OCID=AID2000051_SEM_O2ShDlJP&MarinID=O2ShDlJP_332092752199_azure%20account_e_c__63148277493_aud-390212648371:kwd-295861291340&lnkd=Google_Azure_Brand&dclid=CKjVuKOP7uYCFVapaAoddSkKcA)
-   - *Permissions needed*:  The ability to create and deploy to an Azure [resource group](https://docs.microsoft.com/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/azure/role-based-access-control/overview) to the service principal over the resource group.
+  - *Permissions needed*:  The ability to create and deploy to an Azure [resource group](https://docs.microsoft.com/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/azure/role-based-access-control/overview) to the service principal over the resource group.
 
-   - Active subscription with the following [resource providers](https://docs.microsoft.com/azure/azure-resource-manager/management/azure-services-resource-providers) enabled:
-
-     - Microsoft.Storage
+  - Active subscription with the following [resource providers](https://docs.microsoft.com/azure/azure-resource-manager/management/azure-services-resource-providers) enabled:
+    - Microsoft.Storage
 
 #### 2.1.1 Software Prerequisites
 
 - [Azure CLI](https://docs.microsoft.com/cli/azure) installed on the local machine
    - *Installation instructions* can be found [here](https://docs.microsoft.com/cli/azure/install-azure-cli)
 - [Terraform](https://www.terraform.io) installed on the local machine
-   - *Installation instructions* can be found [here](https://developer.hashicorp.com/terraform/downloads)
-   - Minimum required version is 1.3.x or later
+  - *Installation instructions* can be found [here](https://developer.hashicorp.com/terraform/downloads)
+  - Minimum required version is 1.3.x or later
 
 ### 2.2. Setup and deployment
 
@@ -94,7 +92,8 @@ The script is configuration driven and based on a variable of type map(map(map))
 - Third level map represents the data life cycle rules under respective container.
 
 Sample variable format is shown below:
-```
+
+```json
 storage_account_container_config = {
     "StorageAccountName1" = {
         "Container1"       = { "LifeCycleAction1" : "NumberOfDays", "LifeCycleAction2" : "NumberOfDays"}
@@ -108,14 +107,15 @@ storage_account_container_config = {
     }
 }
 ```
+
 Configure as many storage accounts, containers and lifecycle rules as needed and run the IAC script provided in this git repo.
 
 Run below commands in the sequence:
 
-```
-$ terraform init
-$ terraform plan
-$ terraform apply
+```bash
+terraform init
+terraform plan
+terraform apply
 ```
 
    > Note: The script would expect that you are logged in to the Azure account using az login command, before you deploy resources to Azure.
@@ -145,9 +145,9 @@ Here are the detail steps on how to execute the sample:
 - Here are the sequence of commands to run from the main directory :
 
    ```
-   $ terraform init
-   $ terraform plan
-   $ terraform apply
+   terraform init
+   terraform plan
+   terraform apply
    ```
 
 After you run the above commands successfully, you should be able to see the following items under your Azure Subscription:
@@ -164,6 +164,7 @@ You can observe the appended random strings to make the storage accounts’ name
 - Azure data lifecycle rules. Sample view is shown below.
 
 ![alt text](../common_assets/images/data_lifecycle_rules.png "Logo Title Text 1")
+
 ### 2.5. Clean-up
 
 Please follow the below steps to clean up your environment :
@@ -173,8 +174,9 @@ The clean-up script can be executed to clean up the resources provisioned in thi
 - Navigate to `single_tech_samples/synapseanalytics/sample1_loading_dynamic_modules/setup`.
 
 - Run terraform destroy command :
-   ```
-   $ terraform destroy
+
+   ```bash
+   terraform destroy
    ```
 
 ## 3. Troubleshooting
@@ -182,19 +184,21 @@ The clean-up script can be executed to clean up the resources provisioned in thi
 ### Error Building AzureRM Client
 
 If you run the terraform plan command, you may run into the following error:
-```
+
+```bash
 Error: building AzureRM Client: obtain subscription() from Azure CLI: parsing json result from the Azure CLI: waiting for the Azure CLI: exit status 1: ERROR: No subscription found. Run 'az account set' to select a subscription.
 with provider["registry.terraform.io/hashicorp/azurerm"],
 on provider.tf line 14, in provider "azurerm":
 14: provider "azurerm" {
+
 ```
 
 This is usually happen when terraform is unable to find Azure Subscription. The core issue behind this is that user is not logged to Azure account.
 
 In order to fix this you must login to Azure using the following command:
 
-```
-$ az login
+```bash
+az login
 ```
 
 ## 4. Notes
