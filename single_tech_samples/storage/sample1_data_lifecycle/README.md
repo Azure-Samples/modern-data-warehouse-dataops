@@ -205,16 +205,16 @@ $ az login
 
 ## 5. References
 
-- https://learn.microsoft.com/azure/storage/blobs/lifecycle-management-overview
-- https://azure.microsoft.com/services/storage/data-lake-storage
-- https://www.terraform.io
-- https://github.com
-- https://azure.microsoft.com/free/search/?&ef_id=Cj0KCQiAr8bwBRD4ARIsAHa4YyLdFKh7JC0jhbxhwPeNa8tmnhXciOHcYsgPfNB7DEFFGpNLTjdTPbwaAh8bEALw_wcB:G:s&OCID=AID2000051_SEM_O2ShDlJP&MarinID=O2ShDlJP_332092752199_azure%20account_e_c__63148277493_aud-390212648371:kwd-295861291340&lnkd=Google_Azure_Brand&dclid=CKjVuKOP7uYCFVapaAoddSkKcA)
-- https://docs.microsoft.com/azure/azure-resource-manager/management/overview
-- https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals
-- https://docs.microsoft.com/azure/role-based-access-control/overview
-- https://docs.microsoft.com/azure/azure-resource-manager/management/azure-services-resource-providers
-- https://docs.microsoft.com/cli/azure
-- https://docs.microsoft.com/cli/azure/install-azure-cli
-- https://developer.hashicorp.com/terraform/downloads
-- https://developer.hashicorp.com/terraform/language/functions/startswith
+- [Lifecycle Management Overview](https://learn.microsoft.com/azure/storage/blobs/lifecycle-management-overview)
+- [Data Lake Storage](https://azure.microsoft.com/services/storage/data-lake-storage)
+- [Terraform](https://www.terraform.io)
+- [Github](https://github.com)
+- [Azure Account](https://azure.microsoft.com/free/search/?&ef_id=Cj0KCQiAr8bwBRD4ARIsAHa4YyLdFKh7JC0jhbxhwPeNa8tmnhXciOHcYsgPfNB7DEFFGpNLTjdTPbwaAh8bEALw_wcB:G:s&OCID=AID2000051_SEM_O2ShDlJP&MarinID=O2ShDlJP_332092752199_azure%20account_e_c__63148277493_aud-390212648371:kwd-295861291340&lnkd=Google_Azure_Brand&dclid=CKjVuKOP7uYCFVapaAoddSkKcA)
+- [Azure Resource Manager](https://docs.microsoft.com/azure/azure-resource-manager/management/overview)
+- [Service Principal](https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals)
+- [Role Based Access Control](https://docs.microsoft.com/azure/role-based-access-control/overview)
+- [Resource Providers](https://docs.microsoft.com/azure/azure-resource-manager/management/azure-services-resource-providers)
+- [Azure CLI](https://docs.microsoft.com/cli/azure)
+- [Install Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli)
+- [Terraform Downloads](https://developer.hashicorp.com/terraform/downloads)
+- [Terraform - startswith](https://developer.hashicorp.com/terraform/language/functions/startswith)
