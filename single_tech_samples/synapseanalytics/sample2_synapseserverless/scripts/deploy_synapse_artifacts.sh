@@ -95,6 +95,13 @@ createPipeline () {
             tmp1=$(mktemp)
             jq --arg a "${BIG_DATAPOOL_NAME}" '.properties.activities[1].typeProperties.sparkPool.referenceName = $a' ./synapseartifacts/workspace/pipelines/"${name}".json > "$tmp1" && mv "$tmp1" ./synapseartifacts/workspace/pipelines/"${name}".json
             ;;
+        "Pl_NYCTaxi_0_Main")
+            tmp=$(mktemp)
+            jq --arg a "${PROJECT_NAME}st1${DEPLOYMENT_ID}" '.properties.activities[3].typeProperties.parameters.storage_acct.value = $a' ./synapseartifacts/workspace/pipelines/"${name}".json > "$tmp" && mv "$tmp" ./synapseartifacts/workspace/pipelines/"${name}".json
+
+            tmp1=$(mktemp)
+            jq --arg a "${BIG_DATAPOOL_NAME}" '.properties.activities[3].typeProperties.sparkPool.referenceName = $a' ./synapseartifacts/workspace/pipelines/"${name}".json > "$tmp1" && mv "$tmp1" ./synapseartifacts/workspace/pipelines/"${name}".json
+            ;;
     esac
 
     # Deploy the pipeline
@@ -148,6 +155,7 @@ createDataset "Ds_NYCTaxi_Config"
 # This line allows the spark pool to be available to attach to the notebooks
 az synapse spark session list --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spark-pool-name "${BIG_DATAPOOL_NAME}"
 createNotebook "Nb_Convert_Parquet_to_Delta"
+createNotebook "nb_config_operations_library"
 
 # Deploy Setup Pipeline
 createPipeline "Pl_NYCTaxi_1_Setup" "IF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'ext_ds_datalake') BEGIN CREATE EXTERNAL DATA SOURCE [ext_ds_datalake] WITH (LOCATION = N'https://${PROJECT_NAME}st1${DEPLOYMENT_ID}.blob.core.windows.net/datalake') END"

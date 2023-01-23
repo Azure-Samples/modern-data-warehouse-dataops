@@ -3,38 +3,44 @@
         {
             "year": "2019",
             "month": "09",
-            "filename": "yellow_tripdata_2019-09.parquet",
             "aclPermissions": [
                 {
                     "type": "read",
-                    "userOrGroup": "aadgr<project_name><deployment_id>"
+                    "groups": ["AADGR<project_name><deployment_id>"]
                 },
                 {
-                    "type": "execute",
-                    "userOrGroup": "aadgr<project_name><deployment_id>"
+                    "type": "write",
+                    "groups": ["AADGR<project_name><deployment_id>"]
                 }
             ],
-            "created": "",
-            "lastUpdated": "",
-            "retention": ""
+            "created":"",
+            "lastUpdatedSourceSystem": "",
+		    "lastUpdatedDatalake": ""
         },
         {
             "year": "2019",
             "month": "10",
-            "filename": "yellow_tripdata_2019-10.parquet",
             "aclPermissions": [
                 {
                     "type": "read",
-                    "userOrGroup": "aadgr<project_name><deployment_id>"
+                    "groups": ["AADGR<project_name><deployment_id>"]
+                },
+                {
+                    "type": "write",
+                    "groups": ["AADGR<project_name><deployment_id>"]
                 },
                 {
                     "type": "execute",
-                    "userOrGroup": "aadgr<project_name><deployment_id>"
+                    "groups": ["AADGR<project_name><deployment_id>"]
                 }
             ],
-            "created": "",
-            "lastUpdated": "",
-            "retention": ""
+            "created":"",
+            "lastUpdatedSourceSystem": "",
+		    "lastUpdatedDatalake": ""
         }
     ]
 }
+
+
+
+
