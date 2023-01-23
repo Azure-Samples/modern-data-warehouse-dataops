@@ -1,4 +1,4 @@
-resource_group_name       = "terrafor"
+resource_group_name       = "datalifecyclerg"
 location                  = "EastUS"
 is_hns_enabled            = true
 last_access_time_enabled  = true

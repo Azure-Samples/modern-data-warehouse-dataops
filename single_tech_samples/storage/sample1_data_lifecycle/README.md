@@ -14,6 +14,7 @@
   - [2.4. Deployment validation and Execution](#24-deployment-validation-and-execution)
   - [2.5. Clean-up](#25-clean-up)
 - [3. Troubleshooting](#3-troubleshooting)
+- [4. Notes](#4-notes)
 
 ## 1. Solution Overview
 
@@ -41,7 +42,7 @@ It is desirable to reduce the costs by optimizing the resource usage costs in cl
 
 Data lifecycle is one such feature on Azure using which you can optimize costs by moving your data to lower cost tiers when their access is less frequent. It also supports deleting obselete data to save costs.
 
-More details can be found in [this link](https://learn.microsoft.com/en-us/azure/storage/blobs/lifecycle-management-overview)
+More details can be found in [this link](https://learn.microsoft.com/azure/storage/blobs/lifecycle-management-overview)
 
 We can define data lifecycle rules to move data from one tier to other. The current solution provides Infra As Code script written in Terraform, to provision these rules in Azure.
 
@@ -51,7 +52,7 @@ Details about [how to run the pipeline](#24-deployment-validation-and-execution)
 
 The following technologies are used to build this sample:
 
-- [Azure Storage](https://azure.microsoft.com/en-au/services/storage/data-lake-storage/)
+- [Azure Storage](https://azure.microsoft.com/services/storage/data-lake-storage/)
 - [Terraform](https://www.terraform.io/)
 
 ## 2. How to use this sample
@@ -63,19 +64,20 @@ This section holds the information about usage instructions of this sample.
 The following are the prerequisites for deploying this sample:
 
 1. [Github account](https://github.com/)
-2. [Azure Account](https://azure.microsoft.com/en-au/free/search/?&ef_id=Cj0KCQiAr8bwBRD4ARIsAHa4YyLdFKh7JC0jhbxhwPeNa8tmnhXciOHcYsgPfNB7DEFFGpNLTjdTPbwaAh8bEALw_wcB:G:s&OCID=AID2000051_SEM_O2ShDlJP&MarinID=O2ShDlJP_332092752199_azure%20account_e_c__63148277493_aud-390212648371:kwd-295861291340&lnkd=Google_Azure_Brand&dclid=CKjVuKOP7uYCFVapaAoddSkKcA)
-   - *Permissions needed*:  The ability to create and deploy to an Azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
+2. [Azure Account](https://azure.microsoft.com/free/search/?&ef_id=Cj0KCQiAr8bwBRD4ARIsAHa4YyLdFKh7JC0jhbxhwPeNa8tmnhXciOHcYsgPfNB7DEFFGpNLTjdTPbwaAh8bEALw_wcB:G:s&OCID=AID2000051_SEM_O2ShDlJP&MarinID=O2ShDlJP_332092752199_azure%20account_e_c__63148277493_aud-390212648371:kwd-295861291340&lnkd=Google_Azure_Brand&dclid=CKjVuKOP7uYCFVapaAoddSkKcA)
+   - *Permissions needed*:  The ability to create and deploy to an Azure [resource group](https://docs.microsoft.com/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/azure/role-based-access-control/overview) to the service principal over the resource group.
 
-   - Active subscription with the following [resource providers](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/azure-services-resource-providers) enabled:
+   - Active subscription with the following [resource providers](https://docs.microsoft.com/azure/azure-resource-manager/management/azure-services-resource-providers) enabled:
 
      - Microsoft.Storage
 
 #### 2.1.1 Software Prerequisites
 
-1. [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/) installed on the local machine
-   - *Installation instructions* can be found [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+1. [Azure CLI](https://docs.microsoft.com/cli/azure/) installed on the local machine
+   - *Installation instructions* can be found [here](https://docs.microsoft.com/cli/azure/install-azure-cli)
 1. [Terraform](https://www.terraform.io/) installed on the local machine
    - *Installation instructions* can be found [here](https://developer.hashicorp.com/terraform/downloads)
+   - Minimum required version is 1.3.x or later
 
 ### 2.2. Setup and deployment
 
@@ -124,18 +126,9 @@ $ terraform apply
 
 The following resources will be deployed as a part of this sample once the script is executed:
 
-1.Azure Storage Accounts. Sample view is shown below.
-
-![alt text](../../common_assets/images/storage_accounts.png "Logo Title Text 1")
-You can observe the appended random strings to make the storage accounts’ names unique since we have used the azurecaf feature.
-
-2.Azure Storage Containers. Sample view is shown below.
-
-![alt text](../../common_assets/images/storage_containers.png "Logo Title Text 1")
-
-3.Azure data lifecycle rules. Sample view is shown below.
-
-![alt text](../../common_assets/images/data_lifecycle_rules.png "Logo Title Text 1")
+- Azure Storage Accounts.
+- Azure Storage Containers.
+- Azure data lifecycle rules.
 
 ### 2.4. Deployment validation and Execution
 
@@ -155,14 +148,26 @@ II. Configure the variables as needed under the files variables.tf and terraform
 
 III. Here are the sequence of commands to run from the main directory :
 
-terraform init
-
-terraform plan
-
-terraform apply
+```
+$ terraform init
+$ terraform plan
+$ terraform apply
+```
 
 After you run the above commands successfully, you should be able to see the following items under your Azure Subscription:
 
+1.Azure Storage Accounts. Sample view is shown below.
+
+![alt text](../common_assets/images/storage_accounts.png "Logo Title Text 1")
+You can observe the appended random strings to make the storage accounts’ names unique since we have used the azurecaf feature.
+
+2.Azure Storage Containers. Sample view is shown below.
+
+![alt text](../common_assets/images/storage_containers.png "Logo Title Text 1")
+
+3.Azure data lifecycle rules. Sample view is shown below.
+
+![alt text](../common_assets/images/data_lifecycle_rules.png "Logo Title Text 1")
 ### 2.5. Clean-up
 
 Please follow the below steps to clean up your environment :
@@ -189,3 +194,9 @@ This is usually happen when terraform is unable to find Azure Subscription. The 
 In order to fix this you must login to Azure using the following command:
 
 > az login
+
+## 4. Notes
+
+- The azurerm_storage_container resource block can not be used due to a bug in the terraform provider. Hence the deployment is done using ARM template for storage containers
+- The terraform script in this sample uses [startswith](https://developer.hashicorp.com/terraform/language/functions/startswith) function which needs minimum terraform version of 1.3.x
+- The sample script expects the resource group to be created before it is executed.

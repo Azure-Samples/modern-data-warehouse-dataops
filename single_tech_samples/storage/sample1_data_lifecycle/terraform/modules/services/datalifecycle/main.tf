@@ -64,6 +64,12 @@ locals {
   storage_name_id_map = zipmap(values(azurerm_storage_account.storage_account)[*].name, values(azurerm_storage_account.storage_account)[*].id)
 }
 
+# Looping over the container_config and creating containers in 
+# respective storage accounts.
+
+# The azurerm_storage_container resource block can not be used due to a bug in the terraform provider 
+# Hence the deployment is done using ARM template for storage containers
+
 resource "azurerm_resource_group_template_deployment" "storage-containers" {
   for_each            = local.container_config
   name                = each.value
