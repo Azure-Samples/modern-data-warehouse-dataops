@@ -77,7 +77,7 @@ variable "orch_pool_name" {
 variable "vm_size_orch_pool" {
   description = "Specifies the size of the VM created in the Batch pool."
   type        = string
-  default     = "standard_a4_v2"
+  default     = "standard_d2s_v3"
 }
 
 variable "node_agent_sku_id_orch_pool" {
@@ -106,7 +106,7 @@ variable "exec_pool_name" {
 variable "vm_size_exec_pool" {
   description = "Specifies the size of the VM created in the Batch pool."
   type        = string
-  default     = "standard_d8_v3"
+  default     = "standard_d2s_v3"
 }
 
 variable "node_agent_sku_id_exec_pool" {

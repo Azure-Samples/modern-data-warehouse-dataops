@@ -144,29 +144,9 @@ resource "azurerm_batch_pool" "exec_pool" {
       }
     }
   }
-  auto_scale {
-    evaluation_interval = "PT10M"
-    formula             = <<EOF
-      startingNumberOfVMs = 0;
-      // Ideally for extraction 1 bag files requires 27 task slots
-      // 270 means 10 bag files will be procssed concurrently.
-      tasksToBeRunConCurrently = 270;
-      maxNumberofVMs = tasksToBeRunConCurrently/$TaskSlotsPerNode;
-      // Get the pending tasks for the past X-number of minutes
-      timeInterval = 7;
-      // Get pending tasks for the past configured minutes.
-      $samples = $ActiveTasks.GetSamplePercent(TimeInterval_Minute * timeInterval);
-      // If we have fewer than 70 percent data points, we use the last sample point, otherwise we use the maximum of last sample point and the history average.
-      $tasks = $samples < 70 ? max(0, $ActiveTasks.GetSample(1)) : max( $ActiveTasks.GetSample(1), avg($ActiveTasks.GetSample(TimeInterval_Minute * timeInterval)));
-      minimumNodesRequired = ($tasks < $TaskSlotsPerNode && $tasks > 0) ? 1 : 0;
-      //Batch does not support ceil/floor/round functions
-      //0.7 is added so that adequate number of nodes is available. 
-      //e.g if the desired number comes to be 3.8 and if we dont add 0.7 only 3 nodes will be scaled.
-      desiredNodesRequired = ($tasks/$TaskSlotsPerNode) + 0.7;
-      desiredNodesRequired = $tasks > $TaskSlotsPerNode  ? desiredNodesRequired  : minimumNodesRequired;
-      $TargetLowPriorityNodes = min(maxNumberofVMs, desiredNodesRequired);
-      $NodeDeallocationOption = taskcompletion;
-    EOF
+  fixed_scale {
+    target_dedicated_nodes    = 1
+    target_low_priority_nodes = 0
   }
   network_configuration {
     subnet_id = var.batch_subnet_id
