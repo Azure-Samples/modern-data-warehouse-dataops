@@ -1,4 +1,4 @@
-# Terraform Script to create Storage Account , Containers and Data Lifecycle Rules at scale in Azure <!-- omit in toc -->
+# Storage Life Cycle Managment <!-- omit in toc -->
 
 ## Contents <!-- omit in toc -->
 
@@ -89,33 +89,34 @@ Below listed are the steps to deploy this sample :
 
 The script is configuration driven and based on a variable of type map(map(map))).
 
-    First level map represents storage accounts.
-
-    Second level map represents the containers inside the respective storage account.
-
-    Third level map represents the data life cycle rules under respective container.
+- First level map represents storage accounts.
+- Second level map represents the containers inside the respective storage account.
+- Third level map represents the data life cycle rules under respective container.
 
 Sample variable format is shown below:
-
-    "storage_account_container_config = {
-        "StorageAccountName1" = {
-            "Container1"       = { "LifeCycleAction1" : "NumberOfDays", "LifeCycleAction2" : "NumberOfDays"}
-        }
-        "StorageAccountName2" = {
-            "Container2"       = { "LifeCycleAction1" : "NumberOfDays", "LifeCycleAction1" : "NumberOfDays" }
-        }
-        "StorageAccountName3" = {
-            "Container3"       = { "LifeCycleAction1" : "NumberOfDays" }
-            "Container4"       = {   }
-        }
+```
+storage_account_container_config = {
+    "StorageAccountName1" = {
+        "Container1"       = { "LifeCycleAction1" : "NumberOfDays", "LifeCycleAction2" : "NumberOfDays"}
     }
+    "StorageAccountName2" = {
+        "Container2"       = { "LifeCycleAction1" : "NumberOfDays", "LifeCycleAction1" : "NumberOfDays" }
+    }
+    "StorageAccountName3" = {
+        "Container3"       = { "LifeCycleAction1" : "NumberOfDays" }
+        "Container4"       = {   }
+    }
+}
+```
 Configure as many storage accounts, containers and lifecycle rules as needed and run the IAC script provided in this git repo.
 
 1. Run below commands in the sequence:
 
-I. terraform init
-II. terraform plan
-III. terraform apply
+```
+$ terraform init
+$ terraform plan
+$ terraform apply
+```
 
    > Note: The script would expect that you are logged in to the Azure account using az login command, before you deploy resources to Azure.
 
