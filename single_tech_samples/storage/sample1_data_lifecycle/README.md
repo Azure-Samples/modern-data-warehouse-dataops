@@ -20,11 +20,9 @@
 
 ## 1. Solution Overview
 
-With wide scale adaptation of Infrastructure As Code (IAC), many a times we would need to create storage accounts and corresponding entities dynamically using Infra As Code (IAC) Scripts.
+The purpose of this solution is to demonstrate the creation of Azure storage accounts/containers and configuring the data lifecycle rules at scale using Terraform based IaC templates.
 
-This solution demonstrates how we can create data storage accounts, containers and data lifecycle rules in Azure using Terraform scripting.
-
-The solution is flexible,extensible and scalable to accommodate any number of storage accounts, containers and data life cycle rules.
+The solution takes details about the storage accounts, containers and lifecycle rules as JSON configuration and apply it in a loop which makes it flexible, extensible and scalable to accommodate any number of storage accounts, containers and data life cycle rules.
 
 ### 1.1. Scope
 
