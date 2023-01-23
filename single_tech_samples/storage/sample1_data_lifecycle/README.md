@@ -15,6 +15,8 @@
   - [2.5. Clean-up](#25-clean-up)
 - [3. Troubleshooting](#3-troubleshooting)
 - [4. Notes](#4-notes)
+- [5. References](#5-references)
+
 
 ## 1. Solution Overview
 
@@ -26,13 +28,11 @@ The solution is flexible,extensible and scalable to accommodate any number of st
 
 ### 1.1. Scope
 
-The following list captures the scope of this sample:
-
 The following items will be provisioned as a part of this sample setup:
 
-   1. Azure Storage Accounts.
-   2. Storage Containers.
-   3. Data lifecycle rules.
+- Azure Storage Accounts.
+- Storage Containers.
+- Data lifecycle rules.
 
 Details about [how to use this sample](#2-how-to-use-this-sample) can be found in the later sections of this document.
 
@@ -52,8 +52,8 @@ Details about [how to run the pipeline](#24-deployment-validation-and-execution)
 
 The following technologies are used to build this sample:
 
-- [Azure Storage](https://azure.microsoft.com/services/storage/data-lake-storage/)
-- [Terraform](https://www.terraform.io/)
+- [Azure Storage](https://azure.microsoft.com/services/storage/data-lake-storage)
+- [Terraform](https://www.terraform.io)
 
 ## 2. How to use this sample
 
@@ -63,8 +63,8 @@ This section holds the information about usage instructions of this sample.
 
 The following are the prerequisites for deploying this sample:
 
-1. [Github account](https://github.com/)
-2. [Azure Account](https://azure.microsoft.com/free/search/?&ef_id=Cj0KCQiAr8bwBRD4ARIsAHa4YyLdFKh7JC0jhbxhwPeNa8tmnhXciOHcYsgPfNB7DEFFGpNLTjdTPbwaAh8bEALw_wcB:G:s&OCID=AID2000051_SEM_O2ShDlJP&MarinID=O2ShDlJP_332092752199_azure%20account_e_c__63148277493_aud-390212648371:kwd-295861291340&lnkd=Google_Azure_Brand&dclid=CKjVuKOP7uYCFVapaAoddSkKcA)
+-  [Github account](https://github.com)
+- [Azure Account](https://azure.microsoft.com/free/search/?&ef_id=Cj0KCQiAr8bwBRD4ARIsAHa4YyLdFKh7JC0jhbxhwPeNa8tmnhXciOHcYsgPfNB7DEFFGpNLTjdTPbwaAh8bEALw_wcB:G:s&OCID=AID2000051_SEM_O2ShDlJP&MarinID=O2ShDlJP_332092752199_azure%20account_e_c__63148277493_aud-390212648371:kwd-295861291340&lnkd=Google_Azure_Brand&dclid=CKjVuKOP7uYCFVapaAoddSkKcA)
    - *Permissions needed*:  The ability to create and deploy to an Azure [resource group](https://docs.microsoft.com/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/azure/role-based-access-control/overview) to the service principal over the resource group.
 
    - Active subscription with the following [resource providers](https://docs.microsoft.com/azure/azure-resource-manager/management/azure-services-resource-providers) enabled:
@@ -73,9 +73,9 @@ The following are the prerequisites for deploying this sample:
 
 #### 2.1.1 Software Prerequisites
 
-1. [Azure CLI](https://docs.microsoft.com/cli/azure/) installed on the local machine
+- [Azure CLI](https://docs.microsoft.com/cli/azure) installed on the local machine
    - *Installation instructions* can be found [here](https://docs.microsoft.com/cli/azure/install-azure-cli)
-1. [Terraform](https://www.terraform.io/) installed on the local machine
+- [Terraform](https://www.terraform.io) installed on the local machine
    - *Installation instructions* can be found [here](https://developer.hashicorp.com/terraform/downloads)
    - Minimum required version is 1.3.x or later
 
@@ -85,9 +85,9 @@ The following are the prerequisites for deploying this sample:
 
 Below listed are the steps to deploy this sample :
 
-1. Fork and clone this repository. Navigate to  `single_tech_samples/storage/sample1_data_lifecycle/terraform/`.
+- Fork and clone this repository. Navigate to  `single_tech_samples/storage/sample1_data_lifecycle/terraform`.
 
-1. The sample depends on the variables to be set before the deployment script is run; You can set these variables by editing the variables.tf and terraform.auto.tfvars files, otherwise the default values provided would be considered.
+- The sample depends on the variables to be set before the deployment script is run; You can set these variables by editing the variables.tf and terraform.auto.tfvars files, otherwise the default values provided would be considered.
 
 The script is configuration driven and based on a variable of type map(map(map))).
 
@@ -112,7 +112,7 @@ storage_account_container_config = {
 ```
 Configure as many storage accounts, containers and lifecycle rules as needed and run the IAC script provided in this git repo.
 
-1. Run below commands in the sequence:
+Run below commands in the sequence:
 
 ```
 $ terraform init
@@ -134,38 +134,36 @@ The following resources will be deployed as a part of this sample once the scrip
 
 The following steps can be performed to validate the correct deployment and execution of the sample:
 
-- Users with appropriate access rights should be able to:
+Users with appropriate access rights should be able to:
 
-   1. View the storage accounts in the Azure portal.
-   2. View the storage containers under the storage accounts through the Azure portal.
-   3. View the data lifecycle rules created in the Azure portal under storage accounts.
+- View the storage accounts in the Azure portal.
+- View the storage containers under the storage accounts through the Azure portal.
+- View the data lifecycle rules created in the Azure portal under storage accounts.
 
-- Detail steps on how to execute the sample:
+Here are the detail steps on how to execute the sample:
 
-I. Checkout the code.
+- Checkout the code.
+- Configure the variables as needed under the files variables.tf and terraform.auto.tfvars
+- Here are the sequence of commands to run from the main directory :
 
-II. Configure the variables as needed under the files variables.tf and terraform.auto.tfvars
-
-III. Here are the sequence of commands to run from the main directory :
-
-```
-$ terraform init
-$ terraform plan
-$ terraform apply
-```
+   ```
+   $ terraform init
+   $ terraform plan
+   $ terraform apply
+   ```
 
 After you run the above commands successfully, you should be able to see the following items under your Azure Subscription:
 
-1.Azure Storage Accounts. Sample view is shown below.
+- Azure Storage Accounts. Sample view is shown below.
 
 ![alt text](../common_assets/images/storage_accounts.png "Logo Title Text 1")
 You can observe the appended random strings to make the storage accounts’ names unique since we have used the azurecaf feature.
 
-2.Azure Storage Containers. Sample view is shown below.
+- Azure Storage Containers. Sample view is shown below.
 
 ![alt text](../common_assets/images/storage_containers.png "Logo Title Text 1")
 
-3.Azure data lifecycle rules. Sample view is shown below.
+- Azure data lifecycle rules. Sample view is shown below.
 
 ![alt text](../common_assets/images/data_lifecycle_rules.png "Logo Title Text 1")
 ### 2.5. Clean-up
@@ -174,29 +172,51 @@ Please follow the below steps to clean up your environment :
 
 The clean-up script can be executed to clean up the resources provisioned in this sample. Following are the steps to execute the script:
 
-1. Navigate to `single_tech_samples/synapseanalytics/sample1_loading_dynamic_modules/setup/`.
+- Navigate to `single_tech_samples/synapseanalytics/sample1_loading_dynamic_modules/setup`.
 
-2. Run `terraform destroy`
+- Run terraform destroy command :
+   ```
+   $ terraform destroy
+   ```
 
 ## 3. Troubleshooting
 
 ### Error Building AzureRM Client
 
 If you run the terraform plan command, you may run into the following error:
->
-> Error: building AzureRM Client: obtain subscription() from Azure CLI: parsing json result from the Azure CLI: waiting for the Azure CLI: >exit status 1: ERROR: No subscription found. Run 'az account set' to select a subscription.
->with provider["registry.terraform.io/hashicorp/azurerm"],
->on provider.tf line 14, in provider "azurerm":
->14: provider "azurerm" {
+```
+Error: building AzureRM Client: obtain subscription() from Azure CLI: parsing json result from the Azure CLI: waiting for the Azure CLI: exit status 1: ERROR: No subscription found. Run 'az account set' to select a subscription.
+with provider["registry.terraform.io/hashicorp/azurerm"],
+on provider.tf line 14, in provider "azurerm":
+14: provider "azurerm" {
+```
 
 This is usually happen when terraform is unable to find Azure Subscription. The core issue behind this is that user is not logged to Azure account.
 
 In order to fix this you must login to Azure using the following command:
 
-> az login
+```
+$ az login
+```
 
 ## 4. Notes
 
 - The azurerm_storage_container resource block can not be used due to a bug in the terraform provider. Hence the deployment is done using ARM template for storage containers
 - The terraform script in this sample uses [startswith](https://developer.hashicorp.com/terraform/language/functions/startswith) function which needs minimum terraform version of 1.3.x
 - The sample script expects the resource group to be created before it is executed.
+
+## 5. References
+
+- https://learn.microsoft.com/azure/storage/blobs/lifecycle-management-overview
+- https://azure.microsoft.com/services/storage/data-lake-storage
+- https://www.terraform.io
+- https://github.com
+- https://azure.microsoft.com/free/search/?&ef_id=Cj0KCQiAr8bwBRD4ARIsAHa4YyLdFKh7JC0jhbxhwPeNa8tmnhXciOHcYsgPfNB7DEFFGpNLTjdTPbwaAh8bEALw_wcB:G:s&OCID=AID2000051_SEM_O2ShDlJP&MarinID=O2ShDlJP_332092752199_azure%20account_e_c__63148277493_aud-390212648371:kwd-295861291340&lnkd=Google_Azure_Brand&dclid=CKjVuKOP7uYCFVapaAoddSkKcA)
+- https://docs.microsoft.com/azure/azure-resource-manager/management/overview
+- https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals
+- https://docs.microsoft.com/azure/role-based-access-control/overview
+- https://docs.microsoft.com/azure/azure-resource-manager/management/azure-services-resource-providers
+- https://docs.microsoft.com/cli/azure
+- https://docs.microsoft.com/cli/azure/install-azure-cli
+- https://developer.hashicorp.com/terraform/downloads
+- https://developer.hashicorp.com/terraform/language/functions/startswith
