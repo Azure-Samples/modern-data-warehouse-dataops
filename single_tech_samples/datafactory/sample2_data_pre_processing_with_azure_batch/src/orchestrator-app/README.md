@@ -1,6 +1,6 @@
 # Batch Orchestrator App
 
-This is a sample code for an orchestrator app which runs as a azure batch application on the orchestrator pool of the [reference architecture](../../README.MD#13-architecture). It can be zipped and uploaded as an application which gets invoked from Azure Data Factory(ADF) via its custom activity.
+This is a sample code for an orchestrator app which runs as an Azure Batch application on the orchestrator pool of the [reference architecture](../../README.MD#13-architecture). It can be zipped and uploaded as an application which gets invoked from Azure Data Factory(ADF) via its custom activity.
 
 This sample application accepts two parameters `inputFile` and `outputPath` as parameters. You need to invoke the below command from ADF custom activity:
 
@@ -13,7 +13,7 @@ python3 app/extract.py --inputFile /data/raw/samplefile.bag --outputPath /data/e
 
 ```
 
-Note: In this sample we have a azure data lake storage account(ADLS) which has a container `data` with two folders `raw` and `extracted`. This `data` container is mounted on the azure batch pool nodes and data can be read and written directly to the ADLS account. For more details refere to the [deployed resouces](../../deploy/terraform/README.md) documentation.
+Note: In this sample we have a azure data lake storage account(ADLS) which has a container `data` with two folders `raw` and `extracted`. This `data` container is mounted on the azure batch pool nodes and data can be read and written directly to the ADLS account. For more details refer to the [deployed resouces](../../deploy/terraform/README.md) documentation.
 
 ## Steps to package and upload this sample application to Azure Batch
 

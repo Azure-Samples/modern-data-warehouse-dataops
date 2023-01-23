@@ -44,7 +44,7 @@ For our sample use case we have a sample [ros bag file](http://wiki.ros.org/Bags
 
 Ideally in actual production scenarios, there will be two ADLS accounts representing raw and extarcted zones, for the simplcity case we will have the raw and the extarcted zones in the same ADLS account. Pipeline will pick the ros bag file from the raw zone and send it for extraction to Azure Batch where the file can be extracted simultaneously by one or more processors. In this sample we will be using a single `sample-processor` which will be packaged as a docker image and pushed to container registry. Azure batch will use this image to spin a container and perform the extraction and store the extarcted contents back to extracted zone. Once the extraction is completed ADF pipeline can proceed with the next step to process this extracted data or invoke other pipelines.
 
-![use-case](images/use-case.png)
+![use-case](images/pre-processing-usecase.map.drawio.svg)
 
 Details about [how to run the pipeline](#24-deployment-validation-and-execution) can be found in the later sections of this document.
 
@@ -53,7 +53,7 @@ Details about [how to run the pipeline](#24-deployment-validation-and-execution)
 The below diagram illustrates the high level design showing the ADF and the azure batch integration for running container workloads on azure batch:
 
 ![alt text](images/adf-batch-integration-design.svg "Design Diagram")
-#### **Architectur Design Components**
+#### **Architecture Design Components**
 - **Raw Zone:** This is an ADLS account where the ingested data lands.
 - **Extracted Zone:** This is an ADLS account where the extracted data will be stored.
 - **ADF Pipeline:** This is an ADF pipeline which can have a scheduled trigger to pick data from raw zone and sends it to azure batch for extraction.
@@ -88,14 +88,20 @@ This section holds the information about usage instructions of this sample.
    - Active subscription with the following [resource providers](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/azure-services-resource-providers) enabled:
 
      - Microsoft.Storage
+     - Microsoft.DataFactory
+     - Microsoft.KeyVault
+     - Microsoft.Batch
+     - Microsoft.ContainerRegistry
 
 #### 2.1.1 Software Prerequisites
 
 1. [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/) installed on the local machine
    - *Installation instructions* can be found [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
-1. For Windows users,
+2. [Terraform](https://www.terraform.io/) 
+   - *Installation instructions* can be found [here](https://developer.hashicorp.com/terraform/downloads)
+3. For Windows users,
    1. Option 1: [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
-   2. Option 2: Use the devcontainer published [here](./.devcontainer) as a host for the bash shell.
+   2. Option 2: Use the devcontainer published [here](./.devcontainer) as a host for the bash shell, it has all the pre-requisites installed.
       For more information about Devcontainers, see [here](https://code.visualstudio.com/docs/remote/containers).
 ### 2.2. Setup and deployment
 1. [Deploy all the azure resources required for the sample](deploy/terraform/README.md)
@@ -108,7 +114,7 @@ This section holds the information about usage instructions of this sample.
 
 Below is the list of resources which will be deployed in your azure resource group:
 
-![Attach your screen shot here]()
+![Deployed Resources]()
 
 ### 2.4. Deployment validation and Execution
 
