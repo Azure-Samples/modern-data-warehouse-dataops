@@ -67,6 +67,9 @@ resource "azurerm_storage_account" "storage_account" {
   blob_properties {
     last_access_time_enabled = var.last_access_time_enabled
   }
+    depends_on = [
+    azurerm_resource_group.resource_group
+  ]
 }
 
 locals {
@@ -79,7 +82,7 @@ locals {
 resource "azurerm_storage_container" "storage-containers" {
   for_each            = local.container_config
   name                = each.value
-  storage_account_name  = keys({for key, value in local.storage_name_id_map: key => value if startswith(key, "${each.key}")})[0]
+  storage_account_name  = keys({for key, value in local.storage_name_id_map: key => value if startswith(key, split("-","${each.key}")[0])})[0]
   depends_on = [
     azurerm_storage_account.storage_account
   ]
