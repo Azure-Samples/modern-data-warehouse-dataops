@@ -164,7 +164,7 @@ You can observe the appended random strings to make the storage accounts’ name
 
 ### 2.5. Clean-up
 
-The clean-up script can be executed to clean up the resources provisioned in this sample. 
+The clean-up script can be executed to clean up the resources provisioned in this sample.
 
 Following are the steps to execute the script:
 
