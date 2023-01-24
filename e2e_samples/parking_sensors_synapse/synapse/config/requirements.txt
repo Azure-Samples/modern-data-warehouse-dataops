@@ -1,1 +1,1 @@
-opencensus==1.1.7
+opencensus-ext-azure==1.1.7
