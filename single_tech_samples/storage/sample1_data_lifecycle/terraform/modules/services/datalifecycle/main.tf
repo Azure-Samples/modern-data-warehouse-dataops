@@ -76,26 +76,13 @@ locals {
 # Looping over the container_config and creating containers in 
 # respective storage accounts.
 
-# The azurerm_storage_container resource block can not be used due to a bug in the terraform provider 
-# Hence the deployment is done using ARM template for storage containers
-
-resource "azurerm_resource_group_template_deployment" "storage-containers" {
+resource "azurerm_storage_container" "storage-containers" {
   for_each            = local.container_config
   name                = each.value
-  resource_group_name = var.resource_group_name
-  deployment_mode     = "Incremental"
-
+  storage_account_name  = keys({for key, value in local.storage_name_id_map: key => value if startswith(key, "${each.key}")})[0]
   depends_on = [
     azurerm_storage_account.storage_account
   ]
-
-  parameters_content = jsonencode({
-    "location"             = { value = var.location }
-    "storageAccountName"   = { value = keys({for key, value in local.storage_name_id_map: key => value if startswith(key, split("-", "${each.key}")[0])})[0]}
-    "defaultContainerName" = { value = "${each.value}" }
-  })
-
-  template_content = file("${path.module}/storage-container.json")
 }
 
 
