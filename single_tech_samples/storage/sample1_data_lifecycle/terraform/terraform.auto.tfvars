@@ -1,5 +1,5 @@
-resource_group_name       = "datalifecyclerg"
-location                  = "EastUS"
+resource_group_name       = "rg-storage-lifecycle"
+location                  = "CentralIndia"
 is_hns_enabled            = true
 last_access_time_enabled  = true
 blob_storage_cors_origins = ["https://*.contoso.com"]

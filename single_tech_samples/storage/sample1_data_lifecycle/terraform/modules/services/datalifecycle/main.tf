@@ -9,6 +9,7 @@ terraform {
       version = "1.2.11"
     }
   }
+  required_version = ">= 1.3"
 }
 
 
@@ -33,6 +34,14 @@ locals {
   azurecaf_name            = ""
 }
 
+# Resource group creation
+
+resource "azurerm_resource_group" "resource_group" {
+  name     = var.resource_group_name
+  location = var.location
+}
+
+# Azurecaf to keep storage accounts name unique
 resource "azurecaf_name" "sa_fn_datalifecycle" {
   name          = local.azurecaf_name
   resource_type = "azurerm_storage_account"

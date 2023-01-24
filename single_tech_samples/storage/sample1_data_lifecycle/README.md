@@ -31,15 +31,13 @@ The following items will be provisioned as a part of this sample setup:
 - Storage Containers.
 - Data lifecycle rules.
 
-Details about [how to use this sample](#2-how-to-use-this-sample) can be found in the later sections of this document.
-
 ### 1.2. Use Case
 
 It is desirable to reduce the costs by optimizing the resource usage costs in cloud environments.
 
 Data lifecycle is one such feature on Azure using which you can optimize costs by moving your data to lower cost tiers when their access is less frequent. It also supports deleting obselete data to save costs.
 
-More details can be found in [this link](https://learn.microsoft.com/azure/storage/blobs/lifecycle-management-overview)
+More details can be found in [this link](https://learn.microsoft.com/azure/storage/blobs/lifecycle-management-overview).
 
 We can define data lifecycle rules to move data from one tier to other. The current solution provides Infra As Code script written in Terraform, to provision these rules in Azure.
 
@@ -64,22 +62,21 @@ The following are the prerequisites for deploying this sample:
 - [Azure Account](https://azure.microsoft.com/free/search/?&ef_id=Cj0KCQiAr8bwBRD4ARIsAHa4YyLdFKh7JC0jhbxhwPeNa8tmnhXciOHcYsgPfNB7DEFFGpNLTjdTPbwaAh8bEALw_wcB:G:s&OCID=AID2000051_SEM_O2ShDlJP&MarinID=O2ShDlJP_332092752199_azure%20account_e_c__63148277493_aud-390212648371:kwd-295861291340&lnkd=Google_Azure_Brand&dclid=CKjVuKOP7uYCFVapaAoddSkKcA)
   - *Permissions needed*:  The ability to create and deploy to an Azure [resource group](https://docs.microsoft.com/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/azure/role-based-access-control/overview) to the service principal over the resource group.
 
-  - Active subscription with the following [resource providers](https://docs.microsoft.com/azure/azure-resource-manager/management/azure-services-resource-providers) enabled:
-    - Microsoft.Storage
+  - Active subscription with `Microsoft.Storage` [resource providers](https://docs.microsoft.com/azure/azure-resource-manager/management/azure-services-resource-providers) enabled.
 
 #### 2.1.1 Software Prerequisites
 
-- [Azure CLI](https://docs.microsoft.com/cli/azure) installed on the local machine
-  - *Installation instructions* can be found [here](https://docs.microsoft.com/cli/azure/install-azure-cli)
-- [Terraform](https://www.terraform.io) installed on the local machine
-  - *Installation instructions* can be found [here](https://developer.hashicorp.com/terraform/downloads)
-  - Minimum required version is 1.3.x or later
+- [Azure CLI](https://docs.microsoft.com/cli/azure) installed on the local machine.
+  - Installation instructions can be found [here](https://docs.microsoft.com/cli/azure/install-azure-cli).
+- [Terraform](https://www.terraform.io) installed on the local machine.
+  - Installation instructions can be found [here](https://developer.hashicorp.com/terraform/downloads).
+  - Minimum required version is 1.3.x or later.
 
 ### 2.2. Setup and deployment
 
 > **IMPORTANT NOTE:** As with all Azure Deployments, this will **incur associated costs**. Remember to teardown all related resources after use to avoid unnecessary costs. See [here](#4.3.-deployed-resources) for a list of deployed resources.
 
-Below listed are the steps to deploy this sample :
+Below listed are the steps to deploy this sample:
 
 - Fork and clone this repository. Navigate to  `single_tech_samples/storage/sample1_data_lifecycle/terraform`.
 
@@ -167,11 +164,11 @@ You can observe the appended random strings to make the storage accounts’ name
 
 ### 2.5. Clean-up
 
-Please follow the below steps to clean up your environment :
+The clean-up script can be executed to clean up the resources provisioned in this sample. 
 
-The clean-up script can be executed to clean up the resources provisioned in this sample. Following are the steps to execute the script:
+Following are the steps to execute the script:
 
-- Navigate to `single_tech_samples/synapseanalytics/sample1_loading_dynamic_modules/setup`.
+- Navigate to `single_tech_samples/storage/sample1_data_lifecycle/terraform`.
 
 - Run terraform destroy command :
 
@@ -203,22 +200,9 @@ az login
 
 ## 4. Notes
 
-- The azurerm_storage_container resource block can not be used due to a bug in the terraform provider. Hence the deployment is done using ARM template for storage containers
-- The terraform script in this sample uses [startswith](https://developer.hashicorp.com/terraform/language/functions/startswith) function which needs minimum terraform version of 1.3.x
+- The azurerm_storage_container resource block can not be used due to a bug in the terraform provider. Hence the deployment is done using ARM template for storage containers.
 - The sample script expects the resource group to be created before it is executed.
 
 ## 5. References
 
 - [Lifecycle Management Overview](https://learn.microsoft.com/azure/storage/blobs/lifecycle-management-overview)
-- [Data Lake Storage](https://azure.microsoft.com/services/storage/data-lake-storage)
-- [Terraform](https://www.terraform.io)
-- [Github](https://github.com)
-- [Azure Account](https://azure.microsoft.com/free/search/?&ef_id=Cj0KCQiAr8bwBRD4ARIsAHa4YyLdFKh7JC0jhbxhwPeNa8tmnhXciOHcYsgPfNB7DEFFGpNLTjdTPbwaAh8bEALw_wcB:G:s&OCID=AID2000051_SEM_O2ShDlJP&MarinID=O2ShDlJP_332092752199_azure%20account_e_c__63148277493_aud-390212648371:kwd-295861291340&lnkd=Google_Azure_Brand&dclid=CKjVuKOP7uYCFVapaAoddSkKcA)
-- [Azure Resource Manager](https://docs.microsoft.com/azure/azure-resource-manager/management/overview)
-- [Service Principal](https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals)
-- [Role Based Access Control](https://docs.microsoft.com/azure/role-based-access-control/overview)
-- [Resource Providers](https://docs.microsoft.com/azure/azure-resource-manager/management/azure-services-resource-providers)
-- [Azure CLI](https://docs.microsoft.com/cli/azure)
-- [Install Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli)
-- [Terraform Downloads](https://developer.hashicorp.com/terraform/downloads)
-- [Terraform - startswith](https://developer.hashicorp.com/terraform/language/functions/startswith)
