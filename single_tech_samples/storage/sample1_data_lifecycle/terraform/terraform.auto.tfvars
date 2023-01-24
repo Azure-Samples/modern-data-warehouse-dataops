@@ -1,4 +1,4 @@
-resource_group_name       = "rg-storage-lifecycle"
+resource_group_name       = "rg-storage"
 location                  = "CentralIndia"
 is_hns_enabled            = true
 last_access_time_enabled  = true
