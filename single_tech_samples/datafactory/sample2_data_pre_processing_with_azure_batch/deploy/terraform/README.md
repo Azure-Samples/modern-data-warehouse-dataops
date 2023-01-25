@@ -1,52 +1,74 @@
-## 1. How to use this sample
+## Deploying Azure Resources
 
-This section holds the information about usage instructions of this sample.
+Azure resources required for this sample can be deployed by setting up your pre-requisites mentioned here in your local environment, or alternatively you can use the [this](../../.devcontainer) devcontainer with pre-installed dependencies.
 
-### 1.1 Prerequisites
+### Deployment steps
 
-The following are the prerequisites for deploying this sample:
-
-1. [Terraform (any version >1.2.8)](https://developer.hashicorp.com/terraform/downloads)
-2. [AZ CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli)
-
-### 1.2. Setup and deployment
-1. Clone this repository
-2. Go to the directory containing all the terraform scripts to setup a new environment
+1. Go to the directory containing all the terraform scripts to setup a new environment.
 
 ```
 cd ./single_tech_samples/datafactory/sample2_data_pre_processing_with_azure_batch/deploy/terraform 
 ```
 
-3. Login to the Azure Account you wish to use for the deployment. 
-4. Create a resource group for the new environemnt in your subscription. This can be done using the following az cli command 
+2. Login to your Azure account.
 
 ```
-az group create --name {resourceGroupName} --location {location}
+az login
+az account set -s <YOUR AZURE SUBSCRIPTION ID>
 ```
 
-5. In the terraform.tfvars file, enter the values required according to your prefernece.
+3. Create a resource group. 
 
-6. After the resource group has been successfully set up and you have configered all the variables in terraform.tfvars file, run the following terraform commands to deploy all the resources in your resource group. 
+```
+az group create --name <YOUR-RESOURCE-GROUP-NAME> --location <YOUR-RESOURCE-GROUP-LOCATION>
+
+e.g
+az group create --name sample-rg --location eastus
+
+```
+
+4. In the `terraform.tfvars` file, update the resource group and location parameters.
+
+![terraform-vars](../../images/terraform-vars.png)
+
+5. After the resource group has been successfully created and you have set the resource group and location parameters in `terraform.tfvars` file, run the following terraform commands to deploy all the resources in your resource group. 
 
 ```
 terraform init
+```
+![init output](../../images/init-output.png)
+
+```
 terraform plan 
+```
+![plan output](../../images/plan-output.png)
+
+```
 terraform apply
 ```
 
-### 1.3. Deployed Resources
+![apply output](../../images/apply-output.png)
 
-The following resources will be deployed as a part of this sample once the script is executed:
+![post-apply](../../images/post-apply-output.png)
+### Deployed Resources
+
+After the successful execution of `terraform apply` following resources will be created in your resource group.
+
+- Virtual Network with a Subnet
 - Azure Data Factory
 - Azure Batch
-- Azure Data Lake Storage
-- Azure Blob Store
-- Virtual Network with a subnet
+    - Azure Batch IP Addresses
+    - Azure Batch Security Group
+    - Azure Batch Pools    
+- Azure Data Lake Storage Account
+- Azure Blob Storage Account
 - Azure Container Registry
 - Azure Key Vault
 - User Assigned Managed Idnetity dedicated to Azure batch 
 
-### 1.4. Clean-up the whole infrastructure
+![Deployed Resources](../../images/deployed-resources-output.png)
+
+### Clean-up the whole infrastructure
 
 Please follow the below steps to clean up your environment :
 
@@ -62,7 +84,15 @@ cd ./single_tech_samples/datafactory/sample2_data_pre_processing_with_azure_batc
 terraform destroy
 ```
 
-## 2. Best Practices 
+![destroy-output](../../images/destroy-output.png)
+
+3. Delete your resource group.
+
+```
+az group delete --name <YOUR-RESOURCE-GROUP-NAME>
+```
+
+## Best Practices 
 
 It is ideal to configure a storage account to use as a remote backend for your terraform state files. For simplicity's sake, we have not configured a remote backed and by default terraform will use the local backend to save all the state files. 
 For learning more about configuring a remote backend and its advantages, follow this [link](https://developer.hashicorp.com/terraform/language/settings/backends/configuration)

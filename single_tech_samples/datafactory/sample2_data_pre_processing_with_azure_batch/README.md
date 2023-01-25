@@ -104,10 +104,11 @@ This section holds the information about usage instructions of this sample.
    2. Option 2: Use the devcontainer published [here](./.devcontainer) as a host for the bash shell, it has all the pre-requisites installed.
       For more information about Devcontainers, see [here](https://code.visualstudio.com/docs/remote/containers).
 ### 2.2. Setup and deployment
-1. [Deploy all the azure resources required for the sample](deploy/terraform/README.md)
-2. [Deploy a sample ADF pipeline.](deploy/adf.README.md)
-3. [Publish a sample-processor image to your azure container registry.](src/sample-processor/README.md)
-4. [Deploy a sample orchestrator app to azure batch pool.](src/orchestrator-app/README.md)
+1. Cone this repository.
+2. [Deploy all the azure resources required for the sample](deploy/terraform/README.md)
+3. [Deploy a sample ADF pipeline.](deploy/adf.README.md)
+4. [Publish a sample-processor image to your azure container registry.](src/sample-processor/README.md)
+5. [Deploy a sample orchestrator app to azure batch pool.](src/orchestrator-app/README.md)
 
 
 ### 2.3. Deployed Resources

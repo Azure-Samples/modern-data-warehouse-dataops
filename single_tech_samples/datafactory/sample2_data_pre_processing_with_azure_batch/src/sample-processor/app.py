@@ -8,10 +8,10 @@ import os
 import argparse
 
 def extractSampleBagFile(inputFile, outputPath):  
-    #Access the bag file
-    inputFile = rosbag.Bag(args.rawPath)
-    bagContents = inputFile.read_messages()
     print(f"Started extracting {inputFile}")
+    #Access the bag file
+    inputBagFile = rosbag.Bag(inputFile)
+    bagContents = inputBagFile.read_messages()    
     
     outputFolder = createOutputFolder(outputPath)        
     # get list of topics from the bag
@@ -28,7 +28,7 @@ def extractSampleBagFile(inputFile, outputPath):
             filewriter = csv.writer(csvfile, delimiter=',')
             firstIteration = True  # allows header row
             # for each instant in time that has data for topicName
-            for subtopic, msg, t in inputFile.read_messages(topicName):
+            for subtopic, msg, t in inputBagFile.read_messages(topicName):
                 # parse data from this instant, which is of the form of multiple lines of "Name: value\n"
                 # - put it in the form of a list of 2-element lists
                 msgString = str(msg)
@@ -53,10 +53,10 @@ def extractSampleBagFile(inputFile, outputPath):
                     if len(pair) > 1:
                         values.append(pair[1])
                 filewriter.writerow(values)
-    bag.close()
+    inputBagFile.close()
     print("Extraction Successful! \nDone extracting all topics into respective csv files")
 
-createOutputFolder(outputPath:str):
+def createOutputFolder(outputPath:str):
     outputFolder = f"{outputPath}/output"
 
     try:
@@ -71,11 +71,11 @@ createOutputFolder(outputPath:str):
 if __name__ == '__main__':
     try:
         parser = argparse.ArgumentParser()
-        parser.add_argument("--inputFilePath", "-i",
+        parser.add_argument("--inputFile", "-i",
                             help="Set the file path for the raw bag file.")
         parser.add_argument("--outputPath", "-o",
                             help="Set the output path for the extracted contents.")
         args = parser.parse_args()
-        extractSampleBagFile(args)
+        extractSampleBagFile(args.inputFile, args.outputPath)
     except Exception as e:
         raise RuntimeError(f"Error: {e.__class__}\n Error Extracting the Bag File!")

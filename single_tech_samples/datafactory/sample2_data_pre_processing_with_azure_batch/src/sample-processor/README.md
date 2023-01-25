@@ -3,7 +3,7 @@ This is a sample image which is buid from ros:noetic base image. It extracts the
 
 ### Steps To build a docker image
 
-* Go to the folder : sample-processor ```cd src/sample-processor```
+* Go to the folder : sample-processor ```cd ./single_tech_samples/datafactory/sample2_data_pre_processing_with_azure_batch/src/sample-processor```
 * Build a docker image by running : ```docker build . -t sample-processor:latest```
 
 ### Testing your image locally
@@ -12,26 +12,31 @@ Run the following command, which mounts src/sample-processor/data to your contai
 
 `Make sure to update <YOURPATH> with your clonned directory path`
 
-    ```docker run --rm --mount type=bind,source=<YOURPATH>/src/sample-processor/data,target=/data sample-processor:latest bash -c "source /opt/ros/noetic/setup.bash&&python3 /code/app.py /data/raw/sample.bag /data/extracted && rosbag info '/data/raw/sample.bag' > /data/extracted/rosbagInfo.txt"
-    ```
+```
+docker run --rm --mount type=bind,source=<YOURPATH>/src/sample-processor/data,target=/data sample-processor:latest bash -c "source /opt/ros/noetic/setup.bash&&python3 /code/app.py /data/raw/sample.bag /data/extracted && rosbag info '/data/raw/sample-data.bag' > /data/extracted/rosbagInfo.txt"
+```
+
 Once this command runs successfully, you will see the output in the `src/sample-processor/data/extracted` folder.
 
 
 ### Pushing the docker image to Azure Container Regsitry(ACR)
 
-* Login to acr
- ```
- az acr login --name <YOUR-ACR-NANME>
- ``` 
+* Login to your Azure Container Registry(ACR)
+ 
+```
+az acr login --name <YOUR-ACR-NANME>
+```
+
 * Tag your image as `sample-processor:latest` 
   
 ``` 
-docker tag sample-processor:latest  <YOUR-ACR-NANME>.azurecr.io/sample-processor:v1
+docker tag sample-processor:latest  <YOUR-ACR-NANME>.azurecr.io/sample-processor:latest
 ```
 
 * Push your image to ACR
+
  ```
- docker push <YOUR-ACR-NANME>.azurecr.io/sample-processor:v1
+ docker push <YOUR-ACR-NANME>.azurecr.io/sample-processor:latest
  ```
 
 
