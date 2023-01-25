@@ -98,3 +98,6 @@ az group delete --name <YOUR-RESOURCE-GROUP-NAME>
 
 It is ideal to configure a storage account to use as a remote backend for your terraform state files. For simplicity's sake, we have not configured a remote backed and by default terraform will use the local backend to save all the state files. 
 For learning more about configuring a remote backend and its advantages, follow this [link](https://developer.hashicorp.com/terraform/language/settings/backends/configuration)
+
+
+[Back to deployment steps](../../README.md)

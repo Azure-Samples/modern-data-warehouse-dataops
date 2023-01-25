@@ -96,3 +96,4 @@ AZ_BATCH_KEY="<YOUR-BATCH-KEY>"
 
 Note: `.vscode\launch.json` contains a sample extract task configuration which passes sample arguments to the orchestrator app. The path used is actually a mounted path of the ADLS account where a sample file exists. Please refer to [this section]() for mounting details. 
 
+[Back to deployment steps](../../README.md)

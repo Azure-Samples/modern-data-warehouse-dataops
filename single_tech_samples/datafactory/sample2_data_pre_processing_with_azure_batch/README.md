@@ -10,11 +10,9 @@
 - [2. How to use this sample](#2-how-to-use-this-sample)
   - [2.1. Prerequisites](#21-prerequisites)
     - [2.1.1 Software Prerequisites](#211-software-prerequisites)
-  - [2.2. Setup and deployment](#22-setup-and-deployment)
-  - [2.3. Deployed Resources](#23-deployed-resources)
-  - [2.4. Deployment validation and Execution](#24-deployment-validation-and-execution)
-  - [2.5. Clean-up](#25-clean-up)
-- [3. Troubleshooting](#3-troubleshooting)
+  - [2.2. Setup and deployment](#22-setup-and-deployment)  
+  - [2.3. Deployment validation and Execution](#23-deployment-validation-and-execution)
+  - [2.4. Clean-up](#24-clean-up)
 
 ## 1. Solution Overview
 
@@ -115,14 +113,7 @@ git clone https://github.com/Azure-Samples/modern-data-warehouse-dataops.git
 4. [Publish a sample-processor image to your azure container registry.](src/sample-processor/README.md)
 5. [Deploy a sample orchestrator app to azure batch pool.](src/orchestrator-app/README.md)
 
-
-### 2.3. Deployed Resources
-
-Below is the list of resources which will be deployed in your azure resource group:
-
-![Deployed Resources]()
-
-### 2.4. Deployment validation and Execution
+### 2.3. Deployment validation and Execution
 
 The following steps can be performed to validate the correct deployment and execution of the sample:
 
@@ -138,9 +129,9 @@ The following steps can be performed to validate the correct deployment and exec
 7. Once the execution pool tasks are completed, a sample rosbag file will be extracted to the extracted zone and a ros metadata info will be generated.
 8. Your ADF piepline will marked as completed.
 
-### 2.5. Clean-up
+### 2.4. Clean-up
 
-Please follow the below steps to clean up your environment :
+Please follow the steps in the [clean-up section](deploy/terraform/README.md)
 
 ### Resources
 

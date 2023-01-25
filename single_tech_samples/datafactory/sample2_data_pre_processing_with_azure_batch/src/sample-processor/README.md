@@ -3,7 +3,12 @@ This is a sample image which is buid from ros:noetic base image. It extracts the
 
 ### Steps To build a docker image
 
-* Go to the folder : sample-processor ```cd ./single_tech_samples/datafactory/sample2_data_pre_processing_with_azure_batch/src/sample-processor```
+* Go to the folder `src/sample-processor` 
+
+```
+cd ./single_tech_samples/datafactory/sample2_data_pre_processing_with_azure_batch/src/sample-processor
+```
+
 * Build a docker image by running : ```docker build . -t sample-processor:latest```
 
 ### Testing your image locally
@@ -60,7 +65,7 @@ az storage account network-rule add -g $RESOURCE_GROUP_NAME --account-name $STOR
 
 az storage blob upload -f "data/raw/sample-data.bag" -c data/raw --account-name "$STORAGE_ACCOUNT_NAME"
 ```
-
+[Back to deployment steps](../../README.md)
 
 
 
