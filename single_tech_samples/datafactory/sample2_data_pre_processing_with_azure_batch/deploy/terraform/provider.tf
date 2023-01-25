@@ -9,5 +9,10 @@ terraform {
 
 provider "azurerm" {
   # Configuration options
-  features {}
+  features {
+    key_vault {
+      recover_soft_deleted_key_vaults = false
+      purge_soft_delete_on_destroy    = true
+    }
+  }
 }
