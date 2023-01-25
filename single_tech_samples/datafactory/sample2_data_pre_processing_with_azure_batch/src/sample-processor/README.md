@@ -51,7 +51,12 @@ docker tag sample-processor:latest  <YOUR-ACR-NANME>.azurecr.io/sample-processor
 Run the following script
 
 ```
+RESOURCE_GROUP_NAME="<YOUR-RESOURCE-GROUP-NAME>"
 STORAGE_ACCOUNT_NAME="<YOUR-ADLS-STORAGE-ACCOUNT>"
+
+#Add your client ip to access storage account.
+IP_ADDRESS=$(curl -s checkip.dyndns.org | sed -e 's/.*Current IP Address: //' -e 's/<.*$//')
+az storage account network-rule add -g $RESOURCE_GROUP_NAME --account-name $STORAGE_ACCOUNT_NAME --ip-address $IP_ADDRESS
 
 az storage blob upload -f "data/raw/sample-data.bag" -c data/raw --account-name "$STORAGE_ACCOUNT_NAME"
 ```
