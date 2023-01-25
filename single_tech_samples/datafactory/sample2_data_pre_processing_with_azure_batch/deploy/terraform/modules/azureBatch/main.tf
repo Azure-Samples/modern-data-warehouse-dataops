@@ -18,7 +18,7 @@ resource "azurerm_public_ip" "orch_pool_ip" {
   location            = var.location
   allocation_method   = "Static"
   sku                 = var.ip_sku
-  domain_name_label   = "${var.resource_group_name}-${var.orch_pool_name}-ip"
+  domain_name_label   = "${var.resource_group_name}-${azurerm_batch_account.batch_account.name}-${var.orch_pool_name}-ip"
   tags                = var.tags
 }
 
@@ -32,7 +32,7 @@ resource "azurerm_batch_pool" "orch_pool" {
   display_name        = var.orch_pool_name
   vm_size             = var.vm_size_orch_pool
   node_agent_sku_id   = var.node_agent_sku_id_orch_pool
-  max_tasks_per_node  = 16
+  max_tasks_per_node  = 8
   identity {
     type         = "UserAssigned"
     identity_ids = [var.batch_uami_id]
@@ -92,7 +92,7 @@ resource "azurerm_public_ip" "exec_pool_ip" {
   location            = var.location
   allocation_method   = "Static"
   sku                 = var.ip_sku
-  domain_name_label   = "${var.resource_group_name}-${var.exec_pool_name}-ip"
+  domain_name_label   = "${var.resource_group_name}-${azurerm_batch_account.batch_account.name}-${var.exec_pool_name}-ip"
   tags                = var.tags
 }
 
@@ -106,7 +106,7 @@ resource "azurerm_batch_pool" "exec_pool" {
   display_name        = var.exec_pool_name
   vm_size             = var.vm_size_exec_pool
   node_agent_sku_id   = var.node_agent_sku_id_exec_pool
-  max_tasks_per_node  = 32
+  max_tasks_per_node  = 8
   identity {
     type         = "UserAssigned"
     identity_ids = [var.batch_uami_id]

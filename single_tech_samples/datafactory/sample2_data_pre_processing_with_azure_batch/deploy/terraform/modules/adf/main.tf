@@ -21,6 +21,13 @@ resource "azurerm_data_factory_linked_service_data_lake_storage_gen2" "linked_se
   use_managed_identity     = true
 }
 
+resource "azurerm_data_factory_linked_service_key_vault" "linked_service_key_vault" {
+  name                     = "${var.key_vault_name}_LS"
+  data_factory_id          = azurerm_data_factory.data_factory.id
+  integration_runtime_name = azurerm_data_factory_integration_runtime_azure.managed_integeration_runtime.name
+  key_vault_id             = var.key_vault_id
+}
+
 resource "azurerm_data_factory_integration_runtime_azure" "managed_integeration_runtime" {
   name                    = local.adf_integration_runtime_azure_name
   data_factory_id         = azurerm_data_factory.data_factory.id
