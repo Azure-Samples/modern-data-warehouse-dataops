@@ -15,14 +15,17 @@ python3 app/extract.py --inputFile /data/raw/samplefile.bag --outputPath /data/e
 
 Note: In this sample we have a azure data lake storage account(ADLS) which has a container `data` with two folders `raw` and `extracted`. This `data` container is mounted on the azure batch pool nodes and data can be read and written directly to the ADLS account. For more details refer to the [deployed resouces](../../deploy/terraform/README.md) documentation.
 
-## Steps to package and upload this sample application to Azure Batch
+# Steps to package and upload this sample application to Azure Batch
 
 1. `cd modern-data-warehouse-dataops/single_tech_samples/datafactory/sample2_data_pre_processing_with_azure_batch/src/orchestrator-app`
 
 2. Create a `.env` file in the `orchestrator-app/app` folder with the name of your keyvault.
-```
-orchestrator-app> vim app/.env
 
+```
+vim app/.env
+```
+
+```
 AZ_KEYVAULT_NAME="<YOUR-KEYVAULT-NAME>"
 ```
 
@@ -44,13 +47,13 @@ az account set -s <YOUR AZURE SUBSCRIPTION ID>
 5. Create an Azure Batch application and link it to the orchestrator pool.
 
 ```
-AZ_RESOURCE_GROUP=<YOUR-RESOURCEGROUP-NAME>
-AZ_BATCH_ACCOUNT_NAME=<YOUR-BATCH-ACCOUNT-NAME>
-AZ_BATCH_ORCHESTRATOR_POOL=<YOUR-ORCHESTRATION-POOL-NAME>
-AZ_BATCH_ACCOUNT_URL=<YOUR-BATCH-ACCOUNT-URL>
-AZ_BATCH_APP_VERSION=1.0.0
+AZ_RESOURCE_GROUP="<YOUR-RESOURCEGROUP-NAME>"
+AZ_BATCH_ACCOUNT_NAME="<YOUR-BATCH-ACCOUNT-NAME>"
+AZ_BATCH_ORCHESTRATOR_POOL_D="<YOUR-ORCHESTRATION-POOL-NAME>"
+AZ_BATCH_ACCOUNT_URL="<YOUR-BATCH-ACCOUNT-URL>"
+AZ_BATCH_APP_VERSION="1.0.0"
 
-az batch application package create --application-name orchestratorapp --name AZ_BATCH_ACCOUNT_NAME --resource-group $AZ_RESOURCE_GROUP --package-file app.zip --version-name $AZ_BATCH_APP_VERSION
+az batch application package create --application-name orchestratorapp --name $AZ_BATCH_ACCOUNT_NAME --resource-group $AZ_RESOURCE_GROUP --package-file app.zip --version-name $AZ_BATCH_APP_VERSION
 
 az batch application set --application-name orchestratorapp --name $AZ_BATCH_ACCOUNT_NAME --resource-group $AZ_RESOURCE_GROUP --default-version $AZ_BATCH_APP_VERSION
 
