@@ -19,7 +19,14 @@ docker run --rm --mount type=bind,source=<YOURPATH>/src/sample-processor/data,ta
 Once this command runs successfully, you will see the output in the `src/sample-processor/data/extracted` folder.
 
 
-### Pushing the docker image to Azure Container Regsitry(ACR)
+## Pushing the docker image to Azure Container Regsitry(ACR)
+
+* Login to your Azure Account
+
+```
+az login
+az account set -s <YOUR-SUBSCRIPTION_ID>
+```
 
 * Login to your Azure Container Registry(ACR)
  
@@ -38,6 +45,16 @@ docker tag sample-processor:latest  <YOUR-ACR-NANME>.azurecr.io/sample-processor
  ```
  docker push <YOUR-ACR-NANME>.azurecr.io/sample-processor:latest
  ```
+
+## Upload a sample bag file to your storage account.
+
+Run the following script
+
+```
+STORAGE_ACCOUNT_NAME="<YOUR-ADLS-STORAGE-ACCOUNT>"
+
+az storage blob upload -f "data/raw/sample-data.bag" -c data/raw --account-name "$STORAGE_ACCOUNT_NAME"
+```
 
 
 

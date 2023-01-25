@@ -50,9 +50,11 @@ terraform apply
 ![apply output](../../images/apply-output.png)
 
 ![post-apply](../../images/post-apply-output.png)
+
+Note:- Make a note of names of resources deployed, you will need their names in further scripts.
 ### Deployed Resources
 
-After the successful execution of `terraform apply` following resources will be created in your resource group.
+After the successful execution of `terraform apply` following resources will be created in your resource group. From Azure portal you can navigate to your resource group for more details about the deployed resources.
 
 - Virtual Network with a Subnet
 - Azure Data Factory
