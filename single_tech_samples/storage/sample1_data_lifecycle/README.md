@@ -27,21 +27,17 @@ The solution takes details about the storage accounts, containers and lifecycle 
 
 The following items will be provisioned as a part of this sample setup:
 
-- Azure Storage Accounts.
-- Storage Containers.
-- Data lifecycle rules.
+- Azure Storage Accounts
+- Storage Containers
+- Data lifecycle rules
 
 ### 1.2. Use Case
 
 It is desirable to reduce the costs by optimizing the resource usage costs in cloud environments.
 
-Data lifecycle is one such feature on Azure using which you can optimize costs by moving your data to lower cost tiers when their access is less frequent. It also supports deleting obselete data to save costs.
+Data lifecycle is one such feature on Azure using which you can optimize costs by moving your data to lower cost tiers when their access is less frequent. It also supports deleting obselete data to save costs.For additional information, please check the Microsoft [documentation](https://learn.microsoft.com/azure/storage/blobs/lifecycle-management-overview).
 
-More details can be found in [this link](https://learn.microsoft.com/azure/storage/blobs/lifecycle-management-overview).
-
-We can define data lifecycle rules to move data from one tier to other. The current solution provides Infra As Code script written in Terraform, to provision these rules in Azure.
-
-Details about [how to run the pipeline](#24-deployment-validation-and-execution) can be found in the later sections of this document.
+ Data lifecycle rules can be defiened to move data from one tier to other. This solution provides Infra As Code script written in Terraform, to provision these rules in Azure.
 
 ### 1.3. Technologies used
 
@@ -74,7 +70,7 @@ The following are the prerequisites for deploying this sample:
 
 ### 2.2. Setup and deployment
 
-> **IMPORTANT NOTE:** As with all Azure Deployments, this will **incur associated costs**. Remember to teardown all related resources after use to avoid unnecessary costs. See [here](#4.3.-deployed-resources) for a list of deployed resources.
+> **IMPORTANT NOTE:** As with all Azure Deployments, this will **incur associated costs**. Remember to teardown all related resources after use to avoid unnecessary costs. See [here](#23-deployed-resources) for a list of deployed resources.
 
 Below listed are the steps to deploy this sample:
 
@@ -82,7 +78,7 @@ Below listed are the steps to deploy this sample:
 
 - The sample depends on the variables to be set before the deployment script is run; You can set these variables by editing the variables.tf and terraform.auto.tfvars files, otherwise the default values provided would be considered.
 
-The script is configuration driven and based on a variable of type map(map(map))).
+The script is configuration driven and based on a variable of type `map(map(map)))`.
 
 - First level map represents storage accounts.
 - Second level map represents the containers inside the respective storage account.
@@ -90,7 +86,7 @@ The script is configuration driven and based on a variable of type map(map(map))
 
 Sample variable format is shown below:
 
-```json
+```txt
 storage_account_container_config = {
     "StorageAccountName1" = {
         "Container1"       = { "LifeCycleAction1" : "NumberOfDays", "LifeCycleAction2" : "NumberOfDays"}
@@ -138,8 +134,8 @@ Users with appropriate access rights should be able to:
 Here are the detail steps on how to execute the sample:
 
 - Checkout the code.
-- Configure the variables as needed under the files variables.tf and terraform.auto.tfvars
-- Here are the sequence of commands to run from the main directory :
+- Configure the variables as needed under the files variables.tf and terraform.auto.tfvars.
+- Here is the sequence of commands to run from the main directory:
 
    ```bash
    terraform init
@@ -149,16 +145,16 @@ Here are the detail steps on how to execute the sample:
 
 After you run the above commands successfully, you should be able to see the following items under your Azure Subscription:
 
-- Azure Storage Accounts. Sample view is shown below.
+- Azure Storage Accounts.
 
 ![alt text](../common_assets/images/storage_accounts.png "Logo Title Text 1")
-You can observe the appended random strings to make the storage accounts’ names unique since we have used the azurecaf feature.
+ It can be observed that the storage accounts’ names have embedded random letters, which makes them unique. This is achieved by using the [azurecaf](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/azurecaf_name) feature.
 
-- Azure Storage Containers. Sample view is shown below.
+- Azure Storage Containers.
 
 ![alt text](../common_assets/images/storage_containers.png "Logo Title Text 1")
 
-- Azure data lifecycle rules. Sample view is shown below.
+- Azure data lifecycle rules.
 
 ![alt text](../common_assets/images/data_lifecycle_rules.png "Logo Title Text 1")
 
@@ -170,7 +166,7 @@ Following are the steps to execute the script:
 
 - Navigate to `single_tech_samples/storage/sample1_data_lifecycle/terraform`.
 
-- Run terraform destroy command :
+- Run terraform destroy command:
 
    ```bash
    terraform destroy
