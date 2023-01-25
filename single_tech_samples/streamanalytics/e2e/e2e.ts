@@ -6,6 +6,7 @@ chai.use(require('chai-subset'));
 
 const EVENT_SINK_CONTAINER = 'bloboutput';
 const EXPECTED_E2E_LATENCY_MS = 1500;
+const TEST_TIMEOUT_MS = 3000;
 const DEVICE_ID = 'modern-data-warehouse-dataops/single_tech_samples/streamanalytics/e2e'
 
 describe('Send to IoT Hub', () => {
@@ -18,12 +19,12 @@ describe('Send to IoT Hub', () => {
     });
 
     before(async () => {
-        iotClient = Client.fromConnectionString(process.env.DEVICE_CONNECTION_STRING, Mqtt);
+        iotClient = Client.fromConnectionString(process.env.DEVICE_CONNECTION_STRING as string, Mqtt);
         await iotClient.open();
     });
 
     before(() => {
-        containerClient = new ContainerClient(process.env.AZURE_STORAGE_CONNECTION_STRING, EVENT_SINK_CONTAINER);
+        containerClient = new ContainerClient(process.env.AZURE_STORAGE_CONNECTION_STRING as string, EVENT_SINK_CONTAINER);
     });
 
     before(async () => {
@@ -48,10 +49,12 @@ describe('Send to IoT Hub', () => {
         }
     }
 
-    async function getFirstBlob(): Promise<BlobItem> {
+    async function getAllBlobs(): Promise<BlobItem[]> {
+        const blobItems: BlobItem[] = []
         for await (const blob of containerClient.listBlobsFlat()) {
-            return blob;
+            blobItems.push(blob);
         }
+        return blobItems;
     }
 
     async function getBlobData(blob: BlobItem): Promise<string> {
@@ -90,18 +93,17 @@ describe('Send to IoT Hub', () => {
                     temperature: 27.1
                 };
                 const message = new Message(JSON.stringify(data));
-
+                
                 await send(message);
-
                 await delay();
+                const blobs = await getAllBlobs();
 
-                const blob = await getFirstBlob();
-                chai.expect(blob).to.not.be.undefined;
-                const blobData = await getBlobData(blob);
-                const entries = convertBlobData(blobData);
+                chai.expect(blobs).to.have.length(1);
+                const blobData = await getBlobData(blobs[0]);
+                const entries = convertBlobData(blobData);                                
                 chai.expect(entries).to.have.length(1);
                 chai.expect(entries).to.containSubset([data]);
-            }).timeout(3000);
+            }).timeout(TEST_TIMEOUT_MS);
         });
 
         describe('equal to 27 degrees', () => {
@@ -113,12 +115,11 @@ describe('Send to IoT Hub', () => {
                 const message = new Message(JSON.stringify(data));
 
                 await send(message);
-
                 await delay();
+                const blobs = await getAllBlobs();
 
-                const blob = await getFirstBlob();
-                chai.expect(blob).to.be.undefined;
-            }).timeout(2000);
+                chai.expect(blobs).to.be.empty;
+            }).timeout(TEST_TIMEOUT_MS);
         });
 
         describe('less than 27 degrees', () => {
@@ -130,12 +131,11 @@ describe('Send to IoT Hub', () => {
                 const message = new Message(JSON.stringify(data));
 
                 await send(message);
-
                 await delay();
+                const blobs = await getAllBlobs();
 
-                const blob = await getFirstBlob();
-                chai.expect(blob).to.be.undefined;
-            }).timeout(2000);
+                chai.expect(blobs).to.be.empty;
+            }).timeout(TEST_TIMEOUT_MS);
         });
     });
 });
