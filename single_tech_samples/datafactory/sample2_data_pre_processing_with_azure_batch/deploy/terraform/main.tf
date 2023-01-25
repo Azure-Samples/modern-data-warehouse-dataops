@@ -161,5 +161,5 @@ module "kv_secrets" {
   source                   = "./modules/kvSecerets"
   key_vault_id             = module.key_vault.key_vault_id
   batch_key_secret         = module.azure_batch.batch_account_primary_access_key
-  batch_storage_key_secret = module.batch_storage_account.storage_account_primary_access_key
+  batch_storage_key_secret = module.batch_storage_account.storage_account_primary_connection_string
 }
