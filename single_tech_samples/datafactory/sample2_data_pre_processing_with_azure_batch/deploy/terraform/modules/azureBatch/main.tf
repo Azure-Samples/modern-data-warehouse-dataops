@@ -18,7 +18,7 @@ resource "azurerm_public_ip" "orch_pool_ip" {
   location            = var.location
   allocation_method   = "Static"
   sku                 = var.ip_sku
-  domain_name_label   = "${var.resource_group_name}-${var.orch_pool_name}-ip"
+  domain_name_label   = "${var.resource_group_name}-${azurerm_batch_account.batch_account.name}-${var.orch_pool_name}-ip"
   tags                = var.tags
 }
 
@@ -87,7 +87,7 @@ resource "azurerm_public_ip" "exec_pool_ip" {
   location            = var.location
   allocation_method   = "Static"
   sku                 = var.ip_sku
-  domain_name_label   = "${var.resource_group_name}-${var.exec_pool_name}-ip"
+  domain_name_label   = "${var.resource_group_name}-${azurerm_batch_account.batch_account.name}-${var.exec_pool_name}-ip"
   tags                = var.tags
 }
 
