@@ -4,7 +4,7 @@
     "annotations": [],
     "type": "HttpServer",
     "typeProperties": {
-      "url": "",
+      "url": "https://d37ci6vzurychx.cloudfront.net/trip-data/",
       "enableServerCertificateValidation": true,
       "authenticationType": "Anonymous"
     },

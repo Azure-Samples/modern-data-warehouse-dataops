@@ -98,7 +98,7 @@
         "userProperties": [],
         "typeProperties": {
           "notebook": {
-            "referenceName": "Nb_Convert_Parquet_to_Delta",
+            "referenceName": "Nb_NYCTaxi_Convert_Parquet_to_Delta",
             "type": "NotebookReference"
           },
           "parameters": {
@@ -117,12 +117,12 @@
               "type": "string"
             },
             "stgAccountName": {
-              "value": "ysst1de1",
+              "value": "",
               "type": "string"
             }
           },
           "sparkPool": {
-            "referenceName": "sysparkpoolde1",
+            "referenceName": "",
             "type": "BigDataPoolReference"
           },
           "conf": {

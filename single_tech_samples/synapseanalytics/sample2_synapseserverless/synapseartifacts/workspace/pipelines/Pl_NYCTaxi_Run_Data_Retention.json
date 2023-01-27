@@ -1,0 +1,304 @@
+{
+  "name": "Pl_NYCTaxi_Run_Data_Retention",
+  "properties": {
+      "activities": [
+          {
+              "name": "Read Configuration File",
+              "type": "Lookup",
+              "dependsOn": [],
+              "policy": {
+                  "timeout": "0.12:00:00",
+                  "retry": 0,
+                  "retryIntervalInSeconds": 30,
+                  "secureOutput": false,
+                  "secureInput": false
+              },
+              "userProperties": [],
+              "typeProperties": {
+                  "source": {
+                      "type": "JsonSource",
+                      "storeSettings": {
+                          "type": "AzureBlobFSReadSettings",
+                          "recursive": true,
+                          "enablePartitionDiscovery": false
+                      },
+                      "formatSettings": {
+                          "type": "JsonReadSettings"
+                      }
+                  },
+                  "dataset": {
+                      "referenceName": "Ds_NYCTaxi_Config",
+                      "type": "DatasetReference"
+                  },
+                  "firstRowOnly": false
+              }
+          },
+          {
+              "name": "ForEachProperty",
+              "type": "ForEach",
+              "dependsOn": [
+                  {
+                      "activity": "Read Configuration File",
+                      "dependencyConditions": [
+                          "Succeeded"
+                      ]
+                  }
+              ],
+              "userProperties": [],
+              "typeProperties": {
+                  "items": {
+                      "value": "@activity('Read Configuration File').output.value[0].datalakeProperties",
+                      "type": "Expression"
+                  },
+                  "activities": [
+                      {
+                          "name": "If Previous to Retention Date",
+                          "type": "IfCondition",
+                          "dependsOn": [],
+                          "userProperties": [],
+                          "typeProperties": {
+                              "expression": {
+                                  "value": "@and(greater(formatDateTime(subtractFromTime(utcNow(),2,'Year'),'yyyy'),item().year),less(formatDateTime(utcNow(),'MM'),item().month))",
+                                  "type": "Expression"
+                              },
+                              "ifFalseActivities": [
+                                  {
+                                      "name": "Run Data Retention at the row level",
+                                      "type": "SynapseNotebook",
+                                      "dependsOn": [],
+                                      "policy": {
+                                          "timeout": "0.12:00:00",
+                                          "retry": 0,
+                                          "retryIntervalInSeconds": 30,
+                                          "secureOutput": false,
+                                          "secureInput": false
+                                      },
+                                      "userProperties": [],
+                                      "typeProperties": {
+                                          "notebook": {
+                                              "referenceName": "Nb_NYCTaxi_Run_Data_Retention",
+                                              "type": "NotebookReference"
+                                          },
+                                          "parameters": {
+                                              "dynamicyear": {
+                                                  "value": {
+                                                      "value": "@item().year",
+                                                      "type": "Expression"
+                                                  },
+                                                  "type": "string"
+                                              },
+                                              "dynamicmonth": {
+                                                  "value": {
+                                                      "value": "@item().month",
+                                                      "type": "Expression"
+                                                  },
+                                                  "type": "string"
+                                              },
+                                              "retentionDate": {
+                                                  "value": {
+                                                      "value": "@getPastTime(2,'year')",
+                                                      "type": "Expression"
+                                                  },
+                                                  "type": "string"
+                                              },
+                                              "stgAccountName": {
+                                                  "value": "",
+                                                  "type": "string"
+                                              },
+                                              "retentionTimeInYears": {
+                                                  "value": "2",
+                                                  "type": "int"
+                                              }
+                                          },
+                                          "sparkPool": {
+                                              "referenceName": "",
+                                              "type": "BigDataPoolReference"
+                                          },
+                                          "conf": {
+                                              "spark.dynamicAllocation.enabled": null,
+                                              "spark.dynamicAllocation.minExecutors": null,
+                                              "spark.dynamicAllocation.maxExecutors": null
+                                          },
+                                          "numExecutors": null
+                                      }
+                                  }
+                              ],
+                              "ifTrueActivities": [
+                                  {
+                                      "name": "Delete File Structure before Retention",
+                                      "type": "Delete",
+                                      "dependsOn": [],
+                                      "policy": {
+                                          "timeout": "0.12:00:00",
+                                          "retry": 0,
+                                          "retryIntervalInSeconds": 30,
+                                          "secureOutput": false,
+                                          "secureInput": false
+                                      },
+                                      "userProperties": [],
+                                      "typeProperties": {
+                                          "dataset": {
+                                              "referenceName": "Ds_NYCTaxi_ADLS2_Folder",
+                                              "type": "DatasetReference",
+                                              "parameters": {
+                                                  "year": {
+                                                      "value": "@item().year",
+                                                      "type": "Expression"
+                                                  },
+                                                  "month": {
+                                                      "value": "@item().month",
+                                                      "type": "Expression"
+                                                  }
+                                              }
+                                          },
+                                          "enableLogging": false,
+                                          "storeSettings": {
+                                              "type": "AzureBlobFSReadSettings",
+                                              "recursive": true,
+                                              "enablePartitionDiscovery": false
+                                          }
+                                      }
+                                  },
+                                  {
+                                      "name": "DeleteServerlessDynamicView",
+                                      "type": "Script",
+                                      "dependsOn": [
+                                          {
+                                              "activity": "Delete File Structure before Retention",
+                                              "dependencyConditions": [
+                                                  "Succeeded"
+                                              ]
+                                          }
+                                      ],
+                                      "policy": {
+                                          "timeout": "0.12:00:00",
+                                          "retry": 0,
+                                          "retryIntervalInSeconds": 30,
+                                          "secureOutput": false,
+                                          "secureInput": false
+                                      },
+                                      "userProperties": [],
+                                      "linkedServiceName": {
+                                          "referenceName": "Ls_NYCTaxi_Synapse_Serverless_db",
+                                          "type": "LinkedServiceReference"
+                                      },
+                                      "typeProperties": {
+                                          "scripts": [
+                                              {
+                                                  "type": "NonQuery",
+                                                  "text": {
+                                                      "value": "@concat('DROP VIEW IF EXISTS ', 'dbo.VW_', item().year, item().month)",
+                                                      "type": "Expression"
+                                                  }
+                                              }
+                                          ]
+                                      }
+                                  }
+                              ]
+                          }
+                      },
+                      {
+                          "name": "If Current Year Folder is Empty",
+                          "type": "IfCondition",
+                          "dependsOn": [
+                              {
+                                  "activity": "Get Folder Children",
+                                  "dependencyConditions": [
+                                      "Succeeded"
+                                  ]
+                              }
+                          ],
+                          "userProperties": [],
+                          "typeProperties": {
+                              "expression": {
+                                  "value": "@and(activity('Get Folder Children').output.exists,equals(length(activity('Get Folder Children').output.childItems), 0))",
+                                  "type": "Expression"
+                              },
+                              "ifTrueActivities": [
+                                  {
+                                      "name": "Delete Current Empty Year",
+                                      "type": "Delete",
+                                      "dependsOn": [],
+                                      "policy": {
+                                          "timeout": "0.12:00:00",
+                                          "retry": 0,
+                                          "retryIntervalInSeconds": 30,
+                                          "secureOutput": false,
+                                          "secureInput": false
+                                      },
+                                      "userProperties": [],
+                                      "typeProperties": {
+                                          "dataset": {
+                                              "referenceName": "Ds_NYCTaxi_ADLS2_Year_Folder",
+                                              "type": "DatasetReference",
+                                              "parameters": {
+                                                  "year": {
+                                                      "value": "@item().year",
+                                                      "type": "Expression"
+                                                  }
+                                              }
+                                          },
+                                          "enableLogging": false,
+                                          "storeSettings": {
+                                              "type": "AzureBlobFSReadSettings",
+                                              "recursive": true,
+                                              "enablePartitionDiscovery": false
+                                          }
+                                      }
+                                  }
+                              ]
+                          }
+                      },
+                      {
+                          "name": "Get Folder Children",
+                          "type": "GetMetadata",
+                          "dependsOn": [
+                              {
+                                  "activity": "If Previous to Retention Date",
+                                  "dependencyConditions": [
+                                      "Succeeded"
+                                  ]
+                              }
+                          ],
+                          "policy": {
+                              "timeout": "0.12:00:00",
+                              "retry": 0,
+                              "retryIntervalInSeconds": 30,
+                              "secureOutput": false,
+                              "secureInput": false
+                          },
+                          "userProperties": [],
+                          "typeProperties": {
+                              "dataset": {
+                                  "referenceName": "Ds_NYCTaxi_ADLS2_Year_Folder",
+                                  "type": "DatasetReference",
+                                  "parameters": {
+                                      "year": {
+                                          "value": "@item().year",
+                                          "type": "Expression"
+                                      }
+                                  }
+                              },
+                              "fieldList": [
+                                  "childItems",
+                                  "exists"
+                              ],
+                              "storeSettings": {
+                                  "type": "AzureBlobFSReadSettings",
+                                  "recursive": true,
+                                  "enablePartitionDiscovery": false
+                              },
+                              "formatSettings": {
+                                  "type": "BinaryReadSettings"
+                              }
+                          }
+                      }
+                  ]
+              }
+          }
+      ],
+      "annotations": [],
+      "lastPublishTime": "2023-01-25T13:04:49Z"
+  },
+  "type": "Microsoft.Synapse/workspaces/pipelines"
+}
