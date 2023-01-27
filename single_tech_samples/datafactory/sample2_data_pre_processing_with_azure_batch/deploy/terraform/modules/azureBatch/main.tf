@@ -46,15 +46,10 @@ resource "azurerm_batch_pool" "orch_pool" {
   }
 
   start_task {
-    command_line       = file("./modules/startupTasks/orchestratorpool.sh")
+    command_line       = "/bin/bash -c \"sudo apt-get update && apt-get -y install python3-pip && pip install azure-batch==12.0.0 azure-keyvault==4.2.0 azure-identity==1.11.0 pydantic==1.10.2 python-dotenv==0.21.0\""
     task_retry_maximum = 1
     wait_for_success   = true
-    common_environment_properties = {
-      storage_account_name        = var.adls_account_name
-      container_name              = var.container_name
-      BATCH_INSIGHTS_DOWNLOAD_URL = "https://github.com/Azure/batch-insights/releases/download/v1.3.0/batch-insights"
-      AZCOPY_CONCURRENCY_VALUE    = "AUTO"
-    }
+    
     user_identity {
       auto_user {
         elevation_level = "Admin"
@@ -128,15 +123,9 @@ resource "azurerm_batch_pool" "exec_pool" {
     }
   }
   start_task {
-    command_line       = file("./modules/startupTasks/executionpool.sh")
+    command_line       = "/bin/bash -c 'sudo echo \"${var.adls_account_name}.blob.core.windows.net:/${var.adls_account_name}/${var.container_name} /${var.container_name} nfs defaults,sec=sys,vers=3,nolock,proto=tcp,nofail 0 0\" >> /etc/fstab && sudo mkdir -p /${var.container_name} && sudo apt-get update && sudo apt install -y nfs-common && mount /${var.container_name}'"
     task_retry_maximum = 1
-    wait_for_success   = true
-    common_environment_properties = {
-      storage_account_name        = var.adls_account_name
-      container_name              = var.container_name
-      BATCH_INSIGHTS_DOWNLOAD_URL = "https://github.com/Azure/batch-insights/releases/download/v1.3.0/batch-insights"
-      AZCOPY_CONCURRENCY_VALUE    = "AUTO"
-    }
+    wait_for_success   = true    
     user_identity {
       auto_user {
         elevation_level = "Admin"
