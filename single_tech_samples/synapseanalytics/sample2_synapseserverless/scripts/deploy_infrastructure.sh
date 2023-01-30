@@ -89,10 +89,10 @@ azure_storage_key=$(az storage account keys list \
     --resource-group "$resource_group_name" \
     --output json | jq -r '.[0].value')
 
-echo "Generating Config file using the template"
+echo "Generating Data config file using the template"
 cat ./scripts/config/datalake_config_template.json|sed -e "s/<project_name>/${PROJECT}/g" -e "s/<deployment_id>/${DEPLOYMENT_ID}/g" > ./scripts/config/datalake_config.json
 
-echo "Uploading Config file within the file system."
+echo "Uploading Data Retention config file within the file system."
 az storage blob upload --container-name 'config' --account-name "$azure_storage_account" --account-key "$azure_storage_key" \
     --file scripts/config/datalake_config.json --name "datalake_config.json" --overwrite
 kv_name=$(echo "$arm_output" | jq -r '.properties.outputs.keyvault_name.value')
@@ -110,8 +110,12 @@ synapse_serverless_endpoint=$(az synapse workspace show \
     --resource-group "$resource_group_name" \
     --output json |
     jq -r '.connectivityEndpoints | .sqlOnDemand')
+echo "$synapse_serverless_endpoint"
 
 synapse_sparkpool_name=$(echo "$arm_output" | jq -r '.properties.outputs.synapse_output_spark_pool_name.value')
+echo "$synapse_sparkpool_name"
+
+echo "$owner_object_id"
 
 sleep 20
 
@@ -133,6 +137,11 @@ aad_group_id=$(echo $aad_group_output | jq -r '.id')
 echo "Adding the AAD Group id to the KeyVault"
 az keyvault secret set --vault-name "$kv_name" --name "$aad_group_name" --value "$aad_group_id" -o none
 
+#################
+# RBAC - Synapse 
+# Allow Synapse Reader access to the AADGroup
+assign_synapse_role_if_not_exists "$synapseworkspace_name" "Synapse User" "$owner_object_id"
+
 ##########################
 # Deploy Synapse artifacts
 #AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID \
@@ -143,6 +152,7 @@ SYNAPSE_WORKSPACE_NAME=$synapseworkspace_name \
 BIG_DATAPOOL_NAME=$synapse_sparkpool_name \
 KEYVAULT_NAME=$kv_name \
     bash -c "./scripts/deploy_synapse_artifacts.sh"
+
 
 ####################
 # CLS
@@ -155,20 +165,12 @@ until [ -n "${aadGroupObjectId}" ]
         sleep 10
     done
 
-#################
-# RBAC - Synapse 
-# Allow Synapse Reader access to the AADGroup
-assign_synapse_role_if_not_exists "$synapseworkspace_name" "Synapse User" "$aadGroupObjectId"
-
 # Add the owner of the deployment to the AAD Group, if you have permissions to do it (otherwise you will need to request to the AAD admin and comment this line)
-#if [[ $(az ad group member check --group "AADGR${PROJECT}${DEPLOYMENT_ID}" --member-id ${owner_object_id}) == false ]]; then
-echo "Adding members to AAD Group:AADGR${PROJECT}${DEPLOYMENT_ID}"
-az ad group member add --group "AADGR${PROJECT}${DEPLOYMENT_ID}" --member-id $owner_object_id
-#fi
+if [[ $(az ad group member check --group "AADGR${PROJECT}${DEPLOYMENT_ID}" --member-id $owner_object_id) = false ]]
+then
+    echo "Adding members to AAD Group:AADGR${PROJECT}${DEPLOYMENT_ID}"
+    az ad group member add --group "AADGR${PROJECT}${DEPLOYMENT_ID}" --member-id $owner_object_id
+fi
 
 # Allow Contributor to the AAD Group on Synapse workspace
 az role assignment create --role "Contributor" --assignee-object-id "${aadGroupObjectId}" --assignee-principal-type "Group" --scope "/subscriptions/${AZURE_SUBSCRIPTION_ID}/resourceGroups/${resource_group_name}/providers/Microsoft.Synapse/workspaces/${synapseworkspace_name}"
-
-# Allow Contributor to the AAD Group on Synapse workspace
-echo "Giving ACL permission on the datalake container for the AAD Group"
-az storage fs access set --acl "group:${aadGroupObjectId}:rwx" -p "/" -f "datalake" --account-name "$azure_storage_account" --account-key "$azure_storage_key"

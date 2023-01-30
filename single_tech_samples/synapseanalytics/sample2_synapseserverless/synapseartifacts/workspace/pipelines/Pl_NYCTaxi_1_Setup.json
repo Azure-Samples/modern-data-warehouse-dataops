@@ -54,7 +54,7 @@
           "scripts": [
             {
               "type": "Query",
-              "text": "IF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'ext_ds_datalake') BEGIN CREATE EXTERNAL DATA SOURCE [ext_ds_datalake] WITH (LOCATION = N'https://') END"
+              "text": "IF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'ext_ds_datalake')\r\nBEGIN\r\n    CREATE EXTERNAL DATA SOURCE [ext_ds_datalake] WITH (LOCATION = N'https://sintechst1d16.blob.core.windows.net/datalake')\r\nEND"
             }
           ]
         }

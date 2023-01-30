@@ -102,14 +102,6 @@ createPipeline () {
             tmp1=$(mktemp)
             jq --arg a "${BIG_DATAPOOL_NAME}" '.properties.activities[3].typeProperties.sparkPool.referenceName = $a' ./synapseartifacts/workspace/pipelines/"${name}".json > "$tmp1" && mv "$tmp1" ./synapseartifacts/workspace/pipelines/"${name}".json
             ;;
-        "Pl_NYCTaxi_Run_Data_Retention")
-            # Replace spark pool name and storage account name based on deployment info
-            tmp=$(mktemp)
-            jq --arg a "${PROJECT_NAME}st1${DEPLOYMENT_ID}" '.properties.activities[1].typeProperties.activities[0].typeProperties.ifFalseActivities[0].typeProperties.parameters.stgAccountName.value = $a' ./synapseartifacts/workspace/pipelines/"${name}".json > "$tmp" && mv "$tmp" ./synapseartifacts/workspace/pipelines/"${name}".json
-            
-            tmp1=$(mktemp)
-            jq --arg a "${BIG_DATAPOOL_NAME}" '.properties.activities[1].typeProperties.activities[0].typeProperties.ifFalseActivities[0].typeProperties.sparkPool.referenceName = $a' ./synapseartifacts/workspace/pipelines/"${name}".json > "$tmp1" && mv "$tmp1" ./synapseartifacts/workspace/pipelines/"${name}".json
-            ;;
     esac
 
     # Deploy the pipeline
@@ -157,17 +149,13 @@ createLinkedService "Ls_NYCTaxi_ADLS2_Folder" "https://${PROJECT_NAME}st1${DEPLO
 createDataset "Ds_NYCTaxi_HTTP" 
 createDataset "Ds_NYCTaxi_ADLS2"
 createDataset "Ds_NYCTaxi_ADLS2_Folder"
-createDataset "Ds_NYCTaxi_ADLS2_Year_Folder"
 createDataset "Ds_NYCTaxi_Config"
 
 # Deploy all Notebooks
 # This line allows the spark pool to be available to attach to the notebooks
 az synapse spark session list --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spark-pool-name "${BIG_DATAPOOL_NAME}"
-createNotebook "Nb_NYCTaxi_Convert_Parquet_to_Delta"
-az synapse spark session list --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spark-pool-name "${BIG_DATAPOOL_NAME}"
-createNotebook "Nb_NYCTaxi_Config_Operations_Library"
-az synapse spark session list --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spark-pool-name "${BIG_DATAPOOL_NAME}"
-createNotebook "Nb_NYCTaxi_Run_Data_Retention"
+createNotebook "Nb_Convert_Parquet_to_Delta"
+createNotebook "nb_config_operations_library"
 
 # Deploy Setup Pipeline
 createPipeline "Pl_NYCTaxi_1_Setup" "IF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'ext_ds_datalake') BEGIN CREATE EXTERNAL DATA SOURCE [ext_ds_datalake] WITH (LOCATION = N'https://${PROJECT_NAME}st1${DEPLOYMENT_ID}.blob.core.windows.net/datalake') END"
@@ -175,10 +163,10 @@ createPipeline "Pl_NYCTaxi_1_Setup" "IF NOT EXISTS (SELECT * FROM sys.external_d
 # Deploy main pipeline that transforms parquet to delta and created dynamic views on top of the delta structure
 createPipeline "Pl_NYCTaxi_2_IngestData" "${BIG_DATAPOOL_NAME}"
 
-# Deploy main pipeline that calls the setup and ingest  pipelines
+# Deploy main pipeline that calls the setup and preparation pipelines
 createPipeline "Pl_NYCTaxi_0_Main" ""
 
-createPipeline "Pl_NYCTaxi_Run_Data_Retention" "${BIG_DATAPOOL_NAME}"
+#createPipeline "Pl_NYCTaxi_Run_Data_Retention" "${BIG_DATAPOOL_NAME}"
 
 # Deploy trigger
 createTrigger "Tg_NYCTaxi_0_Main"
