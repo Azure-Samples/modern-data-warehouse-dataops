@@ -14,8 +14,7 @@
   - [2.4. Deployment validation and Execution](#24-deployment-validation-and-execution)
   - [2.5. Clean-up](#25-clean-up)
 - [3. Troubleshooting](#3-troubleshooting)
-- [4. Notes](#4-notes)
-- [5. References](#5-references)
+- [4. References](#4-references)
 
 ## 1. Solution Overview
 
@@ -194,11 +193,6 @@ In order to fix this you must login to Azure using the following command:
 az login
 ```
 
-## 4. Notes
-
-- The azurerm_storage_container resource block can not be used due to a bug in the terraform provider. Hence the deployment is done using ARM template for storage containers.
-- The sample script expects the resource group to be created before it is executed.
-
-## 5. References
+## 4. References
 
 - [Lifecycle Management Overview](https://learn.microsoft.com/azure/storage/blobs/lifecycle-management-overview)
