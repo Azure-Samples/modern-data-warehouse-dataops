@@ -1,5 +1,5 @@
-resource_group_name = "sample-rg"
-location            = "eastus"
+resource_group_name = "dataops-sample"
+location            = "centralindia"
 tags = {
   environment = "dev",
 }
