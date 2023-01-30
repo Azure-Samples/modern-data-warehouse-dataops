@@ -1,14 +1,15 @@
 {
-  "name": "Ls_NYCTaxi_ADLS2_Folder",
-  "properties": {
-    "annotations": [],
-    "type": "AzureBlobFS",
-    "typeProperties": {
-      "url": "https://ysst1de4.dfs.core.windows.net/"
-    },
-    "connectVia": {
-      "referenceName": "AutoResolveIntegrationRuntime",
-      "type": "IntegrationRuntimeReference"
+    "name": "Ls_NYCTaxi_ADLS2_Folder",
+    "type": "Microsoft.Synapse/workspaces/linkedservices",
+    "properties": {
+        "type": "AzureBlobFS",
+        "connectVia": {
+            "referenceName": "AutoResolveIntegrationRuntime",
+            "type": "IntegrationRuntimeReference"
+        },
+        "annotations": [],
+        "typeProperties": {
+            "url": "https://dhdst1y5.dfs.core.windows.net/"
+        }
     }
-  }
 }
