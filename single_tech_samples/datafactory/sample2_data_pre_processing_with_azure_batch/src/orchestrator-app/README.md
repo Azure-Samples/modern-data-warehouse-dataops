@@ -9,7 +9,7 @@ python3 app/extract.py --inputFile <Your sample bag file path> --outputPath <You
 
 In the sample we are running it as :
 
-python3 app/extract.py --inputFile /data/raw/samplefile.bag --outputPath /data/extracted
+python3 app/extract.py --inputFile /data/raw/sample-data.bag --outputPath /data/extracted
 
 ```
 
@@ -49,7 +49,7 @@ az account set -s <YOUR AZURE SUBSCRIPTION ID>
 ```
 AZ_RESOURCE_GROUP="<YOUR-RESOURCEGROUP-NAME>"
 AZ_BATCH_ACCOUNT_NAME="<YOUR-BATCH-ACCOUNT-NAME>"
-AZ_BATCH_ORCHESTRATOR_POOL_D="<YOUR-ORCHESTRATION-POOL-NAME>"
+AZ_BATCH_ORCHESTRATOR_POOL_ID="<YOUR-ORCHESTRATION-POOL-NAME>"
 AZ_BATCH_ACCOUNT_URL="<YOUR-BATCH-ACCOUNT-URL>"
 AZ_BATCH_APP_VERSION="1.0.0"
 
@@ -57,9 +57,11 @@ az batch application package create --application-name orchestratorapp --name $A
 
 az batch application set --application-name orchestratorapp --name $AZ_BATCH_ACCOUNT_NAME --resource-group $AZ_RESOURCE_GROUP --default-version $AZ_BATCH_APP_VERSION
 
-az batch pool set --pool-id $AZ_BATCH_ORCHESTRATOR_POOL --account-name $AZ_BATCH_ACCOUNT_NAME --account-endpoint $AZ_BATCH_ACCOUNT_URL --application-package-references 'orchestratorapp'
+az batch pool set --pool-id $AZ_BATCH_ORCHESTRATOR_POOL_ID --account-name $AZ_BATCH_ACCOUNT_NAME --account-endpoint $AZ_BATCH_ACCOUNT_URL --application-package-references 'orchestratorapp'
 
 ```
+
+Note: Refer to [deployed resources](../../deploy/terraform/README.md) for populating resource names.
 
 6. Restart orchestrator pool nodes, this is required to pull the uploaded application on the batch nodes. For more details refer to the [documentation](https://learn.microsoft.com/en-us/azure/batch/batch-application-packages)
 
@@ -92,7 +94,7 @@ AZ_BATCH_KEY="<YOUR-BATCH-KEY>"
 
 3. Set `extract.py` as your current file and select the `Run` tool to run `Python:extract`
 
-![Batch pool application](images/local-debug.png)
+![Debug orchestrator application](../../images/local-debug.png)
 
 Note: `.vscode\launch.json` contains a sample extract task configuration which passes sample arguments to the orchestrator app. The path used is actually a mounted path of the ADLS account where a sample file exists. Please refer to [this section]() for mounting details. 
 

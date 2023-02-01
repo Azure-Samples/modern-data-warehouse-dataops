@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     AZ_KEYVAULT_NAME: str = None
     AZ_BATCH_ACCOUNT_URL: str = os.getenv("AZ_BATCH_ACCOUNT_URL",default=None)
     AZ_BATCH_ACCOUNT_NAME: str = os.getenv("AZ_BATCH_ACCOUNT_NAME",default=None)
-    AZ_BATCH_EXECUTION_POOL_ID: str = os.getenv("AZ_BATCH_EXECUTION_POOL_ID",default="execution-pool")
+    AZ_BATCH_EXECUTION_POOL_ID: str = os.getenv("AZ_BATCH_EXECUTION_POOL_ID",default="executionpool")
     AZ_BATCH_KEY: str = "azurebatchkey"
 
     class Config:

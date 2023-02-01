@@ -51,7 +51,7 @@ terraform apply
 
 ![post-apply](../../images/post-apply-output.png)
 
-Note:- Make a note of names of resources deployed, you will need their names in further scripts.
+Note:- Copy the output with resource names to your notepad, you will need their names in further scripts. If you don't copy then can always get it from azure portal by navigating to your resource group.
 ### Deployed Resources
 
 After the successful execution of `terraform apply` following resources will be created in your resource group. From Azure portal you can navigate to your resource group for more details about the deployed resources.

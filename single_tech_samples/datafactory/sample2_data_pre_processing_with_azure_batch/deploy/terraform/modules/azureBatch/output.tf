@@ -21,3 +21,7 @@ output "exec_pool_name" {
 output "orch_pool_name" {
   value = azurerm_batch_pool.orch_pool.name
 }
+
+output "batch_account_url" {
+  value = azurerm_batch_account.batch_account.account_endpoint
+}

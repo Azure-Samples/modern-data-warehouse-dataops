@@ -9,7 +9,10 @@ This is a sample image which is buid from ros:noetic base image. It extracts the
 cd ./single_tech_samples/datafactory/sample2_data_pre_processing_with_azure_batch/src/sample-processor
 ```
 
-* Build a docker image by running : ```docker build . -t sample-processor:latest```
+* Build a docker image by running : 
+```
+docker build . -t sample-processor:latest
+```
 
 ### Testing your image locally
 

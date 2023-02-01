@@ -97,7 +97,9 @@ This section holds the information about usage instructions of this sample.
    - *Installation instructions* can be found [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 2. [Terraform](https://www.terraform.io/) 
    - *Installation instructions* can be found [here](https://developer.hashicorp.com/terraform/downloads)
-3. For Windows users,
+3. [Docker Desktop](https://www.docker.com/get-started/)
+   - *Installation instructions* can be found [here](https://www.docker.com/products/docker-desktop/)   
+4. For Windows users,
    1. Option 1: [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
    2. Option 2: Use the devcontainer published [here](./.devcontainer) as a host for the bash shell, it has all the pre-requisites installed.
       For more information about Devcontainers, see [here](https://code.visualstudio.com/docs/remote/containers).
