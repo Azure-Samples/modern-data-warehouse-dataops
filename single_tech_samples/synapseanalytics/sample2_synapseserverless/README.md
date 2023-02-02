@@ -12,8 +12,8 @@
 - [Synapse Serverless with Delta files and Partitioned Views](#synapse-serverless-with-delta-files-and-partitioned-views)
   - [Dynamic View Creation on top of Delta files](#dynamic-view-creation-on-top-of-delta-files)
   - [Implementing CLS on top of Delta files with Synapse Serverless](#implementing-cls-on-top-of-delta-files-with-synapse-serverless)
-  - [Applying ACLs to the datalake (using Spark pool)](#applying-acls-to-the-datalake-using-spark-pool)
-  - [Implementing Data Retention (using Spark pool)](#implementing-data-retention-using-spark-pool)
+  - [Applying ACLs to the datalake (using a Spark pool)](#applying-acls-to-the-datalake-using-a-spark-pool)
+  - [Implementing Data Retention (using a Spark pool)](#implementing-data-retention-using-a-spark-pool)
 - [Working with the Sample](#working-with-the-sample)
   - [Pre-requisites](#pre-requisites)
   - [Using Dev Containers](#using-dev-containers)
@@ -32,7 +32,7 @@
 
 ## Objectives
 
-This sample aims to demonstrate the use of Synapse Serverless Pools with Delta Lake files including the automation towards the CI initial deployment of the necessary artifacts and the automation of the dynamic views creation on top of the delta lake files based on a json configuration file. A second and related objective is to demonstrates how to implement CLS (Column Level Security) on the delta tables using the previously created views. Finally, the sample also aims to demonstrate how to approach and execute on data retention requirements at the partition level or at a particular data/time field.
+This sample aims to demonstrate the use of Synapse Serverless Pools with Delta Lake files including the automation towards the CI initial deployment of the necessary artifacts and the automation of the dynamic views creation on top of the delta lake files based on a json configuration file. A second and related objective is to demonstrates how to implement CLS (Column Level Security) on the delta tables using the previously created views. Finally, the sample also aims to demonstrate how to approach and execute on data retention requirements at the partition level or at the level of a particular data/time field.
 
 ## Key Learnings
 
@@ -45,18 +45,18 @@ When using this sample, you will learn:
 - to implement CLS on top of the lake
 - to use only ACLs on the data lake in order to allow to access to the Synapse workspace but not direct access to the storage account. The use of Azure roles (Storage Reader for example) is not recommended in this case as it is too permissive and ACLs allow for a more fined grained approach
 - understand how to implement common data retention requirements considering two angles:
-  - physical partition year/month structure s
+  - physical partition year/month structure
   - specific datetime field
 
 ## Source System Data Considerations
 
 For the purpose of demonstrating the mentioned goals, we are using the New York Taxi open data as a source system because is a known global dataset and quite simple to understand.
 
-However, it's important to mention that the use of any data source that is star schema like can also be used for the same purpose and furthermore possible better mirror some real-life use cases.
+However, it's important to mention that the use of any data source that is star schema like can also be used for the same purpose and furthermore better mirror some real-life use cases.
 
 ## Json Configuration File
 
-The sample makes use of a json configuration file. This file drives different behaviors through the sample by using different parameters.
+The sample makes use of a json configuration file. This file drives different behaviors through out the sample by using different parameters.
 
 A template named datalake_config_template.json is provided and the deployment script dynamically updates a datalake_config.json file with the information of the current deployment. The deployment then uploads the config file in the datalake storage account on a container called config.
 
@@ -66,7 +66,7 @@ The template file can be changed previously to the deployment to reflect other y
 
 The configuration file structure is as described below:
 
-`
+```json
 {
   "datalakeProperties": [
     {
@@ -90,25 +90,26 @@ The configuration file structure is as described below:
       "lastUpdatedSourceSystem": "2023-01-15T08:05:18Z",
       "lastUpdatedDatalake": "2023-01-01T08:05:18Z"
     },...
-`
+```
 
 ### Configuration File Parameters Definition
 
 The file defines the values for the following fields:
 
-- year: year to ingest from source system. First level of the physical partition(*) in the destination system (datalake).
-- month: to ingest from source system. Second level of the physical partition in the destination system (datalake).
-- aclPermissions: definition of type of permission and AD groups groups that should be attributed to that year/month/file hierarchy. Type of permissions are: read, write and execute. Groups are AD Groups, and in the scope of the sample they have the following name convention: AADGR<PROJECT><DEPLOYMENT_ID>(**).
-- created: datetime fields that represents the date and time that the file was created in the source system.
-- lastUpdatedSourceSystem: datetime fields that represents the date and time that the file was last updated in the source system.
-- lastUpdatedDatalake: datetime fields that represents the date and time that the file was updated in the Data Lake.
+- **year**: year to ingest from source system. First level of the physical partition(*) in the destination system (datalake).
+- **month**: to ingest from source system. Second level of the physical partition in the destination system (datalake).
+- **aclPermissions**: definition of type of permission and AD groups groups that should be attributed to that year/month/file hierarchy. Type of permissions are: read, write and execute. Groups are AD Groups, and in the scope of the sample they have the following name convention: AADGR<PROJECT><DEPLOYMENT_ID>(**).
+- **created**: datetime fields that represents the date and time that the file was created in the source system.
+- **lastUpdatedSourceSystem**: datetime fields that represents the date and time that the file was last updated in the source system.
+- **lastUpdatedDatalake**: datetime fields that represents the date and time that the file was updated in the Data Lake.
   
 (*) - The partitioning implemented in the target destination follows a two-level physical partitioning strategy. There is no logical partitioning executed in the datalake.
+
 (**) - As part of the sample, just one unique AD Group is automatically generated, but the code is prepared to take more groups in the list. Keep in mind the ACL limit limitation described [here:](https://learn.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-access-control#what-are-the-limits-for-azure-role-assignments-and-acl-entries)
 
 ### Configuration File Parameters Current Usage
 
-Each pair year/month will be ingested into the same physical structure in the data lake. For that hierarchy including the delta file and respective metadata structure, the aclPermissions will be applied.
+Each pair year/month will be ingested into the same physical structure in the data lake. For that hierarchy (including the delta file and respective metadata), the aclPermissions will be applied.
 
 The datetime fields are supporting fields used to optimize the ingestion process. When:
 
@@ -132,8 +133,8 @@ An extra challenge when dealing with Delta Files is to expect a large number of 
 There are several aspects to consider in this process:
 
 - Setup, that is responsible to automatically create a database within the serverless pool, creates a external data source to the data lake and a stored procedure in the serverless database that will be triggered later. This functionality is also aligned with the pipeline Pl_NYCTaxi_1_Setup. This pipeline needs to run before the P_NYCTaxi_2_IngestData pipeline.
-- Ingest or re-ingest parquet data alined with the datalake_config.json configuration file definitions and transform it to delta format. In order to have testing data we are downloading sample data from the NYC Taxi available open data as mentioned earlier, to demonstrate the behavior. The data is in parquet format and a second step is taken to transform the same data to the delta format. In case of re-ingestion, the previous version is dropped completely not to run into file inconsistencies and to guarantee that if there is a schema change in the source that fact is reflected in the destination.
-- Automatically creates partitioned views based on the delta lake file structure after its creation, the third pillar of the process is responsible to point to the data lake previously created folders and dynamically create or re-create the partitioned views on top of it. For that it uses the stored procedure that was created on the Setup pipeline as explained above.
+- Ingest or re-ingest parquet data aligned with the datalake_config.json configuration file definitions and transform it to delta format. In order to have testing data we are downloading sample data from the NYC Taxi available open data as mentioned earlier, to demonstrate the behavior. The data is in parquet format and a second step is taken to transform the same data to the delta format. In case of re-ingestion, the previous version is dropped completely not to run into file inconsistencies and to guarantee that if there is a schema change in the source that fact is reflected in the destination without conflicts.
+- Automatically creates partitioned views based on the delta lake file structure after its creation, this pillar of the process is responsible to point to the folders previously created  and dynamically create or re-create the partitioned views on top of it. For that purpose, the stored procedure that was created on the Setup pipeline is executed accordingly.
 - Automatically and recursively applies ACLs list definitions read from the datalake_config.json file.
 - Backup the configuration file with the following name convention <datalake_config.json.current_timestamp> and update the configuration file content to replace timestamp for the lastUpdatedDatalake field after the ingestion.
 
@@ -168,15 +169,15 @@ The diagram below illustrates the step-by-step process in order to successfully 
 
 ![CLS](./images/CLS.jpg)
 
-### Applying ACLs to the datalake (using Spark pool)
+### Applying ACLs to the datalake (using a Spark pool)
 
-Once the ingestion is finished, a process that applies the ACL list defined in the configuration file to the datalake is triggered.
-The main advantage of this process is that is an independent module. It can run after the ingestion within the same pipeline, but it can also be ran independently of the ingestion process if necessary.
+Once the ingestion is finished, a process that applies the ACL list defined in the configuration file in the datalake is triggered.
+The main advantage of this process is that runs as an independent module. It can run after the ingestion within the same pipeline, but it can also be ran independently of the ingestion process if necessary.
 
-In order to apply the ACLs, the azure-storage-file-datalake was used and a Key Vault was included in the deployment to deal with the storage secrets properly.
+In order to apply the ACLs, the azure-storage-file-datalake library was used and a Key Vault was included in the deployment to deal with the storage secrets properly.
 
 Nevertheless, importing the library mentioned above might take a considerably amount of time from within Synapse.
-In the table below the explored options are summarized and pros and cons are summarized:
+In the table below the explored options with pros and cons are summarized:
 
 | Method | Command used/Steps needed | Pros | Cons |
 |-|-|-|-|
@@ -187,7 +188,7 @@ In the table below the explored options are summarized and pros and cons are sum
 | | | 2) Runs one time at the deployment time | |
 | Run a similar script outside Synapse | script and language of choice | Runtime faster | Adds complexity to the architecture and loses centralization of the entire process in just one service - Synapse |
 
-### Implementing Data Retention (using Spark pool)
+### Implementing Data Retention (using a Spark pool)
 
 The correct implementation of data retention requirements is paramount to organizations due to compliance reasons and legal obligations. However, when those obligations are attained and the data no longer needs to be retained, the removal of that data should be incorporated in the data lifecycle execution process.
 
@@ -195,10 +196,8 @@ In the current sample implementation, the Data retention period is assumed to be
 
 The Data Retention process runs under the execution of the Pl_NYCTaxi_Run_Data_Retention pipeline and the process considers several angles when iterating on the configuration file information.
 
-If the year and month in the configuration files is:
-
-- previous to the retention date obligation (current data minus 2 years) and that data is not present in the datalake, then those folders are not ingested and furthermore are deleted from the configuration file after properly backing it up.
-- previous to the retention date obligation (current data minus 2 years) and that data is not present in the datalake, then those folders are deleted as well as the corresponding partitioned views.
+- If the year and month in the configuration files is previous to the retention date obligation (current data minus 2 years) and that data is not present in the datalake, then those folders are not ingested and furthermore are deleted from the configuration file after properly backing it up.
+- If the year and month in the configuration files is previous to the retention date obligation (current data minus 2 years) and that data is present in the datalake, then those folders are deleted as well as the corresponding partitioned views.
   
 |![Datalake after ingestion](./images/datalake_after_ingestion.jpg)|
 |:--:|
@@ -208,7 +207,7 @@ If the year and month in the configuration files is:
 |:--:|
 | Datalake after deleting folders outside of retention |
 
-- covered by the retention date obligation and that data is present in the datalake, then a query is ran to delete individual records that are previous to the retention date in a specific field (tpep_pickup_datetime in the current example). In this case, because of the Delta lake default behavior of saving extra files to use later for time travel purposes, the notebook also runs a vacuum command to remove all unnecessary files. In the present sample, vacuum is ran with 0 retention hours setting, so users are able to check the results immediately, but in production environments caution is advised and is recommended to have at least 7 days of retention before running this command.
+- If the year and month in the configuration files is covered by the retention date obligation and that data is present in the datalake, then a query is ran to delete individual records that are previous to the retention date in a specific field (tpep_pickup_datetime in the current example). In this case, because of the Delta lake default behavior of saving extra files to use later for time travel purposes, the notebook also runs a vacuum command to remove all unnecessary files. In the present sample, vacuum is ran with 0 retention hours setting, so users are able to check the results immediately, but in production environments caution is advised and is recommended to have at least 7 days of retention before running this command.
 
 |![Datalake after running delete query](./images/datalake_after_field_query_delete.jpg)|
 |:--:|
@@ -310,8 +309,6 @@ The synapse artifacts are uploaded immediately after the infrastructure is succe
   - Pl_NYCTaxi_1_Setup
   - Pl_NYCTaxi_2_IngestData
   - Pl_NYCTaxi_Run_Data_Retention
-
-    ![Pipeline Hierarchy](./images/pipeline_hierarchy.jpg)
 - Notebook
   - Nb_NYCTaxi_Convert_Parquet_to_Delta
   - Nb_NYCTaxi_Config_Operations_Library
