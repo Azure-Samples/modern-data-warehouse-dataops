@@ -95,6 +95,9 @@ module "container_registry" {
 # ------------------------------------------------------------------------------------------------------
 
 module "azure_batch" {
+  depends_on = [
+    module.container_registry
+  ]
   source                  = "./modules/azureBatch"
   resource_group_name     = var.resource_group_name
   location                = var.location
