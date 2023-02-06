@@ -41,7 +41,7 @@ getProvisioningState(){
 createLinkedService () {
     declare name=$1
     declare url=$2
-    echo "Creating Synapse LinkedService: $name"
+    echo "$(date):Synapse Workspace: Creating Synapse LinkedService: $name"
     tmp=$(mktemp)
 
     case "$name" in
@@ -65,7 +65,7 @@ createLinkedService () {
 
 createDataset () {
     declare name=$1
-    echo "Creating Synapse Dataset: $name"
+    echo "$(date):Synapse Workspace: Creating Synapse Dataset: $name"
     az synapse dataset create --file @./synapseartifacts/workspace/datasets/"${name}".json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" -o none
 }
 createNotebook() {
@@ -73,13 +73,13 @@ createNotebook() {
     # As of 26 Oct 2021, there is an outstanding bug regarding az synapse notebook create command which prevents it from deploy notebook .JSON files
     # Thus, we are resorting to deploying notebooks in .ipynb format.
     # See here: https://github.com/Azure/azure-cli/issues/20037
-    echo "Creating Synapse Notebook: $name"
+    echo "$(date):Synapse Workspace: Creating Synapse Notebook: $name"
     az synapse notebook create --file @./synapseartifacts/notebooks/"${name}".ipynb --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spark-pool-name "${BIG_DATAPOOL_NAME}" -o none
 }
 createPipeline () {
     declare name=$1
     declare sqlScript=$2
-    echo "Creating Synapse Pipeline: $name"
+    echo "$(date):Synapse Workspace: Creating Synapse Pipeline: $name"
 
     case $name in 
         "Pl_NYCTaxi_1_Setup")
@@ -117,24 +117,24 @@ createPipeline () {
 }
 createTrigger () {
     declare name=$1
-    echo "Creating Synapse Trigger: $name"
+    echo "$(date):Synapse Workspace: Creating Synapse Trigger: $name"
     az synapse trigger create --file @./synapseartifacts/workspace/triggers/"${name}".json --name="${name}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" -o none
 }
 
 createSQLScript(){
     declare name=$1
-    echo "Creating Synapse SQL Script: $name"
+    echo "$(date):Synapse Workspace: Creating Synapse SQL Script: $name"
     az synapse sql-script create --workspace-name $SYNAPSE_WORKSPACE_NAME --name "${name}" --file ./synapseartifacts/workspace/scripts/"$name".sql -o none
 }
 
 startTrigger(){
     declare name=$1
-    echo "Starting Synapse Trigger: $name"
+    echo "$(date):Synapse Workspace: Starting Synapse Trigger: $name"
     az synapse trigger start --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --name "${name}"
 }
 
 getProvisioningState
-echo "$provision_state"
+echo "$(date):$provision_state"
 
 while [ "$provision_state" != "Succeeded" ]
 do
@@ -142,6 +142,25 @@ do
     getProvisioningState
     echo "$provision_state: checking again in 10 seconds..."
 done
+
+addPackageToSynapseWorkspace(){
+    echo "$(date):Synapse Workspace: Adding Wheel file as a workspace package"
+    az synapse workspace-package upload --workspace-name "${SYNAPSE_WORKSPACE_NAME}" \
+        --package ./synapseartifacts/workspace/packages/adlsaccess-1.0-py3-none-any.whl
+}
+
+attachingPackageToSparkPool(){
+    echo "$(date):Synapse SparkPool Update: Attaching workspace package to SparkPool"
+    az synapse spark pool update --name "${BIG_DATAPOOL_NAME}" \
+        --workspace-name "${SYNAPSE_WORKSPACE_NAME}" \
+        --resource-group "${RESOURCE_GROUP_NAME}" \
+        --package "adlsaccess-1.0-py3-none-any.whl" \
+        --package-action Add
+}
+
+# Add Whell package to Synapse workspace
+addPackageToSynapseWorkspace
+attachingPackageToSparkPool
 
 # Deploy all Linked Services
 
@@ -166,6 +185,8 @@ az synapse spark session list --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spa
 createNotebook "Nb_NYCTaxi_Convert_Parquet_to_Delta"
 az synapse spark session list --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spark-pool-name "${BIG_DATAPOOL_NAME}"
 createNotebook "Nb_NYCTaxi_Config_Operations_Library"
+az synapse spark session list --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spark-pool-name "${BIG_DATAPOOL_NAME}"
+createNotebook "Nb_NYCTaxi_Config_Operations_Library_No_Wheel"
 az synapse spark session list --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spark-pool-name "${BIG_DATAPOOL_NAME}"
 createNotebook "Nb_NYCTaxi_Run_Data_Retention"
 

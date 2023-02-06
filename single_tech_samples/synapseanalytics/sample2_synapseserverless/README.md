@@ -98,7 +98,7 @@ The file defines the values for the following fields:
 
 - **year**: year to ingest from source system. First level of the physical partition(*) in the destination system (datalake).
 - **month**: to ingest from source system. Second level of the physical partition in the destination system (datalake).
-- **aclPermissions**: definition of type of permission and AD groups groups that should be attributed to that year/month/file hierarchy. Type of permissions are: read, write and execute. Groups are AD Groups, and in the scope of the sample they have the following name convention: AADGR<PROJECT><DEPLOYMENT_ID>(**).
+- **aclPermissions**: definition of type of permission and AD groups groups that should be attributed to that year/month/file hierarchy. Type of permissions are: read, write and execute. Groups are AD Groups, and in the scope of the sample they have the following name convention: "AADGR"<PROJECT><DEPLOYMENT_ID>(**).
 - **created**: datetime fields that represents the date and time that the file was created in the source system.
 - **lastUpdatedSourceSystem**: datetime fields that represents the date and time that the file was last updated in the source system.
 - **lastUpdatedDatalake**: datetime fields that represents the date and time that the file was updated in the Data Lake.
@@ -187,6 +187,8 @@ In the table below the explored options with pros and cons are summarized:
 | Import whl package| import whl to synapse package workspace, import package from the notebook| 1) The use of whl packages is considered best practice because allows the simplification of the notebooks and enable a simpler way to do unit tests | Takes 20 minutes to run this step |
 | | | 2) Runs one time at the deployment time | |
 | Run a similar script outside Synapse | script and language of choice | Runtime faster | Adds complexity to the architecture and loses centralization of the entire process in just one service - Synapse |
+
+NOTE: when deploying the sample, the version using the notebook with the wheel sample import is used by default. However, a version with no wheel file is also provided under the name of Nb_NYCTaxi_Config_Operations_Library_No_Wheel.ipynb. To test the latest, is enough to change the Pl_NYCTaxi_0_Main pipeline to point to the second notebook instead.
 
 ### Implementing Data Retention (using a Spark pool)
 
@@ -309,10 +311,13 @@ The synapse artifacts are uploaded immediately after the infrastructure is succe
   - Pl_NYCTaxi_1_Setup
   - Pl_NYCTaxi_2_IngestData
   - Pl_NYCTaxi_Run_Data_Retention
-- Notebook
+- Notebooks
   - Nb_NYCTaxi_Convert_Parquet_to_Delta
   - Nb_NYCTaxi_Config_Operations_Library
+  - Nb_NYCTaxi_Config_Operations_Library_No_Wheel
   - Nb_NYCTaxi_Run_Data_Retention
+- Packages
+  - adlsaccess-1.0-py3-none-any.whl
 - Trigger
   - Tg_NYCTaxi_0_Main
 - Script
