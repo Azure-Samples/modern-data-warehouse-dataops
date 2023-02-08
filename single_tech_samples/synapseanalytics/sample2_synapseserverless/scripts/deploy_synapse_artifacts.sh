@@ -189,6 +189,8 @@ az synapse spark session list --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spa
 createNotebook "Nb_NYCTaxi_Config_Operations_Library_No_Wheel"
 az synapse spark session list --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spark-pool-name "${BIG_DATAPOOL_NAME}"
 createNotebook "Nb_NYCTaxi_Run_Data_Retention"
+az synapse spark session list --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --spark-pool-name "${BIG_DATAPOOL_NAME}"
+createNotebook "Nb_NYCTaxi_Run_Data_Retention_No_Wheel"
 
 # Deploy Setup Pipeline
 createPipeline "Pl_NYCTaxi_1_Setup" "IF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'ext_ds_datalake') BEGIN CREATE EXTERNAL DATA SOURCE [ext_ds_datalake] WITH (LOCATION = N'https://${PROJECT_NAME}st1${DEPLOYMENT_ID}.blob.core.windows.net/datalake') END"
