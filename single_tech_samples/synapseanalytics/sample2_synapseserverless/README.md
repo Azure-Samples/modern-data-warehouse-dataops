@@ -98,7 +98,7 @@ The file defines the values for the following fields:
 
 - **year**: year to ingest from source system. First level of the physical partition(*) in the destination system (datalake).
 - **month**: to ingest from source system. Second level of the physical partition in the destination system (datalake).
-- **aclPermissions**: definition of type of permission and AD groups groups that should be attributed to that year/month/file hierarchy. Type of permissions are: read, write and execute. Groups are AD Groups, and in the scope of the sample they have the following name convention: "AADGR"<PROJECT><DEPLOYMENT_ID>(**).
+- **aclPermissions**: definition of type of permission and AD groups groups that should be attributed to that year/month/file hierarchy. Type of permissions are: read, write and execute. Groups are AD Groups, and in the scope of the sample they have the following name convention: "AADGR"<PROJECT_NAME><DEPLOYMENT_ID>(**).
 - **created**: datetime fields that represents the date and time that the file was created in the source system.
 - **lastUpdatedSourceSystem**: datetime fields that represents the date and time that the file was last updated in the source system.
 - **lastUpdatedDatalake**: datetime fields that represents the date and time that the file was updated in the Data Lake.
