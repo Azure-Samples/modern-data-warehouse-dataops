@@ -317,6 +317,7 @@ The synapse artifacts are uploaded immediately after the infrastructure is succe
   - Nb_NYCTaxi_Config_Operations_Library
   - Nb_NYCTaxi_Config_Operations_Library_No_Wheel
   - Nb_NYCTaxi_Run_Data_Retention
+  - Nb_NYCTaxi_Run_Data_Retention_No_Wheel
 - Packages
   - adlsaccess-1.0-py3-none-any.whl
 - Trigger
