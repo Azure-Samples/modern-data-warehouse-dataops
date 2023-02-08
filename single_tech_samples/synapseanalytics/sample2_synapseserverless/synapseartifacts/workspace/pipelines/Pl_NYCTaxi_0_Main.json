@@ -197,10 +197,6 @@
             "storage_acct": {
               "value": "",
               "type": "string"
-            },
-            "retentionTimeInYears": {
-              "value": "2",
-              "type": "string"
             }
           },
           "sparkPool": {
