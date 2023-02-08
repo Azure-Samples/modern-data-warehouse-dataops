@@ -189,6 +189,7 @@ In the table below the explored options with pros and cons are summarized:
 | Run a similar script outside Synapse | script and language of choice | Runtime faster | Adds complexity to the architecture and loses centralization of the entire process in just one service - Synapse |
 
 NOTE: when deploying the sample, the version using the notebook with the wheel sample import is used by default. However, a version with no wheel file is also provided under the name of Nb_NYCTaxi_Config_Operations_Library_No_Wheel.ipynb. To test the latest, is enough to change the Pl_NYCTaxi_0_Main pipeline to point to the second notebook instead.
+The same applies to Nb_NYCTaxi_Run_Data_Retention and Nb_NYCTaxi_Run_Data_Retention_No_Wheel notebooks.
 
 ### Implementing Data Retention (using a Spark pool)
 
