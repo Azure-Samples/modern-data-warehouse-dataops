@@ -146,7 +146,7 @@ done
 addPackageToSynapseWorkspace(){
     echo "$(date):Synapse Workspace: Adding Wheel file as a workspace package"
     az synapse workspace-package upload --workspace-name "${SYNAPSE_WORKSPACE_NAME}" \
-        --package ./synapseartifacts/workspace/packages/adlsaccess-1.0-py3-none-any.whl
+        --package ./synapseartifacts/workspace/workspace_packages/adlsaccess-1.0-py3-none-any.whl
 }
 
 attachingPackageToSparkPool(){
