@@ -149,7 +149,7 @@ addPackageToSynapseWorkspace(){
         --package ./synapseartifacts/workspace/workspace_packages/adlsaccess-1.0-py3-none-any.whl
 }
 
-attachingPackageToSparkPool(){
+attachPackageToSparkPool(){
     echo "$(date):Synapse SparkPool Update: Attaching workspace package to SparkPool"
     az synapse spark pool update --name "${BIG_DATAPOOL_NAME}" \
         --workspace-name "${SYNAPSE_WORKSPACE_NAME}" \
@@ -158,9 +158,9 @@ attachingPackageToSparkPool(){
         --package-action Add
 }
 
-# Add Whell package to Synapse workspace
+# Add Wheel package to Synapse workspace
 addPackageToSynapseWorkspace
-attachingPackageToSparkPool
+attachPackageToSparkPool
 
 # Deploy all Linked Services
 

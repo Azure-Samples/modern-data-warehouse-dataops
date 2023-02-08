@@ -105,7 +105,7 @@ The file defines the values for the following fields:
   
 (*) - The partitioning implemented in the target destination follows a two-level physical partitioning strategy. There is no logical partitioning executed in the datalake.
 
-(**) - As part of the sample, just one unique AD Group is automatically generated, but the code is prepared to take more groups in the list. Keep in mind the ACL limit limitation described [here:](https://learn.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-access-control#what-are-the-limits-for-azure-role-assignments-and-acl-entries)
+(**) - As part of the sample, just one unique AD Group is automatically generated, but the code is prepared to take more groups in the list. Keep in mind the limits for ACL entries described [here](https://learn.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-access-control#what-are-the-limits-for-azure-role-assignments-and-acl-entries)
 
 ### Configuration File Parameters Current Usage
 
