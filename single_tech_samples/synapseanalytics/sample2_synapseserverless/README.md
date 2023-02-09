@@ -182,10 +182,10 @@ In the table below the explored options with pros and cons are summarized:
 | Method | Command used/Steps needed | Pros | Cons |
 |-|-|-|-|
 | Import library directly in the notebook | pip install azure-storage-file-datalake | Faster method to load the library (seconds after the Spark pools starts) | |
-| Import requirements.txt and update Spark pool | az synapse spark pool update with --library-requirements requirements.txt | 1) Centralized execution of the requirements | Takes 20 minutes to run this step |
-| | | 2) Runs one time at the deployment time | |
+| Import requirements.txt and update Spark pool | az synapse spark pool update with --library-requirements requirements.txt | 1) Centralized execution of the requirements  | Takes 20 minutes to run this step  |
+||| 2) Runs one time at the deployment time | |
 | Import whl package| import whl to synapse package workspace, import package from the notebook| 1) The use of whl packages is considered best practice because allows the simplification of the notebooks and enable a simpler way to do unit tests | Takes 20 minutes to run this step |
-| | | 2) Runs one time at the deployment time | |
+||| 2) Runs one time at the deployment time | |
 | Run a similar script outside Synapse | script and language of choice | Runtime faster | Adds complexity to the architecture and loses centralization of the entire process in just one service - Synapse |
 
 NOTE: when deploying the sample, the version using the notebook with the wheel sample import is used by default. However, a version with no wheel file is also provided under the name of Nb_NYCTaxi_Config_Operations_Library_No_Wheel.ipynb. To test the latest, is enough to change the Pl_NYCTaxi_0_Main pipeline to point to the second notebook instead.
