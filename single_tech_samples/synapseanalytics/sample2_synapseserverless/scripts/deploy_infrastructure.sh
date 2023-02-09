@@ -94,7 +94,7 @@ cat ./scripts/config/datalake_config_template.json|sed -e "s/<project_name>/${PR
 
 echo "Uploading Config file within the file system."
 az storage blob upload --container-name 'config' --account-name "$azure_storage_account" --account-key "$azure_storage_key" \
-    --file scripts/config/datalake_config.json --name "datalake_config.json" --overwrite
+    --file scripts/config/datalake_config.json --name "datalake_config.json" --overwrite -o none
 kv_name=$(echo "$arm_output" | jq -r '.properties.outputs.keyvault_name.value')
 az keyvault secret set --vault-name "$kv_name" --name "datalakeKey" --value "$azure_storage_key" -o none
 
@@ -171,4 +171,4 @@ az role assignment create --role "Contributor" --assignee-object-id "${aadGroupO
 
 # Allow Contributor to the AAD Group on Synapse workspace
 echo "Giving ACL permission on the datalake container for the AAD Group"
-az storage fs access set --acl "group:${aadGroupObjectId}:rwx" -p "/" -f "datalake" --account-name "$azure_storage_account" --account-key "$azure_storage_key"
+az storage fs access set --acl "group:${aadGroupObjectId}:rwx" -p "/" -f "datalake" --account-name "$azure_storage_account" --account-key "$azure_storage_key" -o none
