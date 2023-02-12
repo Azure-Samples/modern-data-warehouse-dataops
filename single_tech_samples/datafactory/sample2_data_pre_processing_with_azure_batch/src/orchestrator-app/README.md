@@ -19,7 +19,7 @@ Note: In this sample we have a azure data lake storage account(ADLS) which has a
 
 1. `cd modern-data-warehouse-dataops/single_tech_samples/datafactory/sample2_data_pre_processing_with_azure_batch/src/orchestrator-app`
 
-2. Create a `.env` file in the `orchestrator-app/app` folder with the name of your keyvault.
+2. Create a `.env` file in the `orchestrator-app/app` folder with the name of your keyvault and azure container registry.
 
 ```
 vim app/.env
@@ -27,6 +27,7 @@ vim app/.env
 
 ```
 AZ_KEYVAULT_NAME="<YOUR-KEYVAULT-NAME>"
+AZ_ACR_NAME="<YOUR-ACR-NAME>"
 ```
 
 Note: Refer to [deployed resources]() to get your keyvault name.

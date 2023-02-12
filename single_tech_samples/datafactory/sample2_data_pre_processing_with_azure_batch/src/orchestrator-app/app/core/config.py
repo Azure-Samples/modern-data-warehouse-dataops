@@ -18,6 +18,7 @@ class Settings(BaseSettings):
 
     RUN_ENVIRONMENT: str = os.getenv("RUN_ENVIRONMENT",default="CLOUD")
     AZ_KEYVAULT_NAME: str = None
+    AZ_ACR_NAME: str = None
     AZ_BATCH_ACCOUNT_URL: str = os.getenv("AZ_BATCH_ACCOUNT_URL",default=None)
     AZ_BATCH_ACCOUNT_NAME: str = os.getenv("AZ_BATCH_ACCOUNT_NAME",default=None)
     AZ_BATCH_EXECUTION_POOL_ID: str = os.getenv("AZ_BATCH_EXECUTION_POOL_ID",default="executionpool")
