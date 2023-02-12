@@ -111,7 +111,7 @@ git clone https://github.com/Azure-Samples/modern-data-warehouse-dataops.git
 ```
 
 2. [Deploy all the azure resources required for the sample](deploy/terraform/README.md)
-3. [Deploy a sample ADF pipeline.](deploy/adf.README.md)
+3. [Deploy a sample ADF pipeline.](deploy/adf/README.md)
 4. [Publish a sample-processor image to your azure container registry.](src/sample-processor/README.md)
 5. [Deploy a sample orchestrator app to azure batch pool.](src/orchestrator-app/README.md)
 
@@ -120,16 +120,32 @@ git clone https://github.com/Azure-Samples/modern-data-warehouse-dataops.git
 The following steps can be performed to validate the correct deployment and execution of the sample:
 
 1. Go to your azure portal and select your resource group.
-2. Select the azure data factory, and click on view data factory.
-3. From the pipelines open sample-pipeline.
-4. From the pipelines options select trigger now.
-5. Once the pipeline runs, it will create a job for orchestartor pool with the name `nnn` and a task under it to invoke orchestrator app `extract.py` entry file.
-6. Orchestrator app will create a extract job and a couple of tasks for execution pool. 
-    
-        Note: Those tasks are actually the container works loads and sample-processor image deployed as a part of deploymemt steps will be used for executing the tasks.
+2. Select the azure data factory, and click on Launch Studio (Azure Datafactory Studio).
+3. Select Author pipreines.
 
-7. Once the execution pool tasks are completed, a sample rosbag file will be extracted to the extracted zone and a ros metadata info will be generated.
+![Author PIpeline](images/author-pipelines.png)
+
+4. From the pipelines open sample-pipeline.
+
+![sample pipeline](images/sample-pipeline.png)
+
+4. From the pipelines options Add trigger select Trigger now.
+5. Once the pipeline runs, it will create a job for orchestartor pool with the name `adfv2-orchestratorpool` and a task under it to invoke orchestrator app `extract.py` entry file.
+6. Orchestrator app will create an extract job and a couple of tasks for execution pool. 
+
+![jobs](images/jobs.png)
+
+ ```   
+Note: Those tasks are actually the container works loads and sample-processor image deployed as a part of deploymemt steps will be used for executing the tasks.
+```
+
+7. Once the execution pool tasks are completed, a sample rosbag file will be extracted to the `extracted/output` folder and a ros metadata info(`meta-data-info.txt`) will be generated in the `extarcted` folder.
+
+![pipeline output](images/pipeline-output.png)
+
 8. Your ADF piepline will marked as completed.
+
+![pipeline run](images/pipeline-run.png)
 
 ### 2.4. Clean-up
 

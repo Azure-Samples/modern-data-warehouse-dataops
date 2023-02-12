@@ -23,3 +23,5 @@ Note: Refer to [deployed resources](../terraform/README.md) to get your resource
 
 4. Run `./deploy-pipeline.sh`
 
+[Back to deployment steps](../../README.md)
+

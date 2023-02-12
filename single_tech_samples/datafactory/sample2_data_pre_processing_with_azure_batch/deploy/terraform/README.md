@@ -70,6 +70,10 @@ After the successful execution of `terraform apply` following resources will be 
 
 ![Deployed Resources](../../images/deployed-resources-output.png)
 
+> Azure Batch will have two pools orchestratorpool and execution pool. Execution pool will be responsible for executing the container workloads. It will mount the datelake data container as local drive and can access it directly. Startup task of executionpool has the script to mount your datalake account.
+
+![Storage mount](../../images/storage-mount.png)
+
 ### Clean-up the whole infrastructure
 
 Please follow the below steps to clean up your environment :
