@@ -54,8 +54,6 @@ docker tag sample-processor:latest  <YOUR-ACR-NANME>.azurecr.io/sample-processor
  docker push <YOUR-ACR-NANME>.azurecr.io/sample-processor:latest
  ```
 
-## Upload a sample bag file to your storage account.
-
 Run the following script
 
 ```
@@ -66,9 +64,14 @@ STORAGE_ACCOUNT_NAME="<YOUR-ADLS-STORAGE-ACCOUNT>"
 IP_ADDRESS=$(curl -s checkip.dyndns.org | sed -e 's/.*Current IP Address: //' -e 's/<.*$//')
 az storage account network-rule add -g $RESOURCE_GROUP_NAME --account-name $STORAGE_ACCOUNT_NAME --ip-address $IP_ADDRESS
 
+#Upload sample file
 az storage blob upload -f "data/raw/sample-data.bag" -c data/raw --account-name "$STORAGE_ACCOUNT_NAME"
+
+#Create extracted path.
+az storage blob directory create -c data -d extracted --account-name "$STORAGE_ACCOUNT_NAME"
 ```
 [Back to deployment steps](../../README.md)
+
 
 
 

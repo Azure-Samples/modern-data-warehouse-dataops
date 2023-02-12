@@ -30,7 +30,7 @@ AZ_KEYVAULT_NAME="<YOUR-KEYVAULT-NAME>"
 AZ_ACR_NAME="<YOUR-ACR-NAME>"
 ```
 
-Note: Refer to [deployed resources]() to get your keyvault name.
+Note: Refer to [deployed resources](../../deploy/terraform/README.md) to get your keyvault name and ACR name.
 
 3. Create a zip of your app folder.
 
