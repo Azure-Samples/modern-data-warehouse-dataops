@@ -10,11 +10,9 @@
 - [2. How to use this sample](#2-how-to-use-this-sample)
   - [2.1. Prerequisites](#21-prerequisites)
     - [2.1.1 Software Prerequisites](#211-software-prerequisites)
-  - [2.2. Setup and deployment](#22-setup-and-deployment)
-  - [2.3. Deployed Resources](#23-deployed-resources)
-  - [2.4. Deployment validation and Execution](#24-deployment-validation-and-execution)
-  - [2.5. Clean-up](#25-clean-up)
-- [3. Troubleshooting](#3-troubleshooting)
+  - [2.2. Setup and deployment](#22-setup-and-deployment)  
+  - [2.3. Deployment validation and Execution](#23-deployment-validation-and-execution)
+  - [2.4. Clean-up](#24-clean-up)
 
 ## 1. Solution Overview
 
@@ -99,24 +97,25 @@ This section holds the information about usage instructions of this sample.
    - *Installation instructions* can be found [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 2. [Terraform](https://www.terraform.io/) 
    - *Installation instructions* can be found [here](https://developer.hashicorp.com/terraform/downloads)
-3. For Windows users,
+3. [Docker Desktop](https://www.docker.com/get-started/)
+   - *Installation instructions* can be found [here](https://www.docker.com/products/docker-desktop/)   
+4. For Windows users,
    1. Option 1: [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
    2. Option 2: Use the devcontainer published [here](./.devcontainer) as a host for the bash shell, it has all the pre-requisites installed.
       For more information about Devcontainers, see [here](https://code.visualstudio.com/docs/remote/containers).
 ### 2.2. Setup and deployment
-1. [Deploy all the azure resources required for the sample](deploy/terraform/README.md)
-2. [Deploy a sample ADF pipeline.](deploy/adf.README.md)
-3. [Publish a sample-processor image to your azure container registry.](src/sample-processor/README.md)
-4. [Deploy a sample orchestrator app to azure batch pool.](src/orchestrator-app/README.md)
+1. Clone this repository.
 
+```
+git clone https://github.com/Azure-Samples/modern-data-warehouse-dataops.git
+```
 
-### 2.3. Deployed Resources
+2. [Deploy all the azure resources required for the sample](deploy/terraform/README.md)
+3. [Deploy a sample ADF pipeline.](deploy/adf.README.md)
+4. [Publish a sample-processor image to your azure container registry.](src/sample-processor/README.md)
+5. [Deploy a sample orchestrator app to azure batch pool.](src/orchestrator-app/README.md)
 
-Below is the list of resources which will be deployed in your azure resource group:
-
-![Deployed Resources]()
-
-### 2.4. Deployment validation and Execution
+### 2.3. Deployment validation and Execution
 
 The following steps can be performed to validate the correct deployment and execution of the sample:
 
@@ -132,9 +131,9 @@ The following steps can be performed to validate the correct deployment and exec
 7. Once the execution pool tasks are completed, a sample rosbag file will be extracted to the extracted zone and a ros metadata info will be generated.
 8. Your ADF piepline will marked as completed.
 
-### 2.5. Clean-up
+### 2.4. Clean-up
 
-Please follow the below steps to clean up your environment :
+Please follow the steps in the [clean-up section](deploy/terraform/README.md)
 
 ### Resources
 

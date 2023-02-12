@@ -1,0 +1,1 @@
+This module is for creating a storage account for Azure batch.
