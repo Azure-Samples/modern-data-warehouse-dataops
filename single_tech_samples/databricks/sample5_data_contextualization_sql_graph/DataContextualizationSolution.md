@@ -20,7 +20,7 @@ For simplicity, the architecture uses only two layers; Silver layer representing
 
 The data in the Silver layer has been stored in [Delta Lake](https://docs.databricks.com/delta/index.html) and exposed as delta tables.
 
-### Incremental Data Load 
+### Incremental Data Load
 
 The solution performs incremental data processing i.e., only the data which has been modified or added since the last run is processed. This is a typical requirement for batch processing so that the data can be processed quickly and economically.
 
@@ -74,7 +74,7 @@ Contoso has many market leading products and applications to help factory owners
 So Gary logged in the ‘Quality system’ and used the asset ID ‘AE0520’ to look up the table from AE_OP_EFF which contains the all the key attributes for operation efficiency data.
 
 There are many columns in the AE_OP_EFF table and Gary is speficially interested in the ‘alarm’ status. However the details for the most critical alarms of the asset is kept in another table called ‘alarm’. Gary needs to record the key ID ‘MA_0520’ of ‘alarm’ table which correspoinding to the asset ‘AE0520’, as they are using different naming conventions.
- 
+
 In the reality, the relationship is much more complicated than this. Gary has to search for more than one attribute of the asset and has to log in to many more tables from different systems to get all the data for a complete report. Gary used query and script to faciliate his work but the queries become complicated and hard to maintain. Even worse thing is, the systems are growing and the demand of the report is changing, that more data needs to be added to the report for different decision makers’ perspectives.
 
 One of the major pain points for Gary is, the ID of one asset in different system are different, as these systems have been developed and  mainained  separately and even using different protocols. He has to manually query the different tables to get the data for the same asset, that caused his query not only complex but also difficult to understand without domain expertise. He uses a lot of time to recruit to the newly onboarded operation engineer and explain the relationships behind.
@@ -85,7 +85,7 @@ If there is a mechnism to ‘link’ the different names but belong to the same 
 
 * A manufacturing solution provider would like to contextualize the master data and event data provided by its customers continuously. Since the context information is too complicated to be represented by relational tables, graph models are used for data contextualization.
 * A process engineer in the factory needs to troubleshoot for an issue of the factory equipment. The graph model stores the all the related data, direct or indirect, of the troubleshooting equipment that can provide a overall information for root cause analysis.
- 
+
 ## Considerations
 
 ### Choose a Graph Database
@@ -111,6 +111,7 @@ As mentioned previously, in the market, there are many graph databases to choose
 |[Deployment Options](https://cycode.engineering/blog/aws-neptune-neo4j-arangodb-or-redisgraph-how-we-at-cycode-chose-our-graph-database/)|Cloud Offering|Cloud & Self-Hosted (Enterprise Edition requires commercial license)|Cloud Offering, but Apache AGE (AGE) Extension is not supported on Azure database for PostgreSQL|Cloud Offering|Cloud & Self-Hosted|
 
 Reference Links:
+
 1. [Azure Cosmos DB for Apache Gremlin](https://learn.microsoft.com/en-us/azure/cosmos-db/gremlin/)
 2. [Azure SQL Database Graph](https://learn.microsoft.com/en-us/sql/relational-databases/graphs/sql-graph-overview?view=sql-server-ver16)
 3. [Neo4J](https://neo4j.com/docs/operations-manual/current/introduction/)
@@ -122,7 +123,7 @@ Finnally we choose to use Azure SQL Database, because:
 * It's an Azure managed relational database servcie with graph capabilities.
 * It's easy to get started since we are farmiliar with SQL Server or Azure SQL Database.
 * We'll also benefit from using Transact-SQL since the graph database is based on SQL Database.
- 
+
 ### Graph Design
 
 Azure SQL Database offers graph database capabilities to model many-to-many relationships. The graph relationships are integrated into Transact-SQL and receive the benefits of using SQL Database as the foundational database management system.
@@ -242,7 +243,7 @@ Every time we load the newly added data in raw_system_1, we take the following s
 * Update last_commit_version in table table_commit_version for the next query
 
 Please note that enabling CDF will not make significant impact for the system performance and cost. The change data records are generated in line during the query execution process, and are generally much smaller than the total size of rewritten files.
- 
+
 ## Data Contextualization
 
 ### Preparation
