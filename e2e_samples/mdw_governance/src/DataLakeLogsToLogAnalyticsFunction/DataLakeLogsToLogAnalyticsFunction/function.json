@@ -1,9 +1,0 @@
-{
-    "bindings": [{
-        "name": "inputBlob",
-        "type": "blobTrigger",
-        "direction": "in",
-        "connection": "STORAGE_ACCOUNT_CONNECTION",
-        "path": "$logs/blob/{year}/{month}/{day}/{hour}/{name}"
-    }]
-}

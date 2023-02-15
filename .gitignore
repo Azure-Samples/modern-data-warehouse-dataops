@@ -459,7 +459,6 @@ MigrationBackup/
 *pip.conf
 
 # Terraform
-
 .terraform
 .terraform.lock.hcl
 
@@ -472,3 +471,5 @@ package.json
 __azurite_db_queue__.json
 __azurite_db_queue_extent__.json
 out.plan
+docs
+.github

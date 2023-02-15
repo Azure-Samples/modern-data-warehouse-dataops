@@ -1,0 +1,42 @@
+jobs:
+- job: run_integration_tests
+  displayName: 'Run integration tests'
+  dependsOn: deploy_adf
+  pool:
+    vmImage: 'ubuntu-latest'
+  variables:
+    pythonWorkingDir: 'e2e_samples/parking_sensors/tests/integrationtests'
+    pythonVersion: 3.6
+  steps:
+  - script: |
+      curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+      sudo bash -c "curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list"
+      sudo apt-get update
+      sudo ACCEPT_EULA=Y apt-get -y install msodbcsql17 unixodbc-dev
+    displayName: 'Install msodbc'
+
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '$(pythonVersion)'
+      addToPath: true
+      architecture: 'x64'
+    displayName: 'Use Python Version: $(pythonVersion)'
+
+  - script: pip install -r requirements.txt
+    workingDirectory: $(pythonWorkingDir)
+    displayName: 'Install requirements'
+
+  - script: pytest
+    workingDirectory: $(pythonWorkingDir)
+    env:
+      AZ_SERVICE_PRINCIPAL_ID: $(spAdfId)
+      AZ_SERVICE_PRINCIPAL_SECRET: $(spAdfPass)
+      AZ_SERVICE_PRINCIPAL_TENANT_ID: $(spAdfTenantId)
+      AZ_SUBSCRIPTION_ID: $(subscriptionId)
+      AZ_RESOURCE_GROUP_NAME: $(rgName)
+      AZ_DATAFACTORY_NAME: $(adfName)
+      AZ_SQL_SERVER_NAME: $(sqlsrvrName).database.windows.net
+      AZ_SQL_SERVER_USERNAME: $(sqlsrvrUsername)
+      AZ_SQL_SERVER_PASSWORD: $(sqlsrvrPassword)
+      AZ_SQL_DATABASE_NAME: $(sqlDwDatabaseName)
+    displayName: 'Run integration tests'

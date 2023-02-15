@@ -1,5 +1,0 @@
-export DEPLOYMENT_PREFIX=lumos
-export AZURE_SUBSCRIPTION_ID=<thesubscriptionid>
-export AZURE_RESOURCE_GROUP_NAME=lumosrg
-export AZURE_RESOURCE_GROUP_LOCATION=westus
-export DELETE_RESOURCE_GROUP=true

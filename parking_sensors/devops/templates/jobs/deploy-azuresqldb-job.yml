@@ -1,0 +1,31 @@
+parameters:
+- name: environmentName
+  type: string
+- name: serviceConnection
+  type: string
+
+jobs:
+- deployment: deploy_azuresqldw
+  displayName: 'Deploy to AzureSQLDW'
+  pool:
+    vmImage: 'windows-latest'
+  variables:
+    sqlProjName: ddo_azuresqldw_dw
+  environment: ${{ parameters.environmentName }}
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        # https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/deploy/sql-azure-dacpac-deployment?view=azure-devops
+        - task: SqlAzureDacpacDeployment@1
+          inputs:
+            azureSubscription: ${{ parameters.serviceConnection }}
+            AuthenticationType: 'server'
+            ServerName: $(sqlsrvrName).database.windows.net
+            DatabaseName: $(sqlDwDatabaseName)
+            SqlUsername: '$(sqlsrvrUsername)'
+            SqlPassword: '$(sqlsrvrPassword)'
+            deployType: 'DacpacTask'
+            DacpacFile: '$(Pipeline.Workspace)/ciartifacts/sql_dw_dacpac/$(sqlProjName).dacpac'
+            AdditionalArguments: '/Variables:ADLSLocation=abfss://datalake@$(datalakeAccountName).dfs.core.windows.net /Variables:ADLSCredentialKey=$(datalakeKey)'
+          displayName: 'Azure SQL Dacpac'

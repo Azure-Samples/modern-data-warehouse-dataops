@@ -1,9 +1,0 @@
-{
-    "IsEncrypted": false,
-    "Values": {
-      "AzureWebJobsStorage": "UseDevelopmentStorage=true (or <Storage Account connection string>)",
-      "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
-      "EventHubConnectionString": "<Event Hub connection string>",
-      "StorageConnectionString": "<Storage Account connection string>"
-    }
-  }

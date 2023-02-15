@@ -1,8 +1,0 @@
-{
-	"name": "PySpark Sample",
-	"dockerFile": "Dockerfile",
-	"context": "..",
-	"extensions": [
-		"ms-python.python"
-	]
-}
