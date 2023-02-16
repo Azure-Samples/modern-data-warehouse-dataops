@@ -118,7 +118,7 @@ az deployment group create -f main.bicep -g rg-${DEVELOPER} --parameters query='
 az iot hub device-identity create --hub-name iot-${DEVELOPER}-${ENVIRONMENT} --device-id iot-${DEVELOPER}-${ENVIRONMENT} --edge-enabled
 
 export DEVICE_CONNECTION_STRING=$(az iot hub device-identity connection-string show --hub-name iot-${DEVELOPER}-${ENVIRONMENT} --device-id iot-${DEVELOPER}-${ENVIRONMENT} --output tsv)
-export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string -n ${STORAGE_ACCOUNT} --query connectionString -o tsv)
+export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string -g rg-${DEVELOPER} -n ${STORAGE_ACCOUNT} --query connectionString -o tsv)
 
 # Cleanup
 az group delete -n rg-${DEVELOPER}
