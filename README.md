@@ -12,6 +12,7 @@ products:
 - azure-stream-analytics
 - azure-data-lake-gen2
 - azure-functions
+- azure-data-share
 description: "Code samples showcasing how to apply DevOps concepts to the Modern Data Warehouse Architecture leveraging different Azure Data Technologies."
 ---
 
@@ -41,6 +42,7 @@ The samples are either focused on a single azure service (**Single Tech Samples*
 - [Stream Analytics](single_tech_samples/streamanalytics/)
 - [Azure Purview](single_tech_samples/purview/)
   - [IaC - Azure Purview](single_tech_samples/purview/)
+- [Azure Data Share](single_tech_samples/datashare/)
 
 ## End to End samples
 

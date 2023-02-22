@@ -1,0 +1,16 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "DATA_SHARE_ACCOUNT_NAME": "",
+    "DATA_SHARE_RESOURCE_GROUP_NAME": "",
+    "DATA_SHARE_AZURE_SUBSCRIPTION_ID": "",
+    "DESTINATION_STORAGE_ACCOUNT_NAME": "",
+    "DESTINATION_STORAGE_RESOURCE_GROUP_NAME": "",
+    "DESTINATION_STORAGE_SUBSCRIPTION_ID": "",
+    "AZURE_CLIENT_ID": "",
+    "AZURE_CLIENT_SECRET": "",
+    "AZURE_TENANT_ID": ""
+  }
+}

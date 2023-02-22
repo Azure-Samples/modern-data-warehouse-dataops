@@ -2,10 +2,10 @@ azure-common==1.1.27
 azure-core==1.13.0
 azure-identity==1.5.0
 azure-keyvault-secrets==4.2.0
-certifi==2020.12.5
+certifi==2022.12.7
 cffi==1.14.5
 chardet==4.0.0
-cryptography==3.4.7
+cryptography==39.0.1
 greenlet==1.0.0
 idna==2.10
 isodate==0.6.0
