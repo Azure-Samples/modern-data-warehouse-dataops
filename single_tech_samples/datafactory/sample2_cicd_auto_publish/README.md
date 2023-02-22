@@ -1,21 +1,25 @@
 # Automated Publish and CI/CD for Azure Data Factory
 
-This sample demonstrates the deployment of Azure Data Factory using Automated Publish Method. Usually, the Azure Data Factory deployment required Manual Publish setup where the developer had to manually Publish the ADF changes from the portal. This step generated the ARM Templates which were used in deployment step.
+This sample demonstrates the deployment of Azure Data Factory using Automated Publish Method. Usually, the Azure Data Factory deployment requires Manual Publish setup where the developer publishes the ADF changes manually from the portal. This step generates ARM Templates which are used in deployment steps.
 
-In this sample, we have eliminated the Manual Publish step by using ADF Packages for Automated Publish. Now, the ARM templates will be generated automatically without any manual intervention.
+In this sample, the need to manually publish step has been eliminated by using a publicly available npm package @microsoft/azure-data-factory-utilities for automated publishing. With this, the ARM templates can be generated automatically without any manual intervention.
 
 ## ADF Introduction
 
-Azure Data Factory(ADF) is a service in Microsoft Azure that allows the developers to integrate and transform their data using various processes. ADF has good integrations with multiple internal and external services.
+Azure Data Factory is a cloud-based, fully managed, serverless data integration service for data movement and transformation. It enables users to create, schedule, and orchestrate data pipelines that move data between various on-premises and cloud-based data sources to a central data store. The pipelines can be used to perform complex data transformations, including data enrichment, data validation, and data migration.
 
-In ADF, CI/CD essentially means deploying the Data Factory components(Linked Service, Triggers, Pipelines, Datasets) to a new environment(ADF) automatically using Pipelines.
+In ADF, CI/CD essentially means deploying the various data factory entities such as linked service, triggers, pipelines, datasets etc. to a new environment automatically using [Azure Pipelines](https://learn.microsoft.com/en-us/azure/devops/pipelines/get-started/what-is-azure-pipelines?view=azure-devops).
 
 ### ADF Modes
 
-1) ADF consists of two modes- Live Mode and Git Mode.
-2) Live Mode is the standalone ADF, and in Git mode is we connect ADF to a Version control where all ADF resources are stored.
-3) Git integration in ADF consists of selecting two branches Collaboration branch and Publish branch.
-4) Collaboration branch is where all the feature branch is merged (will be mapped to ‘develop’ branch for our case). Publish branch is where all the changes including auto generated ARM templates gets published (by default, ADF creates ‘adf_publish’ branch for that).
+1) ADF consists of two modes namely `live mode` and `Git Mode`.
+
+- Live mode is the standalone ADF which is not connected to Git. All operations on ADF happens via Portal.
+
+- Git Mode is when ADF is connected to Git and all the ADF entities are stored as code in Git.
+
+2)Git integration in ADF consists of selecting two branches Collaboration branch and Publish branch.
+3)Collaboration branch is where all the feature branch is merged (will be mapped to ‘develop’ branch for our case). Publish branch is where all the changes including auto generated ARM templates gets published (by default, ADF creates ‘adf_publish’ branch for that).
 
 > NOTE: Only the ADF instance in the DEV environment should be linked to git. The deployment are propagated to the other environments by CI/CD pipelines.
 
