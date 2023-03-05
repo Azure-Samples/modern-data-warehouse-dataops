@@ -83,7 +83,7 @@ The below diagram illustrates the high level design showing the ADF and the azur
   - **Execution Pool:** This is a a batch pool which is responsible for running container work loads. This pool has start up task configuration where it mounts the raw and extracted ADLS zones as NFS mounts to its nodes and when containers are spinned to process the actual workloads and the same mounts are mounted to containers as well via container run options. Orchestrator pool creates jobs and tasks for execution pool.
 
       ADLS storage mounts on execution pool nodes and containers will help containers to process large files without downloading the locally.
-      
+
 - **Application Insights:** It monitors the health of execution and orchestrator pool nodes. We can integrate the application insights with azure batch application and the container images for end to end tracing of jobs.
 
 - **Azure Container Registry(ACR):**  In this sample execution pool is configured with a azure container registry to pull container images, but we can have any container registry configured.
@@ -106,27 +106,26 @@ This section holds the information about usage instructions of this sample.
 ### 2.1. Prerequisites
 
 1. [Github account](https://github.com/)
-2. [Azure Account](https://azure.microsoft.com/en-au/free/search/?&ef_id=Cj0KCQiAr8bwBRD4ARIsAHa4YyLdFKh7JC0jhbxhwPeNa8tmnhXciOHcYsgPfNB7DEFFGpNLTjdTPbwaAh8bEALw_wcB:G:s&OCID=AID2000051_SEM_O2ShDlJP&MarinID=O2ShDlJP_332092752199_azure%20account_e_c__63148277493_aud-390212648371:kwd-295861291340&lnkd=Google_Azure_Brand&dclid=CKjVuKOP7uYCFVapaAoddSkKcA)
+2. [Azure Account](https://azure.microsoft.com/en-gb/free/)
+   - *Permissions needed*:  The ability to create and deploy to an Azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview)
 
-  - *Permissions needed*:  The ability to create and deploy to an Azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview) 
+   - Active subscription with the following [resource providers](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/azure-services-resource-providers) enabled:
 
-  - Active subscription with the following [resource providers](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/azure-services-resource-providers) enabled:
-
-    - Microsoft.Storage
-    - Microsoft.DataFactory
-    - Microsoft.KeyVault
-    - Microsoft.Batch
-    - Microsoft.ContainerRegistry
+     - Microsoft.Storage
+     - Microsoft.DataFactory
+     - Microsoft.KeyVault
+     - Microsoft.Batch
+     - Microsoft.ContainerRegistry
 
 #### 2.1.1 Software Prerequisites
 
 1. [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/) installed on the local machine
 
    - *Installation instructions* can be found [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
-2. [Terraform](https://www.terraform.io/) 
+2. [Terraform](https://www.terraform.io/)
    - *Installation instructions* can be found [here](https://developer.hashicorp.com/terraform/downloads)
 3. [Docker Desktop](https://www.docker.com/get-started/)
-   - *Installation instructions* can be found [here](https://www.docker.com/products/docker-desktop/)   
+   - *Installation instructions* can be found [here](https://www.docker.com/products/docker-desktop/)
 4. For Windows users,
    1. Option 1: [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
    2. Option 2: Use the devcontainer published [here](./.devcontainer) as a host for the bash shell, it has all the pre-requisites installed.
@@ -165,7 +164,7 @@ The following steps can be performed to validate the correct deployment and exec
 
    ![jobs](images/jobs.png)
 
-   ```shell   
+   ```shell
    Note: Those tasks are actually the container works loads and sample-processor image deployed as a part of deploymemt steps will be used for executing the tasks.
    ```
 

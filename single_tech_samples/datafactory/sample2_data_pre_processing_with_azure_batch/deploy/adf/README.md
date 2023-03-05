@@ -8,7 +8,7 @@
     az login
     az account set -s <YOUR AZURE SUBSCRIPTION ID>
     ```
-    
+
 3. Set the following variables in `deploy-pipeline.
 
     ```shell

@@ -99,6 +99,6 @@ Note: In this sample we have a azure data lake storage account(ADLS) which has a
 
     ![Debug orchestrator application](../../images/local-debug.png)
 
-    Note: `.vscode\launch.json` contains a sample extract task configuration which passes sample arguments to the orchestrator app. The path used is actually a mounted path of the ADLS account where a sample file exists. Please refer to [this section]() for mounting details.
+    Note: `.vscode\launch.json` contains a sample extract task configuration which passes sample arguments to the orchestrator app. The path used is actually a mounted path of the ADLS account where a sample file exists.
 
 [Back to deployment steps](../../README.md)

@@ -64,7 +64,7 @@ After the successful execution of `terraform apply` following resources will be 
 - Azure Batch
   - Azure Batch IP Addresses
   - Azure Batch Security Group
-  - Azure Batch Pools    
+  - Azure Batch Pools
 - Azure Data Lake Storage Account
 - Azure Blob Storage Account
 - Azure Container Registry

@@ -45,7 +45,7 @@ Once this command runs successfully, you will see the output in the `src/sample-
 
 3. Tag your image as `sample-processor:latest`
 
-    ```shell 
+    ```shell
     docker tag sample-processor:latest  <YOUR-ACR-NANME>.azurecr.io/sample-processor:latest
     ```
 
