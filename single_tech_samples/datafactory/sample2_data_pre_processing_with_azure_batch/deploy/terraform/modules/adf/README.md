@@ -1,1 +1,0 @@
-This module is for creating an Azyre Data Factory resource with managed integeration runtime and managed private endpoints for key vault, storage account and azure batch account.

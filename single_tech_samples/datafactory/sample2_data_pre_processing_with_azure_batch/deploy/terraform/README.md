@@ -1,4 +1,4 @@
-## Deploying Azure Resources
+# Deploying Azure Resources
 
 Azure resources required for this sample can be deployed by setting up your pre-requisites mentioned here in your local environment, or alternatively you can use the [this](../../.devcontainer) devcontainer with pre-installed dependencies.
 
@@ -6,52 +6,55 @@ Azure resources required for this sample can be deployed by setting up your pre-
 
 1. Go to the directory containing all the terraform scripts to setup a new environment.
 
-```
-cd ./single_tech_samples/datafactory/sample2_data_pre_processing_with_azure_batch/deploy/terraform 
-```
+    ```shell
+    cd ./single_tech_samples/datafactory/sample2_data_pre_processing_with_azure_batch/deploy/terraform 
+    ```
 
 2. Login to your Azure account.
 
-```
-az login
-az account set -s <YOUR AZURE SUBSCRIPTION ID>
-```
+    ```shell
+    az login
+    az account set -s <YOUR AZURE SUBSCRIPTION ID>
+    ```
 
 3. Create a resource group. 
 
-```
-az group create --name <YOUR-RESOURCE-GROUP-NAME> --location <YOUR-RESOURCE-GROUP-LOCATION>
+    ```shell
+    az group create --name <YOUR-RESOURCE-GROUP-NAME> --location <YOUR-RESOURCE-GROUP-LOCATION>
 
-e.g
-az group create --name sample-rg --location eastus
+    e.g
+    az group create --name sample-rg --location eastus
 
-```
+    ```
 
 4. In the `terraform.tfvars` file, update the resource group and location parameters.
 
-![terraform-vars](../../images/terraform-vars.png)
+    ![terraform-vars](../../images/terraform-vars.png)
 
 5. After the resource group has been successfully created and you have set the resource group and location parameters in `terraform.tfvars` file, run the following terraform commands to deploy all the resources in your resource group. 
 
-```
-terraform init
-```
-![init output](../../images/init-output.png)
+    ```shell
+    terraform init
+    ```
 
-```
-terraform plan 
-```
-![plan output](../../images/plan-output.png)
+    ![init output](../../images/init-output.png)
 
-```
-terraform apply
-```
+    ```
+    terraform plan 
+    ```
+    
+    ![plan output](../../images/plan-output.png)
 
-![apply output](../../images/apply-output.png)
+    ```shell
+    terraform apply
+    ```
 
-![post-apply](../../images/post-apply-output.png)
+    ![apply output](../../images/apply-output.png)
 
-Note:- Copy the output with resource names to your notepad, you will need their names in further scripts. If you don't copy then you can always get it from azure portal by navigating to your resource group.
+    ![post-apply](../../images/post-apply-output.png)
+
+    Note:- Copy the output with resource names to your notepad, you will need their names in further scripts. If you don't copy then you can always get it from azure portal by navigating to your resource group.
+
 ### Deployed Resources
 
 After the successful execution of `terraform apply` following resources will be created in your resource group. From Azure portal you can navigate to your resource group for more details about the deployed resources.
@@ -80,28 +83,27 @@ Please follow the below steps to clean up your environment :
 
 1. Go to the terraform directory 
 
-```
-cd ./single_tech_samples/datafactory/sample2_data_pre_processing_with_azure_batch/deploy/terraform 
-```
+    ```shell
+    cd ./single_tech_samples/datafactory/sample2_data_pre_processing_with_azure_batch/deploy/terraform 
+    ```
  
 2. Run the following command to clean up your environment and destroy all the resources
 
-```
-terraform destroy
-```
+    ```shell
+    terraform destroy
+    ```
 
-![destroy-output](../../images/destroy-output.png)
+    ![destroy-output](../../images/destroy-output.png)
 
 3. Delete your resource group.
 
-```
-az group delete --name <YOUR-RESOURCE-GROUP-NAME>
-```
+    ```shell
+    az group delete --name <YOUR-RESOURCE-GROUP-NAME>
+    ```
 
 ## Best Practices 
 
 It is ideal to configure a storage account to use as a remote backend for your terraform state files. For simplicity's sake, we have not configured a remote backed and by default terraform will use the local backend to save all the state files. 
 For learning more about configuring a remote backend and its advantages, follow this [link](https://developer.hashicorp.com/terraform/language/settings/backends/configuration)
-
 
 [Back to deployment steps](../../README.md)

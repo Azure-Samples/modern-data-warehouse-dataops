@@ -1,1 +1,0 @@
-This module is for creating new Azure Data Lake Storage Accounts along with Containers and private endpoints.

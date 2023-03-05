@@ -1,1 +1,0 @@
-This module is for creating secrets in Azure Key Vault.
