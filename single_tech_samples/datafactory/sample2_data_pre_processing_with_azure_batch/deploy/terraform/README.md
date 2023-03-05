@@ -2,7 +2,7 @@
 
 Azure resources required for this sample can be deployed by setting up your pre-requisites mentioned here in your local environment, or alternatively you can use the [this](../../.devcontainer) devcontainer with pre-installed dependencies.
 
-### Deployment steps
+## Deployment steps
 
 1. Go to the directory containing all the terraform scripts to setup a new environment.
 
@@ -17,7 +17,7 @@ Azure resources required for this sample can be deployed by setting up your pre-
     az account set -s <YOUR AZURE SUBSCRIPTION ID>
     ```
 
-3. Create a resource group. 
+3. Create a resource group.
 
     ```shell
     az group create --name <YOUR-RESOURCE-GROUP-NAME> --location <YOUR-RESOURCE-GROUP-LOCATION>
@@ -31,7 +31,7 @@ Azure resources required for this sample can be deployed by setting up your pre-
 
     ![terraform-vars](../../images/terraform-vars.png)
 
-5. After the resource group has been successfully created and you have set the resource group and location parameters in `terraform.tfvars` file, run the following terraform commands to deploy all the resources in your resource group. 
+5. After the resource group has been successfully created and you have set the resource group and location parameters in `terraform.tfvars` file, run the following terraform commands to deploy all the resources in your resource group.
 
     ```shell
     terraform init
@@ -39,10 +39,10 @@ Azure resources required for this sample can be deployed by setting up your pre-
 
     ![init output](../../images/init-output.png)
 
+    ```shell
+    terraform plan
     ```
-    terraform plan 
-    ```
-    
+
     ![plan output](../../images/plan-output.png)
 
     ```shell
@@ -62,14 +62,14 @@ After the successful execution of `terraform apply` following resources will be 
 - Virtual Network with a Subnet
 - Azure Data Factory
 - Azure Batch
-    - Azure Batch IP Addresses
-    - Azure Batch Security Group
-    - Azure Batch Pools    
+  - Azure Batch IP Addresses
+  - Azure Batch Security Group
+  - Azure Batch Pools    
 - Azure Data Lake Storage Account
 - Azure Blob Storage Account
 - Azure Container Registry
 - Azure Key Vault
-- User Assigned Managed Idnetity dedicated to Azure batch 
+- User Assigned Managed Identity dedicated to Azure batch
 
 ![Deployed Resources](../../images/deployed-resources-output.png)
 
@@ -81,12 +81,12 @@ After the successful execution of `terraform apply` following resources will be 
 
 Please follow the below steps to clean up your environment :
 
-1. Go to the terraform directory 
+1. Go to the terraform directory
 
     ```shell
     cd ./single_tech_samples/datafactory/sample2_data_pre_processing_with_azure_batch/deploy/terraform 
     ```
- 
+
 2. Run the following command to clean up your environment and destroy all the resources
 
     ```shell
@@ -101,9 +101,10 @@ Please follow the below steps to clean up your environment :
     az group delete --name <YOUR-RESOURCE-GROUP-NAME>
     ```
 
-## Best Practices 
+### Best Practices
 
-It is ideal to configure a storage account to use as a remote backend for your terraform state files. For simplicity's sake, we have not configured a remote backed and by default terraform will use the local backend to save all the state files. 
+It is ideal to configure a storage account to use as a remote backend for your terraform state files. For simplicity's sake, we have not configured a remote backed and by default terraform will use the local backend to save all the state files.
+
 For learning more about configuring a remote backend and its advantages, follow this [link](https://developer.hashicorp.com/terraform/language/settings/backends/configuration)
 
 [Back to deployment steps](../../README.md)

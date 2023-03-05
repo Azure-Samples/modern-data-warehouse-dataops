@@ -15,7 +15,7 @@ python3 app/extract.py --inputFile /data/raw/sample-data.bag --outputPath /data/
 
 Note: In this sample we have a azure data lake storage account(ADLS) which has a container `data` with two folders `raw` and `extracted`. This `data` container is mounted on the azure batch pool nodes and data can be read and written directly to the ADLS account. For more details refer to the [deployed resouces](../../deploy/terraform/README.md) documentation.
 
-# Steps to package and upload this sample application to Azure Batch
+## Steps to package and upload this sample application to Azure Batch
 
 1. `cd modern-data-warehouse-dataops/single_tech_samples/datafactory/sample2_data_pre_processing_with_azure_batch/src/orchestrator-app`
 
@@ -75,7 +75,7 @@ Note: In this sample we have a azure data lake storage account(ADLS) which has a
     done
     ```
 
-### Debugging and troubleshooting orchestrator app locally.
+### Debugging and troubleshooting orchestrator app locally
 
 1. Open orchestrator-app in visual studio code
 
@@ -99,6 +99,6 @@ Note: In this sample we have a azure data lake storage account(ADLS) which has a
 
     ![Debug orchestrator application](../../images/local-debug.png)
 
-    Note: `.vscode\launch.json` contains a sample extract task configuration which passes sample arguments to the orchestrator app. The path used is actually a mounted path of the ADLS account where a sample file exists. Please refer to [this section]() for mounting details. 
+    Note: `.vscode\launch.json` contains a sample extract task configuration which passes sample arguments to the orchestrator app. The path used is actually a mounted path of the ADLS account where a sample file exists. Please refer to [this section]() for mounting details.
 
 [Back to deployment steps](../../README.md)

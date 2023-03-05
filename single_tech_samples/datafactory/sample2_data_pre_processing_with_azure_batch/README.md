@@ -78,12 +78,12 @@ The below diagram illustrates the high level design showing the ADF and the azur
 
 - **Azure Batch:**  It will extract the bag file data and stored the extracted contents to extracted zone. Azure Batch has following components:
 
-    - **Orchestrator Pool:** This is a batch pool which runs a batch application, see [sample here](src/orchestrator-app/README.md) on an ubuntu node. ADF pipeline uses a custom activity to invoke this application. This application acts as an orchestrator for creating jobs and tasks and monitoring those for completion on execution pool described below.
+  - **Orchestrator Pool:** This is a batch pool which runs a batch application, see [sample here](src/orchestrator-app/README.md) on an ubuntu node. ADF pipeline uses a custom activity to invoke this application. This application acts as an orchestrator for creating jobs and tasks and monitoring those for completion on execution pool described below.
 
-    - **Execution Pool:** This is a a batch pool which is responsible for running container work loads. This pool has start up task configuration where it mounts the raw and extracted ADLS zones as NFS mounts to its nodes and when containers are spinned to process the actual workloads and the same mounts are mounted to containers as well via container run options. Orchestrator pool creates jobs and tasks for execution pool.
+  - **Execution Pool:** This is a a batch pool which is responsible for running container work loads. This pool has start up task configuration where it mounts the raw and extracted ADLS zones as NFS mounts to its nodes and when containers are spinned to process the actual workloads and the same mounts are mounted to containers as well via container run options. Orchestrator pool creates jobs and tasks for execution pool.
 
-        ADLS storage mounts on execution pool nodes and containers will help containers to process large files without downloading the locally.
-        
+      ADLS storage mounts on execution pool nodes and containers will help containers to process large files without downloading the locally.
+      
 - **Application Insights:** It monitors the health of execution and orchestrator pool nodes. We can integrate the application insights with azure batch application and the container images for end to end tracing of jobs.
 
 - **Azure Container Registry(ACR):**  In this sample execution pool is configured with a azure container registry to pull container images, but we can have any container registry configured.
@@ -107,19 +107,21 @@ This section holds the information about usage instructions of this sample.
 
 1. [Github account](https://github.com/)
 2. [Azure Account](https://azure.microsoft.com/en-au/free/search/?&ef_id=Cj0KCQiAr8bwBRD4ARIsAHa4YyLdFKh7JC0jhbxhwPeNa8tmnhXciOHcYsgPfNB7DEFFGpNLTjdTPbwaAh8bEALw_wcB:G:s&OCID=AID2000051_SEM_O2ShDlJP&MarinID=O2ShDlJP_332092752199_azure%20account_e_c__63148277493_aud-390212648371:kwd-295861291340&lnkd=Google_Azure_Brand&dclid=CKjVuKOP7uYCFVapaAoddSkKcA)
-   - *Permissions needed*:  The ability to create and deploy to an Azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview) 
 
-   - Active subscription with the following [resource providers](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/azure-services-resource-providers) enabled:
+  - *Permissions needed*:  The ability to create and deploy to an Azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview) 
 
-     - Microsoft.Storage
-     - Microsoft.DataFactory
-     - Microsoft.KeyVault
-     - Microsoft.Batch
-     - Microsoft.ContainerRegistry
+  - Active subscription with the following [resource providers](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/azure-services-resource-providers) enabled:
+
+    - Microsoft.Storage
+    - Microsoft.DataFactory
+    - Microsoft.KeyVault
+    - Microsoft.Batch
+    - Microsoft.ContainerRegistry
 
 #### 2.1.1 Software Prerequisites
 
 1. [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/) installed on the local machine
+
    - *Installation instructions* can be found [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 2. [Terraform](https://www.terraform.io/) 
    - *Installation instructions* can be found [here](https://developer.hashicorp.com/terraform/downloads)
@@ -157,9 +159,9 @@ The following steps can be performed to validate the correct deployment and exec
 
    ![sample pipeline](images/sample-pipeline.png)
 
-4. From the pipelines options Add trigger select Trigger now.
-5. Once the pipeline runs, it will create a job for orchestartor pool with the name `adfv2-orchestratorpool` and a task under it to invoke orchestrator app `extract.py` entry file.
-6. Orchestrator app will create an extract job and a couple of tasks for execution pool. 
+5. From the pipelines options Add trigger select Trigger now.
+6. Once the pipeline runs, it will create a job for orchestartor pool with the name `adfv2-orchestratorpool` and a task under it to invoke orchestrator app `extract.py` entry file.
+7. Orchestrator app will create an extract job and a couple of tasks for execution pool.
 
    ![jobs](images/jobs.png)
 
@@ -167,11 +169,11 @@ The following steps can be performed to validate the correct deployment and exec
    Note: Those tasks are actually the container works loads and sample-processor image deployed as a part of deploymemt steps will be used for executing the tasks.
    ```
 
-7. Once the execution pool tasks are completed, a sample rosbag file will be extracted to the `extracted/output` folder and a ros metadata info(`meta-data-info.txt`) will be generated in the `extarcted` folder.
+8. Once the execution pool tasks are completed, a sample rosbag file will be extracted to the `extracted/output` folder and a ros metadata info(`meta-data-info.txt`) will be generated in the `extarcted` folder.
 
    ![pipeline output](images/pipeline-output.png)
 
-8. Your ADF piepline will marked as completed.
+9. Your ADF piepline will be marked as completed.
 
    ![pipeline run](images/pipeline-run.png)
 
