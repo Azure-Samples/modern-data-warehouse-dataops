@@ -1,0 +1,61 @@
+{
+	"name": "source",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "adls_connection",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "cereal.csv",
+				"folderPath": "bronze",
+				"fileSystem": "datalake"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Cereal",
+				"type": "String"
+			},
+			{
+				"name": "Cal",
+				"type": "String"
+			},
+			{
+				"name": "Protein",
+				"type": "String"
+			},
+			{
+				"name": "Fat",
+				"type": "String"
+			},
+			{
+				"name": "Sodium",
+				"type": "String"
+			},
+			{
+				"name": "Fiber",
+				"type": "String"
+			},
+			{
+				"name": "Carbs",
+				"type": "String"
+			},
+			{
+				"name": "Sugar",
+				"type": "String"
+			},
+			{
+				"name": "Potassium",
+				"type": "String"
+			}
+		]
+	}
+}

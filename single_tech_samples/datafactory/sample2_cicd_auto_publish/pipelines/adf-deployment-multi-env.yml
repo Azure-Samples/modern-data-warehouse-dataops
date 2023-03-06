@@ -1,0 +1,179 @@
+trigger:
+  batch: false
+  branches:
+    include:
+      - develop #collaboration branch
+      - main
+
+pr:
+   branches:
+     include:
+     - main
+     - develop
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+
+variables:
+  - ${{ if eq(variables['build.SourceBranchName'], 'develop') }}:
+      - group: mdws-adf-dev
+      
+  - ${{ if eq(variables['build.SourceBranchName'], 'main') }}:
+      - group: mdws-adf-stage
+
+  - name: adf_code_path
+    value: "$(Build.SourcesDirectory)/single_tech_samples/datafactory/adf"
+    
+  - name: adf_package_file_path
+    value: "$(Build.SourcesDirectory)/single_tech_samples/datafactory/build/"
+
+
+# Installs Node and the npm packages saved in your package.json files in the .pipelines folder
+stages:
+  - stage: Validate_ADF_Code
+    pool:
+      vmImage: 'windows-latest'
+    jobs:
+    - job: Build_ADF_Code
+      displayName: 'Validating the ADF Code'
+      steps:
+      - task: BuildADFTask@1
+        inputs:
+          DataFactoryCodePath: '$(adf_code_path)'
+          Action: 'Build'
+        continueOnError: true
+
+  - stage: Build_And_Publish_ADF_Artifacts
+    
+    jobs:
+    - job: Build_Adf_Arm_Templates
+      displayName: 'Generate ADF Artifacts'
+      steps:
+
+      - task: NodeTool@0
+        inputs:
+          versionSpec: '10.x'
+        displayName: 'Install Node.js'
+
+      - task: Npm@1
+        inputs:
+          command: 'install'
+          workingDir: '$(adf_package_file_path)'
+          verbose: true
+        displayName: 'Install npm package'
+
+
+      - task: Npm@1
+        inputs:
+          command: 'custom'
+          workingDir: '$(adf_package_file_path)'
+
+          customCommand: 'run build validate $(adf_code_path) /subscriptions/$(azure_subscription_id)/resourceGroups/$(resource_group_name)/providers/Microsoft.DataFactory/factories/$(azure_data_factory_name)' # Change "ADFIntegration" to the name of your root folder, if there is not root folder, remove that part and keep Build.Repository.LocalPath only.
+
+        displayName: 'Validate'
+
+      - task: Npm@1
+        inputs:
+          command: 'custom'
+          workingDir: '$(adf_package_file_path)'
+
+          customCommand: 'run build export $(adf_code_path) /subscriptions/$(azure_subscription_id)/resourceGroups/$(resource_group_name)/providers/Microsoft.DataFactory/factories/$(azure_data_factory_name) "ArmTemplate"'  # Change "ADFIntegration" to the name of your root folder, if there is not root folder, remove that part.
+
+
+        displayName: 'Validate and Generate ARM template'
+
+
+      - task: PublishPipelineArtifact@1
+        inputs:
+          targetPath: '$(Build.SourcesDirectory)/build/ArmTemplate'
+          artifact: 'adf-artifact-$(Build.BuildNumber)'
+          publishLocation: 'pipeline'
+
+  - stage: Deploy_to_Dev
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), eq(variables['build.SourceBranchName'], 'develop'))
+    displayName: Deploy Dev Stage
+    dependsOn: Build_And_Publish_ADF_Artifacts
+    jobs: 
+      - job: Deploy_Dev
+        displayName: 'Deployment - PreProd'
+        steps:
+        - task: DownloadPipelineArtifact@2
+          displayName: Download Build Artifacts - ADF ARM templates
+          inputs: 
+            artifactName: 'adf-artifact-$(Build.BuildNumber)'
+            targetPath: '$(Pipeline.Workspace)/adf-artifact-$(Build.BuildNumber)'
+
+        - task: toggle-adf-trigger@2
+          inputs:
+            azureSubscription: '$(azure_service_connection_name)'
+            ResourceGroupName: '$(resource_group_name)'
+            DatafactoryName: '$(azure_data_factory_name)'
+            TriggerFilter: 'trigger1'
+            TriggerStatus: 'stop'
+
+        - task: AzureResourceManagerTemplateDeployment@3
+          inputs:
+            deploymentScope: 'Resource Group'
+            azureResourceManagerConnection: '$(azure_service_connection_name)'
+            subscriptionId: '$(azure_subscription_id)'
+            action: 'Create Or Update Resource Group'
+            resourceGroupName: '$(resource_group_name)'
+            location: '$(location)'
+            templateLocation: 'Linked artifact'
+            csmFile: '$(Pipeline.Workspace)/adf-artifact-$(Build.BuildNumber)/ARMTemplateForFactory.json'
+            csmParametersFile: '$(Pipeline.Workspace)/adf-artifact-$(Build.BuildNumber)/ARMTemplateParametersForFactory.json'
+            overrideParameters: '-factoryName "$(azure_data_factory_name)" -adls_connection_properties_typeProperties_url "https://$(azure_storage_account_name).dfs.core.windows.net/" -databricks_connection_properties_typeProperties_existingClusterId $(azure_databricks_cluster_id) -keyvault_connection_properties_typeProperties_baseUrl "https://$(azure_keyvault_name).vault.azure.net/"'
+            deploymentMode: 'Incremental'
+
+        - task: toggle-adf-trigger@2
+          inputs:
+            azureSubscription: '$(azure_service_connection_name)'
+            ResourceGroupName: '$(resource_group_name)'
+            DatafactoryName: '$(azure_data_factory_name)'
+            TriggerFilter: 'trigger1'
+            TriggerStatus: 'start'
+
+  - stage: Deploy_to_PreProd
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), eq(variables['build.SourceBranchName'], 'main'))
+    displayName: Deploy Pre Prod Stage
+    dependsOn: Build_And_Publish_ADF_Artifacts
+    jobs: 
+      - job: Deploy_PreProd
+        displayName: 'Deployment - PreProd'
+        steps:
+        - task: DownloadPipelineArtifact@2
+          displayName: Download Build Artifacts - ADF ARM templates
+          inputs: 
+            artifactName: 'adf-artifact-$(Build.BuildNumber)'
+            targetPath: '$(Pipeline.Workspace)/adf-artifact-$(Build.BuildNumber)'
+
+        - task: toggle-adf-trigger@2
+          inputs:
+            azureSubscription: '$(azure_service_connection_name)'
+            ResourceGroupName: '$(resource_group_name)'
+            DatafactoryName: '$(azure_data_factory_name)'
+            TriggerFilter: 'trigger1'
+            TriggerStatus: 'stop'
+
+        - task: AzureResourceManagerTemplateDeployment@3
+          inputs:
+            deploymentScope: 'Resource Group'
+            azureResourceManagerConnection: '$(azure_service_connection_name)'
+            subscriptionId: '$(azure_subscription_id)'
+            action: 'Create Or Update Resource Group'
+            resourceGroupName: '$(resource_group_name)'
+            location: '$(location)'
+            templateLocation: 'Linked artifact'
+            csmFile: '$(Pipeline.Workspace)/adf-artifact-$(Build.BuildNumber)/ARMTemplateForFactory.json'
+            csmParametersFile: '$(Pipeline.Workspace)/adf-artifact-$(Build.BuildNumber)/ARMTemplateParametersForFactory.json'
+            overrideParameters: '-factoryName "$(azure_data_factory_name)" -adls_connection_properties_typeProperties_url "https://$(azure_storage_account_name).dfs.core.windows.net/" -databricks_connection_properties_typeProperties_existingClusterId $(azure_databricks_cluster_id) -keyvault_connection_properties_typeProperties_baseUrl "https://$(azure_keyvault_name).vault.azure.net/"'
+            deploymentMode: 'Incremental'
+
+        - task: toggle-adf-trigger@2
+          inputs:
+            azureSubscription: '$(azure_service_connection_name)'
+            ResourceGroupName: '$(resource_group_name)'
+            DatafactoryName: '$(azure_data_factory_name)'
+            TriggerFilter: 'trigger1'
+            TriggerStatus: 'start'
