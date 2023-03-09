@@ -1,6 +1,6 @@
 # Databricks notebook source
-dbutils.fs.rm("/mnt/honeywell/raw/tbl_alarm_master", True)
-dbutils.fs.rm("/mnt/honeywell/table_commit_version", True)
+dbutils.fs.rm("/mnt/example/raw/tbl_alarm_master", True)
+dbutils.fs.rm("/mnt/example/table_commit_version", True)
 
 # COMMAND ----------
 
@@ -13,7 +13,7 @@ dbutils.fs.rm("/mnt/honeywell/table_commit_version", True)
 # MAGIC %sql
 # MAGIC CREATE TABLE tbl_alarm_master (alarm_id INT, alarm_type STRING, alarm_desc STRING, valid_from TIMESTAMP, valid_till TIMESTAMP) 
 # MAGIC USING DELTA
-# MAGIC LOCATION '/mnt/honeywell/raw/tbl_alarm_master'
+# MAGIC LOCATION '/mnt/raw/tbl_alarm_master'
 # MAGIC TBLPROPERTIES (delta.enableChangeDataFeed = true)
 
 # COMMAND ----------
@@ -28,7 +28,7 @@ dbutils.fs.rm("/mnt/honeywell/table_commit_version", True)
 # MAGIC %sql
 # MAGIC CREATE TABLE table_commit_version (table_name STRING, last_commit_version LONG, updated_at TIMESTAMP)
 # MAGIC USING DELTA
-# MAGIC LOCATION '/mnt/honeywell/table_commit_version'
+# MAGIC LOCATION '/mnt/example/table_commit_version'
 
 # COMMAND ----------
 

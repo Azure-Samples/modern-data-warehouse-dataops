@@ -9,7 +9,7 @@ jdbc_url = f"jdbc:sqlserver://{jdbcHostname}:{jdbcPort};database={jdbcDatabase};
 
 pushdown_query = "(SELECT a.Alarm_Type, b.Asset_ID\
                    FROM Alarm a, belongs_to, Asset b, is_associated_with, Quality_System c\
-                   WHERE MATCH (a-(belongs_to)->c-(is_associated_with)->b)) as new_tbl2"
+                   WHERE MATCH (a-(belongs_to)->c-(is_associated_with)->b)) as new_tbl"
 
 ala2ass = spark.read \
         .format("jdbc") \
@@ -28,7 +28,7 @@ from pyspark.sql.functions import *
 def save_df(df, table_name):
     df = df.withColumn("valid_from", current_timestamp())
     df = df.withColumn("valid_till", to_timestamp(lit("2099-12-31 23:59:59.0000") ,"yyyy-MM-dd HH:mm:ss.SSSS"))
-    df.write.mode("overwrite").format("delta").option("path", "/mnt/honeywell/reference/{}".format(table_name)).option("overwriteSchema", "true").saveAsTable(table_name)
+    df.write.mode("overwrite").format("delta").option("path", "/mnt/example/reference/{}".format(table_name)).option("overwriteSchema", "true").saveAsTable(table_name)
 
 # COMMAND ----------
 
