@@ -13,7 +13,7 @@ dbutils.fs.rm("/mnt/example/table_commit_version", True)
 # MAGIC %sql
 # MAGIC CREATE TABLE tbl_alarm_master (alarm_id INT, alarm_type STRING, alarm_desc STRING, valid_from TIMESTAMP, valid_till TIMESTAMP) 
 # MAGIC USING DELTA
-# MAGIC LOCATION '/mnt/raw/tbl_alarm_master'
+# MAGIC LOCATION '/mnt/example/raw/tbl_alarm_master'
 # MAGIC TBLPROPERTIES (delta.enableChangeDataFeed = true)
 
 # COMMAND ----------
