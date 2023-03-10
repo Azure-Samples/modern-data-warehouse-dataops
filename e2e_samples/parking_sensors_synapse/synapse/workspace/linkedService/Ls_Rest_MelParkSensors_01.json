@@ -9,7 +9,7 @@
 		},
 		"annotations": [],
 		"typeProperties": {
-			"url": "https://data.melbourne.vic.gov.au/resource/",
+			"url": "https://data.melbourne.vic.gov.au/api/explore/v2.1/catalog/datasets/",
 			"enableServerCertificateValidation": true,
 			"authenticationType": "Anonymous"
 		}

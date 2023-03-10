@@ -1,0 +1,19 @@
+{
+    "name": "Ds_Http_Parking_Bay",
+    "properties": {
+        "linkedServiceName": {
+            "referenceName": "Ls_Http_Parking_Bay_01",
+            "type": "LinkedServiceReference"
+        },
+        "annotations": [],
+        "type": "Json",
+        "typeProperties": {
+            "location": {
+                "type": "HttpServerLocation",
+                "relativeUrl": "on-street-parking-bays/exports/json"
+            }
+        },
+        "schema": {}
+    },
+    "type": "Microsoft.Synapse/workspaces/datasets"
+}
