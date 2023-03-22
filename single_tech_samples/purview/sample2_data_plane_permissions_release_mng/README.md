@@ -10,6 +10,8 @@ This action allows you to assign any purview permission(s) to a user or security
 
 ## Sample Usage
 
+> *Note: It is preferable to clone or fork this action when testing to avoid populating the actions log for this repo.*
+
 To use the action in a workflow with a service principal for example, you can [create a service principal](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure?tabs=azure-portal%2Clinux#create-a-service-principal), connect to github and ensure right permissions to successfully run the workflow.
 
 ### Ensuring Right Permissions
