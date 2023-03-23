@@ -5,6 +5,9 @@
         },
         {
             "pattern": "^https://adb-[0-9]+.[0-9].azuredatabricks.net"
+        },
+        {
+            "pattern": "^https://sigdelta.com/blog/how-to-install-pyspark-locally/"
         }
     ]
 }
