@@ -24,7 +24,9 @@ The identity running the workflow needs to have the following permissions:
 
 ### Sample Workflow
 
-The action can be used in your github workflows like below:
+The action can be used directly from your repository source code or published to a marketplace. To publish to a marketplace, create a new repository for the action and follow the instructions on [publishing an action to a marketplace](https://docs.github.com/en/actions/creating-actions/publishing-actions-in-github-marketplace).
+
+A sample workflow looks like the one below:
 
 ```yaml
 name: Test pipeline
@@ -45,7 +47,7 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Set purview permissions
-        uses: abeebu/purview-custom-permissions@v1   # or uses: ./ if you are using the source code in your repository
+        uses: <url_to_your_github_action@v1>   # e.g abeebu/purview-custom-permissions@v1 or uses: ./ if you are using the source code in your repository
         with:
           purview_name: "<purview_account_name>"  # as in https://<purview_account_name>.purview.azure.com  
           object_id: "object-id"  # Object Id to assign permissions to
