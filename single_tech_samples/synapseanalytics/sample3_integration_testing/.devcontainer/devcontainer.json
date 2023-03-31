@@ -18,6 +18,5 @@
 		"ghcr.io/devcontainers/features/azure-cli:1": {
 			"version": "2.43.0"
 		}
-	},
-	"postCreateCommand": "chmod -R 774 scripts && chmod 774 deploy.sh"
+	}
 }

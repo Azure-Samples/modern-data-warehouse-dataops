@@ -42,8 +42,8 @@ def upload_to_ADLS(
         container (str): Container Name where file needs to be uploaded
         file_path (str): File Path of local file to upload
         file_name (str): File Name of local file to upload
-        base_path (str): Base Folder Path in ADLS where file will be uploaded
-        file_contents (bytes): Contents of the file
+        base_path (str) [optional - default is None]: Base Folder Path in ADLS where file will be uploaded
+        file_contents (bytes) [optional - default is None]: Contents of the file
     Returns:
         request_id (str): Id of the ADLS upload request
     """
@@ -85,15 +85,15 @@ def download_from_ADLS(
     adls_connection_client: DataLakeServiceClient,
     container: str,
     file_name: str,
-    base_path: str = None,
+    base_path: str = "/",
 ):
     """Download file from ADLS
 
     Args:
         adls_connection_client (DataLakeServiceClient): ADLS Connection Object
         container (str): Container Name where file needs to be uploaded
-        base_path (str): Base Folder Path in ADLS where file will be uploaded
         file_name (str): File Name to Upload
+        base_path (str) [optional - default is "/"]: Base Folder Path in ADLS where file will be uploaded
 
     Returns:
         downloaded_bytes (bytes): Contents of the file
@@ -109,10 +109,8 @@ def download_from_ADLS(
         file_system_client = adls_connection_client.get_file_system_client(
             file_system=container
         )
-        if not base_path:
-            directory_client = file_system_client.get_directory_client("/")
-        else:
-            directory_client = file_system_client.get_directory_client(base_path)
+
+        directory_client = file_system_client.get_directory_client(base_path)
 
         file_client = directory_client.get_file_client(file_name)
 
@@ -144,15 +142,15 @@ def get_parquet_df_from_contents(downloaded_bytes: bytes):
 
 
 def read_parquet_file_from_ADLS(
-    adls_connection_client, container: str, file_name: str, base_path: str = None
+    adls_connection_client, container: str, file_name: str, base_path: str = "/"
 ):
     """Download file from ADLS and convert to parquet data frame
 
     Args:
         adls_connection_client (DataLakeServiceClient): ADLS Connection Object
         container (str): Container Name where file needs to be uploaded
-        base_path (str): Base Folder Path in ADLS where file will be uploaded
         file_name (str): File Name to Upload
+        base_path (str) [optional - default is "/"]: Base Folder Path in ADLS where file will be uploaded
 
     Returns:
         processed_df (bytes): DataFrame Of Read File

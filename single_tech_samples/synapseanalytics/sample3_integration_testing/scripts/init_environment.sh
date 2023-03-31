@@ -29,4 +29,5 @@ SYNAPSE_SQL_PASSWORD=${SYNAPSE_SQL_PASSWORD:-}
 if [ -z "$SYNAPSE_SQL_PASSWORD" ]
 then 
     export SYNAPSE_SQL_PASSWORD="$(makepasswd --chars 16)"
+    echo "No Synapse SQL password specified. Generating a new password. View this value in the .env.dev file or in Key Vault."
 fi
