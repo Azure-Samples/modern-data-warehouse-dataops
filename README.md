@@ -42,7 +42,11 @@ The samples are either focused on a single azure service (**Single Tech Samples*
 - [Stream Analytics](single_tech_samples/streamanalytics/)
 - [Azure Purview](single_tech_samples/purview/)
   - [IaC - Azure Purview](single_tech_samples/purview/)
-- [Azure Data Share](single_tech_samples/datashare/)
+  - [Data Plane Purview Permission Automation](single_tech_samples/purview/sample2_data_plane_permissions_release_mng/)
+- Azure Data Share
+  - Azure Data Share e2e automation
+    - *No longer maintained in this repo* [Azure Data Share e2e automation](single_tech_samples/datashare/)
+    - *New repo* [Azure Data Share e2e automation](https://github.com/Azure-Samples/enterprise-data-sharing/tree/main/2-data-sharing-mechanism)
 
 ## End to End samples
 
