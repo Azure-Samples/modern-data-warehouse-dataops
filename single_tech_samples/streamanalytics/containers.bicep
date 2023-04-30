@@ -1,20 +1,21 @@
 param name string
 param env string
+param location string
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2020-08-01-preview' = {
   name: replace('st${name}${env}', '-', '')
-  location: resourceGroup().location
+  location: location
   sku: {
     name: 'Standard_LRS'
   }
   kind: 'StorageV2'
+
+  resource blobServices 'blobServices' = {
+    name: 'default'
+    resource blobContainer 'containers' = {
+      name: 'bloboutput'
+    }    
+  }
 }
 
-resource blobContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2020-08-01-preview' = {
-  name: '${storageAccount.name}/default/bloboutput'
-}
-
-output account object = {
-  accountName: storageAccount.name
-  accountKey: listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value
-}
+output storageAccountName string = storageAccount.name

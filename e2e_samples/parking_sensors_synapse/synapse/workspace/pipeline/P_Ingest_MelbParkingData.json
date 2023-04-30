@@ -54,10 +54,10 @@
         },
         "inputs": [
           {
-            "referenceName": "Ds_REST_MelbParkingData",
+            "referenceName": "Ds_Http_Parking_Bay_Sensors",
             "type": "DatasetReference",
             "parameters": {
-              "relativeurl": "dtpv-d4pf.json"
+              "relativeurl": ""
             }
           }
         ],
@@ -112,10 +112,10 @@
         },
         "inputs": [
           {
-            "referenceName": "Ds_REST_MelbParkingData",
+            "referenceName": "Ds_Http_Parking_Bay",
             "type": "DatasetReference",
             "parameters": {
-              "relativeurl": "wuf8-susg.json"
+              "relativeurl": ""
             }
           }
         ],
@@ -260,7 +260,7 @@
         },
         "userProperties": [],
         "sqlPool": {
-          "referenceName": "syndpprodlace21",
+          "referenceName": "",
           "type": "SqlPoolReference"
         },
         "typeProperties": {

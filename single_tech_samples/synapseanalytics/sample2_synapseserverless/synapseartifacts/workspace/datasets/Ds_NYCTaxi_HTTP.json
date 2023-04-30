@@ -16,7 +16,7 @@
             "location": {
                 "type": "HttpServerLocation",
                 "relativeUrl": {
-                    "value": "@concat('yellow_tripdata_', dataset().sourcefile,'.parquet')",
+                    "value": "@concat(dataset().sourcefile)",
                     "type": "Expression"
                 }
             },

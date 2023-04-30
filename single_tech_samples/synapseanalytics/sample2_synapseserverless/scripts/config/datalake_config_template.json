@@ -1,0 +1,109 @@
+{
+    "datalakeProperties": [
+        {
+            "year": "2019",
+            "month": "09",
+            "aclPermissions": [
+                {
+                    "type": "read",
+                    "groups": ["AADGR<project_name><deployment_id>"]
+                },
+                {
+                    "type": "write",
+                    "groups": ["AADGR<project_name><deployment_id>"]
+                }
+            ],
+            "created":"",
+            "lastUpdatedSourceSystem": "",
+		    "lastUpdatedDatalake": ""
+        },
+        {
+            "year": "2019",
+            "month": "10",
+            "aclPermissions": [
+                {
+                    "type": "read",
+                    "groups": ["AADGR<project_name><deployment_id>"]
+                },
+                {
+                    "type": "write",
+                    "groups": ["AADGR<project_name><deployment_id>"]
+                },
+                {
+                    "type": "execute",
+                    "groups": ["AADGR<project_name><deployment_id>"]
+                }
+            ],
+            "created":"",
+            "lastUpdatedSourceSystem": "",
+		    "lastUpdatedDatalake": ""
+        },
+        {
+            "year": "2021",
+            "month": "01",
+            "aclPermissions": [
+                {
+                    "type": "read",
+                    "groups": ["AADGR<project_name><deployment_id>"]
+                },
+                {
+                    "type": "write",
+                    "groups": ["AADGR<project_name><deployment_id>"]
+                },
+                {
+                    "type": "execute",
+                    "groups": ["AADGR<project_name><deployment_id>"]
+                }
+            ],
+            "created":"",
+            "lastUpdatedSourceSystem": "",
+		    "lastUpdatedDatalake": ""
+        },
+        {
+            "year": "2020",
+            "month": "12",
+            "aclPermissions": [
+                {
+                    "type": "read",
+                    "groups": ["AADGR<project_name><deployment_id>"]
+                },
+                {
+                    "type": "write",
+                    "groups": ["AADGR<project_name><deployment_id>"]
+                },
+                {
+                    "type": "execute",
+                    "groups": ["AADGR<project_name><deployment_id>"]
+                }
+            ],
+            "created":"",
+            "lastUpdatedSourceSystem": "",
+		    "lastUpdatedDatalake": ""
+        },
+        {
+            "year": "2022",
+            "month": "01",
+            "aclPermissions": [
+                {
+                    "type": "read",
+                    "groups": ["AADGR<project_name><deployment_id>"]
+                },
+                {
+                    "type": "write",
+                    "groups": ["AADGR<project_name><deployment_id>"]
+                },
+                {
+                    "type": "execute",
+                    "groups": ["AADGR<project_name><deployment_id>"]
+                }
+            ],
+            "created":"",
+            "lastUpdatedSourceSystem": "",
+		    "lastUpdatedDatalake": ""
+        }
+    ]
+}
+
+
+
+

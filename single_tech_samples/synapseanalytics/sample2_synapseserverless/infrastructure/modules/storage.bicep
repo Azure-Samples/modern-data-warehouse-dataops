@@ -46,6 +46,13 @@ resource dataLakeStorage 'Microsoft.Storage/storageAccounts@2021-09-01' = {
         publicAccess: 'None'
       }
     }
+
+    resource dataLakeStorageFileSystem3  'containers@2021-09-01' = {
+      name: 'config'
+      properties: {
+        publicAccess: 'None'
+      }
+    }
   }
 }
 

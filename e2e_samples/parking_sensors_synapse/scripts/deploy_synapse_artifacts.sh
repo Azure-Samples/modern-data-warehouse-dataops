@@ -57,90 +57,35 @@ synapse_ws_location=$(az group show \
     --output json |
     jq -r '.location')
 
-# Function responsible to perform the 4 steps needed to upload a single package to the synapse workspace area
-uploadSynapsePackagesToWorkspace(){
+addPackageToSynapseWorkspace(){ 
     declare name=$1
-    echo "Uploading Library Wheel Package to Workspace: $name"
-
-    #az synapse workspace wait --resource-group "${RESOURCE_GROUP_NAME}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --created
-    # Step 1: Get bearer token for the Data plane    
-    token=$(az account get-access-token --resource ${synapseResource} --query accessToken --output tsv)    
-    # Step 2: create workspace package placeholder
-    synapseLibraryBaseUri=${SYNAPSE_DEV_ENDPOINT}/libraries
-    synapseLibraryUri="${synapseLibraryBaseUri}/${name}?api-version=${dataPlaneApiVersion}"
-
-    if [[ -n $(az rest --method get --headers "Authorization=Bearer ${token}" 'Content-Type=application/json;charset=utf-8' --url "${synapseLibraryBaseUri}?api-version=${dataPlaneApiVersion}" --query "value[?name == '${name}']" -o tsv) ]]; then
-        echo "Library exists: ${name}"
-        echo "Skipping creation"
-        return 0
-    fi
-
-    az rest --method put --headers "Authorization=Bearer ${token}" "Content-Type=application/json;charset=utf-8" --url "${synapseLibraryUri}"
-    sleep 5
-
-    # Step 3: upload package content to workspace placeholder
-    #az synapse workspace wait --resource-group "${RESOURCE_GROUP_NAME}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --updated
-    synapseLibraryUriForAppend="${SYNAPSE_DEV_ENDPOINT}/libraries/${name}?comp=appendblock&api-version=${dataPlaneApiVersion}"
-    curl -i -X PUT -H "Authorization: Bearer ${token}" -H "Content-Type: application/octet-stream" --data-binary @./synapse/libs/"${name}" "${synapseLibraryUriForAppend}"
-    sleep 15
-  
-    # Step4: Completing Package creation/Flush the library
-    #az synapse workspace wait --resource-group "${RESOURCE_GROUP_NAME}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --updated
-    synapseLibraryUriForFlush="${SYNAPSE_DEV_ENDPOINT}/libraries/${name}/flush?api-version=${dataPlaneApiVersion}"
-    az rest --method post --headers "Authorization=Bearer ${token}" "Content-Type=application/json;charset=utf-8" --url "${synapseLibraryUriForFlush}"
-
+    echo "$(date):Synapse Workspace: Adding Wheel file as a workspace package"
+    az synapse workspace-package upload --workspace-name "${SYNAPSE_WORKSPACE_NAME}" \
+        --package ./synapse/libs/"${name}"
 }
 
-# Function responsible to perform the update of a spark pool on 3 configurations: requirements.txt, packages and spark configuration
-uploadSynapseArtifactsToSparkPool(){
-    declare requirementList=$1
-    declare customLibraryList=$2
-    echo "Uploading Synapse Artifacts to Spark Pool: ${BIG_DATAPOOL_NAME}"
+attachConfigsToSparkPool(){
+    declare name=$1
+    echo "$(date):Synapse SparkPool Update: Attaching Spark Config File to SparkPool"
 
-    json_body="{
-        \"location\": \"${synapse_ws_location}\",
-        \"properties\": {
-            \"nodeCount\": 10,
-            \"isComputeIsolationEnabled\": false,
-            \"nodeSizeFamily\": \"MemoryOptimized\",
-            \"nodeSize\": \"Small\",
-            \"autoScale\": {
-                \"enabled\": true,
-                \"minNodeCount\": 3,
-                \"maxNodeCount\": 10
-            },
-            \"cacheSize\": 0,
-            \"dynamicExecutorAllocation\": {
-                \"enabled\": false,
-                \"minExecutors\": 0,
-                \"maxExecutors\": 10
-            },
-            \"autoPause\": {
-                \"enabled\": true,
-                \"delayInMinutes\": 15
-            },
-            \"sparkVersion\": \"2.4\",
-            \"libraryRequirements\": {
-                \"filename\": \"requirements.txt\",
-                \"content\": \"${requirementList}\"
-            },
-            \"sessionLevelPackagesEnabled\": true,
-            ${customLibraryList}
-            \"sparkConfigProperties\": {
-                \"configurationType\": \"File\",
-                \"filename\": \"spark_loganalytics_conf.txt\",
-                \"content\": \"spark.synapse.logAnalytics.enabled true\r\nspark.synapse.logAnalytics.workspaceId ${LOG_ANALYTICS_WS_ID}\r\nspark.synapse.logAnalytics.secret ${LOG_ANALYTICS_WS_KEY}\"
-            },
-        }
-    }"
+    echo "$(date):Synapse SparkPool Update: Cleaning previous versions ./synapse/config/spark_config.txt"
+    > ./synapse/config/spark_config.txt
+    echo "" >> ./synapse/config/spark_config.txt
     
-    #Get bearer token for the management API
-    managementApiUri="${synapseWorkspaceBaseUrl}/bigDataPools/${BIG_DATAPOOL_NAME}?api-version=${apiVersion}"
-    az account get-access-token
+    echo "$(date):Synapse SparkPool Update: Creating current version ./synapse/config/spark_config.txt"
+    echo "cleaning previous versions ./synapse/config/spark_config.txt"
+    echo "spark.synapse.logAnalytics.enabled true" >> ./synapse/config/spark_config.txt
+    echo "spark.synapse.logAnalytics.workspaceId ${LOG_ANALYTICS_WS_ID}" >> ./synapse/config/spark_config.txt
+    echo "spark.synapse.logAnalytics.secret ${LOG_ANALYTICS_WS_KEY}" >> ./synapse/config/spark_config.txt
+    echo "" >> ./synapse/config/spark_config.txt
     
-    #Update the Spark Pool with requirements.txt and sparkconfiguration
-    #az synapse spark pool wait --resource-group "${RESOURCE_GROUP_NAME}" --workspace-name "${SYNAPSE_WORKSPACE_NAME}" --big-data-pool-name "${BIG_DATAPOOL_NAME}" --created
-    az rest --method put --headers "Content-Type=application/json" --url "${managementApiUri}" --body "$json_body"
+    az synapse spark pool update --name "${BIG_DATAPOOL_NAME}" \
+        --workspace-name "${SYNAPSE_WORKSPACE_NAME}" \
+        --resource-group "${RESOURCE_GROUP_NAME}" \
+        --spark-config-file-path './synapse/config/spark_config.txt' \
+        --library-requirements './synapse/config/requirements.txt' \
+        --package-action Add \
+        --package "${name}" 
 }
 
 createLinkedService () {
@@ -238,28 +183,10 @@ do
     echo "$provision_state: checking again in 10 seconds..."
 done
 
-# Build requirement.txt string to upload in the Spark Configuration
-configurationList=""
-while read -r p; do 
-    line=$(echo "$p" | tr -d '\r' | tr -d '\n')
-    if [ "$configurationList" != "" ]; then configurationList="$configurationList$line\r\n" ; else configurationList="$line\r\n"; fi
-done < $requirementsFileName
 
-# Build packages list to upload in the Spark Pool, upload packages to synapse workspace
-libraryList=""
-for file in "$packagesDirectory"*.whl; do
-    filename=${file##*/}
-    librariesToUpload="{
-        \"name\": \"${filename}\",
-        \"path\": \"${SYNAPSE_WORKSPACE_NAME}/libraries/${filename}\",
-        \"containerName\": \"prep\",
-        \"type\": \"whl\"
-    }"
-    if [ "$libraryList" != "" ]; then libraryList=${libraryList}","${librariesToUpload}; else libraryList=${librariesToUpload};fi
-    uploadSynapsePackagesToWorkspace "${filename}"
-done
-customlibraryList="customLibraries:[$libraryList],"
-uploadSynapseArtifactsToSparkPool "${configurationList}" "${customlibraryList}"
+# Add Wheel package to Synapse workspace
+addPackageToSynapseWorkspace "ddo_transform-localdev-py2.py3-none-any.whl"
+attachConfigsToSparkPool "ddo_transform-localdev-py2.py3-none-any.whl"
 
 getProvisioningState
 echo "$provision_state"
@@ -286,11 +213,12 @@ echo "$keyVaultLsContent" > ./synapse/workspace/linkedService/Ls_KeyVault_01.jso
 
 createLinkedService "Ls_KeyVault_01"
 createLinkedService "Ls_AdlsGen2_01"
-createLinkedService "Ls_Rest_MelParkSensors_01"
+createLinkedService "Ls_Http_Parking_Bay_01"
 
 # Deploy all Datasets
 createDataset "Ds_AdlsGen2_MelbParkingData"
-createDataset "Ds_REST_MelbParkingData"
+createDataset "Ds_Http_Parking_Bay"
+createDataset "Ds_Http_Parking_Bay_Sensors"
 
 # Deploy all Notebooks
 # This line allows the spark pool to be available to attach to the notebooks

@@ -6,7 +6,10 @@
             "type": "LinkedServiceReference"
         },
         "parameters": {
-            "sourcefilename": {
+            "month": {
+                "type": "string"
+            },
+            "year": {
                 "type": "string"
             }
         },
@@ -16,11 +19,11 @@
             "location": {
                 "type": "AzureBlobFSLocation",
                 "fileName": {
-                    "value": "@concat('yellow_tripdata_',dataset().sourcefilename,'.parquet')",
+                    "value": "@concat('yellow_tripdata_',dataset().year,'-',dataset().month,'.parquet')",
                     "type": "Expression"
                 },
                 "folderPath": {
-                    "value": "@replace(dataset().sourcefilename,'-','/')",
+                    "value": "@concat(dataset().year,'/',dataset().month)",
                     "type": "Expression"
                 },
                 "fileSystem": "datalake"

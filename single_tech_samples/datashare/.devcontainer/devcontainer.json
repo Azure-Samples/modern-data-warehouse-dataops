@@ -1,0 +1,15 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/python
+{
+	"name": "Python 3",
+	"image": "mcr.microsoft.com/devcontainers/python:0-3.9",
+	"features": {
+		"ghcr.io/devcontainers/features/azure-cli:1": {},
+		"ghcr.io/devcontainers-contrib/features/black:1": {},
+		"ghcr.io/jlaundry/devcontainer-features/azure-functions-core-tools:1": {}
+	},
+	"extensions": [
+		"azurite.azurite"
+	],
+	"postCreateCommand": "pip3 install --user -r python/requirements.txt"
+}
