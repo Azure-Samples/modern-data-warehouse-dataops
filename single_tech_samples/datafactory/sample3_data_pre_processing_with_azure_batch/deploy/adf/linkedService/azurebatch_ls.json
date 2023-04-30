@@ -1,0 +1,13 @@
+{
+    "annotations": [],
+    "type": "AzureBatch",
+    "typeProperties": {
+        "batchUri": "TEMP_AZ_BATCH_ACCOUNT_URL",
+        "poolName": "TEMP_AZ_BATCH_ORCHESTRATOR_POOL_ID",
+        "accountName": "TEMP_AZ_BATCH_ACCOUNT_NAME",
+        "linkedServiceName": {
+            "referenceName": "AzureBlobStorage_LS",
+            "type": "LinkedServiceReference"
+        }
+    }
+}

@@ -1,0 +1,6 @@
+rosbagTimestamp,header,seq,stamp,secs,nsecs,frame_id,cta_left_alert,cta_right_alert,cta_left_enabled,cta_right_enabled,blis_left_alert,blis_right_alert,blis_left_enabled,blis_right_enabled,sonar_enabled,sonar_fault,sonar
+1479513000089757970,,1846,,1479513000,89683784,'',False,False,True,True,False,False,True,True,False,False,"[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]"
+1479513000291162049,,1847,,1479513000,291086287,'',False,False,True,True,False,False,True,True,False,False,"[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]"
+1479513000492451846,,1848,,1479513000,492363175,'',False,False,True,True,False,False,True,True,False,False,"[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]"
+1479513000693824709,,1849,,1479513000,693723673,'',False,False,True,True,False,False,True,True,False,False,"[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]"
+1479513000895210674,,1850,,1479513000,895076503,'',False,False,True,True,False,False,True,True,False,False,"[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]"
