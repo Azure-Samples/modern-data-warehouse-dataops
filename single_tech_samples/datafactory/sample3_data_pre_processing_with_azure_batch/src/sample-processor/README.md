@@ -17,7 +17,7 @@ This is a sample image which is build from ros:noetic base image. It extracts th
     az account set -s <YOUR-SUBSCRIPTION_ID>
     ```
 
-3.  Set the following variables in `deploy-processor.sh`
+3. Set the following variables in `deploy-processor.sh`
 
     ```shell
     RESOURCE_GROUP_NAME="<YOUR-RESOURCE-GROUP-NAME>"
@@ -32,7 +32,6 @@ This is a sample image which is build from ros:noetic base image. It extracts th
 5. Run `./deploy-processor.sh`
 
 [Back to deployment steps](../../README.md)
-
 
 ### Testing your image locally [OPTIONAL]
 

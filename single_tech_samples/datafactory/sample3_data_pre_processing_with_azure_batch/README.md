@@ -20,7 +20,7 @@ The solution demonstrates the process of performing data pre-processing by runni
 
 Azure Batch is a great option for data pre-processing. However, there are certain technical challenges and limitations when it comes to processing large files, autoscaling batch nodes and triggering batch workloads from Azure Data Factory. Some of these challenges and limitations are explained below:
 
-### Auto-scaling issues(slow spin-up times for new nodes) 
+### Auto-scaling issues(slow spin-up times for new nodes)
 
 To process your workloads processor code need to be deployed on the Azure Batch nodes, which means all the dependencies which are required by your application are to be installed on the batch node. Azure Batch provides you with startup task which can be used to install the required dependencies, but if the required dependencies are too many then it will delay the node readiness and will impact your autoscaling as every new node which gets spun up will take time to get ready for processing your workloads. This setup time can vary from 3-30 minutes depending on the list of dependencies your processor code requires.
 
@@ -28,7 +28,7 @@ To process your workloads processor code need to be deployed on the Azure Batch 
 In such cases it is best practice to containerize your application and run container work loads on Azure Batch. 
 ```
 
-### Working with large files 
+### Working with large files
 
 When processing large files it does not makes sense to download the large files on to the batch nodes from storage account and then extract the contents and upload those back to the storage account. This way you need to ensure your nodes have enough storage attached to them or you may require to do some kind of cleansing to free the space after the job is done and you will be spending extra time in the downloading and uploading of contents to storage account.
 
@@ -36,7 +36,7 @@ When processing large files it does not makes sense to download the large files 
 The best practice here is, you can mount your storage accounts on to the batch nodes and access the data directly. However one thing to be noted here is NFS mounts are not supported on windows nodes. For more details see Mounting storage accounts via NFS
 ```
 
-### Triggering azure batch container workloads from Azure datafactory 
+### Triggering azure batch container workloads from Azure datafactory
 
 Azure datafactory does not support triggering batch container workloads directly via its [custom activity](https://learn.microsoft.com/en-us/azure/data-factory/transform-data-using-custom-activity). The below [architecture](#13-architecture) explains how to over come this limitation.
 
@@ -62,7 +62,7 @@ Details about [how to use this sample](#2-how-to-use-this-sample) can be found i
 
 For our sample use case we have a sample [ros bag file](http://wiki.ros.org/Bags/Format) in an ADLS account and will be picked by ADF pipeline for pre-processing via Azure Batch.
 
-Ideally in actual production scenarios, there will be two ADLS accounts representing raw and extarcted zones, for the simplcity case we will have the raw and the extarcted zones in the same ADLS account. Pipeline will pick the ros bag file from the raw zone and send it for extraction to Azure Batch where the file can be extracted simultaneously by one or more processors. In this sample we will be using a single `sample-processor` which will be packaged as a docker image and pushed to container registry. Azure batch will use this image to spin a container and perform the extraction and store the extarcted contents back to extracted zone. Once the extraction is completed ADF pipeline can proceed with the next step to process this extracted data or invoke other pipelines.
+Ideally in actual production scenarios, there will be two ADLS accounts representing raw and extracted zones, for the simplcity case we will have the raw and the extracted zones in the same ADLS account. Pipeline will pick the ros bag file from the raw zone and send it for extraction to Azure Batch where the file can be extracted simultaneously by one or more processors. In this sample we will be using a single `sample-processor` which will be packaged as a docker image and pushed to container registry. Azure batch will use this image to spin a container and perform the extraction and store the extarcted contents back to extracted zone. Once the extraction is completed ADF pipeline can proceed with the next step to process this extracted data or invoke other pipelines.
 
 ![use-case](images/pre-processing-usecase.map.drawio.svg)
 
