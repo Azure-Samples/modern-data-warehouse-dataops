@@ -12,8 +12,9 @@ services:
     ports: 
     - 5004:5004
     volumes:
-      # Update this to wherever you want VS Code to mount the folder of your project
-      - ..:/workspace
+      # Update this to wherever you want VS Code to mount the folder of your project.
+      # Use the Git root folder to enable vscode version control integration.
+      - ../../../../..:/workspace
 
       # # This lets you avoid setting up Git again in the container
       # - ~/.gitconfig:/root/.gitconfig
