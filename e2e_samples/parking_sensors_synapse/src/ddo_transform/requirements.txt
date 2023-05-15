@@ -1,1 +1,7 @@
-pyspark==3.2.2
+# Requirements for running the runtime code standalone.
+# These requirements would be installed for running integration tests in a dedicated
+# environment, though no integration tests are currently defined.
+#
+# See README.md regarding version alignment with Databricks runtime.
+#
+pyspark==3.3.0
