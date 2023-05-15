@@ -3,10 +3,7 @@
 
 """The setup script."""
 
-import os
 from setuptools import setup, find_packages
-
-version = os.environ['PACKAGE_VERSION']
 
 with open('README.md') as readme_file:
     readme = readme_file.read()
@@ -14,7 +11,7 @@ with open('README.md') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ['Click>=6.0', ]
+requirements = []
 
 setup_requirements = ['pytest-runner', ]
 
@@ -38,22 +35,15 @@ setup(
         'Programming Language :: Python :: 3.8',
     ],
     description="Python Boilerplate contains all the boilerplate you need to create a Python package.",
-    entry_points={
-        'console_scripts': [
-            'ddo_transform=ddo_transform.cli:main',
-        ],
-    },
     install_requires=requirements,
     license="MIT license",
     long_description=readme + '\n\n' + history,
     include_package_data=True,
-    keywords='ddo_transform',
     name='ddo_transform',
     packages=find_packages(include=['ddo_transform']),
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
-    url='https://github.com/devlace/datadevops',
-    version=version,
+    url='https://github.com/Azure-Samples/modern-data-warehouse-dataops/tree/main/e2e_samples/parking_sensors',
     zip_safe=False,
 )
