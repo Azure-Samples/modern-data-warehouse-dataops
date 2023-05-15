@@ -2,7 +2,7 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See LICENSE in the project root for license information.
 #-----------------------------------------------------------------------------------------
-FROM python:3.7
+FROM python:3.9.5
 
 # Configure apt
 ENV DEBIAN_FRONTEND=noninteractive
@@ -17,7 +17,6 @@ RUN apt-get install -y libicu[0-9][0-9]
 
 # Install java
 RUN apt-get install -y openjdk-11-jdk
-ENV JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64
 
 RUN mkdir /workspace
 WORKDIR /workspace
