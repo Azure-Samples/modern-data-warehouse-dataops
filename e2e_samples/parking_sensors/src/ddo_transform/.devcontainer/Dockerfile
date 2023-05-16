@@ -29,6 +29,12 @@ RUN pip install -r requirements_dev.txt \
     && pip install -r requirements.txt \ 
     && rm requirements.txt*
 
+# Install Delta JAR packages 
+# (needed for DeltaTable integration tests)
+COPY util/install-delta-jars.sh .
+RUN ./install-delta-jars.sh \
+  && rm install-delta-jars.sh
+
 # Clean up
 RUN apt-get autoremove -y \
     && apt-get clean -y \
