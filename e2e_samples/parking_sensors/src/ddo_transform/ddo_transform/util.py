@@ -20,3 +20,6 @@ def save_overwrite_unmanaged_table(spark: SparkSession, dataframe: DataFrame, ta
         .insertInto(table_name, overwrite=True)
     # Drop temp table
     spark.sql("DROP TABLE " + temp_table_name).collect()
+
+def append_delta(spark: SparkSession, dataframe: DataFrame, table_name: str):
+    dataframe.write.format("delta").mode("append").insertInto(table_name)

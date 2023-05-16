@@ -13,7 +13,7 @@ import datetime
 import os
 from pyspark.sql.functions import col, lit
 import ddo_transform.transform as t
-import ddo_transform.util as util
+import ddo_transform.util as util, append_delta
 
 load_id = loadid
 loaded_on = datetime.datetime.now()
@@ -61,7 +61,7 @@ dim_st_marker = spark.read.table("dw.dim_st_marker")
 nr_fact_parking = t.process_fact_parking(sensordata_sdf, dim_parkingbay_sdf, dim_location_sdf, dim_st_marker, load_id, loaded_on)
 
 # Insert new rows
-nr_fact_parking.write.mode("append").insertInto("dw.fact_parking")
+append_delta(nr_fact_parking, "dw.fact_parking")
 
 # COMMAND ----------
 
