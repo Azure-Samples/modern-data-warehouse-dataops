@@ -1,1 +1,8 @@
-pyspark==3.1.3
+# Requirements for running the runtime code standalone and for improved type inference.
+# These requirements would be installed for running integration tests,
+# though no integration tests are currently defined.
+#
+# See README.md regarding version alignment with Databricks runtime.
+#
+pyspark==3.3.0
+delta-spark==2.3.0
