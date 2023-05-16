@@ -20,3 +20,4 @@ ls *.jar > /dev/null
 wget \
     https://repo1.maven.org/maven2/io/delta/delta-core_"$scalaVersion"/"$deltaVersion"/delta-core_"$scalaVersion"-"$deltaVersion".jar \
     https://repo1.maven.org/maven2/io/delta/delta-storage/"$deltaVersion"/delta-storage-"$deltaVersion".jar
+
