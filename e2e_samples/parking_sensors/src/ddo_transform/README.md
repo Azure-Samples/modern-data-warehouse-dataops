@@ -28,7 +28,7 @@ The Devcontainer should have ms-python extension installed and .vscode all the n
 
 ### Dependency and artifact versions
 
-When determining versions of base Docker images and dependency packages, make sure to align versions with the ones used in the Databricks runtime version currently used in deploymen.
+When determining versions of base Docker images and dependency packages, make sure to align versions with the ones used in the Databricks runtime version currently used in deployment.
 
 The sample is currently aligned to [Databricks Runtime 12.2 LTS](https://docs.databricks.com/release-notes/runtime/12.2.html). This includes:
 
@@ -37,5 +37,5 @@ The sample is currently aligned to [Databricks Runtime 12.2 LTS](https://docs.da
 - Python 3.9.5
 - Delta Lake 2.2.0
 
-However, note that Databricks frequently backports features to its runtime. For example, [`whenNotMatchedBySource` was added in Delta Lake 2.3.0](https://github.com/delta-io/delta/pull/1511), but is [available](https://learn.microsoft.com/en-us/azure/databricks/delta/merge) in Databricks Runtime 12.2 LTS, which is documented to use Delta Lake 2.2.0. Therefore, Delta Lake 2.3.0 must be used for testing.
+However, note that Databricks frequently backports features to its runtime. For example, [`whenNotMatchedBySource` was added in Delta Lake 2.3.0](https://github.com/delta-io/delta/pull/1511), but is [available](https://learn.microsoft.com/en-us/azure/databricks/delta/merge) in Databricks Runtime 12.2 LTS, which is documented to use Delta Lake 2.2.0. Therefore, Delta Lake 2.3.0 must be used for testing fif that feature is used.
 
