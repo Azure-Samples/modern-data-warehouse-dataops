@@ -2,75 +2,78 @@
 
 ## Contents <!-- omit in toc -->
 
-- [1. Solution Overview](#1-solution-overview)
-  - [1.1. Scope](#11-scope)
-  - [1.2. Use Case](#12-use-case)
-  - [1.3. Architecture](#13-architecture)
-  - [1.4. Technologies used](#14-technologies-used)
-- [2. How to use this sample](#2-how-to-use-this-sample)
-  - [2.1. Prerequisites](#21-prerequisites)
-    - [2.1.1 Software Prerequisites](#211-software-prerequisites)
-  - [2.2. Setup and deployment](#22-setup-and-deployment)  
-  - [2.3. Deployment validation and Execution](#23-deployment-validation-and-execution)
-  - [2.4. Clean-up](#24-clean-up)
+- [Solution Overview](#solution-overview)
+  - [Scope](#scope)
+  - [Use Case](#use-case)
+  - [Architecture](#architecture)
+  - [Technologies used](#technologies-used)
+- [How to use this sample](#how-to-use-this-sample)
+  - [Prerequisites](#prerequisites)
+    - [Software Prerequisites](#software-prerequisites)
+  - [Setup and deployment](#setup-and-deployment)  
+  - [Deployment validation and Execution](#deployment-validation-and-execution)
+  - [Clean-up](#clean-up)
+  - [Resources](#resources)
 
-## 1. Solution Overview
+## Solution Overview
 
-The solution demonstrates the process of performing data pre-processing by running Azure Batch container workloads from Azure Data Factory.
+This solution demonstrates the data pre-processing process by running Azure Batch container workloads from Azure Data Factory.
 
 Azure Batch is a great option for data pre-processing. However, there are certain technical challenges and limitations when it comes to processing large files, autoscaling batch nodes and triggering batch workloads from Azure Data Factory. Some of these challenges and limitations are explained below:
 
-### Auto-scaling issues(slow spin-up times for new nodes)
+- Auto-scaling issues(slow spin-up times for new nodes)
 
-To process your workloads processor code need to be deployed on the Azure Batch nodes, which means all the dependencies which are required by your application are to be installed on the batch node. Azure Batch provides you with startup task which can be used to install the required dependencies, but if the required dependencies are too many then it will delay the node readiness and will impact your autoscaling as every new node which gets spun up will take time to get ready for processing your workloads. This setup time can vary from 3-30 minutes depending on the list of dependencies your processor code requires.
+   To process workloads, the processor code needs to be deployed on the Azure Batch nodes. Thus, all the dependencies required by the application are to be installed on the batch nodes as well.
 
-```plaintext
-In such cases it is best practice to containerize your application and run container work loads on Azure Batch. 
-```
+   Azure Batch provides the option of startup task which can be used to install the required dependencies. However, if there are numerous required dependencies, the readiness of the nodes would be delayed, consequently impacting auto-scaling. This is because each newly spun-up node will require time to become ready for processing the workloads. This setup time can vary from 3-30 minutes depending on the list of dependencies required by the processor code.
 
-### Working with large files
+   ```plaintext
+   In such cases it is best practice to containerize your application and run container work loads on Azure Batch. 
+   ```
 
-When processing large files it does not makes sense to download the large files on to the batch nodes from storage account and then extract the contents and upload those back to the storage account. This way you need to ensure your nodes have enough storage attached to them or you may require to do some kind of cleansing to free the space after the job is done and you will be spending extra time in the downloading and uploading of contents to storage account.
+- Working with large files
 
-```plaintext
-The best practice here is, you can mount your storage accounts on to the batch nodes and access the data directly. However one thing to be noted here is NFS mounts are not supported on windows nodes. For more details see Mounting storage accounts via NFS
-```
+   When processing large files it does not makes sense to download the large files on to the batch nodes from storage account and then extract the contents and upload those back to the storage account. This way you need to ensure your nodes have enough storage attached to them or you may require to do some kind of cleansing to free the space after the job is done and you will be spending extra time in the downloading and uploading of contents to storage account.
 
-### Triggering azure batch container workloads from Azure datafactory
+   ```plaintext
+   The best practice here is, you can mount your storage accounts on to the batch nodes and access the data directly. However one thing to be noted here is NFS mounts are not supported on windows nodes. For more details see Mounting storage accounts via NFS
+   ```
 
-Azure datafactory does not support triggering batch container workloads directly via its [custom activity](https://learn.microsoft.com/en-us/azure/data-factory/transform-data-using-custom-activity). The below [architecture](#13-architecture) explains how to over come this limitation.
+- Triggering azure batch container workloads from Azure datafactory
 
-This sample will focus on provisioning an Azure Batch account, Azure Data Factory and other required resources where you can run the ADF pipeline to see how the data pre-processing can be done on huge volume of data in an efficient and scalable manner.  
+   Azure datafactory does not support triggering batch container workloads directly via its [custom activity](https://learn.microsoft.com/en-us/azure/data-factory/transform-data-using-custom-activity). The below [architecture](#13-architecture) explains how to over come this limitation.
 
-### 1.1. Scope
+   This sample will focus on provisioning an Azure Batch account, Azure Data Factory and other required resources where you can run the ADF pipeline to see how the data pre-processing can be done on huge volume of data in an efficient and scalable manner.  
+
+### Scope
 
 The following list captures the scope of this sample:
 
-1. Provision an ADF, Azure Batch and required storage acounts and other resources.
-2. The following services will be provisioned as a part of this sample setup:
-   1. V-Net with one subnet
-   2. Azure Data Factory
-   3. Azure Batch Account
-   4. ADLS account with a sample data(.bag) file
-   5. Azure Storage account for azure batch resources
-   6. Key Vault
-   7. User Assigned Managed Identity
+- Provision an ADF, Azure Batch and required storage acounts and other resources.
+- The following services will be provisioned as a part of this sample setup:
+   - VNet with one subnet
+   - Azure Data Factory
+   - Azure Batch Account
+   - ADLS account with a sample data(.bag) file
+   - Azure Storage account for azure batch resources
+   - Key Vault
+   - User Assigned Managed Identity
 
 Details about [how to use this sample](#2-how-to-use-this-sample) can be found in the later sections of this document.
 
-### 1.2. Use Case
+### Use Case
 
-For our sample use case we have a sample [ros bag file](http://wiki.ros.org/Bags/Format) in an ADLS account and will be picked by ADF pipeline for pre-processing via Azure Batch.
+For this sample use case, a sample [ros bag](http://wiki.ros.org/Bags/Format) file in an ADLS Gen2 account will be picked by ADF pipeline for pre-processing via Azure Batch.
 
-Ideally in actual production scenarios, there will be two ADLS accounts representing raw and extracted zones, for the simplcity case we will have the raw and the extracted zones in the same ADLS account. Pipeline will pick the ros bag file from the raw zone and send it for extraction to Azure Batch where the file can be extracted simultaneously by one or more processors. In this sample we will be using a single `sample-processor` which will be packaged as a docker image and pushed to container registry. Azure batch will use this image to spin a container and perform the extraction and store the extarcted contents back to extracted zone. Once the extraction is completed ADF pipeline can proceed with the next step to process this extracted data or invoke other pipelines.
+In actual production scenarios, it is ideal to have two ADLS accounts, one representing the raw zone and the other representing the extracted zone. However, for the sake of simplicity in this case, both the raw and extracted zones will reside within the same ADLS account. The pipeline will select the ROS bag file from the raw zone and send it to Azure Batch for extraction. Within Azure Batch, the file can be simultaneously extracted by one or more processors. For this sample, a single `sample-processor` will be utilized, which will be packaged as a docker image and pushed to the container registry. Azure Batch will employ this image to create a container and execute the extraction process, subsequently storing the extracted contents in the extracted zone. Once the extraction is complete, the ADF pipeline can proceed to the next step, either to process the extracted data or invoke other pipelines.
 
 ![use-case](images/pre-processing-usecase.map.drawio.svg)
 
 Details about [how to run the pipeline](#24-deployment-validation-and-execution) can be found in the later sections of this document.
 
-### 1.3. Architecture
+### Architecture
 
-The below diagram illustrates the high level design showing the ADF and the azure batch integration for running container workloads on azure batch:
+The high-level design is depicted in the diagram below, showcasing the integration between ADF and Azure Batch for executing container workloads on Azure Batch.
 
 ![alt text](images/adf-batch-integration-design.svg "Design Diagram")
 
@@ -96,20 +99,20 @@ The below diagram illustrates the high level design showing the ADF and the azur
 
 - **Managed Identity:** This is a user assigned managed identity which will be assigned to both of the batch pools and batch pool will use it to access any other required resources like container registry, keyvault, storage account etc.
 
-### 1.4. Technologies used
+### Technologies used
 
 The following technologies are used to build this sample:
 
-- [Azure Data Factory](https://azure.microsoft.com/en-in/products/data-factory/)
+- [Azure Data Factory](https://azure.microsoft.com/products/data-factory/)
 - [Azure Batch](https://azure.microsoft.com/en-us/products/batch)
 - [Azure Storage(ADLS)](https://azure.microsoft.com/en-au/services/storage/data-lake-storage/)
 - [NFS Mounts](https://learn.microsoft.com/en-us/azure/storage/blobs/network-file-system-protocol-support-how-to)
 
-## 2. How to use this sample
+## How to use this sample
 
 This section holds the information about usage instructions of this sample.
 
-### 2.1. Prerequisites
+### Prerequisites
 
 1. [Github account](https://github.com/)
 2. [Azure Account](https://azure.microsoft.com/en-gb/free/)
@@ -123,7 +126,7 @@ This section holds the information about usage instructions of this sample.
      - Microsoft.Batch
      - Microsoft.ContainerRegistry
 
-#### 2.1.1 Software Prerequisites
+#### Software Prerequisites
 
 1. [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/) installed on the local machine
 
@@ -137,7 +140,7 @@ This section holds the information about usage instructions of this sample.
    2. Option 2: Use the devcontainer published [here](./.devcontainer) as a host for the bash shell, it has all the pre-requisites installed.
       For more information about Devcontainers, see [here](https://code.visualstudio.com/docs/remote/containers).
 
-### 2.2. Setup and deployment
+### Setup and deployment
 
 1. Clone this repository.
 
@@ -150,7 +153,7 @@ This section holds the information about usage instructions of this sample.
 4. [Publish a sample-processor image to your azure container registry.](src/sample-processor/README.md)
 5. [Deploy a sample orchestrator app to azure batch pool.](src/orchestrator-app/README.md)
 
-### 2.3. Deployment validation and Execution
+### Deployment validation and Execution
 
 The following steps can be performed to validate the correct deployment and execution of the sample:
 
@@ -182,7 +185,7 @@ The following steps can be performed to validate the correct deployment and exec
 
    ![pipeline run](images/pipeline-run.png)
 
-### 2.4. Clean-up
+### Clean-up
 
 Please follow the steps in the [clean-up section](deploy/terraform/README.md)
 

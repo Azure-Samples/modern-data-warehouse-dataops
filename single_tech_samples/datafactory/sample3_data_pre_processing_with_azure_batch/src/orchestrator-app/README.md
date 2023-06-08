@@ -1,6 +1,6 @@
 # Batch Orchestrator App
 
-This is a sample code for an orchestrator app which runs as an Azure Batch application on the orchestrator pool of the [reference architecture](../../README.MD#13-architecture). It can be zipped and uploaded as an application which gets invoked from Azure Data Factory(ADF) via its custom activity.
+This is a sample code for an orchestrator app which runs as an Azure Batch application on the orchestrator pool of the [reference architecture](../../README.MD#architecture). It can be zipped and uploaded as an application which gets invoked from Azure Data Factory(ADF) via its custom activity.
 
 This sample application accepts two parameters `inputFile` and `outputPath` as parameters. You need to invoke the below command from ADF custom activity:
 
