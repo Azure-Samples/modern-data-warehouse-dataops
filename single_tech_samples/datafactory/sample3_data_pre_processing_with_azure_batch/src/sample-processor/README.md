@@ -25,13 +25,13 @@ This is a sample image which is build from ros:noetic base image. It extracts th
     CONTAINER_REGISTRY_NAME="<YOUR-ACR-NANME>"
     ```
 
-    Note: Refer to [deployed resources](../../deploy/terraform/README.md) to get your resource names.
+    Note: Refer to [deployed resources](../../deploy/terraform/README.md#deployed-resources) to get your resource names.
 
 4. Give execute permissions to script `chmod +x deploy-processor.sh`
 
 5. Run `./deploy-processor.sh`
 
-[Back to deployment steps](../../README.md)
+[Back to deployment steps](../../README.md#setup-and-deployment)
 
 ### Testing your image locally [OPTIONAL]
 

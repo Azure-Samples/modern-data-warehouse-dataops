@@ -37,7 +37,7 @@ Azure Batch is a great option for data pre-processing. However, there are certai
 
 - Triggering azure batch container workloads from Azure datafactory
 
-   Azure datafactory does not support triggering batch container workloads directly via its [custom activity](https://learn.microsoft.com/en-us/azure/data-factory/transform-data-using-custom-activity). The below [architecture](#13-architecture) explains how to over come this limitation.
+   Azure datafactory does not support triggering batch container workloads directly via its [custom activity](https://learn.microsoft.com/en-us/azure/data-factory/transform-data-using-custom-activity). The below [architecture](#architecture) explains how to over come this limitation.
 
    This sample will focus on provisioning an Azure Batch account, Azure Data Factory and other required resources where you can run the ADF pipeline to see how the data pre-processing can be done on huge volume of data in an efficient and scalable manner.  
 
@@ -55,7 +55,7 @@ The following list captures the scope of this sample:
   - Key Vault
   - User Assigned Managed Identity
 
-Details about [how to use this sample](#2-how-to-use-this-sample) can be found in the later sections of this document.
+Details about [how to use this sample](#how-to-use-this-sample) can be found in the later sections of this document.
 
 ### Use Case
 
@@ -65,7 +65,7 @@ In actual production scenarios, it is ideal to have two ADLS accounts, one repre
 
 ![use-case](images/pre-processing-usecase.map.drawio.svg)
 
-Details about [how to run the pipeline](#24-deployment-validation-and-execution) can be found in the later sections of this document.
+Details about [how to run the pipeline](#deployment-validation-and-execution) can be found in the later sections of this document.
 
 ### Architecture
 
@@ -183,9 +183,11 @@ The following steps can be performed to validate the correct deployment and exec
 
 ### Clean-up
 
-Please follow the steps in the [clean-up section](deploy/terraform/README.md)
+Please follow the steps in the [clean-up section](deploy/terraform/README.md#clean-up-the-whole-infrastructure)
 
 ### Resources
+
+- [Data operations for autonomous vehicle operations](https://learn.microsoft.com/en-us/azure/architecture/example-scenario/automotive/autonomous-vehicle-operations-dataops)
 
 - [Parallel processing with Azure Batch.](https://learn.microsoft.com/en-us/azure/batch/batch-technical-overview#run-parallel-workloads)
 

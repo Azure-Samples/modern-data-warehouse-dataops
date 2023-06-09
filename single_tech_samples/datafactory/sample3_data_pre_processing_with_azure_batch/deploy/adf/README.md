@@ -19,10 +19,10 @@
     AZ_DATAFACTORY_NAME="<YOUR-DATAFACTORY-NAME>"
     ```
 
-    Note: Refer to [deployed resources](../terraform/README.md) to get your resource names.
+    Note: Refer to [deployed resources](../terraform/README.md#deployed-resources) to get your resource names.
 
 4. Give execute permissions to script `chmod +x deploy-pipeline.sh`
 
 5. Run `./deploy-pipeline.sh`
 
-[Back to deployment steps](../../README.md)
+[Back to deployment steps](../../README.md#setup-and-deployment)

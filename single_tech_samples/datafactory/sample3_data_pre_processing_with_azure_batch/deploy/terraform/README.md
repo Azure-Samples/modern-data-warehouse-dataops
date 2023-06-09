@@ -107,4 +107,4 @@ It is ideal to configure a storage account to use as a remote backend for your t
 
 For learning more about configuring a remote backend and its advantages, follow this [link](https://developer.hashicorp.com/terraform/language/settings/backends/configuration)
 
-[Back to deployment steps](../../README.md)
+[Back to deployment steps](../../README.md#setup-and-deployment)

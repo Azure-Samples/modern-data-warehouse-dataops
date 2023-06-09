@@ -13,7 +13,7 @@ python3 app/extract.py --inputFile /data/raw/sample-data.bag --outputPath /data/
 
 ```
 
-Note: In this sample we have a azure data lake storage account(ADLS) which has a container `data` with two folders `raw` and `extracted`. This `data` container is mounted on the azure batch pool nodes and data can be read and written directly to the ADLS account. For more details refer to the [deployed resouces](../../deploy/terraform/README.md) documentation.
+Note: In this sample we have a azure data lake storage account(ADLS) which has a container `data` with two folders `raw` and `extracted`. This `data` container is mounted on the azure batch pool nodes and data can be read and written directly to the ADLS account. For more details refer to the [deployed resouces](../../deploy/terraform/README.md#deployed-resources) documentation.
 
 ## Steps to package and upload this sample application to Azure Batch
 
@@ -30,7 +30,7 @@ Note: In this sample we have a azure data lake storage account(ADLS) which has a
     AZ_ACR_NAME="<YOUR-ACR-NAME>"
     ```
 
-    Note: Refer to [deployed resources](../../deploy/terraform/README.md) to get your keyvault name and ACR name.
+    Note: Refer to [deployed resources](../../deploy/terraform/README.md#deployed-resources) to get your keyvault name and ACR name.
 
 3. Create a zip of your app folder.
 
@@ -62,7 +62,7 @@ Note: In this sample we have a azure data lake storage account(ADLS) which has a
 
     ```
 
-    Note: Refer to [deployed resources](../../deploy/terraform/README.md) for populating resource names.
+    Note: Refer to [deployed resources](../../deploy/terraform/README.md#deployed-resources) for populating resource names.
 
 6. Restart orchestrator pool nodes, this is required to pull the uploaded application on the batch nodes. For more details refer to the [documentation](https://learn.microsoft.com/en-us/azure/batch/batch-application-packages)
 
@@ -101,4 +101,4 @@ Note: In this sample we have a azure data lake storage account(ADLS) which has a
 
     Note: `.vscode\launch.json` contains a sample extract task configuration which passes sample arguments to the orchestrator app. The path used is actually a mounted path of the ADLS account where a sample file exists.
 
-[Back to deployment steps](../../README.md)
+[Back to deployment steps](../../README.md#setup-and-deployment)
