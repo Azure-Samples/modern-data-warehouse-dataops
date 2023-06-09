@@ -27,17 +27,13 @@ Azure Batch is a great option for data pre-processing. However, there are certai
 
    Azure Batch provides the option of startup task which can be used to install the required dependencies. However, if there are numerous required dependencies, the readiness of the nodes would be delayed, consequently impacting auto-scaling. This is because each newly spun-up node will require time to become ready for processing the workloads. This setup time can vary from 3-30 minutes depending on the list of dependencies required by the processor code.
 
-   ```plaintext
-   In such cases it is best practice to containerize your application and run container work loads on Azure Batch. 
-   ```
+   _**Best Practice:**_ Containerize application and run the container workloads on Azure Batch.
 
 - Working with large files
 
-   When processing large files it does not makes sense to download the large files on to the batch nodes from storage account and then extract the contents and upload those back to the storage account. This way you need to ensure your nodes have enough storage attached to them or you may require to do some kind of cleansing to free the space after the job is done and you will be spending extra time in the downloading and uploading of contents to storage account.
+   When processing large files, it is not logical to download the files onto the batch nodes from the storage account, extract their contents, and then upload them back to the storage account. This approach necessitates ensuring that the nodes have sufficient attached storage or performing some form of cleansing to free up space after the job is completed. Moreover, additional time will be expended in the process of downloading and uploading the contents to the storage account.
 
-   ```plaintext
-   The best practice here is, you can mount your storage accounts on to the batch nodes and access the data directly. However one thing to be noted here is NFS mounts are not supported on windows nodes. For more details see Mounting storage accounts via NFS
-   ```
+   _**Best Practice:**_ Mount storage accounts onto the batch nodes and access the data directly. Please note here that NFS mounts are not supported on windows nodes. Please check the [supported configurations](https://learn.microsoft.com/azure/batch/virtual-file-mount?tabs=windows#supported-configurations) for the details.
 
 - Triggering azure batch container workloads from Azure datafactory
 
@@ -51,13 +47,13 @@ The following list captures the scope of this sample:
 
 - Provision an ADF, Azure Batch and required storage acounts and other resources.
 - The following services will be provisioned as a part of this sample setup:
-   - VNet with one subnet
-   - Azure Data Factory
-   - Azure Batch Account
-   - ADLS account with a sample data(.bag) file
-   - Azure Storage account for azure batch resources
-   - Key Vault
-   - User Assigned Managed Identity
+  - VNet with one subnet
+  - Azure Data Factory
+  - Azure Batch Account
+  - ADLS account with a sample data(.bag) file
+  - Azure Storage account for azure batch resources
+  - Key Vault
+  - User Assigned Managed Identity
 
 Details about [how to use this sample](#2-how-to-use-this-sample) can be found in the later sections of this document.
 
