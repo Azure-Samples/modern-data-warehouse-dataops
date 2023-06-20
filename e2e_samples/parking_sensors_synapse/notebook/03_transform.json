@@ -18,14 +18,11 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "2eefb360-05b3-4799-a18e-356340b023d2"
+				"spark.autotune.trackingId": "d16bddd2-a2ae-4383-907a-730357397121"
 			}
 		},
 		"metadata": {
 			"saveOutput": true,
-			"synapse_widget": {
-				"version": "0.1"
-			},
 			"enableDebugMode": false,
 			"kernelspec": {
 				"name": "synapse_pyspark",
@@ -41,14 +38,13 @@
 				"endpoint": "https://sywsdev77.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/test",
 				"auth": {
 					"type": "AAD",
-					"authResource": "https://dev.azuresynapse.net",
-					"authHeader": null
+					"authResource": "https://dev.azuresynapse.net"
 				},
 				"sparkVersion": "3.3",
 				"nodeCount": 10,
 				"cores": 4,
 				"memory": 28,
-				"extraHeader": null
+				"automaticScaleJobs": false
 			},
 			"sessionKeepAliveTimeout": 30
 		},
@@ -386,7 +382,8 @@
 					"#    parkingbayMalformedCount = customDimensions.parkingbay_malformed_count,\n",
 					"#    sensordataMalformedCount = customDimensions.sensordata_malformed_count,\n",
 					"#    dimParkingbayCount       = customDimensions.new_parkingbay_count"
-				]
+				],
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -447,7 +444,8 @@
 					"#    jobId           = split(Message, '~', 2),\n",
 					"#    SparkPoolName   = split(Message, '~', 3),\n",
 					"#    UserId          = split(Message, '~', 5)"
-				]
+				],
+				"execution_count": null
 			}
 		]
 	}
