@@ -1,0 +1,168 @@
+{
+    "name": "<pipelinename>",
+    "properties": {
+        "activities": [
+            {
+                "name": "Copy Ingest Data",
+                "type": "Copy",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "DelimitedTextSource",
+                        "storeSettings": {
+                            "type": "AzureBlobFSReadSettings",
+                            "recursive": true,
+                            "wildcardFileName": {
+                                "value": "@pipeline().parameters.filename",
+                                "type": "Expression"
+                            },
+                            "enablePartitionDiscovery": false
+                        },
+                        "formatSettings": {
+                            "type": "DelimitedTextReadSettings"
+                        }
+                    },
+                    "sink": {
+                        "type": "ParquetSink",
+                        "storeSettings": {
+                            "type": "AzureBlobFSWriteSettings"
+                        },
+                        "formatSettings": {
+                            "type": "ParquetWriteSettings"
+                        }
+                    },
+                    "enableStaging": false,
+                    "translator": {
+                        "type": "TabularTranslator",
+                        "typeConversion": true,
+                        "typeConversionSettings": {
+                            "allowDataTruncation": true,
+                            "treatBooleanAsNumber": false
+                        }
+                    }
+                },
+                "inputs": [
+                    {
+                        "referenceName": "Ds_Ingest_CSV",
+                        "type": "DatasetReference"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "referenceName": "Ds_Egress_Parquet",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "filename": {
+                                "value": "@pipeline().RunId",
+                                "type": "Expression"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "ETL Sample Notebook",
+                "type": "SynapseNotebook",
+                "dependsOn": [
+                    {
+                        "activity": "Copy Ingest Data",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "notebook": {
+                        "referenceName": "ETL_sample",
+                        "type": "NotebookReference"
+                    },
+                    "parameters": {
+                        "pipeline_run_id": {
+                            "value": {
+                                "value": "@pipeline().RunId",
+                                "type": "Expression"
+                            },
+                            "type": "string"
+                        }
+                    },
+                    "conf": {
+                        "spark.dynamicAllocation.enabled": null,
+                        "spark.dynamicAllocation.minExecutors": null,
+                        "spark.dynamicAllocation.maxExecutors": null
+                    },
+                    "numExecutors": null
+                }
+            },
+            {
+                "name": "SQL Status Update",
+                "type": "ExecuteDataFlow",
+                "dependsOn": [
+                    {
+                        "activity": "ETL Sample Notebook",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "dataflow": {
+                        "referenceName": "Df_SaveToSQL",
+                        "type": "DataFlowReference",
+                        "datasetParameters": {
+                            "source1": {
+                                "foldername": {
+                                    "value": "@pipeline().RunId",
+                                    "type": "Expression"
+                                }
+                            }
+                        }
+                    },
+                    "staging": {
+                        "folderPath": "synapsedefaultfs/synapse"
+                    },
+                    "compute": {
+                        "coreCount": 8,
+                        "computeType": "General"
+                    },
+                    "traceLevel": "None",
+                    "cacheSinks": {
+                        "firstRowOnly": true
+                    }
+                }
+            }
+        ],
+        "parameters": {
+            "filename": {
+                "type": "string",
+                "defaultValue": "@{split(pipeline().parameters.filename,'_')[0]}"
+            }
+        },
+        "annotations": [],
+        "lastPublishTime": "2022-12-14T22:10:19Z"
+    },
+    "type": "Microsoft.Synapse/workspaces/pipelines"
+}

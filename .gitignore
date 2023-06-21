@@ -471,4 +471,10 @@ package-lock.json
 package.json
 __azurite_db_queue__.json
 __azurite_db_queue_extent__.json
-out.plan
+
+# Single Tech Sample 3
+!single_tech_samples/synapseanalytics/sample3_integration_testing/tests/integrationtests/.vscode/
+single_tech_samples/synapseanalytics/sample3_integration_testing/synapse/workspace/dataset/Ds_SqlDW_Table.json
+single_tech_samples/synapseanalytics/sample3_integration_testing/synapse/workspace/linkedService/Ls_KeyVault_01.json
+single_tech_samples/synapseanalytics/sample3_integration_testing/synapse/workspace/pipeline/P_Sample3.json
+single_tech_samples/synapseanalytics/sample3_integration_testing/synapse/workspace/trigger/T_Stor.json

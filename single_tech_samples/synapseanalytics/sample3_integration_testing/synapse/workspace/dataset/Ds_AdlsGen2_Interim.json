@@ -1,0 +1,29 @@
+{
+    "name": "Ds_AdlsGen2_Interim",
+    "properties": {
+        "linkedServiceName": {
+            "referenceName": "Ls_AdlsGen2_01",
+            "type": "LinkedServiceReference"
+        },
+        "parameters": {
+            "foldername": {
+                "type": "string"
+            }
+        },
+        "annotations": [],
+        "type": "Parquet",
+        "typeProperties": {
+            "location": {
+                "type": "AzureBlobFSLocation",
+                "folderPath": {
+                    "value": "@concat('interim.count/', dataset().foldername)",
+                    "type": "Expression"
+                },
+                "fileSystem": "saveddata"
+            },
+            "compressionCodec": "snappy"
+        },
+        "schema": []
+    },
+    "type": "Microsoft.Synapse/workspaces/datasets"
+}
