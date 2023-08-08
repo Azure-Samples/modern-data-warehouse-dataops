@@ -16,8 +16,13 @@ RUN apt-get -y install git procps lsb-release
 RUN apt-get install -y libicu[0-9][0-9]
 
 # Install java
-RUN apt-get install -y openjdk-11-jdk
-ENV JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64
+RUN wget -qO - https://packages.adoptium.net/artifactory/api/gpg/key/public | apt-key add -
+RUN echo "deb https://packages.adoptium.net/artifactory/deb \
+$(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" \
+| tee /etc/apt/sources.list.d/adoptium.list
+RUN apt-get update \
+    && apt-get -y install --no-install-recommends \
+      temurin-8-jdk
 
 RUN mkdir /workspace
 WORKDIR /workspace
