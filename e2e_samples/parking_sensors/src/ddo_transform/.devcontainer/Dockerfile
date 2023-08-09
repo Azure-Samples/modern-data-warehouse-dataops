@@ -22,7 +22,7 @@ $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" \
 | tee /etc/apt/sources.list.d/adoptium.list
 RUN apt-get update \
     && apt-get -y install --no-install-recommends \
-      temurin-8-jdk
+      temurin-11-jdk
 
 RUN mkdir /workspace
 WORKDIR /workspace
