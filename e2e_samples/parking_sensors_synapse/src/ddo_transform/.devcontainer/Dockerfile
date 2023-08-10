@@ -4,6 +4,10 @@
 #-----------------------------------------------------------------------------------------
 FROM python:3.7
 
+ARG USERNAME=mdwuser
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+
 # Configure apt
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
@@ -24,11 +28,15 @@ RUN apt-get update \
     && apt-get -y install --no-install-recommends \
       temurin-11-jdk
 
-RUN mkdir /workspace
-WORKDIR /workspace
+
+RUN groupadd --gid $USER_GID $USERNAME \
+    && useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USERNAME
+    
+RUN mkdir /home/$USERNAME/workspace
+WORKDIR /home/$USERNAME/workspace
 
 # Install Python dependencies from requirements.txt and requirements_dev.txt
-COPY requirements.txt* requirements_dev.txt* /workspace/
+COPY requirements.txt* requirements_dev.txt* /home/$USERNAME/workspace/
 RUN pip install -r requirements_dev.txt \
     && rm requirements_dev.txt* \
     && pip install -r requirements.txt \ 
@@ -45,3 +53,6 @@ ENV PACKAGE_VERSION=localdev
 
 # Set the default shell to bash rather than sh
 ENV SHELL /bin/bash
+
+# Set user to non-root user to get rid of permission errors
+USER $USERNAME
