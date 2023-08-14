@@ -35,17 +35,21 @@ RUN groupadd --gid $USER_GID $USERNAME \
 RUN mkdir /home/$USERNAME/workspace
 WORKDIR /home/$USERNAME/workspace
 
-# Install Python dependencies from requirements.txt and requirements_dev.txt
-COPY requirements.txt* requirements_dev.txt* /home/$USERNAME/workspace/
-RUN pip install -r requirements_dev.txt \
-    && rm requirements_dev.txt* \
-    && pip install -r requirements.txt \ 
-    && rm requirements.txt*
-
 # Clean up
 RUN apt-get autoremove -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies from requirements.txt and requirements_dev.txt
+COPY requirements.txt* requirements_dev.txt* /home/$USERNAME/workspace/
+RUN chown -R $USERNAME:$USER_GID /home/$USERNAME/workspace
+USER $USERNAME
+RUN pip install -r requirements_dev.txt \
+    && rm requirements_dev.txt* \
+    && pip install -r requirements.txt \ 
+    && rm requirements.txt*
+ENV PYTHONPATH=/workspace
+
 ENV DEBIAN_FRONTEND=dialog
 
 # Set PACKAGE_VERSION to localdev
@@ -53,6 +57,3 @@ ENV PACKAGE_VERSION=localdev
 
 # Set the default shell to bash rather than sh
 ENV SHELL /bin/bash
-
-# Set user to non-root user to get rid of permission errors
-USER $USERNAME
