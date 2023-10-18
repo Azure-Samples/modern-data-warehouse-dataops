@@ -14,7 +14,7 @@ resources:
     - repository: mdwdataops_adfpublish
       type: github
       endpoint: mdwdo-adf-github
-      name: githubuser/mdw-dataops-clone
+      name: Alegandi83/modern-data-warehouse-dataops
       ref: adf_publish
 
 # The deployment script sets this as a Pipeline Variable, but you may choose to set it here in the definition
