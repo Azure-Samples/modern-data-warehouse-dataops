@@ -11,7 +11,7 @@ trigger:
 pr: none
 
 variables:
-  basePath: 'single_tech_samples/datafactory'
+  basePath: 'single_tech_samples/datafactory/sample1_cicd'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
