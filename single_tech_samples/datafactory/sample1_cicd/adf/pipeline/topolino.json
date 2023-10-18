@@ -1,0 +1,19 @@
+{
+	"name": "topolino",
+	"properties": {
+		"activities": [
+			{
+				"name": "Wait1",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 3
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-10-12T15:54:25Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
