@@ -8,6 +8,8 @@
     [Suffix]       NVARCHAR (10)     NULL,
     [CompanyName]  NVARCHAR (128)    NULL,
     [CompanyAddress] NVARCHAR (128)    NULL,
+    [CompanyLogo] NVARCHAR (128)    NULL,
+    [CompanyCity] NVARCHAR (128)    NULL,
     [SalesPerson]  NVARCHAR (256)    NULL,
     [EmailAddress] NVARCHAR (50)     NULL,
     [Phone]        [dbo].[Phone]     NULL,
