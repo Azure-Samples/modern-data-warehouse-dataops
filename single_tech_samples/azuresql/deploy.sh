@@ -70,8 +70,9 @@ export SERVICE_PRINCIPAL_ID=$(echo $az_sp | jq -r '.appId')
 az_sp_tenant_id=$(echo $az_sp | jq -r '.tenant')
 
 #tags don't seem to work right on service principals at the moment.
-az ad sp update --id $SERVICE_PRINCIPAL_ID --add tags "source=mdwdo-azsql"
-az ad sp update --id $SERVICE_PRINCIPAL_ID --add tags "deployment=$DEPLOYMENT_ID"
+# TODO - verificare il commento alle due linee sotto
+# az ad sp update --id $SERVICE_PRINCIPAL_ID --add tags "source=mdwdo-azsql"
+# az ad sp update --id $SERVICE_PRINCIPAL_ID --add tags "deployment=$DEPLOYMENT_ID"
 
 # Create Azure Service connection in Azure DevOps
 export AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY=$(echo $az_sp | jq -r '.password')

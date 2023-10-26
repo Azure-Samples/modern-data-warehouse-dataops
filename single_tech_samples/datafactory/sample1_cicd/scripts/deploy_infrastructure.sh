@@ -52,7 +52,7 @@ az group create --name "$RESOURCE_GROUP_NAME" --location "$RESOURCE_GROUP_LOCATI
 
 # By default, set all KeyVault permission to deployer
 # Retrieve KeyVault User Id
-kv_owner_object_id=$(az ad signed-in-user show --output json | jq -r '.objectId')
+kv_owner_object_id=$(az ad signed-in-user show --output json | jq -r '.id')
 
 # Deploy arm template
 echo "Deploying resources into $RESOURCE_GROUP_NAME"
@@ -103,6 +103,8 @@ do
 done
 
 # Get Azure Data Factory managed service identity
+echo "Get Azure Data Factory managed service identity"
+
 export DATAFACTORY_NAME=$(echo $arm_output | jq -r '.properties.outputs.datafactory_name.value')
 adf_msi=$(az resource show \
          --name $DATAFACTORY_NAME \
@@ -111,17 +113,26 @@ adf_msi=$(az resource show \
          --output json |
          jq -r '.identity.principalId')
 
+echo "ADF service identity: $adf_msi"
+
 # Grant storage rights to ADF MSI
-az role assignment create --assignee-object-id $adf_msi --role "Storage Blob Data Owner" --scope "/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP_NAME/providers/Microsoft.Storage/storageAccounts/$dl_storage_account"
+echo "Grant storage rights to ADF MSI"
+echo "AZURE_SUBSCRIPTION_ID: $AZURE_SUBSCRIPTION_ID"
+echo "RESOURCE_GROUP_NAME: $RESOURCE_GROUP_NAME"
+echo "dl_storage_account: $dl_storage_account"
+
+# az role assignment create --assignee-object-id $adf_msi --role "Storage Blob Data Owner" --scope "/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP_NAME/providers/Microsoft.Storage/storageAccounts/$dl_storage_account"
 
 #########################
 # CONFIGURE FILE SHARE AND SEED DATA
 
 # Retrieve storage account name
+echo "Retrieve storage account name"
 fs_storage_account=$(echo $arm_output | jq -r '.properties.outputs.fileshare_storage_account_name.value')
 export FS_STORAGE_ACCOUNT=$fs_storage_account
 
 # Retrieve storage account key
+echo "Retrieve storage account key"
 fs_storage_key=$(az storage account keys list \
     --account-name $fs_storage_account \
     --resource-group $RESOURCE_GROUP_NAME \
@@ -130,6 +141,7 @@ fs_storage_key=$(az storage account keys list \
 export FS_STORAGE_KEY=$fs_storage_key
 
 # Retrieve full storage account azure id
+echo "Retrieve full storage account azure id"
 fs_stor_id=$(az storage account show \
     --name "$fs_storage_account" \
     --resource-group "$RESOURCE_GROUP_NAME" \
