@@ -1,0 +1,55 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="SourceFiles\TLC Trip Record Data\taxi_zone_lookup.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SourceFiles\TLC Trip Record Data\yellow_tripdata_2022-01.parquet">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SourceFiles\TLC Trip Record Data\yellow_tripdata_2022-02.parquet">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SourceFiles\TLC Trip Record Data\yellow_tripdata_2022-03.parquet">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SourceFiles\TLC Trip Record Data\yellow_tripdata_2022-04.parquet">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SourceFiles\TLC Trip Record Data\yellow_tripdata_2022-05.parquet">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SourceFiles\TLC Trip Record Data\yellow_tripdata_2022-06.parquet">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SourceFiles\TLC Trip Record Data\yellow_tripdata_2022-07.parquet">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SourceFiles\TLC Trip Record Data\yellow_tripdata_2022-08.parquet">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SourceFiles\TLC Trip Record Data\yellow_tripdata_2022-09.parquet">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SourceFiles\TLC Trip Record Data\yellow_tripdata_2022-10.parquet">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SourceFiles\TLC Trip Record Data\yellow_tripdata_2022-11.parquet">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SourceFiles\TLC Trip Record Data\yellow_tripdata_2022-12.parquet">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
