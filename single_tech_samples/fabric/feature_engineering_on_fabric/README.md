@@ -1,9 +1,9 @@
 # Introduction
 
-This article will guide you to build a feature engineering system based on Azure Managed Feature Store and Microsoft Fabric.
+This article will guide you to build a feature engineering system based on Azure Machine Learning Managed Feature Store and Microsoft Fabric.
 
 ![Architecture](./images/fs_architecture.png)
-As the diagram shows above, running on Microsoft Fabric, a data pipeline lands, ingests and transforms the incoming data. The transformed data is registered as features in Azure Managed Feature Store. The features are then can be used for model training and inferencing. In the meantime, the data lineage of both the data pipeline and features are tracked and monitored by Azure Purview.
+As the diagram shows above, running on Microsoft Fabric, a data pipeline lands, ingests and transforms the incoming data. The transformed data is registered as features in Azure Machine Learning Managed Feature Store. The features are then can be used for model training and inferencing. In the meantime, the data lineage of both the data pipeline and features are tracked and monitored by Azure Purview.
 
 ## Getting Started
 
@@ -20,11 +20,11 @@ As the diagram shows above, running on Microsoft Fabric, a data pipeline lands, 
 
 After signing into Microsoft Fabric, it's necessary to create a new workspace for setting up a pipeline. Therefore, please navigate to the left-hand menu, select the workspace option, and proceed to create a new workspace.
 
-![workspace_01](./images/data_pipeline/workspace_01.jpg =320x)
+![workspace_01](./images/data_pipeline/workspace_01.png)
 
 Next, please enter your workspace name and description (optional). If you wish, you can upload a photo to use as your workspace avatar. This is also optional. However, please note that you need to select 'trial' under the 'license mode' in the advanced options, as currently only this type supports all the features of Fabric. Then click the 'Apply' button to complete the creation of the workspace.
 
-![workspace_02](./images/data_pipeline/workspace_02.jpg =400x)
+![workspace_02](./images/data_pipeline/workspace_02.jpg)
 
 ##### Step 2: Create a Lakehouse
 
@@ -34,13 +34,13 @@ Then within this created workspace, create a new Lakehouse named as '[prefix]_lh
 
 After the Lakehouse is created, please click the 'New' button again, and select 'Import notebook' from the menu. Navigate to `src/notebooks` folder under the repo, and select all the notebooks to import:
 
-![import all notebooks](./images/import_all_notebooks.png =300x)
+![import all notebooks](./images/import_all_notebooks.png)
 
 ##### Step 4: Add the Created Lakehouse to the notebooks
 
 After the notebooks are imported, please open the notebook named as 'data_cleansing'，'data_ingestion'，'data_transformation','data_validation'，‘EDA','feature_set_registration' respectively, and add the Lakehouse created in the previous step to the notebook. Please note that the Lakehouse name should be '[prefix]_lh', where [prefix] is the prefix you defined in the prerequisites section.
 
-![add lakehouse](./images/add_lh_to_notebook.png =850x)
+![add lakehouse](./images/add_lh_to_notebook.png)
 
 #### Create an Azure Resource Group
 
@@ -58,9 +58,9 @@ Create an Azure Data Lake Storage Gen2 account named as [prefix]sa, where [prefi
 
 Create an Azure Purview account named as [prefix]pv, where [prefix] is the prefix you defined in the prerequisites section.
 
-#### Azure Managed Feature store
+#### Azure Machine Learning Managed Feature store
 
-Create an Azure Managed Feature store by running the following Azure CLI:
+Create an Azure Machine Learning Managed Feature store by running the following Azure CLI:
 
 ```az ml feature-store create --subscription <subscription id> --resource-group <resource group> --location <location> --name <location>```
 
@@ -78,13 +78,13 @@ We provide two options to get the sample data:
 
 The initial step for both __option 1__ and __option 2__ please download all the data from [this git repository](https://github.com/Nick287/TLC_Trip_Record_Data_2022). Ensure that you download all the files from the path TLC_Trip_Record_Data_2022/TLC Trip Record Data/ to your local machine.
 
-![source_file](./images/data_pipeline/source_file.png =280x)
+![source_file](./images/data_pipeline/source_file.png)
 
 #### Option 1: ADLS (Azure Data Lake Storage) or Blob storage
 
 If you choose to use ADLS, in the newly created ADLS Gen2 storage account [prefix]sa, create a new container in the storage account, and upload the parquet and csv files to the container, and please note the names of the container and folder you created, as we will use them later.
 
-![ADLS_source_file](./images/data_pipeline/ADLS_source_file.png =600x)
+![ADLS_source_file](./images/data_pipeline/ADLS_source_file.png)
 
 Once the files are uploaded, you have completed the data preparation work. You can skip option 2.
 
@@ -92,9 +92,9 @@ Once the files are uploaded, you have completed the data preparation work. You c
 
 Open the project with Visual Studio and copy you just download data source files to the data source folder __src/data_source_webapp/DataSourceAPP/SourceFiles/TLC Trip Record Data__. Then select all of the files and click the right mouse button, select 'Properties' in the menu, and then change the copy to output directory to __'Copy always'__. This will ensure that the files are copied to the output directory when the project is built. Then use Visual Studio to deploy this Web API project.
 
-![webapp_01](./images/web_app/webapp_01.png =300x)
+![webapp_01](./images/web_app/webapp_01.png)
 
-![webapp_02](./images/web_app/webapp_02.png =300x)
+![webapp_02](./images/web_app/webapp_02.png)
 
 If you are not familiar with the deployment process of Azure Web App, please refer to this article for deployment:
 
@@ -104,13 +104,13 @@ If you are not familiar with the deployment process of Azure Web App, please ref
 
 For more deploy options, please switch the button on the top of the page.
 
-![webapp_03](./images/web_app/webapp_03.png =450x)
+![webapp_03](./images/web_app/webapp_03.png)
 
 ### Data Pipeline Setup
 
 For the Data Pipeline in Microsoft Fabric, first we need to create a Data Pipeline in the workspace, and then add a new activity in the new data pipeline.
 
-![data_pipeline_01](./images/data_pipeline/data_pipeline_01.png =750x)
+![data_pipeline_01](./images/data_pipeline/data_pipeline_01.png)
 
 #### Data Landing Activity (Data Source Option 1)
 
@@ -118,33 +118,33 @@ If you chose __option 1__ in the previous Data Source Preparation, please contin
 
 - Step 1, Select the copy data Activity and add to Canvas.
 
-  ![create_copy_activity](./images/data_pipeline/create_copy_activity.png =600x)
+  ![create_copy_activity](./images/data_pipeline/create_copy_activity.png)
 
 - Step 2, Set up the Copy Data Activity. Configure the Source and Destination tab. First, switch to the Source tab, then select 'external' for the Data Storage Type. Subsequently, for the connection, create an [Azure Data Lake Storage Gen2 connector overview](https://learn.microsoft.com/en-us/fabric/data-factory/connector-azure-data-lake-storage-gen2-overview). On the creation page, input your ADLS Gen2 URL and connection name. Then for the Authentication you can use any kind of authentication method as you like. Finally, click the 'Create' button to complete the setup.
 
-  ![create_storage_link_service](./images/data_pipeline/create_storage_link_service.jpg =600x)
+  ![create_storage_link_service](./images/data_pipeline/create_storage_link_service.jpg)
 
 After that, select the connection you just created. Then set up the File path container name and folder path. The file path is the path of the folder you just uploaded the data source files to, for the file name please keep it as empty. Then select the binary as the file format and select the recursively check box, this will download all the files in the folder. This completes the configuration of the Source in the Copy data Activity.
 
-![create_storage_link_service02](./images/data_pipeline/create_storage_link_service02.jpg =600x)
+![create_storage_link_service02](./images/data_pipeline/create_storage_link_service02.jpg)
 
 - Step 3, create parameters for our pipeline. Return to the pipeline design panel and click anywhere on the blank area. Then, select 'Parameter' at the place shown in the image, and add the following two parameters:
   - __'landing_path'__, the type is 'String', the default value to be entered is: '01_landing'.
   - __'client_secret'__, the type is 'SecureString', the default value should be left blank.
   
-    ![ADLS_pipeline_parameter](./images/data_pipeline/ADLS_pipeline_parameter.png =550x)
+    ![ADLS_pipeline_parameter](./images/data_pipeline/ADLS_pipeline_parameter.png)
 
 - Step 4, Switch to the Destination tab and make the following configurations as shown in the image. If you have not created a Lakehouse, you need to create a new Lakehouse in the workspace first, then select this Lakehouse here. If you have already created a Lakehouse, you can directly select the Lakehouse you have created here. The file path here is the second parameter 'landing_path' that we just created, so our Copy data Activity will download the data to the corresponding folder in our Lakehouse.
   - File Path: __@pipeline().parameters.landing_path__
   - File name: _keep empty_
 
-    ![create_storage_link_service03](./images/data_pipeline/create_storage_link_service03.png =700x)
+    ![create_storage_link_service03](./images/data_pipeline/create_storage_link_service03.png)
 
 - Step 5, Run this pipeline with the single 'Data Landing' activity. If everything is good, then we should be able to see the downloaded data in our Lakehouse.
   
-  ![data_pipeline_09](./images/data_pipeline/data_pipeline_09.png =700x)
+  ![data_pipeline_09](./images/data_pipeline/data_pipeline_09.png)
   
-  ![data_pipeline_10](./images/data_pipeline/data_pipeline_10.png =450x)
+  ![data_pipeline_10](./images/data_pipeline/data_pipeline_10.png)
 
 #### Data Landing Activity (Data Source Option 2)
 
@@ -152,19 +152,19 @@ If you chose __option 2__ in the previous Data Source Preparation, please use th
 
 Then select ForEach Activity, because we need to download multiple files, so we need a ForEach loop to help us complete this task.
 
-![data_pipeline_02](./images/data_pipeline/data_pipeline_02.png =500x)
+![data_pipeline_02](./images/data_pipeline/data_pipeline_02.png)
 
 - Step 1, Select the ForEach Activity we just created and click the Add Activities button. Select Copy Data Activity from the menu.
   
-  ![data_pipeline_03](./images/data_pipeline/data_pipeline_03.png =450x)
+  ![data_pipeline_03](./images/data_pipeline/data_pipeline_03.png)
 
 - Step 2, Set up the Copy Data Activity by configuring the Source and Destination tab. First, switch to the Source tab, then select 'external' for the Data Storage Type. Subsequently, for the connection, create a new HTTP link. On the creation page, enter the server URL or IP address where the Web API is deployed. Note that there is no need to input any parameter information. Finally, click the 'Create' button to complete the setup.
   
-  ![data_pipeline_04](./images/data_pipeline/data_pipeline_04.png =550x)
+  ![data_pipeline_04](./images/data_pipeline/data_pipeline_04.png)
 
 - Step 3, Create parameters for our pipeline. We need to return to the pipeline design panel and click anywhere on the blank area. Then, select 'Parameter' at the place shown in the image, and add the following three parameters:
   
-  ![data_pipeline_05](./images/data_pipeline/data_pipeline_05.png =550x)
+  ![data_pipeline_05](./images/data_pipeline/data_pipeline_05.png)
   
   - __urls__, Type: Array, Default Value:
 
@@ -189,37 +189,37 @@ Then select ForEach Activity, because we need to download multiple files, so we 
 
 - Step 4, Return to the Settings tab of the ForEach Activity, set the Batch count value to 20, this limits the maximum number of files to be downloaded concurrently. Then, in the Items setting, select the parameter 'URLs' that we just created, or directly enter '@pipeline().parameters.URLs'. Now we completed the configuration of the ForEach Activity.
   
-  ![data_pipeline_06](./images/data_pipeline/data_pipeline_06.png =500x)
+  ![data_pipeline_06](./images/data_pipeline/data_pipeline_06.png)
 
 - Step 5, Return to the Source tab of the Copy data Activity within the ForEach Activity. In the connection, select the HTTP link that we just created. The Connection type should be HTTP. Then, enter '@item()' in the Relative URL, and select Binary as the File format. This completes the configuration of the Source in the Copy data Activity.
   
-  ![data_pipeline_07](./images/data_pipeline/data_pipeline_07.png =600x)
+  ![data_pipeline_07](./images/data_pipeline/data_pipeline_07.png)
 
 - Step 6, Switch to the Destination tab and make the following configurations as shown in the image. Please note, if you have not created a Lakehouse, you need to create a new Lakehouse named as '[prefix]_lh' in the workspace first, then select this Lakehouse here. If you have already created a Lakehouse, then you can directly select the Lakehouse you have created here. The file path here is the second parameter 'landing_path' that we just created, so our Copy data Activity will download the data to the corresponding folder in our Lakehouse.
   - File Path: __@pipeline().parameters.landing_path__
   - File name: __@last(array(split(item(),'/')))__
   
-  ![data_pipeline_08](./images/data_pipeline/data_pipeline_08.png =800x)
+  ![data_pipeline_08](./images/data_pipeline/data_pipeline_08.png)
 
 - Step 7, Run this pipeline with the single 'Data Landing' activity. If everything is good, then we should be able to see the downloaded data in our Lakehouse.
   
-  ![data_pipeline_09](./images/data_pipeline/data_pipeline_09.png =700x)
+  ![data_pipeline_09](./images/data_pipeline/data_pipeline_09.png)
   
-  ![data_pipeline_10](./images/data_pipeline/data_pipeline_10.png =450x)
+  ![data_pipeline_10](./images/data_pipeline/data_pipeline_10.png)
 
 #### The Rest of the Data Pipeline
 
 After the Data Landing, we need to configure the subsequent steps of this pipeline. The following steps of this pipeline include __data ingestion__ -> __data cleansing__ -> __data transformation__ -> __feature registration__. Therefore, we need to create another 4 notebook activities to execute these data operations. When we finish configuring the whole pipeline, it should look like this.
 
-![data_pipeline_11](./images/data_pipeline/data_pipeline_11.png =800x)
+![data_pipeline_11](./images/data_pipeline/data_pipeline_11.png)
 
 - Step 1, click the Add Activities button 4 times to add 4 Notebook Activities.
   
-  ![data_pipeline_12](./images/data_pipeline/data_pipeline_12.png =800x)
+  ![data_pipeline_12](./images/data_pipeline/data_pipeline_12.png)
 
 - Step 2, Link the Activities within the pipeline. Please make sure to drag the check mark located on the right side of each Activity to the next one. This represents that the subsequent Activity will be executed once the current one has successfully completed.
   
-  ![data_pipeline_13](./images/data_pipeline/data_pipeline_13.png =800x)
+  ![data_pipeline_13](./images/data_pipeline/data_pipeline_13.png)
 
 - Step 3, Configure Notebook Activities, rename each activity select the Notebook Activity, and then click the __General__ tab and input the name of the Notebook Activity. Here's the list of the notebook activities:
   - __Data Ingestion__
@@ -236,7 +236,7 @@ After the Data Landing, we need to configure the subsequent steps of this pipeli
   - __Data Transformation__ -> __data_transformation__
   - __Feature Registration__ -> __feature_set_registration__
   
-  ![data_pipeline_15](./images/data_pipeline/data_pipeline_15.png =800x)
+  ![data_pipeline_15](./images/data_pipeline/data_pipeline_15.png)
 
 ### Feature Store Setup
 
@@ -244,25 +244,25 @@ Follow the official documentation to create a feature store:
 [Create a Minimal Feature Store](https://learn.microsoft.com/en-us/azure/machine-learning/tutorial-get-started-with-feature-store?view=azureml-api-2&tabs=SDK-track#create-a-minimal-feature-store).
 
 Create a Service Principle and make a memo of the client secret, client id and tenant id.
-![service principle](./images/featurestore_2.png =1000x)
+![service principle](./images/featurestore_2.png)
 
 Go to the page of feature store in Azure portal, and assign the Service Principle with following role:
 
 - `AzureML Data Scientist`
 
-  ![roles](./images/featurestore_1.png =900x)
+  ![roles](./images/featurestore_1.png)
 
 ### Fabric Environment Setup
 
 Go to Fabric workspace homepage, create a new __Environment__ by clicking __+ New__ button in workspace homepage and select __Environment__ under __Data Engineering__.
-![new](./images/featurestore_5.png =750x)
-![env](./images/featurestore_4.png =1000x)
+![new](./images/featurestore_5.png)
+![env](./images/featurestore_4.png)
 
 In the Environment, you will need to setup the python env under Public Libraries. You can do this by adding `azureml-featurestore` by PyPI, or by clicking __Add from yml__ and select `./src/environment/Publiclibrary.yml` under this repo.
 
-![pip](./images/featurestore_3.png =1100x)
+![pip](./images/featurestore_3.png)
 
-You will also need to edit the Spark properties. Find the properties list yaml template in this repo `./src/environment/sparkProperties.yaml`. Replace the value with your created resources of Azure Managed Feature Store and Service Principle.
+You will also need to edit the Spark properties. Find the properties list yaml template in this repo `./src/environment/sparkProperties.yaml`. Replace the value with your created resources of Azure Machine Learning Managed Feature Store and Service Principle.
 
 ```yaml
 runtime_version: '1.1'
@@ -272,7 +272,7 @@ spark_conf:
   - spark.fsd.subscription_id: <subscription-id>
   - spark.fsd.rg_name: <feature-store-resouce-group>
   - spark.fsd.name: <feature-store-name>
-  - spark.fsd.fabric.tenant: <fabric-tenant>
+  - spark.fsd.fabric.tenant: <fabric-tenant-name> # Fetch from Fabric base URL, like https://<fabric-tenant-name>.powerbi.com/
   - spark.fsd.fabric.workspace: <fabric-workspace>
   - spark.fsd.fabric.lakehouse: <fabric-lakehouse>
   - spark.fsd.purview.account: <purview-account-name>
@@ -283,11 +283,11 @@ After this is done, click __Save__ to save the environment, and then __Publish__
 
 To apply the environment, you can set the newly created environment as 'default' in the Fabric workspace settings page.
 
-![pip](./images/fabric_env_2.png =600x)
+![pip](./images/fabric_env_2.png)
 
 Or you can apply to each specific notebook in the notebook edition page.
 
-![pip](./images/fabric_env_1.png =900x)
+![pip](./images/fabric_env_1.png)
 
 ### Model Training and Inferencing Setup
 
@@ -323,15 +323,15 @@ Then the data assets and lineage registration setup is done, either of the below
 
 Access the Fabric workspace and locate the item categorized as a `Data pipeline`.
 
-![data pipeline](./images/pipeline_image.png =500x)
+![data pipeline](./images/pipeline_image.png)
 
 In order to trigger the data pipeline, choose this data pipeline, and click `Run`.
 
-![data pipeline](./images/data_pipeline.png =800x)
+![data pipeline](./images/data_pipeline.png)
 
 In the pane, you can check the input and output, which gives the more detailed execution result.
 
-![pipeline run](./images/pipeline_run.png =1000x)
+![pipeline run](./images/pipeline_run.png)
 
 ### Train the Model and Inferencing
 
@@ -344,11 +344,11 @@ The model will be trained and registered as an ML model.
 
 Go to the Fabric workspace and locate the item categorized as a `ML model`.
 
-![machine learning models](./images/model_type.png =500x)
+![machine learning models](./images/model_type.png)
 
 For each ML model, you can track different versions with different parameters or metrics.
 
-![ml model list](./images/model_list.png =600x)
+![ml model list](./images/model_list.png)
 
 #### Model inferencing
 
@@ -356,10 +356,10 @@ Go to model_inferencing notebook, and click `Run all`.
 
 Once the execution is complete, the prediction results will be presented for your review.
 
-![inferencing result](./images/inferencing_result.png =450x)
+![inferencing result](./images/inferencing_result.png)
 
 ## References
 
 - [Micrsoft Fabric](https://learn.microsoft.com/en-us/fabric/get-started/microsoft-fabric-overview)
-- [Azure Managed Feature Store](https://learn.microsoft.com/en-us/azure/machine-learning/concept-what-is-managed-feature-store?view=azureml-api-2)
+- [Azure Machine Learning Managed Feature Store](https://learn.microsoft.com/en-us/azure/machine-learning/concept-what-is-managed-feature-store?view=azureml-api-2)
 - [Azure Purview](https://azure.microsoft.com/en-us/services/purview/)
