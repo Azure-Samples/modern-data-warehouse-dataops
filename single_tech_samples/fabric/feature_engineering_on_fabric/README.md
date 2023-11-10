@@ -74,13 +74,25 @@ In this demo the data from the [New York City Taxi & Limousine Commission](https
 We provide two options to get the sample data:
 
 - Option 1: ADLS (Azure Data Lake Storage) or Blob storage.
-- Option 2: REST APIs provided by Azure App Service.
-
-The initial step for both __option 1__ and __option 2__ please download all the data from [this git repository](https://github.com/Nick287/TLC_Trip_Record_Data_2022). Ensure that you download all the files from the path TLC_Trip_Record_Data_2022/TLC Trip Record Data/ to your local machine.
-
-![source_file](./images/data_pipeline/source_file.png)
+- Option 2: Download files directly by using Microsoft Fabric data pipeline.
 
 #### Option 1: ADLS (Azure Data Lake Storage) or Blob storage
+
+The initial step for both option 1 please download all the data from the file link to your local machine.
+
+- [yellow_tripdata_2022-01.parquet](https://stmdwpublic.blob.core.windows.net/datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-01.parquet)
+- [yellow_tripdata_2022-02.parquet](https://stmdwpublic.blob.core.windows.net/datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-02.parquet)
+- [yellow_tripdata_2022-03.parquet](https://stmdwpublic.blob.core.windows.net/datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-03.parquet)
+- [yellow_tripdata_2022-04.parquet](https://stmdwpublic.blob.core.windows.net/datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-04.parquet)
+- [yellow_tripdata_2022-05.parquet](https://stmdwpublic.blob.core.windows.net/datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-05.parquet)
+- [yellow_tripdata_2022-06.parquet](https://stmdwpublic.blob.core.windows.net/datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-06.parquet)
+- [yellow_tripdata_2022-07.parquet](https://stmdwpublic.blob.core.windows.net/datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-07.parquet)
+- [yellow_tripdata_2022-08.parquet](https://stmdwpublic.blob.core.windows.net/datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-08.parquet)
+- [yellow_tripdata_2022-09.parquet](https://stmdwpublic.blob.core.windows.net/datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-09.parquet)
+- [yellow_tripdata_2022-10.parquet](https://stmdwpublic.blob.core.windows.net/datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-10.parquet)
+- [yellow_tripdata_2022-11.parquet](https://stmdwpublic.blob.core.windows.net/datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-11.parquet)
+- [yellow_tripdata_2022-12.parquet](https://stmdwpublic.blob.core.windows.net/datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-12.parquet)
+- [taxi_zone_lookup.csv](https://stmdwpublic.blob.core.windows.net/datasets/nyc-yellow-tripdata-2022/taxi_zone_lookup.csv)
 
 If you choose to use ADLS, in the newly created ADLS Gen2 storage account [prefix]sa, create a new container in the storage account, and upload the parquet and csv files to the container, and please note the names of the container and folder you created, as we will use them later.
 
@@ -88,23 +100,9 @@ If you choose to use ADLS, in the newly created ADLS Gen2 storage account [prefi
 
 Once the files are uploaded, you have completed the data preparation work. You can skip option 2.
 
-#### Option 2: C# Web App
+#### Option 2: Download files directly by using Microsoft Fabric data pipeline
 
-Open the project with Visual Studio and copy you just download data source files to the data source folder __src/data_source_webapp/DataSourceAPP/SourceFiles/TLC Trip Record Data__. Then select all of the files and click the right mouse button, select 'Properties' in the menu, and then change the copy to output directory to __'Copy always'__. This will ensure that the files are copied to the output directory when the project is built. Then use Visual Studio to deploy this Web API project.
-
-![webapp_01](./images/web_app/webapp_01.png)
-
-![webapp_02](./images/web_app/webapp_02.png)
-
-If you are not familiar with the deployment process of Azure Web App, please refer to this article for deployment:
-
-[Quickstart: Deploy an ASP.NET web app by Visual Studio](https://docs.microsoft.com/en-us/azure/app-service/quickstart-dotnetcore?tabs=netcore31&pivots=development-environment-vs)
-
-[Quickstart: Deploy an ASP.NET web app by VS Code](https://learn.microsoft.com/en-us/azure/app-service/quickstart-dotnetcore?tabs=net70&pivots=development-environment-vscode)
-
-For more deploy options, please switch the button on the top of the page.
-
-![webapp_03](./images/web_app/webapp_03.png)
+For option 2, no action is required for this step.
 
 ### Data Pipeline Setup
 
@@ -158,8 +156,10 @@ Then select ForEach Activity, because we need to download multiple files, so we 
   
   ![data_pipeline_03](./images/data_pipeline/data_pipeline_03.png)
 
-- Step 2, Set up the Copy Data Activity by configuring the Source and Destination tab. First, switch to the Source tab, then select 'external' for the Data Storage Type. Subsequently, for the connection, create a new HTTP link. On the creation page, enter the server URL or IP address where the Web API is deployed. Note that there is no need to input any parameter information. Finally, click the 'Create' button to complete the setup.
+- Step 2, Set up the Copy Data Activity by configuring the Source and Destination tab. First, switch to the Source tab, then select 'external' for the Data Storage Type. Subsequently, for the connection, create a new HTTP link. On the creation page, enter the server URL as below. Finally, click the 'Create' button to complete the setup.
   
+- The URL is: <https://stmdwpublic.blob.core.windows.net/datasets/nyc-yellow-tripdata-2022>
+
   ![data_pipeline_04](./images/data_pipeline/data_pipeline_04.png)
 
 - Step 3, Create parameters for our pipeline. We need to return to the pipeline design panel and click anywhere on the blank area. Then, select 'Parameter' at the place shown in the image, and add the following three parameters:
@@ -169,19 +169,19 @@ Then select ForEach Activity, because we need to download multiple files, so we 
   - __urls__, Type: Array, Default Value:
 
     ``` json
-    ["/api/download/yellow_tripdata_2022-01.parquet",
-    "/api/download/yellow_tripdata_2022-02.parquet",
-    "/api/download/yellow_tripdata_2022-03.parquet",
-    "/api/download/yellow_tripdata_2022-04.parquet",
-    "/api/download/yellow_tripdata_2022-05.parquet",
-    "/api/download/yellow_tripdata_2022-06.parquet",
-    "/api/download/yellow_tripdata_2022-07.parquet",
-    "/api/download/yellow_tripdata_2022-08.parquet",
-    "/api/download/yellow_tripdata_2022-09.parquet",
-    "/api/download/yellow_tripdata_2022-10.parquet",
-    "/api/download/yellow_tripdata_2022-11.parquet",
-    "/api/download/yellow_tripdata_2022-12.parquet",
-    "/api/download/taxi_zone_lookup.csv"]
+    ["/yellow_tripdata_2022-01.parquet",
+    "/yellow_tripdata_2022-02.parquet",
+    "/yellow_tripdata_2022-03.parquet",
+    "/yellow_tripdata_2022-04.parquet",
+    "/yellow_tripdata_2022-05.parquet",
+    "/yellow_tripdata_2022-06.parquet",
+    "/yellow_tripdata_2022-07.parquet",
+    "/yellow_tripdata_2022-08.parquet",
+    "/yellow_tripdata_2022-09.parquet",
+    "/yellow_tripdata_2022-10.parquet",
+    "/yellow_tripdata_2022-11.parquet",
+    "/yellow_tripdata_2022-12.parquet",
+    "/taxi_zone_lookup.csv"]
     ```
 
   - __landing_path__, Type: String; Default Value: `01_landing`.
