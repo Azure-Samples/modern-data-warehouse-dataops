@@ -1,9 +1,9 @@
 # Introduction
 
-This article will guide you to build a feature engineering system based on Azure Machine Learning Managed Feature Store and Microsoft Fabric.
+This article will guide you to build a feature engineering system based on Azure ML managed feature store and Microsoft Fabric. Here is the high-level architecure diagram:
 
 ![Architecture](./images/fs_architecture.png)
-As the diagram shows above, running on Microsoft Fabric, a data pipeline lands, ingests and transforms the incoming data. The transformed data is registered as features in Azure Machine Learning Managed Feature Store. The features are then can be used for model training and inferencing. In the meantime, the data lineage of both the data pipeline and features are tracked and monitored by Azure Purview.
+This architecture utilizes Microsoft Fabric as the data analytics platform. A data pipeline lands, ingests, and transform the incoming data. The transformed data is registered as [features](https://learn.microsoft.com/azure/machine-learning/concept-what-is-managed-feature-store?view=azureml-api-2#what-are-features) in Azure ML managed feature store. These features are used for model training and inferencing. Concurrently, the data lineage of both the data pipelines and the features is tracked and monitored using Microsoft Purview.
 
 ## Getting Started
 
@@ -11,8 +11,8 @@ As the diagram shows above, running on Microsoft Fabric, a data pipeline lands, 
 
 #### Prerequisites
 
-- Create an Azure subscription if you haven't got one. You can get a free trial [here](https://azure.microsoft.com/en-us/free/).
-- Define a prefix, such as 'fsd1', which will be used to name the resources created in this demo. Please note that the prefix must be unique within the Azure subscription.
+- Create an Azure subscription if you do not have one already. You can sign up for a free trial by following [this link](https://azure.microsoft.com/en-us/free/).
+- Define a prefix, such as 'fsd1', which would be used in naming the resources created in this demo. Please note that the prefix must be unique within the Azure subscription.
 
 #### Microsoft Fabric
 
@@ -22,7 +22,7 @@ After signing into Microsoft Fabric, it's necessary to create a new workspace fo
 
 ![workspace_01](./images/data_pipeline/workspace_01.png)
 
-Next, please enter your workspace name and description (optional). If you wish, you can upload a photo to use as your workspace avatar. This is also optional. However, please note that you need to select 'trial' under the 'license mode' in the advanced options, as currently only this type supports all the features of Fabric. Then click the 'Apply' button to complete the creation of the workspace.
+Next, please enter your workspace name and an optional description. Please note that you need to select 'trial' under the 'license mode' in the advanced options, as currently only this type supports all the features of Fabric. Then click the 'Apply' button to complete the creation of the workspace.
 
 ![workspace_02](./images/data_pipeline/workspace_02.jpg)
 
@@ -38,7 +38,15 @@ After the Lakehouse is created, please click the 'New' button again, and select 
 
 ##### Step 4: Add the Created Lakehouse to the notebooks
 
-After the notebooks are imported, please open the notebook named as 'data_cleansing'，'data_ingestion'，'data_transformation','data_validation'，‘EDA','feature_set_registration' respectively, and add the Lakehouse created in the previous step to the notebook. Please note that the Lakehouse name should be '[prefix]_lh', where [prefix] is the prefix you defined in the prerequisites section.
+After importing, open the following notebooks and add the lakehouse created in the previous step to them:
+- data_cleansing
+- data_ingestion
+- data_transformation
+- data_validation
+- EDA
+- feature_set_registration
+
+Please note that the Lakehouse name should be '[prefix]_lh', where [prefix] is the prefix you defined in the prerequisites section.
 
 ![add lakehouse](./images/add_lh_to_notebook.png)
 
@@ -62,7 +70,7 @@ Create an Azure Purview account named as [prefix]pv, where [prefix] is the prefi
 
 Create an Azure Machine Learning Managed Feature store by running the following Azure CLI:
 
-```az ml feature-store create --subscription <subscription id> --resource-group <resource group> --location <location> --name <location>```
+```az ml feature-store create --subscription <subscription id> --resource-group <resource group> --location <location> --name <feature store name>```
 
 For other ways to create a feature store, please refer to the online document:
 [Create a Minimal Feature Store](https://learn.microsoft.com/en-us/azure/machine-learning/tutorial-get-started-with-feature-store?view=azureml-api-2&tabs=SDK-track#create-a-minimal-feature-store).
