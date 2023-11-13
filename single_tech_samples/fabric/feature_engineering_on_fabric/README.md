@@ -158,7 +158,7 @@ Then select ForEach Activity, because we need to download multiple files, so we 
 
 - Step 2, Set up the Copy Data Activity by configuring the Source and Destination tab. First, switch to the Source tab, then select 'external' for the Data Storage Type. Subsequently, for the connection, create a new HTTP link. On the creation page, enter the server URL as below. Finally, click the 'Create' button to complete the setup.
   
-- The URL is: <https://stmdwpublic.blob.core.windows.net/datasets/nyc-yellow-tripdata-2022>
+- Base url is: <https://stmdwpublic.blob.core.windows.net/>
 
   ![data_pipeline_04](./images/data_pipeline/data_pipeline_04.png)
 
@@ -169,19 +169,19 @@ Then select ForEach Activity, because we need to download multiple files, so we 
   - __urls__, Type: Array, Default Value:
 
     ``` json
-    ["/yellow_tripdata_2022-01.parquet",
-    "/yellow_tripdata_2022-02.parquet",
-    "/yellow_tripdata_2022-03.parquet",
-    "/yellow_tripdata_2022-04.parquet",
-    "/yellow_tripdata_2022-05.parquet",
-    "/yellow_tripdata_2022-06.parquet",
-    "/yellow_tripdata_2022-07.parquet",
-    "/yellow_tripdata_2022-08.parquet",
-    "/yellow_tripdata_2022-09.parquet",
-    "/yellow_tripdata_2022-10.parquet",
-    "/yellow_tripdata_2022-11.parquet",
-    "/yellow_tripdata_2022-12.parquet",
-    "/taxi_zone_lookup.csv"]
+    ["datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-01.parquet",
+    "datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-02.parquet",
+    "datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-03.parquet",
+    "datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-04.parquet",
+    "datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-05.parquet",
+    "datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-06.parquet",
+    "datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-07.parquet",
+    "datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-08.parquet",
+    "datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-09.parquet",
+    "datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-10.parquet",
+    "datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-11.parquet",
+    "datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-12.parquet",
+    "datasets/nyc-yellow-tripdata-2022/taxi_zone_lookup.csv"]
     ```
 
   - __landing_path__, Type: String; Default Value: `01_landing`.
