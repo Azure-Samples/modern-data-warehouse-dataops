@@ -5,18 +5,16 @@ This article will guide you to build a feature engineering system based on Azure
 ![Architecture](./images/fs_architecture.png)
 This architecture utilizes Microsoft Fabric as the data analytics platform. A data pipeline lands, ingests, and transform the incoming data. The transformed data is registered as [features](https://learn.microsoft.com/azure/machine-learning/concept-what-is-managed-feature-store?view=azureml-api-2#what-are-features) in Azure ML managed feature store. These features are used for model training and inferencing. Concurrently, the data lineage of both the data pipelines and the features is tracked and monitored using Microsoft Purview.
 
-## Getting Started
+## Environment Setup
 
-### Environment Setup
-
-#### Prerequisites
+### Prerequisites
 
 - Create an Azure subscription if you do not have one already. You can sign up for a free trial by following [this link](https://azure.microsoft.com/en-us/free/).
 - Define a prefix, such as 'fsd1', which would be used in naming the resources created in this demo. Please note that the prefix must be unique within the Azure subscription.
 
-#### Microsoft Fabric
+### Microsoft Fabric
 
-##### Step 1: Create a Microsoft Fabric workspace
+#### Step 1: Create a Microsoft Fabric workspace
 
 After signing into Microsoft Fabric, it's necessary to create a new workspace for setting up a pipeline. Therefore, please navigate to the left-hand menu, select the workspace option, and proceed to create a new workspace.
 
@@ -26,43 +24,44 @@ Next, please enter your workspace name and an optional description. Please note 
 
 ![workspace_02](./images/data_pipeline/workspace_02.jpg)
 
-##### Step 2: Create a Lakehouse
+#### Step 2: Create a Lakehouse
 
 Then within this created workspace, create a new Lakehouse named as '[prefix]_lh' by clicking the 'New' button on the top of the page. Please note that [prefix] is the prefix you defined in the prerequisites section.
 
-##### Step 3: Import the sample notebooks
+#### Step 3: Import the sample notebooks
 
 After the Lakehouse is created, please click the 'New' button again, and select 'Import notebook' from the menu. Navigate to `src/notebooks` folder under the repo, and select all the notebooks to import:
 
 ![import all notebooks](./images/import_all_notebooks.png)
 
-##### Step 4: Add the Created Lakehouse to the notebooks
+#### Step 4: Add the Created Lakehouse to the notebooks
 
 After importing, open the following notebooks and add the lakehouse created in the previous step to them:
+
 - data_cleansing
 - data_ingestion
 - data_transformation
 - data_validation
-- EDA
+- exploratory_data_analysis
 - feature_set_registration
 
 Please note that the Lakehouse name should be '[prefix]_lh', where [prefix] is the prefix you defined in the prerequisites section.
 
 ![add lakehouse](./images/add_lh_to_notebook.png)
 
-#### Create an Azure Resource Group
+### Create an Azure Resource Group
 
 Create a new resource group named as [prefix]rg, where [prefix] is the prefix you defined in the prerequisites section.
 
-#### Azure Data Lake Storage Gen2
+### Azure Data Lake Storage Gen2
 
 Create an Azure Data Lake Storage Gen2 account named as [prefix]sa, where [prefix] is the prefix you defined in the prerequisites section. For the detailed information, please refer to: [Create a storage account to use with Azure Data Lake Storage Gen2](https://learn.microsoft.com/en-us/azure/storage/blobs/create-data-lake-storage-account)
 
-#### Azure Purview
+### Azure Purview
 
 Create an Azure Purview account named as [prefix]pv, where [prefix] is the prefix you defined in the prerequisites section.
 
-#### Azure Machine Learning Managed Feature store
+### Azure Machine Learning Managed Feature store
 
 Create an Azure Machine Learning Managed Feature store by running the following Azure CLI:
 
@@ -71,17 +70,17 @@ Create an Azure Machine Learning Managed Feature store by running the following 
 For other ways to create a feature store, please refer to the online document:
 [Create a Minimal Feature Store](https://learn.microsoft.com/en-us/azure/machine-learning/tutorial-get-started-with-feature-store?view=azureml-api-2&tabs=SDK-track#create-a-minimal-feature-store).
 
-### Data Source Preparation
+## Data Source Preparation
 
 In this demo the data from the [New York City Taxi & Limousine Commission](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page) Yellow Taxi Trip Records, which is public. We used Records for 2022. This includes anonymized travel details like departure points, destinations, times, distances, and costs. The data, in conjunction with Taxi Zone Maps and Lookup Tables, aids in various research fields. It helps identify frequent pickup and drop-off zones in the city.
 
-### Data Pipeline Setup
+## Data Pipeline Setup
 
 For the Data Pipeline in Microsoft Fabric, first we need to create a Data Pipeline in the workspace, and then add a new activity in the new data pipeline.
 
 ![data_pipeline_01](./images/data_pipeline/data_pipeline_01.png)
 
-#### Data Landing Activity
+### Data Landing Activity
 
 Plaese select ForEach Activity, because we need to download multiple files, so we need a ForEach loop to help us complete this task. [^1]
 
@@ -142,7 +141,7 @@ Plaese select ForEach Activity, because we need to download multiple files, so w
   
   ![data_pipeline_10](./images/data_pipeline/data_pipeline_10.png)
 
-#### The Rest of the Data Pipeline
+### The Rest of the Data Pipeline
 
 After the Data Landing, we need to configure the subsequent steps of this pipeline. The following steps of this pipeline include __data ingestion__ -> __data cleansing__ -> __data transformation__ -> __feature registration__. Therefore, we need to create another 4 notebook activities to execute these data operations. When we finish configuring the whole pipeline, it should look like this.
 
@@ -173,7 +172,7 @@ After the Data Landing, we need to configure the subsequent steps of this pipeli
   
   ![data_pipeline_15](./images/data_pipeline/data_pipeline_15.png)
 
-### Feature Store Setup
+## Feature Store Setup
 
 Follow the official documentation to create a feature store:
 [Create a Minimal Feature Store](https://learn.microsoft.com/en-us/azure/machine-learning/tutorial-get-started-with-feature-store?view=azureml-api-2&tabs=SDK-track#create-a-minimal-feature-store).
@@ -187,7 +186,7 @@ Go to the page of feature store in Azure portal, and assign the Service Principl
 
   ![roles](./images/featurestore_1.png)
 
-### Fabric Environment Setup
+## Fabric Environment Setup
 
 Go to Fabric workspace homepage, create a new __Environment__ by clicking __+ New__ button in workspace homepage and select __Environment__ under __Data Engineering__.
 ![new](./images/featurestore_5.png)
@@ -208,8 +207,6 @@ spark_conf:
   - spark.fsd.rg_name: <feature-store-resouce-group>
   - spark.fsd.name: <feature-store-name>
   - spark.fsd.fabric.tenant: <fabric-tenant-name> # Fetch from Fabric base URL, like https://<fabric-tenant-name>.powerbi.com/
-  - spark.fsd.fabric.workspace: <fabric-workspace>
-  - spark.fsd.fabric.lakehouse: <fabric-lakehouse>
   - spark.fsd.purview.account: <purview-account-name>
 
 ```
@@ -224,7 +221,7 @@ Or you can apply to each specific notebook in the notebook edition page.
 
 ![pip](./images/fabric_env_1.png)
 
-### Model Training and Inferencing Setup
+## Model Training and Inferencing Setup
 
 Go to Fabric workspace, double check if the following notebooks are imported:
 
@@ -232,15 +229,15 @@ Go to Fabric workspace, double check if the following notebooks are imported:
 - model_inferencing.ipynb
 - feature_set_retrieval.ipynb
 
-### Data Lineage Setup
+## Data Lineage Setup
 
-#### Step 1
+### Step 1
 
 In our custom data lineage registration solution, we register data assets and their lineage to [Microsoft Purview](https://learn.microsoft.com/en-us/purview/purview), therefore a Microsoft Purview account is required for sure, please refer to the below online document to create a new account if you don't have one yet.
 
 [Quickstart: Create an account in the Microsoft Purview governance portal](https://learn.microsoft.com/en-us/purview/create-microsoft-purview-portal)
 
-#### Step 2
+### Step 2
 
 Once the Purview account is ready, please assign the same Service Principle created during the [Feature Store Setup](#feature-store-setup) with the [Data curators](https://learn.microsoft.com/en-us/purview/how-to-create-and-manage-collections#roles) role in the Purview root collection, for details steps please refer to [this online help document](https://learn.microsoft.com/en-us/purview/how-to-create-and-manage-collections#add-role-assignments).
 
