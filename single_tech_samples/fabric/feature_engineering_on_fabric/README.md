@@ -75,84 +75,15 @@ For other ways to create a feature store, please refer to the online document:
 
 In this demo the data from the [New York City Taxi & Limousine Commission](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page) Yellow Taxi Trip Records, which is public. We used Records for 2022. This includes anonymized travel details like departure points, destinations, times, distances, and costs. The data, in conjunction with Taxi Zone Maps and Lookup Tables, aids in various research fields. It helps identify frequent pickup and drop-off zones in the city.
 
-We provide two options to get the sample data:
-
-- Option 1: ADLS (Azure Data Lake Storage) or Blob storage.
-- Option 2: Download files directly by using Microsoft Fabric data pipeline.
-
-#### Option 1: ADLS (Azure Data Lake Storage) or Blob storage
-
-The initial step for both option 1 please download all the data from the file link to your local machine.
-
-- [yellow_tripdata_2022-01.parquet](https://stmdwpublic.blob.core.windows.net/datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-01.parquet)
-- [yellow_tripdata_2022-02.parquet](https://stmdwpublic.blob.core.windows.net/datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-02.parquet)
-- [yellow_tripdata_2022-03.parquet](https://stmdwpublic.blob.core.windows.net/datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-03.parquet)
-- [yellow_tripdata_2022-04.parquet](https://stmdwpublic.blob.core.windows.net/datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-04.parquet)
-- [yellow_tripdata_2022-05.parquet](https://stmdwpublic.blob.core.windows.net/datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-05.parquet)
-- [yellow_tripdata_2022-06.parquet](https://stmdwpublic.blob.core.windows.net/datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-06.parquet)
-- [yellow_tripdata_2022-07.parquet](https://stmdwpublic.blob.core.windows.net/datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-07.parquet)
-- [yellow_tripdata_2022-08.parquet](https://stmdwpublic.blob.core.windows.net/datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-08.parquet)
-- [yellow_tripdata_2022-09.parquet](https://stmdwpublic.blob.core.windows.net/datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-09.parquet)
-- [yellow_tripdata_2022-10.parquet](https://stmdwpublic.blob.core.windows.net/datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-10.parquet)
-- [yellow_tripdata_2022-11.parquet](https://stmdwpublic.blob.core.windows.net/datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-11.parquet)
-- [yellow_tripdata_2022-12.parquet](https://stmdwpublic.blob.core.windows.net/datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-12.parquet)
-- [taxi_zone_lookup.csv](https://stmdwpublic.blob.core.windows.net/datasets/nyc-yellow-tripdata-2022/taxi_zone_lookup.csv)
-
-If you choose to use ADLS, in the newly created ADLS Gen2 storage account [prefix]sa, create a new container in the storage account, and upload the parquet and csv files to the container, and please note the names of the container and folder you created, as we will use them later.
-
-![ADLS_source_file](./images/data_pipeline/ADLS_source_file.png)
-
-Once the files are uploaded, you have completed the data preparation work. You can skip option 2.
-
-#### Option 2: Download files directly by using Microsoft Fabric data pipeline
-
-For option 2, no action is required for this step.
-
 ### Data Pipeline Setup
 
 For the Data Pipeline in Microsoft Fabric, first we need to create a Data Pipeline in the workspace, and then add a new activity in the new data pipeline.
 
 ![data_pipeline_01](./images/data_pipeline/data_pipeline_01.png)
 
-#### Data Landing Activity (Data Source Option 1)
+#### Data Landing Activity
 
-If you chose __option 1__ in the previous Data Source Preparation, please continue with this configuration.
-
-- Step 1, Select the copy data Activity and add to Canvas.
-
-  ![create_copy_activity](./images/data_pipeline/create_copy_activity.png)
-
-- Step 2, Set up the Copy Data Activity. Configure the Source and Destination tab. First, switch to the Source tab, then select 'external' for the Data Storage Type. Subsequently, for the connection, create an [Azure Data Lake Storage Gen2 connector overview](https://learn.microsoft.com/en-us/fabric/data-factory/connector-azure-data-lake-storage-gen2-overview). On the creation page, input your ADLS Gen2 URL and connection name. Then for the Authentication you can use any kind of authentication method as you like. Finally, click the 'Create' button to complete the setup.
-
-  ![create_storage_link_service](./images/data_pipeline/create_storage_link_service.jpg)
-
-After that, select the connection you just created. Then set up the File path container name and folder path. The file path is the path of the folder you just uploaded the data source files to, for the file name please keep it as empty. Then select the binary as the file format and select the recursively check box, this will download all the files in the folder. This completes the configuration of the Source in the Copy data Activity.
-
-![create_storage_link_service02](./images/data_pipeline/create_storage_link_service02.jpg)
-
-- Step 3, create parameters for our pipeline. Return to the pipeline design panel and click anywhere on the blank area. Then, select 'Parameter' at the place shown in the image, and add the following two parameters:
-  - __'landing_path'__, the type is 'String', the default value to be entered is: '01_landing'.
-  - __'client_secret'__, the type is 'SecureString', the default value should be left blank.
-  
-    ![ADLS_pipeline_parameter](./images/data_pipeline/ADLS_pipeline_parameter.png)
-
-- Step 4, Switch to the Destination tab and make the following configurations as shown in the image. If you have not created a Lakehouse, you need to create a new Lakehouse in the workspace first, then select this Lakehouse here. If you have already created a Lakehouse, you can directly select the Lakehouse you have created here. The file path here is the second parameter 'landing_path' that we just created, so our Copy data Activity will download the data to the corresponding folder in our Lakehouse.
-  - File Path: __@pipeline().parameters.landing_path__
-  - File name: _keep empty_
-
-    ![create_storage_link_service03](./images/data_pipeline/create_storage_link_service03.png)
-
-- Step 5, Run this pipeline with the single 'Data Landing' activity. If everything is good, then we should be able to see the downloaded data in our Lakehouse.
-  
-  ![data_pipeline_09](./images/data_pipeline/data_pipeline_09.png)
-  
-  ![data_pipeline_10](./images/data_pipeline/data_pipeline_10.png)
-
-#### Data Landing Activity (Data Source Option 2)
-
-If you chose __option 2__ in the previous Data Source Preparation, please use this configuration.
-
-Then select ForEach Activity, because we need to download multiple files, so we need a ForEach loop to help us complete this task.
+Plaese select ForEach Activity, because we need to download multiple files, so we need a ForEach loop to help us complete this task. [^1]
 
 ![data_pipeline_02](./images/data_pipeline/data_pipeline_02.png)
 
@@ -367,3 +298,5 @@ Once the execution is complete, the prediction results will be presented for you
 - [Micrsoft Fabric](https://learn.microsoft.com/en-us/fabric/get-started/microsoft-fabric-overview)
 - [Azure Machine Learning Managed Feature Store](https://learn.microsoft.com/en-us/azure/machine-learning/concept-what-is-managed-feature-store?view=azureml-api-2)
 - [Azure Purview](https://azure.microsoft.com/en-us/services/purview/)
+
+[^1]: For Data Landing, we can also use another approach, which is to use ADLS (Azure Data Lake Storage) or Blob storage. First, download these files to your local, then upload these documents to ADLS. Then use Copy Data Activity through a link service to the storage, so we can also complete the same task.
