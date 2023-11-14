@@ -54,10 +54,6 @@ Please note that the Lakehouse name should be '[prefix]_lh', where [prefix] is t
 
 Create a new resource group named as [prefix]rg, where [prefix] is the prefix you defined in the prerequisites section.
 
-#### Azure App Service
-
-Create a new Azure App Service named as [prefix]as, where [prefix] is the prefix you defined in the prerequisites section.
-
 #### Azure Data Lake Storage Gen2
 
 Create an Azure Data Lake Storage Gen2 account named as [prefix]sa, where [prefix] is the prefix you defined in the prerequisites section. For the detailed information, please refer to: [Create a storage account to use with Azure Data Lake Storage Gen2](https://learn.microsoft.com/en-us/azure/storage/blobs/create-data-lake-storage-account)
