@@ -62,7 +62,7 @@ The below diagram illustrates the deployment process flow followed in this templ
 
 The following technologies are used to build this template:
 
-- [Azure DevOps](https://azure.microsoft.com/en-us/services/devops/)
+- [Azure DevOps](https://azure.microsoft.com/products/devops/)
 - [Azure Databricks](https://azure.microsoft.com/en-au/free/databricks/)
 - [Azure Resource Manager](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview)
 - [nutter](https://github.com/microsoft/nutter)

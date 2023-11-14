@@ -2,7 +2,7 @@
 
 ![introductory diagram](./docs/images/ASA-job.PNG)
 
-[Azure Stream Analytics](https://azure.microsoft.com/en-us/services/stream-analytics/) is a serverless real-time analytics service. The goal of this sample is to demonstrate how to develop a streaming pipeline, with IaC and testability in mind.
+[Azure Stream Analytics](https://azure.microsoft.com/products/stream-analytics/) is a serverless real-time analytics service. The goal of this sample is to demonstrate how to develop a streaming pipeline, with IaC and testability in mind.
 
 ## Prerequisites
 

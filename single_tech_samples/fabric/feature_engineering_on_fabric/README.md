@@ -9,7 +9,7 @@ This architecture utilizes Microsoft Fabric as the data analytics platform. A da
 
 ### Prerequisites
 
-- Create an Azure subscription if you do not have one already. You can sign up for a free trial by following [this link](https://azure.microsoft.com/en-us/free/).
+- Create an Azure subscription if you do not have one already. You can sign up for a free trial by following [this link](https://azure.microsoft.com/free/).
 - Define a prefix, such as 'fsd1', which would be used in naming the resources created in this demo. Please note that the prefix must be unique within the Azure subscription.
 
 ### Microsoft Fabric

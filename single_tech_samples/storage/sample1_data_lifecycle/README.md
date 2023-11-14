@@ -5,7 +5,7 @@
 - [1. Solution Overview](#1-solution-overview)
   - [1.1. Scope](#11-scope)
   - [1.2. Use Case](#12-use-case)
-  - [1.3. Technologies used](#14-technologies-used)
+  - [1.3. Technologies used](#13-technologies-used)
 - [2. How to use this sample](#2-how-to-use-this-sample)
   - [2.1. Prerequisites](#21-prerequisites)
     - [2.1.1 Software Prerequisites](#211-software-prerequisites)
@@ -14,6 +14,7 @@
   - [2.4. Deployment validation and Execution](#24-deployment-validation-and-execution)
   - [2.5. Clean-up](#25-clean-up)
 - [3. Troubleshooting](#3-troubleshooting)
+  - [Error Building AzureRM Client](#error-building-azurerm-client)
 - [4. References](#4-references)
 
 ## 1. Solution Overview
@@ -42,7 +43,7 @@ Data lifecycle is one such feature on Azure using which you can optimize costs b
 
 The following technologies are used to build this sample:
 
-- [Azure Storage](https://azure.microsoft.com/services/storage/data-lake-storage)
+- [Azure Storage](https://azure.microsoft.com/products/storage/data-lake-storage)
 - [Terraform](https://www.terraform.io)
 
 ## 2. How to use this sample

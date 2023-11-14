@@ -33,18 +33,18 @@ The following shows the architecture of the solution.
 
 ### Technologies used
 
-- [Azure Purview](https://azure.microsoft.com/en-au/services/devops/)
-- [Azure Data Factory](https://azure.microsoft.com/en-au/services/data-factory/)
-- [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction)
-- [Azure Databricks](https://docs.microsoft.com/en-us/azure/databricks/)
-- [Azure Key Vault](https://azure.microsoft.com/en-us/services/key-vault/)
-- [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)
-- [Office365 API Connection](https://docs.microsoft.com/en-us/azure/connectors/connectors-create-api-office365-outlook)
-- [Azure Virtual Network](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview)
-- [Private Endpoint](https://docs.microsoft.com/en-us/azure/private-link/private-endpoint-overview)
-- [Azure Function](https://docs.microsoft.com/en-us/azure/azure-functions/)
-- [Azure Logic App](https://azure.microsoft.com/en-us/services/logic-apps/)
-- [Azure Private DNS](https://docs.microsoft.com/en-us/azure/dns/private-dns-overview)
+- [Azure Purview](https://azure.microsoft.com/products/purview/)
+- [Azure Data Factory](https://azure.microsoft.com/products/data-factory/)
+- [Azure Data Lake Gen2](https://docs.microsoft.com/azure/storage/blobs/data-lake-storage-introduction)
+- [Azure Databricks](https://docs.microsoft.com/azure/databricks/)
+- [Azure Key Vault](https://azure.microsoft.com/products/key-vault/)
+- [Application Insights](https://docs.microsoft.com/azure/azure-monitor/app/app-insights-overview)
+- [Office365 API Connection](https://docs.microsoft.com/azure/connectors/connectors-create-api-office365-outlook)
+- [Azure Virtual Network](https://docs.microsoft.com/azure/virtual-network/virtual-networks-overview)
+- [Private Endpoint](https://docs.microsoft.com/azure/private-link/private-endpoint-overview)
+- [Azure Function](https://docs.microsoft.com/azure/azure-functions/)
+- [Azure Logic App](https://azure.microsoft.com/products/logic-apps/)
+- [Azure Private DNS](https://docs.microsoft.com/azure/dns/private-dns-overview)
 
 ## Key Learnings
 

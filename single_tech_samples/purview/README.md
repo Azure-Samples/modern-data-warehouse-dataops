@@ -22,12 +22,12 @@ Azure Purview is a managed data governance cloud service for centrally managing 
   - [Setup and Deployment](#setup-and-deployment)
     - [Deployed Resources](#deployed-resources)
   - [Optional scripts](#optional-scripts)
-    - [search_advanced.sh](#search_advancedsh)
-    - [delete_purview_data.sh](#delete_purview_datash)
+    - [search\_advanced.sh](#search_advancedsh)
+    - [delete\_purview\_data.sh](#delete_purview_datash)
 
 ## Solution Overview
 
-This solution sets up an [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction) storage account, with a folder structure that enables data tiering (bronze, silver, gold), an [Azure Data Factory](https://azure.microsoft.com/en-au/services/data-factory/)(ADF) instance with linked services connecting to the data lake, a [key vault](https://azure.microsoft.com/en-us/services/key-vault/) for any secrets, and an [Azure Purview](https://azure.microsoft.com/en-us/services/purview/) account for data governance.
+This solution sets up an [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction) storage account, with a folder structure that enables data tiering (bronze, silver, gold), an [Azure Data Factory](https://azure.microsoft.com/en-au/services/data-factory/)(ADF) instance with linked services connecting to the data lake, a [key vault](https://azure.microsoft.com/en-us/services/key-vault/) for any secrets, and an [Azure Purview](https://azure.microsoft.com/products/purview/) account for data governance.
 
 The Azure Data Factory contains a simple ADF Pipeline that is stored in a git repository, that is taking data from the Dropzone and ingesting it into the bronze folder.
 
@@ -41,10 +41,10 @@ The following shows the simple architecture of the Azure Purview connected to fe
 
 ### Technologies used
 
-- [Azure Purview](https://azure.microsoft.com/en-au/services/devops/)
-- [Azure Data Factory](https://azure.microsoft.com/en-au/services/data-factory/)
-- [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction)
-- [Azure Key Vault](https://azure.microsoft.com/en-us/services/key-vault/)
+- [Azure Purview](https://azure.microsoft.com/products/devops/)
+- [Azure Data Factory](https://azure.microsoft.com/products/data-factory/)
+- [Azure Data Lake Gen2](https://docs.microsoft.com/azure/storage/blobs/data-lake-storage-introduction)
+- [Azure Key Vault](https://azure.microsoft.com/products/key-vault/)
 
 ## Key Learnings
 
