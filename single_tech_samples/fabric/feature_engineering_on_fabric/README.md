@@ -24,10 +24,11 @@ The article focuses on constructing a feature engineering system using Azure ML 
 - [Data pipeline setup](#data-pipeline-setup)
   - [Data landing activity](#data-landing-activity)
   - [Notebook activities](#notebook-activities)
-- [Build and Test](#build-and-test)
-  - [Trigger the Data Pipeline](#trigger-the-data-pipeline)
-  - [Check the Data Lineage in Purview](#check-the-data-lineage-in-purview)
-- [Model Training and Inferencing](#model-training-and-inferencing)
+- [Execute and verify](#execute-and-verify)
+  - [Trigger the data pipeline](#trigger-the-data-pipeline)
+  - [Verify the data lineage in Purview](#verify-the-data-lineage-in-purview)
+  - [Verify the features in Feature Store](#verify-the-features-in-feature-store)
+- [Model training and inferencing](#model-training-and-inferencing)
   - [Model training](#model-training)
   - [Model inferencing](#model-inferencing)
 - [References](#references)
@@ -308,9 +309,11 @@ Here are the steps involved in configuring these notebook activities.
   
   ![data_pipeline_15](./images/data_pipeline/data_pipeline_15.png)
 
-## Build and Test
+## Execute and verify
 
-### Trigger the Data Pipeline
+Once the setup is complete, you can trigger the pipeline and verify the results.
+
+### Trigger the data pipeline
 
 Access the Fabric workspace and locate the item categorized as a `Data pipeline`.
 
@@ -324,11 +327,15 @@ In the pane, you can check the input and output, which gives the more detailed e
 
 ![pipeline run](./images/pipeline_run.png)
 
-### Check the Data Lineage in Purview
+### Verify the data lineage in Purview
 
-TBA
+TBD
 
-## Model Training and Inferencing
+### Verify the features in Feature Store
+
+TBD
+
+## Model training and inferencing
 
 ### Model training
 
