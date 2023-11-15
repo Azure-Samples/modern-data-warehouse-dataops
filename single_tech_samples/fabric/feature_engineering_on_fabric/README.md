@@ -37,19 +37,25 @@ In addition to the main flow, there are optional steps for performing 'explorato
 
 As described above, the sample uses Microsoft Fabric as the data analytics platform, which provides SaaS based access to the required storage and compute resources. However, the following Microsoft/Azure resources, which are external to Microsoft Fabric, are still required:
 
-#### [Microsoft Purview Account](https://learn.microsoft.com/purview/)
+- Microsoft Purview Account
 
-You can [create a new account](https://learn.microsoft.com/purview/create-microsoft-purview-portal) or use an existing one. Note down the purview account name.
+  You can [create a new account](https://learn.microsoft.com/purview/create-microsoft-purview-portal) or use an existing one. Note down the purview account name.
 
-#### [Azure ML Managed Feature Store](https://learn.microsoft.com/azure/machine-learning/concept-what-is-managed-feature-store?view=azureml-api-2)
+- Azure ML Managed Feature Store
 
-You can create an Azure ML managed feature store by running the following Azure CLI:
+  You can create an [Azure ML managed feature store](https://learn.microsoft.com/azure/machine-learning/concept-what-is-managed-feature-store?view=azureml-api-2) by running the following Azure CLI:
 
-```az ml feature-store create --subscription <subscription-id> --resource-group <resource-group-name> --location <location> --name <feature-store-name>```
+  ```bash
+  az ml feature-store create \
+    --subscription <subscription-id> \
+    --resource-group <resource-group-name> \
+    --location <location> \
+    --name <feature-store-name>
+  ```
 
-To explore alternative methods for building a feature store, check out the [Microsoft documentation](https://learn.microsoft.com/azure/machine-learning/tutorial-get-started-with-feature-store?view=azureml-api-2&tabs=SDK-track#create-a-minimal-feature-store).
+  To explore alternative methods for building a feature store, check out the [Microsoft documentation](https://learn.microsoft.com/azure/machine-learning/tutorial-get-started-with-feature-store?view=azureml-api-2&tabs=SDK-track#create-a-minimal-feature-store).
 
-Note down the subscription id, resource group, and feature store name.
+  Note down the subscription id, resource group, and feature store name.
 
 ### Microsoft Fabric Setup Steps
 
@@ -86,9 +92,13 @@ Note down the subscription id, resource group, and feature store name.
 
    ![add lakehouse](./images/add_lh_to_notebook.png)
 
-## Data Source Preparation
+## Source Dataset
 
-In this demo the data from the [New York City Taxi & Limousine Commission](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page) Yellow Taxi Trip Records, which is public. We used Records for 2022. This includes anonymized travel details like departure points, destinations, times, distances, and costs. The data, in conjunction with Taxi Zone Maps and Lookup Tables, aids in various research fields. It helps identify frequent pickup and drop-off zones in the city.
+The sample uses the public yellow taxi trip dataset from [New York City Taxi & Limousine Commission](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page). However, we have hosted a subset of this dataset on our own public blob storage at the following location
+
+Base URL: https://stmdwpublic.blob.core.windows.net/
+
+This subset contains data for the year 2022, and each month is available as a separate parquet file. The data includes anonymized travel details like departure points, destinations, times, distances, and costs. The data, in conjunction with taxi zone maps and lookup tables, aids in various research fields such as identifying frequent pickup and drop-off zones in the city.
 
 ## Data Pipeline Setup
 
