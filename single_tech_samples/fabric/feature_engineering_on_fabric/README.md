@@ -41,7 +41,7 @@ Here is the high-level architecture diagram:
 
 This architecture utilizes Microsoft Fabric as the data analytics platform. A [data pipeline](https://learn.microsoft.com/training/modules/use-data-factory-pipelines-fabric/) lands, ingests, and transform the incoming data. The transformed data is registered as [features](https://learn.microsoft.com/azure/machine-learning/concept-what-is-managed-feature-store?view=azureml-api-2#what-are-features) in Azure ML managed feature store. These features are used for model training and inferencing. Concurrently, the data lineage of both the data pipelines and the features is tracked and monitored using Microsoft Purview.
 
-The sample follows a medallion architecture with `landing`, `staging` and `standard` zones created in the **File Section** of a [lakehouse](https://learn.microsoft.com/fabric/data-engineering/lakehouse-overview) in [Fabric OneLake](https://learn.microsoft.com/fabric/onelake/onelake-overview). For data landing, 'ForEach' activity is used to download multiple files from a public blob storage. The rest of the processing (ingestion, transformation, feature registration, model training, and model inferencing) is done using Fabric 'data notebooks'.
+The sample follows a medallion architecture with `landing`, `staging` and `standard` zones created in the __File Section__ of a [lakehouse](https://learn.microsoft.com/fabric/data-engineering/lakehouse-overview) in [Fabric OneLake](https://learn.microsoft.com/fabric/onelake/onelake-overview). For data landing, 'ForEach' activity is used to download multiple files from a public blob storage. The rest of the processing (ingestion, transformation, feature registration, model training, and model inferencing) is done using Fabric 'data notebooks'.
 
 In addition to the main flow, there are optional steps for performing 'exploratory data analysis' and 'data validations' (illustrated by dotted lines in the diagram). These features are currently not covered as part of the step-by-step guide, but the notebooks are available in the repo for reference.
 
@@ -159,7 +159,7 @@ As described above, the sample uses Microsoft Fabric as the data analytics platf
 
 The sample uses the public yellow taxi trip dataset from [New York City Taxi & Limousine Commission](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page). However, we have hosted a subset of this dataset on our own public blob storage at the following location
 
-Base URL: https://stmdwpublic.blob.core.windows.net/
+Base URL: <https://stmdwpublic.blob.core.windows.net/>
 
 This subset contains data for the year 2022, and each month is available as a separate parquet file. The data includes anonymized travel details like departure points, destinations, times, distances, and costs. The data, in conjunction with taxi zone maps and lookup tables, aids in various research fields such as identifying frequent pickup and drop-off zones in the city.
 
@@ -198,6 +198,7 @@ The configuration of this 'ForEach' activity follows a series of steps as below.
     Type: Array
 
     Default Value:
+
     ``` json
     ["datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-01.parquet",
     "datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-02.parquet",
@@ -213,6 +214,7 @@ The configuration of this 'ForEach' activity follows a series of steps as below.
     "datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-12.parquet",
     "datasets/nyc-yellow-tripdata-2022/taxi_zone_lookup.csv"]
     ```
+
   - __landing_path__
 
     Type: String
@@ -290,6 +292,7 @@ Here are the steps involved in configuring these notebook activities.
   Rename each notebook activity by selecting it, clicking 'General' tab and updating the name of the 'Notebook' activity. Name them as 'Data Ingestion', 'Data Cleansing', 'Data Transformation', and 'Feature Registration' respectively.
 
   For each notebook activity, add the following 'Base parameters' in the Settings' tab:
+
   ```text
   Name: client_secret
   Type: String
@@ -329,7 +332,39 @@ In the pane, you can check the input and output, which gives the more detailed e
 
 ### Verify the data lineage in Purview
 
-TBD
+We can check data lineage details in Purview once the Fabric data pipeline has run successfully.
+
+#### Data pipeline lineage
+
+1. Open the Microsoft Purview Governance Portal of your Purview account, for detailed instructions please refer to [this document](https://learn.microsoft.com/en-us/purview/use-microsoft-purview-governance-portal).
+2. Go to _Data Catalog -> Home_ page, and type _Fabric notebook_ in the search field, in the _Asset suggestions_ list you should be able to see some Fabric notebook items that have been executed via the Fabric data pipeline, click on one of the items, like _data_ingestion (Fabric notebook)_. For more detailed instructions please refer to [this document](https://learn.microsoft.com/en-us/purview/how-to-search-catalog).
+3. Go to the _Properties_ tab of the asset page, there we can see inputs and outputs assets of this notebook asset, as well as the qualified name of this asset, via which we can open the Fabric notebook directly in a new browser tab.
+
+   ![process_asset_properties_view](./images/data_lineage/process_asset_properties_view.png)
+
+4. In the _Lineage_ tab, we can see the lineage view of the whole data processing lifecycle of the demo we built and ran. The partial screenshot below shows the lineage of the data pipeline processing, from source parquet files in the landing zone to the transformed data saved in the standardized zone.
+
+   ![process_asset_lineage_view](./images/data_lineage/process_asset_lineage_view.png)
+
+   Click any node in the lineage view and then click the _Switch to asset_ link in the lower-left to navigate to another asset to check more details.
+
+#### Feature store lineage
+
+1. In the lineage view of the transformed data asset, we can see three downstream assets, which are features registered in Azure ML managed feature store.
+
+   ![feature_store_lineage_view](./images/data_lineage/feature_store_lineage_view.png)
+
+2. Switch to one of the features, in the _Properties_ tab we can see the data type of the feature as well as which feature set it belongs to.
+
+   ![feature_properties_view](./images/data_lineage/feature_properties_view.png)
+
+3. Click the feature set link can bring us to related feature set asset, in the _Properties_ tab, we can tell what features it contains, which feature store it belongs to, as well as the qualified name, via which we can open the feature set view of Azure ML managed feature store in a new browser tab to check more details.
+
+   ![featureset_properties_view](./images/data_lineage/featureset_properties_view.png)
+
+4. Go to the _Related_ tab of the feature set asset, it shows the asset type hierarchy view of feature store relevant asset types, click the _features_ node to get all available features displayed in the upper-left of the canvas, or click the _featurestore_ node to get the feature store details, then click the link to navigate to another interested asset.
+
+   ![featureset_related_view](./images/data_lineage/featureset_related_view.png)
 
 ### Verify the features in Feature Store
 
@@ -359,6 +394,20 @@ Go to model_inferencing notebook, and click `Run all`.
 Once the execution is complete, the prediction results will be presented for your review.
 
 ![inferencing result](./images/inferencing_result.png)
+
+### Verify the model training lineage in Purview
+
+After the model_training notebook is run successfully, go to the Purview portal page to check the latest updates of the lineage view.
+
+1. Go to _Data Catalog -> Home_ page, and type _Fabric notebook_ in the search field, click the _model_training (Fabric notebook)_ item in the _Asset suggestions_ list.
+
+2. Go to the _Lineage_ tab, we can see several extra assets appending to the end of the previous lineage path, which shows the lineage of the trained model; we can tell what features are used in the model training, as always we can navigate to the actual model training notebook via the qualified name to check more details, or go to the model training experiment page in Fabric to get more experiment runs details.
+
+   ![ml_model_lineage_view](./images/data_lineage/ml_model_lineage_view.png)
+
+3. Switch to the _demand_prediction_model_ asset, in the _Properties_ tab, it shows the model version and related experiment run name.
+
+   ![ml_model_properties_view](./images/data_lineage/ml_model_properties_view.png)
 
 ## References
 
