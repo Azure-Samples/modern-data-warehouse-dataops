@@ -31,6 +31,7 @@ The article focuses on constructing a feature engineering system using Azure ML 
 - [Model training and inferencing](#model-training-and-inferencing)
   - [Model training](#model-training)
   - [Model inferencing](#model-inferencing)
+  - [Verify the model training lineage in Purview](#verify-the-model-training-lineage-in-purview)
 - [References](#references)
 
 ## Architecture
