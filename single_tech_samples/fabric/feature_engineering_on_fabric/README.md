@@ -1,4 +1,4 @@
-# Introduction
+# Introduction <!-- omit in toc -->
 
 [Feature engineering](https://learn.microsoft.com/azure/architecture/data-science-process/create-features#what-is-feature-engineering) is the process of selecting, transforming, or creating relevant features (variables) from raw data to improve the performance of a machine learning model. It involves extracting meaningful information, handling missing values, scaling, encoding categorical variables, and creating new features. Effective feature engineering enhances a model's ability to understand patterns, leading to better predictions and improved overall performance in data science and machine learning tasks.
 
@@ -13,6 +13,30 @@ To learn more, read [Data Science documentation in Microsoft Fabric](https://lea
 
 The article focuses on constructing a feature engineering system using Azure ML managed feature store and Microsoft Fabric. It delves into the tracking and monitoring of data lineage for these features through Microsoft Purview. The content includes a step-by-step guide for environment setup and running the demo, aiming to expedite the feature engineering process within the Azure ecosystem.
 
+## Contents <!-- omit in toc -->
+
+- [Architecture](#architecture)
+- [Environment setup](#environment-setup)
+  - [Prerequisites](#prerequisites)
+  - [Microsoft/Azure resources](#microsoftazure-resources)
+  - [Microsoft Fabric setup](#microsoft-fabric-setup)
+- [Source dataset](#source-dataset)
+- [Data pipeline setup](#data-pipeline-setup)
+  - [Data landing activity](#data-landing-activity)
+  - [Notebook activities](#notebook-activities)
+- [Feature Store Setup](#feature-store-setup)
+- [Fabric Environment Setup](#fabric-environment-setup)
+- [Model Training and Inferencing Setup](#model-training-and-inferencing-setup)
+- [Data Lineage Setup](#data-lineage-setup)
+  - [Step 1](#step-1)
+  - [Step 2](#step-2)
+- [Build and Test](#build-and-test)
+  - [Trigger the Data Pipeline](#trigger-the-data-pipeline)
+  - [Train the Model and Inferencing](#train-the-model-and-inferencing)
+    - [Model training](#model-training)
+    - [Model inferencing](#model-inferencing)
+- [References](#references)
+
 ## Architecture
 
 Here is the high-level architecture diagram:
@@ -25,7 +49,7 @@ The sample follows a medallion architecture with `landing`, `staging` and `stand
 
 In addition to the main flow, there are optional steps for performing 'exploratory data analysis' and 'data validations' (illustrated by dotted lines in the diagram). These features are currently not covered as part of the step-by-step guide, but the notebooks are available in the repo for reference.
 
-## Environment Setup
+## Environment setup
 
 ### Prerequisites
 
@@ -33,7 +57,7 @@ In addition to the main flow, there are optional steps for performing 'explorato
 - Access to an Azure subscription. You can sign up for a free trial by following [this link](https://azure.microsoft.com/free/).
 - Permissions to [create a service principal](https://learn.microsoft.com/entra/identity-platform/howto-create-service-principal-portal#register-an-application-with-microsoft-entra-id-and-create-a-service-principal) in Microsoft Entra ID.
 
-### Microsoft/Azure Resources
+### Microsoft/Azure resources
 
 As described above, the sample uses Microsoft Fabric as the data analytics platform, which provides SaaS based access to the required storage and compute resources. However, the following Microsoft/Azure resources, which are external to Microsoft Fabric, are still required:
 
@@ -57,7 +81,7 @@ As described above, the sample uses Microsoft Fabric as the data analytics platf
 
   Note down the subscription id, resource group, and feature store name.
 
-### Microsoft Fabric Setup Steps
+### Microsoft Fabric setup
 
 1. Create a Microsoft Fabric workspace
 
@@ -92,7 +116,7 @@ As described above, the sample uses Microsoft Fabric as the data analytics platf
 
    ![add lakehouse](./images/add_lh_to_notebook.png)
 
-## Source Dataset
+## Source dataset
 
 The sample uses the public yellow taxi trip dataset from [New York City Taxi & Limousine Commission](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page). However, we have hosted a subset of this dataset on our own public blob storage at the following location
 
@@ -100,34 +124,41 @@ Base URL: https://stmdwpublic.blob.core.windows.net/
 
 This subset contains data for the year 2022, and each month is available as a separate parquet file. The data includes anonymized travel details like departure points, destinations, times, distances, and costs. The data, in conjunction with taxi zone maps and lookup tables, aids in various research fields such as identifying frequent pickup and drop-off zones in the city.
 
-## Data Pipeline Setup
+## Data pipeline setup
 
-For the Data Pipeline in Microsoft Fabric, first we need to create a Data Pipeline in the workspace, and then add a new activity in the new data pipeline.
+This is the main data pipeline which contains all the activities required for data landing, ingestion, cleansing, transformation, and feature registration. Start by creating a new data pipeline in the workspace.
 
 ![data_pipeline_01](./images/data_pipeline/data_pipeline_01.png)
 
-### Data Landing Activity
+### Data landing activity
 
-Plaese select ForEach Activity, because we need to download multiple files, so we need a ForEach loop to help us complete this task. [^1]
+As mentioned in the introduction, a 'ForEach' activity is used for data landing. This activity downloads multiple files from a public blob storage. Add the 'ForEach' activity to the data pipeline [^1].
 
 ![data_pipeline_02](./images/data_pipeline/data_pipeline_02.png)
 
-- Step 1, Select the ForEach Activity we just created and click the Add Activities button. Select Copy Data Activity from the menu.
-  
+The configuration of this 'ForEach' activity follows a series of steps as below.
+
+- Add copy data activity
+
+  Select the 'ForEach' activity that was just created and click '+' to add a 'Copy data' activity.
+
   ![data_pipeline_03](./images/data_pipeline/data_pipeline_03.png)
 
-- Step 2, Set up the Copy Data Activity by configuring the Source and Destination tab. First, switch to the Source tab, then select 'external' for the Data Storage Type. Subsequently, for the connection, create a new HTTP link. On the creation page, enter the server URL as below. Finally, click the 'Create' button to complete the setup.
-  
-- Base url is: <https://stmdwpublic.blob.core.windows.net/>
+- Define source and destination for 'Copy data' activity
 
-  ![data_pipeline_04](./images/data_pipeline/data_pipeline_04.png)
+  Select the 'Copy data' activity and switch to the 'Source' tab. Choose 'external' as the 'Data store type'. For 'Connection', click '+' to create a new HTTP link. On the creation page, enter <https://stmdwpublic.blob.core.windows.net/> as the server URL. Click the 'Create' button to complete the setup.
 
-- Step 3, Create parameters for our pipeline. We need to return to the pipeline design panel and click anywhere on the blank area. Then, select 'Parameter' at the place shown in the image, and add the following three parameters:
-  
-  ![data_pipeline_05](./images/data_pipeline/data_pipeline_05.png)
-  
-  - __urls__, Type: Array, Default Value:
+ ![data_pipeline_04](./images/data_pipeline/data_pipeline_04.png)
 
+- Define pipeline parameters
+
+  Return to the pipeline design panel and click anywhere on the blank area. Then, select 'Parameters' and add the following three parameters:
+
+  - __URLs__
+
+    Type: Array
+
+    Default Value:
     ``` json
     ["datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-01.parquet",
     "datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-02.parquet",
@@ -143,58 +174,99 @@ Plaese select ForEach Activity, because we need to download multiple files, so w
     "datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-12.parquet",
     "datasets/nyc-yellow-tripdata-2022/taxi_zone_lookup.csv"]
     ```
+  - __landing_path__
 
-  - __landing_path__, Type: String; Default Value: `01_landing`.
-  - __client_secret__, Type: SecureString, Default Value: left blank.
+    Type: String
 
-- Step 4, Return to the Settings tab of the ForEach Activity, set the Batch count value to 20, this limits the maximum number of files to be downloaded concurrently. Then, in the Items setting, select the parameter 'URLs' that we just created, or directly enter '@pipeline().parameters.URLs'. Now we completed the configuration of the ForEach Activity.
-  
+    Default Value: `01_landing`
+
+  - __client_secret__
+
+    Type: SecureString
+
+    Default Value: left blank
+
+  ![data_pipeline_05](./images/data_pipeline/data_pipeline_05.png)
+
+- Configure 'Settings' for 'ForEach' activity
+
+  Return to the Settings tab of the 'ForEach' activity and set the Batch count value to 20. This limits the maximum number of files to be downloaded concurrently. For 'Items', select the parameter 'URLs', or directly enter `@pipeline().parameters.URLs`.
+
   ![data_pipeline_06](./images/data_pipeline/data_pipeline_06.png)
 
-- Step 5, Return to the Source tab of the Copy data Activity within the ForEach Activity. In the connection, select the HTTP link that we just created. The Connection type should be HTTP. Then, enter '@item()' in the Relative URL, and select Binary as the File format. This completes the configuration of the Source in the Copy data Activity.
-  
+- Review 'Source' settings for 'Copy data' activity
+
+  Return to the 'Source' tab of the 'Copy data' activity within the 'ForEach' activity. In the connection, select the HTTP link that was created before. The 'Connection type' should be 'HTTP'. For 'Relative URL', enter '@item()' and select 'Binary' as the 'File format'. This completes the configuration of the Source in the Copy data Activity.
+
   ![data_pipeline_07](./images/data_pipeline/data_pipeline_07.png)
 
-- Step 6, Switch to the Destination tab and make the following configurations as shown in the image. Please note, if you have not created a Lakehouse, you need to create a new Lakehouse named as '[prefix]_lh' in the workspace first, then select this Lakehouse here. If you have already created a Lakehouse, then you can directly select the Lakehouse you have created here. The file path here is the second parameter 'landing_path' that we just created, so our Copy data Activity will download the data to the corresponding folder in our Lakehouse.
-  - File Path: __@pipeline().parameters.landing_path__
-  - File name: __@last(array(split(item(),'/')))__
-  
+- Review 'Destination' settings for 'Copy data' activity
+
+  Switch to the 'Destination' tab and enter the configuration as shown in the image. Note that if you have not already created a lakehouse, you need to create a new one in the workspace first and select it here. If you have already created the lakehouse, select that. The 'File path', use the following values:
+
+  ```text
+  File Path: @pipeline().parameters.landing_path
+  File name: @last(array(split(item(),'/')))
+  ```
+
   ![data_pipeline_08](./images/data_pipeline/data_pipeline_08.png)
 
-- Step 7, Run this pipeline with the single 'Data Landing' activity. If everything is good, then we should be able to see the downloaded data in our Lakehouse.
-  
+- Test the pipeline
+
+  Run this pipeline with the single 'Data Landing' activity. If everything is properly configured, you shall should be able to see the downloaded data in the lakehouse as shown below.
+
   ![data_pipeline_09](./images/data_pipeline/data_pipeline_09.png)
   
   ![data_pipeline_10](./images/data_pipeline/data_pipeline_10.png)
 
-### The Rest of the Data Pipeline
+### Notebook activities
 
-After the Data Landing, we need to configure the subsequent steps of this pipeline. The following steps of this pipeline include __data ingestion__ -> __data cleansing__ -> __data transformation__ -> __feature registration__. Therefore, we need to create another 4 notebook activities to execute these data operations. When we finish configuring the whole pipeline, it should look like this.
+Once the 'Data Landing' activity is configured, we can start to add more activities to perform the data ingestion, cleansing, transformation, and feature set registration tasks. Each of these tasks is performed by a 'notebook' activity which invokes the corresponding notebook:
+
+- [data_ingestion](./src/notebooks/data_ingestion.ipynb)
+- [data_cleansing](./src/notebooks/data_cleansing.ipynb)
+- [data_transformation](./src/notebooks/data_transformation.ipynb)
+- [feature_set_registration](./src/notebooks/feature_set_registration.ipynb)
+
+When we finish configuring the whole pipeline, it should look like this.
 
 ![data_pipeline_11](./images/data_pipeline/data_pipeline_11.png)
 
-- Step 1, click the Add Activities button 4 times to add 4 Notebook Activities.
-  
+Here are the steps involved in configuring these notebook activities.
+
+- Add four 'Notebook' activities
+
+  Select 'Activities' tab and add four 'Notebook' activities.
+
   ![data_pipeline_12](./images/data_pipeline/data_pipeline_12.png)
 
-- Step 2, Link the Activities within the pipeline. Please make sure to drag the check mark located on the right side of each Activity to the next one. This represents that the subsequent Activity will be executed once the current one has successfully completed.
-  
+- Link the activities
+
+  Link the activities within the pipeline. Make sure to drag the 'On success' check mark located on the right side of each activity to the next one. It would ensure that the subsequent activity will be executed only when the current one has completed successfully.
+
   ![data_pipeline_13](./images/data_pipeline/data_pipeline_13.png)
 
-- Step 3, Configure Notebook Activities, rename each activity select the Notebook Activity, and then click the __General__ tab and input the name of the Notebook Activity. Here's the list of the notebook activities:
-  - __Data Ingestion__
-  - __Data Cleansing__
-  - __Data Transformation__
-  - __Feature Registration__
-  
-  Then switch to the __Settings__ tab, select the Notebook Activity that we just created, and then click the __Base Parameters__. We need to add the following parameters to each Notebook Activity.
-  - __client_secret__: Type: String; Default Value: `@pipeline().parameters.client_secret`
+- Configure the 'Notebook' activities
 
-- Step 4, Within the 'Settings' tab, select our current workspace and then choose the right Notebook file.
-  - __Data Ingestion__ -> __data_ingestion__
-  - __Data Cleansing__ -> __data_cleansing__
-  - __Data Transformation__ -> __data_transformation__
-  - __Feature Registration__ -> __feature_set_registration__
+  Rename each notebook activity by selecting it, clicking 'General' tab and updating the name of the 'Notebook' activity. Name them as 'Data Ingestion', 'Data Cleansing', 'Data Transformation', and 'Feature Registration' respectively.
+
+  For each notebook activity, add the following 'Base parameters' in the Settings' tab:
+  ```text
+  Name: client_secret
+  Type: String
+  Value: `@pipeline().parameters.client_secret`
+  ```
+
+- Associate actual notebooks with the activities
+
+  Within the 'Settings' tab, select our current workspace and then choose the right Notebook file.
+
+  ```text
+  Data Ingestion       -> data_ingestion
+  Data Cleansing       -> data_cleansing
+  Data Transformation  -> data_transformation
+  Feature Registration -> feature_set_registration
+  ```
   
   ![data_pipeline_15](./images/data_pipeline/data_pipeline_15.png)
 
