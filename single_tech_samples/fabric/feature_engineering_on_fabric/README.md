@@ -92,25 +92,21 @@ As described above, the sample uses Microsoft Fabric as the data analytics platf
 
 1. Create a Microsoft Fabric workspace
 
-   After signing into Microsoft Fabric, it's necessary to create a new workspace for setting up a pipeline. Therefore, please navigate to the left-hand menu, select the workspace option, and proceed to create a new workspace.
+   After signing into Microsoft Fabric, the very first step is to create a workspace. Workspaces contain the Fabric items such as lakehouses, warehouses, and reports. For detailed instructions about creating a Fabric workspace, refer to [this documentation](https://learn.microsoft.com/fabric/data-warehouse/tutorial-create-workspace).
 
-   ![workspace_01](./images/data_pipeline/workspace_01.png)
+   Please note that you need to select 'trial' under the 'license mode' in the advanced options, as currently only this type supports all the Microsoft Fabric features required for this sample.
 
-   Enter workspace name and an optional description. Please note that you need to select 'trial' under the 'license mode' in the advanced options, as currently only this type supports all the features of Fabric. Then click the 'Apply' button to complete the creation of the workspace.
+2. Create a Fabric lakehouse
 
-   ![workspace_02](./images/data_pipeline/workspace_02.jpg)
+   Within the workspace, create a new lakehouse by clicking the 'New' button on the top of the page. Refer to [this documentation](https://learn.microsoft.com/fabric/onelake/create-lakehouse-onelake#create-a-lakehouse) for detailed instructions.
 
-1. Create a Fabric lakehouse
-
-   Within the workspace, create a new lakehouse by clicking the 'New' button on the top of the page.
-
-1. Import the sample notebooks
+3. Import the sample notebooks
 
    After the lakehouse is created, go back to the workspace. Click the 'New' button again and select 'Import notebook' from the menu. Navigate to `src/notebooks` folder under the repo, and select all the notebooks to import:
 
    ![import all notebooks](./images/import_all_notebooks.png)
 
-1. Add the created lakehouse to the imported notebooks
+4. Add the created lakehouse to the imported notebooks
 
    After importing, open the following notebooks and add the lakehouse created in the previous step to them:
 
@@ -123,7 +119,7 @@ As described above, the sample uses Microsoft Fabric as the data analytics platf
 
    ![add lakehouse](./images/add_lh_to_notebook.png)
 
-1. Create and setup a Fabric 'Environment'
+5. Create and setup a Fabric 'Environment'
 
    Go to Fabric workspace homepage and create a new __Environment__ by clicking '+ New' button and selecting `Environment (Preview)` under 'Data Engineering' or 'Data Science' experience.
 
