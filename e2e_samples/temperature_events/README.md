@@ -68,7 +68,7 @@ It makes use of the following azure services:
 - [Azure Event Hubs](https://azure.microsoft.com/en-us/services/event-hubs/)
 - [Azure Functions](https://azure.microsoft.com/en-us/services/functions/)
 - [Azure IoT Device Telemetry Simulator](https://github.com/Azure-Samples/Iot-Telemetry-Simulator/)
-- [Azure DevOps](https://azure.microsoft.com/en-au/services/devops/)
+- [Azure DevOps](https://azure.microsoft.com/products/devops/)
 - [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)
 - [Terraform](https://www.terraform.io/)
 

@@ -29,66 +29,62 @@ In addition to the main flow, there are optional steps for performing 'explorato
 
 ### Prerequisites
 
-- Create an Azure subscription if you do not have one already. You can sign up for a free trial by following [this link](https://azure.microsoft.com/free/).
-- Define a prefix, such as 'fsd1', which would be used in naming the resources created in this demo. Please note that the prefix must be unique within the Azure subscription.
+- Access to a [Microsoft Fabric enabled tenant](https://learn.microsoft.com/fabric/admin/fabric-switch#enable-for-your-tenant). You can sign up for Fabric (Preview) trials for a period of 60 days by following [this link](https://learn.microsoft.com/fabric/get-started/fabric-trial).
+- Access to an Azure subscription. You can sign up for a free trial by following [this link](https://azure.microsoft.com/free/).
+- Permissions to [create a service principal](https://learn.microsoft.com/entra/identity-platform/howto-create-service-principal-portal#register-an-application-with-microsoft-entra-id-and-create-a-service-principal) in Microsoft Entra ID.
 
-### Microsoft Fabric
+### Microsoft/Azure Resources
 
-#### Step 1: Create a Microsoft Fabric workspace
+As described above, the sample uses Microsoft Fabric as the data analytics platform, which provides SaaS based access to the required storage and compute resources. However, the following Microsoft/Azure resources, which are external to Microsoft Fabric, are still required:
 
-After signing into Microsoft Fabric, it's necessary to create a new workspace for setting up a pipeline. Therefore, please navigate to the left-hand menu, select the workspace option, and proceed to create a new workspace.
+#### [Microsoft Purview Account](https://learn.microsoft.com/purview/)
 
-![workspace_01](./images/data_pipeline/workspace_01.png)
+You can [create a new account](https://learn.microsoft.com/purview/create-microsoft-purview-portal) or use an existing one. Note down the purview account name.
 
-Next, please enter your workspace name and an optional description. Please note that you need to select 'trial' under the 'license mode' in the advanced options, as currently only this type supports all the features of Fabric. Then click the 'Apply' button to complete the creation of the workspace.
+#### [Azure ML Managed Feature Store](https://learn.microsoft.com/azure/machine-learning/concept-what-is-managed-feature-store?view=azureml-api-2)
 
-![workspace_02](./images/data_pipeline/workspace_02.jpg)
+You can create an Azure ML managed feature store by running the following Azure CLI:
 
-#### Step 2: Create a Lakehouse
+```az ml feature-store create --subscription <subscription-id> --resource-group <resource-group-name> --location <location> --name <feature-store-name>```
 
-Then within this created workspace, create a new Lakehouse named as '[prefix]_lh' by clicking the 'New' button on the top of the page. Please note that [prefix] is the prefix you defined in the prerequisites section.
+To explore alternative methods for building a feature store, check out the [Microsoft documentation](https://learn.microsoft.com/azure/machine-learning/tutorial-get-started-with-feature-store?view=azureml-api-2&tabs=SDK-track#create-a-minimal-feature-store).
 
-#### Step 3: Import the sample notebooks
+Note down the subscription id, resource group, and feature store name.
 
-After the Lakehouse is created, please click the 'New' button again, and select 'Import notebook' from the menu. Navigate to `src/notebooks` folder under the repo, and select all the notebooks to import:
+### Microsoft Fabric Setup Steps
 
-![import all notebooks](./images/import_all_notebooks.png)
+1. Create a Microsoft Fabric workspace
 
-#### Step 4: Add the Created Lakehouse to the notebooks
+   After signing into Microsoft Fabric, it's necessary to create a new workspace for setting up a pipeline. Therefore, please navigate to the left-hand menu, select the workspace option, and proceed to create a new workspace.
 
-After importing, open the following notebooks and add the lakehouse created in the previous step to them:
+   ![workspace_01](./images/data_pipeline/workspace_01.png)
 
-- data_cleansing
-- data_ingestion
-- data_transformation
-- data_validation
-- exploratory_data_analysis
-- feature_set_registration
+   Enter workspace name and an optional description. Please note that you need to select 'trial' under the 'license mode' in the advanced options, as currently only this type supports all the features of Fabric. Then click the 'Apply' button to complete the creation of the workspace.
 
-Please note that the Lakehouse name should be '[prefix]_lh', where [prefix] is the prefix you defined in the prerequisites section.
+   ![workspace_02](./images/data_pipeline/workspace_02.jpg)
 
-![add lakehouse](./images/add_lh_to_notebook.png)
+1. Create a Fabric lakehouse
 
-### Create an Azure Resource Group
+   Within the workspace, create a new lakehouse by clicking the 'New' button on the top of the page.
 
-Create a new resource group named as [prefix]rg, where [prefix] is the prefix you defined in the prerequisites section.
+1. Import the sample notebooks
 
-### Azure Data Lake Storage Gen2
+   After the lakehouse is created, go back to the workspace. Click the 'New' button again and select 'Import notebook' from the menu. Navigate to `src/notebooks` folder under the repo, and select all the notebooks to import:
 
-Create an Azure Data Lake Storage Gen2 account named as [prefix]sa, where [prefix] is the prefix you defined in the prerequisites section. For the detailed information, please refer to: [Create a storage account to use with Azure Data Lake Storage Gen2](https://learn.microsoft.com/en-us/azure/storage/blobs/create-data-lake-storage-account)
+   ![import all notebooks](./images/import_all_notebooks.png)
 
-### Azure Purview
+1. Add the created lakehouse to the imported notebooks
 
-Create an Azure Purview account named as [prefix]pv, where [prefix] is the prefix you defined in the prerequisites section.
+   After importing, open the following notebooks and add the lakehouse created in the previous step to them:
 
-### Azure Machine Learning Managed Feature store
+   - [data_cleansing](./src/notebooks/data_cleansing.ipynb)
+   - [data_ingestion](./src/notebooks/data_ingestion.ipynb)
+   - [data_transformation](./src/notebooks/data_transformation.ipynb)
+   - [data_validation](./src/notebooks/data_validation.ipynb)
+   - [exploratory_data_analysis](./src/notebooks/exploratory_data_analysis.ipynb)
+   - [feature_set_registration](./src/notebooks/feature_set_registration.ipynb)
 
-Create an Azure Machine Learning Managed Feature store by running the following Azure CLI:
-
-```az ml feature-store create --subscription <subscription id> --resource-group <resource group> --location <location> --name <feature store name>```
-
-For other ways to create a feature store, please refer to the online document:
-[Create a Minimal Feature Store](https://learn.microsoft.com/en-us/azure/machine-learning/tutorial-get-started-with-feature-store?view=azureml-api-2&tabs=SDK-track#create-a-minimal-feature-store).
+   ![add lakehouse](./images/add_lh_to_notebook.png)
 
 ## Data Source Preparation
 

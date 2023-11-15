@@ -27,7 +27,7 @@ Azure Purview is a managed data governance cloud service for centrally managing 
 
 ## Solution Overview
 
-This solution sets up an [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction) storage account, with a folder structure that enables data tiering (bronze, silver, gold), an [Azure Data Factory](https://azure.microsoft.com/en-au/services/data-factory/)(ADF) instance with linked services connecting to the data lake, a [key vault](https://azure.microsoft.com/en-us/services/key-vault/) for any secrets, and an [Azure Purview](https://azure.microsoft.com/products/purview/) account for data governance.
+This solution sets up an [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction) storage account, with a folder structure that enables data tiering (bronze, silver, gold), an [Azure Data Factory](https://azure.microsoft.com/products/data-factory/)(ADF) instance with linked services connecting to the data lake, a [key vault](https://azure.microsoft.com/en-us/services/key-vault/) for any secrets, and an [Azure Purview](https://azure.microsoft.com/products/purview/) account for data governance.
 
 The Azure Data Factory contains a simple ADF Pipeline that is stored in a git repository, that is taking data from the Dropzone and ingesting it into the bronze folder.
 
@@ -100,7 +100,7 @@ To view the API Swagger documentation, download [PurviewCatalogAPISwagger.zip](h
 ### Prerequisites
 
 1. [Github account](https://github.com/)
-2. [Azure Account](https://azure.microsoft.com/en-au/free/search/?&ef_id=Cj0KCQiAr8bwBRD4ARIsAHa4YyLdFKh7JC0jhbxhwPeNa8tmnhXciOHcYsgPfNB7DEFFGpNLTjdTPbwaAh8bEALw_wcB:G:s&OCID=AID2000051_SEM_O2ShDlJP&MarinID=O2ShDlJP_332092752199_azure%20account_e_c__63148277493_aud-390212648371:kwd-295861291340&lnkd=Google_Azure_Brand&dclid=CKjVuKOP7uYCFVapaAoddSkKcA)
+2. [Azure Account](https://azure.microsoft.com/free/)
    - *Permissions needed*: ability to create and deploy to an azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
 
 #### Software pre-requisites
