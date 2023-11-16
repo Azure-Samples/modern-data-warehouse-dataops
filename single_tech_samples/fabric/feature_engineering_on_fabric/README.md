@@ -33,6 +33,17 @@ In addition to the main flow, there are optional steps for performing 'explorato
 - Access to an Azure subscription. You can sign up for a free trial by following [this link](https://azure.microsoft.com/free/).
 - Permissions to [create a service principal](https://learn.microsoft.com/entra/identity-platform/howto-create-service-principal-portal#register-an-application-with-microsoft-entra-id-and-create-a-service-principal) in Microsoft Entra ID.
 
+
+### [Optional] Setup Environment with a Local Notebook
+For a guided setup, you can use the [SETUP_ENVIRONMENT.ipynb](./SETUP_ENVIRONMENT.ipynb) notebook. This tool simplifies the process of setting up essential Azure resources, including:
+
+- Resource Group
+- Azure ML Managed Feature Store
+- Azure Purview account
+
+It also assists with creating a service principal and assigning the necessary roles. While the notebook covers most of the setup, some steps will still need to be completed manually. Detailed instructions are provided within the notebook for your convenience.
+
+
 ### Microsoft/Azure Resources
 
 As described above, the sample uses Microsoft Fabric as the data analytics platform, which provides SaaS based access to the required storage and compute resources. However, the following Microsoft/Azure resources, which are external to Microsoft Fabric, are still required:
