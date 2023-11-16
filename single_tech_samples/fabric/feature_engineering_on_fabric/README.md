@@ -112,7 +112,7 @@ As described above, the sample uses Microsoft Fabric as the data analytics platf
 
 2. Create a Fabric lakehouse
 
-   Within the workspace, create a new lakehouse by clicking the 'New' button on the top of the page. Refer to [this documentation](https://learn.microsoft.com/fabric/onelake/create-lakehouse-onelake#create-a-lakehouse) for detailed instructions.
+   After the lakehouse is created, go back to the workspace. Click the 'New' button from the **Data Engineering** or the **Data Science** homepage and select 'Import notebook' from the menu. Navigate to `src/notebooks` folder under the repo, and select all the notebooks to import:
 
 3. Import the sample notebooks
 
@@ -367,7 +367,15 @@ Once the Fabric data pipeline has executed successfully, the data pipeline and f
 
 ### Verify the features in Feature Store
 
-TBD
+If the pipeline executes successfully, you can verify the features registered in the Azure ML Managed Feature Store.
+
+- Login to Azure ML Studio, and select _Feature stores_ tab from the left menu.
+- Find the feature store under _Feature stores_ that you created and click on the link.
+- Select _Feature sets_ tab from the left menu, and you can see the feature set that you registered. Click on the link.
+- You can see the features that you registered under the _Features_ tab. You can also see the feature set specification under the _Specification_ tab.
+- Similarly, you can also check the entities from the _Entities_ tab.
+
+  ![feature_lineage](./images/managed_feature_store.gif)
 
 ## Model training and inferencing
 
@@ -414,7 +422,9 @@ Once the training and inferencing notebooks have been executed successfully, the
 
 ## Conclusion
 
-Congratulations on completing this sample! You have learned how to use Azure ML managed feature store and Microsoft Fabric to build a feature engineering system. You have also learned how to track and monitor the data lineage of the features and the model training process using Microsoft Purview.
+Congratulations on completing this sample! By now, you would have learned how to use Azure ML managed feature store and Microsoft Fabric to build a feature engineering system. You would have also learned how to track and monitor the data lineage of the features and the model training process using Microsoft Purview.
+
+Feel free to check out the product documentation links in the references section below to learn more about the features and services used in this sample.
 
 ## References
 
