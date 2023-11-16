@@ -347,9 +347,9 @@ Once the Fabric data pipeline has executed successfully, the data pipeline and f
 
 - In the _Lineage_ tab, you can see the lineage view of the whole data processing lifecycle that was executed as part of this demo.
 
-![process_asset_lineage_view](./images/data_lineage/data_lineage_in_purview.gif)
+- Click any node in the lineage view and then click the _Switch to asset_ link in the lower-left to navigate to another asset to check more details.
 
-Click any node in the lineage view and then click the _Switch to asset_ link in the lower-left to navigate to another asset to check more details.
+  ![process_asset_lineage_view](./images/data_lineage/data_lineage_in_purview.gif)
 
 #### Feature lineage
 
@@ -361,7 +361,7 @@ Click any node in the lineage view and then click the _Switch to asset_ link in 
 
 - Go to the _Related_ tab of the feature set asset. It shows the asset type hierarchy view of feature store relevant asset types. Click the _features_ node to get all available features displayed in the upper-left of the canvas, or click the _featurestore_ node to get the feature store details. Then click the link to navigate to another interested asset.
 
-![feature_lineage](./images/data_lineage/feature_lineage.gif)
+  ![feature_lineage](./images/data_lineage/feature_lineage.gif)
 
 ### Verify the features in Feature Store
 
@@ -371,17 +371,16 @@ TBD
 
 So far in this sample, the source data has been ingested, cleansed, transformed, and registered as features in Azure ML managed feature store. The data lineage of each processing step has also been registered in Microsoft Purview. Now, we can use these features to train a machine learning model.
 
-Even though they can be included in the same data pipeline, the training and inferencing notebooks are run separately as distinct operations for the purpose of this sample.
+Even though these can be included in the same data pipeline, the training and inferencing notebooks are run separately as distinct operations for the purpose of this sample.
 
 ### Model training
 
-The model training notebook is available at [model_training](./src/notebooks/model_training.ipynb). This notebook uses the features registered in the previous step to train a machine learning model. Like previous notebooks, it also registers the model training lineage in Microsoft Purview.
-
-To run the notebook, Open it and and click `Run all`.
+The model training notebook is available at [model_training](./src/notebooks/model_training.ipynb). This notebook uses the features registered in the previous step to train a machine learning model. Like previous notebooks, it also registers the lineage in Microsoft Purview. But this time, it's the model training lineage.
 
 > Note: the model_training will need to retrieve data from the feature store, which requires credential to access the feature store. Make sure the `client_secret` parameter is set in the notebook `feature_set_retrieval`.
+>
 
-The model will be trained and registered as an `ML model` in the Fabric workspace.
+To run the notebook, Open it and and click `Run all`. The model will be trained and registered as an `ML model` in the Fabric workspace.
 
 ![machine learning models](./images/model_type.png)
 
@@ -391,11 +390,9 @@ For each ML model, different versions can be tracked with different parameters a
 
 ### Model inferencing
 
-The model inferencing notebook is available at [model_inferencing](./src/notebooks/model_inferencing.ipynb). This notebook uses the features registered in the previous step to perform inferencing. Like previous notebooks, it also registers the model inferencing lineage in Microsoft Purview.
+The model inferencing notebook is available at [model_inferencing](./src/notebooks/model_inferencing.ipynb). This notebook uses the 'ML Model' that was registered and trained during the model training phase (previous step) to perform inferencing.
 
-Go to model_inferencing notebook, and click `Run all`.
-
-Once the execution is complete, the prediction results will be presented for your review.
+Go to model_inferencing notebook, and click `Run all`. Once the execution is complete, the prediction results would be generated.
 
 ![inferencing result](./images/inferencing_result.png)
 
