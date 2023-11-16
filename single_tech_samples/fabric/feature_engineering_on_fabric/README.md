@@ -68,13 +68,17 @@ This subset contains data for the year 2022, and each month is available as a se
 
 
 ### [Optional] Setup Environment with a Local Notebook
-For a guided setup, you can use the [SETUP_ENVIRONMENT.ipynb](./SETUP_ENVIRONMENT.ipynb) notebook. This tool simplifies the process of setting up essential Azure resources, including:
+For a guided setup, you can use the [deploy.ipynb](./deploy.ipynb) notebook. This tool simplifies the process of setting up essential Azure resources, including:
 
 - Resource Group
 - Azure ML Managed Feature Store
 - Azure Purview account
 
 It also assists with creating a service principal and assigning the necessary roles. While the notebook covers most of the setup, some steps will still need to be completed manually. Detailed instructions are provided within the notebook for your convenience.
+
+The notebook should be run in any local or Azure service which allows you to,
+- run jupyter notebooks
+- authenticate with credential of the target tenant
 
 ### Microsoft/Azure resources
 
