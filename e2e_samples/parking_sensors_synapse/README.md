@@ -62,7 +62,7 @@ It makes use of the following azure services:
 - [Azure Synapse Analytics](https://azure.microsoft.com/products/synapse-analytics/)
 - [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction)
 - [Azure DevOps](https://azure.microsoft.com/en-us/products/devops/)
-- [PowerBI](https://powerbi.microsoft.com/en-us/)
+- [PowerBI](https://www.microsoft.com/en-us/power-platform/products/power-bi/)
 - [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)
 - [Log Analytics](https://docs.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overview)
 

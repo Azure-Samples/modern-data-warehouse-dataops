@@ -76,7 +76,7 @@ The following technologies are used to build this sample:
 
 - [Azure Databricks](https://azure.microsoft.com/en-us/free/databricks/)
 - [Azure Storage](https://azure.microsoft.com/en-us/products/storage/data-lake-storage/)
-- [Azure Key Vault](https://azure.microsoft.com/products/key-vault/)
+- [Azure Key Vault](https://azure.microsoft.com/en-us/products/key-vault/)
 - [Azure Virtual networks](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview)
 - [Azure Firewall](https://docs.microsoft.com/en-us/azure/firewall/overview)
 - [Azure Route tables](https://docs.microsoft.com/en-us/azure/virtual-network/manage-route-table)

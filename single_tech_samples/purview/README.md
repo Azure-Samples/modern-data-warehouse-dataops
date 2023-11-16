@@ -44,7 +44,7 @@ The following shows the simple architecture of the Azure Purview connected to fe
 - [Azure Purview](https://azure.microsoft.com/en-us/products/devops/)
 - [Azure Data Factory](https://azure.microsoft.com/en-us/products/data-factory/)
 - [Azure Data Lake Gen2](https://docs.microsoft.com/azure/storage/blobs/data-lake-storage-introduction)
-- [Azure Key Vault](https://azure.microsoft.com/products/key-vault/)
+- [Azure Key Vault](https://azure.microsoft.com/en-us/products/key-vault/)
 
 ## Key Learnings
 

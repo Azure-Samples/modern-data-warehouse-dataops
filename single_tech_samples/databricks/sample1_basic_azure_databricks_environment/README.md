@@ -57,7 +57,7 @@ The following technologies are used to build this sample:
 
 - [Azure Databricks](https://azure.microsoft.com/en-us/free/databricks/)
 - [Azure Storage](https://azure.microsoft.com/en-us/products/storage/data-lake-storage/)
-- [Azure Key Vault](https://azure.microsoft.com/products/key-vault/)
+- [Azure Key Vault](https://azure.microsoft.com/en-us/products/key-vault/)
 - [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/)
 - [Azure Resource Manager](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview)
 

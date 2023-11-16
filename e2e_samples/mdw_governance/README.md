@@ -37,7 +37,7 @@ The following shows the architecture of the solution.
 - [Azure Data Factory](https://azure.microsoft.com/en-us/products/data-factory/)
 - [Azure Data Lake Gen2](https://docs.microsoft.com/azure/storage/blobs/data-lake-storage-introduction)
 - [Azure Databricks](https://docs.microsoft.com/azure/databricks/)
-- [Azure Key Vault](https://azure.microsoft.com/products/key-vault/)
+- [Azure Key Vault](https://azure.microsoft.com/en-us/products/key-vault/)
 - [Application Insights](https://docs.microsoft.com/azure/azure-monitor/app/app-insights-overview)
 - [Office365 API Connection](https://docs.microsoft.com/azure/connectors/connectors-create-api-office365-outlook)
 - [Azure Virtual Network](https://docs.microsoft.com/azure/virtual-network/virtual-networks-overview)
