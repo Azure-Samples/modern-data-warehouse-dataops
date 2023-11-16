@@ -19,7 +19,7 @@ The article focuses on constructing a feature engineering system using Azure ML 
 - [Source dataset](#source-dataset)
 - [Environment setup](#environment-setup)
   - [Prerequisites](#prerequisites)
-  - [Microsoft/Azure resources](#microsoftazure-resources)
+  - [Required resources](#required-resources)
   - [Microsoft Fabric setup](#microsoft-fabric-setup)
 - [Data pipeline setup](#data-pipeline-setup)
   - [Data landing activity](#data-landing-activity)
@@ -66,7 +66,7 @@ This subset contains data for the year 2022, and each month is available as a se
 - Access to an Azure subscription. You can sign up for a free trial by following [this link](https://azure.microsoft.com/free/).
 - Permissions to [create a service principal](https://learn.microsoft.com/entra/identity-platform/howto-create-service-principal-portal#register-an-application-with-microsoft-entra-id-and-create-a-service-principal) in Microsoft Entra ID.
 
-### Microsoft/Azure resources
+### Required resources
 
 As described above, the sample uses Microsoft Fabric as the data analytics platform, which provides SaaS based access to the required storage and compute resources. However, the following Microsoft/Azure resources, which are external to Microsoft Fabric, are still required:
 
