@@ -1,6 +1,6 @@
 # Azure SQL Database
 
-[Azure SQL Database](https://azure.microsoft.com/products/azure-sql/database/) is a relational database commonly used in the MDW architecture, typically in the serving layer. The following samples demonstrates how you might build CI/CD pipelines to deploy changes to
+[Azure SQL Database](https://azure.microsoft.com/en-us/products/azure-sql/database/) is a relational database commonly used in the MDW architecture, typically in the serving layer. The following samples demonstrates how you might build CI/CD pipelines to deploy changes to
 Azure SQL Database.
 
 ## Contents
@@ -78,7 +78,7 @@ The following are some sample [Azure DevOps](https://docs.microsoft.com/en-us/az
 1. [Github account](https://github.com/)
 2. [Azure Account](https://azure.microsoft.com/free)
    - *Permissions needed*: ability to create and deploy to an azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
-3. [Azure DevOps Account](https://azure.microsoft.com/products/devops/)
+3. [Azure DevOps Account](https://azure.microsoft.com/en-us/products/devops/)
    - *Permissions needed*: ability to create [service connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml) and [pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops&tabs=yaml).
 
 #### Software Prerequisites

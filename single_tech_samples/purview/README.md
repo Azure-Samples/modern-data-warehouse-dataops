@@ -27,7 +27,7 @@ Azure Purview is a managed data governance cloud service for centrally managing 
 
 ## Solution Overview
 
-This solution sets up an [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction) storage account, with a folder structure that enables data tiering (bronze, silver, gold), an [Azure Data Factory](https://azure.microsoft.com/products/data-factory/)(ADF) instance with linked services connecting to the data lake, a [key vault](https://azure.microsoft.com/en-us/services/key-vault/) for any secrets, and an [Azure Purview](https://azure.microsoft.com/products/purview/) account for data governance.
+This solution sets up an [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction) storage account, with a folder structure that enables data tiering (bronze, silver, gold), an [Azure Data Factory](https://azure.microsoft.com/en-us/products/data-factory/)(ADF) instance with linked services connecting to the data lake, a [key vault](https://azure.microsoft.com/en-us/services/key-vault/) for any secrets, and an [Azure Purview](https://azure.microsoft.com/en-us/products/purview/) account for data governance.
 
 The Azure Data Factory contains a simple ADF Pipeline that is stored in a git repository, that is taking data from the Dropzone and ingesting it into the bronze folder.
 
@@ -41,8 +41,8 @@ The following shows the simple architecture of the Azure Purview connected to fe
 
 ### Technologies used
 
-- [Azure Purview](https://azure.microsoft.com/products/devops/)
-- [Azure Data Factory](https://azure.microsoft.com/products/data-factory/)
+- [Azure Purview](https://azure.microsoft.com/en-us/products/devops/)
+- [Azure Data Factory](https://azure.microsoft.com/en-us/products/data-factory/)
 - [Azure Data Lake Gen2](https://docs.microsoft.com/azure/storage/blobs/data-lake-storage-introduction)
 - [Azure Key Vault](https://azure.microsoft.com/products/key-vault/)
 
@@ -100,7 +100,7 @@ To view the API Swagger documentation, download [PurviewCatalogAPISwagger.zip](h
 ### Prerequisites
 
 1. [Github account](https://github.com/)
-2. [Azure Account](https://azure.microsoft.com/free/)
+2. [Azure Account](https://azure.microsoft.com/en-us/free/)
    - *Permissions needed*: ability to create and deploy to an azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
 
 #### Software pre-requisites

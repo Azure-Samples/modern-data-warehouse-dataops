@@ -11,7 +11,7 @@ To learn more, read the [launch blog](https://techcommunity.microsoft.com/t5/ai-
 
 To learn more, read [Data Science documentation in Microsoft Fabric](https://learn.microsoft.com/en-us/fabric/data-science/).
 
-The article focuses on constructing a feature engineering system using Azure ML managed feature store and Microsoft Fabric. It delves into the tracking and monitoring of data lineage for these features through Microsoft Purview. The content includes a step-by-step guide for environment setup and running the demo, aiming to expedite the feature engineering process within the Azure ecosystem.
+This sample focuses on constructing a feature engineering system using Azure ML managed feature store and Microsoft Fabric. It delves into the tracking and monitoring of data lineage for these features through Microsoft Purview. The content includes a step-by-step guide for environment setup and running the demo, aiming to expedite the feature engineering process within the Azure ecosystem.
 
 ## Contents <!-- omit in toc -->
 
@@ -63,7 +63,7 @@ This subset contains data for the year 2022, and each month is available as a se
 ### Prerequisites
 
 - Access to a [Microsoft Fabric enabled tenant](https://learn.microsoft.com/fabric/admin/fabric-switch#enable-for-your-tenant). You can sign up for Fabric (Preview) trials for a period of 60 days by following [this link](https://learn.microsoft.com/fabric/get-started/fabric-trial).
-- Access to an Azure subscription. You can sign up for a free trial by following [this link](https://azure.microsoft.com/free/).
+- Access to an Azure subscription. You can sign up for a free trial by following [this link](https://azure.microsoft.com/en-us/free/).
 - Permissions to [create a service principal](https://learn.microsoft.com/entra/identity-platform/howto-create-service-principal-portal#register-an-application-with-microsoft-entra-id-and-create-a-service-principal) in Microsoft Entra ID.
 
 ### Required resources
@@ -230,7 +230,7 @@ The configuration of this 'ForEach' activity follows a series of steps as below.
 
     Type: SecureString
 
-    Default Value: left blank
+    Default Value: _The client secret of the service principal that you created earlier._
 
   ![data_pipeline_05](./images/data_pipeline/data_pipeline_05.png)
 
@@ -430,6 +430,6 @@ Feel free to check out the product documentation links in the references section
 
 - [Micrsoft Fabric](https://learn.microsoft.com/fabric/get-started/microsoft-fabric-overview)
 - [Azure Machine Learning Managed Feature Store](https://learn.microsoft.com/azure/machine-learning/concept-what-is-managed-feature-store?view=azureml-api-2)
-- [Azure Purview](https://azure.microsoft.com/products/purview/)
+- [Azure Purview](https://azure.microsoft.com/en-us/products/purview/)
 
 [^1]: For Data Landing, we can also use another approach, which is to use ADLS (Azure Data Lake Storage) or Blob storage. First, download these files to your local, then upload these documents to ADLS. Then use Copy Data Activity through a link service to the storage, so we can also complete the same task.

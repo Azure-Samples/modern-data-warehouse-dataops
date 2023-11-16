@@ -74,8 +74,8 @@ Following are the cloud design patterns being used by this sample:
 
 The following technologies are used to build this sample:
 
-- [Azure Databricks](https://azure.microsoft.com/en-au/free/databricks/)
-- [Azure Storage](https://azure.microsoft.com/en-au/services/storage/data-lake-storage/)
+- [Azure Databricks](https://azure.microsoft.com/en-us/free/databricks/)
+- [Azure Storage](https://azure.microsoft.com/en-us/products/storage/data-lake-storage/)
 - [Azure Key Vault](https://azure.microsoft.com/products/key-vault/)
 - [Azure Virtual networks](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview)
 - [Azure Firewall](https://docs.microsoft.com/en-us/azure/firewall/overview)
@@ -146,7 +146,7 @@ This section holds the information about usage instructions of this sample.
 The following are the prerequisites for deploying this sample :
 
 1. [Github account](https://github.com/)
-2. [Azure Account](https://azure.microsoft.com/free/)
+2. [Azure Account](https://azure.microsoft.com/en-us/free/)
    - *Permissions needed*:  The ability to create and deploy to an Azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
 
    - Active subscription with the following [resource providers](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/azure-services-resource-providers) enabled:

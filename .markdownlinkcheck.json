@@ -8,6 +8,9 @@
         },
         {
             "pattern": "^https://sigdelta.com/blog/how-to-install-pyspark-locally/"
+        },
+        {
+            "pattern": "^https://stmdwpublic.blob.core.windows.net/"
         }
     ]
 }
