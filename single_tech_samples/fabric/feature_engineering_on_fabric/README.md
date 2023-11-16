@@ -33,7 +33,9 @@ The article focuses on constructing a feature engineering system using Azure ML 
 - [Model training and inferencing](#model-training-and-inferencing)
   - [Model training](#model-training)
   - [Model inferencing](#model-inferencing)
-  - [Verify the model training lineage in Purview](#verify-the-model-training-lineage-in-purview)
+  - [Verify lineage in Purview](#verify-lineage-in-purview-1)
+    - [Model training lineage](#model-training-lineage)
+- [Conclusion](#conclusion)
 - [References](#references)
 
 ## Architecture
@@ -396,19 +398,23 @@ Go to model_inferencing notebook, and click `Run all`. Once the execution is com
 
 ![inferencing result](./images/inferencing_result.png)
 
-### Verify the model training lineage in Purview
+### Verify lineage in Purview
 
-After the model_training notebook is run successfully, go to the Purview portal page to check the latest updates of the lineage view.
+Once the training and inferencing notebooks have been executed successfully, the model training lineage can be checked in Microsoft Purview.
 
-1. Go to _Data Catalog -> Home_ page, and type _Fabric notebook_ in the search field, click the _model_training (Fabric notebook)_ item in the _Asset suggestions_ list.
+#### Model training lineage
 
-2. Go to the _Lineage_ tab, we can see several extra assets appending to the end of the previous lineage path, which shows the lineage of the trained model; we can tell what features are used in the model training, as always we can navigate to the actual model training notebook via the qualified name to check more details, or go to the model training experiment page in Fabric to get more experiment runs details.
+- Go to _Data Catalog -> Home_ page, and type _Fabric notebook_ in the search field, click the _model_training (Fabric notebook)_ item in the _Asset suggestions_ list.
 
-   ![ml_model_lineage_view](./images/data_lineage/ml_model_lineage_view.png)
+- Go to the _Lineage_ tab, we can see several extra assets appending to the end of the previous lineage path, which shows the lineage of the trained model; this can tell what features are used in the model training. You can navigate to the actual model training notebook via the qualified name to check more details, or go to the model training experiment page in Fabric to get more experiment runs details.
 
-3. Switch to the _demand_prediction_model_ asset, in the _Properties_ tab, it shows the model version and related experiment run name.
+- Switch to the _demand_prediction_model_ asset, in the _Properties_ tab. It shows the model version and related experiment run name.
 
-   ![ml_model_properties_view](./images/data_lineage/ml_model_properties_view.png)
+  ![ml_model_training_lineage](./images/data_lineage/model_training_lineage.gif)
+
+## Conclusion
+
+Congratulations on completing this sample! You have learned how to use Azure ML managed feature store and Microsoft Fabric to build a feature engineering system. You have also learned how to track and monitor the data lineage of the features and the model training process using Microsoft Purview.
 
 ## References
 
