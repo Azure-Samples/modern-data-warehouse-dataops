@@ -52,9 +52,9 @@ In addition to the main flow, there are optional steps for performing 'explorato
 
 ## Source dataset
 
-The sample uses the public yellow taxi trip dataset from [New York City Taxi & Limousine Commission](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page). However, we have hosted a subset of this dataset on our own public blob storage at the following location
+The sample uses the public yellow taxi trip dataset from [New York City Taxi & Limousine Commission](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page). However, we have hosted a subset of this dataset on our own public blob storage at the following location:
 
-Base URL: https://stmdwpublic.blob.core.windows.net/
+Base URL: [https://stmdwpublic.blob.core.windows.net/](https://stmdwpublic.blob.core.windows.net/)
 
 This subset contains data for the year 2022, and each month is available as a separate parquet file. The data includes anonymized travel details like departure points, destinations, times, distances, and costs. The data, in conjunction with taxi zone maps and lookup tables, aids in various research fields such as identifying frequent pickup and drop-off zones in the city.
 
@@ -412,7 +412,7 @@ Once the training and inferencing notebooks have been executed successfully, the
 
 #### Model training lineage
 
-- Go to _Data Catalog -> Home_ page, and type _Fabric notebook_ in the search field, click the _model_training (Fabric notebook)_ item in the _Asset suggestions_ list.
+- Go to _Data Catalog -> Home_ page, and type _Fabric notebook_ in the search field, click the 'model_training (Fabric notebook)' item in the _Asset suggestions_ list.
 
 - Go to the _Lineage_ tab, we can see several extra assets appending to the end of the previous lineage path, which shows the lineage of the trained model; this can tell what features are used in the model training. You can navigate to the actual model training notebook via the qualified name to check more details, or go to the model training experiment page in Fabric to get more experiment runs details.
 
