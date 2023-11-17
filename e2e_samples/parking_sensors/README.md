@@ -212,9 +212,9 @@ More resources:
 ### Prerequisites
 
 1. [Github account](https://github.com/)
-2. [Azure Account](https://azure.microsoft.com/free/)
+2. [Azure Account](https://azure.microsoft.com/en-us/free/)
    - *Permissions needed*: ability to create and deploy to an azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
-3. [Azure DevOps Project](https://azure.microsoft.com/products/devops/)
+3. [Azure DevOps Project](https://azure.microsoft.com/en-us/products/devops/)
    - *Permissions needed*: ability to create [service connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml), [pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops&tabs=yaml) and [variable groups](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml).
 
 #### Software pre-requisites if you don't use dev container<!-- omit in toc -->
