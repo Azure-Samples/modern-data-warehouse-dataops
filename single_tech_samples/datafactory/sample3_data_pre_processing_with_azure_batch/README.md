@@ -6,11 +6,12 @@
   - [Scope](#scope)
   - [Use Case](#use-case)
   - [Architecture](#architecture)
+    - [**Architecture Design Components**](#architecture-design-components)
   - [Technologies used](#technologies-used)
 - [How to use this sample](#how-to-use-this-sample)
   - [Prerequisites](#prerequisites)
     - [Software Prerequisites](#software-prerequisites)
-  - [Setup and deployment](#setup-and-deployment)  
+  - [Setup and deployment](#setup-and-deployment)
   - [Deployment validation and Execution](#deployment-validation-and-execution)
   - [Clean-up](#clean-up)
   - [Resources](#resources)
@@ -99,10 +100,10 @@ The high-level design is depicted in the diagram below, showcasing the integrati
 
 The following technologies are used to build this sample:
 
-- [Azure Data Factory](https://azure.microsoft.com/products/data-factory/)
+- [Azure Data Factory](https://azure.microsoft.com/en-us/products/data-factory/)
 - [Azure Batch](https://azure.microsoft.com/en-us/products/batch)
-- [Azure Storage(ADLS)](https://azure.microsoft.com/en-au/services/storage/data-lake-storage/)
-- [NFS Mounts](https://learn.microsoft.com/en-us/azure/storage/blobs/network-file-system-protocol-support-how-to)
+- [Azure Storage(ADLS)](https://azure.microsoft.com/services/storage/data-lake-storage/)
+- [NFS Mounts](https://learn.microsoft.com/azure/storage/blobs/network-file-system-protocol-support-how-to)
 
 ## How to use this sample
 
@@ -187,10 +188,10 @@ Please follow the steps in the [clean-up section](deploy/terraform/README.md#cle
 
 ### Resources
 
-- [Data operations for autonomous vehicle operations](https://learn.microsoft.com/en-us/azure/architecture/example-scenario/automotive/autonomous-vehicle-operations-dataops)
+- [Data operations for autonomous vehicle operations](https://learn.microsoft.com/azure/architecture/example-scenario/automotive/autonomous-vehicle-operations-dataops)
 
-- [Parallel processing with Azure Batch.](https://learn.microsoft.com/en-us/azure/batch/batch-technical-overview#run-parallel-workloads)
+- [Parallel processing with Azure Batch.](https://learn.microsoft.com/azure/batch/batch-technical-overview#run-parallel-workloads)
 
-- [Autoscaling with Azure Batch](https://learn.microsoft.com/en-us/azure/batch/batch-automatic-scaling)
+- [Autoscaling with Azure Batch](https://learn.microsoft.com/azure/batch/batch-automatic-scaling)
 
-- [Running Azure Batch from Azure Data Factory(ADF)](https://learn.microsoft.com/en-us/azure/batch/tutorial-run-python-batch-azure-data-factory)
+- [Running Azure Batch from Azure Data Factory(ADF)](https://learn.microsoft.com/azure/batch/tutorial-run-python-batch-azure-data-factory)

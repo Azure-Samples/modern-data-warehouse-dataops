@@ -5,7 +5,7 @@
 - [1. Solution Overview](#1-solution-overview)
   - [1.1. Scope](#11-scope)
   - [1.2. Use Case](#12-use-case)
-  - [1.3. Technologies used](#14-technologies-used)
+  - [1.3. Technologies used](#13-technologies-used)
 - [2. How to use this sample](#2-how-to-use-this-sample)
   - [2.1. Prerequisites](#21-prerequisites)
     - [2.1.1 Software Prerequisites](#211-software-prerequisites)
@@ -14,6 +14,7 @@
   - [2.4. Deployment validation and Execution](#24-deployment-validation-and-execution)
   - [2.5. Clean-up](#25-clean-up)
 - [3. Troubleshooting](#3-troubleshooting)
+  - [Error Building AzureRM Client](#error-building-azurerm-client)
 - [4. References](#4-references)
 
 ## 1. Solution Overview
@@ -42,7 +43,7 @@ Data lifecycle is one such feature on Azure using which you can optimize costs b
 
 The following technologies are used to build this sample:
 
-- [Azure Storage](https://azure.microsoft.com/services/storage/data-lake-storage)
+- [Azure Storage](https://azure.microsoft.com/products/storage/data-lake-storage)
 - [Terraform](https://www.terraform.io)
 
 ## 2. How to use this sample
@@ -54,7 +55,7 @@ This section holds the information about usage instructions of this sample.
 The following are the prerequisites for deploying this sample:
 
 - [Github account](https://github.com)
-- [Azure Account](https://azure.microsoft.com/free/search/?&ef_id=Cj0KCQiAr8bwBRD4ARIsAHa4YyLdFKh7JC0jhbxhwPeNa8tmnhXciOHcYsgPfNB7DEFFGpNLTjdTPbwaAh8bEALw_wcB:G:s&OCID=AID2000051_SEM_O2ShDlJP&MarinID=O2ShDlJP_332092752199_azure%20account_e_c__63148277493_aud-390212648371:kwd-295861291340&lnkd=Google_Azure_Brand&dclid=CKjVuKOP7uYCFVapaAoddSkKcA)
+- [Azure Account](https://azure.microsoft.com/en-us/free/)
   - *Permissions needed*:  The ability to create and deploy to an Azure [resource group](https://docs.microsoft.com/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/azure/role-based-access-control/overview) to the service principal over the resource group.
 
   - Active subscription with `Microsoft.Storage` [resource providers](https://docs.microsoft.com/azure/azure-resource-manager/management/azure-services-resource-providers) enabled.

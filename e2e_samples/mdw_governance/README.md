@@ -33,18 +33,18 @@ The following shows the architecture of the solution.
 
 ### Technologies used
 
-- [Azure Purview](https://azure.microsoft.com/en-au/services/devops/)
-- [Azure Data Factory](https://azure.microsoft.com/en-au/services/data-factory/)
-- [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction)
-- [Azure Databricks](https://docs.microsoft.com/en-us/azure/databricks/)
-- [Azure Key Vault](https://azure.microsoft.com/en-us/services/key-vault/)
-- [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)
-- [Office365 API Connection](https://docs.microsoft.com/en-us/azure/connectors/connectors-create-api-office365-outlook)
-- [Azure Virtual Network](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview)
-- [Private Endpoint](https://docs.microsoft.com/en-us/azure/private-link/private-endpoint-overview)
-- [Azure Function](https://docs.microsoft.com/en-us/azure/azure-functions/)
-- [Azure Logic App](https://azure.microsoft.com/en-us/services/logic-apps/)
-- [Azure Private DNS](https://docs.microsoft.com/en-us/azure/dns/private-dns-overview)
+- [Azure Purview](https://azure.microsoft.com/en-us/products/purview/)
+- [Azure Data Factory](https://azure.microsoft.com/en-us/products/data-factory/)
+- [Azure Data Lake Gen2](https://docs.microsoft.com/azure/storage/blobs/data-lake-storage-introduction)
+- [Azure Databricks](https://docs.microsoft.com/azure/databricks/)
+- [Azure Key Vault](https://azure.microsoft.com/en-us/products/key-vault/)
+- [Application Insights](https://docs.microsoft.com/azure/azure-monitor/app/app-insights-overview)
+- [Office365 API Connection](https://docs.microsoft.com/azure/connectors/connectors-create-api-office365-outlook)
+- [Azure Virtual Network](https://docs.microsoft.com/azure/virtual-network/virtual-networks-overview)
+- [Private Endpoint](https://docs.microsoft.com/azure/private-link/private-endpoint-overview)
+- [Azure Function](https://docs.microsoft.com/azure/azure-functions/)
+- [Azure Logic App](https://azure.microsoft.com/products/logic-apps/)
+- [Azure Private DNS](https://docs.microsoft.com/azure/dns/private-dns-overview)
 
 ## Key Learnings
 
@@ -80,8 +80,8 @@ Each environment has an identical set of resources
 
 ### Prerequisites
 
-1. [Azure DevOps account](https://dev.azure.com/)
-2. [Azure Account](https://azure.microsoft.com/en-au/free/search/?&ef_id=Cj0KCQiAr8bwBRD4ARIsAHa4YyLdFKh7JC0jhbxhwPeNa8tmnhXciOHcYsgPfNB7DEFFGpNLTjdTPbwaAh8bEALw_wcB:G:s&OCID=AID2000051_SEM_O2ShDlJP&MarinID=O2ShDlJP_332092752199_azure%20account_e_c__63148277493_aud-390212648371:kwd-295861291340&lnkd=Google_Azure_Brand&dclid=CKjVuKOP7uYCFVapaAoddSkKcA)
+1. [Azure DevOps account](https://azure.microsoft.com/en-us/products/devops/)
+2. [Azure Account](https://azure.microsoft.com/en-us/free/)
    - *Permissions needed*: ability to create and deploy to an azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
 
 ### Setup and Deployment

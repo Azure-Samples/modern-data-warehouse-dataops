@@ -55,9 +55,9 @@ Following are the cloud design patterns being used by this sample:
 
 The following technologies are used to build this sample:
 
-- [Azure Databricks](https://azure.microsoft.com/en-au/free/databricks/)
-- [Azure Storage](https://azure.microsoft.com/en-au/services/storage/data-lake-storage/)
-- [Azure Key Vault](https://azure.microsoft.com/en-au/services/key-vault/)
+- [Azure Databricks](https://azure.microsoft.com/en-us/free/databricks/)
+- [Azure Storage](https://azure.microsoft.com/en-us/products/storage/data-lake-storage/)
+- [Azure Key Vault](https://azure.microsoft.com/en-us/products/key-vault/)
 - [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/)
 - [Azure Resource Manager](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview)
 
@@ -70,7 +70,7 @@ This section holds the information about usage instructions of this sample.
 The following are the prerequisites for deploying this sample :
 
 1. [Github account](https://github.com/)
-2. [Azure Account](https://azure.microsoft.com/en-au/free/search/?&ef_id=Cj0KCQiAr8bwBRD4ARIsAHa4YyLdFKh7JC0jhbxhwPeNa8tmnhXciOHcYsgPfNB7DEFFGpNLTjdTPbwaAh8bEALw_wcB:G:s&OCID=AID2000051_SEM_O2ShDlJP&MarinID=O2ShDlJP_332092752199_azure%20account_e_c__63148277493_aud-390212648371:kwd-295861291340&lnkd=Google_Azure_Brand&dclid=CKjVuKOP7uYCFVapaAoddSkKcA)
+2. [Azure Account](https://azure.microsoft.com/en-us/free/)
    - *Permissions needed*:  The ability to create and deploy to an Azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
 
    - Active subscription with the following [resource providers](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/azure-services-resource-providers) enabled:

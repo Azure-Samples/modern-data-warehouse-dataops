@@ -66,7 +66,7 @@ The same follow applies to Stamp2 and Stamp3 too. In this current version of sam
 
 ### Prerequisites
 
-1. [Azure DevOps account](https://dev.azure.com/)
+1. [Azure DevOps account](https://azure.microsoft.com/en-us/products/devops/)
 2. [Azure Account](https://azure.microsoft.com/en-us/free/)  
 *Permissions needed*: ability to create and deploy to an azure resource group, a service principal, and grant the collaborator role to the service principal over the resource group; ability to manage Azure AD to create App registration, Users, Groups and Enterprise App Registration.
 

@@ -28,7 +28,7 @@ The sample demonstrates how Events can be processed in a streaming serverless pi
 - [Azure Function logic](#azure-function-logic)
   - [Device Filter](#device-filter)
   - [Temperature Filter](#temperature-filter)
-- [EventHub & Azure Function scaling](#eventhub--azure-function-scaling)
+- [EventHub \& Azure Function scaling](#eventhub--azure-function-scaling)
 - [Infrastructure as Code](#infrastructure-as-code)
   - [Modularize Terraform](#modularize-terraform)
   - [Isolation of Environment](#isolation-of-environment)
@@ -65,10 +65,10 @@ time | timestamp of value
 
 It makes use of the following azure services:
 
-- [Azure Event Hubs](https://azure.microsoft.com/en-us/services/event-hubs/)
+- [Azure Event Hubs](https://azure.microsoft.com/en-us/products/event-hubs/)
 - [Azure Functions](https://azure.microsoft.com/en-us/services/functions/)
 - [Azure IoT Device Telemetry Simulator](https://github.com/Azure-Samples/Iot-Telemetry-Simulator/)
-- [Azure DevOps](https://azure.microsoft.com/en-au/services/devops/)
+- [Azure DevOps](https://azure.microsoft.com/en-us/products/devops/)
 - [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)
 - [Terraform](https://www.terraform.io/)
 
@@ -90,7 +90,7 @@ There are 3 major steps to running the sample. Follow each sub-page in order:
   - [Github account](https://github.com/) [Optional]
   - [Azure Account](https://azure.microsoft.com/en-au/free/)
     - *Permissions needed*: ability to create and deploy to an azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
-  - [Azure DevOps Project](https://azure.microsoft.com/en-us/services/devops/)
+  - [Azure DevOps Project](https://azure.microsoft.com/en-us/products/devops/)
     - *Permissions needed*: ability to create [service connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml), [pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops&tabs=yaml) and [variable groups](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml).
 - Software
   - [Azure CLI 2.18+](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
@@ -344,7 +344,7 @@ The load testing script allows you to quickly generate load against your infrast
 Getting started resources:
 
 - [Azure IoT Device Telemetry Simulator](https://github.com/Azure-Samples/Iot-Telemetry-Simulator/)
-- [Azure Well Architected Framework - Performance testing](https://docs.microsoft.com/en-us/azure/architecture/framework/scalability/performance-test)
+- [Azure Well Architected Framework - Performance testing](https://learn.microsoft.com/en-us/azure/well-architected/performance-efficiency/performance-test)
 - [Load test for real time data processing | by Masayuki Ota](https://masayukiota.medium.com/load-test-for-real-time-data-processing-30a256a994ce)
 
 ### Load testing architecture
@@ -354,7 +354,7 @@ The load testing can be invoked by the [IoTSimulator.ps1](./loadtesting/IoTSimul
 The script will orchestrate the test by automating these steps:
 
 - Create or use an existing Resource Group
-- Create an [Azure Container Instances](https://azure.microsoft.com/en-us/services/container-instances/) resource.
+- Create an [Azure Container Instances](https://azure.microsoft.com/en-us/products/container-instances/) resource.
 - Deploy the [Azure IoT Device Telemetry Simulator](https://github.com/Azure-Samples/Iot-Telemetry-Simulator/) container, and scale it to the number of instances passed in as a parameter.
 - Coordinate them to simulate the specified number of devices, and send a certain number of messages.
 - Wait for it to complete.

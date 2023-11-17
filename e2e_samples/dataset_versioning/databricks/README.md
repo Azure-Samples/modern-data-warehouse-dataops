@@ -37,7 +37,7 @@ The [official doc](https://docs.microsoft.com/en-us/azure/databricks/security/da
      1. Navigating to your Storage account in the Azure Portal then clicking on `containers` -> `container(datalake)` -> `Manage ACL`
      2. Add your READ and EXECUTE permission and click save.
      3. [**Optional**] In case you have any existing files in the Data Lake container, you may need to propogate ACL permissions.
-        1. Open up [Microsoft Azure Storage Explorer](https://azure.microsoft.com/en-us/features/storage-explorer/)
+        1. Open up [Microsoft Azure Storage Explorer](https://azure.microsoft.com/en-us/products/storage/storage-explorer/)
         2. Navigate to the storage account and right click on container to select **propagate access control list**.
         > Propagate access control list cannot be found: Try updating azure storage explorer to the latest version.
 
