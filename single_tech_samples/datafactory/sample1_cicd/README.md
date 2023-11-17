@@ -28,7 +28,7 @@ This sample demonstrates how to apply DevOps with Azure Data Factory (ADF) by so
 
 ## Solution Overview
 
-This solution sets up an [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction) storage account, with a folder structure that enables data tiering (bronze, silver, gold), and an [Azure Data Factory](https://azure.microsoft.com/products/data-factory/)(ADF) instance with linked services connecting to the data lake, to a separate file share and a [key vault](https://azure.microsoft.com/en-us/services/key-vault/) for secrets.
+This solution sets up an [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction) storage account, with a folder structure that enables data tiering (bronze, silver, gold), and an [Azure Data Factory](https://azure.microsoft.com/en-us/products/data-factory/)(ADF) instance with linked services connecting to the data lake, to a separate file share and a [key vault](https://azure.microsoft.com/en-us/services/key-vault/) for secrets.
 
 The Azure Data Factory contains a simple pipeline taking data from the file share and ingesting it to the bronze folder.
 
@@ -51,10 +51,10 @@ The following shows the overall CI/CD process as built with Azure DevOps Pipelin
 
 ### Technologies used
 
-- [Azure Data Factory](https://azure.microsoft.com/products/data-factory/)
+- [Azure Data Factory](https://azure.microsoft.com/en-us/products/data-factory/)
 - [Azure Data Lake Gen2](https://docs.microsoft.com/azure/storage/blobs/data-lake-storage-introduction)
-- [Azure Key Vault](https://azure.microsoft.com/products/key-vault/)
-- [Azure DevOps](https://azure.microsoft.com/products/devops/)
+- [Azure Key Vault](https://azure.microsoft.com/en-us/products/key-vault/)
+- [Azure DevOps](https://azure.microsoft.com/en-us/products/devops/)
 - [pytest-adf](https://github.com/devlace/pytest-adf)
 
 ## Key Learnings
@@ -152,9 +152,9 @@ This kicks off the PROD CI/CD pipeline.
 ### Prerequisites
 
 1. [Github account](https://github.com/)
-2. [Azure Account](https://azure.microsoft.com/free/)
+2. [Azure Account](https://azure.microsoft.com/en-us/free/)
    - *Permissions needed*: ability to create and deploy to an azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
-3. [Azure DevOps Project](https://azure.microsoft.com/products/devops/)
+3. [Azure DevOps Project](https://azure.microsoft.com/en-us/products/devops/)
    - *Permissions needed*: ability to create [service connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml), [pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops&tabs=yaml) and [variable groups](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml).
 
 #### Software pre-requisites

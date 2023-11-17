@@ -33,11 +33,11 @@ The following shows the architecture of the solution.
 
 ### Technologies used
 
-- [Azure Purview](https://azure.microsoft.com/products/purview/)
-- [Azure Data Factory](https://azure.microsoft.com/products/data-factory/)
+- [Azure Purview](https://azure.microsoft.com/en-us/products/purview/)
+- [Azure Data Factory](https://azure.microsoft.com/en-us/products/data-factory/)
 - [Azure Data Lake Gen2](https://docs.microsoft.com/azure/storage/blobs/data-lake-storage-introduction)
 - [Azure Databricks](https://docs.microsoft.com/azure/databricks/)
-- [Azure Key Vault](https://azure.microsoft.com/products/key-vault/)
+- [Azure Key Vault](https://azure.microsoft.com/en-us/products/key-vault/)
 - [Application Insights](https://docs.microsoft.com/azure/azure-monitor/app/app-insights-overview)
 - [Office365 API Connection](https://docs.microsoft.com/azure/connectors/connectors-create-api-office365-outlook)
 - [Azure Virtual Network](https://docs.microsoft.com/azure/virtual-network/virtual-networks-overview)
@@ -80,8 +80,8 @@ Each environment has an identical set of resources
 
 ### Prerequisites
 
-1. [Azure DevOps account](https://dev.azure.com/)
-2. [Azure Account](https://azure.microsoft.com/free/)
+1. [Azure DevOps account](https://azure.microsoft.com/en-us/products/devops/)
+2. [Azure Account](https://azure.microsoft.com/en-us/free/)
    - *Permissions needed*: ability to create and deploy to an azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
 
 ### Setup and Deployment

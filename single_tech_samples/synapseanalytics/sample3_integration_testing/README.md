@@ -49,7 +49,7 @@ It makes use of the following azure services:
 
 ### Prerequisites
 
-1. [Azure Account](https://azure.microsoft.com/free/)
+1. [Azure Account](https://azure.microsoft.com/en-us/free/)
    - *Permissions needed*: ability to create and deploy to an Azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [Contributor role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
 
 #### Software pre-requisites if you don't use dev container<!-- omit in toc -->

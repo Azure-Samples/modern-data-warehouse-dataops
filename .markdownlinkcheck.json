@@ -8,6 +8,21 @@
         },
         {
             "pattern": "^https://sigdelta.com/blog/how-to-install-pyspark-locally/"
+        },
+        {
+            "pattern": "^https://stmdwpublic.blob.core.windows.net/"
+        },
+        {
+            "pattern": "^https://azure.microsoft.com/en-us/free/"
+        },
+        {
+            "pattern": "^https://azure.microsoft.com/en-us/products/data-factory/"
+        },
+        {
+            "pattern": "^https://dev.azure.com"
+        },
+        {
+            "pattern": "^https://azure.microsoft.com/en-us/free/databricks/"
         }
     ]
 }

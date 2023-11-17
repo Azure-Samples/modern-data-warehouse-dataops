@@ -58,7 +58,7 @@ The sample demonstrate how DevOps principles can be applied end to end Data Pipe
 
 ## Solution Overview
 
-The solution pulls near realtime [Melbourne Parking Sensor data](https://www.melbourne.vic.gov.au/about-council/governance-transparency/open-data/Pages/on-street-parking-data.aspx) from a publicly available REST api endpoint and saves this to [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction). It then validates, cleanses, and transforms the data to a known schema using [Azure Databricks](https://azure.microsoft.com/products/databricks/). A second Azure Databricks job then transforms these into a [Star Schema](https://en.wikipedia.org/wiki/Star_schema) which are then loaded into [Azure Synapse Analytics (formerly SQLDW)](https://azure.microsoft.com/products/synapse-analytics/) using [Polybase](https://docs.microsoft.com/en-us/sql/relational-databases/polybase/polybase-guide?view=sql-server-ver15). The entire pipeline is orchestrated with [Azure Data Factory](https://azure.microsoft.com/products/data-factory/).
+The solution pulls near realtime [Melbourne Parking Sensor data](https://www.melbourne.vic.gov.au/about-council/governance-transparency/open-data/Pages/on-street-parking-data.aspx) from a publicly available REST api endpoint and saves this to [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction). It then validates, cleanses, and transforms the data to a known schema using [Azure Databricks](https://azure.microsoft.com/en-us/products/databricks/). A second Azure Databricks job then transforms these into a [Star Schema](https://en.wikipedia.org/wiki/Star_schema) which are then loaded into [Azure Synapse Analytics (formerly SQLDW)](https://azure.microsoft.com/products/synapse-analytics/) using [Polybase](https://docs.microsoft.com/en-us/sql/relational-databases/polybase/polybase-guide?view=sql-server-ver15). The entire pipeline is orchestrated with [Azure Data Factory](https://azure.microsoft.com/en-us/products/data-factory/).
 
 ### Architecture
 
@@ -82,13 +82,13 @@ See [here](#build-and-release-pipeline) for details.
 
 It makes use of the following azure services:
 
-- [Azure Data Factory](https://azure.microsoft.com/products/data-factory/)
-- [Azure Databricks](https://azure.microsoft.com/products/databricks/)
+- [Azure Data Factory](https://azure.microsoft.com/en-us/products/data-factory/)
+- [Azure Databricks](https://azure.microsoft.com/en-us/products/databricks/)
 - [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction)
 - [Azure Synapse Analytics (formerly SQLDW)](https://azure.microsoft.com/products/synapse-analytics/)
-- [Azure DevOps](https://azure.microsoft.com/products/devops/)
+- [Azure DevOps](https://azure.microsoft.com/en-us/products/devops/)
 - [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)
-- [PowerBI](https://powerbi.microsoft.com/en-us/)
+- [PowerBI](https://www.microsoft.com/en-us/power-platform/products/power-bi/)
 
 For a detailed walk-through of the solution and key concepts, watch the following video recording:
 
