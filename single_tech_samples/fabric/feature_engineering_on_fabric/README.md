@@ -66,18 +66,6 @@ This subset contains data for the year 2022, and each month is available as a se
 - Access to an Azure subscription. You can sign up for a free trial by following [this link](https://azure.microsoft.com/en-us/free/).
 - Permissions to [create a service principal](https://learn.microsoft.com/entra/identity-platform/howto-create-service-principal-portal#register-an-application-with-microsoft-entra-id-and-create-a-service-principal) in Microsoft Entra ID.
 
-### [Optional] Setup Environment with a Local Notebook
-For a guided setup, you can use the [deploy.ipynb](./deploy.ipynb) notebook. This tool simplifies the process of setting up essential Azure resources, including:
-
-- Resource Group
-- Azure ML Managed Feature Store
-- Azure Purview account
-
-It also assists with creating a service principal and assigning the necessary roles. While the notebook covers most of the setup, some steps will still need to be completed manually. Detailed instructions are provided within the notebook for your convenience.
-
-The notebook should be run in any local or Azure service which allows you to,
-- run jupyter notebooks
-- authenticate with credential of the target tenant
 
 ### Required resources
 
@@ -114,6 +102,10 @@ As described above, the sample uses Microsoft Fabric as the data analytics platf
   ![roles](./images/featurestore_1.png)
 
   For granting access to Microsoft Purview access, assign [Data curators](https://learn.microsoft.com/en-us/purview/how-to-create-and-manage-collections#roles) role in the Purview root collection to this SP. For details, refer to [Microsoft documentation](https://learn.microsoft.com/purview/how-to-create-and-manage-collections#add-role-assignments).
+
+
+#### [Optional] Notebook for Creating Above Resources
+To streamline your setup process, utilize the [deploy-azure-resources.ipynb](./src/infra/deploy-azure-resources.ipynb) notebook. This tool is designed to guide you through the creation of Azure resources mentioned above in an interactive and user-friendly way.
 
 ### Microsoft Fabric setup
 
