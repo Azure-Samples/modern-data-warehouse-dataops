@@ -1,5 +1,7 @@
 # Data Share Automation
 
+*This sample is now being updated and maintained in the [Enterprise Data Sharing repo](https://github.com/Azure-Samples/enterprise-data-sharing).*
+
 [Azure Data Share](https://azure.microsoft.com/en-us/services/data-share/) setup requires a number of steps to establish the connection between the source data and the destination. One of those steps is sending an invitation from a source data share account and accepting the invitation in a destination data share account.
 
 Through the portal UI, invitations can only be sent to email addresses and that requires the email recipient to perform some manual steps to accept the invitation and map the incoming data to the destination. However, the Azure Data Share SDK allows invitations to be sent to *service principals* as well, which opens up the opportunity to fully automate the process, even between different subscriptions and tenants.
@@ -8,31 +10,33 @@ This code illustrates how to perform a fully automated data sharing process betw
 
 ## Contents
 
-- [Working with the sample](#working-with-the-sample)
-  - [source.py](#sourcepy)
-  - [dest.py](#destpy)
-  - [Azure Function](#azure-function)
-  - [Dev Container](#dev-container)
-  - [Prerequisites](#prerequisites)
-    - [Bash](#bash)
-    - [Powershell](#powershell)
-  - [Creating the service principal](#creating-the-service-principal)
-  - [Role Assignments](#role-assignments)
-- [Running the sample](#running-the-sample)
-  - [Sharing data](#sharing-data)
-    - [Source script configuration](#source-script-configuration)
-    - [Source script authentication](#source-script-authentication)
-    - [Running the source script](#running-the-source-script)
-  - [Receiving data](#receiving-data)
-    - [Destination script configuration](#destination-script-configuration)
-    - [Destination script authentication](#destination-script-authentication)
-    - [Running the destination script](#running-the-destination-script)
-  - [Triggering the scan](#triggering-the-scan)
-  - [Using the Azure Function](#using-the-azure-function)
-    - [Azure Function requirements](#azure-function-requirements)
-    - [F5 experience](#f5-experience)
-    - [Azure function authentication](#azure-function-authentication)
-- [Removing the sample assets](#removing-the-sample-assets)
+- [Data Share Automation](#data-share-automation)
+  - [Contents](#contents)
+  - [Working with the sample](#working-with-the-sample)
+    - [source.py](#sourcepy)
+    - [dest.py](#destpy)
+    - [Azure Function](#azure-function)
+    - [Dev Container](#dev-container)
+    - [Prerequisites](#prerequisites)
+      - [Bash](#bash)
+      - [Powershell](#powershell)
+    - [Creating the service principal](#creating-the-service-principal)
+    - [Role Assignments](#role-assignments)
+  - [Running the sample](#running-the-sample)
+    - [Sharing data](#sharing-data)
+      - [Source script configuration](#source-script-configuration)
+      - [Source script authentication](#source-script-authentication)
+      - [Running the source script](#running-the-source-script)
+    - [Receiving data](#receiving-data)
+      - [Destination script configuration](#destination-script-configuration)
+      - [Destination script authentication](#destination-script-authentication)
+      - [Running the destination script](#running-the-destination-script)
+    - [Triggering the scan](#triggering-the-scan)
+    - [Using the Azure Function](#using-the-azure-function)
+      - [Azure Function requirements](#azure-function-requirements)
+      - [F5 experience](#f5-experience)
+      - [Azure function authentication](#azure-function-authentication)
+  - [Removing the sample assets](#removing-the-sample-assets)
 
 ## Working with the sample
 
