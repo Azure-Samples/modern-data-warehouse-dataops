@@ -66,7 +66,6 @@ This subset contains data for the year 2022, and each month is available as a se
 - Access to an Azure subscription. You can sign up for a free trial by following [this link](https://azure.microsoft.com/en-us/free/).
 - Permissions to [create a service principal](https://learn.microsoft.com/entra/identity-platform/howto-create-service-principal-portal#register-an-application-with-microsoft-entra-id-and-create-a-service-principal) in Microsoft Entra ID.
 
-
 ### Required resources
 
 As described above, the sample uses Microsoft Fabric as the data analytics platform, which provides SaaS based access to the required storage and compute resources. However, the following Microsoft/Azure resources, which are external to Microsoft Fabric, are still required:
@@ -103,9 +102,7 @@ As described above, the sample uses Microsoft Fabric as the data analytics platf
 
   For granting access to Microsoft Purview access, assign [Data curators](https://learn.microsoft.com/en-us/purview/how-to-create-and-manage-collections#roles) role in the Purview root collection to this SP. For details, refer to [Microsoft documentation](https://learn.microsoft.com/purview/how-to-create-and-manage-collections#add-role-assignments).
 
-
-#### [Optional] Notebook for Creating Above Resources
-To streamline your setup process, utilize the [deploy-azure-resources.ipynb](./src/infra/deploy-azure-resources.ipynb) notebook. This tool is designed to guide you through the creation of Azure resources mentioned above in an interactive and user-friendly way.
+> Note: *An optional (and novel) alternative for deploying the specified Azure resources involves utilizing the Fabric notebook. The [deploy-azure-resources.ipynb](./src/infra/deploy-azure-resources.ipynb) notebook can be used to interactively create the aforementioned resources. It utilizes Azure's Python SDK along with Azure CLI to facilitate the resource creation process.*
 
 ### Microsoft Fabric setup
 
