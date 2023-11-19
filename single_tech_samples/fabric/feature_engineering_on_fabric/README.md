@@ -142,11 +142,11 @@ As described above, the sample uses Microsoft Fabric as the data analytics platf
    ![new](./images/featurestore_5.png)
    ![env](./images/featurestore_4.png)
 
-   In this environment, you will setup the python environment under 'Public Libraries'. This can be done by adding `azureml-featurestore` package using PyPI, or by clicking 'Add from yml' and selecting `./src/environment/Publiclibrary.yml` from this repo.
+   In this environment, you will setup the python environment under 'Public Libraries'. This can be done by adding `azureml-featurestore` package using PyPI, or by clicking 'Add from yml' and selecting [src/environment/Publiclibrary.yml](./src/environment/Publiclibrary.yml) from this repo.
 
    ![pip](./images/featurestore_3.png)
 
-   You will also need to edit the Spark properties. The yaml template with the required properties is available at `./src/environment/sparkProperties.yaml`. Replace the value with the resources that you created.
+   You will also need to edit the Spark properties. The yaml template with the required properties is available at [src/environment/sparkProperties.yml](./src/environment/sparkProperties.yml). Replace the value with the resources that you created.
 
    ```yaml
    runtime_version: '1.1'
@@ -389,8 +389,7 @@ Even though these can be included in the same data pipeline, the training and in
 
 The model training notebook is available at [model_training](./src/notebooks/model_training.ipynb). This notebook uses the features registered in the previous step to train a machine learning model. Like previous notebooks, it also registers the lineage in Microsoft Purview. But this time, it's the model training lineage.
 
-> Note: the model_training will need to retrieve data from the feature store, which requires credential to access the feature store. Make sure the `client_secret` parameter is set in the notebook `feature_set_retrieval`.
->
+> *Note: the model_training will need to retrieve data from the feature store, which requires credential to access the feature store. Make sure the `client_secret` parameter is set in the notebook `feature_set_retrieval`*.
 
 To run the notebook, Open it and and click `Run all`. The model will be trained and registered as an `ML model` in the Fabric workspace.
 
