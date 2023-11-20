@@ -94,7 +94,7 @@ As described above, the sample uses Microsoft Fabric as the data analytics platf
 
 - Azure Monitor Application Insights
 
-  You can create a new [Azure Monitor Application Insights](https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview) by following [this documentation](https://learn.microsoft.com/en-us/azure/azure-monitor/app/create-workspace-resource#create-a-workspace-based-resource), or use an existing one.
+  When setting up an Azure ML managed feature store, it automatically creates [Azure Monitor Application Insights](https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview).
 
 - Service Principal
 
