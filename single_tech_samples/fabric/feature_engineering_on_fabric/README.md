@@ -30,6 +30,8 @@ This sample focuses on constructing a feature engineering system using Azure ML 
     - [Data lineage](#data-lineage)
     - [Feature lineage](#feature-lineage)
   - [Verify the features in Feature Store](#verify-the-features-in-feature-store)
+  - [Exploratory data analysis (EDA)](#exploratory-data-analysis-eda)
+  - [Data validation](#data-validation)
 - [Model training and inferencing](#model-training-and-inferencing)
   - [Model training](#model-training)
   - [Model inferencing](#model-inferencing)
@@ -90,6 +92,10 @@ As described above, the sample uses Microsoft Fabric as the data analytics platf
 
   Note down the subscription id, resource group, and feature store name.
 
+- Azure Monitor Application Insights
+
+  You can create a new [Azure Monitor Application Insights](https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview) by following [this documentation](https://learn.microsoft.com/en-us/azure/azure-monitor/app/create-workspace-resource#create-a-workspace-based-resource), or use an existing one.
+
 - Service Principal
 
   This service principal is required to access and interact with the Azure ML managed feature store and with Microsoft Purview from Fabric notebooks. Create the service principal in Microsoft Entra ID by [registering an application](https://learn.microsoft.com/purview/create-service-principal-azure#app-registration) and [adding a secret to the client credentials](https://learn.microsoft.com/purview/create-service-principal-azure#adding-a-secret-to-the-client-credentials). Note down the client id, client secret, and tenant id.
@@ -119,6 +125,22 @@ As described above, the sample uses Microsoft Fabric as the data analytics platf
    After the lakehouse is created, go back to the workspace. Click the 'New' button again and select 'Import notebook' from the menu. Navigate to `src/notebooks` folder under the repo, and select all the notebooks to import:
 
    ![import all notebooks](./images/import_all_notebooks.png)
+
+   And below are brief introductions for all notebooks.
+
+   | Notebook | Description |
+   |----------|-------------|
+   | data_ingestion | Ingest data from the `Landing Zone` to the `Staging Zone` |
+   | exploratory_data_analysis | Explore and analyze data in `Staging Zone` to discover patterns, spot anomalies, test a hypothesis, or check assumptions by data scientists according to data analyzing or machine learning model training requirements |
+   | data_validation | Validate data in `Staging Zone` by user-defined rules using [Great Expectations](https://docs.greatexpectations.io/docs/) |
+   | data_cleansing | Cleanse data in `Staging Zone` and sink them to `Standardized Zone` |
+   | data_transformation | Transform cleansed data and sink them to `Standardized Zone` |
+   | feature_set_registration | Create features based on transformed data and register them to Azure ML managed feature store |
+   | data_catalog_and_lineage | Utility functions for registering data assets and lineage to Microsoft Purview |
+   | model_training | Train ML models using features values retrieved from Azure ML managed feature store |
+   | model_inferencing | Do some inferencing based on trained model |
+   | feature_set_retrieval | Utility functions for retrieving features values for model training |
+   | utils | The common utility functions |
 
 4. Add the created lakehouse to the imported notebooks
 
@@ -259,7 +281,7 @@ The configuration of this 'ForEach' activity follows a series of steps as below.
 
 - Test the pipeline
 
-  Run this pipeline with the single 'Data Landing' activity. If everything is properly configured, you shall should be able to see the downloaded data in the lakehouse as shown below.
+  Run this pipeline with the single 'Data Landing' activity. If everything is properly configured, you should be able to see the downloaded data in the lakehouse as shown below.
 
   ![data_pipeline_09](./images/data_pipeline/data_pipeline_09.png)
   
@@ -377,6 +399,40 @@ If the pipeline executes successfully, you can verify the features registered in
 
   ![feature_lineage](./images/managed_feature_store.gif)
 
+### Exploratory data analysis (EDA)
+
+Note that the imported `exploratory_data_analysis` notebook is not part of the Fabric data pipeline you executed in the above section.
+
+- It normally includes various data exploration and analysis logic from data scientists to get more understanding of the data sets.
+- It helps to discover patterns, spot anomalies, test a hypothesis, or check assumptions according to data analyzing or machine learning model training requirements.
+
+EDA often uses visual techniques, such as graphs, plots, and other visualizations, the current `exploratory_data_analysis` notebook contains some basic data investigation and visualization logics as examples using pandas library, you can run and check the results by opening the notebook and clicking `Run all`.
+
+### Data validation
+
+The `data_validation` notebook helps to validate data sets with user-defined validation rules and generate data quality logs/reports using [Great Expectations](https://docs.greatexpectations.io/docs/).
+
+The following are key steps included in the `data_validation` notebook.
+
+- Configure a [Data Context](https://docs.greatexpectations.io/docs/terms/data_context), it is the primary entry point for a Great Expectations (GX) deployment, and it provides the configurations and methods required throughout the end-to-end data validation process, like configure setup, connect to source data, create expectations, and validate data, etc.
+- Create a [Batch Request](https://docs.greatexpectations.io/docs/terms/batch_request/), it contains all the necessary details to query the appropriate underlying data, to create a batch of data for the coming validation steps.
+- Define [Expectations](https://docs.greatexpectations.io/docs/terms/expectation) and [Expectation suite](https://docs.greatexpectations.io/docs/terms/expectation_suite). An Expectation is a verifiable assertion about data, while an Expectation Suite is a collection of Expectations.
+- Configure a [Checkpoint](https://docs.greatexpectations.io/docs/terms/checkpoint) and run the Expectation suite, a checkpoint provides a convenient abstraction for bundling the validation of a batch (or batches) of data provided by one (or several) Batch Requests, against one or several Expectation Suites.
+- Report the data quality logs to [Azure Monitor Application Insights](https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)
+
+Before running this notebook, please [find the connection string](https://learn.microsoft.com/en-us/azure/azure-monitor/app/sdk-connection-string?tabs=dotnet5#find-your-connection-string) of your Azure Monitor Application Insights resource and assign it to variable `AZURE_MONITOR_SECRET` in the last cell of the [data_validation](./src/notebooks/data_validation.ipynb) notebook.
+
+```python
+# Report Data Quality Metrics to Azure Monitor using python Azure Monitor open-census exporter 
+import logging
+import time
+from opencensus.ext.azure.log_exporter import AzureLogHandler
+
+AZURE_MONITOR_SECRET = "InstrumentationKey=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+```
+
+For more details, please refer to this article, [Data Validation with Great Expectations on Microsoft Fabric](https://medium.com/@756025472/enhancing-data-validation-with-great-expectations-and-sending-logs-to-azure-monitor-19ba7d345d20)
+
 ## Model training and inferencing
 
 So far in this sample, the source data has been ingested, cleansed, transformed, and registered as features in Azure ML managed feature store. The data lineage of each processing step has also been registered in Microsoft Purview. Now, we can use these features to train a machine learning model.
@@ -390,7 +446,7 @@ The model training notebook is available at [model_training](./src/notebooks/mod
 > Note: the model_training will need to retrieve data from the feature store, which requires credential to access the feature store. Make sure the `client_secret` parameter is set in the notebook `feature_set_retrieval`.
 >
 
-To run the notebook, Open it and and click `Run all`. The model will be trained and registered as an `ML model` in the Fabric workspace.
+To run the notebook, Open it and click `Run all`. The model will be trained and registered as an `ML model` in the Fabric workspace.
 
 ![machine learning models](./images/model_type.png)
 
