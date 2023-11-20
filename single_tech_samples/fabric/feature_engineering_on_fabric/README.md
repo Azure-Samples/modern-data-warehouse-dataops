@@ -159,14 +159,11 @@ As described above, the sample uses Microsoft Fabric as the data analytics platf
 
    Go to Fabric workspace homepage and create a new __Environment__ by clicking '+ New' button and selecting `Environment (Preview)` under 'Data Engineering' or 'Data Science' experience.
 
-   ![new](./images/featurestore_5.png)
-   ![env](./images/featurestore_4.png)
-
    In this environment, you will setup the python environment under 'Public Libraries'. This can be done by adding `azureml-featurestore` package using PyPI, or by clicking 'Add from yml' and selecting `./src/environment/Publiclibrary.yml` from this repo.
 
-   ![pip](./images/featurestore_3.png)
+   ![fabric_spark_env_1](./images/fabric_spark_env_1.gif)
 
-   You will also need to edit the Spark properties. The yaml template with the required properties is available at `./src/environment/sparkProperties.yaml`. Replace the value with the resources that you created.
+   You will also need to edit the 'Spark properties' by clicking 'Add from .yml' and selecting the `./src/environment/sparkProperties.yaml` file from this repo, then replace the placeholders with values of relevant resources that you created, or you can firstly replace the values in the yaml template and then add it to the 'Spark properties'.
 
    ```yaml
    runtime_version: '1.1'
@@ -182,9 +179,11 @@ As described above, the sample uses Microsoft Fabric as the data analytics platf
 
    After this is done, click 'Save' to save the environment, and then 'Publish' to publish it. This may take a few minutes to finish.
 
+   ![fabric_spark_env_2](./images/fabric_spark_env_2.gif)
+
    Finally, To apply the environment, you can set the newly created environment as 'default' in the Fabric workspace settings page.
 
-   ![pip](./images/fabric_env_2.png)
+   ![fabric_spark_env_3](./images/fabric_spark_env_3.gif)
 
    Or you can apply to each specific notebook in the notebook edition page.
 
@@ -214,7 +213,7 @@ The configuration of this 'ForEach' activity follows a series of steps as below.
 
   Select the 'Copy data' activity and switch to the 'Source' tab. Choose 'external' as the 'Data store type'. For 'Connection', click '+' to create a new HTTP link. On the creation page, enter <https://stmdwpublic.blob.core.windows.net/> as the server URL. Click the 'Create' button to complete the setup.
 
- ![data_pipeline_04](./images/data_pipeline/data_pipeline_04.png)
+  ![data_pipeline_04](./images/data_pipeline/data_pipeline_04.png)
 
 - Define pipeline parameters
 
@@ -431,7 +430,7 @@ from opencensus.ext.azure.log_exporter import AzureLogHandler
 AZURE_MONITOR_SECRET = "InstrumentationKey=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 ```
 
-For more details, please refer to this article, [Data Validation with Great Expectations on Microsoft Fabric](https://medium.com/@756025472/enhancing-data-validation-with-great-expectations-and-sending-logs-to-azure-monitor-19ba7d345d20)
+For more details, please refer to this article, [Data Validation with Great Expectations on Microsoft Fabric](https://medium.com/@756025472/enhancing-data-validation-with-great-expectations-and-sending-logs-to-azure-monitor-19ba7d345d20).
 
 ## Model training and inferencing
 
