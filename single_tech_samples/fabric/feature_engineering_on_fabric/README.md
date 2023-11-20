@@ -108,6 +108,8 @@ As described above, the sample uses Microsoft Fabric as the data analytics platf
 
   For granting access to Microsoft Purview access, assign [Data curators](https://learn.microsoft.com/en-us/purview/how-to-create-and-manage-collections#roles) role in the Purview root collection to this SP. For details, refer to [Microsoft documentation](https://learn.microsoft.com/purview/how-to-create-and-manage-collections#add-role-assignments).
 
+> Note: *An optional (and novel) alternative for deploying the specified Azure resources involves utilizing the Fabric notebook. The [deploy-azure-resources.ipynb](./src/infra/deploy-azure-resources.ipynb) notebook can be used to interactively create the aforementioned resources. It utilizes Azure's Python SDK along with Azure CLI to facilitate the resource creation process.*
+
 ### Microsoft Fabric setup
 
 1. Create a Microsoft Fabric workspace
@@ -159,11 +161,11 @@ As described above, the sample uses Microsoft Fabric as the data analytics platf
 
    Go to Fabric workspace homepage and create a new __Environment__ by clicking '+ New' button and selecting `Environment (Preview)` under 'Data Engineering' or 'Data Science' experience.
 
-   In this environment, you will setup the python environment under 'Public Libraries'. This can be done by adding `azureml-featurestore` package using PyPI, or by clicking 'Add from yml' and selecting `./src/environment/Publiclibrary.yml` from this repo.
+   In this environment, you will setup the python environment under 'Public Libraries'. This can be done by adding `azureml-featurestore` package using PyPI, or by clicking 'Add from yml' and selecting [src/environment/Publiclibrary.yml](./src/environment/Publiclibrary.yml) from this repo.
 
    ![fabric_spark_env_1](./images/fabric_spark_env_1.gif)
 
-   You will also need to edit the 'Spark properties' by clicking 'Add from .yml' and selecting the `./src/environment/sparkProperties.yaml` file from this repo, then replace the placeholders with values of relevant resources that you created, or you can firstly replace the values in the yaml template and then add it to the 'Spark properties'.
+   You will also need to edit the 'Spark properties' by clicking 'Add from .yml' and selecting [src/environment/sparkProperties.yml](./src/environment/sparkProperties.yml) file from this repo, then replace the placeholders with values of relevant resources that you created, or you can firstly replace the values in the yaml template and then add it to the 'Spark properties'.
 
    ```yaml
    runtime_version: '1.1'
@@ -442,8 +444,7 @@ Even though these can be included in the same data pipeline, the training and in
 
 The model training notebook is available at [model_training](./src/notebooks/model_training.ipynb). This notebook uses the features registered in the previous step to train a machine learning model. Like previous notebooks, it also registers the lineage in Microsoft Purview. But this time, it's the model training lineage.
 
-> Note: the model_training will need to retrieve data from the feature store, which requires credential to access the feature store. Make sure the `client_secret` parameter is set in the notebook `feature_set_retrieval`.
->
+> *Note: the model_training will need to retrieve data from the feature store, which requires credential to access the feature store. Make sure the `client_secret` parameter is set in the notebook `feature_set_retrieval`*.
 
 To run the notebook, Open it and click `Run all`. The model will be trained and registered as an `ML model` in the Fabric workspace.
 
