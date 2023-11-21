@@ -66,7 +66,7 @@ time | timestamp of value
 It makes use of the following azure services:
 
 - [Azure Event Hubs](https://azure.microsoft.com/en-us/products/event-hubs/)
-- [Azure Functions](https://azure.microsoft.com/en-us/services/functions/)
+- [Azure Functions](https://azure.microsoft.com/en-us/products/functions/)
 - [Azure IoT Device Telemetry Simulator](https://github.com/Azure-Samples/Iot-Telemetry-Simulator/)
 - [Azure DevOps](https://azure.microsoft.com/en-us/products/devops/)
 - [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)
