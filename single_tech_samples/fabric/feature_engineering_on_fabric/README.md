@@ -30,13 +30,14 @@ This sample focuses on constructing a feature engineering system using Azure ML 
     - [Data lineage](#data-lineage)
     - [Feature lineage](#feature-lineage)
   - [Verify the features in Feature Store](#verify-the-features-in-feature-store)
-  - [Exploratory data analysis (EDA)](#exploratory-data-analysis-eda)
-  - [Data validation](#data-validation)
 - [Model training and inferencing](#model-training-and-inferencing)
   - [Model training](#model-training)
   - [Model inferencing](#model-inferencing)
   - [Verify lineage in Purview](#verify-lineage-in-purview-1)
     - [Model training lineage](#model-training-lineage)
+- [Additional Features](#additional-features)
+  - [Exploratory data analysis](#exploratory-data-analysis)
+  - [Data validation](#data-validation)
 - [Conclusion](#conclusion)
 - [References](#references)
 
@@ -50,7 +51,7 @@ This architecture utilizes Microsoft Fabric as the data analytics platform. A [d
 
 The sample follows a medallion architecture with `landing`, `staging` and `standard` zones created in the __File Section__ of a [lakehouse](https://learn.microsoft.com/fabric/data-engineering/lakehouse-overview) in [Fabric OneLake](https://learn.microsoft.com/fabric/onelake/onelake-overview). For data landing, 'ForEach' activity is used to download multiple files from a public blob storage. The rest of the processing (ingestion, transformation, feature registration, model training, and model inferencing) is done using Fabric 'data notebooks'.
 
-In addition to the main flow, there are optional steps for performing 'exploratory data analysis' and 'data validations' (illustrated by dotted lines in the diagram). These features are currently not covered as part of the step-by-step guide, but the notebooks are available in the repo for reference.
+In addition to the main flow, there are optional steps for performing 'exploratory data analysis' and 'data validations' (illustrated by dotted lines in the diagram). These features are not part of the main processing steps, but are covered separately under [Additional Features](#additional-features).
 
 ## Source dataset
 
@@ -132,17 +133,17 @@ As described above, the sample uses Microsoft Fabric as the data analytics platf
 
    | Notebook | Description |
    |----------|-------------|
-   | data_ingestion | Ingest data from the `Landing Zone` to the `Staging Zone`. |
-   | exploratory_data_analysis | Explore and analyze data in `Staging Zone` to discover patterns, spot anomalies, test a hypothesis, or check assumptions by data scientists according to data analyzing or ML model training requirements. |
-   | data_validation | Validate data in `Staging Zone` by user-defined rules using [Great Expectations](https://docs.greatexpectations.io/docs/) library. |
-   | data_cleansing | Cleanse data in `Staging Zone` and sink it to `Standardized Zone`. |
-   | data_transformation | Transform cleansed data and sink it to `Standardized Zone`. |
-   | feature_set_registration | Create features based on transformed data and register them to Azure ML managed feature store. |
-   | data_catalog_and_lineage | Utility functions for registering data assets and lineage to Microsoft Purview. |
-   | model_training | Train ML models using features values retrieved from Azure ML managed feature store. |
-   | model_inferencing | Perform inferencing based on trained model. |
-   | feature_set_retrieval | Utility functions for retrieving features values for model training. |
-   | utils | Common utility functions. |
+   | [data_ingestion](./src/notebooks/data_ingestion.ipynb) | Ingest data from the `Landing Zone` to the `Staging Zone`. |
+   | [exploratory_data_analysis](./src/notebooks/exploratory_data_analysis.ipynb) | Explore and analyze data in `Staging Zone` to discover patterns, spot anomalies, test a hypothesis, or check assumptions by data scientists according to data analyzing or ML model training requirements. |
+   | [data_validation](./src/notebooks/data_validation.ipynb) | Validate data in `Staging Zone` by user-defined rules using [Great Expectations](https://docs.greatexpectations.io/docs/) library. |
+   | [data_cleansing](./src/notebooks/data_cleansing.ipynb) | Cleanse data in `Staging Zone` and sink it to `Standardized Zone`. |
+   | [data_transformation](./src/notebooks/data_transformation.ipynb) | Transform cleansed data and sink it to `Standardized Zone`. |
+   | [feature_set_registration](./src/notebooks/feature_set_registration.ipynb) | Create features based on transformed data and register them to Azure ML managed feature store. |
+   | [data_catalog_and_lineage](./src/notebooks/data_catalog_and_lineage.ipynb) | Utility functions for registering data assets and lineage to Microsoft Purview. |
+   | [model_training](./src/notebooks/model_training.ipynb) | Train ML models using features values retrieved from Azure ML managed feature store. |
+   | [model_inferencing](./src/notebooks/model_inferencing.ipynb) | Perform inferencing based on trained model. |
+   | [feature_set_retrieval](./src/notebooks/feature_set_retrieval.ipynb) | Utility functions for retrieving features values for model training. |
+   | [utils](./src/notebooks/utils.ipynb) | Common utility functions. |
 
 4. Add the created lakehouse to the imported notebooks
 
@@ -400,40 +401,6 @@ If the pipeline executes successfully, you can verify the features registered in
 
   ![feature_lineage](./images/managed_feature_store.gif)
 
-### Exploratory data analysis (EDA)
-
-Note that the imported `exploratory_data_analysis` notebook is not part of the Fabric data pipeline you executed in the above section.
-
-- It normally includes various data exploration and analysis logic from data scientists to get more understanding of the data sets.
-- It helps to discover patterns, spot anomalies, test a hypothesis, or check assumptions according to data analyzing or machine learning model training requirements.
-
-EDA often uses visual techniques, such as graphs, plots, and other visualizations, the current `exploratory_data_analysis` notebook contains some basic data investigation and visualization logics as examples using pandas library, you can run and check the results by opening the notebook and clicking `Run all`.
-
-### Data validation
-
-The `data_validation` notebook helps to validate data sets with user-defined validation rules and generate data quality logs/reports using [Great Expectations](https://docs.greatexpectations.io/docs/).
-
-The following are key steps included in the `data_validation` notebook.
-
-- Configure a [Data Context](https://docs.greatexpectations.io/docs/terms/data_context), it is the primary entry point for a Great Expectations (GX) deployment, and it provides the configurations and methods required throughout the end-to-end data validation process, like configure setup, connect to source data, create expectations, and validate data, etc.
-- Create a [Batch Request](https://docs.greatexpectations.io/docs/terms/batch_request/), it contains all the necessary details to query the appropriate underlying data, to create a batch of data for the coming validation steps.
-- Define [Expectations](https://docs.greatexpectations.io/docs/terms/expectation) and [Expectation suite](https://docs.greatexpectations.io/docs/terms/expectation_suite). An Expectation is a verifiable assertion about data, while an Expectation Suite is a collection of Expectations.
-- Configure a [Checkpoint](https://docs.greatexpectations.io/docs/terms/checkpoint) and run the Expectation suite, a checkpoint provides a convenient abstraction for bundling the validation of a batch (or batches) of data provided by one (or several) Batch Requests, against one or several Expectation Suites.
-- Report the data quality logs to [Azure Monitor Application Insights](https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)
-
-Before running this notebook, please [find the connection string](https://learn.microsoft.com/en-us/azure/azure-monitor/app/sdk-connection-string?tabs=dotnet5#find-your-connection-string) of your Azure Monitor Application Insights resource and assign it to variable `AZURE_MONITOR_SECRET` in the last cell of the [data_validation](./src/notebooks/data_validation.ipynb) notebook.
-
-```python
-# Report Data Quality Metrics to Azure Monitor using python Azure Monitor open-census exporter 
-import logging
-import time
-from opencensus.ext.azure.log_exporter import AzureLogHandler
-
-AZURE_MONITOR_SECRET = "InstrumentationKey=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-```
-
-For more details, refer to the article, [Data validation with Great Expectations on Microsoft Fabric](https://medium.com/@756025472/enhancing-data-validation-with-great-expectations-and-sending-logs-to-azure-monitor-19ba7d345d20).
-
 ## Model training and inferencing
 
 So far in this sample, the source data has been ingested, cleansed, transformed, and registered as features in Azure ML managed feature store. The data lineage of each processing step has also been registered in Microsoft Purview. Now, we can use these features to train a machine learning model.
@@ -475,6 +442,40 @@ Once the training and inferencing notebooks have been executed successfully, the
 - Switch to the _demand_prediction_model_ asset, in the _Properties_ tab. It shows the model version and related experiment run name.
 
   ![ml_model_training_lineage](./images/data_lineage/model_training_lineage.gif)
+
+## Additional Features
+
+### Exploratory data analysis
+
+Exploratory data analysis is used by data scientists to analyze and investigate data sets and summarize characteristics of the data. It often uses visual techniques, such as graphs, plots, and other visualizations, to unveil patterns, spot anomalies, test hypotheses, or check assumptions, according to the requirements of data analysis or ML model training tasks.
+
+The [exploratory_data_analysis.ipynb](./src/notebooks/exploratory_data_analysis.ipynb) notebook includes some basic data investigation and visualization logics as examples using [pandas](https://pandas.pydata.org/) library, you can run and explore the results by opening the notebook and clicking `Run all`.
+
+### Data validation
+
+Data validation is the process of ensuring the accuracy and quality of data. This is achieved by incorporating necessary checks to verify the correctness of data and ensure it meets the desired quality standards before entering downstream processes such as data analysis or ML model training.
+
+The [data_validation.ipynb](./src/notebooks/data_validation.ipynb) notebook implements data validation checks with user-defined rules and generate data quality logs/reports leveraging [Great Expectations](https://docs.greatexpectations.io/docs/) library.
+It encompasses several key steps:
+
+- Configure a [Data Context](https://docs.greatexpectations.io/docs/terms/data_context), it is the primary entry point for a Great Expectations (GX) deployment, offering configurations and methods essential for the end-to-end data validation process, including tasks like setting up configurations, connecting to source data, creating expectations, and validating data.
+- Create a [Batch Request](https://docs.greatexpectations.io/docs/terms/batch_request/), it contains all the necessary details to query the appropriate underlying data, forming a batch of data for subsequent validation steps.
+- Define [Expectations](https://docs.greatexpectations.io/docs/terms/expectation) and [Expectation suite](https://docs.greatexpectations.io/docs/terms/expectation_suite). An Expectation is a verifiable assertion about data, while an Expectation Suite is a collection of expectations.
+- Configure a [Checkpoint](https://docs.greatexpectations.io/docs/terms/checkpoint) and run the Expectation suite, checkpoint provides a convenient abstraction for bundling the validation of one or more batches of data provided by one or several Batch Requests, against one or more Expectation Suites.
+- Report the data quality logs to [Azure Monitor Application Insights](https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview).
+
+Before executing this notebook, ensure you [retrieve the connection string](https://learn.microsoft.com/en-us/azure/azure-monitor/app/sdk-connection-string?tabs=dotnet5#find-your-connection-string) for your Azure Monitor Application Insights resource and assign it to variable `AZURE_MONITOR_SECRET` in the last cell of the [data_validation](./src/notebooks/data_validation.ipynb) notebook.
+
+```python
+# Report Data Quality Metrics to Azure Monitor using python Azure Monitor open-census exporter 
+import logging
+import time
+from opencensus.ext.azure.log_exporter import AzureLogHandler
+
+AZURE_MONITOR_SECRET = "InstrumentationKey=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+```
+
+For more details, refer to the article, [Data validation with Great Expectations on Microsoft Fabric](https://medium.com/@756025472/enhancing-data-validation-with-great-expectations-and-sending-logs-to-azure-monitor-19ba7d345d20).
 
 ## Conclusion
 
