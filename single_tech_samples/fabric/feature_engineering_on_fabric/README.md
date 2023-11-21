@@ -432,7 +432,7 @@ from opencensus.ext.azure.log_exporter import AzureLogHandler
 AZURE_MONITOR_SECRET = "InstrumentationKey=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 ```
 
-For more details, please refer to this article, [Data Validation with Great Expectations on Microsoft Fabric](https://medium.com/@756025472/enhancing-data-validation-with-great-expectations-and-sending-logs-to-azure-monitor-19ba7d345d20).
+For more details, refer to the article, [Data validation with Great Expectations on Microsoft Fabric](https://medium.com/@756025472/enhancing-data-validation-with-great-expectations-and-sending-logs-to-azure-monitor-19ba7d345d20).
 
 ## Model training and inferencing
 
