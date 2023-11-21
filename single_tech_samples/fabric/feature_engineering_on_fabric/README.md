@@ -132,17 +132,17 @@ As described above, the sample uses Microsoft Fabric as the data analytics platf
 
    | Notebook | Description |
    |----------|-------------|
-   | data_ingestion | Ingest data from the `Landing Zone` to the `Staging Zone` |
-   | exploratory_data_analysis | Explore and analyze data in `Staging Zone` to discover patterns, spot anomalies, test a hypothesis, or check assumptions by data scientists according to data analyzing or machine learning model training requirements |
-   | data_validation | Validate data in `Staging Zone` by user-defined rules using [Great Expectations](https://docs.greatexpectations.io/docs/) |
-   | data_cleansing | Cleanse data in `Staging Zone` and sink them to `Standardized Zone` |
-   | data_transformation | Transform cleansed data and sink them to `Standardized Zone` |
-   | feature_set_registration | Create features based on transformed data and register them to Azure ML managed feature store |
-   | data_catalog_and_lineage | Utility functions for registering data assets and lineage to Microsoft Purview |
-   | model_training | Train ML models using features values retrieved from Azure ML managed feature store |
-   | model_inferencing | Do some inferencing based on trained model |
-   | feature_set_retrieval | Utility functions for retrieving features values for model training |
-   | utils | The common utility functions |
+   | data_ingestion | Ingest data from the `Landing Zone` to the `Staging Zone`. |
+   | exploratory_data_analysis | Explore and analyze data in `Staging Zone` to discover patterns, spot anomalies, test a hypothesis, or check assumptions by data scientists according to data analyzing or ML model training requirements. |
+   | data_validation | Validate data in `Staging Zone` by user-defined rules using [Great Expectations](https://docs.greatexpectations.io/docs/) library. |
+   | data_cleansing | Cleanse data in `Staging Zone` and sink it to `Standardized Zone`. |
+   | data_transformation | Transform cleansed data and sink it to `Standardized Zone`. |
+   | feature_set_registration | Create features based on transformed data and register them to Azure ML managed feature store. |
+   | data_catalog_and_lineage | Utility functions for registering data assets and lineage to Microsoft Purview. |
+   | model_training | Train ML models using features values retrieved from Azure ML managed feature store. |
+   | model_inferencing | Perform inferencing based on trained model. |
+   | feature_set_retrieval | Utility functions for retrieving features values for model training. |
+   | utils | Common utility functions. |
 
 4. Add the created lakehouse to the imported notebooks
 
