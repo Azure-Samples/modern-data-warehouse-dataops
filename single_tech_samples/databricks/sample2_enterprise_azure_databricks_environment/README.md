@@ -109,11 +109,11 @@ This sample implementation focuses on securing the Azure Databricks Environment 
 
   - Appropriately select the [Storage redundancy](https://docs.microsoft.com/en-us/azure/storage/common/storage-redundancy) option.
 
-  - Leverage [Azure Cost Management and Billing](https://azure.microsoft.com/en-us/services/cost-management/) to track usage cost of the Azure Databricks and Storage services.
+  - Leverage [Azure Cost Management and Billing](https://azure.microsoft.com/en-us/products/cost-management/) to track usage cost of the Azure Databricks and Storage services.
 
-  - Use [Azure Advisor](https://azure.microsoft.com/en-us/services/advisor/) to optimize deployments by leveraging the smart insights.
+  - Use [Azure Advisor](https://azure.microsoft.com/en-us/products/advisor/) to optimize deployments by leveraging the smart insights.
 
-  - Use [Azure Policies](https://azure.microsoft.com/en-us/services/azure-policy/) to define guardrails around deployment constraints to regulate the cost.
+  - Use [Azure Policies](https://azure.microsoft.com/en-us/products/azure-policy/) to define guardrails around deployment constraints to regulate the cost.
 
 - Operational Excellence
 

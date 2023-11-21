@@ -28,7 +28,7 @@ This sample demonstrates how to apply DevOps with Azure Data Factory (ADF) by so
 
 ## Solution Overview
 
-This solution sets up an [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction) storage account, with a folder structure that enables data tiering (bronze, silver, gold), and an [Azure Data Factory](https://azure.microsoft.com/en-us/products/data-factory/)(ADF) instance with linked services connecting to the data lake, to a separate file share and a [key vault](https://azure.microsoft.com/en-us/services/key-vault/) for secrets.
+This solution sets up an [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction) storage account, with a folder structure that enables data tiering (bronze, silver, gold), and an [Azure Data Factory](https://azure.microsoft.com/en-us/products/data-factory/)(ADF) instance with linked services connecting to the data lake, to a separate file share and a [key vault](https://azure.microsoft.com/en-us/products/key-vault/) for secrets.
 
 The Azure Data Factory contains a simple pipeline taking data from the file share and ingesting it to the bronze folder.
 

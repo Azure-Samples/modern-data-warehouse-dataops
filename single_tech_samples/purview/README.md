@@ -27,7 +27,7 @@ Azure Purview is a managed data governance cloud service for centrally managing 
 
 ## Solution Overview
 
-This solution sets up an [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction) storage account, with a folder structure that enables data tiering (bronze, silver, gold), an [Azure Data Factory](https://azure.microsoft.com/en-us/products/data-factory/)(ADF) instance with linked services connecting to the data lake, a [key vault](https://azure.microsoft.com/en-us/services/key-vault/) for any secrets, and an [Azure Purview](https://azure.microsoft.com/en-us/products/purview/) account for data governance.
+This solution sets up an [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction) storage account, with a folder structure that enables data tiering (bronze, silver, gold), an [Azure Data Factory](https://azure.microsoft.com/en-us/products/data-factory/)(ADF) instance with linked services connecting to the data lake, a [key vault](https://azure.microsoft.com/en-us/products/key-vault/) for any secrets, and an [Azure Purview](https://azure.microsoft.com/en-us/products/purview/) account for data governance.
 
 The Azure Data Factory contains a simple ADF Pipeline that is stored in a git repository, that is taking data from the Dropzone and ingesting it into the bronze folder.
 

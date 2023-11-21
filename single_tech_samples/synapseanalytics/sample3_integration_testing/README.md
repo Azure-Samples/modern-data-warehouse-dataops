@@ -28,7 +28,7 @@ The solution runs a flow triggered on a storage file upload. It then runs a samp
 
 It makes use of the following azure services:
 
-- [Azure Synapse Analytics](https://azure.microsoft.com/products/synapse-analytics/)
+- [Azure Synapse Analytics](https://azure.microsoft.com/en-us/products/synapse-analytics/)
 - [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction)
 
 ## Key Concepts

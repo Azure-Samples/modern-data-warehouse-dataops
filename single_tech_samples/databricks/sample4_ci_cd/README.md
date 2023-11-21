@@ -80,7 +80,7 @@ The following are the prerequisites for deploying this template :
 1. [Github account](https://github.com/)
 2. [Azure DevOps account](https://dev.azure.com)
 3. [Azure account](https://portal.azure.com)
-4. [Azure Databricks Workspace](https://azure.microsoft.com/en-us/services/databricks/)
+4. [Azure Databricks Workspace](https://azure.microsoft.com/en-us/products/databricks/)
 
 ### 2.2. Infrastructure as Code (IaC)
 

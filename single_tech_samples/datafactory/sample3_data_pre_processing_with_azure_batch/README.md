@@ -102,7 +102,7 @@ The following technologies are used to build this sample:
 
 - [Azure Data Factory](https://azure.microsoft.com/en-us/products/data-factory/)
 - [Azure Batch](https://azure.microsoft.com/en-us/products/batch)
-- [Azure Storage(ADLS)](https://azure.microsoft.com/services/storage/data-lake-storage/)
+- [Azure Data Lake Storage](https://azure.microsoft.com/en-us/products/storage/data-lake-storage/)
 - [NFS Mounts](https://learn.microsoft.com/azure/storage/blobs/network-file-system-protocol-support-how-to)
 
 ## How to use this sample

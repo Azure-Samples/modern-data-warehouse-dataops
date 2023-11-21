@@ -43,7 +43,7 @@ Data lifecycle is one such feature on Azure using which you can optimize costs b
 
 The following technologies are used to build this sample:
 
-- [Azure Storage](https://azure.microsoft.com/products/storage/data-lake-storage)
+- [Azure Storage](https://azure.microsoft.com/en-us/products/storage/data-lake-storage)
 - [Terraform](https://www.terraform.io)
 
 ## 2. How to use this sample
