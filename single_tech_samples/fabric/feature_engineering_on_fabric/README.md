@@ -35,6 +35,9 @@ This sample focuses on constructing a feature engineering system using Azure ML 
   - [Model inferencing](#model-inferencing)
   - [Verify lineage in Purview](#verify-lineage-in-purview-1)
     - [Model training lineage](#model-training-lineage)
+- [Additional Features](#additional-features)
+  - [Exploratory data analysis](#exploratory-data-analysis)
+  - [Data validation](#data-validation)
 - [Conclusion](#conclusion)
 - [References](#references)
 
@@ -48,7 +51,7 @@ This architecture utilizes Microsoft Fabric as the data analytics platform. A [d
 
 The sample follows a medallion architecture with `landing`, `staging` and `standard` zones created in the __File Section__ of a [lakehouse](https://learn.microsoft.com/fabric/data-engineering/lakehouse-overview) in [Fabric OneLake](https://learn.microsoft.com/fabric/onelake/onelake-overview). For data landing, 'ForEach' activity is used to download multiple files from a public blob storage. The rest of the processing (ingestion, transformation, feature registration, model training, and model inferencing) is done using Fabric 'data notebooks'.
 
-In addition to the main flow, there are optional steps for performing 'exploratory data analysis' and 'data validations' (illustrated by dotted lines in the diagram). These features are currently not covered as part of the step-by-step guide, but the notebooks are available in the repo for reference.
+In addition to the main flow, there are optional steps for performing 'exploratory data analysis' and 'data validations' (illustrated by dotted lines in the diagram). These features are not part of the main processing steps, but are covered separately under [Additional Features](#additional-features).
 
 ## Source dataset
 
@@ -90,6 +93,10 @@ As described above, the sample uses Microsoft Fabric as the data analytics platf
 
   Note down the subscription id, resource group, and feature store name.
 
+- Azure Monitor Application Insights
+
+  When setting up an Azure ML managed feature store, it automatically creates [Azure Monitor Application Insights](https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview).
+
 - Service Principal
 
   This service principal is required to access and interact with the Azure ML managed feature store and with Microsoft Purview from Fabric notebooks. Create the service principal in Microsoft Entra ID by [registering an application](https://learn.microsoft.com/purview/create-service-principal-azure#app-registration) and [adding a secret to the client credentials](https://learn.microsoft.com/purview/create-service-principal-azure#adding-a-secret-to-the-client-credentials). Note down the client id, client secret, and tenant id.
@@ -114,13 +121,29 @@ As described above, the sample uses Microsoft Fabric as the data analytics platf
 
 2. Create a Fabric lakehouse
 
-   After the lakehouse is created, go back to the workspace. Click the 'New' button from the **Data Engineering** or the **Data Science** homepage and select 'Import notebook' from the menu. Navigate to `src/notebooks` folder under the repo, and select all the notebooks to import:
+   Within the workspace, create a new lakehouse by clicking the 'New' button on the top of the page. Refer to [this documentation](https://learn.microsoft.com/fabric/onelake/create-lakehouse-onelake#create-a-lakehouse) for detailed instructions.
 
 3. Import the sample notebooks
 
-   After the lakehouse is created, go back to the workspace. Click the 'New' button again and select 'Import notebook' from the menu. Navigate to `src/notebooks` folder under the repo, and select all the notebooks to import:
+   After the lakehouse is created, go back to the workspace. Click the 'New' button from the **Data Engineering** or the **Data Science** homepage and select 'Import notebook' from the menu. Navigate to `src/notebooks` folder under the repo, and select all the notebooks to import:
 
    ![import all notebooks](./images/import_all_notebooks.png)
+
+   And below are brief introductions for all notebooks.
+
+   | Notebook | Description |
+   |----------|-------------|
+   | [data_ingestion](./src/notebooks/data_ingestion.ipynb) | Ingest data from the `Landing Zone` to the `Staging Zone`. |
+   | [exploratory_data_analysis](./src/notebooks/exploratory_data_analysis.ipynb) | Explore and analyze data in `Staging Zone` to discover patterns, spot anomalies, test a hypothesis, or check assumptions by data scientists according to data analyzing or ML model training requirements. |
+   | [data_validation](./src/notebooks/data_validation.ipynb) | Validate data in `Staging Zone` by user-defined rules using [Great Expectations](https://docs.greatexpectations.io/docs/) library. |
+   | [data_cleansing](./src/notebooks/data_cleansing.ipynb) | Cleanse data in `Staging Zone` and sink it to `Standardized Zone`. |
+   | [data_transformation](./src/notebooks/data_transformation.ipynb) | Transform cleansed data and sink it to `Standardized Zone`. |
+   | [feature_set_registration](./src/notebooks/feature_set_registration.ipynb) | Create features based on transformed data and register them to Azure ML managed feature store. |
+   | [data_catalog_and_lineage](./src/notebooks/data_catalog_and_lineage.ipynb) | Utility functions for registering data assets and lineage to Microsoft Purview. |
+   | [model_training](./src/notebooks/model_training.ipynb) | Train ML models using features values retrieved from Azure ML managed feature store. |
+   | [model_inferencing](./src/notebooks/model_inferencing.ipynb) | Perform inferencing based on trained model. |
+   | [feature_set_retrieval](./src/notebooks/feature_set_retrieval.ipynb) | Utility functions for retrieving features values for model training. |
+   | [utils](./src/notebooks/utils.ipynb) | Common utility functions. |
 
 4. Add the created lakehouse to the imported notebooks
 
@@ -139,14 +162,11 @@ As described above, the sample uses Microsoft Fabric as the data analytics platf
 
    Go to Fabric workspace homepage and create a new __Environment__ by clicking '+ New' button and selecting `Environment (Preview)` under 'Data Engineering' or 'Data Science' experience.
 
-   ![new](./images/featurestore_5.png)
-   ![env](./images/featurestore_4.png)
-
    In this environment, you will setup the python environment under 'Public Libraries'. This can be done by adding `azureml-featurestore` package using PyPI, or by clicking 'Add from yml' and selecting [src/environment/Publiclibrary.yml](./src/environment/Publiclibrary.yml) from this repo.
 
-   ![pip](./images/featurestore_3.png)
+   ![fabric_spark_env_1](./images/fabric_spark_env_1.gif)
 
-   You will also need to edit the Spark properties. The yaml template with the required properties is available at [src/environment/sparkProperties.yml](./src/environment/sparkProperties.yml). Replace the value with the resources that you created.
+   You will also need to edit the 'Spark properties' by clicking 'Add from .yml' and selecting [src/environment/sparkProperties.yml](./src/environment/sparkProperties.yml) file from this repo, then replace the placeholders with values of relevant resources that you created, or you can firstly replace the values in the yaml template and then add it to the 'Spark properties'.
 
    ```yaml
    runtime_version: '1.1'
@@ -162,9 +182,11 @@ As described above, the sample uses Microsoft Fabric as the data analytics platf
 
    After this is done, click 'Save' to save the environment, and then 'Publish' to publish it. This may take a few minutes to finish.
 
+   ![fabric_spark_env_2](./images/fabric_spark_env_2.gif)
+
    Finally, To apply the environment, you can set the newly created environment as 'default' in the Fabric workspace settings page.
 
-   ![pip](./images/fabric_env_2.png)
+   ![fabric_spark_env_3](./images/fabric_spark_env_3.gif)
 
    Or you can apply to each specific notebook in the notebook edition page.
 
@@ -194,7 +216,7 @@ The configuration of this 'ForEach' activity follows a series of steps as below.
 
   Select the 'Copy data' activity and switch to the 'Source' tab. Choose 'external' as the 'Data store type'. For 'Connection', click '+' to create a new HTTP link. On the creation page, enter <https://stmdwpublic.blob.core.windows.net/> as the server URL. Click the 'Create' button to complete the setup.
 
- ![data_pipeline_04](./images/data_pipeline/data_pipeline_04.png)
+  ![data_pipeline_04](./images/data_pipeline/data_pipeline_04.png)
 
 - Define pipeline parameters
 
@@ -261,7 +283,7 @@ The configuration of this 'ForEach' activity follows a series of steps as below.
 
 - Test the pipeline
 
-  Run this pipeline with the single 'Data Landing' activity. If everything is properly configured, you shall should be able to see the downloaded data in the lakehouse as shown below.
+  Run this pipeline with the single 'Data Landing' activity. If everything is properly configured, you should be able to see the downloaded data in the lakehouse as shown below.
 
   ![data_pipeline_09](./images/data_pipeline/data_pipeline_09.png)
   
@@ -391,7 +413,7 @@ The model training notebook is available at [model_training](./src/notebooks/mod
 
 > *Note: the model_training will need to retrieve data from the feature store, which requires credential to access the feature store. Make sure the `client_secret` parameter is set in the notebook `feature_set_retrieval`*.
 
-To run the notebook, Open it and and click `Run all`. The model will be trained and registered as an `ML model` in the Fabric workspace.
+To run the notebook, Open it and click `Run all`. The model will be trained and registered as an `ML model` in the Fabric workspace.
 
 ![machine learning models](./images/model_type.png)
 
@@ -420,6 +442,40 @@ Once the training and inferencing notebooks have been executed successfully, the
 - Switch to the _demand_prediction_model_ asset, in the _Properties_ tab. It shows the model version and related experiment run name.
 
   ![ml_model_training_lineage](./images/data_lineage/model_training_lineage.gif)
+
+## Additional Features
+
+### Exploratory data analysis
+
+Exploratory data analysis is used by data scientists to analyze and investigate data sets and summarize characteristics of the data. It often uses visual techniques, such as graphs, plots, and other visualizations, to unveil patterns, spot anomalies, test hypotheses, or check assumptions, according to the requirements of data analysis or ML model training tasks.
+
+The [exploratory_data_analysis.ipynb](./src/notebooks/exploratory_data_analysis.ipynb) notebook includes some basic data investigation and visualization logics as examples using [pandas](https://pandas.pydata.org/) library, you can run and explore the results by opening the notebook and clicking `Run all`.
+
+### Data validation
+
+Data validation is the process of ensuring the accuracy and quality of data. This is achieved by incorporating necessary checks to verify the correctness of data and ensure it meets the desired quality standards before entering downstream processes such as data analysis or ML model training.
+
+The [data_validation.ipynb](./src/notebooks/data_validation.ipynb) notebook implements data validation checks with user-defined rules and generate data quality logs/reports leveraging [Great Expectations](https://docs.greatexpectations.io/docs/) library.
+It encompasses several key steps:
+
+- Configure a [Data Context](https://docs.greatexpectations.io/docs/terms/data_context), it is the primary entry point for a Great Expectations (GX) deployment, offering configurations and methods essential for the end-to-end data validation process, including tasks like setting up configurations, connecting to source data, creating expectations, and validating data.
+- Create a [Batch Request](https://docs.greatexpectations.io/docs/terms/batch_request/), it contains all the necessary details to query the appropriate underlying data, forming a batch of data for subsequent validation steps.
+- Define [Expectations](https://docs.greatexpectations.io/docs/terms/expectation) and [Expectation suite](https://docs.greatexpectations.io/docs/terms/expectation_suite). An Expectation is a verifiable assertion about data, while an Expectation Suite is a collection of expectations.
+- Configure a [Checkpoint](https://docs.greatexpectations.io/docs/terms/checkpoint) and run the Expectation suite, checkpoint provides a convenient abstraction for bundling the validation of one or more batches of data provided by one or several Batch Requests, against one or more Expectation Suites.
+- Report the data quality logs to [Azure Monitor Application Insights](https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview).
+
+Before executing this notebook, ensure you [retrieve the connection string](https://learn.microsoft.com/en-us/azure/azure-monitor/app/sdk-connection-string?tabs=dotnet5#find-your-connection-string) for your Azure Monitor Application Insights resource and assign it to variable `AZURE_MONITOR_SECRET` in the last cell of the [data_validation](./src/notebooks/data_validation.ipynb) notebook.
+
+```python
+# Report Data Quality Metrics to Azure Monitor using python Azure Monitor open-census exporter 
+import logging
+import time
+from opencensus.ext.azure.log_exporter import AzureLogHandler
+
+AZURE_MONITOR_SECRET = "InstrumentationKey=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+```
+
+For more details, refer to the article, [Data validation with Great Expectations on Microsoft Fabric](https://medium.com/@756025472/enhancing-data-validation-with-great-expectations-and-sending-logs-to-azure-monitor-19ba7d345d20).
 
 ## Conclusion
 
