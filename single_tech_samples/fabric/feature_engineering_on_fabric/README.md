@@ -55,11 +55,13 @@ In addition to the main flow, there are optional steps for performing 'explorato
 
 ## Source dataset
 
-The sample uses the public yellow taxi trip dataset from [New York City Taxi & Limousine Commission](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page). However, we have hosted a subset of this dataset on our own public blob storage at the following location:
+The sample uses the public yellow taxi trip dataset from [New York City Taxi & Limousine Commission](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page) and the public historical weather dataset from [Open-Meteo](https://open-meteo.com/en/docs/historical-weather-api#latitude=40.7143&longitude=-74.006). However, we have hosted a subset of this dataset on our own public blob storage at the following location:
 
 Base URL: [https://stmdwpublic.blob.core.windows.net/](https://stmdwpublic.blob.core.windows.net/)
 
-This subset contains data for the year 2022, and each month is available as a separate parquet file. The data includes anonymized travel details like departure points, destinations, times, distances, and costs. The data, in conjunction with taxi zone maps and lookup tables, aids in various research fields such as identifying frequent pickup and drop-off zones in the city.
+This subset of the yellow taxi trip dataset contains data from Jan. 2022 to Jan. 2023, and each month is available as a separate parquet file. The data includes anonymized travel details like departure points, destinations, times, distances, and costs. The data, in conjunction with taxi zone maps and lookup tables, aids in various research fields such as identifying frequent pickup and drop-off zones in the city.
+
+While the historical weather dataset contains data for a same time period, and the data includes hourly weather variables like temperature, precipitation, cloud cover, wind speed, etc.
 
 ## Environment setup
 
@@ -125,7 +127,7 @@ As described above, the sample uses Microsoft Fabric as the data analytics platf
 
 3. Import the sample notebooks
 
-   After the lakehouse is created, go back to the workspace. Click the 'New' button from the **Data Engineering** or the **Data Science** homepage and select 'Import notebook' from the menu. Navigate to `src/notebooks` folder under the repo, and select all the notebooks to import:
+   After the lakehouse is created, go back to the workspace. Click the 'New' button from the __Data Engineering__ or the __Data Science__ homepage and select 'Import notebook' from the menu. Navigate to `src/notebooks` folder under the repo, and select all the notebooks to import:
 
    ![import all notebooks](./images/import_all_notebooks.png)
 
@@ -155,6 +157,7 @@ As described above, the sample uses Microsoft Fabric as the data analytics platf
    - [data_validation](./src/notebooks/data_validation.ipynb)
    - [exploratory_data_analysis](./src/notebooks/exploratory_data_analysis.ipynb)
    - [feature_set_registration](./src/notebooks/feature_set_registration.ipynb)
+   - [model_inferencing](./src/notebooks/model_inferencing.ipynb)
 
    ![add lakehouse](./images/add_lh_to_notebook.png)
 
@@ -241,7 +244,10 @@ The configuration of this 'ForEach' activity follows a series of steps as below.
     "datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-10.parquet",
     "datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-11.parquet",
     "datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-12.parquet",
-    "datasets/nyc-yellow-tripdata-2022/taxi_zone_lookup.csv"]
+    "datasets/nyc-yellow-tripdata-2022/taxi_zone_lookup.csv",
+    "datasets/nyc-yellow-tripdata-2022/nyc_weather_2022.csv",
+    "datasets/nyc-yellow-tripdata-2023/yellow_tripdata_2023-01.parquet",
+    "datasets/nyc-yellow-tripdata-2023/nyc_weather_2023-01.csv"]
     ```
 
   - __landing_path__
@@ -254,7 +260,7 @@ The configuration of this 'ForEach' activity follows a series of steps as below.
 
     Type: SecureString
 
-    Default Value: _The client secret of the service principal that you created earlier._
+    Default Value: *The client secret of the service principal that you created earlier.*
 
   ![data_pipeline_05](./images/data_pipeline/data_pipeline_05.png)
 
@@ -367,13 +373,13 @@ Once the Fabric data pipeline has executed successfully, the data pipeline and f
 
 - Open the [Microsoft Purview Governance Portal](https://learn.microsoft.com/en-us/purview/use-microsoft-purview-governance-portal) of your Purview account.
 
-- Go to _Data Catalog -> Home_ and type _Fabric notebook_ in the search field. In the _Asset suggestions_ list, you shall be able to see some Fabric notebook items that have been executed via the Fabric data pipeline. Click on one of the items such as _data_ingestion (Fabric notebook)_. To know more about searching the Purview catalog, refer to [this documentation](https://learn.microsoft.com/purview/how-to-search-catalog).
+- Go to *Data Catalog -> Home* and type *Fabric notebook* in the search field. In the *Asset suggestions* list, you shall be able to see some Fabric notebook items that have been executed via the Fabric data pipeline. Click on one of the items such as *data_ingestion (Fabric notebook)*. To know more about searching the Purview catalog, refer to [this documentation](https://learn.microsoft.com/purview/how-to-search-catalog).
 
-- Go to the _Properties_ tab of the asset page. There you can view inputs and outputs assets of this notebook asset, as well as the qualified name of this asset. Via this link, the Fabric notebook can be opened directly in a new browser tab.
+- Go to the *Properties* tab of the asset page. There you can view inputs and outputs assets of this notebook asset, as well as the qualified name of this asset. Via this link, the Fabric notebook can be opened directly in a new browser tab.
 
-- In the _Lineage_ tab, you can see the lineage view of the whole data processing lifecycle that was executed as part of this demo.
+- In the *Lineage* tab, you can see the lineage view of the whole data processing lifecycle that was executed as part of this demo.
 
-- Click any node in the lineage view and then click the _Switch to asset_ link in the lower-left to navigate to another asset to check more details.
+- Click any node in the lineage view and then click the *Switch to asset* link in the lower-left to navigate to another asset to check more details.
 
   ![process_asset_lineage_view](./images/data_lineage/data_lineage_in_purview.gif)
 
@@ -381,11 +387,11 @@ Once the Fabric data pipeline has executed successfully, the data pipeline and f
 
 - In the lineage view of the transformed data asset, you can see three downstream assets, which are features registered in Azure ML managed feature store.
 
-- Switch to one of the features. In the _Properties_ tab, you can see the data type of the feature as well as feature set each feature belongs to.
+- Switch to one of the features. In the *Properties* tab, you can see the data type of the feature as well as feature set each feature belongs to.
 
-- Clicking the feature set link takes it to the related feature set asset. In the _Properties_ tab, you can tell what features it contains, which feature store it belongs to, as well as the qualified name. This link can be clicked to open the feature set view of Azure ML managed feature store in a new browser tab.
+- Clicking the feature set link takes it to the related feature set asset. In the *Properties* tab, you can tell what features it contains, which feature store it belongs to, as well as the qualified name. This link can be clicked to open the feature set view of Azure ML managed feature store in a new browser tab.
 
-- Go to the _Related_ tab of the feature set asset. It shows the asset type hierarchy view of feature store relevant asset types. Click the _features_ node to get all available features displayed in the upper-left of the canvas, or click the _featurestore_ node to get the feature store details. Then click the link to navigate to another interested asset.
+- Go to the *Related* tab of the feature set asset. It shows the asset type hierarchy view of feature store relevant asset types. Click the *features* node to get all available features displayed in the upper-left of the canvas, or click the *featurestore* node to get the feature store details. Then click the link to navigate to another interested asset.
 
   ![feature_lineage](./images/data_lineage/feature_lineage.gif)
 
@@ -393,11 +399,11 @@ Once the Fabric data pipeline has executed successfully, the data pipeline and f
 
 If the pipeline executes successfully, you can verify the features registered in the Azure ML Managed Feature Store.
 
-- Login to Azure ML Studio, and select _Feature stores_ tab from the left menu.
-- Find the feature store under _Feature stores_ that you created and click on the link.
-- Select _Feature sets_ tab from the left menu, and you can see the feature set that you registered. Click on the link.
-- You can see the features that you registered under the _Features_ tab. You can also see the feature set specification under the _Specification_ tab.
-- Similarly, you can also check the entities from the _Entities_ tab.
+- Login to Azure ML Studio, and select *Feature stores* tab from the left menu.
+- Find the feature store under *Feature stores* that you created and click on the link.
+- Select *Feature sets* tab from the left menu, and you can see the feature set that you registered. Click on the link.
+- You can see the features that you registered under the *Features* tab. You can also see the feature set specification under the *Specification* tab.
+- Similarly, you can also check the entities from the *Entities* tab.
 
   ![feature_lineage](./images/managed_feature_store.gif)
 
@@ -429,17 +435,19 @@ Go to model_inferencing notebook, and click `Run all`. Once the execution is com
 
 ![inferencing result](./images/inferencing_result.png)
 
+![inferencing result_2](./images/inferencing_result_2.png)
+
 ### Verify lineage in Purview
 
 Once the training and inferencing notebooks have been executed successfully, the model training lineage can be checked in Microsoft Purview.
 
 #### Model training lineage
 
-- Go to _Data Catalog -> Home_ page, and type _Fabric notebook_ in the search field, click the 'model_training (Fabric notebook)' item in the _Asset suggestions_ list.
+- Go to *Data Catalog -> Home* page, and type *Fabric notebook* in the search field, click the 'model_training (Fabric notebook)' item in the *Asset suggestions* list.
 
-- Go to the _Lineage_ tab, we can see several extra assets appending to the end of the previous lineage path, which shows the lineage of the trained model; this can tell what features are used in the model training. You can navigate to the actual model training notebook via the qualified name to check more details, or go to the model training experiment page in Fabric to get more experiment runs details.
+- Go to the *Lineage* tab, we can see several extra assets appending to the end of the previous lineage path, which shows the lineage of the trained model; this can tell what features are used in the model training. You can navigate to the actual model training notebook via the qualified name to check more details, or go to the model training experiment page in Fabric to get more experiment runs details.
 
-- Switch to the _demand_prediction_model_ asset, in the _Properties_ tab. It shows the model version and related experiment run name.
+- Switch to the *demand_prediction_model* asset, in the *Properties* tab. It shows the model version and related experiment run name.
 
   ![ml_model_training_lineage](./images/data_lineage/model_training_lineage.gif)
 
