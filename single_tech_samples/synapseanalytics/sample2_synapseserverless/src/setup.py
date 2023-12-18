@@ -30,7 +30,7 @@ setup(
         'msrest==0.7.1',
         'oauthlib==3.2.2',
         'pycparser==2.21',
-        'requests==2.28.2',
+        'requests==2.31.0',
         'requests-oauthlib==1.3.1',
         'six==1.16.0',
         'typing-extensions==4.4.0',
