@@ -34,6 +34,6 @@ setup(
         'requests-oauthlib==1.3.1',
         'six==1.16.0',
         'typing-extensions==4.4.0',
-        'urllib3==1.26.14'
+        'urllib3==1.26.18'
         ],
 )
