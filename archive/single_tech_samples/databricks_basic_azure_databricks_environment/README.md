@@ -85,7 +85,7 @@ The following are the prerequisites for deploying this sample :
    - *Installation instructions* can be found [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 1. For Windows users,
    1. Option 1: [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
-   2. Option 2: Use the devcontainer published [here](../.devcontainer) as a host for the bash shell.
+   2. Option 2: Use the devcontainer published [here](./.devcontainer) as a host for the bash shell.
       For more information about Devcontainers, see [here](https://code.visualstudio.com/docs/remote/containers).
 
 ### 2.2. Setup and deployment

@@ -40,7 +40,7 @@ for a few extra setup steps.
    - *Installation instructions* can be found [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 1. For Windows users,
    1. Option 1: [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
-   2. Option 2: Use the dev container published [here](../.devcontainer) as a host for the bash shell.
+   2. Option 2: Use the dev container published [here](./.devcontainer) as a host for the bash shell.
 1. [Databricks CLI](https://docs.microsoft.com/en-us/azure/databricks/dev-tools/cli/)
 
 ### 1.2. Setup and deployment
