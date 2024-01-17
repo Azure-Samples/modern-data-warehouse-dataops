@@ -235,11 +235,11 @@ To use a Dev Container, you need to have the following software in addition to t
 In order to open the project in a container follow the following steps:
 
 - Open Visual Studio Code and clone the repository.
-- Use the .envtemplate file located in \modern-data-warehouse-dataops\single_tech_samples\synapseanalytics\sample2_synapseserverless\.devcontainer to create a synapsecontainer.env file with the selected values for the current deployment
+- Use the .envtemplate file located in `\modern-data-warehouse-dataops\single_tech_samples\synapseanalytics\synapse_serverless\.devcontainer` to create a synapsecontainer.env file with the selected values for the current deployment
 - Hit Ctlr-Shift-P to open the command palette and type Dev Containers: Open Folder in Container ...
-- When prompted, select the directory \modern-data-warehouse-dataops\single_tech_samples\synapseanalytics\sample2_synapseserverless
+- When prompted, select the directory `\modern-data-warehouse-dataops\single_tech_samples\synapseanalytics\synapse_serverless`.
 - Wait for the container to build, check the logs for more information:
-  
+
   ![Container Logs](./images/container.jpg)
 
 ### Without using Dev Containers

@@ -9,7 +9,7 @@ services:
     env_file: synapsecontainer.env
     build:
       context: ../../../../
-      dockerfile: single_tech_samples/synapseanalytics/sample2_synapseserverless/.devcontainer/Dockerfile
+      dockerfile: single_tech_samples/synapseanalytics/synapse_serverless/.devcontainer/Dockerfile
       args:
         PYTHON_VARIANT: 3.9
     ports: 

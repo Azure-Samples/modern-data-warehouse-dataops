@@ -34,7 +34,7 @@ The samples are either focused on a single azure service (**Single Tech Samples*
 - [Azure SQL database](./single_tech_samples/azuresql/README.md)
   - [CI/CD - Azure SQL database](./single_tech_samples/azuresql/azuresql_ci_cd/README.md)
 - [Azure Databricks](single_tech_samples/databricks/)
-  - [IaC - Basic deployment](single_tech_samples/databricks/sample1_basic_azure_databricks_environment/)
+  - [IaC - Basic deployment](single_tech_samples/databricks/databricks_ci_cd/README.md)
 - [Azure Data Factory](./single_tech_samples/datafactory/README.md)
   - [CI/CD - Auto publish](./single_tech_samples/datafactory/adf_cicd_auto_publish/README.md)
   - [Data pre-processing using Azure Batch](./single_tech_samples/datafactory/adf_data_pre_processing_with_azure_batch/README.md)
@@ -52,6 +52,7 @@ This demonstrates batch, end-to-end data pipeline following the MDW architecture
 ![Architecture](docs/images/CI_CD_process_simplified.png?raw=true "Architecture")
 
 This has two version of the solution:
+
 - [Azure Data Factory and Azure Databricks Version](e2e_samples/parking_sensors/)
 - [Azure Synapse Version](e2e_samples/parking_sensors_synapse/)
 
