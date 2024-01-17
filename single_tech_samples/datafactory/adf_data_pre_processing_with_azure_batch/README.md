@@ -112,7 +112,7 @@ This section holds the information about usage instructions of this sample.
 ### Prerequisites
 
 1. [Github account](https://github.com/)
-2. [Azure Account](https://azure.microsoft.com/en-gb/free/)
+2. [Azure Account](https://azure.microsoft.com/en-us/free/)
    - *Permissions needed*:  The ability to create and deploy to an Azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview)
 
    - Active subscription with the following [resource providers](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/azure-services-resource-providers) enabled:

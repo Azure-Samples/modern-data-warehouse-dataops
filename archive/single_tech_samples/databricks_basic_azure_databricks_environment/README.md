@@ -94,7 +94,7 @@ The following are the prerequisites for deploying this sample :
 
 Below listed are the steps to deploy this sample :
 
-1. Fork and clone this repository. Navigate to (CD) `single_tech_samples/databricks/sample1_basic_azure_databricks_environment/`.
+1. Fork and clone this repository. Navigate to (CD) `single_tech_samples/databricks/databricks_basic_azure_databricks_environment/`.
 
 1. The sample depends on the following environment variables to be set before the deployment script is run:
   
@@ -147,7 +147,7 @@ Please follow the below steps to clean up your environment :
 
 The clean-up script can be executed to clean up the resources provisioned in this sample. Following are the steps to execute the script:
 
-1. Navigate to (CD) `single_tech_samples/databricks/sample1_basic_azure_databricks_environment/`.
+1. Navigate to (CD) `single_tech_samples/databricks/databricks_basic_azure_databricks_environment/`.
 
 2. Run '/destroy.sh'
 
@@ -157,4 +157,4 @@ The following screenshot displays the log for a successful clean-up run:
 
 ## 3. Next Step
 
-[Deploying Enterprise-grade Azure Databricks environment using Infrastructure as Code aligned with Anti-Data-Exfiltration Reference architecture](../sample2_enterprise_azure_databricks_environment/README.md)
+[Deploying enterprise-grade Azure Databricks environment using IaC aligned with anti-data-exfiltration reference architecture](./../databricks_enterprise_azure_databricks_environment/README.md)

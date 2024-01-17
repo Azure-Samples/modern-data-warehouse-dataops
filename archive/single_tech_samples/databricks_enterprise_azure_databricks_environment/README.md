@@ -170,7 +170,7 @@ The following are the prerequisites for deploying this sample :
 
 Below listed are the steps to deploy this sample :
 
-1. Fork and clone this repository. Navigate to (CD) `single_tech_samples/databricks/sample2_enterprise_azure_databricks_environment/`.
+1. Fork and clone this repository. Navigate to (CD) `single_tech_samples/databricks/databricks_enterprise_azure_databricks_environment/`.
 
 1. The sample depends on the following environment variables to be set before the deployment script is run:
   
@@ -263,7 +263,7 @@ The following steps can be performed to validate the correct deployment of this 
 
 The clean-up script can be executed to clean up the resources provisioned in this sample. Following are the steps to execute the script:
 
-1. Navigate to (CD) `single_tech_samples/databricks/sample1_basic_azure_databricks_environment/`.
+1. Navigate to (CD) `single_tech_samples/databricks/databricks_enterprise_azure_databricks_environment/`.
 
 2. Run '/destroy.sh'
 
@@ -273,4 +273,4 @@ The following screenshot displays the log for a successful clean-up run:
 
 ## 4. Next Step
 
-[Cluster provisioning and enabling data access on a pre-provisioned Azure Databricks Workspace](../sample3_cluster_provisioning_and_data_access/README.md)
+- [Cluster provisioning and enabling data access on a pre-provisioned Azure Databricks Workspace](./../databricks_cluster_provisioning_and_data_access/README.md)
