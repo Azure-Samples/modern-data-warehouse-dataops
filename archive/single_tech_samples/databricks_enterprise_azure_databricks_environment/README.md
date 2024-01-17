@@ -21,7 +21,7 @@
 
 ## 1. Solution Overview
 
-In [sample 1](../sample1_basic_azure_databricks_environment), we focused on deploying a basic Azure Databrick Environment with relevant services like Azure Storage Account and Azure Keyvault provisioned. However, an Enterprise-grade deployment of Databricks demands securing the environment to meet the organizational guardrails around cybersecurity and data protection.
+In [sample 1](./../databricks_basic_azure_databricks_environment/), we focused on deploying a basic Azure Databrick Environment with relevant services like Azure Storage Account and Azure Keyvault provisioned. However, an Enterprise-grade deployment of Databricks demands securing the environment to meet the organizational guardrails around cybersecurity and data protection.
 
 In this sample we focus on hardening the security around the Azure Databricks environment by implementing the following:
 
