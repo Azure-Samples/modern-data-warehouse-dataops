@@ -54,7 +54,7 @@ Details about [how to run the pipeline](#24-deployment-validation-and-execution)
 ### 1.3. Architecture
 
 The below diagram illustrates the design and the flow of the system:
-![alt text](../Common_Assets/Images/Architecture_design.png "Design Diagram")
+![alt text](./images/Architecture_design.png "Design Diagram")
 
 ### 1.4. Technologies used
 
@@ -108,7 +108,7 @@ Below listed are the steps to deploy this sample :
 
    The script will create the Synapse analytics workspace, Azure storage, Synapse pipelines & Synapse notebook. This script will also upload the sample file to blob storage and wheel packages to the Azure synapse.
 
-    ![alt text](../Common_Assets/Images/IAC_Script_Deploy.png "Logo Title Text 1")
+    ![alt text](./images/IAC_Script_Deploy.png "Logo Title Text 1")
 
 ### 2.3. Deployed Resources
 
@@ -116,15 +116,15 @@ The following resources will be deployed as a part of this sample once the scrip
 
 1.Azure Synapse Analytics workspace.
 
-![alt text](../Common_Assets/Images/IAC_Synapse.png "Logo Title Text 1")
+![alt text](./images/IAC_Synapse.png "Logo Title Text 1")
 
 2.Azure Storage with sample file.
 
-![alt text](../Common_Assets/Images/IAC_Storage.png "Logo Title Text 1")
+![alt text](./images/IAC_Storage.png "Logo Title Text 1")
 
 2.Azure Synapse spark pool with wheel packages.
 
-![alt text](../Common_Assets/Images/IAC_package.png "Logo Title Text 1")
+![alt text](./images/IAC_package.png "Logo Title Text 1")
 
 ### 2.4. Deployment validation and Execution
 
@@ -140,13 +140,13 @@ The following steps can be performed to validate the correct deployment and exec
 
     1. Launch the Azure synapse workspace & open the synapse pipelines.
     2. Select on `DataProcessPipeline` and click on edit configurations for `IterateFiles`(ForEach) activity.
-     ![alt text](../Common_Assets/Images/spark-pool1.png "Synapse pipeline")
+     ![alt text](./images/spark-pool1.png "Synapse pipeline")
     3. Select `InvokeOrchestratorNotebook` activity and then click on `Setttings` tab and set the Spark pool to `SparkPool1`
-     ![alt text](../Common_Assets/Images/spark-pool2.png "Synapse spark pool")
+     ![alt text](./images/spark-pool2.png "Synapse spark pool")
     4. Click on debug or trigger to run the pipeline.
     >Note:  As part of deployment, 2 modules have already been uploaded to Azure synapse.
 
-    ![alt text](../Common_Assets/Images/pipeline_run.png "Logo Title Text 1")
+    ![alt text](./images/pipeline_run.png "Logo Title Text 1")
 
   - `storageAccountName` is Azure storage account name
   - `containerName` is Azure blob storage container name
@@ -159,14 +159,14 @@ The following steps can be performed to validate the correct deployment and exec
   - `database`: Input for the spark database ; defaults to `default` value
 
     1. Fill in the parameters as required (or keeping the default values) and run the pipeline. Once the pipeline is successful, you'll see the data in the spark table as defined in the `targetTable` parameter
-    ![alt text](../Common_Assets/Images/Spark_table_full.png "spark table")
+    ![alt text](./images/Spark_table_full.png "spark table")
 
     1. Now let's run the same pipeline with another module, keeping everything same except the module name, module coinfiguration and target tables.
-![alt text](../Common_Assets/Images/pipeline_run_asia.png "Pipeline run")
+![alt text](./images/pipeline_run_asia.png "Pipeline run")
 
     1. Run the pipeline again with the moduleName as `data_filter` & this module will filter the data based on the filter criteria provided in the moduleConfig parameter, which in our case is "Asia" on `region` column.
     1. Once pipeline finished, you'll see a new spark table named `country_list_asia` created successfully.
-![alt text](../Common_Assets/Images/spark_table_asia.png "Spark Table")
+![alt text](./images/spark_table_asia.png "Spark Table")
 
    With this you can have generic pipelines which can load transformation modules dynamically based on configurations to process your data.
 

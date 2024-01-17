@@ -55,11 +55,11 @@ Details about [how to use this sample](#3-how-to-use-this-sample) can be found i
 
 The architecture of the solution is aligned with the security baselines for [Azure Databricks](https://docs.microsoft.com/en-us/azure/databricks/security/). The following diagram captures the high-level design.
 
-![alt text](../Common_Assets/Images/ADE_Architecture.png "Logo Title Text 1")
+![alt text](./images/ADE_Architecture.png "Logo Title Text 1")
 
 In this sample, a shell script is used to orchestrate the deployment. The following diagram illustrates the deployment process flow.
 
-![alt text](../Common_Assets/Images/ADE_Deployment.png "Logo Title Text 1")
+![alt text](./images/ADE_Deployment.png "Logo Title Text 1")
 
 #### 1.2.1. Patterns
 
@@ -188,7 +188,7 @@ Below listed are the steps to deploy this sample :
 
    > Note: `DEPLOYMENT_PREFIX` for this deployment was set as `lumussample2`
 
-    ![alt text](../Common_Assets/Images/ADE_Script_Deploy.png "Logo Title Text 1")
+    ![alt text](./images/ADE_Script_Deploy.png "Logo Title Text 1")
 
 ### 3.3. Deployed Resources
 
@@ -196,53 +196,53 @@ The following resources will be deployed as a part of this sample once the scrip
 
 1.Azure Databricks workspace.
 
-![alt text](../Common_Assets/Images/ADE_Adb.png "Logo Title Text 1")
+![alt text](./images/ADE_Adb.png "Logo Title Text 1")
 
 2.Azure Storage with hierarchical namespace enabled.
 
-![alt text](../Common_Assets/Images/ADE_Storage.png "Logo Title Text 1")
+![alt text](./images/ADE_Storage.png "Logo Title Text 1")
 
 3.Azure Key vault with all the secrets configured.
 
-![alt text](../Common_Assets/Images/ADE_Keyvault.png "Logo Title Text 1")
+![alt text](./images/ADE_Keyvault.png "Logo Title Text 1")
 
 4.Azure Virtual Networks with Vnet peering between the hub and spoke Vnets
   
 **Hub Vnet**
-![alt text](../Common_Assets/Images/ADE_Hub.png "Logo Title Text 1")
+![alt text](./images/ADE_Hub.png "Logo Title Text 1")
 
 **Spoke Vnet**
-![alt text](../Common_Assets/Images/ADE_Spoke.png "Logo Title Text 1")
+![alt text](./images/ADE_Spoke.png "Logo Title Text 1")
 
 5.Azure Firewall with rules configured
 
 **Network Rules**
-![alt text](../Common_Assets/Images/ADE_Firewall.png "Logo Title Text 1")
+![alt text](./images/ADE_Firewall.png "Logo Title Text 1")
 
 **Application Rules**
-![alt text](../Common_Assets/Images/ADE_Firewall_AR.png "Logo Title Text 1")
+![alt text](./images/ADE_Firewall_AR.png "Logo Title Text 1")
 
 6.Azure public IP address associated with the firewall
 
-![alt text](../Common_Assets/Images/ADE_IP.png "Logo Title Text 1")
+![alt text](./images/ADE_IP.png "Logo Title Text 1")
 
 7.Azure Routing table with routes configured
 
 **Subnets**
-![alt text](../Common_Assets/Images/ADE_Subnet.png "Logo Title Text 1")
+![alt text](./images/ADE_Subnet.png "Logo Title Text 1")
 
 **Routes**
-![alt text](../Common_Assets/Images/ADE_Route.png "Logo Title Text 1")
+![alt text](./images/ADE_Route.png "Logo Title Text 1")
 
 8.Azure Network Security Group
 
-![alt text](../Common_Assets/Images/ADE_NSG.png "Logo Title Text 1")
+![alt text](./images/ADE_NSG.png "Logo Title Text 1")
 
 8.Azure Private Link
 
 > **NOTE:** Configuring Private links require provisioning of Network Interface cards and Private DNS zones. The following screenshot illustrates the resources configured for two private links. One for the Storage and Another for Key vault.
 >
-![alt text](../Common_Assets/Images/ADE_PL.png "Logo Title Text 1")
+![alt text](./images/ADE_PL.png "Logo Title Text 1")
 
 ### 3.4. Deployment validation
 
@@ -254,10 +254,10 @@ The following steps can be performed to validate the correct deployment of this 
    2. Access the control plane for the storage account and key vault through the Azure portal.
    3. View the secrets configured in the Azure Key vault.
    4. View deployment logs in the Azure resource group
-   ![alt text](../Common_Assets/Images/ADE_Deployment_Logs.png "Logo Title Text 1").
+   ![alt text](./images/ADE_Deployment_Logs.png "Logo Title Text 1").
    5. Key vault and storage is not accessible outside Azure Databricks workspace.
    6. Changing the firewall rules to deny traffic from the control plane will prevent the Azure Databricks cluster from functioning.
-   ![alt text](../Common_Assets/Images/ADE_Firewall_Deny.png "Logo Title Text 1").
+   ![alt text](./images/ADE_Firewall_Deny.png "Logo Title Text 1").
 
 ### 3.5. Clean-up
 
@@ -269,7 +269,7 @@ The clean-up script can be executed to clean up the resources provisioned in thi
 
 The following screenshot displays the log for a successful clean-up run:
 
-  ![alt text](../Common_Assets/Images/ADE_Script_Teardown.png "Logo Title Text 1")
+  ![alt text](./images/ADE_Script_Teardown.png "Logo Title Text 1")
 
 ## 4. Next Step
 

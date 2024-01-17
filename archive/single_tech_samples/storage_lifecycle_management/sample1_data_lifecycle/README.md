@@ -147,16 +147,16 @@ After you run the above commands successfully, you should be able to see the fol
 
 - Azure Storage Accounts.
 
-![alt text](../common_assets/images/storage_accounts.png "Logo Title Text 1")
+![alt text](./images/storage_accounts.png "Logo Title Text 1")
  It can be observed that the storage accounts’ names have embedded random letters, which makes them unique. This is achieved by using the [azurecaf](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/azurecaf_name) feature.
 
 - Azure Storage Containers.
 
-![alt text](../common_assets/images/storage_containers.png "Logo Title Text 1")
+![alt text](./images/storage_containers.png "Logo Title Text 1")
 
 - Azure data lifecycle rules.
 
-![alt text](../common_assets/images/data_lifecycle_rules.png "Logo Title Text 1")
+![alt text](./images/data_lifecycle_rules.png "Logo Title Text 1")
 
 ### 2.5. Clean-up
 

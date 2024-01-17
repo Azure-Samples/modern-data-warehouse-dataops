@@ -7,13 +7,13 @@ languages:
 - bicep
 products:
 - azure
+- microsoft-fabric
+- azure-sql-database
 - azure-data-factory
 - azure-databricks
 - azure-stream-analytics
-- azure-data-lake-gen2
-- azure-functions
-- azure-data-share
-description: "Code samples showcasing how to apply DevOps concepts to the Modern Data Warehouse Architecture leveraging different Azure Data Technologies."
+- azure-synapse-analytics
+description: "Code samples showcasing how to apply DevOps concepts to the "modern data warehouse" architecture leveraging different Azure data technologies."
 ---
 
 # DataOps for the Modern Data Warehouse
@@ -29,33 +29,31 @@ The samples are either focused on a single azure service (**Single Tech Samples*
 
 ## Single Technology Samples
 
-- [Azure SQL](single_tech_samples/azuresql/)
-  - [CI/CD - AzureSQL](single_tech_samples/azuresql/)
-- [Data Factory](single_tech_samples/datafactory/)
-  - [CI/CD - ADF](single_tech_samples/datafactory/sample1_cicd)
-- [Azure Synapse Analytics](single_tech_samples/synapseanalytics)
+- [Microsoft Fabric](./single_tech_samples/fabric/README.md)
+  - [Feature engineering on Microsoft Fabric](./single_tech_samples/fabric/feature_engineering_on_fabric/README.md)
+- [Azure SQL database](./single_tech_samples/azuresql/README.md)
+  - [CI/CD - Azure SQL database](./single_tech_samples/azuresql/azuresql_ci_cd/README.md)
 - [Azure Databricks](single_tech_samples/databricks/)
-  - [IaC - Basic Azure Databricks deployment](single_tech_samples/databricks/sample1_basic_azure_databricks_environment/)
-  - [IaC - Enterprise Security and Data Exfiltration Protection Deployment](single_tech_samples/databricks/sample2_enterprise_azure_databricks_environment/)
-  - [IaC - Cluster Provisioning and Secure Data Access](single_tech_samples/databricks/sample3_cluster_provisioning_and_data_access/)
-  - [CI/CD - Databricks](single_tech_samples/databricks/sample4_ci_cd/)
-- [Stream Analytics](single_tech_samples/streamanalytics/)
-- [Azure Purview](single_tech_samples/purview/)
-  - [IaC - Azure Purview](single_tech_samples/purview/)
-- [Azure Data Share](single_tech_samples/datashare/)
+  - [IaC - Basic deployment](single_tech_samples/databricks/sample1_basic_azure_databricks_environment/)
+- [Azure Data Factory](./single_tech_samples/datafactory/README.md)
+  - [CI/CD - Auto publish](./single_tech_samples/datafactory/adf_cicd_auto_publish/README.md)
+  - [Data pre-processing using Azure Batch](./single_tech_samples/datafactory/adf_data_pre_processing_with_azure_batch/README.md)
+- [Azure Synapse Analytics](./single_tech_samples/synapseanalytics/README.md)
+  - [Serverless best practices](./single_tech_samples/synapseanalytics/synapse_serverless/README.md)
+- [Azure Stream Analytics](./single_tech_samples/streamanalytics/README.md)
+  - [CI/CD - Azure Stream Analytics](./single_tech_samples/streamanalytics/streamanalytics_ci_cd/README.md)
 
 ## End to End samples
 
-- **Parking Sensor Solution** - This demonstrates batch, end-to-end data pipeline following the MDW architecture, along with a corresponding CI/CD process.
+### Parking Sensor Solution
+
+This demonstrates batch, end-to-end data pipeline following the MDW architecture, along with a corresponding CI/CD process.
+
 ![Architecture](docs/images/CI_CD_process_simplified.png?raw=true "Architecture")
-  This has two version of the solution:
-  - [Azure Data Factory and Azure Databricks Version](e2e_samples/parking_sensors/)
-  - [Azure Synapse Version](e2e_samples/parking_sensors_synapse/)
-- [**Temperature Events Solution**](e2e_samples/temperature_events) - This demonstrate a high-scale event-driven data pipeline with a focus on how to implement Observability and Load Testing.
-![Architecture](e2e_samples/temperature_events/images/temperature-events-architecture.png?raw=true "Architecture")
-- [**Dataset Versioning Solution**](e2e_samples/dataset_versioning) - This demonstrates how to use DataFactory to Orchestrate DataFlow, to do DeltaLoads into DeltaLake On DataLake(DoDDDoD).
-- [**MDW Data Governance and PII data detection**](e2e_samples/mdw_governance) - This sample demonstrates how to deploy the Infrastructure of an end-to-end MDW Pipeline using [Azure DevOps pipelines](https://azure.microsoft.com/en-us/products/devops/pipelines/) along with a focus around Data Governance and PII data detection.
-  - *Technology stack*: Azure DevOps, Azure Data Factory, Azure Databricks, Azure Purview, [Presidio](https://github.com/microsoft/presidio)
+
+This has two version of the solution:
+- [Azure Data Factory and Azure Databricks Version](e2e_samples/parking_sensors/)
+- [Azure Synapse Version](e2e_samples/parking_sensors_synapse/)
 
 ## Contributing
 

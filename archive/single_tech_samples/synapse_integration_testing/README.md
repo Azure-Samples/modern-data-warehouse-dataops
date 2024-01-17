@@ -79,7 +79,7 @@ It makes use of the following azure services:
    - Open the project folder in VS Code.
    - Rename the file `.envtemplate` under ".devcontainer" folder to `devcontainer.env` and update the values as mentioned below.
    - Open the project in the Dev Container (see details [here](docs/devcontainer.md)).
-   - **Alternatively**. You can export the environment variables in the bash terminal after opening the Dev Container or if not using a Dev Contaienr. For example: `export DEPLOYMENT_ID="xxxxx"`.
+   - **Alternatively**. You can export the environment variables in the bash terminal after opening the Dev Container or if not using a Dev Container. For example: `export DEPLOYMENT_ID="xxxxx"`.
 
     -Set the following environment variables:
       - **AZURE_LOCATION** - Azure location to deploy resources. *Default*: default azure location.
@@ -133,7 +133,7 @@ It makes use of the following azure services:
       - Select "Trigger > Trigger Now".
       - Enter the name of a file in the storage account in the `datalake` container (upload this file before starting the trigger).
       - To monitor the run, go to "Monitor > Pipeline runs".
-      ![Pipeline Run](docs/images/SynapseRun.png?raw=true "Pipeline Run]")
+      ![Pipeline Run](./docs/images/SynapseRun.png?raw=true "Pipeline Run]")
    - If a redeployment is required of the Trigger and it has been activated, it will need to be manually deactivated before redeployment will be successful.
 
 Congratulations!! 🥳 You have successfully deployed the solution.

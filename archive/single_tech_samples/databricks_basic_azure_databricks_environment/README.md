@@ -40,7 +40,7 @@ Details about [how to use this sample](#3-how-to-use-this-sample) can be found i
 
 The below diagram illustrates the deployment process flow followed in this sample:
 
-![alt text](../Common_Assets/Images/IAC_Architecture.png "Logo Title Text 1")
+![alt text](./images/IAC_Architecture.png "Logo Title Text 1")
 
 #### 1.2.1. Patterns
 
@@ -111,7 +111,7 @@ Below listed are the steps to deploy this sample :
 
    > Note: `DEPLOYMENT_PREFIX` for this deployment was set as `lumustest`
 
-    ![alt text](../Common_Assets/Images/IAC_Script_Deploy.png "Logo Title Text 1")
+    ![alt text](./images/IAC_Script_Deploy.png "Logo Title Text 1")
 
 ### 2.3. Deployed Resources
 
@@ -119,15 +119,15 @@ The following resources will be deployed as a part of this sample once the scrip
 
 1.Azure Databricks workspace.
 
-![alt text](../Common_Assets/Images/IAC_Adb.png "Logo Title Text 1")
+![alt text](./images/IAC_Adb.png "Logo Title Text 1")
 
 2.Azure Storage with hierarchical namespace enabled.
 
-![alt text](../Common_Assets/Images/IAC_Storage.png "Logo Title Text 1")
+![alt text](./images/IAC_Storage.png "Logo Title Text 1")
 
 2.Azure Key vault with all the secrets configured.
 
-![alt text](../Common_Assets/Images/IAC_Keyvault.png "Logo Title Text 1")
+![alt text](./images/IAC_Keyvault.png "Logo Title Text 1")
 
 ### 2.4. Deployment validation
 
@@ -139,7 +139,7 @@ The following steps can be performed to validate the correct deployment of this 
    2. Access the control plane for the storage account and key vault through the Azure portal.
    3. View the secrets configured in the Azure Key vault
    4. View deployment logs in the Azure resource group
-   ![alt text](../Common_Assets/Images/IAC_Deployment_Logs.png "Logo Title Text 1")
+   ![alt text](./images/IAC_Deployment_Logs.png "Logo Title Text 1")
 
 ### 2.5. Clean-up
 
@@ -153,7 +153,7 @@ The clean-up script can be executed to clean up the resources provisioned in thi
 
 The following screenshot displays the log for a successful clean-up run:
 
-  ![alt text](../Common_Assets/Images/IAC_Script_Teardown.png "Logo Title Text 1")
+  ![alt text](./images/IAC_Script_Teardown.png "Logo Title Text 1")
 
 ## 3. Next Step
 
