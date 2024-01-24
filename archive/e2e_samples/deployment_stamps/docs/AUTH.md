@@ -1,8 +1,8 @@
 # Authentication and Authorization
 
-This sample uses Azure AD as identity provider. You need to:
+This sample uses Microsoft Entra ID as identity provider. You need to:
 
-- Provision Azure AD (or use existing one)
+- Provision Microsoft Entra tenant (or use existing one)
 - Add users and groups
 - Register an application
   - Setup authentication
@@ -11,9 +11,9 @@ This sample uses Azure AD as identity provider. You need to:
   - Setup API permission
 - Setup Users and groups in Enterprise Application
 
-## Provision Azure AD
+## Provision Microsoft Entra tenant
 
-If you don't have any Azure AD yet or need to create new one for testing, follow [Create a new tenant in Azure AD](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-access-create-new-tenant) to provision one.
+If you don't have any Microsoft Entra tenant yet or need to create new one for testing, follow [Create a new tenant in Microsoft Entra ID](https://learn.microsoft.com/en-us/entra/fundamentals/create-new-tenant) to provision one.
 
 ## Add users and groups
 
@@ -21,7 +21,7 @@ If you don't have any Azure AD yet or need to create new one for testing, follow
 
 To test the application, you need at least one user. You can use your own account or create new one.
 
-To create a new user, follow [Add or delete users using Azure Active Directory](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/add-users-azure-active-directory).
+To create a new user, follow [Add or delete users using Microsoft Entra ID](https://learn.microsoft.com/en-us/entra/fundamentals/add-users).
 
 ### Groups
 
@@ -32,13 +32,13 @@ To test the application, you need two groups.
 
 You can name them as you want.
 
-To create a new Group, follow [Create a basic group and add members using Azure Active Directory](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-groups-create-azure-portal#create-a-basic-group-and-add-members).
+To create a new Group, follow [Create a basic group and add members using Microsoft Entra ID](https://learn.microsoft.com/en-us/entra/fundamentals/how-to-manage-groups#create-a-basic-group-and-add-members).
 
 ## Register an application
 
 Follow the steps below to register new application.
 
-1. Go to "App registrations" menu in Azure AD portal.
+1. Go to "App registrations" menu in Microsoft Entra admin center.
 
 1. Click "New registration".
 
@@ -91,7 +91,7 @@ The application permission are used for integration test account. Scope for thes
 
 Once you register an application, you can map app role and groups.
 
-1. Go to Azure AD portal and select "Enterprise Applications".
+1. Go to Microsoft Entra admin center and select "Enterprise Applications".
 1. Select created application from the list.
 1. Select "Users and groups" menu.
 1. Click "Add user/group".
@@ -103,7 +103,7 @@ Once you register an application, you can map app role and groups.
 
 Once you setup group/app role mapping, you can now add users into groups.
 
-1. Go to Azure Portal and select groups.
+1. Go to Microsoft Entra admin center and select groups.
 1. Select admin group and assign any users.
 1. Also assign registered application to the group so that an integration test can use the application id as user. (You can create separate application for this purpose if you want.)
 1. Repeat the step for user group.

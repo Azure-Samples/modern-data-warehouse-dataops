@@ -20,7 +20,7 @@ parameters:
     displayName: Tenant Id (id of the center tenant)
     type: string
   - name: client_id
-    displayName: Client Id (client/application id of the Azure AD app registration to handle authentication)
+    displayName: Client Id (client/application id of the Microsoft Entra ID app registration to handle authentication)
     type: string
   - name: stamp_id
     displayName: Stamp Id (tag to filter resources)

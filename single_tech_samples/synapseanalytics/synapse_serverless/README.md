@@ -269,7 +269,7 @@ Once the sample is deployed in the subscription of choice, navigate to Synapse S
 
 The Pl_NYCTaxi_Run_Data_Retention pipeline does not have a trigger associated, the intend is to trigger it manually for the user to be able to analyze the results from the ingestion and the retention processes separately.
 
-The deployment script responsible to deploy a AAD group called AADGR<PROJECT_NAME><DEPLOYMENT_ID> and add the owner of the deployment as a member. Once the pipeline finishes successfully, you can navigate through the db_serverless database and check the views that were created and experiment the CLS scripts.
+The deployment script responsible to deploy a Microsoft Entra group called AADGR<PROJECT_NAME><DEPLOYMENT_ID> and add the owner of the deployment as a member. Once the pipeline finishes successfully, you can navigate through the db_serverless database and check the views that were created and experiment the CLS scripts.
 
 To successfully test the CLS functionality there are a couple of steps you need to execute manually. After the deployment is complete:
 
@@ -285,7 +285,7 @@ The infrastructure is composed by:
   - one storage account for internal Synapse use, named <PROJECT_NAME>st2<DEPLOYMENT_ID>
   - one storage account that acts as the data lake to store the NYC Taxi Data, named <PROJECT_NAME>st1<DEPLOYMENT_ID>
   - a Synapse workspace that includes a Serverless pool and a Spark pool, named <PROJECT_NAME>st1<DEPLOYMENT_ID>
-  - one AAD group, named AADGR<PROJECT_NAME><DEPLOYMENT_ID>
+  - one Microsoft Entra group, named AADGR<PROJECT_NAME><DEPLOYMENT_ID>
   - a key vault resource named, <PROJECT_NAME><DEPLOYMENT_ID>
 - one resource group named <PROJECT_NAME>-syn-mrg-<DEPLOYMENT_ID>, for  internal use of Synapse
 
@@ -330,7 +330,7 @@ The synapse artifacts are uploaded immediately after the infrastructure is succe
 To remove the sample completely you need to remove the following assets:
 
 - the resource group: <PROJECT_NAME><DEPLOYMENT_ID>-rg, resource group
-- the aad group: AADGR<PROJECT_NAME><DEPLOYMENT_ID>
+- the Microsoft Entra group: AADGR<PROJECT_NAME><DEPLOYMENT_ID>
 
 ## Avoiding unnecessary costs
 

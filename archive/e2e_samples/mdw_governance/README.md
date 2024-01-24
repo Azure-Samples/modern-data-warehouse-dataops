@@ -103,7 +103,7 @@ Each environment has an identical set of resources
         - **resourcePrefix** - this prefix will be appended to all resource names to make them unique (notice: lower-case letters only, no special characters allowed
         - **location** - location where resources should be deployed
         - **locationFormatted** - full name of location where resources should be deployed
-        - **purviewAdmins** - an [objectID](https://docs.microsoft.com/en-us/azure/marketplace/find-tenant-object-id) of the user/user group to be assigned admin rights to Purview (e.g. your Azure AD objectID). To find the object id of the current logged in user in `az cli`, run `az ad signed-in-user show --output json | jq -r '.objectId'`
+        - **purviewAdmins** - an [objectID](https://docs.microsoft.com/en-us/azure/marketplace/find-tenant-object-id) of the user/user group to be assigned admin rights to Purview (e.g. your Microsoft Entra object ID). To find the object id of the current logged in user in `az cli`, run `az ad signed-in-user show --output json | jq -r '.objectId'`
         - **azureResourceManagerConnection** - name of the service connection (by default this is derived from resource group name e.g. "SC-My-Resource-Group")
    9. Create a new pipeline from existing yml in Azure DevOps by selecting the repository and importing the `create-infrastructure.yml` YAML file (see [this post](https://stackoverflow.com/a/59067271) to learn how).
    10. Run the `create-infrastructure.yml` pipeline.

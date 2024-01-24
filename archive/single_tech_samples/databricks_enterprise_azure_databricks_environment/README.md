@@ -66,7 +66,7 @@ In this sample, a shell script is used to orchestrate the deployment. The follow
 Following are the cloud design patterns being used by this sample:
 
 - [External Configuration Store pattern](https://docs.microsoft.com/en-us/azure/architecture/patterns/external-configuration-store): Configuration for the deployment is persisted externally as a parameter file separate from the deployment script.
-- [Federated Identity pattern](https://docs.microsoft.com/en-us/azure/architecture/patterns/federated-identity): Azure active directory is used as the federated identity store to enable seamless integration with enterprise identity providers.
+- [Federated Identity pattern](https://docs.microsoft.com/en-us/azure/architecture/patterns/federated-identity): Microsoft Entra ID is used as the federated identity store to enable seamless integration with enterprise identity providers.
 - [Valet Key pattern](https://docs.microsoft.com/en-us/azure/architecture/patterns/valet-key): Azure key vault is used to manage the secrets and access toked used by the services.
 - [Gatekeeper pattern](https://docs.microsoft.com/en-us/azure/architecture/patterns/gatekeeper): The Azure firewall acts as a gatekeeper for all external traffic flowing in.
 
@@ -99,7 +99,7 @@ This sample implementation focuses on securing the Azure Databricks Environment 
 
 3. Automate the execution of the deployment script and restrict the privileges to service accounts.
 
-4. Integrate with the secure identity provider (Azure Active Directory).
+4. Integrate with the secure identity provider (Microsoft Entra ID).
 
 ### 2.2. Other considerations
 

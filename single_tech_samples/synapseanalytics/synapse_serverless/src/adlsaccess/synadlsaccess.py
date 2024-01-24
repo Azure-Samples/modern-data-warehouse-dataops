@@ -183,4 +183,4 @@ class ADLSOps:
             raise ValueError(
                 f"Config file check failed. Errors are: {self.config_check_errors}"
             )
-        print("ACL Statements generation and Active Directory Check Complete.")
+        print("ACL Statements generation and Microsoft Entra ID check complete.")

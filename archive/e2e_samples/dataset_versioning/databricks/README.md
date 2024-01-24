@@ -22,7 +22,7 @@ ACLs give you the ability to apply "finer grain" level of access to directories 
 
 The [official doc](https://docs.microsoft.com/en-us/azure/databricks/security/data-governance#secure-access-to-azure-data-lake-storage) mentioned:
 
-- Will you be accessing your data in a more interactive, ad-hoc way, perhaps developing an ML model or building an operational dashboard? In that case, we recommend that you use Azure Active Directory (Azure AD) credential passthrough.
+- Will you be accessing your data in a more interactive, ad-hoc way, perhaps developing an ML model or building an operational dashboard? In that case, we recommend that you use Microsoft Entra ID credential passthrough.
 - Will you be running automated, scheduled workloads that require one-off access to the containers in your data lake? Then using service principals to access Azure Data Lake Storage is preferred.
 
 ## Setup and Deployment

@@ -124,13 +124,13 @@ assign_synapse_role_if_not_exists "$synapseworkspace_name" "Synapse Contributor"
 
 #######################
 # RBAC - Control Plane
-# Create a AAD Group, if you have permissions to do it (otherwise you will need to request to the AAD admin and comment this line)
-echo "Creating AAD Group:AADGR${PROJECT}${DEPLOYMENT_ID}"
+# Create a Microsoft Entra group, if you have permissions to do it (otherwise you will need to request to the Microsoft Entra admin and comment this line)
+echo "Creating Microsoft Entra group:AADGR${PROJECT}${DEPLOYMENT_ID}"
 aad_group_name="AADGR${PROJECT}${DEPLOYMENT_ID}"
 aad_group_output=$(az ad group create --display-name "${aad_group_name}" --mail-nickname "${aad_group_name}" --output json)
 aad_group_id=$(echo $aad_group_output | jq -r '.id')
 
-echo "Adding the AAD Group id to the KeyVault"
+echo "Adding the Microsoft Entra Group id to the KeyVault"
 az keyvault secret set --vault-name "$kv_name" --name "$aad_group_name" --value "$aad_group_id" -o none
 
 ##########################
@@ -146,12 +146,12 @@ KEYVAULT_NAME=$kv_name \
 
 ####################
 # CLS
-# Get AAD Group ObjectID
+# Get Microsoft Entra Group Object ID
 aadGroupObjectId=$(az ad group list --filter "(displayName eq 'AADGR${PROJECT}${DEPLOYMENT_ID}')" --query "[].id" --output tsv)
-echo "Get AAD Group id: ${aadGroupObjectId}"
+echo "Get Microsoft Entra Group id: ${aadGroupObjectId}"
 until [ -n "${aadGroupObjectId}" ]
     do
-        echo "waiting for the aad group to be created..."
+        echo "waiting for the Microsoft Entra group to be created..."
         sleep 10
     done
 
@@ -160,15 +160,15 @@ until [ -n "${aadGroupObjectId}" ]
 # Allow Synapse Reader access to the AADGroup
 assign_synapse_role_if_not_exists "$synapseworkspace_name" "Synapse User" "$aadGroupObjectId"
 
-# Add the owner of the deployment to the AAD Group, if you have permissions to do it (otherwise you will need to request to the AAD admin and comment this line)
+# Add the owner of the deployment to the Microsft Entra Group, if you have permissions to do it (otherwise you will need to request to the Microsoft Entra admin and comment this line)
 #if [[ $(az ad group member check --group "AADGR${PROJECT}${DEPLOYMENT_ID}" --member-id ${owner_object_id}) == false ]]; then
-echo "Adding members to AAD Group:AADGR${PROJECT}${DEPLOYMENT_ID}"
+echo "Adding members to Microsoft Entra Group:AADGR${PROJECT}${DEPLOYMENT_ID}"
 az ad group member add --group "AADGR${PROJECT}${DEPLOYMENT_ID}" --member-id $owner_object_id
 #fi
 
-# Allow Contributor to the AAD Group on Synapse workspace
+# Allow Contributor to the Microsoft Entra Group on Synapse workspace
 az role assignment create --role "Contributor" --assignee-object-id "${aadGroupObjectId}" --assignee-principal-type "Group" --scope "/subscriptions/${AZURE_SUBSCRIPTION_ID}/resourceGroups/${resource_group_name}/providers/Microsoft.Synapse/workspaces/${synapseworkspace_name}"
 
-# Allow Contributor to the AAD Group on Synapse workspace
-echo "Giving ACL permission on the datalake container for the AAD Group"
+# Allow Contributor to the Microsoft Entra Group on Synapse workspace
+echo "Giving ACL permission on the datalake container for the Microsoft Entra Group"
 az storage fs access set --acl "group:${aadGroupObjectId}:rwx" -p "/" -f "datalake" --account-name "$azure_storage_account" --account-key "$azure_storage_key" -o none

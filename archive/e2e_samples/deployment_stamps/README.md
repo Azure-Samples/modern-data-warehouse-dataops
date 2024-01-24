@@ -10,15 +10,14 @@ This sample demonstrates how to scale-out a multi-tenant telemetry processing so
 - [How to use the sample](#how-to-use-the-sample)
   - [Prerequisites](#prerequisites)
   - [Setup and Deployment](#setup-and-deployment)
-    - [Azure AD for Authentication](#azure-ad-for-authentication)
+    - [Microsoft Entra ID for Authentication](#microsoft-entra-id-for-authentication)
     - [Azure DevOps to Run the Pipeline](#azure-devops-to-run-the-pipeline)
     - [Create Sample Data](#create-sample-data)
     - [Send Telemetries](#send-telemetries)
     - [Access through API](#access-through-api)
-- [Debug API and Function App Code Locally](#debug-api-and-function-app-code-locally
-)  
-  - [For API APP](#for-api-app)
-  - [For Function APP](#for-function-app)
+- [Debug API and Function App Code Locally](#debug-api-and-function-app-code-locally)
+  - [For API App](#for-api-app)
+  - [For Function App](#for-function-app)
 
 ## Solution Overview
 
@@ -55,8 +54,8 @@ In the above architecture, Stamp1 serves three Tenants A, B and C. Devices which
 
 When an end-user of any of the three Tenants, (i.e., User1, who belongs to Tenant B), sends a request to the API of Stamp1 to get latest telemetry data, the API will:
 
-- first interact with Azure AD to check whether User1 belongs to Tenant B and whether the user has access to the data;
-  > in this sample, Azure AD App registration, App roles, Users and Groups, Enterprise App are used to manage the multi-tenant environment. For more details of how to setup the authentication environment, please check [Authentication and Authorization](docs/AUTH.md).
+- first interact with Microsoft Entra ID to check whether User1 belongs to Tenant B and whether the user has access to the data;
+  > in this sample, Microsoft Entra App registration, App roles, Users and Groups, Enterprise App are used to manage the multi-tenant environment. For more details of how to setup the authentication environment, please check [Authentication and Authorization](docs/AUTH.md).
 - then query tenant details information from CosmosDB to check whether the specified device id belongs to Tenant B;
 - once the access right has been confirmed, the latest telemetry data of the specified device id saved in Table storage will be returned to User1.
 
@@ -68,13 +67,13 @@ The same follow applies to Stamp2 and Stamp3 too. In this current version of sam
 
 1. [Azure DevOps account](https://azure.microsoft.com/en-us/products/devops/)
 2. [Azure Account](https://azure.microsoft.com/en-us/free/)  
-*Permissions needed*: ability to create and deploy to an azure resource group, a service principal, and grant the collaborator role to the service principal over the resource group; ability to manage Azure AD to create App registration, Users, Groups and Enterprise App Registration.
+*Permissions needed*: ability to create and deploy to an azure resource group, a service principal, and grant the collaborator role to the service principal over the resource group; ability to create App registration, Users, Groups and Enterprise App Registration in Microsoft Entra ID.
 
 ### Setup and Deployment
 
-#### Azure AD for Authentication
+#### Microsoft Entra ID for Authentication
 
-Before creating each of the stamp, follow [Authentication and Authorization](docs/AUTH.md) to create a center Azure AD Tenant first.
+Before creating each of the stamp, follow [Authentication and Authorization](docs/AUTH.md) to create a center Microsoft Entra Tenant first.
 
 The center Tenant will be used by the API app to check authentication and authorization.
 
@@ -82,7 +81,7 @@ The center Tenant will be used by the API app to check authentication and author
   - With the center tenant setup, the sample will already be able to work as a stamp serving a single tenant (like the "stamp2" in the Architecture). In this case, Tenant D and the center Tenant are the same Tenant. Test user 2 should be added to the center Tenant (which is also Tenant D).
   
 - Multi-Tenants Stamps
-  - For creating a multi-tenants stamp (like "stamp1" and "stamp3"), Azure AD Tenants besides the center Tenant should also be created and the test users under them should be added to the center Tenant as guest users ([Azure AD - Add guest users](https://docs.microsoft.com/en-us/azure/active-directory/external-identities/b2b-quickstart-add-guest-users-portal)).
+  - For creating a multi-tenants stamp (like "stamp1" and "stamp3"), Microsoft Entra Tenants besides the center Tenant should also be created and the test users under them should be added to the center Tenant as guest users ([Microsoft Entra ID - Add guest users](https://learn.microsoft.com/en-us/entra/external-id/b2b-quickstart-add-guest-users-portal)).
 
   - For example, if you want to do a tryout of "stamp1" in the Architecture, create a center Tenant first; the center Tenant can be used as any of the three Tenants A, B and C; then create the other two Tenants and add their test users to the center Tenant as guest users.
 
@@ -170,7 +169,7 @@ Update following values in the `appsettings.json` with resources in the created 
 
 - Cosmos DB connection string
 - Storage Account connection string
-- Azure AD tenant and client ID
+- Microsoft Entra tenant and client ID
 
 Change directory to **.\api\WebApi\\** and run command `dotnet run`.
 

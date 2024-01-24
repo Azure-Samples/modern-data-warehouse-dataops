@@ -8,31 +8,33 @@ This code illustrates how to perform a fully automated data sharing process betw
 
 ## Contents
 
-- [Working with the sample](#working-with-the-sample)
-  - [source.py](#sourcepy)
-  - [dest.py](#destpy)
-  - [Azure Function](#azure-function)
-  - [Dev Container](#dev-container)
-  - [Prerequisites](#prerequisites)
-    - [Bash](#bash)
-    - [Powershell](#powershell)
-  - [Creating the service principal](#creating-the-service-principal)
-  - [Role Assignments](#role-assignments)
-- [Running the sample](#running-the-sample)
-  - [Sharing data](#sharing-data)
-    - [Source script configuration](#source-script-configuration)
-    - [Source script authentication](#source-script-authentication)
-    - [Running the source script](#running-the-source-script)
-  - [Receiving data](#receiving-data)
-    - [Destination script configuration](#destination-script-configuration)
-    - [Destination script authentication](#destination-script-authentication)
-    - [Running the destination script](#running-the-destination-script)
-  - [Triggering the scan](#triggering-the-scan)
-  - [Using the Azure Function](#using-the-azure-function)
-    - [Azure Function requirements](#azure-function-requirements)
-    - [F5 experience](#f5-experience)
-    - [Azure function authentication](#azure-function-authentication)
-- [Removing the sample assets](#removing-the-sample-assets)
+- [Data Share Automation](#data-share-automation)
+  - [Contents](#contents)
+  - [Working with the sample](#working-with-the-sample)
+    - [source.py](#sourcepy)
+    - [dest.py](#destpy)
+    - [Azure Function](#azure-function)
+    - [Dev Container](#dev-container)
+    - [Prerequisites](#prerequisites)
+      - [Bash](#bash)
+      - [Powershell](#powershell)
+    - [Creating the service principal](#creating-the-service-principal)
+    - [Role Assignments](#role-assignments)
+  - [Running the sample](#running-the-sample)
+    - [Sharing data](#sharing-data)
+      - [Source script configuration](#source-script-configuration)
+      - [Source script authentication](#source-script-authentication)
+      - [Running the source script](#running-the-source-script)
+    - [Receiving data](#receiving-data)
+      - [Destination script configuration](#destination-script-configuration)
+      - [Destination script authentication](#destination-script-authentication)
+      - [Running the destination script](#running-the-destination-script)
+    - [Triggering the scan](#triggering-the-scan)
+    - [Using the Azure Function](#using-the-azure-function)
+      - [Azure Function requirements](#azure-function-requirements)
+      - [F5 experience](#f5-experience)
+      - [Azure function authentication](#azure-function-authentication)
+  - [Removing the sample assets](#removing-the-sample-assets)
 
 ## Working with the sample
 
@@ -43,7 +45,7 @@ This sample includes two Python scripts and an azure function:
 - Creates a share in a data share account
 - Sets up a dataset from a ADLSGen2 storage account file system
 - Creates a synchronization schedule for the share
-- Sends out an invitation to a service principal on a specific Azure AD tenant
+- Sends out an invitation to a service principal on a specific Microsoft Entra tenant
 
 ### dest.py
 
@@ -102,7 +104,7 @@ az account set -s <SUBSCRIPTION_ID>
 
 ### Creating the service principal
 
-To automate the acceptance of the invitation, a service principal must be created in the **destination** Azure AD tenant.
+To automate the acceptance of the invitation, a service principal must be created in the **destination** Microsoft Entra tenant.
 
 ```bash
 az ad sp create-for-rbac --name "<insert_sp_name>"

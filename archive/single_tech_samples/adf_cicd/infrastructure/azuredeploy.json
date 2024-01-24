@@ -29,7 +29,7 @@
         "keyvault_owner_object_id": {
             "type": "String",
             "metadata": {
-                "description": "Active Directory ObjectId to be granted full rights to KV"
+                "description": "Microsoft Entra Object ID to be granted full rights to KV"
             }
         },
         "datalake_storage_account_name": {
