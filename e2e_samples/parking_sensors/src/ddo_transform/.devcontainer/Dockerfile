@@ -4,6 +4,10 @@
 #-----------------------------------------------------------------------------------------
 FROM python:3.7
 
+ARG USERNAME=mdwuser
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+
 # Configure apt
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
@@ -16,23 +20,36 @@ RUN apt-get -y install git procps lsb-release
 RUN apt-get install -y libicu[0-9][0-9]
 
 # Install java
-RUN apt-get install -y openjdk-11-jdk
-ENV JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64
+RUN wget -qO - https://packages.adoptium.net/artifactory/api/gpg/key/public | apt-key add -
+RUN echo "deb https://packages.adoptium.net/artifactory/deb \
+$(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" \
+| tee /etc/apt/sources.list.d/adoptium.list
+RUN apt-get update \
+    && apt-get -y install --no-install-recommends \
+      temurin-11-jdk
 
-RUN mkdir /workspace
-WORKDIR /workspace
 
-# Install Python dependencies from requirements.txt and requirements_dev.txt
-COPY requirements.txt* requirements_dev.txt* /workspace/
-RUN pip install -r requirements_dev.txt \
-    && rm requirements_dev.txt* \
-    && pip install -r requirements.txt \ 
-    && rm requirements.txt*
+RUN groupadd --gid $USER_GID $USERNAME \
+    && useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USERNAME
+    
+RUN mkdir /home/$USERNAME/workspace
+WORKDIR /home/$USERNAME/workspace
 
 # Clean up
 RUN apt-get autoremove -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies from requirements.txt and requirements_dev.txt
+COPY requirements.txt* requirements_dev.txt* /home/$USERNAME/workspace/
+RUN chown -R $USERNAME:$USER_GID /home/$USERNAME/workspace
+USER $USERNAME
+RUN pip install -r requirements_dev.txt \
+    && rm requirements_dev.txt* \
+    && pip install -r requirements.txt \ 
+    && rm requirements.txt*
+ENV PYTHONPATH=/workspace
+
 ENV DEBIAN_FRONTEND=dialog
 
 # Set PACKAGE_VERSION to localdev
