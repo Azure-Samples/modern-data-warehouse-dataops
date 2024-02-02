@@ -38,6 +38,22 @@ set -o nounset
 # RESOURCE_GROUP_LOCATION
 # AZURE_SUBSCRIPTION_ID
 
+# add by Bo for test  
+# step 1 TODO Add by Bo
+export ENV_NAME="botestadf"
+export RESOURCE_GROUP_NAME="botestadf"
+export RESOURCE_GROUP_LOCATION="eastus"
+export AZURE_SUBSCRIPTION_ID=""
+export DEPLOYMENT_ID="2w4"
+
+#step 2 variable for deploy_azdo_service_connections_azure.sh
+# export AZURE_DEVOPS_ORG="bwa0800"
+# export AZURE_DEVOPS_PROJECT="adf-test"
+# #how to create/get AZURE_DEVOPS_EXT_PAT
+# export AZURE_DEVOPS_EXT_PAT=""
+
+# step 3 deploy_azdo_variables.sh
+# None
 
 #####################
 # DEPLOY ARM TEMPLATE
@@ -54,12 +70,15 @@ az group create --name "$RESOURCE_GROUP_NAME" --location "$RESOURCE_GROUP_LOCATI
 # Retrieve KeyVault User Id
 kv_owner_object_id=$(az ad signed-in-user show --output json | jq -r '.id')
 
+
+
+# add by bo ===>  The default parameter can be used for this parameter and default value at ../infra/azuredeploy.json file
+#  --parameters @"azuredeploy.parameters.${ENV_NAME}.json" \
 # Deploy arm template
 echo "Deploying resources into $RESOURCE_GROUP_NAME"
 arm_output=$(az deployment group create \
     --resource-group "$RESOURCE_GROUP_NAME" \
-    --template-file "azuredeploy.json" \
-    --parameters @"azuredeploy.parameters.${ENV_NAME}.json" \
+    --template-file "../infra/azuredeploy.json" \
     --parameters keyvault_owner_object_id=${kv_owner_object_id} deployment_id=${DEPLOYMENT_ID} \
     --output json)
 

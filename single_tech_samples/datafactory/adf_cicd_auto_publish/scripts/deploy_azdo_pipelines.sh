@@ -40,6 +40,17 @@ set -o nounset
 # YAML_PIPELINE_PATH
 # Retrieve Github Service Connection Id
 
+
+# add by Bo for test
+export AZDO_GITHUB_SERVICE_CONNECTION="mdws-adf-serviceconnection-botestadf"
+export GITHUB_REPO_URL="https://dev.azure.com/bwa0800/adf-test/_git/bo-adf-test"
+export AZDO_PIPELINES_BRANCH_NAME="boadftestbranch"
+# Default parameters are concatenated
+export DEV_DATAFACTORY_NAME="mdwsadfdev2w4"
+# It should be emphasized that the yml file should be placed in the ADO location instead of the current Git location
+export YAML_PIPELINE_PATH="adf-deployment.yml"
+
+
 github_sc_name="AZDO_GITHUB_SERVICE_CONNECTION"
 github_sc_id=$(az devops service-endpoint list --output json |
     jq -r --arg NAME "$github_sc_name" '.[] | select(.name==$NAME) | .id')

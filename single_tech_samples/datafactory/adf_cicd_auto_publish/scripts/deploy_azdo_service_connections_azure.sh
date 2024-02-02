@@ -41,6 +41,19 @@ set -o nounset
 # AZURE_DEVOPS_PROJECT
 # AZURE_DEVOPS_EXT_PAT
 
+
+# add by Bo for test
+export ENV_NAME="botestadf"
+export RESOURCE_GROUP_NAME="botestadf"
+export RESOURCE_GROUP_LOCATION="eastus"
+export AZURE_SUBSCRIPTION_ID=""
+export DEPLOYMENT_ID="2w4"
+
+export AZURE_DEVOPS_ORG="bwa0800"
+export AZURE_DEVOPS_PROJECT="adf-test"
+export AZURE_DEVOPS_EXT_PAT=""
+
+
 az_service_connection_name="mdws-adf-serviceconnection-$ENV_NAME"
 
 az_sub=$(az account show --output json)
@@ -61,7 +74,8 @@ az_sp=$(az ad sp create-for-rbac \
 
 
 export SERVICE_PRINCIPAL_ID=$(echo $az_sp | jq -r '.appId')
-echo $AZURE_DEVOPS_EXT_PAT | az devops login --organization https://dev.azure.com/manjitsin/
+# error ---> Failed to authenticate using the supplied token. (hard-coded)
+echo $AZURE_DEVOPS_EXT_PAT | az devops login --organization https://dev.azure.com/$AZURE_DEVOPS_ORG
 az_sp_tenant_id=$(echo $az_sp | jq -r '.tenant')
 
 az devops configure --defaults organization=https://dev.azure.com/$AZURE_DEVOPS_ORG project=$AZURE_DEVOPS_PROJECT

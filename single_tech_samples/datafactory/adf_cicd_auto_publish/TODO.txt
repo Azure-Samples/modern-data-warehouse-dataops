@@ -1,0 +1,40 @@
+deploy_infra.sh
+
+need define deployment ID 
+export DEPLOYMENT_ID="2w4"
+
+incorrect file paths
+--template-file "../infra/azuredeploy.json" \
+
+how to define/create EVN.json or use default value
+--parameters @"azuredeploy.parameters.${ENV_NAME}.json" \
+
+
+
+deploy_azdo_service_connections_azure.sh
+
+error ---> Failed to authenticate using the supplied token. (hard-coded)
+
+echo $AZURE_DEVOPS_EXT_PAT | az devops login --organization https://dev.azure.com/manjitsin/
+echo $AZURE_DEVOPS_EXT_PAT | az devops login --organization https://dev.azure.com/$AZURE_DEVOPS_ORG
+
+
+
+deploy_azdo_pipelines.sh
+may need to expand how to get environment variables (more screenshort)
+
+export AZDO_GITHUB_SERVICE_CONNECTION="mdws-adf-serviceconnection-botestadf"
+export GITHUB_REPO_URL="https://dev.azure.com/bwa0800/adf-test/_git/bo-adf-test"
+export AZDO_PIPELINES_BRANCH_NAME="boadftestbranch"
+export DEV_DATAFACTORY_NAME="mdwsadfdev2w4"
+export YAML_PIPELINE_PATH="adf-deployment.yml"
+
+
+
+for pipeline deploy pipeline extension preparation 
+
+https://marketplace.visualstudio.com/items?itemName=SQLPlayer.DataFactoryTools
+
+Deploy Azure Data Factory (#adftools) - Visual Studio Marketplace
+Extension for Azure DevOps - Tools for deploying entire ADF code (JSON files) to ADF instance
+marketplace.visualstudio.com
