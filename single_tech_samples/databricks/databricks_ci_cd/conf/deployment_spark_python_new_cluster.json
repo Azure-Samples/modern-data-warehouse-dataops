@@ -1,24 +1,26 @@
 {
-    "default": {
-        "jobs": [
-            {
-                "name": "<JOB_NAME>",
-                "new_cluster": {
-                    "spark_version": "7.3.x-cpu-ml-scala2.12",
-                    "node_type_id": "Standard_F4s",
-                    "num_workers": 1
-                },
-                "libraries": [],
-                "email_notifications": {
-                    "on_start": [],
-                    "on_success": [],
-                    "on_failure": []
-                },
-                "max_retries": 0,
-                "spark_python_task": {
-                    "python_file": "<FILE_PATH>"
+    "environments": {
+        "default": {
+            "workflows": [
+                {
+                    "name": "<JOB_NAME>",
+                    "new_cluster": {
+                        "spark_version": "13.3.x-scala2.12",
+                        "node_type_id": "Standard_F4s",
+                        "num_workers": 1
+                    },
+                    "libraries": [],
+                    "email_notifications": {
+                        "on_start": [],
+                        "on_success": [],
+                        "on_failure": []
+                    },
+                    "max_retries": 0,
+                    "spark_python_task": {
+                        "python_file": "file://spark_python_jobs/tests/integration/main_test.py"
+                    }
                 }
-            }
-        ]
+            ]
+        }
     }
 }

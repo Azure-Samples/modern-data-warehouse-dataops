@@ -50,7 +50,7 @@ jobs:
 
 
         - script: |
-            nutter run $NOTEBOOK_PATH $CLUSTER --recursive --junit_report
+            nutter run $NOTEBOOK_PATH $CLUSTER --recursive --junit_report --timeout 600
           displayName: 'Execute Nutter'
           env:
             CLUSTER: ${{ parameters.databricksClusterId}}

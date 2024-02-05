@@ -5,7 +5,7 @@
             {
                 "name": "spark_app_notebook_job_main_a_integration_test",
                 "new_cluster": {
-                    "spark_version": "7.3.x-cpu-ml-scala2.12",
+                    "spark_version": "13.3.x-scala2.12",
                     "node_type_id": "Standard_F4s",
                     "num_workers": 2
                 },
@@ -23,7 +23,7 @@
             {
                 "name": "spark_app_notebook_job_main_b_integration_test",
                 "new_cluster": {
-                    "spark_version": "7.3.x-cpu-ml-scala2.12",
+                    "spark_version": "13.3.x-scala2.12",
                     "node_type_id": "Standard_F4s",
                     "num_workers": 2
                 },
@@ -41,7 +41,7 @@
             {
                 "name": "spark_app_python_job_integration_test",
                 "new_cluster": {
-                    "spark_version": "7.3.x-cpu-ml-scala2.12",
+                    "spark_version": "13.3.x-scala2.12",
                     "node_type_id": "Standard_F4s",
                     "num_workers": 1
                 },

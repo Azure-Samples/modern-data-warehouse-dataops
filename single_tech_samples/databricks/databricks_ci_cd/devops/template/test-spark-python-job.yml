@@ -57,7 +57,7 @@ jobs:
 
         - script: |
             echo "dbx deploy job $DATABRICKS_JON_NAME ..."
-            dbx deploy --deployment-file=$(deploymenFile) --jobs=$DATABRICKS_JON_NAME --files-only
+            dbx deploy --deployment-file=$(deploymenFile) --jobs=$DATABRICKS_JON_NAME --assets-only
           displayName: 'Deploy Spark Python Job'
           env:
             DATABRICKS_HOST: ${{ parameters.databricksDomain }}
@@ -66,7 +66,7 @@ jobs:
 
         - script: |
             echo "dbx launch job $DATABRICKS_JON_NAME ..."
-            dbx launch --job=$DATABRICKS_JON_NAME --as-run-submit --trace
+            dbx launch $DATABRICKS_JON_NAME --as-run-submit --trace
           displayName: 'Launch integration on test'
           env:
             DATABRICKS_HOST: ${{ parameters.databricksDomain }}
