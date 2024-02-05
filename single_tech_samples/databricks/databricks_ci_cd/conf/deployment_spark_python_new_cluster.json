@@ -17,7 +17,7 @@
                     },
                     "max_retries": 0,
                     "spark_python_task": {
-                        "python_file": "file://spark_python_jobs/tests/integration/main_test.py"
+                        "python_file": "file://<FILE_PATH>"
                     }
                 }
             ]
