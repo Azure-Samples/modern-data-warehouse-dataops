@@ -38,20 +38,19 @@ set -o nounset
 # RESOURCE_GROUP_NAME
 # DEPLOYMENT_ID
 # AZURE_DEVOPS_ORG
-# AZURE_DEVOPS_PROJECT
+# AZDO_ORGANIZATION_URL
 # AZURE_DEVOPS_EXT_PAT
 
 
 # add by Bo for test
-export ENV_NAME="botestadf"
-export RESOURCE_GROUP_NAME="botestadf"
-export RESOURCE_GROUP_LOCATION="eastus"
-export AZURE_SUBSCRIPTION_ID=""
-export DEPLOYMENT_ID="2w4"
-
-export AZURE_DEVOPS_ORG="bwa0800"
-export AZURE_DEVOPS_PROJECT="adf-test"
-export AZURE_DEVOPS_EXT_PAT=""
+# export ENV_NAME="botestadf"
+# export RESOURCE_GROUP_NAME="botestadf"
+# export RESOURCE_GROUP_LOCATION="eastus"
+# export AZURE_SUBSCRIPTION_ID=""
+# export DEPLOYMENT_ID="2w4"
+# export AZURE_DEVOPS_ORG="bwa0800"
+# export AZDO_ORGANIZATION_URL="adf-test"
+# export AZURE_DEVOPS_EXT_PAT=""
 
 
 az_service_connection_name="mdws-adf-serviceconnection-$ENV_NAME"
@@ -75,10 +74,10 @@ az_sp=$(az ad sp create-for-rbac \
 
 export SERVICE_PRINCIPAL_ID=$(echo $az_sp | jq -r '.appId')
 # error ---> Failed to authenticate using the supplied token. (hard-coded)
-echo $AZURE_DEVOPS_EXT_PAT | az devops login --organization https://dev.azure.com/$AZURE_DEVOPS_ORG
+echo $AZURE_DEVOPS_EXT_PAT | az devops login --organization $AZDO_ORGANIZATION_URL
 az_sp_tenant_id=$(echo $az_sp | jq -r '.tenant')
 
-az devops configure --defaults organization=https://dev.azure.com/$AZURE_DEVOPS_ORG project=$AZURE_DEVOPS_PROJECT
+az devops configure --defaults organization=$AZDO_ORGANIZATION_URL project=$AZURE_DEVOPS_PROJECT
 
 # Create Azure Service connection in Azure DevOps
 

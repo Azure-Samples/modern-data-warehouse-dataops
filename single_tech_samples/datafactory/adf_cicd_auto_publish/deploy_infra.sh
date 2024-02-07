@@ -28,23 +28,25 @@
 set -o errexit
 set -o pipefail
 set -o nounset
-# set -o xtrace # For debugging
+set -o xtrace # For debugging
 
 ###################
 # REQUIRED ENV VARIABLES:
 #
 # ENV_NAME
-# RESOURCE_GROUP_NAME
-# RESOURCE_GROUP_LOCATION
-# AZURE_SUBSCRIPTION_ID
+# AZDO_PROJECT
+# AZDO_ORGANIZATION_URL
+# AZURE_DEVOPS_EXT_PAT
+
+. ./scripts/init_environment.sh
 
 # add by Bo for test  
 # step 1 TODO Add by Bo
-export ENV_NAME="botestadf"
-export RESOURCE_GROUP_NAME="botestadf"
-export RESOURCE_GROUP_LOCATION="eastus"
-export AZURE_SUBSCRIPTION_ID=""
-export DEPLOYMENT_ID="2w4"
+# export ENV_NAME="botestadf"
+# export RESOURCE_GROUP_NAME="botestadf"
+# export AZURE_LOCATION="eastus"
+# export AZURE_SUBSCRIPTION_ID=""
+# export DEPLOYMENT_ID="2w4"
 
 #step 2 variable for deploy_azdo_service_connections_azure.sh
 # export AZURE_DEVOPS_ORG="bwa0800"
@@ -58,13 +60,10 @@ export DEPLOYMENT_ID="2w4"
 #####################
 # DEPLOY ARM TEMPLATE
 
-# Set account to where ARM template will be deployed to
-echo "Deploying to Subscription: $AZURE_SUBSCRIPTION_ID"
-az account set --subscription $AZURE_SUBSCRIPTION_ID
-
 # Create resource group
-echo "Creating resource group: $RESOURCE_GROUP_NAME"
-az group create --name "$RESOURCE_GROUP_NAME" --location "$RESOURCE_GROUP_LOCATION" --tags Environment=$ENV_NAME
+resource_group_name="adf-$DEPLOYMENT_ID-$ENV_NAME-rg"
+echo "Creating resource group: $resource_group_name"
+az group create --name "$resource_group_name" --location "$AZURE_LOCATION" --tags Environment=$ENV_NAME
 
 # By default, set all KeyVault permission to deployer
 # Retrieve KeyVault User Id
@@ -75,7 +74,7 @@ kv_owner_object_id=$(az ad signed-in-user show --output json | jq -r '.id')
 # add by bo ===>  The default parameter can be used for this parameter and default value at ../infra/azuredeploy.json file
 #  --parameters @"azuredeploy.parameters.${ENV_NAME}.json" \
 # Deploy arm template
-echo "Deploying resources into $RESOURCE_GROUP_NAME"
+echo "Deploying resources into $resource_group_name"
 arm_output=$(az deployment group create \
     --resource-group "$RESOURCE_GROUP_NAME" \
     --template-file "../infra/azuredeploy.json" \
@@ -146,8 +145,22 @@ export KV_URL=https://$kv_name.vault.azure.net/
 
 ####################
 # Set up AZDO Azure Service Connection and Variables Groups
-. ./deploy_azdo_service_connections_azure.sh
-. ./deploy_azdo_variables.sh
+# AzDO Azure Service Connections
+PROJECT=$PROJECT \
+ENV_NAME=$ENV_NAME \
+RESOURCE_GROUP_NAME=$resource_group_name \
+AZDO_ORGANIZATION_URL=$AZDO_ORGANIZATION_URL \
+AZURE_DEVOPS_EXT_PAT=$AZURE_DEVOPS_EXT_PAT \
+    bash -c "./scripts/deploy_azdo_service_connections_azure.sh"
+
+ENV_NAME=$ENV_NAME
+AZURE_LOCATION=$AZURE_LOCATION
+RESOURCE_GROUP_NAME=$RESOURCE_GROUP_NAME
+DATAFACTORY_NAME=$DATAFACTORY_NAME
+AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID
+DL_STORAGE_ACCOUNT=$DL_STORAGE_ACCOUNT
+    bash -c "./scripts/deploy_azdo_variables.sh"
+
 
 ####################
 # BUILD ENV FILE FROM CONFIG INFORMATION
@@ -156,8 +169,8 @@ env_file=".env.${ENV_NAME}"
 echo "Appending configuration to .env file."
 cat << EOF >> $env_file
 
-RESOURCE_GROUP_NAME=${RESOURCE_GROUP_NAME}
-RESOURCE_GROUP_LOCATION=${RESOURCE_GROUP_LOCATION}
+RESOURCE_GROUP_NAME=${resource_group_name}
+AZURE_LOCATION=${AZURE_LOCATION}
 DL_STORAGE_ACCOUNT=${DL_STORAGE_ACCOUNT}
 DL_STORAGE_KEY=${DL_STORAGE_KEY}
 DATAFACTORY_NAME=${DATAFACTORY_NAME}
@@ -165,4 +178,4 @@ KV_URL=${KV_URL}
 
 EOF
 
-echo "Completed deploying Azure resources $RESOURCE_GROUP_NAME ($ENV_NAME)"
+echo "Completed deploying Azure resources $resource_group_name ($ENV_NAME)"
