@@ -1,0 +1,33 @@
+###
+# REQUIRED. Azure DevOps details used in "az devops configure" when devcontainer is built
+
+# Target Azure DevOps project where Azure Pipelines and Variable groups will be deploy
+export AZDO_PROJECT=
+
+# Target Azure DevOps Organization of Azure DevOps project in this form `https://dev.azure.com/<organization>/`. (ei. https://dev.azure.com/my_azdo_org/)
+export AZDO_ORGANIZATION_URL=
+
+
+###
+# REQUIRED. Environment variables for deployment script
+
+# a Azure DevOps PAT token. More info [here](https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=Windows). This requires "repo" scope.
+export AZURE_DEVOPS_EXT_PAT=
+
+
+###
+# OPTIONAL. Environment variables for deployment script.
+# Uncomment to set values.
+
+# Environment name. Default: dev
+# export ENV_NAME=
+
+# Azure location to deploy resources. Default: westus
+# export AZURE_LOCATION=
+
+# Azure subscription id to use to deploy resources. Default: default azure subscription.
+# export AZURE_SUBSCRIPTION_ID=
+
+# String appended to all resource names to ensure uniqueness of azure resource names. Default: random five character string
+# export DEPLOYMENT_ID=
+

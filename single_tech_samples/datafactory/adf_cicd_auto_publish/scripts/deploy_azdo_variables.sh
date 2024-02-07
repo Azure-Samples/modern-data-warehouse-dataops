@@ -36,11 +36,13 @@ set -o nounset
 # REQUIRED ENV VARIABLES:
 #
 # ENV_NAME
-# RESOURCE_GROUP_LOCATION
+# AZURE_LOCATION
 # RESOURCE_GROUP_NAME
 # DATAFACTORY_NAME
 # AZURE_SUBSCRIPTION_ID
 # DL_STORAGE_ACCOUNT
+
+
 # DL_STORAGE_KEY
 # FS_STORAGE_ACCOUNT
 # FS_STORAGE_KEY
@@ -52,7 +54,7 @@ az pipelines variable-group create \
     --name "$vargroup_name" \
     --authorize "true" \
     --variables \
-        location="$RESOURCE_GROUP_LOCATION" \
+        location="$AZURE_LOCATION" \
         resource_group_name="$RESOURCE_GROUP_NAME" \
         azure_data_factory_name="$DATAFACTORY_NAME" \
         azure_subscription_id="$AZURE_SUBSCRIPTION_ID" \
