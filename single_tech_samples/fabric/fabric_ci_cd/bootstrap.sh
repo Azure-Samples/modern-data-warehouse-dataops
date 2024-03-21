@@ -12,6 +12,8 @@ lakehouse_name="lh_main"
 lakehouse_desc="Lakehouse for $FABRIC_PROJECT_NAME"
 notebook_names=("nb-city-safety" "nb-covid-data")
 pipeline_names=("pl-covid-data")
+# TBD: This notebook is used in "pl-covid-data" pipeline. This hardcoding needs to be removed.
+pipeline_notebook="nb-covid-data"
 azure_devops_details='{
     "gitProviderType":"'"AzureDevOps"'",
     "organizationName":"'"$ORGANIZATION_NAME"'",
@@ -28,7 +30,7 @@ create_default_lakehouse="true"
 should_disconnect="false"
 create_notebooks="true"
 create_pipelines="true"
-trigger_notebook_execution="true"
+trigger_notebook_execution="false"
 trigger_pipeline_execution="true"
 
 function create_resource_group () {
@@ -334,24 +336,24 @@ EOF
 function execute_notebook() {
     workspace_id=$1
     item_id=$2
-    workspace_name=$3
-    lakehouse_name=$4
-    onelake_name=$5
+    onelake_name=$3
+    workspace_name=$4
+    lakehouse_name=$5
     execute_notebook_url="$FABRIC_API_ENDPOINT/workspaces/$workspace_id/items/$item_id/jobs/instances?jobType=RunNotebook"
     execute_notebook_body=$(cat <<EOF
 {
     "executionData": {
         "parameters": {
+            "onelake_name": {
+                "value": "$onelake_name",
+                "type": "string"
+            },
             "workspace_name": {
                 "value": "$workspace_name",
                 "type": "string"
             },
             "lakehouse_name": {
                 "value": "$lakehouse_name",
-                "type": "string"
-            },
-            "onelake_name": {
-                "value": "$onelake_name",
                 "type": "string"
             }
         },
@@ -375,8 +377,22 @@ EOF
 function execute_pipeline() {
     workspace_id=$1
     item_id=$2
+    onelake_name=$3
+    workspace_name=$4
+    lakehouse_name=$5
     execute_pipeline_url="$FABRIC_API_ENDPOINT/workspaces/$workspace_id/items/$item_id/jobs/instances?jobType=Pipeline"
-    execute_pipeline_body=""
+    execute_pipeline_body=$(cat <<EOF
+{
+    "executionData": {
+        "parameters": {
+            "onelake_name": "$onelake_name",
+            "workspace_name": "$workspace_name",
+            "lakehouse_name": "$lakehouse_name"
+        }
+    }
+}
+EOF
+)
     # TBD: Check the notebook execution via polling long running operation. Read header response by using "-i" flag.
     response=$(curl -s -X POST -H "Authorization: Bearer $FABRIC_BEARER_TOKEN" -d "$execute_pipeline_body" "$execute_pipeline_url")
     if [[ -n "$response" ]] && [[ "$response" != "null" ]]; then
@@ -501,10 +517,10 @@ if [[ "$create_pipelines" = "true" ]]; then
         if [[ -n "$item_id" ]]; then
             echo "[I] Data pipeline '$pipeline_name' ($item_id) already exists, skipping the upload."
         else
+            # TBD: Remove handcoding of notebook name from here.
+            notebook_id=$(get_item_by_name_type "$dev_workspace_id" "Notebook" "$pipeline_notebook")
             file_path="./src/data-pipelines/${pipeline_name}-content.json"
             base64_data=$(sed -e "s/<<notebook_id>>/${notebook_id}/g" -e "s/<<workspace_id>>/${dev_workspace_id}/g" "$file_path" | base64)
-            # TBD: Remove handcoding of notebook name from here.
-            notebook_id=$(get_item_by_name_type "$dev_workspace_id" "Notebook" "nb-covid-data")
             create_item "$dev_workspace_id" "DataPipeline" "$pipeline_name" "Data pipeline for executing notebook" "$base64_data"
         fi
     done
@@ -517,7 +533,7 @@ if [[ "$trigger_notebook_execution" = "true" ]]; then
     # TBD: Remove hardcoding of the notebook name from here.
     notebook_name="nb-city-safety"
     item_id=$(get_item_by_name_type "$dev_workspace_id" "Notebook" "$notebook_name")
-    execute_notebook "$dev_workspace_id" "$item_id" "$dev_workspace_name" "$lakehouse_name" "$onelake_name"
+    execute_notebook "$dev_workspace_id" "$item_id" "$onelake_name" "$dev_workspace_name" "$lakehouse_name"
     # TBD: Check the notebook execution via polling long running operation.
 else
     echo "[I] Variable 'trigger_notebook_execution' set to $trigger_notebook_execution, skipping notebook execution."
@@ -528,7 +544,7 @@ if [[ "$trigger_pipeline_execution" = "true" ]]; then
     for ((i=0; i<${#pipeline_names[@]}; i++)); do
         pipeline_name="${pipeline_names[i]}"
         item_id=$(get_item_by_name_type "$dev_workspace_id" "DataPipeline" "$pipeline_name")
-        execute_pipeline "$dev_workspace_id" "$item_id"
+        execute_pipeline "$dev_workspace_id" "$item_id" "$onelake_name" "$dev_workspace_name" "$lakehouse_name"
         # TBD: Check the notebook execution via polling long running operation.
     done
 else

@@ -7,24 +7,24 @@
             "variableName": "pipelineReturnValue",
             "value": [
               {
-                "key": "stage",
+                "key": "onelake_name",
                 "value": {
-                  "type": "String",
-                  "content": "dev"
+                  "type": "Expression",
+                  "content": "@pipeline().parameters.onelake_name"
                 }
               },
               {
-                "key": "onelake_name",
+                "key": "workspace_name",
                 "value": {
-                  "type": "String",
-                  "content": "daily-onelake"
+                  "type": "Expression",
+                  "content": "@pipeline().parameters.workspace_name"
                 }
               },
               {
                 "key": "lakehouse_name",
                 "value": {
-                  "type": "String",
-                  "content": "lh_main"
+                  "type": "Expression",
+                  "content": "@pipeline().parameters.lakehouse_name"
                 }
               }
             ],
@@ -43,16 +43,25 @@
             "notebookId": "<<notebook_id>>",
             "workspaceId": "<<workspace_id>>",
             "parameters": {
-              "stage": {
-                "value": "@activity('set-params').Output.value.stage",
+              "onelake_name": {
+                "value": {
+                  "value": "@activity('set-params').Output.value.onelake_name",
+                  "type": "Expression"
+                },
                 "type": "string"
               },
-              "onelake_name": {
-                "value": "@activity('set-params').Output.value.onelake_name",
+              "workspace_name": {
+                "value": {
+                  "value": "@activity('set-params').Output.value.workspace_name",
+                  "type": "Expression"
+                },
                 "type": "string"
               },
               "lakehouse_name": {
-                "value": "@activity('set-params').Output.value.lakehouse_name",
+                "value": {
+                  "value": "@activity('set-params').Output.value.lakehouse_name",
+                  "type": "Expression"
+                },
                 "type": "string"
               }
             }
@@ -75,6 +84,20 @@
           ]
         }
       ],
+      "parameters": {
+        "onelake_name": {
+          "type": "string",
+          "defaultValue": "onelake"
+        },
+        "workspace_name": {
+          "type": "string",
+          "defaultValue": "ws-fabric-cicd-dev"
+        },
+        "lakehouse_name": {
+          "type": "string",
+          "defaultValue": "lh_main"
+        }
+      },
       "annotations": []
     }
   }
