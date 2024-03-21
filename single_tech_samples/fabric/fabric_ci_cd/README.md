@@ -92,7 +92,7 @@ Before you run the pipeline, make sure that the Deployment pipeline exists and t
 
 ![Fabric Deployment Pipelines](./images/dep_pipeline.png)
 
-Shifting gears to Azure DevOps, after you create the pipeline and fill out the variables you can trigger manually the execution.
+Shifting gears to Azure DevOps, after you create the pipeline and fill out the variables you can manually trigger the execution.
 Triggers can be also defined in alignment with your development workflow requirements. This sample doesn't include triggers at the moment.
 
 The version with approvals, need manual intervention during the run. You will need to manually approve before the pipeline completes.
