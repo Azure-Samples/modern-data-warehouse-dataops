@@ -1,6 +1,6 @@
 # Introduction 
 
-This repo contains the code for establishing a CI/CD process around Fabric workspaces. The code is intended to be used as a jumpstart for a new project on Microsoft Fabric. Currently, There are many limitations, but the goal is to expand the capabilities of the code over time.
+This repo contains the code for establishing a CI/CD process around Fabric workspaces. The code is intended to be used as a jumpstart for a new project on Microsoft Fabric. Currently, there are many limitations, but the goal is to expand the capabilities of the code over time.
 
 Aditionally, some of the REST APIs used in the code of the release pipelines will be available mid-April.
 The boostrap code is using already available APIs.
