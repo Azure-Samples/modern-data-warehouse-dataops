@@ -1,0 +1,80 @@
+{
+    "properties": {
+      "activities": [
+        {
+          "type": "SetVariable",
+          "typeProperties": {
+            "variableName": "pipelineReturnValue",
+            "value": [
+              {
+                "key": "stage",
+                "value": {
+                  "type": "String",
+                  "content": "dev"
+                }
+              },
+              {
+                "key": "onelake_name",
+                "value": {
+                  "type": "String",
+                  "content": "daily-onelake"
+                }
+              },
+              {
+                "key": "lakehouse_name",
+                "value": {
+                  "type": "String",
+                  "content": "lh_main"
+                }
+              }
+            ],
+            "setSystemVariable": true
+          },
+          "policy": {
+            "secureInput": false,
+            "secureOutput": false
+          },
+          "name": "set-params",
+          "dependsOn": []
+        },
+        {
+          "type": "TridentNotebook",
+          "typeProperties": {
+            "notebookId": "<<note_book_id>>",
+            "workspaceId": "<<workspace>>",
+            "parameters": {
+              "stage": {
+                "value": "@activity('set-params').Output.value.stage",
+                "type": "string"
+              },
+              "onelake_name": {
+                "value": "@activity('set-params').Output.value.onelake_name",
+                "type": "string"
+              },
+              "lakehouse_name": {
+                "value": "@activity('set-params').Output.value.lakehouse_name",
+                "type": "string"
+              }
+            }
+          },
+          "policy": {
+            "timeout": "0.12:00:00",
+            "retry": 0,
+            "retryIntervalInSeconds": 30,
+            "secureInput": false,
+            "secureOutput": false
+          },
+          "name": "nb-covid-data",
+          "dependsOn": [
+            {
+              "activity": "set-params",
+              "dependencyConditions": [
+                "Succeeded"
+              ]
+            }
+          ]
+        }
+      ],
+      "annotations": []
+    }
+  }
