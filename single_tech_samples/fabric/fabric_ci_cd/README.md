@@ -1,6 +1,9 @@
 # Introduction 
 
-This repo contains the code for establishing a CI/CD process around Fabric workspaces. The code is intended to be used as a jumpstart for a new project on Microsoft Fabric. Currently, There are many limitations, but the goal is to expand the capabilities of the code over time.
+This repo contains the code for establishing a CI/CD process around Fabric workspaces. The code is intended to be used as a jumpstart for a new project on Microsoft Fabric. Currently, there are many limitations, but the goal is to expand the capabilities of the code over time.
+
+Aditionally, some of the REST APIs used in the code of the release pipelines will be available mid-April.
+The boostrap code is using already available APIs.
 
 ## Deployment Process
 
@@ -9,9 +12,6 @@ This repo contains the code for establishing a CI/CD process around Fabric works
 The bootstrap script is designed to automate the creation of initial Fabric workspaces for a project. The script is written in bash and uses Fabric REST APIs mostly to deploy the infrastructure and the Fabric resources.
 
 Here is a summary of the steps that the script performs:
-
-
-
 
 ### Infrastructure deployment steps
 
@@ -57,7 +57,7 @@ Good Luck!
 When your Development, Test and Production environments are located in the same tenant, using Fabric Deployment pipelines is a great solution to promote your changes between the environments.
 
 Building on top of the bootstrap and hydration outcomes, there are two options to implement the CD release process in Fabric.
-There are two [yml files](./src/option_1/) and you can use the files to create an Azure DevOps pipeline. The first option offers an approval gate before allowing the deployment to Test and to Production. The second option doesn't include the approval gates.
+There are two [yml files](./devops/) and you can use the files to create an Azure DevOps pipeline. The first option offers an approval gate before allowing the deployment to Test and to Production. The second option doesn't include the approval gates.
 
 ##### Pre-requisites - Variable Groups
 
@@ -65,47 +65,42 @@ Before trunning the CD release pipeline, the following variable groups need to b
 
 ###### fabric-test variable group
 
-This group should contain the following variables:
+The fabric-test group should contain the following variables:
 
-**fabricRestApiEndpoint** - e.g: https://api.fabric.microsoft.com/v1
+|**Field Name**|**Description/Example of a valid value**|
+|--------------|-------------------------|
+|**fabricRestApiEndpoint** | https://api.fabric.microsoft.com/v1 |
+|**pipelineName** | The name of the deployment pipeline in Fabric |
+|**sourceStageName** | The name of the source stage of the deployment. E.g: "Development"|
+|**targetStageName** | The name of the target stage of the deployment. E.g: "Test"|
+|**targetStageWsName** | The name of the workspace assigned to the target stage of the deployment pipeline.|
+|**token** | Until SP are not supported, we use the Bearer token as a variable.|
 
-**pipelineName** - the name of the deployment pipeline in Fabric
+###### fabric-prod
 
-**sourceStageName** - name of the source stage of the deployment. E.g: "Development"
+The fabric-prod group should contain the following variables:
 
-**targetStageName** - name of the target stage of the deployment. E.g: "Test"
-
-**targetStageWsName** - name of the workspace assigned to the target stage of the deployment pipeline.
-
-**token** - until SP are not supported, we use the Bearer token as a variable.
-
-####### fabric-prod
-
-This group should contain the following variables:
-
-**fabricRestApiEndpoint** - e.g: https://api.fabric.microsoft.com/v1
-
-**pipelineName** - the name of the deployment pipeline in Fabric
-
-**sourceStageName** - name of the source stage of the deployment. E.g: "Test"
-
-**targetStageName** - name of the target stage of the deployment. E.g: "Production"
-
-**targetStageWsName** - name of the worksapace assigned to the target stage of the deployment pipeline.
-
-**token** - until SP are not supported, the Bearer token as a variable.
+|**Field Name**|**Description/Example of a valid value**|
+|--------------|-------------------------|
+|**fabricRestApiEndpoint** | https://api.fabric.microsoft.com/v1 |
+|**pipelineName** | The name of the deployment pipeline in Fabric |
+|**sourceStageName** | The name of the source stage of the deployment. E.g: "Test"|
+|**targetStageName** | The name of the target stage of the deployment. E.g: "Production"|
+|**targetStageWsName** | The name of the workspace assigned to the target stage of the deployment pipeline.|
+|**token** | Until SP are not supported, we use the Bearer token as a variable.|
 
 ### How to run the CD release pipeline
 
-To run the CD pipeline, create an Azure DevOps pipeline pointing to the azdo-fabric-cd-release.yml file.
+To run the CD pipeline, create an Azure DevOps pipeline pointing to the azdo-fabric-cd-release.yml file located in the [devops](./devops/) directory.
 
-Make sure that the token is valid for the run, otherwise the pipeline will fail.
+Make sure that the token is valid for the run, otherwise the pipeline will fail. For more information refer to [Fabric Token](#passing-the-fabric-bearer-token).
 
 Before you run the pipeline, make sure that the Deployment pipeline exists and that the Development workspace is assigned to the Development Stage of the Pipeline. Additionally, uat and prd workspaces should be assigned to the Test and Production Stages respectively. This steps are automated in the bootstrap script.
 
 ![Fabric Deployment Pipelines](./images/dep_pipeline.png)
 
-Shifting gears to Azure DevOps, after you create the pipeline and fill out the variables you can trigger the execution. 
+Shifting gears to Azure DevOps, after you create the pipeline and fill out the variables you can manually trigger the execution.
+Triggers can be also defined in alignment with your development workflow requirements. This sample doesn't include triggers at the moment.
 
 The version with approvals, need manual intervention during the run. You will need to manually approve before the pipeline completes.
 
@@ -207,3 +202,19 @@ If you are running into such issue, you might want to add additional debugging i
 [I] The Git connection has been successfully initialized.
 [I] Committed workspace changes to git successfully.
 ```
+
+### Passing the Fabric Bearer Token
+
+You may experience "The token expired." error message. To workaround it, a new token needs to be generated.
+
+A temporary way to get the token can be found in the following [article](https://learn.microsoft.com/rest/api/fabric/articles/get-started/fabric-api-quickstart#c-code-sample-for-acquiring-a-microsoft-entra-access-token)
+
+For a quick alternative to get a token:
+
+- login into the Fabric portal with the credentials you want to get the token
+- Click on F12 - Developer tools
+- Click on console
+- Type copy(powerBIAccessToken)
+- Paste the token into the variables of the pipeline
+
+Bear in mind that this is not a production ready solution. The token needs to be refreshed every hour for the solution to run properly.
