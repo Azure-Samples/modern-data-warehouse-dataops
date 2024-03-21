@@ -6,23 +6,31 @@ This repo contains the code for establishing a CI/CD process around Fabric works
 
 ### Understanding "bootstrap" script
 
+The bootstrap script is designed to automate the creation of initial Fabric workspaces for a project. The script is written in bash and uses Fabric REST APIs mostly to deploy the infrastructure and the Fabric resources.
+
+Here is a summary of the steps that the script performs:
+
+
+
+
 ### Infrastructure deployment steps
 
 Here are the steps to use the bootstrap script:
 
-1. Change the directory to the `scripts` folder:
+- Change the directory to the `scripts` folder:
 
 ```bash
 cd scripts
 ```
 
-1. Rename the [env.sample](./.env.sample) file to `.env` and fill in the necessary environment variables. Here is the detailed explanation of the environment variables:
+- Rename the [env.sample](./.env.sample) file to `.env` and fill in the necessary environment variables. Here is the detailed explanation of the environment variables:
 
 ```bash
 AZURE_SUBSCRIPTION_ID='Azure Subscription Id'
 AZURE_LOCATION='The location where the Azure resources will be created'
 RESOURCE_GROUP_NAME='The name of the resource group'
 FABRIC_CAPACITY_NAME='The name of the Fabric capacity'
+CAPACITY_ADMIN_EMAIL='The email address of the Fabric capacity admin'
 FABRIC_PROJECT_NAME='The name of the Fabric project. This name is used for naming the Fabric resources.'
 FABRIC_API_ENDPOINT='The Fabric API endpoint. e.g., https://api.fabric.microsoft.com/v1'
 DEPLOYMENT_API_ENDPOINT='The deployment API endpoint. e.g., https://api.powerbi.com/v1.0/myorg/pipelines'
@@ -33,6 +41,14 @@ REPOSITORY_NAME='Azure DevOps repository name'
 BRANCH_NAME='Azure DevOps branch name'
 DIRECTORY_NAME='The directory used by Fabric to sync the workspace code. Can be "/" or any other sub-directory.'
 ```
+
+- Run the bootstrap script:
+
+```bash
+./bootstrap.sh
+```
+
+Good Luck!
 
 ### Creating CI/CD pipelines
 

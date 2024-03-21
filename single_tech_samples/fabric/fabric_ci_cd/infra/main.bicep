@@ -1,7 +1,7 @@
 param location string = resourceGroup().location
-param sku string = 'F2'
-param adminEmail string
 param capacityName string
+param adminEmail string
+param sku string = 'F2'
 
 module fab './fabric_capacity.bicep' = {
   name: 'deploy_capacity'

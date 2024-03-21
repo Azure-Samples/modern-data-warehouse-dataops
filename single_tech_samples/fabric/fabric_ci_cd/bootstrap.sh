@@ -41,8 +41,7 @@ function deploy_azure_resources() {
     arm_output=$(az deployment group create \
         --resource-group "$resource_group_name" \
         --template-file infra/main.bicep \
-        --parameters @infra/params.json \
-        --parameters location="$AZURE_LOCATION" capacityName="$FABRIC_CAPACITY_NAME" \
+        --parameters location="$AZURE_LOCATION" capacityName="$FABRIC_CAPACITY_NAME" adminEmail="$CAPACITY_ADMIN_EMAIL" \
         --output json)
 
     if [[ -z $arm_output ]]; then
