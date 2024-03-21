@@ -40,8 +40,8 @@
         {
           "type": "TridentNotebook",
           "typeProperties": {
-            "notebookId": "<<note_book_id>>",
-            "workspaceId": "<<workspace>>",
+            "notebookId": "<<notebook_id>>",
+            "workspaceId": "<<workspace_id>>",
             "parameters": {
               "stage": {
                 "value": "@activity('set-params').Output.value.stage",

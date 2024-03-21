@@ -10,7 +10,8 @@ deployment_pipeline_desc="Deployment pipeline for $FABRIC_PROJECT_NAME"
 workspace_ids=()
 lakehouse_name="lh_main"
 lakehouse_desc="Lakehouse for $FABRIC_PROJECT_NAME"
-notebook_name="nb-fabric-cicd"
+notebook_names=("nb-city-safety" "nb-covid-data")
+pipeline_names=("pl-covid-data")
 azure_devops_details='{
     "gitProviderType":"'"AzureDevOps"'",
     "organizationName":"'"$ORGANIZATION_NAME"'",
@@ -22,11 +23,13 @@ azure_devops_details='{
 deploy_azure_resources="true"
 create_workspaces="true"
 connect_to_git="true"
-setup_deployment_pipeline="true"
-create_default_lakehouse="true"
+setup_deployment_pipeline="false"
+create_default_lakehouse="false"
 should_disconnect="false"
-upload_notebook="true"
+create_notebooks="true"
+create_pipelines="false"
 trigger_notebook_execution="true"
+trigger_pipeline_execution="false"
 
 function create_resource_group () {
     resource_group_name="$1"
@@ -256,11 +259,12 @@ EOF
 }
 
 # TBD: Add metadata section to the notebook to attach it to default lakehouse before the upload.
-function upload_notebook() {
+function create_notebook() {
     workspace_id=$1
     item_type=$2
     display_name=$3
-    payload=$4
+    description=$4
+    payload=$5
     create_item_url="$FABRIC_API_ENDPOINT/workspaces/$workspace_id/items"
     create_item_payload=$(cat <<EOF
 {
@@ -281,9 +285,50 @@ EOF
 )
     # TBD: Check the notebook creation via polling long running operation. Read header response using "-i" flag.
     response=$(curl -s -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $FABRIC_BEARER_TOKEN" -d "$create_item_payload" "$create_item_url")
-    sleep 30
-    notebook_id=$(get_item_by_name_type "$workspace_id" "Notebook" "$display_name")
-    echo "[I] Created (uploaded) $item_type '$display_name' ($notebook_id) successfully."
+    if [[ -n "$response" ]] && [[ "$response" != "null" ]]; then
+        echo "[E] Notebook '$display_name' creation failed."
+        echo "[E] $response"
+    else
+        sleep 30
+        notebook_id=$(get_item_by_name_type "$workspace_id" "Notebook" "$display_name")
+        echo "[I] Created (uploaded) $item_type '$display_name' ($notebook_id) successfully."
+    fi
+}
+
+function create_pipeline() {
+    workspace_id=$1
+    item_type=$2
+    display_name=$3
+    description=$4
+    payload=$5
+    create_item_url="$FABRIC_API_ENDPOINT/workspaces/$workspace_id/items"
+    create_item_payload=$(cat <<EOF
+{
+    "displayName": "$display_name",
+    "description": "$description",
+    "type":"$item_type",
+    "definition" : {
+        "parts" : [
+            {
+                "path": "pipeline-content.json",
+                "payload": "${payload}",
+                "payloadType": "InlineBase64"
+             }
+      
+        ]
+}
+EOF
+)
+    # TBD: Check the notebook creation via polling long running operation. Read header response using "-i" flag.
+    response=$(curl -s -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $FABRIC_BEARER_TOKEN" -d "$create_item_payload" "$create_item_url")
+    if [[ -n "$response" ]] && [[ "$response" != "null" ]]; then
+        echo "[E] Data pipeline '$display_name' creation failed."
+        echo "[E] $response"
+    else
+        sleep 30
+        pipeline_id=$(get_item_by_name_type "$workspace_id" "$item_type" "$display_name")
+        echo "[I] Created $item_type '$display_name' ($pipeline_id) successfully."
+    fi
 }
 
 function execute_notebook() {
@@ -324,6 +369,21 @@ EOF
         echo "[E] $response"
     else
         echo "[I] Notebook execution triggered successfully."
+    fi
+}
+
+function execute_pipeline() {
+    workspace_id=$1
+    item_id=$2
+    execute_pipeline_url="$FABRIC_API_ENDPOINT/workspaces/$workspace_id/items/$item_id/jobs/instances?jobType=Pipeline"
+    execute_pipeline_body=""
+    # TBD: Check the notebook execution via polling long running operation. Read header response by using "-i" flag.
+    response=$(curl -s -X POST -H "Authorization: Bearer $FABRIC_BEARER_TOKEN" -d "$execute_pipeline_body" "$execute_pipeline_url")
+    if [[ -n "$response" ]] && [[ "$response" != "null" ]]; then
+        echo "[E] Data pipeline execution failed."
+        echo "[E] $response"
+    else
+        echo "[I] Data pipeline execution triggered successfully."
     fi
 }
 
@@ -411,21 +471,46 @@ fi
 
 # TBD: If the notebook exists, update the notebook with the latest version.
 # https://learn.microsoft.com/en-us/rest/api/fabric/core/items/update-item-definition?tabs=HTTP
-echo "[I] --- Completed lakehouse creation. Uploading notebook to DEV workspace. ---"
-if [[ "$upload_notebook" = "true" ]]; then
-    file_path="./src/common/notebooks/${notebook_name}.ipynb"
-    base64_data=$(base64 -i "$file_path")
-    item_id=$(get_item_by_name_type "$dev_workspace_id" "Notebook" "$notebook_name")
-    if [[ -n "$item_id" ]]; then
-        echo "[I] Notebook '$notebook_name' ($item_id) already exists, skipping the upload."
-    else
-        upload_notebook "$dev_workspace_id" "Notebook" "$notebook_name" "$base64_data"
-    fi
+echo "[I] --- Completed lakehouse creation. Creating (uploading) notebook(s) in DEV workspace. ---"
+if [[ "$create_notebooks" = "true" ]]; then
+    for ((i=0; i<${#notebook_names[@]}; i++)); do
+        notebook_name="${notebook_names[i]}"
+        file_path="./src/notebooks/${notebook_name}.ipynb"
+        base64_data=$(base64 -i "$file_path")
+        item_id=$(get_item_by_name_type "$dev_workspace_id" "Notebook" "$notebook_name")
+        if [[ -n "$item_id" ]]; then
+            echo "[I] Notebook '$notebook_name' ($item_id) already exists, skipping the upload."
+        else
+            create_notebook "$dev_workspace_id" "Notebook" "$notebook_name" "Notebook $notebook_name" "$base64_data"
+        fi
+    done
 else
-    echo "[I] Variable 'upload_notebook' set to $upload_notebook, skipping notebook upload."
+    echo "[I] Variable 'create_notebooks' set to $create_notebooks, skipping notebook(s) upload."
 fi
 
-echo "[I] --- Completed Uploading notebook to DEV workspae. Triggering the notebook execution. ---"
+# TBD: If the pipeline exists, update the pipeline with the latest version.
+# https://learn.microsoft.com/en-us/rest/api/fabric/core/items/update-item-definition?tabs=HTTP
+echo "[I] --- Completed notebook creation. Creating data pipeline(s) in DEV workspace. ---"
+if [[ "$create_pipelines" = "true" ]]; then
+    for ((i=0; i<${#pipeline_names[@]}; i++)); do
+        pipeline_name="${pipeline_names[i]}"
+        item_id=$(get_item_by_name_type "$dev_workspace_id" "DataPipeline" "$pipeline_name")
+
+        if [[ -n "$item_id" ]]; then
+            echo "[I] Data pipeline '$pipeline_name' ($item_id) already exists, skipping the upload."
+        else
+            file_path="./src/data-pipelines/${pipeline_name}-content.json"
+            base64_data=$(sed -e "s/<<notebook_id>>/${notebook_id}/g" -e "s/<<workspace_id>>/${dev_workspace_id}/g" "$file_path" | base64)
+            # TBD: Remove handcoding of notebook name from here.
+            notebook_id=$(get_item_by_name_type "$dev_workspace_id" "Notebook" "nb-covid-data")
+            create_pipeline "$dev_workspace_id" "DataPipeline" "$pipeline_name" "Data pipeline for executing notebook" "$base64_data"
+        fi
+    done
+else
+    echo "[I] Variable 'create_pipelines' set to $create_pipelines, skipping data pipeline(s) upload."
+fi
+
+echo "[I] --- Completed Uploading data pipeline(s) to DEV workspae. Triggering the notebook execution. ---"
 if [[ "$trigger_notebook_execution" = "true" ]]; then
     item_id=$(get_item_by_name_type "$dev_workspace_id" "Notebook" "$notebook_name")
     execute_notebook "$dev_workspace_id" "$item_id" "$dev_workspace_name" "$lakehouse_name" "$onelake_name"
@@ -434,7 +519,19 @@ else
     echo "[I] Variable 'trigger_notebook_execution' set to $trigger_notebook_execution, skipping notebook execution."
 fi
 
-echo "[I] --- Triggered the notebook execution. Now integrating GIT with DEV workspace and commiting changes to git. ---"
+echo "[I] --- Triggered the notebook execution. Now, triggering the data pipeline execution. ---"
+if [[ "$trigger_pipeline_execution" = "true" ]]; then
+    for ((i=0; i<${#pipeline_names[@]}; i++)); do
+        pipeline_name="${pipeline_names[i]}"
+        item_id=$(get_item_by_name_type "$dev_workspace_id" "DataPipeline" "$pipeline_name")
+        execute_pipeline "$dev_workspace_id" "$item_id"
+        # TBD: Check the notebook execution via polling long running operation.
+    done
+else
+    echo "[I] Variable 'trigger_pipeline_execution' set to $trigger_pipeline_execution, skipping data pipeline execution."
+fi
+
+echo "[I] --- Triggered the data pipeline execution. Now integrating GIT with DEV workspace and commiting changes to git. ---"
 if [[ "$connect_to_git" = "true" ]]; then
     if [ "$should_disconnect" = true ]; then
         disconnect_workspace_from_git "$dev_workspace_id"
