@@ -12,6 +12,7 @@ stages:
       pool: server
       steps:
           - task: ManualValidation@0
+            timeoutInMinutes: 3 # The time to wait for an approval. Otherwise the task will timeout and fail.
             inputs:
               notifyUsers: ''
               instructions: 'Aprove deployment from Dev to Test' 
@@ -36,6 +37,7 @@ stages:
       pool: server
       steps:
           - task: ManualValidation@0
+            timeoutInMinutes: 1 # The time to wait for an approval. Otherwise the task will timeout and fail.
             inputs:
               notifyUsers: ''
               instructions: 'Aprove deployment from Test to Production' 
