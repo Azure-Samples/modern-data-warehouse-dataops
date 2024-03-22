@@ -28,7 +28,7 @@ This repo contains the code for establishing a CI/CD process around Fabric works
 
 ## Architecture
 
-To be added shortly.
+![Fabric CI/CD Architecture](./images/fabric-cicd.drawio.svg)
 
 ## How to use the sample
 
