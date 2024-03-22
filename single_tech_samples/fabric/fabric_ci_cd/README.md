@@ -62,7 +62,7 @@ Here are the steps to use the bootstrap script:
     DIRECTORY_NAME='The directory used by Fabric to sync the workspace code. Can be "/" or any other sub-directory.'
     ```
 
-- Run the bootstrap script:
+1. Run the bootstrap script:
 
 ```bash
 ./bootstrap.sh
@@ -157,7 +157,7 @@ Here is a summary of the steps that the script performs:
 Here is a table that lists the resources created by the bootstrap script. `<FABRIC_PROJECT_NAME>` is the variable that is set in the environment file.
 
 |**Resource**|**Description**|**Default Naming**|
-|------------|---------------|------------------|
+|:------------|:---------------|:------------------|
 |Resource Group|The Azure resource group that contains all the resources|`rg-<FABRIC_PROJECT_NAME>`|
 |Fabric Capacity|The Fabric capacity that contains the Fabric workspaces|`cap<FABRIC_PROJECT_NAME>`|
 |Fabric Workspaces|The Fabric workspaces that are assigned to the Fabric capacity. Three workspaces are created for development (dev), user acceptance testing (uat), and production (prd)|`ws-<FABRIC_PROJECT_NAME>-dev`</br>`ws-<FABRIC_PROJECT_NAME>-uat`</br>`ws-<FABRIC_PROJECT_NAME>-prd`|
