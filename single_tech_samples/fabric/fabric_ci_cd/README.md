@@ -28,8 +28,7 @@ This repo contains the code for establishing a CI/CD process around Fabric works
 
 ## Architecture
 
-Additionally, some of the REST APIs used in the code of the release pipelines will be available mid-April.
-The bootstrap code is using already available APIs.
+To be added shortly.
 
 ## How to use the sample
 
