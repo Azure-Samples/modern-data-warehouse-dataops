@@ -7,13 +7,10 @@ This repo contains the code for establishing a CI/CD process around Fabric works
 - [Architecture](#architecture)
 - [How to use the sample](#how-to-use-the-sample)
   - [Execute bootstrap script](#execute-bootstrap-script)
-  - [Creating CI/CD pipelines](#creating-cicd-pipelines)
-    - [Option 1: Using Fabric Deployment Pipelines API](#option-1-using-fabric-deployment-pipelines-api)
-      - [Pre-requisites - Variable Groups](#pre-requisites---variable-groups)
-        - [fabric-test variable group](#fabric-test-variable-group)
-        - [fabric-prod](#fabric-prod)
-  - [How to run the CD release pipeline](#how-to-run-the-cd-release-pipeline)
-    - [Option 2: Using Fabric REST APIs](#option-2-using-fabric-rest-apis)
+  - [Fabric CI/CD pipelines](#fabric-cicd-pipelines)
+    - [CI process](#ci-process)
+    - [CD process - Option 1: Using Fabric Deployment Pipelines API](#cd-process---option-1-using-fabric-deployment-pipelines-api)
+    - [CD process - Option 2: Using Fabric REST APIs](#cd-process---option-2-using-fabric-rest-apis)
 - [Understanding bootstrap script](#understanding-bootstrap-script)
   - [List of created resources](#list-of-created-resources)
   - [Hydrating Fabric artifacts](#hydrating-fabric-artifacts)
@@ -23,7 +20,6 @@ This repo contains the code for establishing a CI/CD process around Fabric works
   - [Passing the Fabric bearer token](#passing-the-fabric-bearer-token)
   - [Existing Workspace Warning](#existing-workspace-warning)
   - [Several run attempts might lead to strange errors](#several-run-attempts-might-lead-to-strange-errors)
-- [To-do list](#to-do-list)
 - [References](#references)
 
 ## Architecture
@@ -69,48 +65,50 @@ Here are the steps to use the bootstrap script:
 
 Good Luck!
 
-### Creating CI/CD pipelines
+### Fabric CI/CD pipelines
 
-#### Option 1: Using Fabric Deployment Pipelines API
+#### CI process
 
-When your Development, Test and Production environments are located in the same tenant, using Fabric Deployment pipelines is a great solution to promote your changes between the environments.
+The CI process is not showedcased in this repository at the present time.
+There are some gaps to achieve the full automation at the moment, namely the lack of support for SPs.
+The CI process will be added moving forward.
+
+#### CD process - Option 1: Using Fabric Deployment Pipelines API
+
+For the CD process, the Azure DevOps pipelines provided in the sample are meant to be triggered manually, but the trigger can be easily implemented by changing the "trigger:" property in the yml file.
+
+This option is recommended for cases where the Development, Test and Production environments are located in the same tenant. Using Fabric Deployment pipelines is a great solution to promote your changes between the environments.
 
 Building on top of the bootstrap and hydration outcomes, there are two options to implement the CD release process in Fabric.
-There are two [yml files](./devops/) and you can use the files to create an Azure DevOps pipeline. The first option offers an approval gate before allowing the deployment to Test and to Production. The second option doesn't include the approval gates.
+There are two [yml files](./devops/) that can be used to create an Azure DevOps pipeline. The first option offers an approval gate before allowing the deployment to Test and to Production. The second option doesn't include the approval gates.
 
-##### Pre-requisites - Variable Groups
+**1 - Pre-requisites - Variable Groups**: before trunning the CD release pipeline, the following variable groups need to be created under Pipelines/Library in Azure DevOps.
 
-Before trunning the CD release pipeline, the following variable groups need to be created under Pipelines/Library in Azure DevOps.
-
-###### fabric-test variable group
-
-The fabric-test group should contain the following variables:
+**fabric-test variable group**: should contain the following variables:
 
 |**Field Name**|**Description/Example of a valid value**|
 |--------------|-------------------------|
-|**fabricRestApiEndpoint** | https://api.fabric.microsoft.com/v1 |
+|**fabricRestApiEndpoint** | `https://api.fabric.microsoft.com/v1` |
 |**pipelineName** | The name of the deployment pipeline in Fabric |
 |**sourceStageName** | The name of the source stage of the deployment. E.g: "Development"|
 |**targetStageName** | The name of the target stage of the deployment. E.g: "Test"|
 |**targetStageWsName** | The name of the workspace assigned to the target stage of the deployment pipeline.|
 |**token** | Until SP are not supported, we use the Bearer token as a variable.|
 
-###### fabric-prod
-
-The fabric-prod group should contain the following variables:
+**fabric-prod** : should contain the following variables:
 
 |**Field Name**|**Description/Example of a valid value**|
 |--------------|-------------------------|
-|**fabricRestApiEndpoint** | https://api.fabric.microsoft.com/v1 |
+|**fabricRestApiEndpoint** | `https://api.fabric.microsoft.com/v1` |
 |**pipelineName** | The name of the deployment pipeline in Fabric |
 |**sourceStageName** | The name of the source stage of the deployment. E.g: "Test"|
 |**targetStageName** | The name of the target stage of the deployment. E.g: "Production"|
 |**targetStageWsName** | The name of the workspace assigned to the target stage of the deployment pipeline.|
 |**token** | Until SP are not supported, we use the Bearer token as a variable.|
 
-### How to run the CD release pipeline
+**NOTE:** the bootstrap script creates the dev, uat and prd workspaces. Depending on the Project name used in the `.env` file the names of the workspaces might differ. Make sure that the name created in the bootstrap is the same name referred in the variable groups. E.g: ws-fabric-cicd-dev
 
-To run the CD pipeline, create an Azure DevOps pipeline pointing to the azdo-fabric-cd-release.yml file located in the [devops](./devops/) directory.
+**2 - Running the release pipeline in Azure DevOps**: to run the CD pipeline, create an Azure DevOps pipeline pointing to the azdo-fabric-cd-release.yml file located in the [devops](./devops/) directory.
 
 Make sure that the token is valid for the run, otherwise the pipeline will fail. For more information refer to [Fabric Token](#passing-the-fabric-bearer-token).
 
@@ -131,9 +129,14 @@ The version with approvals, need manual intervention during the run. You will ne
 
 Upon completion  both deployment stages: "Deploy to Test" and "Deploy to Production"  in the Azure DevOps pipeline should be successfully completed. To verify if the deployment was successful, navigate to Fabric->Deployment pipelines to verify that all the Fabric artifacts were promoted to Test and to Production.
 
-#### Option 2: Using Fabric REST APIs
+#### CD process - Option 2: Using Fabric REST APIs
 
-ET to fill in
+There is a second option to implement thd CD release process. This scenario, might be aplied in cases when:
+
+- Development, Staging and Production evironments are not located in the same tenant.
+- Organizations are not using Azure DevOps as a Git tool.
+
+There are some caviats to this approach. The code and more information on this Option, will be available soon.
 
 ## Understanding bootstrap script
 
@@ -193,12 +196,11 @@ Here are the key steps:
 
 > *Due to the constraints in creation of linked services using REST APIs, the data pipeline example only includes activities which doesn't have any linked service references.*
 
-
 ## Known issues
 
 ### Passing the Fabric bearer token
 
-This is due to a known limitation that the Fabric APIs don't have Service Principal (SP) support (See [Microsoft Documentation](https://learn.microsoft.com/rest/api/fabric/articles/using-fabric-apis#considerations-and-limitation)). Currently, the script uses the Fabric Bearer Token to authenticate with the Fabric API. 
+This is due to a known limitation that the Fabric APIs don't have Service Principal (SP) support (See [Microsoft Documentation](https://learn.microsoft.com/rest/api/fabric/articles/using-fabric-apis#considerations-and-limitation)). Currently, the script uses the Fabric Bearer Token to authenticate with the Fabric API.
 
 For now, the token has to be manually generated and passed to the script as an environment variable. This token is valid for one hour and needs to be refreshed after that. There are several ways to generate the token:
 
@@ -284,12 +286,6 @@ If you are running into such issue, you might want to add additional debugging i
 [I] The Git connection has been successfully initialized.
 [I] Committed workspace changes to git successfully.
 ```
-
-## To-do list
-
-- [ ] Add support for Service Principal (SP) authentication.
-- [ ] Update bootstrap script to derive the resource group and capacity name from the Fabric project name.
-- [ ] Update bootstrap script to verify if the environment variables are set correctly.
 
 ## References
 
