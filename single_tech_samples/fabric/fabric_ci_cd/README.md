@@ -1,47 +1,73 @@
-# Introduction 
+# Fabric CI/CD Sample <!-- omit in toc -->
 
 This repo contains the code for establishing a CI/CD process around Fabric workspaces. The code is intended to be used as a jumpstart for a new project on Microsoft Fabric. Currently, there are many limitations, but the goal is to expand the capabilities of the code over time.
 
-Aditionally, some of the REST APIs used in the code of the release pipelines will be available mid-April.
-The boostrap code is using already available APIs.
+## Contents <!-- omit in toc -->
 
-## Deployment Process
+- [Architecture](#architecture)
+- [How to use the sample](#how-to-use-the-sample)
+  - [Execute bootstrap script](#execute-bootstrap-script)
+  - [Creating CI/CD pipelines](#creating-cicd-pipelines)
+    - [Option 1: Using Fabric Deployment Pipelines API](#option-1-using-fabric-deployment-pipelines-api)
+      - [Pre-requisites - Variable Groups](#pre-requisites---variable-groups)
+        - [fabric-test variable group](#fabric-test-variable-group)
+        - [fabric-prod](#fabric-prod)
+  - [How to run the CD release pipeline](#how-to-run-the-cd-release-pipeline)
+    - [Option 2: Using Fabric REST APIs](#option-2-using-fabric-rest-apis)
+- [Understanding bootstrap script](#understanding-bootstrap-script)
+  - [List of created resources](#list-of-created-resources)
+  - [Hydrating Fabric artifacts](#hydrating-fabric-artifacts)
+    - [Using Fabric notebooks](#using-fabric-notebooks)
+    - [Using Fabric data pipelines](#using-fabric-data-pipelines)
+- [Known issues](#known-issues)
+  - [Passing the Fabric bearer token](#passing-the-fabric-bearer-token)
+  - [Existing Workspace Warning](#existing-workspace-warning)
+  - [Several run attempts might lead to strange errors](#several-run-attempts-might-lead-to-strange-errors)
+- [To-do list](#to-do-list)
+- [References](#references)
 
-### Understanding "bootstrap" script
+## Architecture
 
-#### Bootstrap workflow
+To be added shortly.
 
-#### Hydrating Fabric artifacts
+## How to use the sample
 
-### Infrastructure deployment steps
+### Execute bootstrap script
 
 Here are the steps to use the bootstrap script:
 
-- Change the directory to the `scripts` folder:
+1. Change the directory to the `scripts` folder:
+
+    ```bash
+    cd scripts
+    ```
+
+1. Rename the [env.sample](./.env.sample) file to `.env` and fill in the necessary environment variables. Here is the detailed explanation of the environment variables:
+
+    ```bash
+    AZURE_SUBSCRIPTION_ID='Azure Subscription Id'
+    AZURE_LOCATION='The location where the Azure resources will be created'
+    RESOURCE_GROUP_NAME='The name of the resource group'
+    FABRIC_CAPACITY_NAME='The name of the Fabric capacity'
+    CAPACITY_ADMIN_EMAIL='The email address of the Fabric capacity admin'
+    FABRIC_PROJECT_NAME='The name of the Fabric project. This name is used for  naming the Fabric resources.'
+    FABRIC_API_ENDPOINT='The Fabric API endpoint. e.g., https://api.fabric.microsoft.   com/v1'
+    DEPLOYMENT_API_ENDPOINT='The deployment API endpoint. e.g., https://api.powerbi.    com/v1.0/myorg/pipelines'
+    FABRIC_BEARER_TOKEN='The bearer token for calling the Fabric APIs.'
+    ORGANIZATION_NAME='Azure DevOps organization name'
+    PROJECT_NAME='Azure DevOps project name'
+    REPOSITORY_NAME='Azure DevOps repository name'
+    BRANCH_NAME='Azure DevOps branch name'
+    DIRECTORY_NAME='The directory used by Fabric to sync the workspace code. Can be "/" or any other sub-directory.'
+    ```
+
+1. Run the bootstrap script:
 
 ```bash
-cd scripts
+./bootstrap.sh
 ```
 
-- Rename the [env.sample](./.env.sample) file to `.env` and fill in the necessary environment variables. Here is the detailed explanation of the environment variables:
-
-```bash
-AZURE_SUBSCRIPTION_ID='Azure Subscription Id'
-AZURE_LOCATION='The location where the Azure resources will be created'
-RESOURCE_GROUP_NAME='The name of the resource group'
-FABRIC_CAPACITY_NAME='The name of the Fabric capacity'
-FABRIC_PROJECT_NAME='The name of the Fabric project. This name is used for naming the Fabric resources.'
-FABRIC_API_ENDPOINT='The Fabric API endpoint. e.g., https://api.fabric.microsoft.com/v1'
-DEPLOYMENT_API_ENDPOINT='The deployment API endpoint. e.g., https://api.powerbi.com/v1.0/myorg/pipelines'
-FABRIC_BEARER_TOKEN='The bearer token for calling the Fabric APIs.'
-ORGANIZATION_NAME='Azure DevOps organization name'
-PROJECT_NAME='Azure DevOps project name'
-REPOSITORY_NAME='Azure DevOps repository name'
-BRANCH_NAME='Azure DevOps branch name'
-DIRECTORY_NAME='The directory used by Fabric to sync the workspace code. Can be "/" or any other sub-directory.'
-```
-
-- Rename the [params.json-template] file to `params.json` and fill in the necessary values. The admin address should be a user in the same tenant where the sample is being deployed.
+Good Luck!
 
 ### Creating CI/CD pipelines
 
@@ -109,50 +135,164 @@ Upon completion  both deployment stages: "Deploy to Test" and "Deploy to Product
 
 ET to fill in
 
-## Known Issues
+## Understanding bootstrap script
 
-### Bootstrap script fails after workspace creation
+The bootstrap script is designed to automate the creation of initial Fabric workspaces for a project. The script is written in bash and uses bicep for deploying Azure resources and Fabric REST APIs to create Fabric items and GIT integration.
 
-The script is not fully idempotent yet. If you ran the script and it failed after the workspace creation, you might encounter the following error message in the next run:
+Here is a summary of the steps that the script performs:
 
+- Creates an Azure resource group and a Fabric capacity. If the capacity already exists, the script fetches the Id based on the capacity name.
+- Creates three Fabric workspaces for development (DEV), user acceptance testing (UAT), and production (PRD). If the workspaces already exist, the script fetch the corresponding workspace Ids and writes a warning message to validate that the existing workspaces are indeed connected to the intended capacity.
+- Creates a deployment pipeline and assigns the workspaces to the stages. If any pipeline stage is already associated with a different workspace, it reassigns the new workspaces to the stage.
+- Creates a Fabric lakehouse `lh_main`.
+- Creates two Fabric notebooks `nb-city-safety` and `nb-covid-data` by uploading the notebook files from the [src/notebooks](./src/notebooks/) directory. If the notebook already exists, the script skips the upload.
+- Creates a Fabric data pipeline `pl-covid-data` by uploading the pipeline content from the [src/data-pipelines](./src/data-pipelines/) directory. If the pipeline already exists, the script skips the upload.
+- Triggers the execution of the Fabric notebooks and data pipelines to hydrate the Fabric lakehouse. See [Hydrating Fabric artifacts](#hydrating-fabric-artifacts) for more details.
+- Connects the workspaces to the GIT repository and commits the changes. If the workspaces are already connected to the GIT repository, the script leaves it as is.
+- Finally, all the workspaces changes are committed to the GIT repository.
+
+### List of created resources
+
+Here is a table that lists the resources created by the bootstrap script. `<FABRIC_PROJECT_NAME>` is the variable that is set in the environment file.
+
+|**Resource**|**Description**|**Default Naming**|
+|:------------|:---------------|:------------------|
+|Resource Group|Azure resource group that contains all the resources.|`rg-<FABRIC_PROJECT_NAME>`|
+|Fabric Capacity|Fabric capacity that contains the Fabric workspaces.|`cap<FABRIC_PROJECT_NAME>`|
+|Fabric Workspaces|Three Fabric workspaces that are assigned to the Fabric capacity.|`ws-<FABRIC_PROJECT_NAME>-dev`</br>`ws-<FABRIC_PROJECT_NAME>-uat`</br>`ws-<FABRIC_PROJECT_NAME>-prd`|
+|Deployment Pipeline|Fabric deployment pipeline with stages corresponding to the workspaces.|`dp-<FABRIC_PROJECT_NAME>`|
+|Fabric Lakehouse|Fabric lakehouse that contains the data lake.|`lh_main`|
+|Fabric Notebooks|Fabric notebooks that contain the business logic.|`nb-city-safety`</br>`nb-covid-data`|
+|Fabric Data Pipeline|Fabric data pipelines that contain the data processing logic.|`pl-covid-data`|
+
+### Hydrating Fabric artifacts
+
+The code samples use [Microsoft Open Datasets](https://learn.microsoft.com/azure/open-datasets/overview-what-are-open-datasets) and support **parameter driven** executions. The two different ways processing included are:
+
+#### Using Fabric notebooks
+
+Fabric notebook [nb-city-safety.ipynb](./src/notebooks/nb-city-safety.ipynb) reads data from [Microsoft Open Datasets - city safety data](https://learn.microsoft.com/azure/open-datasets/dataset-new-york-city-safety?tabs=azureml-opendatasets) and populates Lakehouse tables. Here are the key steps:
+
+- Data is extracted for multiple cities, one extract at a time, and loaded into a Lakehouse table.
+- Two new columns are added during processing (`UTC time` and `City`).
+- Process can be configured to run in `overwrite` or `append` mode.
+- Count metrics are gathered towards the end of the process.
+
+#### Using Fabric data pipelines
+
+Fabric data pipeline [pl-covid-data](./src/data-pipelines/pl-covid-data-content.json) reads data from [Microsoft Open Datasets - Covid data](https://learn.microsoft.com/azure/open-datasets/dataset-covid-19-data-lake) and populates Lakehouse files. The Pipeline consists of two activities:
+
+1. A `Set variable` activity which has the ability to modify the pipeline parameters and passes these values as 'return values' to next process.
+1. A Fabric notebook [nb-covid-data](./src/notebooks/nb-covid-data.ipynb) activity that performs the ETL operations. This is triggered by the success of first activity and uses the 'return values' as input parameters for the execution.
+
+Here are the key steps:
+
+- The target file path is `<Lakehouse>/Files/covid_data/<covid-data-provider-name>/YYYY-MM/YYYY-MM-DD.parquet`.
+- Latest (daily) files, based on the UTC time at the time of execution are copied from each of the publisher location and stored as `YYYY-MM-DD.parquet` in the target location.
+- Incase of re-runs on the same day, files will be overwritten.
+
+> *Due to the constraints in creation of linked services using REST APIs, the data pipeline example only includes activities which doesn't have any linked service references.*
+
+
+## Known issues
+
+### Passing the Fabric bearer token
+
+This is due to a known limitation that the Fabric APIs don't have Service Principal (SP) support (See [Microsoft Documentation](https://learn.microsoft.com/rest/api/fabric/articles/using-fabric-apis#considerations-and-limitation)). Currently, the script uses the Fabric Bearer Token to authenticate with the Fabric API. 
+
+For now, the token has to be manually generated and passed to the script as an environment variable. This token is valid for one hour and needs to be refreshed after that. There are several ways to generate the token:
+
+- **Using PowerShell**: The token can be generated by using the following PowerShell command:
+
+    ```powershell
+    [PS]> Connect-PowerBIServiceAccount
+    [PS]> Get-PowerBIAccessToken
+    ```
+
+- **Using browser devtools (F12)**: If you are already logged into Fabric portal, you can invoke the following command from the Browser DevTools (F12) console:
+
+    ```powershell
+    > copy(PowerBIAccessToken)
+    ```
+
+    This would copy the token in your clipboard that you can update in the .env file.
+
+- **Acquiring the token programmatically**: A programmatic way of acquiring the access token can be found [here](https://learn.microsoft.com/rest/api/fabric/articles/get-started/fabric-api-quickstart#c-code-sample-for-acquiring-a-microsoft-entra-access-token).
+
+### Existing Workspace Warning
+
+The script starts by creating a new capacity in Azure. If the capacity already exists, the script will fetch the Id based on the name. The script then tries to create new workspaces and associate them to the capacity.
+
+Now, if the workspaces already exist, the script doesn't attempt to delete and recreate them as it might result in losing data and business logic. Instead, the script writes the following warning message:
+
+```txt
 *Workspace: 'ws-fb-1-e2e-sample-uat' (999999999-9999-4f20-ac52-d8ce297dba31) already exists.
 [W] Please verify the attached capacity manually.*
+```
 
-To solve the problem, delete the workspaces and attempt to run the script again, or turn off the flag at the beginning of the bootstrap script by setting create_workspaces="false". Alternatively you can chose to assign the capacities to the workspaces manually.
+As stated in the warning message, you might want to review the workspace and assign it to the right capacity manually. You can also choose to either delete the workspaces manually and attempt to run the script again, or turn off the flag at the beginning of the bootstrap script by setting create_workspaces variable to "false".
 
-### Several run attempts might lead to strange errors due to the lack of idempotency
+### Several run attempts might lead to strange errors
 
-Examples are:
+Because the scripts relies heavily on the Fabric API, there are a lot of reasons that it might fail. Here are some examples:
 
-- *[E] {"error":{"code":"Alm_InvalidRequest_WorkspaceHasNoCapacity","pbi.error":{"code":"Alm_InvalidRequest_WorkspaceHasNoCapacity","parameters":{},"details":[],"exceptionCulprit":1}}}[I] Assigned workspace 'ID' to stage '0' successfully.
+```txt
+*[E] {"error":{"code":"Alm_InvalidRequest_WorkspaceHasNoCapacity","pbi.error":{"code":"Alm_InvalidRequest_WorkspaceHasNoCapacity","parameters":{},"details":[],"exceptionCulprit":1}}}[I] Assigned workspace '<ID>>' to stage '0' successfully.   
 [I] Workspace ws-fb-1-e2e-sample-uat (ID)*
 
-- *[E] {"requestId":"ID","errorCode":"UnsupportedCapacitySKU","message":"The operation is not supported over the capacity SKU"}*
+*[E] {"requestId":"<ID>>","errorCode":"UnsupportedCapacitySKU","message":"The operation is not supported over the capacity SKU"}*
+```
 
-To solve the problem, attempt a clean run.
+If you are running into such issue, you might want to add additional debugging information to the script to understand the root cause of the issue. For a fresh start, you might want to delete the capacity and the workspaces and run the script again. An ideal execution of the script should look something like this:
 
-### Getting errors on a successful run
+```txt
+[I] ############ START ############
+[I] ############ Azure Resource Deployment ############
+[I] Creating resource group 'rg-fabric-cicd'
+[I] Deploying Azure resources to resource group 'rg-fabric-cicd'
+[I] Capacity 'capfabriccicd' created successfully.
+[I] ############ Workspace Creation ############
+[I] Fabric capacity is 'capfabriccicd' (2a76fa8a-ee52-4251-968c-fc7b295fcbc0)
+[I] Created workspace 'ws-fabric-cicd-dev' (8978c223-2ec9-4522-a172-073c4604e1f6)
+[I] Created workspace 'ws-fabric-cicd-uat' (92d8d07a-ebe8-40ac-928f-bb29b7b7f13c)
+[I] Created workspace 'ws-fabric-cicd-prd' (dc30ea98-704f-45e6-b9fd-2d985526da5a)
+[I] ############ Deployment Pipeline Creation ############
+[I] No deployment pipeline with name 'dp-fabric-cicd' found, creating one.
+[I] Created deployment pipeline 'dp-fabric-cicd' (ed946d85-6370-4bc7-b134-af865a4fd1e4) successfully.
+[I] Workspace ws-fabric-cicd-dev (8978c223-2ec9-4522-a172-073c4604e1f6)
+[I] Existing workspace for stage '0' is .
+[I] Assigned workspace '8978c223-2ec9-4522-a172-073c4604e1f6' to stage '0' successfully.
+[I] Workspace ws-fabric-cicd-uat (92d8d07a-ebe8-40ac-928f-bb29b7b7f13c)
+[I] Existing workspace for stage '1' is .
+[I] Assigned workspace '92d8d07a-ebe8-40ac-928f-bb29b7b7f13c' to stage '1' successfully.
+[I] Workspace ws-fabric-cicd-prd (dc30ea98-704f-45e6-b9fd-2d985526da5a)
+[I] Existing workspace for stage '2' is .
+[I] Assigned workspace 'dc30ea98-704f-45e6-b9fd-2d985526da5a' to stage '2' successfully.
+[I] ############ Lakehouse Creation (DEV) ############
+[I] Created Lakehouse 'lh_main' (51b03016-8a14-4c65-ae9a-ce0743fdfa35) successfully.
+[I] ############ Notebooks Creation (DEV) ############
+[I] Created Notebook 'nb-city-safety' (ff1a27c2-ea4b-4cbb-91c9-4883afed61fc) successfully.
+[I] Created Notebook 'nb-covid-data' (d3fd147a-40ae-40d4-8c95-44cae3a96ac3) successfully.
+[I] ############ Data Pipelines Creation (DEV) ############
+[I] Created DataPipeline 'pl-covid-data' (3877e187-b966-41a9-a7db-a1113fafc39b) successfully.
+[I] ############ Triggering Notebook Execution (DEV) ############
+[I] Notebook execution triggered successfully.
+[I] ############ Triggering Data Pipeline Execution (DEV) ############
+[I] Data pipeline execution triggered successfully.
+[I] ############ GIT Integration (DEV) ############
+[I] Workspace connected to the git repository.
+[I] The Git connection has been successfully initialized.
+[I] Committed workspace changes to git successfully.
+```
 
-We noticed there are some errors thrown during the bootstrap run, but the deployment was completely successful.
-If you notice errors like:
+## To-do list
 
-*[E] Notebook upload to the workspace failed.
-[E] Committing workspace changes to git failed.*
+- [ ] Add support for Service Principal (SP) authentication.
+- [ ] Update bootstrap script to derive the resource group and capacity name from the Fabric project name.
+- [ ] Update bootstrap script to verify if the environment variables are set correctly.
 
-Double check first that the notebook really failed or not, and the same for the Git synchronization.
+## References
 
-### Passing the Fabric Bearer Token
-
-You may experience "The token expired." error message. To workaround it, a new token needs to be generated.
-
-A temporary way to get the token can be found in the following [article](https://learn.microsoft.com/rest/api/fabric/articles/get-started/fabric-api-quickstart#c-code-sample-for-acquiring-a-microsoft-entra-access-token)
-
-For a quick alternative to get a token:
-
-- login into the Fabric portal with the credentials you want to get the token
-- Click on F12 - Developer tools
-- Click on console
-- Type copy(powerBIAccessToken)
-- Paste the token into the variables of the pipeline
-
-Bear in mind that this is not a production ready solution. The token needs to be refreshed every hour for the solution to run properly.
+- [Microsoft Fabric REST API documentation](https://learn.microsoft.com/rest/api/fabric/articles/)
+- [Introduction to deployment pipelines](https://learn.microsoft.com/fabric/cicd/deployment-pipelines/intro-to-deployment-pipelines)
+- [Introduction to Git integration](https://learn.microsoft.com/en-us/fabric/cicd/git-integration/intro-to-git-integration)
