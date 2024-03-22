@@ -1,6 +1,6 @@
 # Fabric CI/CD Sample <!-- omit in toc -->
 
-This repo contains a code sample for establishing a CI/CD process for Microsoft Fabric workspaces. The code is intended to be used as a jumpstart for a new project on Microsoft Fabric. At present, the code has several limitations; however, the objective is to continuously improve its capabilities in sync with the advancements of Fabric.
+This repo contains a code sample for establishing a CI/CD process for Microsoft Fabric workspaces. The code is intended to be used as a jump-start for a new project on Microsoft Fabric. At present, the code has several limitations; however, the objective is to continuously improve its capabilities in sync with the advancements of Fabric.
 
 ## Contents <!-- omit in toc -->
 
@@ -75,7 +75,6 @@ The CI process is not showcased in this repository at present and will be added 
 
 There are some gaps to achieve the full automation at the moment, namely the lack of support for SPs.
 
-
 #### CD process - Option 1: Using Fabric Deployment Pipelines API
 
 For the CD process, the Azure DevOps pipelines provided in the sample are meant to be triggered manually, and the trigger can be easily implemented by changing the "trigger:" property in the yml file.
@@ -84,7 +83,7 @@ This option is recommended for cases where the Development, Test and Production 
 
 Building on top of the bootstrap and hydration outcomes, there are two options to implement the CD release process in Fabric. There are two [yml files](./devops/) that can be used to create an Azure DevOps pipeline. The first option offers an approval gate before allowing the deployment to Test and to Production. The second option doesn't include the approval gates.
 
-**1 - Pre-requisites - Variable Groups**: before trunning the CD release pipeline, the following variable groups need to be created under Pipelines/Library in Azure DevOps.
+**1 - Pre-requisites - Variable Groups**: before turning the CD release pipeline, the following variable groups need to be created under Pipelines/Library in Azure DevOps.
 
 **fabric-test variable group**: should contain the following variables:
 
@@ -149,10 +148,10 @@ Here is a summary of the steps that the script performs:
 - Creates an Azure resource group and a Fabric capacity. If the capacity already exists, the script fetches the Id based on the capacity name.
 - Creates three Fabric workspaces for development (DEV), user acceptance testing (UAT), and production (PRD). If the workspaces already exist, the script fetch the corresponding workspace Ids and writes a warning message to validate that the existing workspaces are indeed connected to the intended capacity.
 - Creates a deployment pipeline and assigns the workspaces to the stages. If any pipeline stage is already associated with a different workspace, it reassigns the new workspaces to the stage.
-- Creates a Fabric lakehouse `lh_main`.
+- Creates a Fabric Lakehouse `lh_main`.
 - Creates two Fabric notebooks `nb-city-safety` and `nb-covid-data` by uploading the notebook files from the [src/notebooks](./src/notebooks/) directory. If the notebook already exists, the script skips the upload.
 - Creates a Fabric data pipeline `pl-covid-data` by uploading the pipeline content from the [src/data-pipelines](./src/data-pipelines/) directory. If the pipeline already exists, the script skips the upload.
-- Triggers the execution of the Fabric notebooks and data pipelines to hydrate the Fabric lakehouse. See [Hydrating Fabric artifacts](#hydrating-fabric-artifacts) for more details.
+- Triggers the execution of the Fabric notebooks and data pipelines to hydrate the Fabric Lakehouse. See [Hydrating Fabric artifacts](#hydrating-fabric-artifacts) for more details.
 - Connects the workspaces to the GIT repository and commits the changes. If the workspaces are already connected to the GIT repository, the script leaves it as is.
 - Finally, all the workspaces changes are committed to the GIT repository.
 
@@ -166,7 +165,7 @@ Here is a table that lists the resources created by the bootstrap script. `<FABR
 |Fabric Capacity|Fabric capacity that contains the Fabric workspaces.|`cap<FABRIC_PROJECT_NAME>`|
 |Fabric Workspaces|Three Fabric workspaces that are assigned to the Fabric capacity.|`ws-<FABRIC_PROJECT_NAME>-dev`</br>`ws-<FABRIC_PROJECT_NAME>-uat`</br>`ws-<FABRIC_PROJECT_NAME>-prd`|
 |Deployment Pipeline|Fabric deployment pipeline with stages corresponding to the workspaces.|`dp-<FABRIC_PROJECT_NAME>`|
-|Fabric Lakehouse|Fabric lakehouse that contains the data lake.|`lh_main`|
+|Fabric Lakehouse|Fabric Lakehouse that contains the data lake.|`lh_main`|
 |Fabric Notebooks|Fabric notebooks that contain the business logic.|`nb-city-safety`</br>`nb-covid-data`|
 |Fabric Data Pipeline|Fabric data pipelines that contain the data processing logic.|`pl-covid-data`|
 
@@ -293,4 +292,4 @@ If you are running into such issue, you might want to add additional debugging i
 
 - [Microsoft Fabric REST API documentation](https://learn.microsoft.com/rest/api/fabric/articles/)
 - [Introduction to deployment pipelines](https://learn.microsoft.com/fabric/cicd/deployment-pipelines/intro-to-deployment-pipelines)
-- [Introduction to Git integration](https://learn.microsoft.com/en-us/fabric/cicd/git-integration/intro-to-git-integration)
+- [Introduction to Git integration](https://learn.microsoft.com/fabric/cicd/git-integration/intro-to-git-integration)
