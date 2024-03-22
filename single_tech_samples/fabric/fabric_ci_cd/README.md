@@ -160,7 +160,7 @@ Here is a table that lists the resources created by the bootstrap script. `<FABR
 |:------------|:---------------|:------------------|
 |Resource Group|The Azure resource group that contains all the resources|`rg-<FABRIC_PROJECT_NAME>`|
 |Fabric Capacity|The Fabric capacity that contains the Fabric workspaces|`cap<FABRIC_PROJECT_NAME>`|
-|Fabric Workspaces|The Fabric workspaces that are assigned to the Fabric capacity. Three workspaces are created for development (dev), user acceptance testing (uat), and production (prd)|`ws-<FABRIC_PROJECT_NAME>-dev`</br>`ws-<FABRIC_PROJECT_NAME>-uat`</br>`ws-<FABRIC_PROJECT_NAME>-prd`|
+|Fabric Workspaces|The Fabric workspaces that are assigned to the Fabric capacity.</br>Three workspaces are created for development (dev), user acceptance testing (uat), and production (prd)|`ws-<FABRIC_PROJECT_NAME>-dev`</br>`ws-<FABRIC_PROJECT_NAME>-uat`</br>`ws-<FABRIC_PROJECT_NAME>-prd`|
 |Deployment Pipeline|The Fabric deployment pipeline that contains the stages corresponding to the workspaces|`dp-rg-<FABRIC_PROJECT_NAME>`|
 |Fabric Lakehouse|The Fabric lakehouse that contains the data lake|`lh_main`|
 |Fabric Notebooks|The Fabric notebooks that contain the business logic|`nb-city-safety`</br>`nb-covid-data`|
