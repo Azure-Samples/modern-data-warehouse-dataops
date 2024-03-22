@@ -1,6 +1,6 @@
 # Fabric CI/CD Sample <!-- omit in toc -->
 
-This repo contains the code for establishing a CI/CD process around Fabric workspaces. The code is intended to be used as a jumpstart for a new project on Microsoft Fabric. Currently, there are many limitations, but the goal is to expand the capabilities of the code over time.
+This repo contains a code sample for establishing a CI/CD process for Microsoft Fabric workspaces. The code is intended to be used as a jumpstart for a new project on Microsoft Fabric. At present, the code has several limitations; however, the objective is to continuously improve its capabilities in sync with the advancements of Fabric.
 
 ## Contents <!-- omit in toc -->
 
@@ -32,6 +32,8 @@ This repo contains the code for establishing a CI/CD process around Fabric works
 
 Here are the steps to use the bootstrap script:
 
+1. Clone the repository.
+
 1. Change the directory to the `scripts` folder:
 
     ```bash
@@ -47,8 +49,8 @@ Here are the steps to use the bootstrap script:
     FABRIC_CAPACITY_NAME='The name of the Fabric capacity'
     CAPACITY_ADMIN_EMAIL='The email address of the Fabric capacity admin'
     FABRIC_PROJECT_NAME='The name of the Fabric project. This name is used for  naming the Fabric resources.'
-    FABRIC_API_ENDPOINT='The Fabric API endpoint. e.g., https://api.fabric.microsoft.   com/v1'
-    DEPLOYMENT_API_ENDPOINT='The deployment API endpoint. e.g., https://api.powerbi.    com/v1.0/myorg/pipelines'
+    FABRIC_API_ENDPOINT='The Fabric API endpoint. e.g., https://api.fabric.microsoft.com/v1'
+    DEPLOYMENT_API_ENDPOINT='The deployment API endpoint. e.g., https://api.powerbi.com/v1.0/myorg/pipelines'
     FABRIC_BEARER_TOKEN='The bearer token for calling the Fabric APIs.'
     ORGANIZATION_NAME='Azure DevOps organization name'
     PROJECT_NAME='Azure DevOps project name'
@@ -69,18 +71,18 @@ Good Luck!
 
 #### CI process
 
-The CI process is not showedcased in this repository at the present time.
+The CI process is not showcased in this repository at present and will be added moving forward.
+
 There are some gaps to achieve the full automation at the moment, namely the lack of support for SPs.
-The CI process will be added moving forward.
+
 
 #### CD process - Option 1: Using Fabric Deployment Pipelines API
 
-For the CD process, the Azure DevOps pipelines provided in the sample are meant to be triggered manually, but the trigger can be easily implemented by changing the "trigger:" property in the yml file.
+For the CD process, the Azure DevOps pipelines provided in the sample are meant to be triggered manually, and the trigger can be easily implemented by changing the "trigger:" property in the yml file.
 
 This option is recommended for cases where the Development, Test and Production environments are located in the same tenant. Using Fabric Deployment pipelines is a great solution to promote your changes between the environments.
 
-Building on top of the bootstrap and hydration outcomes, there are two options to implement the CD release process in Fabric.
-There are two [yml files](./devops/) that can be used to create an Azure DevOps pipeline. The first option offers an approval gate before allowing the deployment to Test and to Production. The second option doesn't include the approval gates.
+Building on top of the bootstrap and hydration outcomes, there are two options to implement the CD release process in Fabric. There are two [yml files](./devops/) that can be used to create an Azure DevOps pipeline. The first option offers an approval gate before allowing the deployment to Test and to Production. The second option doesn't include the approval gates.
 
 **1 - Pre-requisites - Variable Groups**: before trunning the CD release pipeline, the following variable groups need to be created under Pipelines/Library in Azure DevOps.
 
@@ -131,12 +133,12 @@ Upon completion  both deployment stages: "Deploy to Test" and "Deploy to Product
 
 #### CD process - Option 2: Using Fabric REST APIs
 
-There is a second option to implement thd CD release process. This scenario, might be aplied in cases when:
+There is a second option to implement thd CD release process. This scenario, might be applied in cases when:
 
-- Development, Staging and Production evironments are not located in the same tenant.
+- Development, Staging and Production environments are not located in the same tenant.
 - Organizations are not using Azure DevOps as a Git tool.
 
-There are some caviats to this approach. The code and more information on this Option, will be available soon.
+There are some caveats to this approach. The code and more information on this Option, will be available soon.
 
 ## Understanding bootstrap script
 
@@ -170,7 +172,7 @@ Here is a table that lists the resources created by the bootstrap script. `<FABR
 
 ### Hydrating Fabric artifacts
 
-The code samples use [Microsoft Open Datasets](https://learn.microsoft.com/azure/open-datasets/overview-what-are-open-datasets) and support **parameter driven** executions. The two different ways processing included are:
+The code samples use [Microsoft Open Datasets](https://learn.microsoft.com/azure/open-datasets/overview-what-are-open-datasets) and support **parameter driven** executions. The following sections mention the two different ways processing.
 
 #### Using Fabric notebooks
 
@@ -178,7 +180,7 @@ Fabric notebook [nb-city-safety.ipynb](./src/notebooks/nb-city-safety.ipynb) rea
 
 - Data is extracted for multiple cities, one extract at a time, and loaded into a Lakehouse table.
 - Two new columns are added during processing (`UTC time` and `City`).
-- Process can be configured to run in `overwrite` or `append` mode.
+- Data table load can be configured to run in `overwrite` or `append` mode.
 - Count metrics are gathered towards the end of the process.
 
 #### Using Fabric data pipelines
@@ -191,8 +193,8 @@ Fabric data pipeline [pl-covid-data](./src/data-pipelines/pl-covid-data-content.
 Here are the key steps:
 
 - The target file path is `<Lakehouse>/Files/covid_data/<covid-data-provider-name>/YYYY-MM/YYYY-MM-DD.parquet`.
-- Latest (daily) files, based on the UTC time at the time of execution are copied from each of the publisher location and stored as `YYYY-MM-DD.parquet` in the target location.
-- Incase of re-runs on the same day, files will be overwritten.
+- Latest (daily) files, at the time of execution are copied from each of the publisher location and stored as `YYYY-MM-DD.parquet`(based on the UTC time ) in the target location.
+- Incase of re-runs on the same day, target files will be overwritten.
 
 > *Due to the constraints in creation of linked services using REST APIs, the data pipeline example only includes activities which doesn't have any linked service references.*
 
