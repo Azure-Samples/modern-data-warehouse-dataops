@@ -132,7 +132,7 @@ Upon completion  both deployment stages: "Deploy to Test" and "Deploy to Product
 
 #### CD process - Option 2: Using Fabric REST APIs
 
-There is a second option to implement thd CD release process. This scenario, might be applied in cases when:
+There is a second option to implement the CD release process. This scenario, might be applied in cases when:
 
 - Development, Staging and Production environments are not located in the same tenant.
 - Organizations are not using Azure DevOps as a Git tool.
