@@ -424,8 +424,8 @@ if [[ "$create_workspaces" = "true" ]]; then
     for ((i=0; i<${#workspace_names[@]}; i++)); do
         workspace_ids[i]=$(get_workspace_id "${workspace_names[$i]}")
         if [[ -n "${workspace_ids[i]}" ]]; then
-            echo "  [W] Workspace: '${workspace_names[$i]}' (${workspace_ids[i]}) already exists."
-            echo "  [W] Please verify the attached capacity manually."
+            echo "[W] Workspace: '${workspace_names[$i]}' (${workspace_ids[i]}) already exists."
+            echo "[W] Please verify the attached capacity manually."
         else
             create_workspace "${workspace_names[$i]}" "$capacity_id"
             workspace_ids[i]=$(get_workspace_id "${workspace_names[$i]}")
