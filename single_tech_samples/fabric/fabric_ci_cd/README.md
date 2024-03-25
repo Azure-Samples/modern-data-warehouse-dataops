@@ -32,22 +32,36 @@ This repo contains a code sample for establishing a CI/CD process for Microsoft 
 
 Here are the steps to use the bootstrap script:
 
+   > Some of the pre-requisites:
+         - Ensure *always* latest Fabric Token is added to the .env file (See instructions below).
+         - Azure CLI and jq are installed.
+         - Ensure that correct Azure account is being used.
+  
 1. Clone the repository.
 
-1. Change the directory to the `scripts` folder:
-
-    ```bash
-    cd scripts
+    ```bash 
+    # Optional
+    az account set -s "your_subscription_id"
+    az login --tenant "your tenant" 
+    cd "<your installation folder"
+    # Repo clone
+    git clone https://github.com/Azure-Samples/modern-data-warehouse-dataops.git
     ```
 
-1. Rename the [env.sample](./.env.sample) file to `.env` and fill in the necessary environment variables. Here is the detailed explanation of the environment variables:
+1. Change the directory to the scripts folder:
+
+    ```bash
+    cd ./modern-data-warehouse-dataops/single_tech_samples/fabric/fabric_ci_cd
+    ```
+
+2. Rename the [.envtemplate](./.envtemplate) file to `.env` and fill in the necessary environment variables. Here is the detailed explanation of the environment variables:
 
     ```bash
     AZURE_SUBSCRIPTION_ID='Azure Subscription Id'
     AZURE_LOCATION='The location where the Azure resources will be created'
     RESOURCE_GROUP_NAME='The name of the resource group'
-    FABRIC_CAPACITY_NAME='The name of the Fabric capacity'
-    CAPACITY_ADMIN_EMAIL='The email address of the Fabric capacity admin'
+    FABRIC_CAPACITY_NAME='The name of the Fabric capacity - Capacity name must contain only lowercase letters or numbers'
+    CAPACITY_ADMIN_EMAIL='The email address of the Fabric capacity admin - **This should be from the same tenant where Capacity is being created.**'
     FABRIC_PROJECT_NAME='The name of the Fabric project. This name is used for  naming the Fabric resources.'
     FABRIC_API_ENDPOINT='The Fabric API endpoint. e.g., https://api.fabric.microsoft.com/v1'
     DEPLOYMENT_API_ENDPOINT='The deployment API endpoint. e.g., https://api.powerbi.com/v1.0/myorg/pipelines'
@@ -59,7 +73,7 @@ Here are the steps to use the bootstrap script:
     DIRECTORY_NAME='The directory used by Fabric to sync the workspace code. Can be "/" or any other sub-directory.'
     ```
 
-1. Run the bootstrap script:
+3. Run the bootstrap script:
 
 ```bash
 ./bootstrap.sh
