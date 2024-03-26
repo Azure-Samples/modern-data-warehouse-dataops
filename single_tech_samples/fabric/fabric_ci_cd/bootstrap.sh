@@ -55,30 +55,29 @@ function deploy_azure_resources() {
 }
 
 function get_capacity_id() {
-     response=$(curl -s -X GET "$FABRIC_API_ENDPOINT/capacities" -H "Authorization: Bearer $FABRIC_BEARER_TOKEN")
-     capacity_id=$(echo "${response}" | jq -r --arg var "$FABRIC_CAPACITY_NAME" '.value[] | select(.displayName == $var) | .id')
-     echo "$capacity_id"
+    response=$(curl -s -X GET -H "Authorization: Bearer $FABRIC_BEARER_TOKEN" "$FABRIC_API_ENDPOINT/capacities")
+    capacity_id=$(echo "${response}" | jq -r --arg var "$FABRIC_CAPACITY_NAME" '.value[] | select(.displayName == $var) | .id')
+    echo "$capacity_id"
 }
 
 function create_workspace(){
-     local workspace_name="$1"
-     local capacity_id="$2"
+    local workspace_name="$1"
+    local capacity_id="$2"
 
-     jsonPayload=$(cat <<EOF
+    jsonPayload=$(cat <<EOF
 {
-     "DisplayName": "$workspace_name",
-     "capacityId": "${capacity_id}",
-     "description": "Workspace $workspace_name",
+    "DisplayName": "$workspace_name",
+    "capacityId": "${capacity_id}",
+    "description": "Workspace $workspace_name",
 }
 EOF
 )
 
-     curl -s -X POST "$FABRIC_API_ENDPOINT/workspaces" \
-          -o /dev/null \
-          -H "Authorization: Bearer $FABRIC_BEARER_TOKEN" \
-          -H "Content-Type: application/json" \
-          -d "${jsonPayload}"
-
+    curl -s -X POST "$FABRIC_API_ENDPOINT/workspaces" \
+        -o /dev/null \
+        -H "Authorization: Bearer $FABRIC_BEARER_TOKEN" \
+        -H "Content-Type: application/json" \
+        -d "${jsonPayload}"
 }
 
 function get_workspace_id() {
@@ -128,7 +127,7 @@ function unassign_workspace_from_stage() {
     pipeline_unassignment_url="$DEPLOYMENT_API_ENDPOINT/$pipeline_id/stages/$stage_id/unassignWorkspace"
     pipeline_unassignment_body={}
 
-    curl -s -X POST -H "Authorization: Bearer $FABRIC_BEARER_TOKEN" -d "$pipeline_unassignment_body" "$pipeline_unassignment_url"
+    curl -s -X POST -H "Authorization: Bearer $FABRIC_BEARER_TOKEN" -H "Content-Type: application/json" -d "$pipeline_unassignment_body" "$pipeline_unassignment_url"
     echo "[I] Unassigned workspace from stage '$stage_id' successfully."
 }
 
@@ -256,7 +255,7 @@ function disconnect_workspace_from_git() {
     workspace_id=$1
     disconnect_workspace_url="$FABRIC_API_ENDPOINT/workspaces/$workspace_id/git/disconnect"
     disconnect_workspace_body={}
-    response=$(curl -s -X POST -H "Authorization : Bearer $FABRIC_BEARER_TOKEN" -d "$disconnect_workspace_body" "$disconnect_workspace_url")
+    response=$(curl -s -X POST -H "Authorization : Bearer $FABRIC_BEARER_TOKEN" -H "Content-Type: application/json" -d "$disconnect_workspace_body" "$disconnect_workspace_url")
     if [[ -n "$response" ]] && [[ "$response" != "null" ]]; then
         error_code=$(echo "$response" | jq -r '.errorCode')
         if [[ "$error_code" = "WorkspaceNotConnectedToGit" ]]; then
@@ -365,7 +364,7 @@ function execute_notebook() {
 EOF
 )
     # TBD: Check the notebook execution via polling long running operation. Read header response by using "-i" flag.
-    response=$(curl -s -X POST -H "Authorization: Bearer $FABRIC_BEARER_TOKEN" -d "$execute_notebook_body" "$execute_notebook_url")
+    response=$(curl -s -X POST -H "Authorization: Bearer $FABRIC_BEARER_TOKEN" -H "Content-Type: application/json" -d "$execute_notebook_body" "$execute_notebook_url")
     if [[ -n "$response" ]] && [[ "$response" != "null" ]]; then
         echo "[E] Notebook execution failed."
         echo "[E] $response"
@@ -394,7 +393,7 @@ function execute_pipeline() {
 EOF
 )
     # TBD: Check the notebook execution via polling long running operation. Read header response by using "-i" flag.
-    response=$(curl -s -X POST -H "Authorization: Bearer $FABRIC_BEARER_TOKEN" -d "$execute_pipeline_body" "$execute_pipeline_url")
+    response=$(curl -s -X POST -H "Authorization: Bearer $FABRIC_BEARER_TOKEN" -H "Content-Type: application/json" -d "$execute_pipeline_body" "$execute_pipeline_url")
     if [[ -n "$response" ]] && [[ "$response" != "null" ]]; then
         echo "[E] Data pipeline execution failed."
         echo "[E] $response"
@@ -404,6 +403,17 @@ EOF
 }
 
 echo "[I] ############ START ############"
+
+echo "[I] ############ Fabric Token Validation ############"
+token_response=$(curl -s -X GET -H "Content-Type: application/json" -H "Authorization: Bearer $FABRIC_BEARER_TOKEN" "$FABRIC_API_ENDPOINT/workspaces/")
+
+if echo "${token_response}" | grep "TokenExpired"; then  
+    echo "[E] Fabric token has expired. Please generate a new token and update the .env file."
+    exit 1
+else
+    echo "[I] Fabric token is valid."
+fi
+
 echo "[I] ############ Azure Resource Deployment ############"
 if [[ "$deploy_azure_resources" = "true" ]]; then
     resource_group_name="$RESOURCE_GROUP_NAME"
@@ -528,17 +538,6 @@ else
     echo "[I] Variable 'create_pipelines' set to $create_pipelines, skipping data pipeline(s) upload."
 fi
 
-echo "[I] ############ Triggering Notebook Execution (DEV) ############"
-if [[ "$trigger_notebook_execution" = "true" ]]; then
-    # TBD: Remove hardcoding of the notebook name from here.
-    notebook_name="nb-city-safety"
-    item_id=$(get_item_by_name_type "$dev_workspace_id" "Notebook" "$notebook_name")
-    execute_notebook "$dev_workspace_id" "$item_id" "$onelake_name" "$dev_workspace_name" "$lakehouse_name"
-    # TBD: Check the notebook execution via polling long running operation.
-else
-    echo "[I] Variable 'trigger_notebook_execution' set to $trigger_notebook_execution, skipping notebook execution."
-fi
-
 echo "[I] ############ Triggering Data Pipeline Execution (DEV) ############"
 if [[ "$trigger_pipeline_execution" = "true" ]]; then
     for ((i=0; i<${#pipeline_names[@]}; i++)); do
@@ -551,6 +550,16 @@ else
     echo "[I] Variable 'trigger_pipeline_execution' set to $trigger_pipeline_execution, skipping data pipeline execution."
 fi
 
+echo "[I] ############ Triggering Notebook Execution (DEV) ############"
+if [[ "$trigger_notebook_execution" = "true" ]]; then
+    # TBD: Remove hardcoding of the notebook name from here.
+    notebook_name="nb-city-safety"
+    item_id=$(get_item_by_name_type "$dev_workspace_id" "Notebook" "$notebook_name")
+    execute_notebook "$dev_workspace_id" "$item_id" "$onelake_name" "$dev_workspace_name" "$lakehouse_name"
+else
+    echo "[I] Variable 'trigger_notebook_execution' set to $trigger_notebook_execution, skipping notebook execution."
+fi
+
 echo "[I] ############ GIT Integration (DEV) ############"
 if [[ "$connect_to_git" = "true" ]]; then
     if [ "$should_disconnect" = true ]; then
@@ -558,6 +567,7 @@ if [[ "$connect_to_git" = "true" ]]; then
     fi
     connect_workspace_to_git "$dev_workspace_id" "$azure_devops_details"
     workspace_head=$(get_git_status "$dev_workspace_id")
+    echo "[I] Workspace head is '${workspace_head}'"
     commit_all_to_git "$dev_workspace_id" "$workspace_head" "Committing initial changes"
 else
     echo "[I] Variable 'connect_to_git' set to $connect_to_git, skipping git integration, commit and push."
