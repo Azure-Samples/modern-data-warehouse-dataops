@@ -44,8 +44,8 @@ Here are the steps to use the bootstrap script:
 
     ```bash 
     # Optional
-    az account set -s "<subscription_id>"
     az login --tenant "<tenant_id>"
+    az account set -s "<subscription_id>"
     cd "<installation_folder>"
     # Repo clone
     git clone https://github.com/Azure-Samples/modern-data-warehouse-dataops.git

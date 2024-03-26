@@ -3,7 +3,7 @@ source .env
 
 az account set --subscription "$AZURE_SUBSCRIPTION_ID"
 
-onelake_name="onelake"
+onelake_name="dxt-onelake" # only for DXT environment
 workspace_names=("ws-$FABRIC_PROJECT_NAME-dev" "ws-$FABRIC_PROJECT_NAME-uat" "ws-$FABRIC_PROJECT_NAME-prd")
 deployment_pipeline_name="dp-$FABRIC_PROJECT_NAME"
 deployment_pipeline_desc="Deployment pipeline for $FABRIC_PROJECT_NAME"
@@ -22,7 +22,7 @@ azure_devops_details='{
     "branchName":"'"$BRANCH_NAME"'",
     "directoryName":"'"$DIRECTORY_NAME"'"
 }'
-deploy_azure_resources="true"
+deploy_azure_resources="false"
 create_workspaces="true"
 connect_to_git="true"
 setup_deployment_pipeline="true"
@@ -30,8 +30,10 @@ create_default_lakehouse="true"
 should_disconnect="false"
 create_notebooks="true"
 create_pipelines="true"
-trigger_notebook_execution="false"
+trigger_notebook_execution="true"
 trigger_pipeline_execution="true"
+add_workspace_admin="true"
+add_pipeline_admin="true"
 
 function create_resource_group () {
     resource_group_name="$1"
@@ -89,6 +91,25 @@ function get_workspace_id() {
     echo "$workspace_id"
 }
 
+function add_admin_to_workspace() {
+    workspace_id=$1
+    admin_ids=("${@:2}")   # this is an array of admin ids
+    add_admin_url="$FABRIC_API_ENDPOINT/workspaces/$workspace_id/roleAssignments"
+    
+    echo "[I] Adding admins to workspace $workspace_id"
+
+    for id in "${admin_ids[@]}"; do  
+        add_admin_body=$(echo "{\"principal\": { \"id\": \"${id}\", \"type\": \"User\"}, \"role\": \"Admin\" }")
+        response=$(curl -s -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $FABRIC_BEARER_TOKEN" -d "$add_admin_body" "$add_admin_url" 2>&1)
+        if [[ $(echo "${response}"|grep "PrincipalAlreadyHasWorkspaceRolePermissions"|wc -l) -ge 1 ]]; then  
+            echo "[W]   The provided principal ${id} already has a role assigned in the workspace."
+        else
+            echo "[I]   Added $id as an admin."
+        fi
+    done
+}
+
+
 function create_deployment_pipeline() {
     deployment_pipeline_name=$1
     deployment_pipeline_desc=$2
@@ -119,6 +140,24 @@ function get_deployment_pipeline_stages() {
     get_pipeline_stages_url="$DEPLOYMENT_API_ENDPOINT/$pipeline_id/stages"
     stages=$(curl -s -H "Authorization: Bearer $FABRIC_BEARER_TOKEN" "$get_pipeline_stages_url" | jq -r '.value')
     echo "$stages"
+}
+
+function add_admin_to_pipeline() {
+    pipeline_id=$1
+    admin_ids=("${@:2}")   # this is an array of admin ids
+    add_admin_url="$DEPLOYMENT_API_ENDPOINT/$pipeline_id/users"
+    
+    echo "[I] Adding admins to deployment pipeline $pipeline_id"
+
+    for id in "${admin_ids[@]}"; do  
+        add_admin_body=$(echo "{\"identifier\":  \"${id}\", \"principalType\": \"User\", \"accessRight\": \"Admin\" }")
+        response=$(curl -s -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $FABRIC_BEARER_TOKEN" -d "$add_admin_body" "$add_admin_url" 2>&1)
+        if [[ $(echo "${response}"|grep "errorCode"|wc -l) -ge 1 ]]; then  
+            echo "[W]   The admin access addition for ${id} resulted in error: $response"
+        else
+            echo "[I]   Added $id as an admin."
+        fi
+    done
 }
 
 function unassign_workspace_from_stage() {
@@ -480,6 +519,24 @@ if [[ "$setup_deployment_pipeline" = "true" ]]; then
     done
 else
     echo "[I] Variable 'setup_deployment_pipeline' set to $setup_deployment_pipeline, skipping deployment pipeline creation."
+fi
+
+echo "[I] ############ Adding admin IDS to Workspaces ############"
+if [[ "$add_workspace_admin" = "true" ]]; then
+    for ((i=0; i<${#workspace_names[@]}; i++)); do
+        add_admin_to_workspace "${workspace_ids[i]}" "${ADMIN_ACCESS_IDS[@]}"  
+        echo "[I] Updated workspace '${workspace_names[i]}' with admin access."
+    done
+else
+    echo "[I] Variable 'add_workspace_admin' set to $add_workspace_admin, skipping admin ids addition to workspace."
+fi
+
+echo "[I] ############ Adding admin IDS to Deployment pipeline ############"
+if [[ "$add_pipeline_admin" = "true" ]]; then
+    add_admin_to_pipeline "$pipeline_id" "${PIPELINE_ADMIN_IDS[@]}"  
+    echo "[I] Updated deployment pipeline '${workspace_names[i]}' with admin access."
+else
+    echo "[I] Variable 'add_pipeline_admin' set to $add_pipeline_admin, skipping admin ids addition to deployment pipeline."
 fi
 
 dev_workspace_id="${workspace_ids[0]}"
