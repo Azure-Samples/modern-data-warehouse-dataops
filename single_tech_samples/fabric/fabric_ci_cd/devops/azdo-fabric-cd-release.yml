@@ -16,7 +16,7 @@ stages:
         - task: PowerShell@2
           displayName: 'Fabric CD DEV TO TEST'
           inputs:
-            filePath: "./src/common/run-deployment-pipelines.ps1"
+            filePath: "./devops_scripts/run-deployment-pipelines.ps1"
             arguments: '-baseUrl "$(fabricRestApiEndpoint)" -fabricToken $(token) -pipelineName "$(pipelineName)" -sourceStageName "$(sourceStageName)" -targetStageName "$(targetStageName)" -targetStageWsName "$(targetStageWsName)"'
             pwsh: true
       
@@ -31,6 +31,6 @@ stages:
         - task: PowerShell@2
           displayName: 'Fabric CD TEST TO PROD'
           inputs:
-              filePath: "./src/common/run-deployment-pipeline.ps1"
+              filePath: "./devops_scripts/run-deployment-pipeline.ps1"
               arguments: '-baseUrl "$(fabricRestApiEndpoint)" -fabricToken $(token) -pipelineName "$(pipelineName)" -sourceStageName "$(sourceStageName)" -targetStageName "$(targetStageName)" -targetStageWsName "$(targetStageWsName)"'
               pwsh: true
