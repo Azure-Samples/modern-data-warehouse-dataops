@@ -55,8 +55,9 @@ function deploy_azure_resources() {
 }
 
 function get_capacity_id() {
-    response=$(curl -s -X GET "$FABRIC_API_ENDPOINT/capacities" -H "Authorization: Bearer $FABRIC_BEARER_TOKEN")
+    response=$(curl -s -X GET -H "Authorization: Bearer $FABRIC_BEARER_TOKEN" "$FABRIC_API_ENDPOINT/capacities")
     capacity_id=$(echo "${response}" | jq -r --arg var "$FABRIC_CAPACITY_NAME" '.value[] | select(.displayName == $var) | .id')
+    echo "$capacity_id"
 }
 
 function create_workspace(){
