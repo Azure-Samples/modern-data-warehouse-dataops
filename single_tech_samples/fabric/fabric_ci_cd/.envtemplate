@@ -1,14 +1,22 @@
 AZURE_SUBSCRIPTION_ID='Azure Subscription Id'
 AZURE_LOCATION='The location where the Azure resources will be created'
 RESOURCE_GROUP_NAME='The name of the resource group'
+# When can't create new capacity and have to use existing capacity then in bootstrap.sh set deploy_azure_resources="false" and provide the capacity name here.
 FABRIC_CAPACITY_NAME='The name of the Fabric capacity. Capacity name must contain only lowercase letters or numbers.'
+# This email must be valid in the tenat where Capacity is located.
 CAPACITY_ADMIN_EMAIL='The email address of the Fabric capacity admin. This should be from the same tenant where capacity is being created.'
 FABRIC_PROJECT_NAME='The name of the Fabric project. This name is used for naming the Fabric resources.'
 FABRIC_API_ENDPOINT='The Fabric API endpoint. e.g., https://api.fabric.microsoft.com/v1'
 DEPLOYMENT_API_ENDPOINT='The deployment API endpoint. e.g., https://api.powerbi.com/v1.0/myorg/pipelines'
+# The ID for which Fabric token is obtained should have also have access to AZDO repo used below.
 FABRIC_BEARER_TOKEN='The bearer token for calling the Fabric APIs.'
 ORGANIZATION_NAME='Azure DevOps organization name'
 PROJECT_NAME='Azure DevOps project name'
 REPOSITORY_NAME='Azure DevOps repository name'
+# This branch must exist with atleast one commit
 BRANCH_NAME='Azure DevOps branch name'
-DIRECTORY_NAME='The directory used by Fabric to sync the workspace code. Can be "/" or any other sub-directory.'
+# This folder must exist
+DIRECTORY_NAME='The directory used by Fabric to sync the workspace code. Can be "/" or any other sub-directory.' 
+# Admin access ids - list of principals ids from the same tenant who will have admin access to the workspaces being created
+ADMIN_ACCESS_IDS=("zzz-xxx-yyyy" "xxx-yyy-zzzz" "ccc-aabc--gfdsjghfdg")
+PIPELINE_ADMIN_IDS=("user1@contoso.com" "user2@contoso.com" "user3@contoso.com")
