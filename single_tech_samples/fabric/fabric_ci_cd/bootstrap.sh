@@ -57,28 +57,26 @@ function deploy_azure_resources() {
 function get_capacity_id() {
     response=$(curl -s -X GET "$FABRIC_API_ENDPOINT/capacities" -H "Authorization: Bearer $FABRIC_BEARER_TOKEN")
     capacity_id=$(echo "${response}" | jq -r --arg var "$FABRIC_CAPACITY_NAME" '.value[] | select(.displayName == $var) | .id')
-    echo "[I] Capacity=$capacity_id"
 }
 
 function create_workspace(){
-     local workspace_name="$1"
-     local capacity_id="$2"
+    local workspace_name="$1"
+    local capacity_id="$2"
 
-     jsonPayload=$(cat <<EOF
+    jsonPayload=$(cat <<EOF
 {
-     "DisplayName": "$workspace_name",
-     "capacityId": "${capacity_id}",
-     "description": "Workspace $workspace_name",
+    "DisplayName": "$workspace_name",
+    "capacityId": "${capacity_id}",
+    "description": "Workspace $workspace_name",
 }
 EOF
 )
 
-     curl -s -X POST "$FABRIC_API_ENDPOINT/workspaces" \
-          -o /dev/null \
-          -H "Authorization: Bearer $FABRIC_BEARER_TOKEN" \
-          -H "Content-Type: application/json" \
-          -d "${jsonPayload}"
-
+    curl -s -X POST "$FABRIC_API_ENDPOINT/workspaces" \
+        -o /dev/null \
+        -H "Authorization: Bearer $FABRIC_BEARER_TOKEN" \
+        -H "Content-Type: application/json" \
+        -d "${jsonPayload}"
 }
 
 function get_workspace_id() {
@@ -404,15 +402,17 @@ EOF
 }
 
 echo "[I] ############ START ############"
-  
+
 echo "[I] ############ Fabric Token Validation ############"
-token_response=$(curl -s -X GET -H "Content-Type: application/json" -H "Authorization: Bearer $FABRIC_BEARER_TOKEN" "$FABRIC_API_ENDPOINT/workspaces/")  
-if echo "${token_response}"| grep "TokenExpired"; then  
-  echo "[E] Fabric token has expired. Please generate a new token and update the .env file."
-  exit 10  
+token_response=$(curl -s -X GET -H "Content-Type: application/json" -H "Authorization: Bearer $FABRIC_BEARER_TOKEN" "$FABRIC_API_ENDPOINT/workspaces/")
+
+if echo "${token_response}" | grep "TokenExpired"; then  
+    echo "[E] Fabric token has expired. Please generate a new token and update the .env file."
+    exit 1
 else
     echo "[I] Fabric token is valid."
 fi
+
 echo "[I] ############ Azure Resource Deployment ############"
 if [[ "$deploy_azure_resources" = "true" ]]; then
     resource_group_name="$RESOURCE_GROUP_NAME"
@@ -542,7 +542,6 @@ if [[ "$trigger_pipeline_execution" = "true" ]]; then
     for ((i=0; i<${#pipeline_names[@]}; i++)); do
         pipeline_name="${pipeline_names[i]}"
         item_id=$(get_item_by_name_type "$dev_workspace_id" "DataPipeline" "$pipeline_name")
-        echo $(echo "[I] Running execute_pipeline with params $(echo "$dev_workspace_id" "$item_id" "$onelake_name" "$dev_workspace_name" "$lakehouse_name")")
         execute_pipeline "$dev_workspace_id" "$item_id" "$onelake_name" "$dev_workspace_name" "$lakehouse_name"
         # TBD: Check the notebook execution via polling long running operation.
     done
@@ -555,7 +554,6 @@ if [[ "$trigger_notebook_execution" = "true" ]]; then
     # TBD: Remove hardcoding of the notebook name from here.
     notebook_name="nb-city-safety"
     item_id=$(get_item_by_name_type "$dev_workspace_id" "Notebook" "$notebook_name")
-    echo $(echo "[I] Running execute_notebook with params $(echo "$dev_workspace_id" "$item_id" "$onelake_name" "$dev_workspace_name" "$lakehouse_name")")
     execute_notebook "$dev_workspace_id" "$item_id" "$onelake_name" "$dev_workspace_name" "$lakehouse_name"
 else
     echo "[I] Variable 'trigger_notebook_execution' set to $trigger_notebook_execution, skipping notebook execution."
@@ -568,7 +566,7 @@ if [[ "$connect_to_git" = "true" ]]; then
     fi
     connect_workspace_to_git "$dev_workspace_id" "$azure_devops_details"
     workspace_head=$(get_git_status "$dev_workspace_id")
-    echo "workspace_head:${workspace_head}"
+    echo "[I] Workspace head is '${workspace_head}'"
     commit_all_to_git "$dev_workspace_id" "$workspace_head" "Committing initial changes"
 else
     echo "[I] Variable 'connect_to_git' set to $connect_to_git, skipping git integration, commit and push."
