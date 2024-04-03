@@ -75,21 +75,21 @@ Here are the steps to use the bootstrap script:
 
 1. Review the various flags in the [bootstrap.sh](./bootstrap.sh) script and set them as needed. Here is a list of the flags:
 
-    | Flag                                | Description                                                           | Default Value | Required Environment  Variables                                                                         | Dependencies |
-    | :---------------------------------- | :-------------------------------------------------------------------- | :------------ |  :----------------------------------------------------------------------------------------------------- | :----------- |
-    | deploy_azure_resources              | Flag to deploy Azure resources.                                       | false         | AZURE_SUBSCRIPTION_ID</br>AZURE_LOCATION</br>CAPACITY_ADMIN_EMAIL                                | None         |
-    | create_workspaces                   | Flag to create new Fabric workspaces.                                 | true          | FABRIC_PROJECT_NAME                                                                                  | None         |
-    | setup_deployment_pipeline           | Flag to create a deployment pipeline and assign workspaces to stages. | true          | FABRIC_PROJECT_NAME                                                                                  | None         |
-    | create_default_lakehouse            | Flag to create a default Lakehouse.                                   | true          | None                                                                                                   | None         |
-    | create_notebooks                    | Flag to create Fabric notebooks.                                      | true          | None                                                                                                   | None         |
-    | create_pipelines                    | Flag to create Fabric data pipelines.                                 | true          | None                                                                                                   | None         |
-    | trigger_notebook_execution          | Flag to trigger the execution of Fabric notebooks.                    | true          | None                                                                                                   | None         |
-    | trigger_pipeline_execution          | Flag to trigger the execution of Fabric data pipelines.               | true          | None                                                                                                   | None         |
-    | should_disconnect                   | Flag to disconnect the workspaces from the GIT repository.            | false         | None                                                                                                   | None         |
-    | connect_to_git                      | Flag to connect the workspaces to the GIT repository.                 | true          | ORGANIZATION_NAME</br>PROJECT_NAME</br>`REPOSITORY_NAME</br>BRANCH_NAME</br>DIRECTORY_NAME | None         |
-    | create_domain_and_attach_workspaces | Flag to create a domain and attach workspaces to it.                  | false         | FABRIC_DOMAIN_NAME</br>FABRIC_SUBDOMAIN_NAME                                                       | None         |
+    | Flag                                | Description                                                           | Default value | Required environment  variables                                                                         |
+    | :---------------------------------- | :-------------------------------------------------------------------- | :------------ |  :----------------------------------------------------------------------------------------------------- |
+    | deploy_azure_resources              | Flag to deploy Azure resources.                                       | false         | `AZURE_SUBSCRIPTION_ID`</br>`AZURE_LOCATION`</br>`CAPACITY_ADMIN_EMAIL`                                |
+    | create_workspaces                   | Flag to create new Fabric workspaces.                                 | true          | `FABRIC_PROJECT_NAME`                                                                                  |
+    | setup_deployment_pipeline           | Flag to create a deployment pipeline and assign workspaces to stages. | true          | `FABRIC_PROJECT_NAME`                                                                                  |
+    | create_default_lakehouse            | Flag to create a default Lakehouse.                                   | true          | None                                                                                                   |
+    | create_notebooks                    | Flag to create Fabric notebooks.                                      | true          | None                                                                                                   |
+    | create_pipelines                    | Flag to create Fabric data pipelines.                                 | true          | None                                                                                                   |
+    | trigger_notebook_execution          | Flag to trigger the execution of Fabric notebooks.                    | true          | None                                                                                                   |
+    | trigger_pipeline_execution          | Flag to trigger the execution of Fabric data pipelines.               | true          | None                                                                                                   |
+    | should_disconnect                   | Flag to disconnect the workspaces from the GIT repository.            | false         | None                                                                                                   |
+    | connect_to_git                      | Flag to connect the workspaces to the GIT repository.                 | true          | `ORGANIZATION_NAME`</br>`PROJECT_NAME`</br>`REPOSITORY_NAME`</br>`BRANCH_NAME`</br>`DIRECTORY_NAME` |
+    | create_domain_and_attach_workspaces | Flag to create a domain and attach workspaces to it.                  | false         | `FABRIC_DOMAIN_NAME`</br>`FABRIC_SUBDOMAIN_NAME`                                                       |
 
-1. Run the bootstrap script:
+2. Run the bootstrap script:
 
     ```bash
     ./bootstrap.sh
