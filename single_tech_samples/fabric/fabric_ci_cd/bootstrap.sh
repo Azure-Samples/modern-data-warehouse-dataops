@@ -27,14 +27,14 @@ azure_devops_details='{
 # TBD: Validate all the possible combinations of the flags. Also validate if the corresponding environment variables are set.
 deploy_azure_resources="false"
 create_workspaces="true"
-connect_to_git="true"
 setup_deployment_pipeline="true"
 create_default_lakehouse="true"
-should_disconnect="false"
 create_notebooks="true"
 create_pipelines="true"
 trigger_notebook_execution="true"
 trigger_pipeline_execution="true"
+should_disconnect="false"
+connect_to_git="true"
 create_domain_and_attach_workspaces="false"
 
 # Derived variables (change as per the project requirements)
