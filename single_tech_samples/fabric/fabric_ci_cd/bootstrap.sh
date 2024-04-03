@@ -3,6 +3,9 @@ source .env
 
 az account set --subscription "$AZURE_SUBSCRIPTION_ID"
 
+# Domain Variables
+fabric_domain_name="$FABRIC_DOMAIN_NAME"
+fabric_subdomain_name="$FABRIC_SUBDOMAIN_NAME"
 fabric_bearer_token="$FABRIC_BEARER_TOKEN"
 fabric_project_name="$FABRIC_PROJECT_NAME"
 location="$AZURE_LOCATION"
@@ -32,6 +35,7 @@ create_notebooks="true"
 create_pipelines="true"
 trigger_notebook_execution="true"
 trigger_pipeline_execution="true"
+create_domain_and_attach_workspaces="false"
 
 # Derived variables (change as per the project requirements)
 onelake_name="onelake"
@@ -425,6 +429,65 @@ EOF
     fi
 }
 
+function get_domain_id() {
+    domain_name=$1
+    get_domains_url="$fabric_api_endpoint/admin/domains"
+    domains=$(curl -s -H "Authorization: Bearer $fabric_bearer_token" "$get_domains_url" | jq -r '.domains')
+    domain=$(echo "$domains" | jq -r --arg name "$domain_name" '.[] | select(.displayName == $name)')
+    domain_id=$(echo "$domain" | jq -r '.id')
+    echo "$domain_id"
+}
+
+function create_domain() {
+    domain_name=$1
+    parent_domain_id=$2
+    create_domain_payload=$(cat <<EOF
+{
+    "displayName": "$domain_name",
+    "description": "Fabric domain $domain_name",
+    "parentDomainId": "$parent_domain_id"
+}
+EOF
+)
+    create_domain_url="$fabric_api_endpoint/admin/domains"
+    response=$(curl -s -X POST -H "Authorization: Bearer $fabric_bearer_token" -H "Content-Type: application/json" -d "$create_domain_payload" "$create_domain_url")
+    domain_id=$(echo "$response" | jq -r '.id')
+    if [[ -n "$domain_id" ]]; then
+        if [[ -n "$parent_domain_id" ]]; then
+            echo "[I] Created subdomain '$domain_name' ($domain_id) successfully."
+        else
+            echo "[I] Created domain '$domain_name' ($domain_id) successfully."
+        fi
+    else
+        echo "[E] Domain creation failed."
+        echo "[E] $response"
+    fi
+}
+
+function assign_domain_workspaces_by_ids() {
+    domain_id=$1
+    shift
+    workspace_ids=("$@")
+    for items in "${workspace_ids[@]}"; do
+        temp_string+="\"$items\","
+    done
+    workspace_ids_as_string=$(echo "$temp_string" | sed 's/.$//')
+    assign_domain_workspaces_payload=$(cat <<EOF
+{
+    "workspacesIds": [${workspace_ids_as_string}]
+}
+EOF
+)
+    assign_domain_workspaces_url="$fabric_api_endpoint/admin/domains/$domain_id/assignWorkspaces"
+    response=$(curl -s -X POST -H "Authorization: Bearer $fabric_bearer_token" -H "Content-Type: application/json" -d "$assign_domain_workspaces_payload" "$assign_domain_workspaces_url")
+    if [[ -n "$response" ]] && [[ "$response" != "null" ]]; then
+        echo "[E] Assigning workspaces to (sub)domain failed."
+        echo "[E] $response"
+    else
+        echo "[I] Assigned workspaces to the (sub)domain successfully."
+    fi
+}
+
 echo "[I] ############ START ############"
 
 echo "[I] ############ Fabric Token Validation ############"
@@ -593,6 +656,32 @@ if [[ "$connect_to_git" = "true" ]]; then
     commit_all_to_git "$dev_workspace_id" "$workspace_head" "Committing initial changes"
 else
     echo "[I] Variable 'connect_to_git' set to $connect_to_git, skipping git integration, commit and push."
+fi
+
+echo "[I] ############ Creating (sub)domain attaching workspaces to it ############"
+if [[ "$create_domain_and_attach_workspaces" = "true" ]]; then
+    domain_id=$(get_domain_id "$fabric_domain_name")
+    if [[ -n "$domain_id" ]]; then
+        echo "[I] Domain '$fabric_domain_name' ($domain_id) already exists."
+    else
+        create_domain "$fabric_domain_name" ""
+        domain_id=$(get_domain_id "$fabric_domain_name")
+    fi
+
+    if [[ -n "$fabric_subdomain_name" ]]; then
+        subdomain_id=$(get_domain_id "$fabric_subdomain_name")
+        if [[ -n "$subdomain_id" ]]; then
+            echo "[I] Subdomain '$fabric_subdomain_name' ($subdomain_id) already exists."
+        else
+            create_domain "$fabric_subdomain_name" "$domain_id"
+            subdomain_id=$(get_domain_id "$fabric_subdomain_name")
+        fi
+        assign_domain_workspaces_by_ids "$subdomain_id" "${workspace_ids[@]}"
+    else
+        assign_domain_workspaces_by_ids "$domain_id" "${workspace_ids[@]}"
+    fi
+else
+    echo "[I] Variable 'create_domain_and_attach_workspaces' set to $create_domain_and_attach_workspaces, skipping domain creation and workspace assignment."
 fi
 
 echo "[I] ############ END ############"
