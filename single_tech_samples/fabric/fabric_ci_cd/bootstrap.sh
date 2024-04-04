@@ -729,7 +729,7 @@ if [[ "$add_workspace_admins" = "true" ]]; then
         echo "[I] Updated workspace '${workspace_names[i]}' with admin access."
     done
 else
-    echo "[I] Variable 'add_workspace_admin' set to $add_workspace_admins, skipping admin ids addition to workspace."
+    echo "[I] Variable 'add_workspace_admins' set to $add_workspace_admins, skipping adding workspace admins."
 fi
 
 echo "[I] ############ Adding admin IDS to Deployment pipeline ############"
@@ -737,7 +737,7 @@ if [[ "$add_pipeline_admins" = "true" ]]; then
     add_admins_to_pipeline "$pipeline_id" "${PIPELINE_ADMIN_IDS[@]}"  
     echo "[I] Updated deployment pipeline '${workspace_names[i]}' with admin access."
 else
-    echo "[I] Variable 'add_pipeline_admin' set to $add_pipeline_admins, skipping admin ids addition to deployment pipeline."
+    echo "[I] Variable 'add_pipeline_admins' set to $add_pipeline_admins, skipping adding deployment pipeline admins."
 fi
 
 echo "[I] ############ END ############"
