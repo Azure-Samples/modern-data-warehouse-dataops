@@ -71,6 +71,8 @@ Here are the steps to use the bootstrap script:
     REPOSITORY_NAME='Azure DevOps repository name'
     BRANCH_NAME='Azure DevOps branch name. This branch should already exist in the repository.'
     DIRECTORY_NAME='The directory used by Fabric to sync the workspace code. It can be "/" or any other sub-directory. If specifying a sub-directory, it must exist in the repository.'
+    ADMIN_ACCESS_IDS='The email addresses of the users who will have admin access to the Fabric project. Format: ("email1" "email2" "email3")'
+    PIPELINE_ADMIN_IDS='The email addresses of the users who will have admin access to the deployment pipeline. Format: ("email1" "email2" "email3")'
     ```
 
 1. Review the various flags in the [bootstrap.sh](./bootstrap.sh) script and set them as needed. Here is a list of the flags:
@@ -88,10 +90,12 @@ Here are the steps to use the bootstrap script:
     | should_disconnect                   | Flag to disconnect the workspaces from the GIT repository.            | false         | -                                                                                                   |
     | connect_to_git                      | Flag to connect the workspaces to the GIT repository.                 | true          | `ORGANIZATION_NAME`</br>`PROJECT_NAME`</br>`REPOSITORY_NAME`</br>`BRANCH_NAME`</br>`DIRECTORY_NAME` |
     | create_domain_and_attach_workspaces | Flag to create a domain and attach workspaces to it.                  | false         | `FABRIC_DOMAIN_NAME`</br>`FABRIC_SUBDOMAIN_NAME`                                                       |
+    | add_workspace_admins | Flag to add admin(s) to the workspaces.                 | true         | `WORKSPACE_ADMIN_IDS`                                                      |
+    | add_pipeline_admins | Flag to add admin(s) to the deployment pipeline.         | true         | `PIPELINE_ADMIN_IDS`                                                       |
 
     Creating Fabric capacities and domains requires elevated privileges. And for that reason, the flags `deploy_azure_resources` and `create_domain_and_attach_workspaces` are set to `false` by default. If you are a Fabric administrator and wish to create new capacity, domain and/or subdomain, set these flags to `true`. If you are toggling other flags, make sure to set the required environment variables accordingly and review the script to understand the implications.
 
-1. Run the bootstrap script:
+2. Run the bootstrap script:
 
     ```bash
     ./bootstrap.sh

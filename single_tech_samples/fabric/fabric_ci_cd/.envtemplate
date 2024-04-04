@@ -10,5 +10,5 @@ PROJECT_NAME='Azure DevOps project name'
 REPOSITORY_NAME='Azure DevOps repository name'
 BRANCH_NAME='Azure DevOps branch name. This branch should already exist in the repository.'
 DIRECTORY_NAME='The directory used by Fabric to sync the workspace code. It can be "/" or any other sub-directory. If specifying a sub-directory, it must exist in the repository.'
-ADMIN_ACCESS_IDS=("zzz-xxx-yyyy" "xxx-yyy-zzzz" "ccc-aabc--gfdsjghfdg")
+WORKSPACE_ADMIN_IDS=("zzz-xxx-yyyy" "xxx-yyy-zzzz" "ccc-aabc--gfdsjghfdg")
 PIPELINE_ADMIN_IDS=("user1@contoso.com" "user2@contoso.com" "user3@contoso.com")
