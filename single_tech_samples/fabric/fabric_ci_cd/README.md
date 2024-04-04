@@ -80,20 +80,24 @@ Here are the steps to use the bootstrap script:
     | deploy_azure_resources              | Flag to deploy Azure resources.                                       | false         | `AZURE_SUBSCRIPTION_ID`</br>`AZURE_LOCATION`</br>`CAPACITY_ADMIN_EMAIL`                                |
     | create_workspaces                   | Flag to create new Fabric workspaces.                                 | true          | `FABRIC_PROJECT_NAME`                                                                                  |
     | setup_deployment_pipeline           | Flag to create a deployment pipeline and assign workspaces to stages. | true          | `FABRIC_PROJECT_NAME`                                                                                  |
-    | create_default_lakehouse            | Flag to create a default Lakehouse.                                   | true          | None                                                                                                   |
-    | create_notebooks                    | Flag to create Fabric notebooks.                                      | true          | None                                                                                                   |
+    | create_default_lakehouse            | Flag to create a default Lakehouse.                                   | true          | -                                                                                                   |
+    | create_notebooks                    | Flag to create Fabric notebooks.                                      | true          | -                                                                                                   |
     | create_pipelines                    | Flag to create Fabric data pipelines.                                 | true          | None                                                                                                   |
-    | trigger_notebook_execution          | Flag to trigger the execution of Fabric notebooks.                    | true          | None                                                                                                   |
-    | trigger_pipeline_execution          | Flag to trigger the execution of Fabric data pipelines.               | true          | None                                                                                                   |
-    | should_disconnect                   | Flag to disconnect the workspaces from the GIT repository.            | false         | None                                                                                                   |
+    | trigger_notebook_execution          | Flag to trigger the execution of Fabric notebooks.                    | true          | -                                                                                                   |
+    | trigger_pipeline_execution          | Flag to trigger the execution of Fabric data pipelines.               | true          | -                                                                                                   |
+    | should_disconnect                   | Flag to disconnect the workspaces from the GIT repository.            | false         | -                                                                                                   |
     | connect_to_git                      | Flag to connect the workspaces to the GIT repository.                 | true          | `ORGANIZATION_NAME`</br>`PROJECT_NAME`</br>`REPOSITORY_NAME`</br>`BRANCH_NAME`</br>`DIRECTORY_NAME` |
     | create_domain_and_attach_workspaces | Flag to create a domain and attach workspaces to it.                  | false         | `FABRIC_DOMAIN_NAME`</br>`FABRIC_SUBDOMAIN_NAME`                                                       |
 
-2. Run the bootstrap script:
+    Creating Fabric capacities and domains requires elevated privileges. And for that reason, the flags `deploy_azure_resources` and `create_domain_and_attach_workspaces` are set to `false` by default. If you are a Fabric administrator and wish to create new capacity, domain and/or subdomain, set these flags to `true`. If you are toggling other flags, make sure to set the required environment variables accordingly and review the script to understand the implications.
+
+1. Run the bootstrap script:
 
     ```bash
     ./bootstrap.sh
     ```
+
+    The script is designed to be idempotent. Running the script multiple times will not result in duplicate resources. Instead, it will either skip or update existing resources. However, it is recommended to review both the script and the created resources to ensure everything is as expected.
 
 Good Luck!
 
