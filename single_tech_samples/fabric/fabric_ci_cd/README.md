@@ -93,9 +93,13 @@ Here are the steps to use the bootstrap script:
     | add_workspace_admins | Flag to add admin(s) to the workspaces.                 | true         | `WORKSPACE_ADMIN_IDS`                                                      |
     | add_pipeline_admins | Flag to add admin(s) to the deployment pipeline.         | true         | `PIPELINE_ADMIN_IDS`                                                       |
 
-    Creating Fabric capacities and domains requires elevated privileges. And for that reason, the flags `deploy_azure_resources` and `create_domain_and_attach_workspaces` are set to `false` by default. If you are a Fabric administrator and wish to create new capacity, domain and/or subdomain, set these flags to `true`. If you are toggling other flags, make sure to set the required environment variables accordingly and review the script to understand the implications.
+    Creating Fabric capacities and domains requires elevated privileges. And for that reason, the flags `deploy_azure_resources` and `create_domain_and_attach_workspaces` are set to `false` by default. If you are a Fabric administrator and wish to create new capacity, domain and/or subdomain, set these flags to `true`.
 
-1. Run the bootstrap script:
+    Also, the flags `add_pipeline_admins` and `add_workspace_admins` are advanced options which allows you to add multiple admins to the deployment pipeline and workspaces respectively. These flags are set to `false` by default. If you wish to add admins, set these flags to `true` and provide the email addresses of the admins in the `WORKSPACE_ADMIN_IDS` and `PIPELINE_ADMIN_IDS` environment variables respectively.
+
+    If you are toggling other flags, make sure to set the required environment variables accordingly and review the script to understand the implications.
+
+2. Run the bootstrap script:
 
     ```bash
     ./bootstrap.sh

@@ -36,8 +36,8 @@ trigger_pipeline_execution="true"
 should_disconnect="false"
 connect_to_git="true"
 create_domain_and_attach_workspaces="false"
-add_workspace_admins="true"
-add_pipeline_admins="true"
+add_workspace_admins="false"
+add_pipeline_admins="false"
 
 # Derived variables (change as per the project requirements)
 onelake_name="onelake"
