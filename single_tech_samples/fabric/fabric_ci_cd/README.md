@@ -32,7 +32,7 @@ This repo contains a code sample for establishing a CI/CD process for Microsoft 
 ### Pre-requisites
 
 - Ensure *always* latest Fabric Token is added to the .env file (see instructions below).
-- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) and [jq](https://jqlang.github.io/jq/download/) are installed.
+- [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli?view=azure-cli-latest) and [jq](https://jqlang.github.io/jq/download/) are installed.
 - Ensure that correct Azure account is being used.
 
 ### Execute bootstrap script
