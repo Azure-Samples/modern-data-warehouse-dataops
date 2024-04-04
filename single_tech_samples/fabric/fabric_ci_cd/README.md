@@ -14,7 +14,7 @@ This repo contains a code sample for establishing a CI/CD process for Microsoft 
     - [CD process - Option 2: Using Fabric REST APIs](#cd-process---option-2-using-fabric-rest-apis)
 - [Understanding bootstrap script](#understanding-bootstrap-script)
   - [List of created resources](#list-of-created-resources)
-  - [Hydrating Fabric artifacts](#hydrating-fabric-artifacts)
+  - [Hydrating Fabric lakehouse](#hydrating-fabric-lakehouse)
     - [Using Fabric notebooks](#using-fabric-notebooks)
     - [Using Fabric data pipelines](#using-fabric-data-pipelines)
 - [Known issues](#known-issues)
@@ -32,8 +32,7 @@ This repo contains a code sample for establishing a CI/CD process for Microsoft 
 ### Pre-requisites
 
 - Ensure *always* latest Fabric Token is added to the .env file (see instructions below).
-- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) and [jq](https://stedolan.github.io/jq/) are installed.
-- [jq](https://stedolan.github.io/jq/)
+- [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli?view=azure-cli-latest) and [jq](https://jqlang.github.io/jq/download/) are installed.
 - Ensure that correct Azure account is being used.
 
 ### Execute bootstrap script
@@ -62,25 +61,43 @@ Here are the steps to use the bootstrap script:
     ```bash
     AZURE_SUBSCRIPTION_ID='Azure Subscription Id'
     AZURE_LOCATION='The location where the Azure resources will be created'
-    RESOURCE_GROUP_NAME='The name of the resource group'
-    FABRIC_CAPACITY_NAME='The name of the Fabric capacity. The capacity name must contain only lowercase letters or numbers'
     CAPACITY_ADMIN_EMAIL='The email address of the Fabric capacity admin. This should be from the same tenant where capacity is being created.'
     FABRIC_PROJECT_NAME='The name of the Fabric project. This name is used for naming the Fabric resources.'
-    FABRIC_API_ENDPOINT='The Fabric API endpoint. e.g., https://api.fabric.microsoft.com/v1'
-    DEPLOYMENT_API_ENDPOINT='The deployment API endpoint. e.g., https://api.powerbi.com/v1.0/myorg/pipelines'
+    FABRIC_DOMAIN_NAME="The name of the Fabric domain. It can be an existing domain."
+    FABRIC_SUBDOMAIN_NAME="The name of the Fabric subdomain. It can be an existing subdomain."
     FABRIC_BEARER_TOKEN='The bearer token for calling the Fabric APIs.'
     ORGANIZATION_NAME='Azure DevOps organization name'
     PROJECT_NAME='Azure DevOps project name'
     REPOSITORY_NAME='Azure DevOps repository name'
-    BRANCH_NAME='Azure DevOps branch name'
-    DIRECTORY_NAME='The directory used by Fabric to sync the workspace code. Can be "/" or any other sub-directory.'
+    BRANCH_NAME='Azure DevOps branch name. This branch should already exist in the repository.'
+    DIRECTORY_NAME='The directory used by Fabric to sync the workspace code. It can be "/" or any other sub-directory. If specifying a sub-directory, it must exist in the repository.'
     ```
+
+1. Review the various flags in the [bootstrap.sh](./bootstrap.sh) script and set them as needed. Here is a list of the flags:
+
+    | Flag                                | Description                                                           | Default value | Required environment  variables                                                                         |
+    | :---------------------------------- | :-------------------------------------------------------------------- | :------------ |  :----------------------------------------------------------------------------------------------------- |
+    | deploy_azure_resources              | Flag to deploy Azure resources.                                       | false         | `AZURE_SUBSCRIPTION_ID`</br>`AZURE_LOCATION`</br>`CAPACITY_ADMIN_EMAIL`                                |
+    | create_workspaces                   | Flag to create new Fabric workspaces.                                 | true          | `FABRIC_PROJECT_NAME`                                                                                  |
+    | setup_deployment_pipeline           | Flag to create a deployment pipeline and assign workspaces to stages. | true          | `FABRIC_PROJECT_NAME`                                                                                  |
+    | create_default_lakehouse            | Flag to create a default Lakehouse.                                   | true          | -                                                                                                   |
+    | create_notebooks                    | Flag to create Fabric notebooks.                                      | true          | -                                                                                                   |
+    | create_pipelines                    | Flag to create Fabric data pipelines.                                 | true          | None                                                                                                   |
+    | trigger_notebook_execution          | Flag to trigger the execution of Fabric notebooks.                    | true          | -                                                                                                   |
+    | trigger_pipeline_execution          | Flag to trigger the execution of Fabric data pipelines.               | true          | -                                                                                                   |
+    | should_disconnect                   | Flag to disconnect the workspaces from the GIT repository.            | false         | -                                                                                                   |
+    | connect_to_git                      | Flag to connect the workspaces to the GIT repository.                 | true          | `ORGANIZATION_NAME`</br>`PROJECT_NAME`</br>`REPOSITORY_NAME`</br>`BRANCH_NAME`</br>`DIRECTORY_NAME` |
+    | create_domain_and_attach_workspaces | Flag to create a domain and attach workspaces to it.                  | false         | `FABRIC_DOMAIN_NAME`</br>`FABRIC_SUBDOMAIN_NAME`                                                       |
+
+    Creating Fabric capacities and domains requires elevated privileges. And for that reason, the flags `deploy_azure_resources` and `create_domain_and_attach_workspaces` are set to `false` by default. If you are a Fabric administrator and wish to create new capacity, domain and/or subdomain, set these flags to `true`. If you are toggling other flags, make sure to set the required environment variables accordingly and review the script to understand the implications.
 
 1. Run the bootstrap script:
 
     ```bash
     ./bootstrap.sh
     ```
+
+    The script is designed to be idempotent. Running the script multiple times will not result in duplicate resources. Instead, it will either skip or update existing resources. However, it is recommended to review both the script and the created resources to ensure everything is as expected.
 
 Good Luck!
 
@@ -170,6 +187,7 @@ Here is a summary of the steps that the script performs:
 - Creates a Fabric data pipeline `pl-covid-data` by uploading the pipeline content from the [src/data-pipelines](./src/data-pipelines/) directory. If the pipeline already exists, the script skips the upload.
 - Triggers the execution of the Fabric notebooks and data pipelines to hydrate the Fabric Lakehouse. See [Hydrating Fabric artifacts](#hydrating-fabric-artifacts) for more details.
 - Connects the workspaces to the GIT repository and commits the changes. If the workspaces are already connected to the GIT repository, the script leaves it as is.
+- Creates the Fabric domain, subdomain or both and attaches the workspaces to it. If the domain and sub-domain already exist, the script attaches the workspaces to the existing ones.
 - Finally, all the workspaces changes are committed to the GIT repository.
 
 ### List of created resources
@@ -179,6 +197,8 @@ Here is a table that lists the resources created by the bootstrap script. `<FABR
 |**Resource**|**Description**|**Default Naming**|
 |:------------|:---------------|:------------------|
 |Resource Group|Azure resource group that contains all the resources.|`rg-<FABRIC_PROJECT_NAME>`|
+|Fabric Domain|Fabric domain to which the Fabric workspaces are associated with.|`<FABRIC_DOMAIN_NAME>`|
+|Fabric Subdomain|Fabric subdomain to which the Fabric workspaces are associated with.|`<FABRIC_SUBDOMAIN_NAME>`|
 |Fabric Capacity|Fabric capacity that contains the Fabric workspaces.|`cap<FABRIC_PROJECT_NAME>`|
 |Fabric Workspaces|Three Fabric workspaces that are assigned to the Fabric capacity.|`ws-<FABRIC_PROJECT_NAME>-dev`</br>`ws-<FABRIC_PROJECT_NAME>-uat`</br>`ws-<FABRIC_PROJECT_NAME>-prd`|
 |Deployment Pipeline|Fabric deployment pipeline with stages corresponding to the workspaces.|`dp-<FABRIC_PROJECT_NAME>`|
@@ -186,9 +206,9 @@ Here is a table that lists the resources created by the bootstrap script. `<FABR
 |Fabric Notebooks|Fabric notebooks that contain the business logic.|`nb-city-safety`</br>`nb-covid-data`|
 |Fabric Data Pipeline|Fabric data pipelines that contain the data processing logic.|`pl-covid-data`|
 
-### Hydrating Fabric artifacts
+### Hydrating Fabric lakehouse
 
-The code samples use [Microsoft Open Datasets](https://learn.microsoft.com/azure/open-datasets/overview-what-are-open-datasets) and support **parameter driven** executions. The following sections mention the two different ways processing.
+The code samples use [Microsoft open datasets](https://learn.microsoft.com/azure/open-datasets/overview-what-are-open-datasets) and support **parameter driven** executions. The following sections mention the two different ways processing.
 
 #### Using Fabric notebooks
 
@@ -303,6 +323,10 @@ If you are running into such issue, you might want to add additional debugging i
 [I] Workspace connected to the git repository.
 [I] The Git connection has been successfully initialized.
 [I] Committed workspace changes to git successfully.
+[I] ############ Creating (sub)domain attaching workspaces to it ############
+[I] Created domain '<FABRIC_DOMAIN_NAME>' (81ef81ae-ca83-4c40-92e4-a7dfa7813824) successfully.
+[I] Created subdomain '<FABRIC_SUBDOMAIN_NAME>' (84133035-ba3e-42ca-bd59-6e105f6de69e) successfully.
+[I] Assigned workspaces to the (sub)domain successfully.
 ```
 
 ## References
