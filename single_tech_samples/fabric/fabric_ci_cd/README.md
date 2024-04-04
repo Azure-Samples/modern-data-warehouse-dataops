@@ -95,7 +95,7 @@ Here are the steps to use the bootstrap script:
 
     Creating Fabric capacities and domains requires elevated privileges. And for that reason, the flags `deploy_azure_resources` and `create_domain_and_attach_workspaces` are set to `false` by default. If you are a Fabric administrator and wish to create new capacity, domain and/or subdomain, set these flags to `true`. If you are toggling other flags, make sure to set the required environment variables accordingly and review the script to understand the implications.
 
-2. Run the bootstrap script:
+1. Run the bootstrap script:
 
     ```bash
     ./bootstrap.sh

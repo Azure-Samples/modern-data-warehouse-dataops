@@ -605,24 +605,6 @@ else
     echo "[I] Variable 'setup_deployment_pipeline' set to $setup_deployment_pipeline, skipping deployment pipeline creation."
 fi
 
-echo "[I] ############ Adding admin IDS to Workspaces ############"
-if [[ "$add_workspace_admin" = "true" ]]; then
-    for ((i=0; i<${#workspace_names[@]}; i++)); do
-        add_admins_to_workspace "${workspace_ids[i]}" "${ADMIN_ACCESS_IDS[@]}"  
-        echo "[I] Updated workspace '${workspace_names[i]}' with admin access."
-    done
-else
-    echo "[I] Variable 'add_workspace_admin' set to $add_workspace_admin, skipping admin ids addition to workspace."
-fi
-
-echo "[I] ############ Adding admin IDS to Deployment pipeline ############"
-if [[ "$add_pipeline_admin" = "true" ]]; then
-    add_admins_to_pipeline "$pipeline_id" "${PIPELINE_ADMIN_IDS[@]}"  
-    echo "[I] Updated deployment pipeline '${workspace_names[i]}' with admin access."
-else
-    echo "[I] Variable 'add_pipeline_admin' set to $add_pipeline_admin, skipping admin ids addition to deployment pipeline."
-fi
-
 dev_workspace_id="${workspace_ids[0]}"
 dev_workspace_name="${workspace_names[0]}"
 
