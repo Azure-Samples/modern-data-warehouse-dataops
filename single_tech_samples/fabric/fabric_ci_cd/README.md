@@ -21,6 +21,7 @@ This repo contains a code sample for establishing a CI/CD process for Microsoft 
   - [Passing the Fabric bearer token](#passing-the-fabric-bearer-token)
   - [Existing Workspace Warning](#existing-workspace-warning)
   - [Several run attempts might lead to strange errors](#several-run-attempts-might-lead-to-strange-errors)
+  - [The pagination issue with the Fabric REST APIs for List operations](#the-pagination-issue-with-the-fabric-rest-apis-for-list-operations)
 - [References](#references)
 
 ## Architecture
@@ -71,8 +72,8 @@ Here are the steps to use the bootstrap script:
     REPOSITORY_NAME='Azure DevOps repository name'
     BRANCH_NAME='Azure DevOps branch name. This branch should already exist in the repository.'
     DIRECTORY_NAME='The directory used by Fabric to sync the workspace code. It can be "/" or any other sub-directory. If specifying a sub-directory, it must exist in the repository.'
-    ADMIN_ACCESS_IDS='The email addresses of the users who will have admin access to the Fabric project. Format: ("email1" "email2" "email3")'
-    PIPELINE_ADMIN_IDS='The email addresses of the users who will have admin access to the deployment pipeline. Format: ("email1" "email2" "email3")'
+    WORKSPACE_ADMIN_UPNS='UserPrincipalName (UPN) list of the workspace admins. These users will have admin access to the Fabric workspaces. The values are separated by space.'
+    PIPELINE_ADMIN_UPNS='UserPrincipalName (UPN) list of the pipeline admins. These users will have admin access to the Fabric deployment pipeline. The values are separated by space.'
     ```
 
 1. Review the various flags in the [bootstrap.sh](./bootstrap.sh) script and set them as needed. Here is a list of the flags:
@@ -90,16 +91,16 @@ Here are the steps to use the bootstrap script:
     | should_disconnect                   | Flag to disconnect the workspaces from the GIT repository.            | false         | -                                                                                                   |
     | connect_to_git                      | Flag to connect the workspaces to the GIT repository.                 | true          | `ORGANIZATION_NAME`</br>`PROJECT_NAME`</br>`REPOSITORY_NAME`</br>`BRANCH_NAME`</br>`DIRECTORY_NAME` |
     | create_domain_and_attach_workspaces | Flag to create a domain and attach workspaces to it.                  | false         | `FABRIC_DOMAIN_NAME`</br>`FABRIC_SUBDOMAIN_NAME`                                                       |
-    | add_workspace_admins | Flag to add admin(s) to the workspaces.                 | false         | `WORKSPACE_ADMIN_IDS`                                                      |
-    | add_pipeline_admins | Flag to add admin(s) to the deployment pipeline.         | false         | `PIPELINE_ADMIN_IDS`                                                       |
+    | add_workspace_admins | Flag to add admin(s) to the workspaces.                 | false         | `WORKSPACE_ADMIN_UPNS`                                                      |
+    | add_pipeline_admins | Flag to add admin(s) to the deployment pipeline.         | false         | `PIPELINE_ADMIN_UPNS`                                                       |
 
     Creating Fabric capacities and domains requires elevated privileges. And for that reason, the flags `deploy_azure_resources` and `create_domain_and_attach_workspaces` are set to `false` by default. If you are a Fabric administrator and wish to create new capacity, domain and/or subdomain, set these flags to `true`.
 
-    Also, the flags `add_pipeline_admins` and `add_workspace_admins` are advanced options which allows you to add multiple admins to the deployment pipeline and workspaces respectively. These flags are set to `false` by default. If you wish to add admins, set these flags to `true` and provide the email addresses of the admins in the `WORKSPACE_ADMIN_IDS` and `PIPELINE_ADMIN_IDS` environment variables respectively.
+    Also, the flags `add_pipeline_admins` and `add_workspace_admins` are advanced options which allows you to add multiple admins to the deployment pipeline and workspaces respectively. These flags are set to `false` by default. If you wish to add admins, set these flags to `true` and provide the [UPN](https://learn.microsoft.com/en-us/entra/identity/hybrid/connect/plan-connect-userprincipalname#what-is-userprincipalname) of the admins in the `WORKSPACE_ADMIN_UPNS` and `PIPELINE_ADMIN_UPNS` environment variables respectively. Currently, the script only supports adding users as admins; it doesn't support adding Microsoft Entra groups or service principals as admins.
 
     If you are toggling other flags, make sure to set the required environment variables accordingly and review the script to understand the implications.
 
-2. Run the bootstrap script:
+1. Run the bootstrap script:
 
     ```bash
     ./bootstrap.sh
@@ -195,8 +196,9 @@ Here is a summary of the steps that the script performs:
 - Creates a Fabric data pipeline `pl-covid-data` by uploading the pipeline content from the [src/data-pipelines](./src/data-pipelines/) directory. If the pipeline already exists, the script skips the upload.
 - Triggers the execution of the Fabric notebooks and data pipelines to hydrate the Fabric Lakehouse. See [Hydrating Fabric artifacts](#hydrating-fabric-artifacts) for more details.
 - Connects the workspaces to the GIT repository and commits the changes. If the workspaces are already connected to the GIT repository, the script leaves it as is.
+- All the workspaces changes are committed to the GIT repository.
 - Creates the Fabric domain, subdomain or both and attaches the workspaces to it. If the domain and sub-domain already exist, the script attaches the workspaces to the existing ones.
-- Finally, all the workspaces changes are committed to the GIT repository.
+- Add workspace admins and deployment pipeline admins to the workspaces and deployment pipeline respectively. If the admins are already added, the script skips the addition.
 
 ### List of created resources
 
@@ -274,8 +276,7 @@ The script starts by creating a new capacity in Azure. If the capacity already e
 Now, if the workspaces already exist, the script doesn't attempt to delete and recreate them as it might result in losing data and business logic. Instead, the script writes the following warning message:
 
 ```txt
-*Workspace: 'ws-fb-1-e2e-sample-uat' (999999999-9999-4f20-ac52-d8ce297dba31) already exists.
-[W] Please verify the attached capacity manually.*
+[W] Workspace 'ws-fb-1-e2e-sample-uat' (999999999-9999-4f20-ac52-d8ce297dba31) already exists. Please verify the attached capacity manually.
 ```
 
 As stated in the warning message, you might want to review the workspace and assign it to the right capacity manually. You can also choose to either delete the workspaces manually and attempt to run the script again, or turn off the flag at the beginning of the bootstrap script by setting create_workspaces variable to "false".
@@ -335,7 +336,28 @@ If you are running into such issue, you might want to add additional debugging i
 [I] Created domain '<FABRIC_DOMAIN_NAME>' (81ef81ae-ca83-4c40-92e4-a7dfa7813824) successfully.
 [I] Created subdomain '<FABRIC_SUBDOMAIN_NAME>' (84133035-ba3e-42ca-bd59-6e105f6de69e) successfully.
 [I] Assigned workspaces to the (sub)domain successfully.
+[I] ############ Adding Workspace Admins ############
+[I] Workspace 'ws-fabric-cicd-dev' (8978c223-2ec9-4522-a172-073c4604e1f6)
+[I] Added 'user1@contoso.com' as admin of the workspace.
+[I] Added 'user2@contoso.com' as admin of the workspace.
+[I] Workspace 'ws-fabric-cicd-uat' (92d8d07a-ebe8-40ac-928f-bb29b7b7f13c)
+[I] Added 'user1@contoso.com' as admin of the workspace.
+[I] Added 'user2@contoso.com' as admin of the workspace.
+[I] Workspace 'ws-fabric-cicd-prd' (dc30ea98-704f-45e6-b9fd-2d985526da5a)
+[I] Added 'user1@contoso.com' as admin of the workspace.
+[I] Added 'user2@contoso.com' as admin of the workspace.
+[I] ############ Adding Deployment Pipeline Admins ############
+[I] Deployment pipeline 'dp-fabric-cicd' (ed946d85-6370-4bc7-b134-af865a4fd1e4)
+[I] Added 'user1@contoso.com' as admin of the deployment pipeline.
+[I] Added 'user2@contoso.com' as admin of the deployment pipeline.
+[I] ############ END ############
 ```
+
+### The pagination issue with the Fabric REST APIs for List operations
+
+The Fabric REST APIs to `List` things like workspaces, domains, items, etc. have the concept of pagination. If there are a lot of items, the initial API call returns a batch of items along with a `continuationToken` and `continuationUri` to fetch the next batch of items. If the `continuationToken` is not present in the response, it means that there are no more items to fetch.
+
+The script doesn't handle pagination at the moment. It makes the initial call and assumes that all the items are fetched in the first batch. If there are more items to fetch, the script might wrongly assume that the item doesn't exist and try to create it. This is a known limitation with the script and will be addressed in the future.
 
 ## References
 
