@@ -42,7 +42,7 @@ Here are the steps to use the bootstrap script:
 
 1. Clone the repository:
 
-    ```bash 
+    ```bash
     # Optional
     az login --tenant "<tenant_id>"
     az account set -s "<subscription_id>"
