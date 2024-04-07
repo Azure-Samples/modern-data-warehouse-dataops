@@ -31,8 +31,6 @@ In this sample we focus on hardening the security around the Azure Databricks en
 
 3.[Azure Private Links](https://docs.microsoft.com/en-us/azure/private-link/private-link-overview) - To secure connectivity with dependent PaaS services.
 
-This sample is also aligned to the implementation pattern published by Databricks around [Data Exfiltration Protection with Azure Databricks](https://databricks.com/blog/2020/03/27/data-exfiltration-protection-with-azure-databricks.html).
-
 The sample implements automating the provisioning of the required services and configurations using the [Infrastructure as Code](https://docs.microsoft.com/en-us/dotnet/architecture/cloud-native/infrastructure-as-code) pattern.
 
 ### 1.1. Scope
