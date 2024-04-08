@@ -199,13 +199,13 @@ More resources:
 
 #### Databricks
 
-- [Monitoring Azure Databricks with Azure Monitor](https://docs.microsoft.com/en-us/azure/architecture/databricks-monitoring/)
+- [Monitoring Azure Databricks with Azure Monitor](https://learn.microsoft.com/azure/architecture/databricks-monitoring/)
 - [Monitoring Azure Databricks Jobs with Application Insights](https://msdn.microsoft.com/en-us/magazine/mt846727.aspx)
 
 #### Data Factory
 
-- [Monitor Azure Data Factory with Azure Monitor](https://docs.microsoft.com/en-us/azure/data-factory/monitor-using-azure-monitor)
-- [Alerting in Azure Data Factory](https://azure.microsoft.com/en-us/blog/create-alerts-to-proactively-monitor-your-data-factory-pipelines/)
+- [Monitor Azure Data Factory with Azure Monitor](https://learn.microsoft.com/azure/data-factory/monitor-data-factory)
+- [Alerting in Azure Data Factory](https://azure.microsoft.com/blog/create-alerts-to-proactively-monitor-your-data-factory-pipelines/)
 
 ## How to use the sample
 

@@ -22,6 +22,9 @@ azure_devops_details='{
     "branchName":"'"$BRANCH_NAME"'",
     "directoryName":"'"$DIRECTORY_NAME"'"
 }'
+# Workspace/Deployment Pipeline Admins
+workspace_admin_upns=("${WORKSPACE_ADMIN_UPNS[@]}")
+pipeline_admin_upns=("${PIPELINE_ADMIN_UPNS[@]}")
 
 # Flags to control the flow of the script (toggle as per the project requirements)
 # TBD: Validate all the possible combinations of the flags. Also validate if the corresponding environment variables are set.
@@ -36,6 +39,8 @@ trigger_pipeline_execution="true"
 should_disconnect="false"
 connect_to_git="true"
 create_domain_and_attach_workspaces="false"
+add_workspace_admins="false"
+add_pipeline_admins="false"
 
 # Derived variables (change as per the project requirements)
 onelake_name="onelake"
@@ -488,6 +493,77 @@ EOF
     fi
 }
 
+function get_user_id_by_upn() {
+    upn=$1
+    user_id=$(az ad user show --id "$upn" --query id -o tsv 2>/dev/null)
+    echo "$user_id"
+}
+
+function add_workspace_admins() {
+    workspace_id=$1
+    admin_upns=("${@:2}") # this is an array of admin user principal names (UPNs)
+    add_admin_url="$fabric_api_endpoint/workspaces/$workspace_id/roleAssignments"
+
+    for upn in "${admin_upns[@]}"; do
+        user_id=$(get_user_id_by_upn "$upn")
+        if [[ -z "$user_id" ]]; then
+            echo "[W] User with UPN '$upn' not found. Skipping it."
+        else
+            add_admin_body=$(cat <<EOF
+{
+    "principal": {
+        "id": "$user_id",
+        "type": "User"
+    },
+    "role": "Admin"
+}
+EOF
+)
+            response=$(curl -s -X POST -H "Authorization: Bearer $fabric_bearer_token" -H "Content-Type: application/json" -d "$add_admin_body" "$add_admin_url")
+            if [[ -n "$response" ]] && [[ "$response" != "null" ]]; then
+                error_code=$(echo "$response" | jq -r '.errorCode')
+                if [[ "$error_code" = "PrincipalAlreadyHasWorkspaceRolePermissions" ]]; then
+                    echo "[W] User '$upn' already has a role assigned in this workspace. Please verify it manually."
+                else
+                    echo "[E] Adding '$upn' as admin of the workspace failed."
+                    echo "[E] $response"
+                fi
+            else
+                echo "[I] Added '$upn' as admin of the workspace."
+            fi
+        fi
+    done
+}
+
+function add_pipeline_admins() {
+    pipeline_id=$1
+    admin_upns=("${@:2}")   # this is an array of admin ids
+    add_admin_url="$deployment_api_endpoint/$pipeline_id/users"
+
+    for upn in "${admin_upns[@]}"; do
+        user_id=$(get_user_id_by_upn "$upn")
+        if [[ -z "$user_id" ]]; then
+            echo "[W] User with UPN '$upn' not found. Skipping it."
+        else
+            add_admin_body=$(cat <<EOF
+{
+    "identifier": "$upn",
+    "principalType": "User",
+    "accessRight": "Admin"
+}
+EOF
+)
+            response=$(curl -s -X POST -H "Authorization: Bearer $fabric_bearer_token" -H "Content-Type: application/json" -d "$add_admin_body" "$add_admin_url")
+            if [[ -n "$response" ]] && [[ "$response" != "null" ]]; then
+                echo "[E] Adding '$upn' as admin of the deployment pipeline failed."
+                echo "[E] $response"
+            else
+                echo "[I] Added '$upn' as admin of the deployment pipeline."
+            fi
+        fi
+    done
+}
+
 echo "[I] ############ START ############"
 
 echo "[I] ############ Fabric Token Validation ############"
@@ -519,8 +595,7 @@ if [[ "$create_workspaces" = "true" ]]; then
     for ((i=0; i<${#workspace_names[@]}; i++)); do
         workspace_ids[i]=$(get_workspace_id "${workspace_names[$i]}")
         if [[ -n "${workspace_ids[i]}" ]]; then
-            echo "[W] Workspace: '${workspace_names[$i]}' (${workspace_ids[i]}) already exists."
-            echo "[W] Please verify the attached capacity manually."
+            echo "[W] Workspace '${workspace_names[$i]}' (${workspace_ids[i]}) already exists. Please verify the attached capacity manually."
         else
             create_workspace "${workspace_names[$i]}" "$capacity_id"
             workspace_ids[i]=$(get_workspace_id "${workspace_names[$i]}")
@@ -682,6 +757,25 @@ if [[ "$create_domain_and_attach_workspaces" = "true" ]]; then
     fi
 else
     echo "[I] Variable 'create_domain_and_attach_workspaces' set to $create_domain_and_attach_workspaces, skipping domain creation and workspace assignment."
+fi
+
+echo "[I] ############ Adding Workspace Admins ############"
+if [[ "$add_workspace_admins" = "true" ]]; then
+    for ((i=0; i<${#workspace_names[@]}; i++)); do
+        echo "[I] Workspace '${workspace_names[i]}' (${workspace_ids[i]})"
+        add_workspace_admins "${workspace_ids[i]}" "${workspace_admin_upns[@]}"
+    done
+else
+    echo "[I] Variable 'add_workspace_admins' set to $add_workspace_admins, skipping adding workspace admins."
+fi
+
+echo "[I] ############ Adding Deployment Pipeline Admins ############"
+if [[ "$add_pipeline_admins" = "true" ]]; then
+    pipeline_id=$(get_deployment_pipeline_id "$deployment_pipeline_name")
+    echo "[I] Deployment pipeline '$deployment_pipeline_name' ($pipeline_id)"
+    add_pipeline_admins "$pipeline_id" "${pipeline_admin_upns[@]}"
+else
+    echo "[I] Variable 'add_pipeline_admins' set to $add_pipeline_admins, skipping adding deployment pipeline admins."
 fi
 
 echo "[I] ############ END ############"
