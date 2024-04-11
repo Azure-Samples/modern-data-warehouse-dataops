@@ -7,7 +7,7 @@ cffi==1.14.5
 chardet==4.0.0
 cryptography==41.0.6
 greenlet==1.0.0
-idna==2.10
+idna==3.7
 isodate==0.6.0
 msal==1.11.0
 msal-extensions==0.3.0
