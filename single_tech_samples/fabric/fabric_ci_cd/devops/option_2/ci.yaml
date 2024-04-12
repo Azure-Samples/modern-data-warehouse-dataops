@@ -1,0 +1,37 @@
+trigger: none
+
+pr:
+  branches:
+    include:
+    - elena_dev
+
+variables:
+  - name: pythonWorkingDir
+    value: 'src/common/ddo_transform'
+  - group: var-group-option-2-common
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- script: |
+    git config --global core.autocrlf true
+    echo "directory name is $(directoryName)"
+    var=$(git --no-pager diff --name-status  origin/development_branch...HEAD | egrep '$(directoryName)\/\w+.\w+\/item.config.json')
+    echo "content of var is $var"
+    if [ -z "${var}" ]; then exit 0; else exit 1; fi;
+  displayName: 'Check if item.config.json files are modified'
+  workingDirectory: $(System.DefaultWorkingDirectory)
+
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.8'
+    architecture: 'x64'
+
+- script: pip install -r requirements_dev.txt && pip install -r requirements.txt
+  workingDirectory: $(pythonWorkingDir)
+  displayName: 'Install requirements'
+
+- script: make lint && make test
+  workingDirectory: $(pythonWorkingDir)
+  displayName: 'Run lint tests'
