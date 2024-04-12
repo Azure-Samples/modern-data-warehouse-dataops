@@ -180,7 +180,7 @@ There is a second option to implement the CD release process. This scenario, mig
 - Development, Staging and Production environments are not located in the same tenant.
 - Organizations are not using Azure DevOps as a Git tool.
 
-There are some caveats to this approach. The code and more information on this Option, will be available soon.
+There are some caveats to this approach. For more details about this option please review the [Option 2 Readme](./docs/option_2/README.md).
 
 ## Understanding bootstrap script
 
