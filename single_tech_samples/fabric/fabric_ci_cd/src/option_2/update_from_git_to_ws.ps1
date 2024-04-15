@@ -9,7 +9,7 @@ param
 )
 ## FROM GIT TO WORKSPACE
 # Used when the developer creates a new branch from the development/main branch
-# and wants to create update the workspace in accordance with the new branch.
+# and wants to create or update the workspace in accordance with the new branch.
 
 
 function GetErrorResponse($exception) {
@@ -275,9 +275,7 @@ function longRunningOperationPolling($uri, $retryAfter){
 }
 
 try {
-    # TODO: consider splitting the config file into 2 separate files, one for the logicalId (am I using it btw?)
-    # and another file for the objectIds. This way the files don't have to be synched to the remote branch when 
-    # the developer creates a PR they won't trickle to the main branch, as they are relative to each branch
+    # TODO: consider removing the logicalId from the file as it's not used today.
     Write-Host "this task is running Powershell version " $PSVersionTable.PSVersion
     Write-Host "the folder we are working on is $folder"
     Write-Host "Updating workspace items for workspace $workspaceName"

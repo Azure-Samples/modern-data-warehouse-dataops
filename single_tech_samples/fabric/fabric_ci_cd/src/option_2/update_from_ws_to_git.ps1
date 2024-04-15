@@ -112,7 +112,7 @@ function createOrUpdateRepositoryItem($requestHeader, $contentType, $baseUrl, $w
         }
     }
 
-    # updare or create metadata file
+    # update or create metadata file
     $params = @{
         Uri = "$($baseUrl)/workspaces/$($workspaceId)/items/$($workspaceItem.id)"
         Method = "GET"
