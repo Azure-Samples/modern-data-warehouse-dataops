@@ -31,7 +31,7 @@ This approach assumes that the developer will operate in the following way:
 - Create new feature branch from `dev` (or any other development branch) and pull new feature branch locally.
 - In a *bash* session run the following command. This command instructs git to disregard local modifications to any `item-config.json` file. The purpose of this is to prevent the `objectId`s in the `dev` branch from being replaced by the `objectId`s from the developer workspace during a commit. For more information see the [Fabric Items and Source Control](#fabric-items-and-source-control) section.
     ```sh
-    git update-index --assume-unchanged $(git ls-files | grep "item.config.json" | tr '\n' ' ')
+    git update-index --assume-unchanged $(git ls-files | grep "item-config.json" | tr '\n' ' ')
     ```
 
 **Step 1. Create/Update Fabric workspace and create Fabric items from local brach**
@@ -43,7 +43,7 @@ This approach assumes that the developer will operate in the following way:
 - Run the [`update_from_git_to_ws.ps1`](../../src/option_2/update_from_git_to_ws.ps1) script from the local repository folder. This step will create a new workspace and mirror what is on the repo to the workspace.
     > **CAUTION: Workspace items that are not in the local branch will be deleted from Fabric workspace.**
 
-    -  If **running for the first time in a new branch** use the flag `-resetConfig` setting it to `$true`. This assumes no `item.config.json` files are present and creates corresponding new objects in the workspace. This is needed because otherwise the script would fail being unable to find the corresponding `objectId`s in the newly created Fabric workspace as it would be looking for the `objectId`s that are in the `dev` branch\workspace instead. **TO DO: Reword for better readability**
+    -  If **running for the first time in a new branch** use the flag `-resetConfig` setting it to `$true`. This assumes no `item-config.json` files are present and creates corresponding new objects in the workspace. This is needed because otherwise the script would fail being unable to find the corresponding `objectId`s in the newly created Fabric workspace as it would be looking for the `objectId`s that are in the `dev` branch\workspace instead. **TO DO: Reword for better readability**
          ```pwsh
         .\<local-file-path>\update_from_git_to_ws.ps1 -baseUrl $config.baseUrl -fabricToken $config.fabricToken -workspaceName $config.workspaceName -capacityId $config.capacityId -folder $config.folder -resetConfig $true
         ```
@@ -70,12 +70,12 @@ This approach assumes that the developer will operate in the following way:
 **Step 5. Push changes and create a PR**
 
 - When happy with the changes, create a PR to merge the changes. 
-   > **CAUTION**: Make sure that when creating the PR no `item.config.json` files are pushed to `dev`. These files are created in each of the workspace item folder as part of Step 3. This file contains the *logical ids and object ids* to identify each of the assets. However, these vary from workspace to another hence these should not be checked in.
+   > **CAUTION**: Make sure that when creating the PR no `item-config.json` files are pushed to `dev`. These files are created in each of the workspace item folder as part of Step 3. This file contains the *logical ids and object ids* to identify each of the assets. However, these vary from workspace to another hence these should not be checked in.
   
 **Step 6. Follow PR approval process to DEV workspace**
 
 - When the PR is approved, devops Build and Release pipelines are triggered:
-    1. the Build pipeline checks that no `item.config.json` files are being pushed to `dev`
+    1. the Build pipeline checks that no `item-config.json` files are being pushed to `dev`
     2. the release pipeline will mirror what is on `dev` to the development workspace by running `update_from_git_to_ws.ps1`
    
 **Step 7 and 8. Use Release pipeline to deploy to all environments/stages**
@@ -120,9 +120,13 @@ folder structure:
 
 ## Common errors
 
-- `Error reponse: Response status code does not indicate success: 401 (Unauthorized)`
+- `Error reponse: token expired: 403 (Unauthorized)`
 
     - Your user token is most likely expired. Update it and source your params file and then try again.
+
+- `Error reponse: Response status code does not indicate success: 401 (Unauthorized)`
+
+    - It is likely that one of the Fabric items you are trying to update has a MIP label that prevents you from updating its definition.
 
 ## Known limitations
 
