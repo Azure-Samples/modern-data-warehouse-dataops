@@ -14,7 +14,7 @@ used for variable that are specific to, respectively, `dev`,`stg` and `prd` envi
 
 |<div style="width:200px">**Variable Group**</div>|**Variable Name**|**Description**|
 |:---|:---|:---|
-|`var-group-option-2-common`|`directoryName`| the value of the directory where Fabric item files (such as `item.config.json`, `item.definition.json`, `item.metadata.json`, and item specific definition files) will be stored|
+|`var-group-option-2-common`|`directoryName`| the value of the directory where Fabric item files (such as `item-config.json`, `item-definition.json`, `item-metadata.json`, and item specific definition files) will be stored|
 |`var-group-option-2-common`|`fabricRestApiEndpoint`| the value of the Fabric REST API endpoint, currently `https://api.fabric.microsoft.com/v1`|
 |`var-group-option-2-common`|`token`| the user token used to authenticate against the Fabric API endpoint. This is needed until Service Principals will be supported by the Fabric APIs|
 ||||
@@ -31,9 +31,9 @@ Fabric APIs|
 
 ## Build Pipeline
 
-The step `Check if item.config.json files are modified` in the [build pipeline](ci.yaml) 
+The step `Check if item-config.json files are modified` in the [build pipeline](ci.yaml) 
 contains a step that will make the pipeline fail if the developer is trying to commit any 
-`item.config.json` files to the branch. This is to prevent loosing track of the Fabric 
+`item-config.json` files to the branch. This is to prevent loosing track of the Fabric 
 item `objectId`s that have been already created on the Fabric Workspace. Without this 
 check a developer might inadvertedly commit to the branch the `objectId`s of his sandbox 
 environment. If this happens, existing items that need to be updated would be otherwise 
@@ -50,12 +50,12 @@ to reflect in the Fabric DEV workspace the changes that are being committed to t
 `dev` branch.
 
 When the `update_from_git_to_ws.ps1` script will run on the agent, it will produce 
-various outputs, including `item.config.json` files that will be stored locally to the 
+various outputs, including `item-config.json` files that will be stored locally to the 
 agent filesystem.
 
 To make sure that any Fabric item `objectId` created by the above step is also tracked 
 on the repository, the release pipeline has a second step `Push Config to branch`. This 
-step will create a commit to the `dev` branch containing any modified `item.config.json` 
+step will create a commit to the `dev` branch containing any modified `item-config.json` 
 files. 
 > Note: For this step to work you will have to make sure that your build 
 service can bypass branch policies (such as skipping CI events given it will commit to 

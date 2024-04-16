@@ -34,12 +34,12 @@ stages:
         - script: |
             git checkout -b $(BRANCHNAME)
 
-            # make sure we are tracking item.config.json files
-            git update-index --no-assume-unchanged $(git ls-files | grep "item.config.json" | tr '\n' ' ')
+            # make sure we are tracking item-config.json files
+            git update-index --no-assume-unchanged $(git ls-files | grep "item-config.json" | tr '\n' ' ')
 
             echo 'branch name is $(BRANCHNAME)'
 
-            # add all modified item.config.json files to our commit to dev
+            # add all modified item-config.json files to our commit to dev
             git add .
 
             echo $(git status -s)

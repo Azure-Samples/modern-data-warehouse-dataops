@@ -53,7 +53,7 @@ function getWorkspaceId($requestHeader, $contentType, $baseUrl, $workspaceName){
 function getRepositoryItems($folder) {
     $repoItems = @()
     $folders = Get-ChildItem -Path $folder -Recurse -Directory
-    $configFiles = Get-ChildItem -Path $folder -Recurse -Filter "*.config.json"
+    $configFiles = Get-ChildItem -Path $folder -Recurse -Filter $itemConfigFileName
     foreach ($folder in $folders) {
         $repoItem = @{objectId = $null; folder = $folder; done = $false}
         $configPath = $configFiles | Where-Object {(Split-Path $_.FullName -Parent) -eq $folder.FullName}
@@ -96,7 +96,7 @@ function createOrUpdateRepositoryItem($requestHeader, $contentType, $baseUrl, $w
     }
 
     # update or create config file
-    $configFilePath = Join-Path $itemFolder "item.config.json"
+    $configFilePath = Join-Path $itemFolder $itemConfigFileName
     if (![System.IO.File]::Exists($configFilePath)){
         $itemConfig = @{
             objectId = $workspaceItem.id
@@ -121,7 +121,7 @@ function createOrUpdateRepositoryItem($requestHeader, $contentType, $baseUrl, $w
     }
     $itemMetadata = (Invoke-RestMethod @params)
     $itemMetadata = $itemMetadata | Select-Object -Property displayName, type, description
-    $metadataFilePath = Join-Path $itemFolder "item.metadata.json"
+    $metadataFilePath = Join-Path $itemFolder $itemMetadataFileName
     $itemMetadata | ConvertTo-Json -Depth 10 | Set-Content -Path $metadataFilePath
 
     # update or create definition file except for Lakehouse items
@@ -144,7 +144,7 @@ function createOrUpdateRepositoryItem($requestHeader, $contentType, $baseUrl, $w
             $itemDefinition = (longRunningOperationPolling $responseHeaders.Location $responseHeaders.'Retry-After')
         }
     
-        $definitionFilePath = Join-Path $itemFolder "item.definition.json"
+        $definitionFilePath = Join-Path $itemFolder $itemDefinitionFileName
         $itemDefinition | ConvertTo-Json -Depth 10 | Set-Content -Path $definitionFilePath
 
         # update or create content file
@@ -219,6 +219,10 @@ try {
     Write-Host "this task is running Powershell version " $PSVersionTable.PSVersion
     Write-Host "the folder we are working on is $folder"
     Write-Host "Updating workspace items for workspace $workspaceName"
+
+    $itemConfigFileName = "item-config.json"
+    $itemMetadataFileName = "item-metadata.json"
+    $itemDefinitionFileName = "item-definition.json"
 
     $authHeader = "Bearer $($fabricToken)"
     $requestHeader = @{

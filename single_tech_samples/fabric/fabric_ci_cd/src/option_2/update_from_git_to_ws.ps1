@@ -141,8 +141,8 @@ function updateWorkspaceItem($baseUrl, $workspaceId, $requestHeader, $contentTyp
 }
 
 function createOrUpdateWorkspaceItem($requestHeader, $contentType, $baseUrl, $workspaceId, $workspaceItems, $folder, $repoItems){
-    # Find if the item already exists in the workspace looking at the item.config.json file
-    $metadataFilePath = Join-Path $folder "item.metadata.json"
+    # Find if the item already exists in the workspace looking at the $itemConfigFileName file
+    $metadataFilePath = Join-Path $folder $itemMetadataFileName
     if ([System.IO.File]::Exists($metadataFilePath)){
         $itemMetadata = Get-Content -Path $metadataFilePath -Raw | ConvertFrom-Json
         Write-Host "Found item metadata for $($itemMetadata.displayName)" -ForegroundColor Green
@@ -151,11 +151,12 @@ function createOrUpdateWorkspaceItem($requestHeader, $contentType, $baseUrl, $wo
         Write-Host "Item $folder does not have the required metadata file, skipping." -ForegroundColor Yellow
         return
     }
-    $definitionFilePath = Join-Path $folder "item.definition.json"
+    $definitionFilePath = Join-Path $folder $itemDefinitionFileName
     if ([System.IO.File]::Exists($definitionFilePath)){
         $itemDefinition = Get-Content -Path $definitionFilePath -Raw | ConvertFrom-Json
         Write-Host "Found item definition for $($itemMetadata.displayName)" -ForegroundColor Green
         $contentFiles = Get-ChildItem -Path $folder | Where-Object {$_.Name -like "*content*"}
+        ## TODO: loop over files in repo, for example model.bim  and definition.pbism else it will only use 1 part
         if ($contentFiles -and $contentFiles.Count -eq 1){
             Write-Host "Found $($contentFiles.Count) content file for $($itemMetadata.displayName)" -ForegroundColor Green
             $itemContent = Get-Content -Path $contentFiles[0].FullName -Raw
@@ -171,11 +172,11 @@ function createOrUpdateWorkspaceItem($requestHeader, $contentType, $baseUrl, $wo
         }
     }
 
-    $configFilePath = Join-Path $folder "item.config.json"
+    $configFilePath = Join-Path $folder "$itemConfigFileName"
     if (![System.IO.File]::Exists($configFilePath) -or $resetConfig){
         # if the config file does not exist then create a new logicalId and save the new config file
         # then create a new item and save the returned objectId in the config file
-        Write-Host "no item.config.json file found, creating new file." -ForegroundColor Yellow
+        Write-Host "no $itemConfigFileName file found, creating new file." -ForegroundColor Yellow
         $itemConfig = @{
             logicalId = [guid]::NewGuid().ToString()
         }
@@ -279,6 +280,10 @@ try {
     Write-Host "this task is running Powershell version " $PSVersionTable.PSVersion
     Write-Host "the folder we are working on is $folder"
     Write-Host "Updating workspace items for workspace $workspaceName"
+
+    $itemConfigFileName = "item-config.json"
+    $itemMetadataFileName = "item-metadata.json"
+    $itemDefinitionFileName = "item-definition.json"
 
     $authHeader = "Bearer $($fabricToken)"
     $requestHeader = @{
