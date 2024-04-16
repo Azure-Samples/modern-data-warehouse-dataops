@@ -11,6 +11,8 @@ Currently, Microsoft Fabric supports Git integration for Azure DevOps only. This
 3. Working as needed in the Fabric workspace.
 4. Updating changes from workspace to reflect them back in source control.
 
+> Note: This sample follows a strategy where each feature branch is paired with a corresponding Fabric workspace, implementing a one-workspace-per-branch approach.
+
 The below picture illustrates these followed by a description of each of the numbered step:
 
 ![Fabric CI/CD Architecture](../../images/Option2.png)
@@ -75,12 +77,12 @@ This approach assumes that the developer will operate in the following way:
 **Step 6. Follow PR approval process to DEV workspace**
 
 - When the PR is approved, devops Build and Release pipelines are triggered:
-    1. the Build pipeline checks that no `item-config.json` files are being pushed to `dev`
-    2. the release pipeline will mirror what is on `dev` to the development workspace by running `update_from_git_to_ws.ps1`
+    1. the Build pipeline checks that no `item-config.json` files are being pushed to `dev`. For more information on usage of DevOps Pipelines in this sample, review the [DevOps Pipelines README](../../devops/option_2/README.md).
+    2. the release pipeline will mirror what is on `dev` to the development workspace by running `update_from_git_to_ws.ps1`.
    
 **Step 7 and 8. Use Release pipeline to deploy to all environments/stages**
 
-- The release pipeline for STG and PRD can be identical or a variation to the release pipeline for DEV.
+- The release pipeline for STG and PRD can be identical or a variation to the release pipeline for DEV. For more information on usage of DevOps Pipelines in this sample, review the [DevOps Pipelines README](../../devops/option_2/README.md).
 
 
 ## Fabric Items and Source Control
