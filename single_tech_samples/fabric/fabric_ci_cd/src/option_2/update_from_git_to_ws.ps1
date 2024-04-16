@@ -294,7 +294,7 @@ try {
     # 1. Check if a workspace with given name already exists, if not create a new one
     $workspaceId = getorCreateWorkspaceId $requestHeader $contentType $baseUrl $workspaceName $capacityId
 
-    # 2. For every item on the branch, check if they exist in the workspace
+    # 2. For every Fabric item on the branch, check if they exist in the workspace
     # first get a list of all items in the workspace
     $params = @{
         Uri = "$($baseUrl)/workspaces/$($workspaceId)/items"

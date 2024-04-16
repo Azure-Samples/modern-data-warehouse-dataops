@@ -107,7 +107,7 @@ function createOrUpdateRepositoryItem($requestHeader, $contentType, $baseUrl, $w
     else {
         $itemConfig = Get-Content -Path $configFilePath | ConvertFrom-Json
         if (!$itemConfig.objectId) {
-            $itemConfig | add-member -Name "objectId" -value $workspaceItem.id -MemberType NoteProperty -Force
+            $itemConfig | Add-Member -Name "objectId" -value $workspaceItem.id -MemberType NoteProperty -Force
             $itemConfig | ConvertTo-Json -Depth 10 | Set-Content -Path $configFilePath
         }
     }
@@ -143,7 +143,11 @@ function createOrUpdateRepositoryItem($requestHeader, $contentType, $baseUrl, $w
         if ($statusCode -eq 202) { # status 202 is accepted instead of OK, which signals a long running operation
             $itemDefinition = (longRunningOperationPolling $responseHeaders.Location $responseHeaders.'Retry-After')
         }
-    
+
+        if ($workspaceItem.type -eq "Notebook" -and !$itemDefinition.definition.format) { # if the format is not set, set it to ipynb
+            $itemDefinition | Add-Member -Name "format" -value "ipynb" -MemberType NoteProperty -Force
+        }
+
         $definitionFilePath = Join-Path $itemFolder $itemDefinitionFileName
         $itemDefinition | ConvertTo-Json -Depth 10 | Set-Content -Path $definitionFilePath
 
