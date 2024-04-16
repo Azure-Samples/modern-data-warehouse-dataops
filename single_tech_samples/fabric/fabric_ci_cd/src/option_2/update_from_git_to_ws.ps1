@@ -155,14 +155,17 @@ function createOrUpdateWorkspaceItem($requestHeader, $contentType, $baseUrl, $wo
     if ([System.IO.File]::Exists($definitionFilePath)){
         $itemDefinition = Get-Content -Path $definitionFilePath -Raw | ConvertFrom-Json
         Write-Host "Found item definition for $($itemMetadata.displayName)" -ForegroundColor Green
-        $contentFiles = Get-ChildItem -Path $folder | Where-Object {$_.Name -like "*content*"}
-        ## TODO: loop over files in repo, for example model.bim  and definition.pbism else it will only use 1 part
-        if ($contentFiles -and $contentFiles.Count -eq 1){
-            Write-Host "Found $($contentFiles.Count) content file for $($itemMetadata.displayName)" -ForegroundColor Green
-            $itemContent = Get-Content -Path $contentFiles[0].FullName -Raw
-            $byte_array = [System.Text.Encoding]::UTF8.GetBytes($itemContent)
-            $base64 = [System.Convert]::ToBase64String($byte_array)
-            $itemDefinition.definition.parts[0].payload = $base64
+        $contentFiles = Get-ChildItem -Path $folder | Where-Object {$_.Name -notlike $itemMetadataFileName -and $_.Name -notlike $itemDefinitionFileName -and $_.Name -notlike $itemConfigFileName}
+        #$contentFiles = Get-ChildItem -Path $folder | Where-Object {$_.Name -like "*content*"}
+        if ($contentFiles -and $contentFiles.Count -ge 1){ # if there is at least a content file then update the definition payload
+            Write-Host "Found $($contentFiles.Count) content file(s) for $($itemMetadata.displayName)" -ForegroundColor Green
+            foreach ($part in $itemDefinition.definition.parts){
+                $file = $contentFiles | Where-Object {$_.Name -eq $part.path}
+                $itemContent = Get-Content -Path $file.FullName -Raw
+                $byte_array = [System.Text.Encoding]::UTF8.GetBytes($itemContent)
+                $base64 = [System.Convert]::ToBase64String($byte_array)
+                $part.payload = $base64
+            }
             $itemDefinition| ConvertTo-Json -Depth 10 | New-Item -Path $definitionFilePath -Force
             Write-Host "updated item definition payload with content file for $($itemMetadata.displayName)" -ForegroundColor Green
         }
