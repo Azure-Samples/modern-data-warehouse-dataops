@@ -5,6 +5,8 @@ Nonetheless creating similar pipelines for GitLab and other git tools should be
 straightforward as no Azure DevOps specific functionalities have been employed (except 
 for system variables and commands specific to variable groups).
 
+> Note: We plan to create a working GitLab version for the devops pipelines in this example.
+
 ## Variables
 
 The pipelines in this sample depend on the following variable groups:
