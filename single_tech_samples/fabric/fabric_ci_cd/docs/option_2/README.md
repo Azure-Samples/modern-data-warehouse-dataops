@@ -122,7 +122,7 @@ folder structure:
 
 - `Error reponse: Response status code does not indicate success: 401 (Unauthorized)`
 
-    - Most likely expired token is the issue. Update it and source your params file and then try again.
+    - Your user token is most likely expired. Update it and source your params file and then try again.
 
 ## Known limitations
 
