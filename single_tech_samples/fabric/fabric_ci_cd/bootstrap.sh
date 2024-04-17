@@ -10,6 +10,7 @@ fabric_bearer_token="$FABRIC_BEARER_TOKEN"
 fabric_project_name="$FABRIC_PROJECT_NAME"
 location="$AZURE_LOCATION"
 capacity_admin_email="$CAPACITY_ADMIN_EMAIL"
+existing_capacity_name="$EXISTING_CAPACITY_NAME"
 ## APIs Endpoints
 fabric_api_endpoint="https://api.fabric.microsoft.com/v1"
 deployment_api_endpoint="$fabric_api_endpoint.0/myorg/pipelines"
@@ -38,9 +39,9 @@ trigger_notebook_execution="true"
 trigger_pipeline_execution="true"
 should_disconnect="false"
 connect_to_git="true"
-create_domain_and_attach_workspaces="false"
-add_workspace_admins="false"
-add_pipeline_admins="false"
+create_domain_and_attach_workspaces="true"
+add_workspace_admins="true"
+add_pipeline_admins="true"
 
 # Derived variables (change as per the project requirements)
 onelake_name="onelake"
@@ -72,10 +73,13 @@ function create_resource_group () {
 
 function deploy_azure_resources() {
     resource_group_name="$1"
+    azure_location="$2"
+    capacity_name="$3"
+    capacity_admin_email="$4"
     arm_output=$(az deployment group create \
         --resource-group "$resource_group_name" \
         --template-file infra/main.bicep \
-        --parameters location="$AZURE_LOCATION" capacityName="$fabric_capacity_name" adminEmail="$capacity_admin_email" \
+        --parameters location="$azure_location" capacityName="$capacity_name" adminEmail="$capacity_admin_email" \
         --output json)
 
     if [[ -z $arm_output ]]; then
@@ -87,8 +91,9 @@ function deploy_azure_resources() {
 }
 
 function get_capacity_id() {
+    capacity_name="$1"
     response=$(curl -s -X GET -H "Authorization: Bearer $fabric_bearer_token" "$fabric_api_endpoint/capacities")
-    capacity_id=$(echo "${response}" | jq -r --arg var "$fabric_capacity_name" '.value[] | select(.displayName == $var) | .id')
+    capacity_id=$(echo "${response}" | jq -r --arg var "$capacity_name" '.value[] | select(.displayName == $var) | .id')
     echo "$capacity_id"
 }
 
@@ -580,16 +585,26 @@ echo "[I] ############ Azure Resource Deployment ############"
 if [[ "$deploy_azure_resources" = "true" ]]; then
     echo "[I] Creating resource group '$resource_group_name'"
     create_resource_group "$resource_group_name"
-
     echo "[I] Deploying Azure resources to resource group '$resource_group_name'"
-    deploy_azure_resources "$resource_group_name"
+    deploy_azure_resources "$resource_group_name" "$location" "$fabric_capacity_name" "$capacity_admin_email"
 else
-    echo "[I] Variable 'deploy_azure_resources' set to $deploy_azure_resources, skipping Azure resource deployment."
+    if [[ -n "$existing_capacity_name" ]]; then
+        echo "[I] Variable 'deploy_azure_resources' set to $deploy_azure_resources, using existing capacity '$existing_capacity_name'."
+        # As an existing capacity is being used, the "fabric_capacity_name" variable is overridden with the name of the existing capacity passed.
+        fabric_capacity_name="$existing_capacity_name"
+    else
+        echo "[E] As variable 'deploy_azure_resources' is set to $deploy_azure_resources, you need to set 'EXISTING_CAPACITY_NAME' environment variable."
+        exit 1
+    fi
 fi
 
 echo "[I] ############ Workspace Creation ############"
 if [[ "$create_workspaces" = "true" ]]; then
-    capacity_id=$(get_capacity_id)
+    capacity_id=$(get_capacity_id "$fabric_capacity_name")
+    if [[ -z "$capacity_id" ]]; then
+        echo "[E] Capacity '$fabric_capacity_name' not found. Please verify the capacity name passed."
+        exit 1
+    fi
     echo "[I] Fabric capacity is '$fabric_capacity_name' ($capacity_id)"
 
     for ((i=0; i<${#workspace_names[@]}; i++)); do

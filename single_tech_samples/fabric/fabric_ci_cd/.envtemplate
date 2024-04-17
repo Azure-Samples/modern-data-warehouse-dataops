@@ -4,6 +4,8 @@ AZURE_SUBSCRIPTION_ID=""
 AZURE_LOCATION=""
 # The email address of the Fabric capacity admin. This should be from the same tenant where capacity is being created.
 CAPACITY_ADMIN_EMAIL=""
+# The name of the existing Fabric capacity. This name is required if you want to use an existing capacity instead of creating a new one.
+EXISTING_CAPACITY_NAME=""
 # The name of the Fabric project. This name is used for naming the Fabric resources.
 FABRIC_PROJECT_NAME=""
 # The name of the Fabric domain. It can be an existing domain.
