@@ -63,6 +63,7 @@ Here are the steps to use the bootstrap script:
     AZURE_SUBSCRIPTION_ID='Azure Subscription Id'
     AZURE_LOCATION='The location where the Azure resources will be created'
     CAPACITY_ADMIN_EMAIL='The email address of the Fabric capacity admin. This should be from the same tenant where capacity is being created.'
+    EXISTING_CAPACITY_NAME="The name of the existing Fabric capacity. This name is required if you want to use an existing capacity instead of creating a new one."
     FABRIC_PROJECT_NAME='The name of the Fabric project. This name is used for naming the Fabric resources.'
     FABRIC_DOMAIN_NAME="The name of the Fabric domain. It can be an existing domain."
     FABRIC_SUBDOMAIN_NAME="The name of the Fabric subdomain. It can be an existing subdomain."
@@ -80,7 +81,7 @@ Here are the steps to use the bootstrap script:
 
     | Flag                                | Description                                                           | Default value | Required environment  variables                                                                         |
     | :---------------------------------- | :-------------------------------------------------------------------- | :------------ |  :----------------------------------------------------------------------------------------------------- |
-    | deploy_azure_resources              | Flag to deploy Azure resources.                                       | false         | `AZURE_SUBSCRIPTION_ID`</br>`AZURE_LOCATION`</br>`CAPACITY_ADMIN_EMAIL`                                |
+    | deploy_azure_resources              | Flag to deploy Azure resources.                                       | false         | If set to false:</br>`EXISTING_CAPACITY_NAME`</br>If set to false:</br>`AZURE_SUBSCRIPTION_ID`</br>`AZURE_LOCATION`</br>`CAPACITY_ADMIN_EMAIL`                               |
     | create_workspaces                   | Flag to create new Fabric workspaces.                                 | true          | `FABRIC_PROJECT_NAME`                                                                                  |
     | setup_deployment_pipeline           | Flag to create a deployment pipeline and assign workspaces to stages. | true          | `FABRIC_PROJECT_NAME`                                                                                  |
     | create_default_lakehouse            | Flag to create a default Lakehouse.                                   | true          | -                                                                                                   |
@@ -188,7 +189,7 @@ The bootstrap script is designed to automate the creation of initial Fabric work
 
 Here is a summary of the steps that the script performs:
 
-- Creates an Azure resource group and a Fabric capacity. If the capacity already exists, the script fetches the Id based on the capacity name.
+- Creates an Azure resource group and a Fabric capacity. For using an existing capacity, set `deploy_azure_resources` to `false` and provide the existing capacity name using `EXISTING_CAPACITY_NAME` environment variable.
 - Creates three Fabric workspaces for development (DEV), user acceptance testing (UAT), and production (PRD). If the workspaces already exist, the script fetch the corresponding workspace Ids and writes a warning message to validate that the existing workspaces are indeed connected to the intended capacity.
 - Creates a deployment pipeline and assigns the workspaces to the stages. If any pipeline stage is already associated with a different workspace, it reassigns the new workspaces to the stage.
 - Creates a Fabric Lakehouse `lh_main`.
