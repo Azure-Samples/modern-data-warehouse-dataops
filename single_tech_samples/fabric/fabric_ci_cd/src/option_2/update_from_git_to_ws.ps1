@@ -65,7 +65,7 @@ function getorCreateWorkspaceId($requestHeader, $contentType, $baseUrl, $workspa
 }
 
 function createWorkspaceItem($baseUrl, $workspaceId, $requestHeader, $contentType, $itemMetadata, $itemDefinition){
-    if ($itemDefinition) #create item with definition
+    if ($itemDefinition)
     {
         # if the item has a definition create the item with definition
         $body = @{
@@ -75,7 +75,7 @@ function createWorkspaceItem($baseUrl, $workspaceId, $requestHeader, $contentTyp
             definition = $itemDefinition.definition
         }
     }
-    else { #item does not have definition only create the item with metadata
+    else { #item does not have definition, only create the item with metadata
         $body = @{
             displayName = $itemMetadata.displayName
             description = $itemMetadata.description
@@ -94,32 +94,18 @@ function createWorkspaceItem($baseUrl, $workspaceId, $requestHeader, $contentTyp
     if ($statusCode -eq 202) { # status 202 is accepted instead of OK, which signals a long running operation
         $item = (longRunningOperationPolling $responseHeaders.Location $responseHeaders.'Retry-After')
     }
+
+    Write-Host "Sensitivity Labels won't make future item defintion updates possible. Please update Sensitivity Labels for created items before re-running this script." -ForegroundColor Yellow
     return $item
 }
 
-function updateWorkspaceItem($baseUrl, $workspaceId, $requestHeader, $contentType, $itemMetadata, $itemDefinition, $itemConfig){
-    $uri = "$($baseUrl)/workspaces/$($workspaceId)/items/$($itemConfig.objectId)"
-    $body = @{
-        displayName = $itemMetadata.displayName
-        description = $itemMetadata.description
-    }
-
-    $params = @{
-        Uri = $uri
-        Method = "PATCH"
-        Headers = $requestHeader
-        ContentType = $contentType
-        Body = $body | ConvertTo-Json -Depth 10
-    }
-
-    Write-Host "Executing PATCH to update item $($itemConfig.objectId) $($itemMetadata.displayName)" -ForegroundColor Green
-    $item = (Invoke-RestMethod @params)
-
-    if ($itemDefinition) {
+function updateWorkspaceItemDefinition($baseUrl, $workspaceId, $requestHeader, $contentType, $itemMetadata, $itemDefinition, $itemConfig){
         $uri = "$($baseUrl)/workspaces/$($workspaceId)/items/$($itemConfig.objectId)/updateDefinition"
+        if ($itemMetadata.type -eq "Notebook" -and !$itemDefinition.definition.format)
+        {
+            $itemDefinition.definition | Add-Member -Name "format" -value "ipynb" -MemberType NoteProperty -Force
+        }
         $body = @{
-            displayName = $itemMetadata.displayName
-            description = $itemMetadata.description
             definition = $itemDefinition.definition
         }
 
@@ -135,9 +121,31 @@ function updateWorkspaceItem($baseUrl, $workspaceId, $requestHeader, $contentTyp
         Invoke-RestMethod @params -ResponseHeadersVariable responseHeaders -StatusCodeVariable statusCode
         if ($statusCode -eq 202 -and $responseHeaders.Location -and $responseHeaders.'Retry-After') { # status 202 is accepted instead of OK, which signals a long running operation
             longRunningOperationPolling $responseHeaders.Location $responseHeaders.'Retry-After'
-        }    
+        } 
+}
+
+function updateWorkspaceItem($baseUrl, $workspaceId, $requestHeader, $contentType, $itemMetadata, $itemDefinition, $itemConfig){
+    # Start updating the item metadata
+    $uri = "$($baseUrl)/workspaces/$($workspaceId)/items/$($itemConfig.objectId)"
+    $body = @{
+        displayName = $itemMetadata.displayName
+        description = $itemMetadata.description
     }
 
+    $params = @{
+        Uri = $uri
+        Method = "PATCH"
+        Headers = $requestHeader
+        ContentType = $contentType
+        Body = $body | ConvertTo-Json -Depth 10
+    }
+
+    Write-Host "Executing PATCH to update item $($itemConfig.objectId) $($itemMetadata.displayName)" -ForegroundColor Green
+    Invoke-RestMethod @params
+    if ($itemDefinition) #for items with a definition, also update the definition
+    {
+        updateWorkspaceItemDefinition $baseUrl $workspaceId $requestHeader $contentType $itemMetadata $itemDefinition $itemConfig
+    }
 }
 
 function createOrUpdateWorkspaceItem($requestHeader, $contentType, $baseUrl, $workspaceId, $workspaceItems, $folder, $repoItems){
@@ -317,7 +325,7 @@ try {
     # 3. for items that are in the workspace but not in the repository (hence no folder), we need to delete them from the workspace
     # use $repoItems to keep track of found object ids (either from creation or config files) and remove all other object ids from the workspace
     foreach ($item in $workspaceItems){
-        if ($item.id -notin $repoItems){
+        if ($item.id -notin $repoItems -and $item.type -notin @("SQLEndpoint", "SemanticModel")){ # SemanticModel and SQL Endpoint items should not be deleted
             Write-Host "Item $($item.id) $($item.displayName) is in the workspace but not in the repository, deleting." -ForegroundColor Yellow
             $params = @{
                 Uri = "$($baseUrl)/workspaces/$($workspaceId)/items/$($item.id)"

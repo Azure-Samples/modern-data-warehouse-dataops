@@ -66,8 +66,8 @@ function getRepositoryItems($folder) {
     return $repoItems
 }
 function createOrUpdateRepositoryItem($requestHeader, $contentType, $baseUrl, $workspaceId, $workspaceItem, $folder, $repoItems){
-    if ($workspaceItem.type -eq "SQLEndpoint") {
-        Write-Host "SQLEndpoint items are not supported. Skipping..." -ForegroundColor Yellow
+    if ($workspaceItem.type -in @("SQLEndpoint", "SemanticModel")) {
+        Write-Host "$workspaceItem.type items are not supported. Skipping..." -ForegroundColor Yellow
         return
     }
 
@@ -145,7 +145,7 @@ function createOrUpdateRepositoryItem($requestHeader, $contentType, $baseUrl, $w
         }
 
         if ($workspaceItem.type -eq "Notebook" -and !$itemDefinition.definition.format) { # if the format is not set, set it to ipynb
-            $itemDefinition | Add-Member -Name "format" -value "ipynb" -MemberType NoteProperty -Force
+            $itemDefinition.definition | Add-Member -Name "format" -value "ipynb" -MemberType NoteProperty -Force
         }
 
         $definitionFilePath = Join-Path $itemFolder $itemDefinitionFileName

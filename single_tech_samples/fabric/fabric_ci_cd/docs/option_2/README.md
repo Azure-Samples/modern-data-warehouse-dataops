@@ -23,7 +23,7 @@ This approach assumes that the developer will operate in the following way:
 
 | Script/File | Description |
 |--------|-------------|
-|[params.psd1](../../src/option_2/params.psd1)|Parameters file - can be used set the input arguments to the scripts. Update the values as needed.|
+|[params.psd1](../../src/option_2/params.psd1)|Parameters file - used to set the input arguments to the scripts. Update the values as needed.|
 |[update_from_git_to_ws.ps1](../../src/option_2/update_from_git_to_ws.ps1)|Script to create Fabric workspace and sync assets from source control (local git branch) to the workspace.|
 |[update_from_ws_to_git.ps1](../../src/option_2/update_from_ws_to_git.ps1)|Script to update the local repository from item defintions in the Fabric workspace.|
 
@@ -122,13 +122,10 @@ folder structure:
 
 ## Common errors
 
-- `Error reponse: token expired: 403 (Unauthorized)`
-
-    - Your user token is most likely expired. Update it and source your params file and then try again.
-
 - `Error reponse: Response status code does not indicate success: 401 (Unauthorized)`
-
-    - It is likely that one of the Fabric items you are trying to update has a MIP label that prevents you from updating its definition.
+    - Your user token has expired. Update it and source your params file and then try again.
+- `Error reponse: Response status code does not indicate success: 400 (Bad Request)`
+    - One of the Fabric items you are trying to update has a MIP label that prevents you from updating its definition.
 
 ## Known limitations
 
