@@ -45,7 +45,7 @@ This approach assumes that the developer will operate in the following way:
 - Run the [`update_from_git_to_ws.ps1`](../../src/option_2/update_from_git_to_ws.ps1) script from the local repository folder. This step will create a new workspace and mirror what is on the repo to the workspace.
     > **CAUTION: Workspace items that are not in the local branch will be deleted from Fabric workspace.**
 
-    -  If **running for the first time in a new branch** use the flag `-resetConfig` setting it to `$true`. This assumes no `item-config.json` files are present and creates corresponding new objects in the workspace. This is needed because otherwise the script would fail being unable to find the corresponding `objectId`s in the newly created Fabric workspace as it would be looking for the `objectId`s that are in the `dev` branch\workspace instead. **TO DO: Reword for better readability**
+    -  When running this for the first time on a new branch, utilize the `-resetConfig` setting it to `$true`. This ignores any existing `item-config.json` files and creates corresponding new objects in the workspace. This step is crucial as it prevents the script from failing due to a search for `objectId`s that are coming from the `dev` branch/workspace, which would not exist in the new Fabric workspace.
          ```pwsh
         .\<local-file-path>\update_from_git_to_ws.ps1 -baseUrl $config.baseUrl -fabricToken $config.fabricToken -workspaceName $config.workspaceName -capacityId $config.capacityId -folder $config.folder -resetConfig $true
         ```
@@ -123,9 +123,9 @@ folder structure:
 ## Common errors
 
 - `Error reponse: Response status code does not indicate success: 401 (Unauthorized)`
-    - Your user token has expired. Update it and source your params file and then try again.
+    - Likely your user token has expired. Update it and source your params file and then try again.
 - `Error reponse: Response status code does not indicate success: 400 (Bad Request)`
-    - One of the Fabric items you are trying to update has a MIP label that prevents you from updating its definition.
+    - Likely one of the Fabric items you are trying to update has a MIP label that prevents you from updating its definition.
 
 ## Known limitations
 
