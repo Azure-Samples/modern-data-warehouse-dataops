@@ -7,9 +7,9 @@ This approach leverages REST API calls to make changes to Dev, Stg and Prod Fabr
 - Local IDE with git command installed
 - A DevOps source control system, like GitLab.
 
-### Set-up Instructions
+## Set-up Instructions
 
-#### Repository
+### Repository
 
 To use this sample it is advisable that you: 
 1. Create a brand new repository with your source control tool of choice.
@@ -17,7 +17,7 @@ To use this sample it is advisable that you:
 3. Copy everything that is under the [fabric_ci_cd folder](../../) to the folder from step 2.
 4. Read remaining instructions.
 
-#### PowerShell Scripts
+### PowerShell Scripts
 
 | Script/File | Description |
 |--------|-------------|
@@ -25,7 +25,7 @@ To use this sample it is advisable that you:
 |[update_from_git_to_ws.ps1](../../src/option_2/update_from_git_to_ws.ps1)|Script to create Fabric workspace and sync assets from source control (local git branch) to the workspace.|
 |[update_from_ws_to_git.ps1](../../src/option_2/update_from_ws_to_git.ps1)|Script to update the local repository from item defintions in the Fabric workspace.|
 
-#### DevOps Pipelines
+### DevOps Pipelines
 
 Create Build (CI) and Release (CD) pipelines from the [yml definitions provided in this sample](../../devops/option_2/). To do so, refer to the information in the [DevOps pipeline readme](../../devops/option_2/README.md).
 
