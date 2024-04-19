@@ -14,7 +14,7 @@ This approach leverages REST API calls to make changes to Dev, Stg and Prod Fabr
 To use this sample it is advisable that you: 
 1. Create a brand new repository with your source control tool of choice.
 2. Clone the entire repository locally to a folder of your choice. 
-3. Copy everything that is under the [fabric_ci_cd folder](../../) to the folder from step 1.
+3. Copy everything that is under the [fabric_ci_cd folder](../../) to the folder from step 2.
 4. Read remaining instructions.
 
 #### PowerShell Scripts
