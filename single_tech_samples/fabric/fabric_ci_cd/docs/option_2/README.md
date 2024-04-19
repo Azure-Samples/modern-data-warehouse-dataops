@@ -155,3 +155,8 @@ The below picture illustrates these followed by a description of each of the num
 
 - Microsoft Information Protection labels are now being enforced by Fabric but there is still not a way to set MIP labels via APIs. When MIP labels are defaulting to Restricted/Confidential, then some of the API calls in the below scripts might fail.
 - Service Principal authentication is currently not supported by Fabric APIs, therefore this sample is currently relying on user tokens - see [passing the bearer token](../../README.md#passing-the-fabric-bearer-token).
+
+## Roadmap
+
+- Add GitLab devops pipelines (Build and Release).
+- Triggering hydration of Lakehouse (via Data Pipelines and Notebook).
