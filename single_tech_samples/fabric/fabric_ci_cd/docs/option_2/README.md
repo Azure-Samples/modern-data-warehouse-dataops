@@ -7,6 +7,62 @@ This approach leverages REST API calls to make changes to Dev, Stg and Prod Fabr
 - Local IDE with git command installed
 - A DevOps source control system, like GitLab.
 
+### Set-up Instructions
+
+#### Repository
+
+To use this sample it is advisable that you: 
+1. Create a brand new repository with your source control tool of choice.
+2. Clone the entire repository locally to a folder of your choice. 
+3. Copy everything that is under the [fabric_ci_cd folder](../../) to the folder from step 1.
+4. Read remaining instructions.
+
+#### PowerShell Scripts
+
+| Script/File | Description |
+|--------|-------------|
+|[params.psd1](../../src/option_2/params.psd1)|Parameters file - used to set the input arguments to the scripts. Update the values as needed.|
+|[update_from_git_to_ws.ps1](../../src/option_2/update_from_git_to_ws.ps1)|Script to create Fabric workspace and sync assets from source control (local git branch) to the workspace.|
+|[update_from_ws_to_git.ps1](../../src/option_2/update_from_ws_to_git.ps1)|Script to update the local repository from item defintions in the Fabric workspace.|
+
+#### DevOps Pipelines
+
+Create Build (CI) and Release (CD) pipelines from the [yml definitions provided in this sample](../../devops/option_2/). To do so, refer to the information in the [DevOps pipeline readme](../../devops/option_2/README.md).
+
+## Fabric Items and Source Control
+
+This sample maintains a record of changes to Fabric items in source control to prevent the need for constant deletion and recreation of modified items. It does this by tracking the *Object Id*s (the GUIDs of the items in the Fabric workspace, as per the Fabric REST APIs) in an `item-config.json` configuration file. 
+
+All Fabric items come with a minimal definition (at the time of writing comprising of Name, Type and Description). Such minimal defintion is stored in the `item-metadata.json` file.
+
+Certain types of items in Fabric can have an [item definition](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/item-definition-overview). You can get this definition by using the [`getDefnition`](https://learn.microsoft.com/rest/api/fabric/core/items/get-item-definition) API. The result of this API call is saved in a file called `item-definition.json`.
+
+To make things easier for developers, the definition, which is encoded in base64 in the `item-definition.json` file, is also stored in the repository. For instance, if the item is a Notebook, a notebook in ipynb format is saved in the repository. This is done by decoding the base64 data that the `getDefnition` API returns. This allows the developer to edit the notebook using their favorite IDE. Any changes made are then saved back in Fabric when the corresponding Fabric item is updated using the [`updateDefnition`](https://learn.microsoft.com/rest/api/fabric/core/items/update-item-definition) API.
+
+All the files that compose a specific Fabric item are stored in a corresponding folder (`Item1Folder.ItemType` in the example below).
+
+All these individual item folders are then stored in one main folder, named `fabric` in this repository.
+
+folder structure:
+
+```
+/ (root of this project)
+│
+└───...
+│
+└───fabric
+│   └───Item1Folder.ItemType
+│   |   │   item-config.json
+│   |   │   item-definition.json (optional)
+│   |   │   item-metadata.json
+│   |   │   (other optional files that may vary by item type)
+│   |
+│   └───Item2Folder.ItemType
+│       │   ...
+│
+└───...
+```
+
 ## Using Fabric item APIs for Git integration
 
 Currently, Microsoft Fabric supports Git integration for Azure DevOps only. This article presents a way to use [Fabric REST APIs](https://learn.microsoft.com/rest/api/fabric/articles/using-fabric-apis) to integrate with other GIT source control mechanisms beyond Azure devOps. A brief summary of the steps involved are:
@@ -18,21 +74,14 @@ Currently, Microsoft Fabric supports Git integration for Azure DevOps only. This
 
 > Note: This sample follows a strategy where each feature branch is paired with a corresponding Fabric workspace, implementing a one-workspace-per-branch approach.
 
-The below picture illustrates these followed by a description of each of the numbered step:
 
-![Fabric CI/CD Architecture](../../images/Option2.png)
 
 This approach assumes that the developer will operate in the following way:
 
-### Pre-setup: Running the PowerShell Scripts
-
-| Script/File | Description |
-|--------|-------------|
-|[params.psd1](../../src/option_2/params.psd1)|Parameters file - used to set the input arguments to the scripts. Update the values as needed.|
-|[update_from_git_to_ws.ps1](../../src/option_2/update_from_git_to_ws.ps1)|Script to create Fabric workspace and sync assets from source control (local git branch) to the workspace.|
-|[update_from_ws_to_git.ps1](../../src/option_2/update_from_ws_to_git.ps1)|Script to update the local repository from item defintions in the Fabric workspace.|
-
 ### Recommended Workflow
+The below picture illustrates these followed by a description of each of the numbered step:
+
+![Fabric CI/CD Architecture](../../images/Option2.png)
 
 **Step 0. Prepare for local development**
 - Create new feature branch from `dev` (or any other development branch) and pull new feature branch locally.
@@ -41,7 +90,7 @@ This approach assumes that the developer will operate in the following way:
     git update-index --assume-unchanged $(git ls-files | grep "item-config.json" | tr '\n' ' ')
     ```
 
-**Step 1. Create/Update Fabric workspace and create Fabric items from local brach**
+**Step 1. Create/Update Fabric workspace and create Fabric items from local branch**
 
 - Update the `params.psd1` file as needed and load its values as follows:
     ```pwsh
@@ -89,40 +138,6 @@ This approach assumes that the developer will operate in the following way:
 
 - The release pipeline for STG and PRD can be identical or a variation to the release pipeline for DEV. For more information on usage of DevOps Pipelines in this sample, review the [DevOps Pipelines README](../../devops/option_2/README.md).
 
-
-## Fabric Items and Source Control
-
-This sample maintains a record of changes to Fabric items in source control to prevent the need for constant deletion and recreation of modified items. It does this by tracking the *Object Id*s (the GUIDs of the items in the Fabric workspace, as per the Fabric REST APIs) in an `item-config.json` configuration file. 
-
-All Fabric items come with a minimal definition (at the time of writing comprising of Name, Type and Description). Such minimal defintion is stored in the `item-metadata.json` file.
-
-Certain types of items in Fabric can have an [item definition](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/item-definition-overview). You can get this definition by using the [`getDefnition`](https://learn.microsoft.com/rest/api/fabric/core/items/get-item-definition) API. The result of this API call is saved in a file called `item-definition.json`.
-
-To make things easier for developers, the definition, which is encoded in base64 in the `item-definition.json` file, is also stored in the repository. For instance, if the item is a Notebook, a notebook in ipynb format is saved in the repository. This is done by decoding the base64 data that the `getDefnition` API returns. This allows the developer to edit the notebook using their favorite IDE. Any changes made are then saved back in Fabric when the corresponding Fabric item is updated using the [`updateDefnition`](https://learn.microsoft.com/rest/api/fabric/core/items/update-item-definition) API.
-
-All the files that compose a specific Fabric item are stored in a corresponding folder (`Item1Folder.ItemType` in the example below).
-
-All these individual item folders are then stored in one main folder, named `fabric` in this repository.
-
-folder structure:
-
-```
-/ (root of this project)
-│
-└───...
-│
-└───fabric
-│   └───Item1Folder.ItemType
-│   |   │   item-config.json
-│   |   │   item-definition.json (optional)
-│   |   │   item-metadata.json
-│   |   │   (other optional files that may vary by item type)
-│   |
-│   └───Item2Folder.ItemType
-│       │   ...
-│
-└───...
-```
 
 
 ## Common errors

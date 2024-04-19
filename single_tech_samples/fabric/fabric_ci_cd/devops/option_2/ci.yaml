@@ -3,11 +3,9 @@ trigger: none
 pr:
   branches:
     include:
-    - elena_dev
+    - dev_branch_name
 
 variables:
-  - name: pythonWorkingDir
-    value: 'src/common/ddo_transform'
   - group: var-group-option-2-common
 
 pool:
@@ -22,16 +20,3 @@ steps:
     if [ -z "${var}" ]; then exit 0; else exit 1; fi;
   displayName: 'Check if item-config.json files are modified'
   workingDirectory: $(System.DefaultWorkingDirectory)
-
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '3.8'
-    architecture: 'x64'
-
-- script: pip install -r requirements_dev.txt && pip install -r requirements.txt
-  workingDirectory: $(pythonWorkingDir)
-  displayName: 'Install requirements'
-
-- script: make lint && make test
-  workingDirectory: $(pythonWorkingDir)
-  displayName: 'Run lint tests'
