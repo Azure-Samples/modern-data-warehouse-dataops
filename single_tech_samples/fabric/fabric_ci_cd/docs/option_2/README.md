@@ -2,6 +2,11 @@
 
 This approach leverages REST API calls to make changes to Dev, Stg and Prod Fabric workspaces.
 
+## Requirements
+- Powershell version 7+
+- Local IDE with git command installed
+- A DevOps source control system, like GitLab.
+
 ## Using Fabric item APIs for Git integration
 
 Currently, Microsoft Fabric supports Git integration for Azure DevOps only. This article presents a way to use [Fabric REST APIs](https://learn.microsoft.com/rest/api/fabric/articles/using-fabric-apis) to integrate with other GIT source control mechanisms beyond Azure devOps. A brief summary of the steps involved are:
@@ -124,8 +129,12 @@ folder structure:
 
 - `Error reponse: Response status code does not indicate success: 401 (Unauthorized)`
     - Likely your user token has expired. Update it and source your params file and then try again.
-- `Error reponse: Response status code does not indicate success: 400 (Bad Request)`
+- `Error reponse: Response status code does not indicate success: 403 (Forbidden)`
     - Likely one of the Fabric items you are trying to update has a MIP label that prevents you from updating its definition.
+- `Error reponse: Response status code does not indicate success: 400 (Bad Request)`
+    - Likely one of the Fabric items you are trying to update has a defintion containing errors.
+- `Error reponse: A parameter cannot be found that matches parameter name 'ResponseHeadersVariable'`
+    - Likely you need to update your Powershell version to 7+.
 
 ## Known limitations
 
