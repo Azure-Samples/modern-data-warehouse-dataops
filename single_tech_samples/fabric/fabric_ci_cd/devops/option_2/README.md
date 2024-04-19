@@ -14,7 +14,7 @@ The pipelines in this sample depend on the following variable groups:
 - `var-group-option-2-dev`, `var-group-option-2-stg` and `var-group-option-2-prd` 
 used for variable that are specific to, respectively, `dev`,`stg` and `prd` environments.
 
-|<div style="width:200px">**Variable Group**</div>|**Variable Name**|**Description**|
+|<div style="width:400px">**Variable Group**</div>|**Variable Name**|**Description**|
 |:---|:---|:---|
 |`var-group-option-2-common`|`directoryName`| the value of the directory where Fabric item files (such as `item-config.json`, `item-definition.json`, `item-metadata.json`, and item specific definition files) will be stored|
 |`var-group-option-2-common`|`fabricRestApiEndpoint`| the value of the Fabric REST API endpoint, currently `https://api.fabric.microsoft.com/v1`|
@@ -25,7 +25,6 @@ used for variable that are specific to, respectively, `dev`,`stg` and `prd` envi
 ||||
 |`var-group-option-2-stg`|`workspaceName`| the name of the workspace that should be connected to the `stg` branch|
 |`var-group-option-2-stg`|`capacityId`| the Fabric Capacity Id that will be used to assign the workspace `workspaceName` in case of creation|
-Fabric APIs|
 ||||
 |`var-group-option-2-prd`|`workspaceName`| the name of the workspace that should be connected to the `prd` branch|
 |`var-group-option-2-prd`|`capacityId`| the Fabric Capacity Id that will be used to assign the workspace `workspaceName` in case of creation|
