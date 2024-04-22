@@ -18,7 +18,7 @@ used for variable that are specific to, respectively, `dev`,`stg` and `prd` envi
 |:---|:---|:---|
 |`var-group-option-2-common`|`directoryName`| the value of the directory where Fabric item files (such as `item-config.json`, `item-definition.json`, `item-metadata.json`, and item specific definition files) will be stored|
 |`var-group-option-2-common`|`fabricRestApiEndpoint`| the value of the Fabric REST API endpoint, currently `https://api.fabric.microsoft.com/v1`|
-|`var-group-option-2-common`|`token`| the user token used to authenticate against the Fabric API endpoint. This is needed until Service Principals will be supported by the Fabric APIs|
+|`var-group-option-2-common`|`token`| the user token used to authenticate against the Fabric API endpoint. This is needed until Service Principals will be supported by the Fabric APIs. <p> **IMPORTANT**: you should toggle the secret variable type for this variable. |
 ||||
 |`var-group-option-2-dev`|`workspaceName`| the name of the workspace that should be connected to the `dev` branch|
 |`var-group-option-2-dev`|`capacityId`| the Fabric Capacity Id that will be used to assign the workspace `workspaceName` in case of creation|
@@ -29,7 +29,7 @@ used for variable that are specific to, respectively, `dev`,`stg` and `prd` envi
 |`var-group-option-2-prd`|`workspaceName`| the name of the workspace that should be connected to the `prd` branch|
 |`var-group-option-2-prd`|`capacityId`| the Fabric Capacity Id that will be used to assign the workspace `workspaceName` in case of creation|
 
-> Note: If you are using a multi-tenant approach where `dev`, `stg` and `prd` environments are located in different Entra tenants, then the variable `token` needs to be deleted from the common group and replicated through `dev`, `stg` and `prd` variable groups as the tokens are going to be different. Furthermore, the respective devops pipeline yml files will need to point to the right token depending on the target environment (`stg` or `prod`).
+> Note: If you are using a multi-tenant approach where `dev`, `stg` and `prd` environments are located in different Entra tenants, then the variable `token` needs to be deleted from the common group and replicated through `dev`, `stg` and `prd` variable groups as the tokens are going to be different. Furthermore, the respective devops pipeline yml files will need to point to the right token depending on the target environment (`stg` or `prd`).
 
 ## Build Pipeline
 

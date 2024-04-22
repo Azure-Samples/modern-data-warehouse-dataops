@@ -146,7 +146,8 @@ The below picture illustrates these followed by a description of each of the num
 ## Common errors
 
 - `Error reponse: Response status code does not indicate success: 401 (Unauthorized)`
-    - Likely your user token has expired. Update it and source your params file and then try again.
+    - Likely your user token has expired. Update it and source your params file and then try again. 
+    - If using Azure DevOps: if you are getting this error when running devops pipelines after refreshing the token variable, make sure you have toggled the secret variable type.
 - `Error reponse: Response status code does not indicate success: 403 (Forbidden)`
     - Likely one of the Fabric items you are trying to update has a MIP label that prevents you from updating its definition.
 - `Error reponse: Response status code does not indicate success: 400 (Bad Request)`
