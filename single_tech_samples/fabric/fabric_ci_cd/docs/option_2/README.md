@@ -25,6 +25,8 @@ To use this sample it is advisable that you:
 |[update_from_git_to_ws.ps1](../../src/option_2/update_from_git_to_ws.ps1)|Script to create Fabric workspace and sync assets from source control (local git branch) to the workspace.|
 |[update_from_ws_to_git.ps1](../../src/option_2/update_from_ws_to_git.ps1)|Script to update the local repository from item defintions in the Fabric workspace.|
 
+> Note: to avoid committing secrets to your remote branch, make sure to ignore changes to the local version of your `params.psd1` file
+
 ### DevOps Pipelines
 
 Create Build (CI) and Release (CD) pipelines from the [yml definitions provided in this sample](../../devops/option_2/). To do so, refer to the information in the [DevOps pipeline readme](../../devops/option_2/README.md).
@@ -89,6 +91,7 @@ The below picture illustrates these followed by a description of each of the num
     ```sh
     git update-index --assume-unchanged $(git ls-files | grep "item-config.json" | tr '\n' ' ')
     ```
+> Note: this approach will also work if no Fabric assets are present on your branch, but you will still need a folder for storing Fabric items definitions later.
 
 **Step 1. Create/Update Fabric workspace and create Fabric items from local branch**
 
