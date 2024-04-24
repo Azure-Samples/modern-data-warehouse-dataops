@@ -259,10 +259,10 @@ try {
         Write-Host "Deleting folder $($repoItem.folder)"
         Remove-Item -Path $repoItem.folder -Recurse -Force
     }
-
+    Write-Host "Script execution completed successfully. Repository items have been updated from workspace $workspaceName." -ForegroundColor Green
 }
 catch {
     $errorResponse = GetErrorResponse($_)
-    Write-Host "Failed to run script to update workspace items for workspace $workspaceName. Error reponse: $errorResponse" -ForegroundColor Red
+    Write-Host "Failed to run script to update repository items for workspace $workspaceName. Error reponse: $errorResponse" -ForegroundColor Red
     exit 1
 }

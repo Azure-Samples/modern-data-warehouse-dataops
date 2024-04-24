@@ -336,6 +336,7 @@ try {
             Invoke-RestMethod @params
         }
     }
+    Write-Host "Script execution completed successfully. Workspace items have been updated for workspace $workspaceName." -ForegroundColor Green
 }
 catch {
     $errorResponse = GetErrorResponse($_)
