@@ -4,8 +4,10 @@ This approach leverages REST API calls to make changes to Dev, Stg and Prod Fabr
 
 ## Requirements
 - Powershell version 7+
-- Local IDE with git command installed
-- A DevOps source control system, like GitLab.
+- Local IDE with git command installed.
+- A DevOps source control system, like Azure DevOps or GitLab.
+- A Fabric tenant with at least one capacity running. 
+  - If you don't have a Fabric tenant you can create a [Fabric trial](https://learn.microsoft.com/fabric/get-started/fabric-trial) and use a trial capacity instead.
 
 ## Set-up Instructions
 
@@ -74,7 +76,9 @@ Currently, Microsoft Fabric supports Git integration for Azure DevOps only. This
 3. Working as needed in the Fabric workspace.
 4. Updating changes from workspace to reflect them back in source control.
 
-> Note: This sample follows a strategy where each feature branch is paired with a corresponding Fabric workspace, implementing a one-workspace-per-branch approach.
+> Note 1: This sample follows a strategy where each feature branch is paired with a corresponding Fabric workspace, implementing a one-workspace-per-branch approach.
+
+> Note 2: This example includes a set of Fabric items to demonstrate the functionality of the solution. You are welcome to substitute these with your own items. In doing so, we advise maintaining identifiers such as workspaceIds and LakehouseIds as parameters for Notebooks and Data Pipelines. Failure to do this may result in the script being unable to push your item definitions if they reference item ids that have been removed. 
 
 
 
@@ -145,13 +149,16 @@ The below picture illustrates these followed by a description of each of the num
 
 ## Common errors
 
+- `Error reponse: Response status code does not indicate success: 400 (Bad Request)`
+    - Likely one of the Fabric items you are trying to update has a defintion containing errors. We advise maintaining identifiers such as workspaceIds and LakehouseIds as **parameters** for Notebooks and Data Pipelines. Failure to do this may result in the script being unable to push your item definitions if they reference item ids that have been removed.
 - `Error reponse: Response status code does not indicate success: 401 (Unauthorized)`
     - Likely your user token has expired. Update it and source your params file and then try again. 
     - If using Azure DevOps: if you are getting this error when running devops pipelines after refreshing the token variable, make sure you have toggled the secret variable type.
 - `Error reponse: Response status code does not indicate success: 403 (Forbidden)`
     - Likely one of the Fabric items you are trying to update has a MIP label that prevents you from updating its definition.
-- `Error reponse: Response status code does not indicate success: 400 (Bad Request)`
-    - Likely one of the Fabric items you are trying to update has a defintion containing errors.
+
+- `Error reponse: Response status code does not indicate success: 404 (Not Found)`
+    - Likely the capacity you specified cannot be used. Make sure that your Fabric capacity is available and running, it might have been paused, in this case you can resume it and re-run the script.
 - `Error reponse: A parameter cannot be found that matches parameter name 'ResponseHeadersVariable'`
     - Likely you need to update your Powershell version to 7+.
 
