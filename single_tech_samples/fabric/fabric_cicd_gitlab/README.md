@@ -3,12 +3,14 @@
 This code sample serves as a starting point for implementing CI/CD processes when working with Microsoft Fabric. While it currently has some [limitations](#known-limitations), the goal is to iteratively enhance its capabilities in alignment with Fabric’s advancements.
 
 The sample is recommended for:
+
 - your organization adopts multi-tenancy in their CI/CD processes, such as the different environments (such as Development, Staging and Production) are on different Microsoft Entra IDs.
 - your organization's preferred git tool is today not yet supported by Fabric (i.e. such as GitLab, and Bitbucket).
 
 If none of the scenarios above match your current situation, consider using the [Fabric CI/CD sample for Azure DevOps](/single_tech_samples/fabric/fabric_ci_cd/README.md).
 
 ## Requirements
+
 - Powershell version 7+
 - Local IDE with git command installed.
 - A DevOps source control system, like Azure DevOps or GitLab.
@@ -20,6 +22,7 @@ If none of the scenarios above match your current situation, consider using the 
 ### Repository
 
 To use this sample it is advisable that you:
+
 1. Create a brand new repository with your source control tool of choice.
 2. Clone the entire repository locally to a directory of your choice.
 3. Copy everything that is under [this sample's folder](./) to the directory from step 2.
@@ -97,11 +100,13 @@ The below picture illustrates these followed by a description of each of the num
 ![Fabric CI/CD Architecture](./images/architecture_and_workflow.png)
 
 **Step 0. Prepare for local development**
+
 - Create new feature branch from `dev` (or any other development branch) and pull new feature branch locally.
 - In a *bash* session run the following command. This command instructs git to disregard local modifications to any `item-config.json` file. The purpose of this is to prevent the `objectId`s in the `dev` branch from being replaced by the `objectId`s from the developer workspace during a commit. For more information see the [Fabric Items and Source Control](#fabric-items-and-source-control) section.
     ```sh
     git update-index --assume-unchanged $(git ls-files | grep "item-config.json" | tr '\n' ' ')
     ```
+
 > Note: this approach will also work if no Fabric assets are present on your branch, but you will still need a folder for storing Fabric items definitions later.
 
 **Step 1. Create/Update Fabric workspace and create Fabric items from local branch**
@@ -121,6 +126,7 @@ The below picture illustrates these followed by a description of each of the num
         ```pwsh
         .\<local-file-path>\update_from_git_to_ws.ps1 -baseUrl $config.baseUrl -fabricToken $config.fabricToken -workspaceName $config.workspaceName -capacityId $config.capacityId -folder $config.folder
        ```
+
 **Step 2. Develop in the Fabric workspace**
 
 - Work as needed in your Fabric workspace (you can find it in Fabric looking for the Workspace `$config.workspaceName`).
@@ -140,11 +146,13 @@ The below picture illustrates these followed by a description of each of the num
 **Step 5. Push changes and create a PR**
 
 - When happy with the changes, create a PR to merge the changes.
+
    > **CAUTION**: Make sure that when creating the PR no `item-config.json` files are pushed to `dev`. These files are created in each of the workspace item folder as part of Step 3. This file contains the *logical ids and object ids* to identify each of the assets. However, these vary from workspace to another hence these should not be checked in.
   
 **Step 6. Follow PR approval process to DEV workspace**
 
 - When the PR is approved, devops Build and Release pipelines are triggered:
+
     1. the Build pipeline checks that no `item-config.json` files are being pushed to `dev`. For more information on usage of DevOps Pipelines in this sample, review the [DevOps Pipelines README](./devops/README.md).
     2. the release pipeline will mirror what is on `dev` to the development workspace by running `update_from_git_to_ws.ps1`.
    

@@ -9,8 +9,10 @@ straightforward.
 ### Variables
 
 The Azure DevOps pipelines in this sample depend on the following variable groups:
+
 - `var-group-option-2-common` used for variables that are common to all pipelines
 - `var-group-option-2-dev`, `var-group-option-2-stg` and `var-group-option-2-prd`
+
 used for variable that are specific to, respectively, `dev`,`stg` and `prd` environments.
 
 The below table contains a description of the variables that have to be defined in the respective variable groups.
