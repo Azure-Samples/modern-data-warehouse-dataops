@@ -156,24 +156,23 @@ The below picture illustrates these followed by a description of each of the num
     1. the Build pipeline checks that no `item-config.json` files are being pushed to `dev`. For more information on usage of DevOps Pipelines in this sample, review the [DevOps Pipelines README](./devops/README.md).
     2. the release pipeline will mirror what is on `dev` to the development workspace by running `update_from_git_to_ws.ps1`.
    
-**Step 7 and 8. Use Release pipeline to deploy to all environments/stages**
-
+**Step 7 and 8. Use Release pipeline to deploy to all environments/stages**:
 - The release pipeline for STG and PRD can be identical or a variation to the release pipeline for DEV. For more information on usage of DevOps Pipelines in this sample, review the [DevOps Pipelines README](./devops/README.md).
 
 ## Common errors
 
 - `Error reponse: Response status code does not indicate success: 400 (Bad Request)`
-    - Likely one of the Fabric items you are trying to update has a defintion containing errors. We advise maintaining identifiers such as workspaceIds and LakehouseIds as **parameters** for Notebooks and Data Pipelines. Failure to do this may result in the script being unable to push your item definitions if they reference item ids that have been removed.
+  - Likely one of the Fabric items you are trying to update has a defintion containing errors. We advise maintaining identifiers such as workspaceIds and LakehouseIds as **parameters** for Notebooks and Data Pipelines. Failure to do this may result in the script being unable to push your item definitions if they reference item ids that have been removed.
 - `Error reponse: Response status code does not indicate success: 401 (Unauthorized)`
-    - Likely your user token has expired. Update it and source your params file and then try again.
-    - If using Azure DevOps: if you are getting this error when running devops pipelines after refreshing the token variable, make sure you have toggled the secret variable type.
+  - Likely your user token has expired. Update it and source your params file and then try again.
+  - If using Azure DevOps: if you are getting this error when running devops pipelines after refreshing the token variable, make sure you have toggled the secret variable type.
 - `Error reponse: Response status code does not indicate success: 403 (Forbidden)`
-    - Likely one of the Fabric items you are trying to update has a MIP label that prevents you from updating its definition.
+  - Likely one of the Fabric items you are trying to update has a MIP label that prevents you from updating its definition.
 
 - `Error reponse: Response status code does not indicate success: 404 (Not Found)`
-    - Likely the capacity you specified cannot be used. Make sure that your Fabric capacity is available and running, it might have been paused, in this case you can resume it and re-run the script.
+  - Likely the capacity you specified cannot be used. Make sure that your Fabric capacity is available and running, it might have been paused, in this case you can resume it and re-run the script.
 - `Error reponse: A parameter cannot be found that matches parameter name 'ResponseHeadersVariable'`
-    - Likely you need to update your Powershell version to 7+.
+  - Likely you need to update your Powershell version to 7+.
 
 ## Known limitations
 
@@ -193,7 +192,7 @@ Until Service Principal Authentication will be supported by Fabric APIs, a user 
 
 - **Using Edge browser devtools (F12)**: If you are already logged into Fabric portal, you can invoke the following command from the Edge Browser DevTools (F12) console:
 
-    ```
+    ```sh
     > copy(PowerBIAccessToken)
     ```
 
