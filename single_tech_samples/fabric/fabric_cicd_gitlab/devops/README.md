@@ -17,11 +17,11 @@ used for variable that are specific to, respectively, `dev`,`stg` and `prd` envi
 
 The below table contains a description of the variables that have to be defined in the respective variable groups.
 
-|<div style="width:400px">**Variable Group**</div>|**Variable Name**|**Description**|
+|**Variable Group**|**Variable Name**|**Description**|
 |:---|:---|:---|
 |`var-group-option-2-common`|`directoryName`| the value of the directory where Fabric item files (such as `item-config.json`, `item-definition.json`, `item-metadata.json`, and item specific definition files) will be stored|
 |`var-group-option-2-common`|`fabricRestApiEndpoint`| the value of the Fabric REST API endpoint, currently `https://api.fabric.microsoft.com/v1`|
-|`var-group-option-2-common`|`token`| the user token used to authenticate against the Fabric API endpoint. This is needed until Service Principals will be supported by the Fabric APIs. <p> **IMPORTANT**: you should toggle the secret variable type for this variable. |
+|`var-group-option-2-common`|`token`| the user token used to authenticate against the Fabric API endpoint. This is needed until Service Principals will be supported by the Fabric APIs. \\\n **IMPORTANT**: you should toggle the secret variable type for this variable. |
 ||||
 |`var-group-option-2-dev`|`workspaceName`| the name of the workspace that should be connected to the `dev` branch|
 |`var-group-option-2-dev`|`capacityId`| the Fabric Capacity Id that will be used to assign the workspace `workspaceName` in case of creation|
@@ -122,7 +122,7 @@ image as its runner environment.
    to the project. The `GIT_SSH_PRIV_KEY` project variable will contain the ssh private
    key of the key-pair you will need to generate. For a detailed example you can refer
    to this GitLab blog post: [GitBot – automating boring Git operations with CI](https://about.gitlab.com/blog/2017/11/02/automating-boring-git-operations-gitlab-ci/).
-   
+
    > **Note 2**: the last step of the before script is prone to Man-In-The-Middle (MITM)
    attacks as it gets the known hosts by asking directly to gitlab.com. With a MITM you
    might receive a fingerprint of a malicious server. To avoid this, you should manually
