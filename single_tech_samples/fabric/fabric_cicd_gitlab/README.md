@@ -143,20 +143,21 @@ The below picture illustrates these followed by a description of each of the num
 
 - Iterate between step 1 to step 3 as needed.
 
-**Step 5. Push changes and create a PR**
+**Step 5. Push changes and create a PR**:
 
 - When happy with the changes, create a PR to merge the changes.
 
    > **CAUTION**: Make sure that when creating the PR no `item-config.json` files are pushed to `dev`. These files are created in each of the workspace item folder as part of Step 3. This file contains the *logical ids and object ids* to identify each of the assets. However, these vary from workspace to another hence these should not be checked in.
-  
-**Step 6. Follow PR approval process to DEV workspace**
+
+**Step 6. Follow PR approval process to DEV workspace**:
 
 - When the PR is approved, devops Build and Release pipelines are triggered:
 
     1. the Build pipeline checks that no `item-config.json` files are being pushed to `dev`. For more information on usage of DevOps Pipelines in this sample, review the [DevOps Pipelines README](./devops/README.md).
     2. the release pipeline will mirror what is on `dev` to the development workspace by running `update_from_git_to_ws.ps1`.
-   
+
 **Step 7 and 8. Use Release pipeline to deploy to all environments/stages**:
+
 - The release pipeline for STG and PRD can be identical or a variation to the release pipeline for DEV. For more information on usage of DevOps Pipelines in this sample, review the [DevOps Pipelines README](./devops/README.md).
 
 ## Common errors
