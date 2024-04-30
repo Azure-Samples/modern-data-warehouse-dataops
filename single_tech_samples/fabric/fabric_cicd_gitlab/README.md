@@ -3,7 +3,7 @@
 This code sample serves as a starting point for implementing CI/CD processes when working with Microsoft Fabric. While it currently has some [limitations](#known-limitations), the goal is to iteratively enhance its capabilities in alignment with Fabric’s advancements.
 
 The sample is recommended for:
-- your organization adopts multi-tenancy in their CI/CD processes, such as the different environments (such as Development, Staging and Production) are on different Microsoft Entra IDs. 
+- your organization adopts multi-tenancy in their CI/CD processes, such as the different environments (such as Development, Staging and Production) are on different Microsoft Entra IDs.
 - your organization's preferred git tool is today not yet supported by Fabric (i.e. such as GitLab, and Bitbucket).
 
 If none of the scenarios above match your current situation, consider using the [Fabric CI/CD sample for Azure DevOps](/single_tech_samples/fabric/fabric_ci_cd/README.md).
@@ -12,16 +12,16 @@ If none of the scenarios above match your current situation, consider using the 
 - Powershell version 7+
 - Local IDE with git command installed.
 - A DevOps source control system, like Azure DevOps or GitLab.
-- A Fabric tenant with at least one capacity running. 
+- A Fabric tenant with at least one capacity running.
   - If you don't have a Fabric tenant you can create a [Fabric trial](https://learn.microsoft.com/fabric/get-started/fabric-trial) and use a trial capacity instead.
 
 ## Set-up Instructions
 
 ### Repository
 
-To use this sample it is advisable that you: 
+To use this sample it is advisable that you:
 1. Create a brand new repository with your source control tool of choice.
-2. Clone the entire repository locally to a directory of your choice. 
+2. Clone the entire repository locally to a directory of your choice.
 3. Copy everything that is under [this sample's folder](./) to the directory from step 2.
 4. Read remaining instructions.
 
@@ -43,7 +43,7 @@ Create Build (CI) and Release (CD) pipelines from the YML definitions provided i
 
 ## Fabric Items and Source Control
 
-This sample maintains a record of changes to Fabric items in source control to prevent the need for constant deletion and recreation of modified items. It does this by tracking the *Object Id*s (the GUIDs of the items in the Fabric workspace, as per the Fabric REST APIs) in an `item-config.json` configuration file. 
+This sample maintains a record of changes to Fabric items in source control to prevent the need for constant deletion and recreation of modified items. It does this by tracking the *Object Id*s (the GUIDs of the items in the Fabric workspace, as per the Fabric REST APIs) in an `item-config.json` configuration file.
 
 All Fabric items come with a minimal definition (at the time of writing comprising of Name, Type and Description). Such minimal defintion is stored in the `item-metadata.json` file.
 
@@ -86,12 +86,12 @@ Currently, Microsoft Fabric supports Git integration for Azure DevOps only. This
 
 > Note 1: This sample follows a strategy where each feature branch is paired with a corresponding Fabric workspace, implementing a one-workspace-per-branch approach.
 
-> Note 2: This example includes a set of Fabric items to demonstrate the functionality of the solution. You are welcome to substitute these with your own items. In doing so, we advise maintaining identifiers such as workspaceIds and LakehouseIds as parameters for Notebooks and Data Pipelines. Failure to do this may result in the script being unable to push your item definitions if they reference item ids that have been removed. 
-
+> Note 2: This example includes a set of Fabric items to demonstrate the functionality of the solution. You are welcome to substitute these with your own items. In doing so, we advise maintaining identifiers such as workspaceIds and LakehouseIds as parameters for Notebooks and Data Pipelines. Failure to do this may result in the script being unable to push your item definitions if they reference item ids that have been removed.
 
 This approach assumes that the developer will operate in the following way:
 
 ### Recommended Workflow
+
 The below picture illustrates these followed by a description of each of the numbered step:
 
 ![Fabric CI/CD Architecture](./images/architecture_and_workflow.png)
@@ -139,7 +139,7 @@ The below picture illustrates these followed by a description of each of the num
 
 **Step 5. Push changes and create a PR**
 
-- When happy with the changes, create a PR to merge the changes. 
+- When happy with the changes, create a PR to merge the changes.
    > **CAUTION**: Make sure that when creating the PR no `item-config.json` files are pushed to `dev`. These files are created in each of the workspace item folder as part of Step 3. This file contains the *logical ids and object ids* to identify each of the assets. However, these vary from workspace to another hence these should not be checked in.
   
 **Step 6. Follow PR approval process to DEV workspace**
@@ -152,14 +152,12 @@ The below picture illustrates these followed by a description of each of the num
 
 - The release pipeline for STG and PRD can be identical or a variation to the release pipeline for DEV. For more information on usage of DevOps Pipelines in this sample, review the [DevOps Pipelines README](./devops/README.md).
 
-
-
 ## Common errors
 
 - `Error reponse: Response status code does not indicate success: 400 (Bad Request)`
     - Likely one of the Fabric items you are trying to update has a defintion containing errors. We advise maintaining identifiers such as workspaceIds and LakehouseIds as **parameters** for Notebooks and Data Pipelines. Failure to do this may result in the script being unable to push your item definitions if they reference item ids that have been removed.
 - `Error reponse: Response status code does not indicate success: 401 (Unauthorized)`
-    - Likely your user token has expired. Update it and source your params file and then try again. 
+    - Likely your user token has expired. Update it and source your params file and then try again.
     - If using Azure DevOps: if you are getting this error when running devops pipelines after refreshing the token variable, make sure you have toggled the secret variable type.
 - `Error reponse: Response status code does not indicate success: 403 (Forbidden)`
     - Likely one of the Fabric items you are trying to update has a MIP label that prevents you from updating its definition.
