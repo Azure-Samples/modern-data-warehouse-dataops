@@ -137,4 +137,3 @@ image as its runner environment.
    If there are no changes, it exits the job.
    - If there are changes, it commits them with a specific message (skipping the build
    validation job), and pushes them to the origin.
-   
