@@ -60,7 +60,7 @@ All these individual item folders are then stored in one main folder, named `fab
 
 folder structure:
 
-```
+```fsys
 / (root of this project)
 │
 └───...
@@ -87,9 +87,9 @@ Currently, Microsoft Fabric supports Git integration for Azure DevOps only. This
 3. Working as needed in the Fabric workspace.
 4. Updating changes from workspace to reflect them back in source control.
 
-> Note 1: This sample follows a strategy where each feature branch is paired with a corresponding Fabric workspace, implementing a one-workspace-per-branch approach.
-
-> Note 2: This example includes a set of Fabric items to demonstrate the functionality of the solution. You are welcome to substitute these with your own items. In doing so, we advise maintaining identifiers such as workspaceIds and LakehouseIds as parameters for Notebooks and Data Pipelines. Failure to do this may result in the script being unable to push your item definitions if they reference item ids that have been removed.
+> **Note 1**: This sample follows a strategy where each feature branch is paired with a corresponding Fabric workspace, implementing a one-workspace-per-branch approach.
+>
+> **Note 2**: This example includes a set of Fabric items to demonstrate the functionality of the solution. You are welcome to substitute these with your own items. In doing so, we advise maintaining identifiers such as workspaceIds and LakehouseIds as parameters for Notebooks and Data Pipelines. Failure to do this may result in the script being unable to push your item definitions if they reference item ids that have been removed.
 
 This approach assumes that the developer will operate in the following way:
 
@@ -99,7 +99,7 @@ The below picture illustrates these followed by a description of each of the num
 
 ![Fabric CI/CD Architecture](./images/architecture_and_workflow.png)
 
-**Step 0. Prepare for local development**
+**Step 0. Prepare for local development**:
 
 - Create new feature branch from `dev` (or any other development branch) and pull new feature branch locally.
 - In a *bash* session run the following command. This command instructs git to disregard local modifications to any `item-config.json` file. The purpose of this is to prevent the `objectId`s in the `dev` branch from being replaced by the `objectId`s from the developer workspace during a commit. For more information see the [Fabric Items and Source Control](#fabric-items-and-source-control) section.
@@ -110,7 +110,7 @@ The below picture illustrates these followed by a description of each of the num
 
 > Note: this approach will also work if no Fabric assets are present on your branch, but you will still need a folder for storing Fabric items definitions later.
 
-**Step 1. Create/Update Fabric workspace and create Fabric items from local branch**
+**Step 1. Create/Update Fabric workspace and create Fabric items from local branch**:
 
 - Update the `params.psd1` file as needed. If you need to generate a new token refer to the [Generating a Fabric Bearer Token](#generating-a-fabric-bearer-token) section. Load the values of the parameters file as follows:
 

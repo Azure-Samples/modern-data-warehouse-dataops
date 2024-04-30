@@ -116,13 +116,13 @@ image as its runner environment.
    - It creates a `.ssh` directory, sets the appropriate permissions, and adds
    `gitlab.com` to the `known_hosts` file to allow SSH connections.
 
-   > **Note**: in order to allow our GitLab runner to commit back to your repository,
+   > **Note 1**: in order to allow our GitLab runner to commit back to your repository,
    you will need to configure [Deploy Keys](https://docs.gitlab.com/ee/user/project/deploy_keys/)
    for your GitLab project, adding a Project Deploy Key with **read-write** permissions
    to the project. The `GIT_SSH_PRIV_KEY` project variable will contain the ssh private
    key of the key-pair you will need to generate. For a detailed example you can refer
    to this GitLab blog post: [GitBot – automating boring Git operations with CI](https://about.gitlab.com/blog/2017/11/02/automating-boring-git-operations-gitlab-ci/).
-
+   >
    > **Note 2**: the last step of the before script is prone to Man-In-The-Middle (MITM)
    attacks as it gets the known hosts by asking directly to gitlab.com. With a MITM you
    might receive a fingerprint of a malicious server. To avoid this, you should manually
@@ -137,3 +137,4 @@ image as its runner environment.
    If there are no changes, it exits the job.
    - If there are changes, it commits them with a specific message (skipping the build
    validation job), and pushes them to the origin.
+   
