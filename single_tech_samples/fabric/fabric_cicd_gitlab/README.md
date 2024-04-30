@@ -103,6 +103,7 @@ The below picture illustrates these followed by a description of each of the num
 
 - Create new feature branch from `dev` (or any other development branch) and pull new feature branch locally.
 - In a *bash* session run the following command. This command instructs git to disregard local modifications to any `item-config.json` file. The purpose of this is to prevent the `objectId`s in the `dev` branch from being replaced by the `objectId`s from the developer workspace during a commit. For more information see the [Fabric Items and Source Control](#fabric-items-and-source-control) section.
+
     ```sh
     git update-index --assume-unchanged $(git ls-files | grep "item-config.json" | tr '\n' ' ')
     ```
@@ -112,34 +113,40 @@ The below picture illustrates these followed by a description of each of the num
 **Step 1. Create/Update Fabric workspace and create Fabric items from local branch**
 
 - Update the `params.psd1` file as needed. If you need to generate a new token refer to the [Generating a Fabric Bearer Token](#generating-a-fabric-bearer-token) section. Load the values of the parameters file as follows:
+
     ```pwsh
     $config = Import-PowerShellDataFile .\<local-file-path>\params.psd1
     ```
+
 - Run the [`update_from_git_to_ws.ps1`](./src/update_from_git_to_ws.ps1) script from the local repository folder. This step will create a new workspace and mirror what is on the repo to the workspace.
     > **CAUTION: Workspace items that are not in the local branch will be deleted from Fabric workspace.**
 
-    -  When running this for the first time on a new branch, utilize the `-resetConfig` setting it to `$true`. This ignores any existing `item-config.json` files and creates corresponding new objects in the workspace. This step is crucial as it prevents the script from failing due to a search for `objectId`s that are coming from the `dev` branch/workspace, which would not exist in the new Fabric workspace.
-         ```pwsh
-        .\<local-file-path>\update_from_git_to_ws.ps1 -baseUrl $config.baseUrl -fabricToken $config.fabricToken -workspaceName $config.workspaceName -capacityId $config.capacityId -folder $config.folder -resetConfig $true
-        ```
-    -  All other times you can omit the flag `-resetConfig` (it will default to `$false`).
-        ```pwsh
-        .\<local-file-path>\update_from_git_to_ws.ps1 -baseUrl $config.baseUrl -fabricToken $config.fabricToken -workspaceName $config.workspaceName -capacityId $config.capacityId -folder $config.folder
-       ```
+  - When running this for the first time on a new branch, utilize the `-resetConfig` setting it to `$true`. This ignores any existing `item-config.json` files and creates corresponding new objects in the workspace. This step is crucial as it prevents the script from failing due to a search for `objectId`s that are coming from the `dev` branch/workspace, which would not exist in the new Fabric workspace.
 
-**Step 2. Develop in the Fabric workspace**
+    ```pwsh
+    .\<local-file-path>\update_from_git_to_ws.ps1 -baseUrl $config.baseUrl -fabricToken $config.fabricToken -workspaceName $config.workspaceName -capacityId $config.capacityId -folder $config.folder -resetConfig $true
+    ```
+
+  - All other times you can omit the flag `-resetConfig` (it will default to `$false`).
+
+    ```pwsh
+    .\<local-file-path>\update_from_git_to_ws.ps1 -baseUrl $config.baseUrl -fabricToken $config.fabricToken -workspaceName $config.workspaceName -capacityId $config.capacityId -folder $config.folder
+    ```
+
+**Step 2. Develop in the Fabric workspace**:
 
 - Work as needed in your Fabric workspace (you can find it in Fabric looking for the Workspace `$config.workspaceName`).
 
-**Step 3. Sync the local branch with Fabric workspace**
+**Step 3. Sync the local branch with Fabric workspace**:
 
 - Once you are ready to commit your changes to your branch, run the [`update_from_ws_to_git.ps1`](./src/update_from_ws_to_git.ps1). The script will update your local branch mirroring what is in your Fabric workspace. This creates/updates folders in the `$config.folder` on your local branch. For more information on folder structure see the [Fabric Items and Source Control](#fabric-items-and-source-control) section.
     > **CAUTION: local branch items that are not in the workspace will be deleted from local branch.**
+
     ```pwsh
     .\<local-file-path>\update_from_ws_to_git.ps1 -baseUrl $config.baseUrl -fabricToken $config.fabricToken -workspaceName $config.workspaceName -capacityId $config.capacityId -folder $config.folder
     ```
 
-**Step 4. Repeat until done**
+**Step 4. Repeat until done**:
 
 - Iterate between step 1 to step 3 as needed.
 
