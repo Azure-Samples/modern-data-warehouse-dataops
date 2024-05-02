@@ -2,7 +2,7 @@
 
 This code sample serves as a starting point for implementing CI/CD processes when working with Microsoft Fabric. While it currently has some [limitations](#known-limitations), the goal is to iteratively enhance its capabilities in alignment with Fabric’s advancements.
 
-The sample is recommended for:
+The sample is recommended if:
 
 - your organization adopts multi-tenancy in their CI/CD processes, such as the different environments (such as Development, Staging and Production) are on different Microsoft Entra IDs.
 - your organization's preferred git tool is today not yet supported by Fabric (i.e. such as GitLab, and Bitbucket).
@@ -91,7 +91,7 @@ Currently, Microsoft Fabric supports Git integration for Azure DevOps only. This
 >
 > **Note 2**: This example includes a set of Fabric items to demonstrate the functionality of the solution. You are welcome to substitute these with your own items. In doing so, we advise maintaining identifiers such as workspaceIds and LakehouseIds as parameters for Notebooks and Data Pipelines. Failure to do this may result in the script being unable to push your item definitions if they reference item ids that have been removed.
 
-This approach assumes that the developer will operate in the following way:
+This approach assumes that the developer will operate by following the recommended workflow, as described below.
 
 ### Recommended Workflow
 

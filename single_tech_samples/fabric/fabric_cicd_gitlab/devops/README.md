@@ -104,7 +104,7 @@ can be identical or variations depending on your CI/CD strategy.
 
 Here's a breakdown of what `deploy-to-dev` does:
 
-1. **Image**: The pipeline uses the `mcr.microsoft.com/powershell:alpine-3.17` Docker
+1. **Runner Image**: The pipeline uses the `mcr.microsoft.com/powershell:alpine-3.17` Docker
 image as its runner environment.
 
 2. **Before Script**: This section prepares the environment for the pipeline:
