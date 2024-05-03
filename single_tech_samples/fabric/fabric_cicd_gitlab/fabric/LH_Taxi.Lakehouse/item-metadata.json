@@ -1,0 +1,5 @@
+{
+  "displayName": "LH_Taxi",
+  "type": "Lakehouse",
+  "description": "Lakehouse with Taxi and Covid data"
+}
