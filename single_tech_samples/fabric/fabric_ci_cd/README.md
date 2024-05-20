@@ -10,8 +10,7 @@ This repo contains a code sample for establishing a CI/CD process for Microsoft 
   - [Execute bootstrap script](#execute-bootstrap-script)
   - [Fabric CI/CD pipelines](#fabric-cicd-pipelines)
     - [CI process](#ci-process)
-    - [CD process - Option 1: Using Fabric Deployment Pipelines API](#cd-process---option-1-using-fabric-deployment-pipelines-api)
-    - [CD process - Option 2: Using Fabric REST APIs](#cd-process---option-2-using-fabric-rest-apis)
+    - [CD process - Using Fabric deployment pipeline APIs](#cd-process---using-fabric-deployment-pipeline-apis)
 - [Understanding bootstrap script](#understanding-bootstrap-script)
   - [List of created resources](#list-of-created-resources)
   - [Hydrating Fabric lakehouse](#hydrating-fabric-lakehouse)
@@ -27,6 +26,16 @@ This repo contains a code sample for establishing a CI/CD process for Microsoft 
 ## Architecture
 
 ![Fabric CI/CD Architecture](./images/fabric-cicd.drawio.svg)
+
+The architecture diagram above showcases a sample CI/CD process for Microsoft Fabric. The process starts with the bootstrap script that automates the creation of initial Fabric workspaces (Dev, Test, and Prod) for a project. The script creates Azure resources (Fabric capacity), Fabric workspaces, deployment pipelines, Lakehouse, notebooks, data pipelines, and connects the workspaces to the GIT repository. The script also hydrates the Fabric Lakehouse by triggering the execution of the Fabric notebooks and data pipelines. For detailed information about the bootstrap script, see the [Understanding bootstrap script](#understanding-bootstrap-script) section.
+
+As part of the development lifecycle, the developer would create a new "feature" branch out of the "main" branch (the one which is linked to the dev workspace). The developer would also create a private workspace^ and link it to the "feature" branch. This syncs workspace with the latest code in the "feature" branch. The developer can now make the required changes in this isolated environment. For more details, see the [Develop using another workspace](https://learn.microsoft.com/en-us/fabric/cicd/git-integration/manage-branches#develop-using-another-workspace) documentation.
+
+One the changes are made, the developer would commit the changes to the "feature" branch. When the changes are ready to be promoted, the developer would create a pull request to merge the "feature" branch into the "main" branch. The pull request would trigger the Continuous Integration (CI) process that would build, test, and validate the changes. The CI process is not showcased in this repository at present and will be added moving forward.
+
+The Continuous Deployment (CD) process is demonstrated using Azure DevOps pipelines. Due to the lack of service principal (SP) support, the Azure DevOps pipelines are required to be triggered manually for now. The CD process is implemented using Fabric deployment pipelines APIs. One of the variant of CD pipelines has the option of approval gates before allowing the deployment to Test and to Production.The CD process includes the creation of variable groups in Azure DevOps and running the release pipeline in Azure DevOps. For more details, see the [Fabric CI/CD pipelines](#fabric-cicd-pipelines) section.
+
+_^Note that the private workspace needs to be created manually by the developer for now. There is an upcoming feature in Fabric to automate the creation of private workspaces when a new branch is created. The sample will be updated to include this feature once it is available._
 
 ## How to use the sample
 
@@ -119,7 +128,7 @@ The CI process is not showcased in this repository at present and will be added 
 
 There are some gaps to achieve the full automation at the moment, namely the lack of support for SPs.
 
-#### CD process - Option 1: Using Fabric Deployment Pipelines API
+#### CD process - Using Fabric deployment pipeline APIs
 
 For the CD process, the Azure DevOps pipelines provided in the sample are meant to be triggered manually, and the trigger can be easily implemented by changing the "trigger:" property in the yml file.
 
@@ -173,15 +182,6 @@ The version with approvals, need manual intervention during the run. You will ne
 ![AzDo CD Release pipeline run](./images/azdo_pipeline_execution.png)
 
 Upon completion  both deployment stages: "Deploy to Test" and "Deploy to Production"  in the Azure DevOps pipeline should be successfully completed. To verify if the deployment was successful, navigate to Fabric->Deployment pipelines to verify that all the Fabric artifacts were promoted to Test and to Production.
-
-#### CD process - Option 2: Using Fabric REST APIs
-
-There is a second option to implement the CD release process. This scenario, might be applied in cases when:
-
-- Development, Staging and Production environments are not located in the same tenant.
-- Organizations are not using Azure DevOps as a Git tool.
-
-There are some caveats to this approach. The code and more information on this Option, will be available soon.
 
 ## Understanding bootstrap script
 
