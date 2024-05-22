@@ -2,6 +2,7 @@
 source .env
 
 az account set --subscription "$AZURE_SUBSCRIPTION_ID"
+az devops configure --defaults organization="https://dev.azure.com/$ORGANIZATION_NAME" project="$PROJECT_NAME"
 
 # Domain Variables
 fabric_domain_name="$FABRIC_DOMAIN_NAME"
@@ -42,10 +43,15 @@ connect_to_git="true"
 create_domain_and_attach_workspaces="true"
 add_workspace_admins="true"
 add_pipeline_admins="true"
+create_azdo_variable_groups="true"
 
 # Derived variables (change as per the project requirements)
 onelake_name="onelake"
-workspace_names=("ws-$fabric_project_name-dev" "ws-$fabric_project_name-uat" "ws-$fabric_project_name-prd")
+environment_names=("dev" "uat" "prd")
+# Workspace names
+for env in "${environment_names[@]}"; do
+    workspace_names+=("ws-$fabric_project_name-$env")
+done
 # Capacity resource details
 resource_group_name="rg-$fabric_project_name"
 capacity_name_suffix=$(echo "$fabric_project_name" | sed "s/'//g" | sed "s/-//g" | tr '[:upper:]' '[:lower:]')
@@ -55,6 +61,7 @@ deployment_pipeline_name="dp-$fabric_project_name"
 deployment_pipeline_desc="Deployment pipeline for $fabric_project_name"
 # Workspace and item details
 workspace_ids=()
+pipeline_stage_display_names=()
 lakehouse_name="lh_main"
 lakehouse_desc="Lakehouse for $fabric_project_name"
 notebook_names=("nb-city-safety" "nb-covid-data")
@@ -144,7 +151,7 @@ EOF
 
 function get_deployment_pipeline_id() {
     deployment_pipeline_name=$1
-    get_pipelines_url="$deployment_api_endpoint"
+    get_pipelines_url="$fabric_api_endpoint/deploymentPipelines"
     pipelines=$(curl -s -H "Authorization: Bearer $fabric_bearer_token" "$get_pipelines_url" | jq -r '.value')
     pipeline=$(echo "$pipelines" | jq -r --arg name "$deployment_pipeline_name" '.[] | select(.displayName == $name)')
     pipeline_id=$(echo "$pipeline" | jq -r '.id')
@@ -153,7 +160,7 @@ function get_deployment_pipeline_id() {
 
 function get_deployment_pipeline_stages() {
     pipeline_id=$1
-    get_pipeline_stages_url="$deployment_api_endpoint/$pipeline_id/stages"
+    get_pipeline_stages_url="$fabric_api_endpoint/deploymentPipelines/$pipeline_id/stages"
     stages=$(curl -s -H "Authorization: Bearer $fabric_bearer_token" "$get_pipeline_stages_url" | jq -r '.value')
     echo "$stages"
 }
@@ -569,6 +576,61 @@ EOF
     done
 }
 
+function create_variable_group() {
+    variable_group_name=$1
+    variable_group_id=$(az pipelines variable-group list --query "[?name=='${variable_group_name}'].id" -o tsv)
+
+    if [[ -n "$variable_group_id" ]]; then
+        echo "[I] Variable group '$variable_group_name' already exists. Deleting it."
+        az pipelines variable-group delete \
+            --id "$variable_group_id" \
+            --yes > /dev/null
+    fi
+
+    echo "[I] Creating variable group: ${variable_group_name}"
+    variable_group_id=$(az pipelines variable-group create \
+        --name "${variable_group_name}" \
+        --authorize "true" \
+        --output json \
+        --variables foo="bar" | jq -r .id) # Needs at least one secret variable to create the variable group
+}
+
+function get_variable_group_id() {
+    variable_group_name=$1
+    variable_group_id=$(az pipelines variable-group list --query "[?name=='${variable_group_name}'].id" -o tsv)
+    echo "${variable_group_id}"
+}
+
+function add_variable() {
+    variable_group_id=$1
+    variable_name=$2
+    variable_value=$3
+    is_secret="${4:-false}"
+
+    if [[ -z "$variable_value" ]]; then
+        echo "[W] The value passed for variable '$variable_name' is empty. Skipping variable creation."
+        return
+    fi
+
+    echo "[I] Adding variable '${variable_name}'"
+    az pipelines variable-group variable create \
+        --group-id "${variable_group_id}" \
+        --secret "${is_secret}" \
+        --name "${variable_name}" \
+        --value "${variable_value}" \
+        --output none
+}
+
+function delete_variable() {
+    variable_group_id=$1
+    variable_group_name=$2
+
+    az pipelines variable-group variable delete \
+        --group-id "${variable_group_id}" \
+        --name "${variable_group_name}" \
+        --yes > /dev/null
+}
+
 echo "[I] ############ START ############"
 
 echo "[I] ############ Fabric Token Validation ############"
@@ -607,7 +669,7 @@ if [[ "$create_workspaces" = "true" ]]; then
     fi
     echo "[I] Fabric capacity is '$fabric_capacity_name' ($capacity_id)"
 
-    for ((i=0; i<${#workspace_names[@]}; i++)); do
+    for ((i=0; i<${#environment_names[@]}; i++)); do
         workspace_ids[i]=$(get_workspace_id "${workspace_names[$i]}")
         if [[ -n "${workspace_ids[i]}" ]]; then
             echo "[W] Workspace '${workspace_names[$i]}' (${workspace_ids[i]}) already exists. Please verify the attached capacity manually."
@@ -636,8 +698,9 @@ if [[ "$setup_deployment_pipeline" = "true" ]]; then
     fi
 
     pipeline_stages=$(get_deployment_pipeline_stages "$pipeline_id")
+    pipeline_stage_display_names=($(echo "$pipeline_stages" | jq -r 'sort_by(.order)[] | .displayName'))
 
-    for ((i=0; i<${#workspace_names[@]}; i++)); do
+    for ((i=0; i<${#environment_names[@]}; i++)); do
         workspace_name="${workspace_names[i]}"
         workspace_id="${workspace_ids[i]}"
         echo "[I] Workspace $workspace_name ($workspace_id)"
@@ -776,7 +839,7 @@ fi
 
 echo "[I] ############ Adding Workspace Admins ############"
 if [[ "$add_workspace_admins" = "true" ]]; then
-    for ((i=0; i<${#workspace_names[@]}; i++)); do
+    for ((i=0; i<${#environment_names[@]}; i++)); do
         echo "[I] Workspace '${workspace_names[i]}' (${workspace_ids[i]})"
         add_workspace_admins "${workspace_ids[i]}" "${workspace_admin_upns[@]}"
     done
@@ -791,6 +854,35 @@ if [[ "$add_pipeline_admins" = "true" ]]; then
     add_pipeline_admins "$pipeline_id" "${pipeline_admin_upns[@]}"
 else
     echo "[I] Variable 'add_pipeline_admins' set to $add_pipeline_admins, skipping adding deployment pipeline admins."
+fi
+
+echo "[I] ############ Creating Azure DevOps Variable Groups ############"
+if [[ "$create_azdo_variable_groups" = "true" ]]; then
+    for ((i=0; i<${#environment_names[@]}; i++)); do
+        variable_group_name="vg-${fabric_project_name}-${environment_names[i]}"
+        # Creating variable group (delete if already exists and create new one)
+        create_variable_group "$variable_group_name"
+        variable_group_id=$(get_variable_group_id "$variable_group_name")
+        # Adding variables to the variable group
+        add_variable "$variable_group_id" "fabricRestApiEndpoint" "$fabric_api_endpoint"
+        add_variable "$variable_group_id" "token" "$fabric_bearer_token" "true"
+        add_variable "$variable_group_id" "pipelineName" "$deployment_pipeline_name"
+        add_variable "$variable_group_id" "workspaceName" "${workspace_ids[i]}"
+        add_variable "$variable_group_id" "mainLakehouseName" "${lakehouse_name}"
+        # Adding variables based on the environment:
+        # - Adding lakehouse id for dev environment as it is created as part of this deployment.
+        # - Adding deployment pipelines source and target stages for test and prod environments.
+        if [[ ${environment_names[i]} = "dev" ]]; then
+            lakehouse_id=$(get_item_by_name_type "$dev_workspace_id" "Lakehouse" "$lakehouse_name")
+            add_variable "$variable_group_id" "mainLakehouseId" "$lakehouse_id"
+        else
+            add_variable "$variable_group_id" "sourceStageName" "${pipeline_stage_display_names[i-1]}"
+            add_variable "$variable_group_id" "targetStageName" "${pipeline_stage_display_names[i]}"
+        fi
+        delete_variable "$variable_group_id" "foo"
+    done
+else
+    echo "[I] Variable 'create_azdo_variable_groups' set to $create_azdo_variable_groups, skipping creating Azure DevOps variable groups."
 fi
 
 echo "[I] ############ END ############"
