@@ -1,0 +1,30 @@
+# The Azure subscription Id.
+AZURE_SUBSCRIPTION_ID=""
+# The location where the Azure resources will be created.
+AZURE_LOCATION=""
+# The email address of the Fabric capacity admin. This should be from the same tenant where capacity is being created.
+CAPACITY_ADMIN_EMAIL=""
+# The name of the existing Fabric capacity. This name is required if you want to use an existing capacity instead of creating a new one.
+EXISTING_CAPACITY_NAME=""
+# The name of the Fabric project. This name is used for naming the Fabric resources.
+FABRIC_PROJECT_NAME=""
+# The name of the Fabric domain. It can be an existing domain.
+FABRIC_DOMAIN_NAME=""
+# The name of the Fabric subdomain. It can be an existing subdomain.
+FABRIC_SUBDOMAIN_NAME=""
+# The bearer token for calling the Fabric APIs.
+FABRIC_BEARER_TOKEN=""
+# The Azure DevOps organization name.
+ORGANIZATION_NAME=""
+# The Azure DevOps project name.
+PROJECT_NAME=""
+# The Azure DevOps repository name.
+REPOSITORY_NAME=""
+# Azure DevOps branch name. This branch should already exist in the repository.
+BRANCH_NAME=""
+# The directory used by Fabric to sync the workspace code. It can be "/" or any other sub-directory. If specifying a sub-directory, it must exist in the repository.
+DIRECTORY_NAME=""
+# UserPrincipalName (UPN) list of the workspace admins. These users will have admin access to the Fabric workspaces. The values are separated by space.
+WORKSPACE_ADMIN_UPNS=("user1@contoso.com" "user2@contoso.com" "...")
+# UserPrincipalName (UPN) list of the pipeline admins. These users will have admin access to the Fabric deployment pipeline. The values are separated by space.
+PIPELINE_ADMIN_UPNS=("user1@contoso.com" "user2@contoso.com" "...")

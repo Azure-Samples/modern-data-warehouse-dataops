@@ -1,0 +1,13 @@
+# Service principal (SP) credentials
+AZURE_CLIENT_ID="<Azure SP client id>"
+AZURE_TENANT_ID="<Azure SP tenant id>"
+AZURE_CLIENT_SECRET="<Azure SP client secret>"
+# Microsoft Fabric workspace and lakehouse details
+ACCOUNT_NAME="onelake"
+WORKSPACE_ID="<Microsoft Fabric workspace id>"
+LAKEHOUSE_ID="<Microsoft Fabric lakehouse id>"
+# Azure DevOps details and personal access token (PAT)
+PERSONAL_ACCESS_TOKEN="<Azure DevOps PAT>"
+ORGANIZATIONAL_URL="Azure DevOps organization URL"
+PROJECT_NAME="<Azure DevOps project name>"
+REPO_NAME="<Azure DevOps repository name>"

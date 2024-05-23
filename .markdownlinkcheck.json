@@ -19,6 +19,9 @@
             "pattern": "^https://azure.microsoft.com/en-us/products/"
         },
         {
+            "pattern": "^https://learn.microsoft.com/azure/"
+        },
+        {
             "pattern": "^https://dev.azure.com"
         }
     ]

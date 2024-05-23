@@ -1,0 +1,53 @@
+trigger:
+- none
+
+stages:
+- stage: deploy_to_test
+  displayName: 'Deploy to Test'
+  variables:
+  - group: fabric-test
+
+  jobs: 
+    - job: APPROVE_DEV_TO_TEST
+      pool: server
+      steps:
+          - task: ManualValidation@0
+            timeoutInMinutes: 3 # The time to wait for an approval. Otherwise the task will timeout and fail.
+            inputs:
+              notifyUsers: ''
+              instructions: 'Aprove deployment from Dev to Test' 
+    - job: DEPLOY_DEV_TO_TEST
+      pool: 
+        vmImage: 'ubuntu-latest'
+      steps:
+        - task: PowerShell@2
+          displayName: 'Fabric CD DEV TO TEST'
+          inputs:
+            filePath: "./devops_scripts/run-deployment-pipelines.ps1"
+            arguments: '-baseUrl "$(fabricRestApiEndpoint)" -fabricToken $(token) -pipelineName "$(pipelineName)" -sourceStageName "$(sourceStageName)" -targetStageName "$(targetStageName)" -targetStageWsName "$(workspaceName)"'
+            pwsh: true
+      
+- stage: deploy_to_prod
+  displayName: 'Deploy to Production'
+  variables:
+  - group: fabric-prod
+
+  jobs:
+    - job: APPROVE_TEST_TO_PROD
+      pool: server
+      steps:
+          - task: ManualValidation@0
+            timeoutInMinutes: 1 # The time to wait for an approval. Otherwise the task will timeout and fail.
+            inputs:
+              notifyUsers: ''
+              instructions: 'Aprove deployment from Test to Production' 
+    - job: DEPLOY_TEST_TO_PROD
+      pool:
+        vmImage: 'ubuntu-latest'
+      steps:   
+        - task: PowerShell@2
+          displayName: 'Fabric CD TEST TO PROD'
+          inputs:
+              filePath: "./devops_scripts/run-deployment-pipelines.ps1"
+              arguments: '-baseUrl "$(fabricRestApiEndpoint)" -fabricToken $(token) -pipelineName "$(pipelineName)" -sourceStageName "$(sourceStageName)" -targetStageName "$(targetStageName)" -targetStageWsName "$(workspaceName)"'
+              pwsh: true
