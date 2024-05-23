@@ -35,7 +35,7 @@ One the changes are made, the developer would commit the changes to the "feature
 
 The Continuous Deployment (CD) process is demonstrated using Azure DevOps pipelines. Due to the lack of service principal (SP) support, the Azure DevOps pipelines are required to be triggered manually for now. The CD process is implemented using Fabric deployment pipelines APIs. One of the variant of CD pipelines has the option of approval gates before allowing the deployment to Test and to Production.The CD process includes the creation of variable groups in Azure DevOps and running the release pipeline in Azure DevOps. For more details, see the [Fabric CI/CD pipelines](#fabric-cicd-pipelines) section.
 
-_ Note that the private workspace needs to be created manually by the developer for now. There is an upcoming feature in Fabric to automate the creation of private workspaces when a new branch is created. The sample will be updated to include this feature once it is available._
+_Note that the private workspace needs to be created manually by the developer for now. There is an upcoming feature in Fabric to automate the creation of private workspaces when a new branch is created. The sample will be updated to include this feature once it is available._
 
 ## How to use the sample
 
@@ -44,6 +44,8 @@ _ Note that the private workspace needs to be created manually by the developer 
 - Ensure *always* latest Fabric Token is added to the .env file (see instructions below).
 - [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli?view=azure-cli-latest) and [jq](https://jqlang.github.io/jq/download/) are installed.
 - Ensure that correct Azure account is being used.
+- Access to Azure DevOps organization and project.
+- An Azure Repo. Currently, only [Git in Azure Repos](https://learn.microsoft.com/azure/devops/user-guide/code-with-git?view=azure-devops) with the _same tenant_ as the Fabric tenant is supported.
 
 ### Execute bootstrap script
 
@@ -103,6 +105,7 @@ Here are the steps to use the bootstrap script:
     | create_domain_and_attach_workspaces | Flag to create a domain and attach workspaces to it.                  | false         | `FABRIC_DOMAIN_NAME`</br>`FABRIC_SUBDOMAIN_NAME`                                                       |
     | add_workspace_admins | Flag to add admin(s) to the workspaces.                 | false         | `WORKSPACE_ADMIN_UPNS`                                                      |
     | add_pipeline_admins | Flag to add admin(s) to the deployment pipeline.         | false         | `PIPELINE_ADMIN_UPNS`                                                       |
+    | create_azdo_variable_groups | Flag to create Azure DevOps variable groups for each environment and adding variables.         | true         | -                                                       |
 
     Creating Fabric capacities and domains requires elevated privileges. And for that reason, the flags `deploy_azure_resources` and `create_domain_and_attach_workspaces` are set to `false` by default. If you are a Fabric administrator and wish to create new capacity, domain and/or subdomain, set these flags to `true`.
 
@@ -110,13 +113,13 @@ Here are the steps to use the bootstrap script:
 
     If you are toggling other flags, make sure to set the required environment variables accordingly and review the script to understand the implications.
 
-1. Run the bootstrap script:
+2. Run the bootstrap script:
 
     ```bash
     ./bootstrap.sh
     ```
 
-    The script is designed to be idempotent. Running the script multiple times will not result in duplicate resources. Instead, it will either skip or update existing resources. However, it is recommended to review both the script and the created resources to ensure everything is as expected.
+    The script is designed to be idempotent. Running the script multiple times will not result in duplicate resources. Instead, it will either skip or update existing resources. The only exception is when Azure DevOps variable groups which are deleted and recreated. However, it is recommended to review both the script and the created resources to ensure everything is as expected.
 
 Good Luck!
 
@@ -132,46 +135,74 @@ There are some gaps to achieve the full automation at the moment, namely the lac
 
 For the CD process, the Azure DevOps pipelines provided in the sample are meant to be triggered manually, and the trigger can be easily implemented by changing the "trigger:" property in the yml file.
 
-This option is recommended for cases where the Development, Test and Production environments are located in the same tenant. Using Fabric Deployment pipelines is a great solution to promote your changes between the environments.
+It is important to refer, that despite of the current repository being located on GitHub, the user will need a second repository on Azure DevOps to synchronize the Fabric artifacts definitions - this is because the git integration with Fabric is solely working for Azure DevOps at the moment. As the CD piece is not yet fully automated, a possibility is to copy the entire devops folder to your Azure DevOps repository beside the Fabric artifacts. After the copy, the Azure repo folder structure should look like this:
 
-Building on top of the bootstrap and hydration outcomes, there are two options to implement the CD release process in Fabric. There are two [yml files](./devops/) that can be used to create an Azure DevOps pipeline. The first option offers an approval gate before allowing the deployment to Test and to Production. The second option doesn't include the approval gates.
-It is important to refer, that despite of the current repository being located on GitHub, the user will need a second repository on Azure DevOps to synchronize the Fabric artifacts definitions - this is because the git integration with Fabric is solely working for Azure DevOps at the moment. As the CD piece is not yet fully automated, a possibility is to copy the entire devops folder to your Azure DevOps repository beside the Fabric artifacts.
-**1 - Pre-requisites - Variable Groups**: before turning the CD release pipeline, the following variable groups need to be created under Pipelines/Library in Azure DevOps.
+```bash
+├── devops
+│   ├── devops_scripts
+│   │   ├── run-deployment-pipelines.ps1
+│   ├── azdo-fabric-cd-release-with-approvals.yml
+│   ├── azdo-fabric-cd-release.yml
+├── DIRECTORY_NAME
+│   ├── <Fabric artifacts would be synced here>
+├── ...
+```
 
-**fabric-test variable group**: should contain the following variables:
+Here, `DIRECTORY_NAME` is the directory where the Fabric artifacts are stored. This is the same directory that is specified as an environment variable in the `.env` file. The `devops` folder contains the Azure DevOps pipeline files. Within `devops`, the `devops_scripts` folder contains the PowerShell script that triggers the Fabric deployment pipelines.
 
-|**Field Name**|**Description/Example of a valid value**|
-|--------------|-------------------------|
-|**fabricRestApiEndpoint** | `https://api.fabric.microsoft.com/v1` |
-|**pipelineName** | The name of the deployment pipeline in Fabric |
-|**sourceStageName** | The name of the source stage of the deployment. E.g: "Development"|
-|**targetStageName** | The name of the target stage of the deployment. E.g: "Test"|
-|**targetStageWsName** | The name of the workspace assigned to the target stage of the deployment pipeline.|
-|**token** | Until SP are not supported, we use the Bearer token as a variable.|
+The bootstrap script creates Azure DevOps variable groups for each environment and adds the required variables. Here are the details about the variable groups, variables, and their default values:
 
-**fabric-prod** : should contain the following variables:
+- Variable group for "Development" environment: **vg-<FABRIC_PROJECT_NAME>-dev**
 
-|**Field Name**|**Description/Example of a valid value**|
-|--------------|-------------------------|
-|**fabricRestApiEndpoint** | `https://api.fabric.microsoft.com/v1` |
-|**pipelineName** | The name of the deployment pipeline in Fabric |
-|**sourceStageName** | The name of the source stage of the deployment. E.g: "Test"|
-|**targetStageName** | The name of the target stage of the deployment. E.g: "Production"|
-|**targetStageWsName** | The name of the workspace assigned to the target stage of the deployment pipeline.|
-|**token** | Until SP are not supported, we use the Bearer token as a variable.|
+  ```text
+  fabricRestApiEndpoint   Fabric Rest API endpoint          https://api.fabric.microsoft.com/v1
+  workspaceName           Fabric workspace name             ws-<FABRIC_PROJECT_NAME>-dev
+  workspaceId             Fabric workspace Id               derived in bootstrap script
+  token                   Fabric bearer token               <FABRIC_BEARER_TOKEN>
+  pipelineName            Fabric deployment pipeline name   dp-<FABRIC_PROJECT_NAME>
+  mainLakehouseName       Main Lakehouse name               lh_main
+  mainLakehouseId         Main Lakehouse Id                 derived in bootstrap script
+  ```
 
-**NOTE:** the bootstrap script creates the dev, uat and prd workspaces. Depending on the Project name used in the `.env` file the names of the workspaces might differ. Make sure that the name created in the bootstrap is the same name referred in the variable groups. E.g: ws-fabric-cicd-dev
+- Variable group for "Test" environment: **vg-<FABRIC_PROJECT_NAME>-uat**
 
-**2 - Running the release pipeline in Azure DevOps**: to run the CD pipeline, create an Azure DevOps pipeline and copy the content from the azdo-fabric-cd-release.yml file located in the [devops](./devops/) directory into the AzDO pipeline. 
+  ```text
+  fabricRestApiEndpoint   Fabric Rest API endpoint          https://api.fabric.microsoft.com/v1
+  workspaceName           Fabric workspace name             ws-<FABRIC_PROJECT_NAME>-uat
+  workspaceId             Fabric workspace Id               derived in bootstrap script
+  token                   Fabric bearer token               <FABRIC_BEARER_TOKEN>
+  pipelineName            Fabric deployment pipeline name   dp-<FABRIC_PROJECT_NAME>
+  mainLakehouseName       Main Lakehouse name               lh_main
+  sourceStageName         Deployment source stage name      Development
+  targetStageName         Deployment target stage name      Test
+  ```
 
-Make sure that the token is valid for the run, otherwise the pipeline will fail. For more information refer to [Fabric Token](#passing-the-fabric-bearer-token).
+- Variable group for "Production" environment: **vg-<FABRIC_PROJECT_NAME>-prd**
 
-Before you run the pipeline, make sure that the Deployment pipeline exists and that the Development workspace is assigned to the Development Stage of the Pipeline. Additionally, uat and prd workspaces should be assigned to the Test and Production Stages respectively. This steps are automated in the bootstrap script.
+  ```text
+  fabricRestApiEndpoint   Fabric Rest API endpoint          https://api.fabric.microsoft.com/v1
+  workspaceName           Fabric workspace name             ws-<FABRIC_PROJECT_NAME>-prd
+  workspaceId             Fabric workspace Id               derived in bootstrap script
+  token                   Fabric bearer token               <FABRIC_BEARER_TOKEN>
+  pipelineName            Fabric deployment pipeline name   dp-<FABRIC_PROJECT_NAME>
+  mainLakehouseName       Main Lakehouse name               lh_main
+  sourceStageName         Deployment source stage name      Test
+  targetStageName         Deployment target stage name      Production
+  ```
+
+Please note that if you have skipped the creation of above variable groups in the bootstrap script (Flag `create_azdo_variable_groups` set to false), you will need to create them manually in Azure DevOps and add the variables as mentioned above. Please refer to the [Azure DevOps documentation](https://learn.microsoft.com/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=classic) for details.
+
+Also, make sure that the token is still valid for the run, otherwise the pipeline will fail. For more information refer to [Fabric Token](#passing-the-fabric-bearer-token).
+
+With that, you are now ready to create and run the CD pipelines in Azure DevOps. Follow the below steps:
+
+- Create an Azure DevOps pipeline and copy the content from the [azdo-fabric-cd-release.yml](./devops/azdo-fabric-cd-release.yml) file located in the [devops](./devops/) directory into the AzDO pipeline. Note that there is also a variant of the pipeline with approvals, [azdo-fabric-cd-release-with-approvals.yml](./devops/azdo-fabric-cd-release-with-approvals.yml), that includes approval gates before allowing the deployment to Test and to Production. You can choose the pipeline that best fits your requirements.
+- Update the name of the variable groups for each stage. For example, for the "deploy_to_test" stage, use the variable group "vg-<FABRIC_PROJECT_NAME>-uat". Similarly, for the "deploy_to_production" stage, use the variable group "vg-<FABRIC_PROJECT_NAME>-prd".
+- Before you run the pipeline, make sure that the deployment pipeline exists and that the development workspace is assigned to the "Development" stage of the pipeline. Similarly, uat and prd workspaces should be assigned to the "Test" and "Production" stages respectively. This steps are automated in the bootstrap script.
 
 ![Fabric Deployment Pipelines](./images/dep_pipeline.png)
 
-Shifting gears to Azure DevOps, after you create the pipeline and fill out the variables you can manually trigger the execution.
-Triggers can be also defined in alignment with your development workflow requirements. This sample doesn't include triggers at the moment.
+Now you can manually trigger the execution. Triggers can be also defined in alignment with your development workflow requirements. This sample doesn't include triggers at the moment because of the dependency on the bearer token (The token expires after one hour).
 
 The version with approvals, need manual intervention during the run. You will need to manually approve before the pipeline completes.
 
@@ -181,7 +212,7 @@ The version with approvals, need manual intervention during the run. You will ne
 
 ![AzDo CD Release pipeline run](./images/azdo_pipeline_execution.png)
 
-Upon completion  both deployment stages: "Deploy to Test" and "Deploy to Production"  in the Azure DevOps pipeline should be successfully completed. To verify if the deployment was successful, navigate to Fabric->Deployment pipelines to verify that all the Fabric artifacts were promoted to Test and to Production.
+Once the execution is complete, both deployment stages, 'Deploy to Test' and 'Deploy to Production', in the Azure DevOps pipeline should be successful. To verify if the deployment was successful, navigate to Fabric -> Deployment pipelines to verify that all the Fabric artifacts were promoted to "Test" and to Production" stages.
 
 ## Understanding bootstrap script
 
