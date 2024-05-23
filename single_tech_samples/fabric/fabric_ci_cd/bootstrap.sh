@@ -867,7 +867,8 @@ if [[ "$create_azdo_variable_groups" = "true" ]]; then
         add_variable "$variable_group_id" "fabricRestApiEndpoint" "$fabric_api_endpoint"
         add_variable "$variable_group_id" "token" "$fabric_bearer_token" "true"
         add_variable "$variable_group_id" "pipelineName" "$deployment_pipeline_name"
-        add_variable "$variable_group_id" "workspaceName" "${workspace_ids[i]}"
+        add_variable "$variable_group_id" "workspaceName" "${workspace_names[i]}"
+        add_variable "$variable_group_id" "workspaceId" "${workspace_ids[i]}"
         add_variable "$variable_group_id" "mainLakehouseName" "${lakehouse_name}"
         # Adding variables based on the environment:
         # - Adding lakehouse id for dev environment as it is created as part of this deployment.

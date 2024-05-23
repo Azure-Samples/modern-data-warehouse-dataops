@@ -21,6 +21,8 @@ This repo contains a code sample for establishing a CI/CD process for Microsoft 
   - [Existing Workspace Warning](#existing-workspace-warning)
   - [Several run attempts might lead to strange errors](#several-run-attempts-might-lead-to-strange-errors)
   - [The pagination issue with the Fabric REST APIs for List operations](#the-pagination-issue-with-the-fabric-rest-apis-for-list-operations)
+- [Other useful utility scripts](#other-useful-utility-scripts)
+  - [Script to upload file in GIT repo to Fabric lakehouse](#script-to-upload-file-in-git-repo-to-fabric-lakehouse)
 - [References](#references)
 
 ## Architecture
@@ -143,12 +145,12 @@ It is important to refer, that despite of the current repository being located o
 │   │   ├── run-deployment-pipelines.ps1
 │   ├── azdo-fabric-cd-release-with-approvals.yml
 │   ├── azdo-fabric-cd-release.yml
-├── DIRECTORY_NAME
+├── <DIRECTORY_NAME>
 │   ├── <Fabric artifacts would be synced here>
 ├── ...
 ```
 
-Here, `DIRECTORY_NAME` is the directory where the Fabric artifacts are stored. This is the same directory that is specified as an environment variable in the `.env` file. The `devops` folder contains the Azure DevOps pipeline files. Within `devops`, the `devops_scripts` folder contains the PowerShell script that triggers the Fabric deployment pipelines.
+Here, `DIRECTORY_NAME` is the directory where the Fabric artifacts are stored. This is the same directory that is specified as an environment variable in the [.envtemplate](./.envtemplate) file. The [devops](./devops/) folder contains the Azure DevOps pipeline files. Within devops, the [devops_scripts](./devops/devops_scripts/) folder contains the PowerShell script that triggers the Fabric deployment pipelines.
 
 The bootstrap script creates Azure DevOps variable groups for each environment and adds the required variables. Here are the details about the variable groups, variables, and their default values:
 
@@ -197,7 +199,7 @@ Also, make sure that the token is still valid for the run, otherwise the pipelin
 With that, you are now ready to create and run the CD pipelines in Azure DevOps. Follow the below steps:
 
 - Create an Azure DevOps pipeline and copy the content from the [azdo-fabric-cd-release.yml](./devops/azdo-fabric-cd-release.yml) file located in the [devops](./devops/) directory into the AzDO pipeline. Note that there is also a variant of the pipeline with approvals, [azdo-fabric-cd-release-with-approvals.yml](./devops/azdo-fabric-cd-release-with-approvals.yml), that includes approval gates before allowing the deployment to Test and to Production. You can choose the pipeline that best fits your requirements.
-- Update the name of the variable groups for each stage. For example, for the "deploy_to_test" stage, use the variable group "vg-<FABRIC_PROJECT_NAME>-uat". Similarly, for the "deploy_to_production" stage, use the variable group "vg-<FABRIC_PROJECT_NAME>-prd".
+- Update the name of the variable groups for each stage. For example, for the "deploy_to_test" stage, use the variable group `vg-<FABRIC_PROJECT_NAME>-uat`. Similarly, for the "deploy_to_production" stage, use the variable group `vg-<FABRIC_PROJECT_NAME>-prd`.
 - Before you run the pipeline, make sure that the deployment pipeline exists and that the development workspace is assigned to the "Development" stage of the pipeline. Similarly, uat and prd workspaces should be assigned to the "Test" and "Production" stages respectively. This steps are automated in the bootstrap script.
 
 ![Fabric Deployment Pipelines](./images/dep_pipeline.png)
@@ -212,7 +214,7 @@ The version with approvals, need manual intervention during the run. You will ne
 
 ![AzDo CD Release pipeline run](./images/azdo_pipeline_execution.png)
 
-Once the execution is complete, both deployment stages, 'Deploy to Test' and 'Deploy to Production', in the Azure DevOps pipeline should be successful. To verify if the deployment was successful, navigate to Fabric -> Deployment pipelines to verify that all the Fabric artifacts were promoted to "Test" and to Production" stages.
+Once the execution is complete, both deployment stages, "Deploy to Test" and "Deploy to Production", in the Azure DevOps pipeline should be successful. To verify if the deployment was successful, navigate to Fabric -> Deployment pipelines to verify that all the Fabric artifacts were promoted to "Test" and to "Production" stages.
 
 ## Understanding bootstrap script
 
@@ -231,6 +233,7 @@ Here is a summary of the steps that the script performs:
 - All the workspaces changes are committed to the GIT repository.
 - Creates the Fabric domain, subdomain or both and attaches the workspaces to it. If the domain and sub-domain already exist, the script attaches the workspaces to the existing ones.
 - Add workspace admins and deployment pipeline admins to the workspaces and deployment pipeline respectively. If the admins are already added, the script skips the addition.
+- Create Azure DevOps variable groups for each environment and add the required variables. If the variable groups are already present, it deletes and recreates them.
 
 ### List of created resources
 
@@ -247,6 +250,7 @@ Here is a table that lists the resources created by the bootstrap script. `<FABR
 |Fabric Lakehouse|Fabric Lakehouse that contains the data lake.|`lh_main`|
 |Fabric Notebooks|Fabric notebooks that contain the business logic.|`nb-city-safety`</br>`nb-covid-data`|
 |Fabric Data Pipeline|Fabric data pipelines that contain the data processing logic.|`pl-covid-data`|
+|AzDo Variable Groups|Azure DevOps variable groups for each environment.|`vg-<FABRIC_PROJECT_NAME>-dev`</br>`vg-<FABRIC_PROJECT_NAME>-uat`</br>`vg-<FABRIC_PROJECT_NAME>-prd`|
 
 ### Hydrating Fabric lakehouse
 
@@ -265,8 +269,8 @@ Fabric notebook [nb-city-safety.ipynb](./src/notebooks/nb-city-safety.ipynb) rea
 
 Fabric data pipeline [pl-covid-data](./src/data-pipelines/pl-covid-data-content.json) reads data from [Microsoft Open Datasets - Covid data](https://learn.microsoft.com/azure/open-datasets/dataset-covid-19-data-lake) and populates Lakehouse files. The Pipeline consists of two activities:
 
-1. A `Set variable` activity which has the ability to modify the pipeline parameters and passes these values as 'return values' to next process.
-1. A Fabric notebook [nb-covid-data](./src/notebooks/nb-covid-data.ipynb) activity that performs the ETL operations. This is triggered by the success of first activity and uses the 'return values' as input parameters for the execution.
+1. A `Set variable` activity which has the ability to modify the pipeline parameters and passes these values as "return values" to next process.
+1. A Fabric notebook [nb-covid-data](./src/notebooks/nb-covid-data.ipynb) activity that performs the ETL operations. This is triggered by the success of first activity and uses the "return values" as input parameters for the execution.
 
 Here are the key steps:
 
@@ -382,6 +386,36 @@ If you are running into such issue, you might want to add additional debugging i
 [I] Deployment pipeline 'dp-fabric-cicd' (ed946d85-6370-4bc7-b134-af865a4fd1e4)
 [I] Added 'user1@contoso.com' as admin of the deployment pipeline.
 [I] Added 'user2@contoso.com' as admin of the deployment pipeline.
+[I] ############ Creating Azure DevOps Variable Groups ############
+[I] Variable group 'vg-fabric-cicd-dev' already exists. Deleting it.
+[I] Creating variable group: vg-fabric-cicd-dev
+[I] Adding variable 'fabricRestApiEndpoint'
+[I] Adding variable 'token'
+[I] Adding variable 'pipelineName'
+[I] Adding variable 'workspaceName'
+[I] Adding variable 'workspaceId'
+[I] Adding variable 'mainLakehouseName'
+[I] Adding variable 'mainLakehouseId'
+[I] Variable group 'vg-fabric-cicd-uat' already exists. Deleting it.
+[I] Creating variable group: vg-fabric-cicd-uat
+[I] Adding variable 'fabricRestApiEndpoint'
+[I] Adding variable 'token'
+[I] Adding variable 'pipelineName'
+[I] Adding variable 'workspaceName'
+[I] Adding variable 'workspaceId'
+[I] Adding variable 'mainLakehouseName'
+[I] Adding variable 'sourceStageName'
+[I] Adding variable 'targetStageName'
+[I] Variable group 'vg-fabric-cicd-prd' already exists. Deleting it.
+[I] Creating variable group: vg-fabric-cicd-prd
+[I] Adding variable 'fabricRestApiEndpoint'
+[I] Adding variable 'token'
+[I] Adding variable 'pipelineName'
+[I] Adding variable 'workspaceName'
+[I] Adding variable 'workspaceId'
+[I] Adding variable 'mainLakehouseName'
+[I] Adding variable 'sourceStageName'
+[I] Adding variable 'targetStageName'
 [I] ############ END ############
 ```
 
@@ -390,6 +424,16 @@ If you are running into such issue, you might want to add additional debugging i
 The Fabric REST APIs to `List` things like workspaces, domains, items, etc. have the concept of pagination. If there are a lot of items, the initial API call returns a batch of items along with a `continuationToken` and `continuationUri` to fetch the next batch of items. If the `continuationToken` is not present in the response, it means that there are no more items to fetch.
 
 The script doesn't handle pagination at the moment. It makes the initial call and assumes that all the items are fetched in the first batch. If there are more items to fetch, the script might wrongly assume that the item doesn't exist and try to create it. This is a known limitation with the script and will be addressed in the future.
+
+## Other useful utility scripts
+
+### Script to upload file in GIT repo to Fabric lakehouse
+
+For config-driven data pipelines or notebooks, the config files are generally stored in the "Files" section of the Fabric Lakehouse. However, the Git integration with Fabric only syncs the lakehouse metadata, not the actual data files. Therefore, the config files must be version controlled outside of Fabric and uploaded to the lakehouse manually. Including this process in the CI/CD pipeline ensures that the latest config files are always available in the lakehouse, and can be promoted to the higher environments.
+
+To facilitate that, the python script [upload-file-to-lakehouse.py](./scripts/lakehouse-file-upload/upload-file-to-lakehouse.py) uploads a file from a GIT repository to a Fabric lakehouse. The script uses a service principal with a client secret and uses Azure Data Lake APIs to authenticate and upload the file.
+
+We plan to use this script in the future to automate the process of uploading "config" files from the Git repository to the Fabric Lakehouse as part of the CI/CD process.
 
 ## References
 
