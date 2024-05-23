@@ -115,7 +115,7 @@ Here are the steps to use the bootstrap script:
 
     If you are toggling other flags, make sure to set the required environment variables accordingly and review the script to understand the implications.
 
-2. Run the bootstrap script:
+1. Run the bootstrap script:
 
     ```bash
     ./bootstrap.sh
