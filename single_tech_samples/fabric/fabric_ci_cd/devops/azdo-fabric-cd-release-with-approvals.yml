@@ -24,7 +24,7 @@ stages:
           displayName: 'Fabric CD DEV TO TEST'
           inputs:
             filePath: "./devops_scripts/run-deployment-pipelines.ps1"
-            arguments: '-baseUrl "$(fabricRestApiEndpoint)" -fabricToken $(token) -pipelineName "$(pipelineName)" -sourceStageName "$(sourceStageName)" -targetStageName "$(targetStageName)" -targetStageWsName "$(targetStageWsName)"'
+            arguments: '-baseUrl "$(fabricRestApiEndpoint)" -fabricToken $(token) -pipelineName "$(pipelineName)" -sourceStageName "$(sourceStageName)" -targetStageName "$(targetStageName)" -targetStageWsName "$(workspaceName)"'
             pwsh: true
       
 - stage: deploy_to_prod
@@ -49,5 +49,5 @@ stages:
           displayName: 'Fabric CD TEST TO PROD'
           inputs:
               filePath: "./devops_scripts/run-deployment-pipelines.ps1"
-              arguments: '-baseUrl "$(fabricRestApiEndpoint)" -fabricToken $(token) -pipelineName "$(pipelineName)" -sourceStageName "$(sourceStageName)" -targetStageName "$(targetStageName)" -targetStageWsName "$(targetStageWsName)"'
+              arguments: '-baseUrl "$(fabricRestApiEndpoint)" -fabricToken $(token) -pipelineName "$(pipelineName)" -sourceStageName "$(sourceStageName)" -targetStageName "$(targetStageName)" -targetStageWsName "$(workspaceName)"'
               pwsh: true
