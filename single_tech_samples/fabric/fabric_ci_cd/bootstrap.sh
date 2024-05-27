@@ -270,13 +270,13 @@ function create_item() {
     response=$(curl -s -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $fabric_bearer_token" -d "$create_item_body" "$create_item_url")
     if [[ -n "$response" ]] && [[ "$response" != "null" ]]; then
         item_id=$(echo "$response" | jq -r '.id // empty')
-        if [ -n "$item_id" ]; then     # HTTP-201 Created
+        if [ -n "$item_id" ]; then
             echo "[I] Created $item_type '$display_name' ($item_id) successfully."
-        else                           # Error response
+        else
             echo "[E] $item_type '$display_name' creation failed."
             echo "[E] $response"
         fi
-    else                               # HTTP-202 Accepted
+    else
         sleep 10
         item_id=$(get_item_by_name_type "$workspace_id" "$item_type" "$display_name")
         echo "[I] Created $item_type '$display_name' ($item_id) successfully."
