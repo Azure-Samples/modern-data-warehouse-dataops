@@ -7,7 +7,7 @@ The sample is recommended if:
 - your organization adopts multi-tenancy in their CI/CD processes, such as the different environments (such as Development, Staging and Production) are on different Microsoft Entra IDs.
 - your organization's preferred git tool is today not yet supported by Fabric (i.e. such as GitLab, and Bitbucket).
 
-If none of the scenarios above match your current situation, consider using the [Fabric CI/CD sample for Azure DevOps](/single_tech_samples/fabric/fabric_ci_cd/README.md).
+If none of the scenarios above match your current situation, consider using the [Fabric CI/CD sample for Azure DevOps](../fabric_ci_cd/README.md).
 
 ## Requirements
 
