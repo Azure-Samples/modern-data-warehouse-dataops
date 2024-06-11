@@ -1,0 +1,36 @@
+trigger:
+- none
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+- stage: deploy_to_test
+  displayName: 'Deploy to Test'
+  variables:
+  - group: fabric-test
+
+  jobs:
+    - job: From_DEV_TO_TEST
+      steps:   
+        - task: PowerShell@2
+          displayName: 'Fabric CD DEV TO TEST'
+          inputs:
+            filePath: "./devops_scripts/run-deployment-pipelines.ps1"
+            arguments: '-baseUrl "$(fabricRestApiEndpoint)" -fabricToken $(token) -pipelineName "$(pipelineName)" -sourceStageName "$(sourceStageName)" -targetStageName "$(targetStageName)" -targetStageWsName "$(workspaceName)"'
+            pwsh: true
+      
+- stage: deploy_to_prod
+  displayName: 'Deploy to Production'
+  variables:
+  - group: fabric-prod
+
+  jobs:
+    - job: From_TEST_TO_PROD
+      steps:   
+        - task: PowerShell@2
+          displayName: 'Fabric CD TEST TO PROD'
+          inputs:
+              filePath: "./devops_scripts/run-deployment-pipeline.ps1"
+              arguments: '-baseUrl "$(fabricRestApiEndpoint)" -fabricToken $(token) -pipelineName "$(pipelineName)" -sourceStageName "$(sourceStageName)" -targetStageName "$(targetStageName)" -targetStageWsName "$(workspaceName)"'
+              pwsh: true

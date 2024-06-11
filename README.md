@@ -30,6 +30,7 @@ The samples are either focused on a single azure service (**Single Tech Samples*
 ## Single Technology Samples
 
 - [Microsoft Fabric](./single_tech_samples/fabric/README.md)
+  - [CI/CD - Microsoft Fabric](./single_tech_samples/fabric/fabric_ci_cd/README.md)
   - [Feature engineering on Microsoft Fabric](./single_tech_samples/fabric/feature_engineering_on_fabric/README.md)
 - [Azure SQL database](./single_tech_samples/azuresql/README.md)
   - [CI/CD - Azure SQL database](./single_tech_samples/azuresql/azuresql_ci_cd/README.md)

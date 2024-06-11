@@ -134,7 +134,7 @@ The following summarizes key learnings and best practices demonstrated by this s
 ### 7. Monitor infrastructure, pipelines and data
 
 - A proper monitoring solution should be in-place to ensure failures are identified, diagnosed and addressed in a timely manner. Aside from the base infrastructure and pipeline runs, data quality should also be monitored. A common area that should have data monitoring is the malformed record store.
-- As an example this repository showcases how to use open source framework [Great Expectations](https://docs.greatexpectations.io/docs/) to define, measure and report data quality metrics at different stages of the data pipeline. Captured Data Quality metrics are reported to Azure Monitor for further visualizing and alerting. Take a look at sample [Data Quality report](docs/images/data_quality_report.png) generated with Azure Monitor workbook. Great Expectations can be configured to generate HTML reports and host directly as static site on Azure Blob Storage. Read more on [How to host and share Data Docs on Azure Blob Storage](https://legacy.docs.greatexpectations.io/en/latest/guides/how_to_guides/configuring_data_docs/how_to_host_and_share_data_docs_on_azure_blob_storage.html).
+- As an example this repository showcases how to use open source framework [Great Expectations](https://docs.greatexpectations.io/docs/) to define, measure and report data quality metrics at different stages of the data pipeline. Captured Data Quality metrics are reported to Azure Monitor for further visualizing and alerting. Take a look at sample [Data Quality report](docs/images/data_quality_report.png) generated with Azure Monitor workbook. Great Expectations can be configured to generate HTML reports and host directly as static site on Azure Blob Storage. Read more on [How to host and share Data Docs on Azure Blob Storage](https://docs.greatexpectations.io/docs/oss/guides/setup/configuring_data_docs/host_and_share_data_docs/).
   
 ## Key Concepts
 
@@ -199,13 +199,13 @@ More resources:
 
 #### Databricks
 
-- [Monitoring Azure Databricks with Azure Monitor](https://docs.microsoft.com/en-us/azure/architecture/databricks-monitoring/)
+- [Monitoring Azure Databricks with Azure Monitor](https://learn.microsoft.com/azure/architecture/databricks-monitoring/)
 - [Monitoring Azure Databricks Jobs with Application Insights](https://msdn.microsoft.com/en-us/magazine/mt846727.aspx)
 
 #### Data Factory
 
-- [Monitor Azure Data Factory with Azure Monitor](https://docs.microsoft.com/en-us/azure/data-factory/monitor-using-azure-monitor)
-- [Alerting in Azure Data Factory](https://azure.microsoft.com/en-us/blog/create-alerts-to-proactively-monitor-your-data-factory-pipelines/)
+- [Monitor Azure Data Factory with Azure Monitor](https://learn.microsoft.com/azure/data-factory/monitor-data-factory)
+- [Alerting in Azure Data Factory](https://azure.microsoft.com/blog/create-alerts-to-proactively-monitor-your-data-factory-pipelines/)
 
 ## How to use the sample
 
