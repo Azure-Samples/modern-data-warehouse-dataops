@@ -15,7 +15,7 @@ stages:
             timeoutInMinutes: 3 # The time to wait for an approval. Otherwise the task will timeout and fail.
             inputs:
               notifyUsers: ''
-              instructions: 'Aprove deployment from Dev to Test' 
+              instructions: 'Approve deployment from Dev to Test' 
     - job: DEPLOY_DEV_TO_TEST
       pool: 
         vmImage: 'ubuntu-latest'
@@ -23,7 +23,7 @@ stages:
         - task: PowerShell@2
           displayName: 'Fabric CD DEV TO TEST'
           inputs:
-            filePath: "./devops_scripts/run-deployment-pipelines.ps1"
+            filePath: "$(System.DefaultWorkingDirectory)/devops/devops_scripts/run-deployment-pipelines.ps1"
             arguments: '-baseUrl "$(fabricRestApiEndpoint)" -fabricToken $(token) -pipelineName "$(pipelineName)" -sourceStageName "$(sourceStageName)" -targetStageName "$(targetStageName)" -targetStageWsName "$(workspaceName)"'
             pwsh: true
       
@@ -40,7 +40,7 @@ stages:
             timeoutInMinutes: 1 # The time to wait for an approval. Otherwise the task will timeout and fail.
             inputs:
               notifyUsers: ''
-              instructions: 'Aprove deployment from Test to Production' 
+              instructions: 'Approve deployment from Test to Production' 
     - job: DEPLOY_TEST_TO_PROD
       pool:
         vmImage: 'ubuntu-latest'
@@ -48,6 +48,6 @@ stages:
         - task: PowerShell@2
           displayName: 'Fabric CD TEST TO PROD'
           inputs:
-              filePath: "./devops_scripts/run-deployment-pipelines.ps1"
+              filePath: "$(System.DefaultWorkingDirectory)/devops/devops_scripts/run-deployment-pipelines.ps1"
               arguments: '-baseUrl "$(fabricRestApiEndpoint)" -fabricToken $(token) -pipelineName "$(pipelineName)" -sourceStageName "$(sourceStageName)" -targetStageName "$(targetStageName)" -targetStageWsName "$(workspaceName)"'
               pwsh: true

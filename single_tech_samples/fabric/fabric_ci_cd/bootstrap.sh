@@ -879,6 +879,8 @@ if [[ "$create_azdo_variable_groups" = "true" ]]; then
         else
             add_variable "$variable_group_id" "sourceStageName" "${pipeline_stage_display_names[i-1]}"
             add_variable "$variable_group_id" "targetStageName" "${pipeline_stage_display_names[i]}"
+            add_variable "$variable_group_id" "sourceStageWorkspaceName" "${workspace_names[i-1]}"
+            add_variable "$variable_group_id" "sourceStageWorkspaceId" "${workspace_ids[i-1]}"
         fi
         delete_variable "$variable_group_id" "foo"
     done

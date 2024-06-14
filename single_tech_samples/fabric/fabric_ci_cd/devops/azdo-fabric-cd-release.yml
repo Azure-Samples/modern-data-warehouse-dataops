@@ -12,14 +12,20 @@ stages:
 
   jobs:
     - job: From_DEV_TO_TEST
-      steps:   
+      steps:
+        - task: PowerShell@2
+          displayName: Update Source Workspace from GIT'
+          inputs:
+            filePath: "$(System.DefaultWorkingDirectory)/devops/devops_scripts/update-workspace-from-git.ps1"
+            arguments: '-baseUrl "$(fabricRestApiEndpoint)" -fabricToken $(token) -workspaceName "$(sourceStageWorkspaceName)"'
+            pwsh: true
         - task: PowerShell@2
           displayName: 'Fabric CD DEV TO TEST'
           inputs:
-            filePath: "./devops_scripts/run-deployment-pipelines.ps1"
+            filePath: "$(System.DefaultWorkingDirectory)/devops/devops_scripts/run-deployment-pipelines.ps1"
             arguments: '-baseUrl "$(fabricRestApiEndpoint)" -fabricToken $(token) -pipelineName "$(pipelineName)" -sourceStageName "$(sourceStageName)" -targetStageName "$(targetStageName)" -targetStageWsName "$(workspaceName)"'
             pwsh: true
-      
+
 - stage: deploy_to_prod
   displayName: 'Deploy to Production'
   variables:
@@ -27,10 +33,10 @@ stages:
 
   jobs:
     - job: From_TEST_TO_PROD
-      steps:   
+      steps:
         - task: PowerShell@2
           displayName: 'Fabric CD TEST TO PROD'
           inputs:
-              filePath: "./devops_scripts/run-deployment-pipeline.ps1"
+              filePath: "$(System.DefaultWorkingDirectory)/devops/devops_scripts/run-deployment-pipelines.ps1"
               arguments: '-baseUrl "$(fabricRestApiEndpoint)" -fabricToken $(token) -pipelineName "$(pipelineName)" -sourceStageName "$(sourceStageName)" -targetStageName "$(targetStageName)" -targetStageWsName "$(workspaceName)"'
               pwsh: true
