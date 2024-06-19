@@ -310,7 +310,7 @@ For now, the token has to be manually generated and passed to the script as an e
 - **Using browser devtools (F12)**: If you are already logged into Fabric portal, you can invoke the following command from the Browser DevTools (F12) console:
 
     ```powershell
-    > copy(PowerBIAccessToken)
+    > copy(powerBIAccessToken)
     ```
 
     This would copy the token in your clipboard that you can update in the .env file.
