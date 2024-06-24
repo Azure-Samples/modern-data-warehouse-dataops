@@ -16,11 +16,18 @@ This repo contains a code sample for establishing a CI/CD process for Microsoft 
   - [Hydrating Fabric lakehouse](#hydrating-fabric-lakehouse)
     - [Using Fabric notebooks](#using-fabric-notebooks)
     - [Using Fabric data pipelines](#using-fabric-data-pipelines)
-- [Known issues](#known-issues)
+- [Known issues and limitations](#known-issues-and-limitations)
   - [Passing the Fabric bearer token](#passing-the-fabric-bearer-token)
+  - [Implications of using Fabric deployment pipelines for CD](#implications-of-using-fabric-deployment-pipelines-for-cd)
+  - [Direct changes made to the "main" branch](#direct-changes-made-to-the-main-branch)
+  - [Engineers kicking off the deployment pipeline manually via Fabric UI](#engineers-kicking-off-the-deployment-pipeline-manually-via-fabric-ui)
+  - [Handing Notebook's default Lakehouse](#handing-notebooks-default-lakehouse)
   - [Existing Workspace Warning](#existing-workspace-warning)
   - [Several run attempts might lead to strange errors](#several-run-attempts-might-lead-to-strange-errors)
-  - [The pagination issue with the Fabric REST APIs for List operations](#the-pagination-issue-with-the-fabric-rest-apis-for-list-operations)
+  - [The pagination issue with the Fabric REST APIs for list operations](#the-pagination-issue-with-the-fabric-rest-apis-for-list-operations)
+- [Alternate approaches for promoting changes to higher environments](#alternate-approaches-for-promoting-changes-to-higher-environments)
+  - [Using Fabric GIT APIs only](#using-fabric-git-apis-only)
+  - [Using advanced CI/CD sample](#using-advanced-cicd-sample)
 - [Other useful utility scripts](#other-useful-utility-scripts)
   - [Script to upload file in GIT repo to Fabric lakehouse](#script-to-upload-file-in-git-repo-to-fabric-lakehouse)
 - [References](#references)
@@ -143,6 +150,7 @@ It is important to refer, that despite of the current repository being located o
 ├── devops
 │   ├── devops_scripts
 │   │   ├── run-deployment-pipelines.ps1
+│   │   ├── update-workspace-from-git.ps1
 │   ├── azdo-fabric-cd-release-with-approvals.yml
 │   ├── azdo-fabric-cd-release.yml
 ├── <DIRECTORY_NAME>
@@ -157,39 +165,43 @@ The bootstrap script creates Azure DevOps variable groups for each environment a
 - Variable group for "Development" environment: **vg-<FABRIC_PROJECT_NAME>-dev**
 
   ```text
-  fabricRestApiEndpoint   Fabric Rest API endpoint          https://api.fabric.microsoft.com/v1
-  workspaceName           Fabric workspace name             ws-<FABRIC_PROJECT_NAME>-dev
-  workspaceId             Fabric workspace Id               derived in bootstrap script
-  token                   Fabric bearer token               <FABRIC_BEARER_TOKEN>
-  pipelineName            Fabric deployment pipeline name   dp-<FABRIC_PROJECT_NAME>
-  mainLakehouseName       Main Lakehouse name               lh_main
-  mainLakehouseId         Main Lakehouse Id                 derived in bootstrap script
+  fabricRestApiEndpoint    Fabric Rest API endpoint               https://api.fabric.microsoft.com/v1
+  workspaceName            Fabric workspace name                  ws-<FABRIC_PROJECT_NAME>-dev
+  workspaceId              Fabric workspace Id                    derived in bootstrap script
+  token                    Fabric bearer token                    <FABRIC_BEARER_TOKEN>
+  pipelineName             Fabric deployment pipeline name        dp-<FABRIC_PROJECT_NAME>
+  mainLakehouseName        Main Lakehouse name                    lh_main
+  mainLakehouseId          Main Lakehouse Id                      derived in bootstrap script
   ```
 
 - Variable group for "Test" environment: **vg-<FABRIC_PROJECT_NAME>-uat**
 
   ```text
-  fabricRestApiEndpoint   Fabric Rest API endpoint          https://api.fabric.microsoft.com/v1
-  workspaceName           Fabric workspace name             ws-<FABRIC_PROJECT_NAME>-uat
-  workspaceId             Fabric workspace Id               derived in bootstrap script
-  token                   Fabric bearer token               <FABRIC_BEARER_TOKEN>
-  pipelineName            Fabric deployment pipeline name   dp-<FABRIC_PROJECT_NAME>
-  mainLakehouseName       Main Lakehouse name               lh_main
-  sourceStageName         Deployment source stage name      Development
-  targetStageName         Deployment target stage name      Test
+  fabricRestApiEndpoint    Fabric Rest API endpoint               https://api.fabric.microsoft.com/v1
+  workspaceName            Fabric workspace name                  ws-<FABRIC_PROJECT_NAME>-uat
+  workspaceId              Fabric workspace Id                    derived in bootstrap script
+  token                    Fabric bearer token                    <FABRIC_BEARER_TOKEN>
+  pipelineName             Fabric deployment pipeline name        dp-<FABRIC_PROJECT_NAME>
+  mainLakehouseName        Main Lakehouse name                    lh_main
+  sourceStageName          Deployment source stage name           Development
+  targetStageName          Deployment target stage name           Test
+  sourceStageWorkspaceName Deployment source stage workspace name ws-<FABRIC_PROJECT_NAME>-dev
+  sourceStageWorkspaceId   Deployment source stage workspace Id   derived in bootstrap script
   ```
 
 - Variable group for "Production" environment: **vg-<FABRIC_PROJECT_NAME>-prd**
 
   ```text
-  fabricRestApiEndpoint   Fabric Rest API endpoint          https://api.fabric.microsoft.com/v1
-  workspaceName           Fabric workspace name             ws-<FABRIC_PROJECT_NAME>-prd
-  workspaceId             Fabric workspace Id               derived in bootstrap script
-  token                   Fabric bearer token               <FABRIC_BEARER_TOKEN>
-  pipelineName            Fabric deployment pipeline name   dp-<FABRIC_PROJECT_NAME>
-  mainLakehouseName       Main Lakehouse name               lh_main
-  sourceStageName         Deployment source stage name      Test
-  targetStageName         Deployment target stage name      Production
+  fabricRestApiEndpoint    Fabric Rest API endpoint               https://api.fabric.microsoft.com/v1
+  workspaceName            Fabric workspace name                  ws-<FABRIC_PROJECT_NAME>-prd
+  workspaceId              Fabric workspace Id                    derived in bootstrap script
+  token                    Fabric bearer token                    <FABRIC_BEARER_TOKEN>
+  pipelineName             Fabric deployment pipeline name        dp-<FABRIC_PROJECT_NAME>
+  mainLakehouseName        Main Lakehouse name                    lh_main
+  sourceStageName          Deployment source stage name           Test
+  targetStageName          Deployment target stage name           Production
+  sourceStageWorkspaceName Deployment source stage workspace name ws-<FABRIC_PROJECT_NAME>-dev
+  sourceStageWorkspaceId   Deployment source stage workspace Id   derived in bootstrap script
   ```
 
 Please note that if you have skipped the creation of above variable groups in the bootstrap script (Flag `create_azdo_variable_groups` set to false), you will need to create them manually in Azure DevOps and add the variables as mentioned above. Please refer to the [Azure DevOps documentation](https://learn.microsoft.com/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=classic) for details.
@@ -280,7 +292,7 @@ Here are the key steps:
 
 > *Due to the constraints in creation of linked services using REST APIs, the data pipeline example only includes activities which doesn't have any linked service references.*
 
-## Known issues
+## Known issues and limitations
 
 ### Passing the Fabric bearer token
 
@@ -298,12 +310,71 @@ For now, the token has to be manually generated and passed to the script as an e
 - **Using browser devtools (F12)**: If you are already logged into Fabric portal, you can invoke the following command from the Browser DevTools (F12) console:
 
     ```powershell
-    > copy(PowerBIAccessToken)
+    > copy(powerBIAccessToken)
     ```
 
     This would copy the token in your clipboard that you can update in the .env file.
 
 - **Acquiring the token programmatically**: A programmatic way of acquiring the access token can be found [here](https://learn.microsoft.com/rest/api/fabric/articles/get-started/fabric-api-quickstart#c-code-sample-for-acquiring-a-microsoft-entra-access-token).
+
+### Implications of using Fabric deployment pipelines for CD
+
+It should be noted that the GIT integration and deployment pipelines are optional features in the sense that you can have a workspace without attaching it to a GIT repository or a deployment pipeline. Also, the workspace GIT integration and deployment pipelines are independent features. i.e., You can have a workspace connected to a GIT repository without a deployment pipeline, and vice versa.
+
+Now, each DEV workspace can have a state of changes that are not yet committed to the GIT repository. Let's term it as "local state". Similarly, there might be changes committed to the GIT repository but not yet synced to the DEV workspace. Let's term it as "remote state".
+
+The possibility of having two different states for the changes has implications on the CI/CD process. As deployment pipeline is associated with the workspaces, and is independent of GIT integration, it would trigger the deployment based on the "local state" of the workspace. This means that the deployment pipeline will trigger the deployment based on the changes that are not yet committed to the GIT repository, and would ignore the committed changes that are yet to be synced to the workspace. And this would result in inconsistent and incorrect deployments. The following diagram illustrates the issue:
+
+![implication-of-deployment-pipeline.svg](./images/implication-of-deployment-pipeline.svg)
+
+- Initially, both the workspace and the GIT repository are in sync. This is represented by the `Local State: V0` in the diagram.
+- The developer makes changes to the workspace and commits them to the GIT repository. However, the changes are not yet synced to the workspace. This is represented by the `Remote State: V1` in the diagram.
+- Another developer makes changes to the workspace directly. These changes are not yet committed to the GIT repository. This is represented by the `Local State: V2` in the diagram.
+- The deployment pipeline is triggered. It will deploy the changes in the `Local State: V2` to the target environment. The changes in the `Remote State: V1` are ignored.
+
+To avoid such issues, the CD pipelines should follow the following steps in the sequence:
+
+1. Sync the workspace with the GIT repository (with "PreferRemote" conflict resolution policy, and "allowOverrideItems" update option set to True).
+1. Undo the changes in the workspace that are not yet committed to the GIT repository.
+1. Kick-off the deployment pipeline.
+
+For achieving the step 1, the script [update-workspace-from-git.ps1](./devops/devops_scripts/update-workspace-from-git.ps1) can be used. The script fetches the latest changes from the GIT repository and syncs the workspace with the latest changes. This script is already included in the [azdo-fabric-cd-release.yml](./devops/azdo-fabric-cd-release.yml) [azdo-fabric-cd-release-with-approvals.yml](./devops/azdo-fabric-cd-release-with-approvals.yml) release pipelines.
+
+Unfortunately, the functionality to undo the local workspace changes is only available on Fabric UI, and can't be done programmatically for now. This is currently a limitation that you should be aware of. As soon as the undo APIs are available, the script will be updated to include this functionality.
+
+### Direct changes made to the "main" branch
+
+Ideally, the changes to the "main" branch should only be made through the "feature" branches and then merged into the "main" branch. This is to ensure that the changes are validated and tested before they are promoted to the "main" branch.
+
+It's possible for the developers to make changes directly to the DEV workspace and push them to the "main" branch. To avoid this, [branch policies](https://learn.microsoft.com/azure/devops/repos/git/repository-settings?view=azure-devops&tabs=browser#branch-policies) in Azure DevOps can be setup to enforce the PR workflow. Please check the [official documentation](https://learn.microsoft.com/azure/devops/repos/git/branch-policies?view=azure-devops&tabs=browser) on how to set up branch policies in Azure DevOps. With branch policies in place, it's not possible to push changes directly to the "main" branch, but only through the PR workflow.
+
+Please note that the sample doesn't enforce the PR workflow as of now. It's the responsibility of the project administrators to set up the branch policies in Azure DevOps.
+
+Also, note that the sample doesn't prevent the developers from making local changes to the DEV workspace directly. The developers should be aware of this and should follow the PR workflow to promote the changes to the "main" branch. Once the APIs to undo the local workspace changes are available, the CD process would be able to handle this scenario.
+
+### Engineers kicking off the deployment pipeline manually via Fabric UI
+
+Depending on the permissions, it's possible for the engineers to kick off the deployment pipeline manually via the Fabric UI. This is not recommended as the deployment pipeline should be triggered only through the Azure DevOps pipelines. The deployment pipeline is created using the Fabric APIs and is associated with the workspaces. The manual triggering of the deployment pipeline via the Fabric UI might result in inconsistent deployments.
+
+To avoid this scenario, ensure that the privileges to trigger the deployment pipeline are only with the Azure DevOps pipelines, the engineers should not have the permissions to trigger the deployment pipeline. Note that pipelines only have one permission, Admin, which is required for sharing, editing and deleting a pipeline. For more information about the permissions, see the [official documentation](https://learn.microsoft.com/fabric/cicd/deployment-pipelines/understand-the-deployment-process#permissions).
+
+### Handing Notebook's default Lakehouse
+
+You can choose to define a default lakehouse for your notebooks. This default lakehouse is then mounted to the runtime working directory, and you can read or write to the default lakehouse using a local path. The information about the default lakehouse gets added as metadata comments within the notebook definition as shown below:
+
+![default-lakehouse](./images/default-lakehouse.png)
+
+This is a great feature to have, but it creates its own challenges for the CD process. When a notebook is promoted using deployment pipelines to a different workspace, the default lakehouse information doesn't get updated. This means that the notebook will still try to read or write to the default lakehouse of the source workspace. This can lead to inconsistent behavior and errors.
+
+This can be avoided in two ways:
+
+1. Avoid using the default lakehouse in the notebooks. Instead, use the actual lakehouse id and rely on the absolute path. This way, the notebook will always read or write to the correct lakehouse irrespective of the workspace it is associated with. This approach would generally work, but it might not be feasible in all scenarios.
+
+2. Fabric supports parameterizing the default lakehouse for each notebook instance when deploying with deployment rules. Using "Default lakehouse rule", you can select a lakehouse to connect to the notebook in the target stage and set it as its default. For more information, please refer to the [official documentation](https://learn.microsoft.com/fabric/data-engineering/notebook-source-control-deployment#notebook-in-deployment-pipelines).
+
+Unfortunately, setting the default lakehouse using the deployment rules is not yet supported through the Fabric APIs. This means that the default lakehouse information in the notebook definition is not updated when the notebook is promoted to a different workspace. The notebooks in the sample avoids this issue by using the approach 1, i.e., using absolute lakehouse path instead of the default one.
+
+If you really want to use the default lakehouse, you can define the deployment rules manually in the Fabric UI after running the bootstrap script. This way, you can set the default lakehouse for each notebook instance in the target stage. These rules needs to be setup up once per notebook and will be applied automatically to all the subsequent deployments.
 
 ### Existing Workspace Warning
 
@@ -406,6 +477,8 @@ If you are running into such issue, you might want to add additional debugging i
 [I] Adding variable 'mainLakehouseName'
 [I] Adding variable 'sourceStageName'
 [I] Adding variable 'targetStageName'
+[I] Adding variable 'sourceStageWorkspaceName'
+[I] Adding variable 'sourceStageWorkspaceId'
 [I] Variable group 'vg-fabric-cicd-prd' already exists. Deleting it.
 [I] Creating variable group: vg-fabric-cicd-prd
 [I] Adding variable 'fabricRestApiEndpoint'
@@ -416,14 +489,32 @@ If you are running into such issue, you might want to add additional debugging i
 [I] Adding variable 'mainLakehouseName'
 [I] Adding variable 'sourceStageName'
 [I] Adding variable 'targetStageName'
+[I] Adding variable 'sourceStageWorkspaceName'
+[I] Adding variable 'sourceStageWorkspaceId'
 [I] ############ END ############
 ```
 
-### The pagination issue with the Fabric REST APIs for List operations
+### The pagination issue with the Fabric REST APIs for list operations
 
 The Fabric REST APIs to `List` things like workspaces, domains, items, etc. have the concept of pagination. If there are a lot of items, the initial API call returns a batch of items along with a `continuationToken` and `continuationUri` to fetch the next batch of items. If the `continuationToken` is not present in the response, it means that there are no more items to fetch.
 
 The script doesn't handle pagination at the moment. It makes the initial call and assumes that all the items are fetched in the first batch. If there are more items to fetch, the script might wrongly assume that the item doesn't exist and try to create it. This is a known limitation with the script and will be addressed in the future.
+
+## Alternate approaches for promoting changes to higher environments
+
+### Using Fabric GIT APIs only
+
+If you don't want to use the Fabric deployment pipelines for continuous delivery (CD), you can use the Fabric Git integration APIs and the GitFlow branching strategy to promote changes to higher environments. In this approach, each workspace is attached to a specific branch in the Git repository. To promote changes to higher environments, a new pull request is raised. When the changes are merged into the target branch, an Azure DevOps pipeline is triggered, which updates the target workspace from Git. The following diagram illustrates this process:
+
+![alternate-approach-1.svg](./images/gitflow-based-deployment.svg)
+
+In the above diagram, there are three workspaces (ignoring 'private' workspaces), and each is linked to a different branch in the Git repository. The CI process remains the same where developers create their own 'Feature' branches and attach those branches to their 'private' workspaces. When the changes are ready to be promoted to the DEV workspace, a pull request is raised from the 'Feature' branch to the 'Main-Dev' branch. When the pull request is merged, an Azure DevOps pipeline is triggered, which updates the DEV workspace from the 'Main-Dev' branch. The same process is followed to promote the changes to the TEST and PROD workspaces. The changes are merged into the 'Main-Test' and 'Main-Prod' branches via PRs, and the corresponding Azure DevOps pipelines are triggered to update the TEST and PROD workspaces respectively using Fabric GIT APIs.
+
+Please note that this approach is conceptual at this stage and not yet implemented in the sample. It has been included here to provide the audience with an alternative approach. Also, it's not really a continuous deployment process as the deployment is based on PR merges and not on code commits.
+
+### Using advanced CI/CD sample
+
+To be added.
 
 ## Other useful utility scripts
 

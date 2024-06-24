@@ -269,8 +269,8 @@ function create_item() {
 
     response=$(curl -s -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $fabric_bearer_token" -d "$create_item_body" "$create_item_url")
     if [[ -n "$response" ]] && [[ "$response" != "null" ]]; then
-        if echo "$response" | jq '.id' > /dev/null 2>&1; then
-            item_id=$(echo "$response" | jq -r '.id')
+        item_id=$(echo "$response" | jq -r '.id // empty')
+        if [ -n "$item_id" ]; then
             echo "[I] Created $item_type '$display_name' ($item_id) successfully."
         else
             echo "[E] $item_type '$display_name' creation failed."
@@ -879,6 +879,8 @@ if [[ "$create_azdo_variable_groups" = "true" ]]; then
         else
             add_variable "$variable_group_id" "sourceStageName" "${pipeline_stage_display_names[i-1]}"
             add_variable "$variable_group_id" "targetStageName" "${pipeline_stage_display_names[i]}"
+            add_variable "$variable_group_id" "sourceStageWorkspaceName" "${workspace_names[i-1]}"
+            add_variable "$variable_group_id" "sourceStageWorkspaceId" "${workspace_ids[i-1]}"
         fi
         delete_variable "$variable_group_id" "foo"
     done
