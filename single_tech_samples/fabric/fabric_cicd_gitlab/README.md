@@ -1,50 +1,35 @@
 # Fabric CI/CD Sample for Multi-Tenancy or Generic Git
 
-This code sample serves as a starting point for implementing CI/CD processes when working with Microsoft Fabric. While it currently has some [limitations](#known-limitations), the goal is to iteratively enhance its capabilities in alignment with Fabric’s advancements.
+## Introduction
 
-The sample is recommended if:
+This code sample provides an advanced mechanism for implementing a CI/CD process with Microsoft Fabric, accomodating multi-tenancy and generic-git deployments. While the sample currently has some [limitations](#known-limitations), the goal is to iteratively enhance its capabilities in alignment with Fabric’s advancements.
+
+This sample is recommended if:
 
 - your organization adopts multi-tenancy in their CI/CD processes, such as the different environments (such as Development, Staging and Production) are on different Microsoft Entra IDs.
 - your organization's preferred git tool is today not yet supported by Fabric (i.e. such as GitLab, and Bitbucket).
 
 If none of the scenarios above match your current situation, consider using the [Fabric CI/CD sample for Azure DevOps](../fabric_ci_cd/README.md).
 
-## Requirements
+## How Does It Work?
 
-- Powershell version 7+
-- Local IDE with git command installed.
-- A DevOps source control system, like Azure DevOps or GitLab.
-- A Fabric tenant with at least one capacity running.
-  - If you don't have a Fabric tenant you can create a [Fabric trial](https://learn.microsoft.com/fabric/get-started/fabric-trial) and use a trial capacity instead.
+### Using REST APIs for creating/updating Fabric items
 
-## Set-up Instructions
+Currently, Microsoft Fabric supports Git integration for Azure DevOps only. For this reason, this sample presents a way to use [Fabric REST APIs](https://learn.microsoft.com/rest/api/fabric/articles/using-fabric-apis) to integrate with other GIT source control mechanisms beyond Azure devOps. A brief summary of the steps involved are:
 
-### Repository
+1. Creating a Fabric workspace (if not existing already)
+2. Creating/updating Fabric items in the workspace to reflect what is on the developer branch.
+3. Working as needed in the Fabric workspace.
+4. Updating changes from workspace to reflect them back in source control.
 
-To use this sample it is advisable that you:
+> **Note 1**: This sample follows a strategy where each feature branch is paired with a corresponding Fabric workspace, implementing a one-workspace-per-branch approach.
+>
+> **Note 2**: This example includes a set of Fabric items to demonstrate the functionality of the solution. You are welcome to substitute these with your own items. In doing so, we advise maintaining identifiers such as workspaceIds and LakehouseIds as parameters for Notebooks and Data Pipelines. Failure to do this may result in the script being unable to push your item definitions if they reference item ids that have been removed.
 
-1. Create a brand new repository with your source control tool of choice.
-2. Clone the entire repository locally to a directory of your choice.
-3. Copy everything that is under [this sample's folder](./) to the directory from step 2.
-4. Read remaining instructions.
+This approach assumes that the developer will operate by following the recommended workflow, as described below in the [Recommended Workflow](#recommended-workflow) section.
 
-### PowerShell Scripts
 
-This sample uses PowerShell scripts to automate the CI/CD process. Below, you’ll find a brief overview of their purpose.
-
-| Script/File | Description |
-|--------|-------------|
-|[params.psd1](./src/params.psd1)|Parameters file - used to store the values of input arguments to the scripts. Update the values as needed.|
-|[update_from_git_to_ws.ps1](./src/update_from_git_to_ws.ps1)|Script to create a Fabric workspace (if non existing) and sync assets from source control (local git branch) to the workspace.|
-|[update_from_ws_to_git.ps1](./src/update_from_ws_to_git.ps1)|Script to update the local repository from the item defintions in the Fabric workspace.|
-
-> Note: to avoid committing secrets to your remote branch, make sure to ignore changes to the local version of your `params.psd1` file.
-
-### DevOps Pipelines
-
-Create Build (CI) and Release (CD) pipelines from the YML definitions provided in this sample. To do so, refer to the information in the [DevOps pipeline readme](./devops/README.md).
-
-## Fabric Items and Source Control
+### Source control mechanism for Fabric items
 
 This sample maintains a record of changes to Fabric items in source control to prevent the need for constant deletion and recreation of modified items. It does this by tracking the *Object Id*s (the GUIDs of the items in the Fabric workspace, as per the Fabric REST APIs) in an `item-config.json` configuration file.
 
@@ -58,7 +43,9 @@ All the files that compose a specific Fabric item are stored in a corresponding 
 
 All these individual item folders are then stored in one main folder, named `fabric` in this sample.
 
-folder structure:
+### Understanding repository structure
+
+The below folder structure offers a visual representation of how this code sample will organize source control files in the repository:
 
 ```fsys
 / (root of this project)
@@ -78,20 +65,46 @@ folder structure:
 └───...
 ```
 
-## Using Fabric item APIs for Git integration
 
-Currently, Microsoft Fabric supports Git integration for Azure DevOps only. This article presents a way to use [Fabric REST APIs](https://learn.microsoft.com/rest/api/fabric/articles/using-fabric-apis) to integrate with other GIT source control mechanisms beyond Azure devOps. A brief summary of the steps involved are:
 
-1. Creating a Fabric workspace (if not existing already)
-2. Creating/updating Fabric items in the workspace to reflect what is on the developer branch.
-3. Working as needed in the Fabric workspace.
-4. Updating changes from workspace to reflect them back in source control.
+### Understanding The PowerShell Scripts
 
-> **Note 1**: This sample follows a strategy where each feature branch is paired with a corresponding Fabric workspace, implementing a one-workspace-per-branch approach.
->
-> **Note 2**: This example includes a set of Fabric items to demonstrate the functionality of the solution. You are welcome to substitute these with your own items. In doing so, we advise maintaining identifiers such as workspaceIds and LakehouseIds as parameters for Notebooks and Data Pipelines. Failure to do this may result in the script being unable to push your item definitions if they reference item ids that have been removed.
+This sample uses PowerShell scripts to automate the CI/CD process. Below, you’ll find a brief overview of their purpose.
 
-This approach assumes that the developer will operate by following the recommended workflow, as described below.
+| Script/File | Description |
+|--------|-------------|
+|[params.psd1](./src/params.psd1)|Parameters file - used to store the values of input arguments to the scripts. Update the values as needed.|
+|[update_from_git_to_ws.ps1](./src/update_from_git_to_ws.ps1)|Script to create a Fabric workspace (if non existing) and sync assets from source control (local git branch) to the workspace.|
+|[update_from_ws_to_git.ps1](./src/update_from_ws_to_git.ps1)|Script to update the local repository from the item defintions in the Fabric workspace.|
+
+> Note: to avoid committing secrets to your remote branch, make sure to ignore changes to the local version of your `params.psd1` file.
+
+### Understanding The DevOps Pipelines
+
+The [DevOps Pipelies README](./devops/README.md) provides a comprehensive explanation of the functionality of the DevOps Pipelines showcased in this example.
+
+## Set-up Instructions
+
+### Pre-Requisites
+
+- Powershell version 7+
+- Local IDE with `git` command installed.
+- A DevOps source control system, like Azure DevOps or GitLab.
+- A Fabric tenant with at least one capacity running.
+  - If you don't have a Fabric tenant you can create a [Fabric trial](https://learn.microsoft.com/fabric/get-started/fabric-trial) and use a trial capacity instead.
+
+### Setting Up Your GIT Repository
+
+To use this sample it is advisable that you:
+
+1. Create a brand new repository with your source control tool of choice.
+2. Clone the entire repository locally to a directory of your choice.
+3. Copy everything that is under [this sample's folder](./) to the directory from step 2.
+4. Read remaining instructions.
+
+### Deployment Steps
+
+Create Build (CI) and Release (CD) pipelines from the YML definitions provided in this sample. To do so, refer to the information in the [DevOps pipeline readme](./devops/README.md).
 
 ### Recommended Workflow
 
@@ -101,11 +114,10 @@ The below picture illustrates these followed by a description of each of the num
 
 **Step 0. Prepare for local development**:
 
-- Create new feature branch from `dev` (or any other development branch) and pull new feature branch locally.
-- In a *bash* session run the following command. This command instructs git to disregard local modifications to any `item-config.json` file. The purpose of this is to prevent the `objectId`s in the `dev` branch from being replaced by the `objectId`s from the developer workspace during a commit. For more information see the [Fabric Items and Source Control](#fabric-items-and-source-control) section.
+- In a `bash` shell run the following command. Replace `feat/feat_1` with your feature branch name and `dev` with you main development branch name. This commands creates a new feature branch locally from `dev` (or the specified branch). It then instructs git to disregard local modifications to any new or existing `item-config.json` file. The purpose of this is to prevent the `objectId`s in the `dev` branch from being replaced by the `objectId`s from the developer workspace during a commit. For more information see the [Source Control Mechanisms for Fabric Items](#source-control-mechanism-for-fabric-items) section.
 
     ```sh
-    git update-index --assume-unchanged $(git ls-files | grep "item-config.json" | tr '\n' ' ')
+    .\new_branch.sh feat/feat_1 dev
     ```
 
 > Note: this approach will also work if no Fabric assets are present on your branch, but you will still need a folder for storing Fabric items definitions later.
@@ -115,7 +127,7 @@ The below picture illustrates these followed by a description of each of the num
 - Update the `params.psd1` file as needed. If you need to generate a new token refer to the [Generating a Fabric Bearer Token](#generating-a-fabric-bearer-token) section. Load the values of the parameters file as follows:
 
     ```pwsh
-    $config = Import-PowerShellDataFile .\<local-file-path>\params.psd1
+    $config = Import-PowerShellDataFile .\src\params.psd1
     ```
 
 - Run the [`update_from_git_to_ws.ps1`](./src/update_from_git_to_ws.ps1) script from the local repository folder. This step will create a new workspace and mirror what is on the repo to the workspace.
@@ -124,13 +136,13 @@ The below picture illustrates these followed by a description of each of the num
   - When running this for the first time on a new branch, utilize the `-resetConfig` setting it to `$true`. This ignores any existing `item-config.json` files and creates corresponding new objects in the workspace. This step is crucial as it prevents the script from failing due to a search for `objectId`s that are coming from the `dev` branch/workspace, which would not exist in the new Fabric workspace.
 
     ```pwsh
-    .\<local-file-path>\update_from_git_to_ws.ps1 -baseUrl $config.baseUrl -fabricToken $config.fabricToken -workspaceName $config.workspaceName -capacityId $config.capacityId -folder $config.folder -resetConfig $true
+    .\src\update_from_git_to_ws.ps1 -baseUrl $config.baseUrl -fabricToken $config.fabricToken -workspaceName $config.workspaceName -capacityId $config.capacityId -folder $config.folder -resetConfig $true
     ```
 
   - All other times you can omit the flag `-resetConfig` (it will default to `$false`).
 
     ```pwsh
-    .\<local-file-path>\update_from_git_to_ws.ps1 -baseUrl $config.baseUrl -fabricToken $config.fabricToken -workspaceName $config.workspaceName -capacityId $config.capacityId -folder $config.folder
+    .\src\update_from_git_to_ws.ps1 -baseUrl $config.baseUrl -fabricToken $config.fabricToken -workspaceName $config.workspaceName -capacityId $config.capacityId -folder $config.folder
     ```
 
 **Step 2. Develop in the Fabric workspace**:
@@ -155,6 +167,8 @@ The below picture illustrates these followed by a description of each of the num
 - When happy with the changes, create a PR to merge the changes.
 
    > **CAUTION**: Make sure that when creating the PR no `item-config.json` files are pushed to `dev`. These files are created in each of the workspace item folder as part of Step 3. This file contains the *logical ids and object ids* to identify each of the assets. However, these vary from workspace to another hence these should not be checked in.
+   > 
+   > **Note**: After the PR is merged it is recommended that the developer delete the feature branch. When, in the local development environment, the developer will switch back to the `dev` branch they will be warned that local changes to `.gitignore` and `item-config.json` files will be lost. There is no harm in doing this.
 
 **Step 6. Follow PR approval process to DEV workspace**:
 
