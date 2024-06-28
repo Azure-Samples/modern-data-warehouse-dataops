@@ -28,7 +28,6 @@ Currently, Microsoft Fabric supports Git integration for Azure DevOps only. For 
 
 This approach assumes that the developer will operate by following the recommended workflow, as described below in the [Recommended Workflow](#recommended-workflow) section.
 
-
 ### Source control mechanism for Fabric items
 
 This sample maintains a record of changes to Fabric items in source control to prevent the need for constant deletion and recreation of modified items. It does this by tracking the *Object Id*s (the GUIDs of the items in the Fabric workspace, as per the Fabric REST APIs) in an `item-config.json` configuration file.
@@ -64,8 +63,6 @@ The below folder structure offers a visual representation of how this code sampl
 │
 └───...
 ```
-
-
 
 ### Understanding The PowerShell Scripts
 
@@ -167,7 +164,7 @@ The below picture illustrates these followed by a description of each of the num
 - When happy with the changes, create a PR to merge the changes.
 
    > **CAUTION**: Make sure that when creating the PR no `item-config.json` files are pushed to `dev`. These files are created in each of the workspace item folder as part of Step 3. This file contains the *logical ids and object ids* to identify each of the assets. However, these vary from workspace to another hence these should not be checked in.
-   > 
+   >
    > **Note**: After the PR is merged it is recommended that the developer delete the feature branch. When, in the local development environment, the developer will switch back to the `dev` branch they will be warned that local changes to `.gitignore` and `item-config.json` files will be lost. There is no harm in doing this.
 
 **Step 6. Follow PR approval process to DEV workspace**:
