@@ -124,7 +124,7 @@ Steps:
 
 1. Verify: echo the env variables that you set previously, if you can get the values that you set in PS/CMD session in WSL session, then it means successfully setup shareable environment variables between WSL and Windows environments.
 
-Reference: [Share Environment Vars between WSL and Windows](https://devblogs.microsoft.com/commandline/share-environment-vars-between-wsl-and-windows/broken-link)
+Reference: [Share Environment Vars between WSL and Windows](https://devblogs.microsoft.com/commandline/share-environment-vars-between-wsl-and-windows/)
 
 ## Release pipeline fails on rerun with: "ERROR: A workspace package with name already exists."
 
