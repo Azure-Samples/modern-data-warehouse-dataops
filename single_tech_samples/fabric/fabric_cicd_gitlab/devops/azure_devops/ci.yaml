@@ -1,0 +1,22 @@
+trigger: none
+
+pr:
+  branches:
+    include:
+    - dev_branch_name
+
+variables:
+  - group: var-group-option-2-common
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- script: |
+    git config --global core.autocrlf true
+    echo "directory name is $(directoryName)"
+    var=$(git --no-pager diff --name-status  origin/development_branch...HEAD | egrep '$(directoryName)\/\w+.\w+\/item-config.json')
+    echo "content of var is $var"
+    if [ -z "${var}" ]; then exit 0; else exit 1; fi;
+  displayName: 'Check if item-config.json files are modified'
+  workingDirectory: $(System.DefaultWorkingDirectory)

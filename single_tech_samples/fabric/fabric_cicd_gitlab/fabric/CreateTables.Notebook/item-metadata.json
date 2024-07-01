@@ -1,0 +1,5 @@
+{
+  "displayName": "CreateTables",
+  "type": "Notebook",
+  "description": "Notebook for creating tables from files in lakehouse"
+}
