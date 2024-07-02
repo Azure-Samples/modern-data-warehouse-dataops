@@ -532,16 +532,17 @@ function add_workspace_admins() {
 EOF
 )
             response=$(curl -s -X POST -H "Authorization: Bearer $fabric_bearer_token" -H "Content-Type: application/json" -d "$add_admin_body" "$add_admin_url")
-            if [[ -n "$response" ]] && [[ "$response" != "null" ]]; then
+            workspace_role_assignment_id=$(echo "$response" | jq -r '.id')
+            if [[ -n "$workspace_role_assignment_id" ]] && [[ "$workspace_role_assignment_id" != "null" ]]; then
+                echo "[I] Added '$upn' as admin of the workspace."
+            else
                 error_code=$(echo "$response" | jq -r '.errorCode')
                 if [[ "$error_code" = "PrincipalAlreadyHasWorkspaceRolePermissions" ]]; then
-                    echo "[W] User '$upn' already has a role assigned in this workspace. Please verify it manually."
+                    echo "[W] '$upn' already has a role assigned in the workspace. Please review it manually."
                 else
                     echo "[E] Adding '$upn' as admin of the workspace failed."
                     echo "[E] $response"
                 fi
-            else
-                echo "[I] Added '$upn' as admin of the workspace."
             fi
         fi
     done
