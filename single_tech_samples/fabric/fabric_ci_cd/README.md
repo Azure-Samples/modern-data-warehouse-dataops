@@ -7,6 +7,7 @@ This repo contains a code sample for establishing a CI/CD process for Microsoft 
 - [Architecture](#architecture)
 - [How to use the sample](#how-to-use-the-sample)
   - [Pre-requisites](#pre-requisites)
+  - [Familiarize yourself with known issues, limitations, and workarounds](#familiarize-yourself-with-known-issues-limitations-and-workarounds)
   - [Execute bootstrap script](#execute-bootstrap-script)
   - [Fabric CI/CD pipelines](#fabric-cicd-pipelines)
     - [CI process](#ci-process)
@@ -16,13 +17,12 @@ This repo contains a code sample for establishing a CI/CD process for Microsoft 
   - [Hydrating Fabric lakehouse](#hydrating-fabric-lakehouse)
     - [Using Fabric notebooks](#using-fabric-notebooks)
     - [Using Fabric data pipelines](#using-fabric-data-pipelines)
-- [Known issues, limitations, and workarounds](#known-issues-limitations-and-workarounds)
 - [Alternate approaches for promoting changes to higher environments](#alternate-approaches-for-promoting-changes-to-higher-environments)
   - [Using Fabric GIT APIs only](#using-fabric-git-apis-only)
   - [Using advanced CI/CD sample](#using-advanced-cicd-sample)
 - [Other useful utility scripts](#other-useful-utility-scripts)
   - [Python script to upload file in GIT repo to Fabric lakehouse](#python-script-to-upload-file-in-git-repo-to-fabric-lakehouse)
-  - [Bash script to update "token" in Azure DevOps variable group](#bash-script-to-update-token-in-azure-devops-variable-group)
+  - [Bash script to update 'token' in AzDo variable group](#bash-script-to-update-token-in-azdo-variable-group)
 - [References](#references)
 
 ## Architecture
@@ -43,11 +43,15 @@ _Note that the private workspace needs to be created manually by the developer f
 
 ### Pre-requisites
 
-- Ensure *always* latest Fabric Token is added to the .env file (see instructions below).
+- Always ensure the latest Fabric Token is added to the .env file (see [instructions](./issues-limitations-and-workarounds.md#passing-the-fabric-bearer-token) for generating the token).
 - [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli?view=azure-cli-latest) and [jq](https://jqlang.github.io/jq/download/) are installed.
 - Ensure that correct Azure account is being used.
 - Access to Azure DevOps organization and project.
 - An Azure Repo. Currently, only [Git in Azure Repos](https://learn.microsoft.com/azure/devops/user-guide/code-with-git?view=azure-devops) with the _same tenant_ as the Fabric tenant is supported.
+
+### Familiarize yourself with known issues, limitations, and workarounds
+
+Refer to the [know issues, limitations, and workarounds](./issues-limitations-and-workarounds.md) page for details. Reviewing this page is highly recommended to understand the limitations, issues, and challenges you may encounter while building CI/CD pipelines for Fabric. It also provides workarounds and alternative approaches to overcome these challenges. This information will also help you understand why certain approaches are used in the bootstrap script and Azure DevOps pipelines.
 
 ### Execute bootstrap script
 
@@ -199,7 +203,7 @@ The bootstrap script creates Azure DevOps variable groups for each environment a
 
 Please note that if you have skipped the creation of above variable groups in the bootstrap script (Flag `create_azdo_variable_groups` set to false), you will need to create them manually in Azure DevOps and add the variables as mentioned above. Please refer to the [Azure DevOps documentation](https://learn.microsoft.com/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=classic) for details.
 
-Also, make sure that the token is still valid for the run, otherwise the pipeline will fail. For more information refer to [Fabric Token](#passing-the-fabric-bearer-token).
+Also, make sure that the token is still valid for the run, otherwise the pipeline will fail. For more information refer to [Fabric Token](./issues-limitations-and-workarounds.md#passing-the-fabric-bearer-token). For a utility script to update the token in Azure DevOps variable group, refer to the [following](#bash-script-to-update-token-in-azdo-variable-group) section.
 
 With that, you are now ready to create and run the CD pipelines in Azure DevOps. Follow the below steps:
 
@@ -285,10 +289,6 @@ Here are the key steps:
 
 > *Due to the constraints in creation of linked services using REST APIs, the data pipeline example only includes activities which doesn't have any linked service references.*
 
-## Known issues, limitations, and workarounds
-
-Refer to [know issues, limitations, and workarounds](./issues-limitations-and-workarounds.md) page for more details. It is highly recommended to review this page to gain insights into the various limitations, issues, and challenges you may encounter while building CI/CD pipelines for Fabric. It also provides some workarounds and alternative approaches to overcome these limitations.
-
 ## Alternate approaches for promoting changes to higher environments
 
 ### Using Fabric GIT APIs only
@@ -303,7 +303,14 @@ Please note that this approach is conceptual at this stage and not yet implement
 
 ### Using advanced CI/CD sample
 
-To be added.
+This sample provides a basic CI/CD process for Fabric. Currently, only Git in Azure Repos with the same tenant as the Fabric tenant is supported. Additionally, the sample relies on Fabric deployment pipelines for promoting changes to higher environments.
+
+While this sample may suffice for many organizations, there are scenarios where a more advanced CI/CD process is needed. Some of these scenarios include:
+
+- Your organization adopts multi-tenancy in their CI/CD processes, with different environments (such as development, staging, and production) on different Microsoft Entra IDs.
+- Your organization's preferred Git tool is not yet supported by Fabric (e.g., GitLab, Bitbucket).
+
+The [advanced Fabric CI/CD sample](./../fabric_cicd_gitlab/README.md) offers a unique approach for addressing these scenarios. This sample utilizes the Fabric REST APIs for creating and updating Fabric items. It extracts the item metadata and definitions (where applicable) and stores them in a Git repository. A configuration file is used to track the Fabric item Object IDs, preventing the need for constant deletion and recreation of modified items.
 
 ## Other useful utility scripts
 
@@ -315,7 +322,7 @@ To facilitate that, the python script [upload-file-to-lakehouse.py](./scripts/la
 
 We plan to use this script in the future to automate the process of uploading "config" files from the Git repository to the Fabric Lakehouse as part of the CI/CD process.
 
-### Bash script to update "token" in Azure DevOps variable group
+### Bash script to update 'token' in AzDo variable group
 
 As you may have noticed, the Azure DevOps pipelines mentioned above take Fabric token as a variable. If this token is expired, the pipelines will fail. To avoid this, the token must be updated in the Azure DevOps variable group before pipeline execution. And this is a manual process for now.
 
