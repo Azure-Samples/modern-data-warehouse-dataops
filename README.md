@@ -57,6 +57,12 @@ This has two version of the solution:
 - [Azure Data Factory and Azure Databricks Version](e2e_samples/parking_sensors/)
 - [Azure Synapse Version](e2e_samples/parking_sensors_synapse/)
 
+### Fabric DataOps Sample
+
+This sample demonstrates end-to-end DataOps process for data solutions build on Microsoft Fabric.
+
+- [Fabric DataOps Sample](./e2e_samples/fabric_dataops_sample/README.md)
+
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
