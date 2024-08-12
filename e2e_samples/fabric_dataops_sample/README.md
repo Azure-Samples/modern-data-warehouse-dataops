@@ -73,9 +73,9 @@ The Fabric resources are deployed using the Fabric REST APIs. Once the terraform
     ALDS_GEN2_CONNECTION_ID="The connection ID for the ADLS Gen2 'Cloud Connection'. If not provided, the ALDS Gen2 shortcut creation would be skipped."
     ```
 
-Leave `ALDS_GEN2_CONNECTION_ID` blank for the first run.
+    Leave `ALDS_GEN2_CONNECTION_ID` blank for the first run.
 
-1 . Review [setup-infra.sh](./infra/setup-infra.sh) script and see if you want to adjust the derived naming of variable names of Azure/Fabric resources.
+1. Review [setup-infra.sh](./infra/setup-infra.sh) script and see if you want to adjust the derived naming of variable names of Azure/Fabric resources.
 
 1. The Azure resources are created using Terraform. The naming of the Azure resources is derived from the `BASE_NAME` environment variable. Please review the [main.tf](./infra/terraform/main.tf) file to understand the naming convention, and adjust it as needed.
 
