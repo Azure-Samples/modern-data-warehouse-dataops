@@ -1,0 +1,6 @@
+# The base name of the Fabric project. This name is used for naming the Azure and Fabric resources.
+BASE_NAME=""
+# The location of the Azure resources. This location is used for creating the Azure resources.
+LOCATION=""
+# The connection ID for the ADLS Gen2 "Cloud Connection". If not provided, the ALDS Gen2 shortcut creation would be skipped.
+ALDS_GEN2_CONNECTION_ID=""
