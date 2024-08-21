@@ -5,3 +5,6 @@ dependencies:
       - pytest==8.2.2
       - ipytest==0.14.2
       - opentelemetry-exporter-otlp==1.25.0
+      - azure-monitor-query==1.4.0
+      - azure-monitor-opentelemetry-exporter==1.0.0b28
+      - opentelemetry-exporter-otlp==1.25.0
