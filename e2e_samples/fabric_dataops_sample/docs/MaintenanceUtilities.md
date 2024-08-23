@@ -1,15 +1,24 @@
 
+TO DO:
+
+WIP
+
 Merge this with Obervability writeup - the generic one with all the possible stuff
 
 - db utils
 - file utils
+- resource management utils
+  - can we use user activity to see if a capacity is in use?
+
+AI principles:
+- Explainable/Visible AI
+- Show first - do not implement 
+  - Two way doors/recoverability
+
 
 AI centric:
+- unusual patterns
 - in fliught checks
-- unusual patterns
-
-AI centric:
-- unusual patterns
 - ofeten used resources based on the queries
 - resources going frequent changes - etimate the freq of changes
   - identify usgae patterns and plan for maintenance - don't perform vaccum every single day
