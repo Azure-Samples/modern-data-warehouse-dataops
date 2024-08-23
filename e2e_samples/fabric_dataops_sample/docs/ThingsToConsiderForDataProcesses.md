@@ -328,10 +328,15 @@ See [Fabirc custom libraries](https://learn.microsoft.com/fabric/data-engineerin
 
 ### Understand making calls to other notebooks/code modules
 
-- Makes the functions available to local session. Only functions definitions any other common params needed are defined in this library notebook. Shown here with an optional parameter that can be used to skip some portion of the code inside a cell.
-- These functions incorporate Opentelemetry based traces and logs generation using the OpenTelemetry providers created in the previous step. See the code in nb_city_safety_common.ipynb for details.
-- Note that the entire notebook will be run.
-- **WARNING**: If there are any variables with the same name then the notebook values that is being called will replace the values in the current notebook context. In the example below - `%run nb_city_safety_common {"execution_mode": "testing"}` will result in `execution_mode = "testing"` in current context as well.
+- `%run` can be used to run a notebook and make its functions available to the local notebook.
+
+- `%run` only recognizes notebooks from same workspace or from notebook *builtin resources* area (using `%run -b`). `notebookutils.notebook.run` can run notebooks from other workspaces but the functions in the called notebook won't be visible to current notebook (no module like treatment). So the notebook examples here uses `%run` to run the notebooks with library functions and make those functions visible to the calling notebook (or testing notebook).
+- As of Aug 2024, `%run` doesn't support variable replacement option i.e., no parameters can be passed as arguments to the run command. See [run a notebook](https://learn.microsoft.com/fabric/data-engineering/author-execute-notebook#reference-run-a-notebook) for details.
+- **WARNING**: If there are any variables with the same name then the notebook values that is being called will replace the values in the current notebook context.
+
+In the example: `%run nb_city_safety_common {"execution_mode": "testing"}` will result in `execution_mode = "testing"` in current context as well.
+
+
 
 ## Make the code configuration driven
 

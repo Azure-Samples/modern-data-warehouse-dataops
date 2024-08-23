@@ -242,7 +242,7 @@ See [code examples](#code-examples) for sample implementation.
 Assumptions/Known limitations:
 
 - If you are running tests outside of Fabric envs, it is possible that some of the Fabric env specific commands can't be tested (e.g., `notebookutils.*`). So Fabric notebooks are used for all these examples.
-- `%run` only recognizes notebooks from same workspace or from notebook *builtin resources* area (using `%run -b`). `notebookutils.notebook.run` can run notebooks from other workspaces but the functions in the called notebook won't be visible to current notebook (no module like treatment). So the notebook examples here use `%run` to run the notebooks with library functions and make those functions visible to the calling notebook (or testing notebook).
+- `%run` only recognizes notebooks from same workspace or from notebook *builtin resources* area (using `%run -b`). `notebookutils.notebook.run` can run notebooks from other workspaces but the functions in the called notebook won't be visible to current notebook (no module like treatment). So the notebook examples here uses `%run` to run the notebooks with library functions and make those functions visible to the calling notebook (or testing notebook).
 - As of Aug 2024, `%run` doesn't support variable replacement option i.e., no parameters can be passed as arguments to the run command. See [run a notebook](https://learn.microsoft.com/fabric/data-engineering/author-execute-notebook#reference-run-a-notebook) for details.
 
 TIPs:
