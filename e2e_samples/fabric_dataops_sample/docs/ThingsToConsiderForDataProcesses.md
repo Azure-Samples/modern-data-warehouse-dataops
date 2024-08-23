@@ -448,7 +448,14 @@ Data quality checks can be performed using mutliple ways:
 - The type of visualizations needed are influenced by the [KPIs](#know-the-kpis).
 - There should always be a state of the system for both operational systems and business data dashboard.
 - [Combine operatonal telemetry/data with business data](#combining-operations-with-business-data). This helps the *continous improvement* activities.
-  
+
+< TO DO>
+
+Adding other aspects of monitoring - user data and security data
+
+- Monitoring hub data as of now is not available
+- we can run item execution apis and store those details periodically
+
 ## Maintenance tools
 
 Besides satisfying the business requirements, systems should also be built for operational efficiencies in mind. Often times this is an iterative process.  Some of the operantional and maintenance tasks can be automated.
