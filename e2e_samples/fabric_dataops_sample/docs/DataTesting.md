@@ -233,7 +233,7 @@ Listed below are the common ways of code existence in Microft Fabric and the rel
 
 - In all options specfied above, these artefacts can be included either as *resources* (either as [environment resources](https://learn.microsoft.com/fabric/data-engineering/environment-manage-resources) or as [notebook resources](https://learn.microsoft.com/fabric/data-engineering/how-to-use-notebook#notebook-resources)) or as [*python libraries*](https://learn.microsoft.com/fabric/data-engineering/environment-manage-library) in a [Fabric environment](https://learn.microsoft.com/fabric/data-engineering/create-and-use-environment).
 - Itis likely that management of *libraries* takes much longer than changes to *resources* when looking at the time for completion of Fabric environment publish step.
-- As of Aug 2024, there is no API support to attach environment level *resources* and this can only be done using browser.
+- As of Aug 2024, there is no API support to attach environment level *resources* and this can only be done using browser or use [workarounds](./ThingsToConsiderForDataProcesses.md#common-resources)
 
 See [code examples](#code-examples) for sample implementation.
 
