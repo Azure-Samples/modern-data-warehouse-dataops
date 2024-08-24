@@ -435,7 +435,7 @@ See [testing data projects](./DataTesting.md) for details.
 
 In addition to having the system available for use, a key measurement of success is meeting business requirements. This means that the system is delivering data to the right audience, with expected levels of *data quality*, frequency and granularity.
 
-==== <WIP> - <Need to add references and code samples>
+==== WIP -Need to add references and code samples
 Data quality checks can be performed using mutliple ways:
 
 - Using tools like GreatExpectations
