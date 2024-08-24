@@ -1,19 +1,21 @@
-# Things to consider while building data processes
+# Key Considerations for Building Data Processes
 
 ***This list is not exhaustive and is a work in progress.***
+
+This document offers insights into the crucial factors to consider when working on data projects, specifically focusing on the utilization of [Microsoft Fabric](https://learn.microsoft.com/fabric/). While the steps outlined here are not exhaustive and may not delve into the finer aspects of end-to-end design, you can find a comprehensive solution that covers all the necessary details for end-to-end design in the [Exploring Modern Data Warehouse (MDW)](https://learn.microsoft.com/data-engineering/playbook/solutions/modern-data-warehouse/) solution documented in [Data Playbook](https://learn.microsoft.com/data-engineering/playbook/?branch=main).
 
 ## General
 
 - [Follow good coding practices](https://microsoft.github.io/code-with-engineering-playbook/).
-- Understand and document high level flow. Be part of architecture design sessions. This is important to know the tech stak, possible interfaces, stakeholders,environment etc.
+- Understand and document high level flow. Be part of architecture design sessions. This is important to know the tech stack, possible interfaces, stakeholders,environment etc.
 - Understand the problem statement.
 - Understand exiting tools and compatability, scability and security, encryption, data privacy, treatment of NPI data etc.
 
 Notebooks:
 
 - If there is only a notebook in the Fabric data pipeline, you can schedule/run it directly with out needing a pipeline.
-- Use absolute paths (as opposed to relative paths) as much as possible. Note that when using `%run` - defult lakehouse is set based on the calling notebook (not the ones which are being run).
-- `%run` nehavior is different than `notebookutils.notebook.run`.
+- Use absolute paths (as opposed to relative paths) as much as possible. Note that when using `%run` - default lakehouse is set based on the calling notebook (not the ones which are being run).
+- `%run` behavior is different than `notebookutils.notebook.run`.
 
 ## Document the assumptions and known limitations
 
