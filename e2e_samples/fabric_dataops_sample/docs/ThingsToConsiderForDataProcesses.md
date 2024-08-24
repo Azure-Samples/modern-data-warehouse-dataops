@@ -170,10 +170,10 @@ As of Aug 2024, there is no API support to upload resources. The below workaroun
 - Create a notebook and associate that notebook with the Fabric environment where you want to add resources.
 - Add the following code to the notebook:
 
-      ```python
-      # This will copy from ADLS to Fabric environment resource area- no need to perform any additional deployments/publish. The file is availble to all artefacts which are using this Fabric environment.
-      notebookutils.fs.cp("abfss://<container-name>@<storage-account-name>.dfs.core.windows.net/<relative-path>/<file-name>", f"file:{notebookutils.nbResPath}/env/<file-name>")
-      ```
+    ```python
+    # This will copy from ADLS to Fabric environment resource area- no need to perform any additional deployments/publish. The file is availble to all artefacts which are using this Fabric environment.
+    notebookutils.fs.cp("abfss://<container-name>@<storage-account-name>.dfs.core.windows.net/<relative-path>/<file-name>", f"file:{notebookutils.nbResPath}/env/<file-name>")
+    ```
 
 - Run the notebook.
 
@@ -190,10 +190,10 @@ As of Aug 2024, there is no API support to upload resources. The below workaroun
 - Open the notebook where you want to add resources.
 - Add the following code to the notebook:
 
-      ```python
-      # This will copy from ADLS to Fabric notebook resource area - The file is available to all sunsequent sessions of the runbook.
-      notebookutils.fs.cp("abfss://<container-name>@<storage-account-name>.dfs.core.windows.net/<relative-path>/<file-name>", f"file:{notebookutils.nbResPath}/builtin/<file-name>")
-      ```
+    ```python
+    # This will copy from ADLS to Fabric notebook resource area - The file is available to all sunsequent sessions of the runbook.
+    notebookutils.fs.cp("abfss://<container-name>@<storage-account-name>.dfs.core.windows.net/<relative-path>/<file-name>", f"file:{notebookutils.nbResPath}/builtin/<file-name>")
+    ```
 
 - Run the notebook.
 
@@ -257,7 +257,7 @@ Consider information about a process/system like stake holders, SLA requirements
 
 In Fabric, common code be made availble in multiple ways using:
 
-- [Fabric environment custom libraries](#managing-custom-libraries-using-fabric-environments): This applies for python libraries only. Can be source controlled with Fabric environment. Another advanatge is a deployment pipeline can copy these artefacts into next stage. Disadvantage is if there is a change then environment also need to be re-built and deployed which is a slow process. This could also cause issues for issues for other users who are sharing the environment. 
+- [Fabric environment custom libraries](#managing-custom-libraries-using-fabric-environments): This applies for python libraries only. Can be source controlled with Fabric environment. Another advanatge is a deployment pipeline can copy these artefacts into next stage. Disadvantage is if there is a change then environment also need to be re-built and deployed which is a slow process. This could also cause issues for issues for other users who are sharing the environment.
 - [Fabric resources](#common-resources): These can be notebook built in resources or environment level resources. The addition of artefacts can be done using notebooks/code which woudln't require redeployment of environment in the case of environement resource update. While this is faster, it has the potential of allowing authorized changes. Note that, deployment pipelines currently (as of Aug 2024) don't support copying these resources into next stage.
 
 #### Managing public libraries using Fabric environments
@@ -338,8 +338,6 @@ See [Fabirc custom libraries](https://learn.microsoft.com/fabric/data-engineerin
 
 In the example: `%run nb_city_safety_common {"execution_mode": "testing"}` will result in `execution_mode = "testing"` in current context as well.
 
-
-
 ## Make the code configuration driven
 
 To improve the flexibility and avoid hardcoding values, you can utilize configuration files or parameters options. This approach allows you to update the necessary values or control the run time behavior without modifying the code itself.
@@ -355,8 +353,7 @@ There are multiple ways parameters can be set when using Fabric notebooks:
    - [Invoke using API](https://learn.microsoft.com/fabric/data-engineering/notebook-public-api#run-a-notebook-on-demand) - You can use "configuration" boody to send the params.
    - [Designate a parameters cell](https://learn.microsoft.com/fabric/data-engineering/author-execute-notebook#designate-a-parameters-cell) and [read parameters from a pipeline](https://learn.microsoft.com/fabric/data-engineering/author-execute-notebook#parameterized-session-configuration-from-a-pipeline).
 
-
-[Parameters cell](https://learn.microsoft.com/fabric/data-engineering/author-execute-notebook#designate-a-parameters-cell) will work regardless of the method chosen.
+Note that [Parameters cell](https://learn.microsoft.com/fabric/data-engineering/author-execute-notebook#designate-a-parameters-cell) will work regardless of the method chosen.
 
 To ensure proper functionality, it is recommended to set the `defaultLakehouse` when working with relative paths in your notebook. By doing so you can avoid any potential issues that may arise from using relative paths.  If the defaultLakehouse is not explicitly defined, the notebook will automatically adopt the lakehouse it was initially associated with during creation as its default lakehouse. **Best practice is to avoid relative paths while coding and use absolute paths**. This practice will also help avoid any conflicts when executing notebooks using `%run`, as the default lakehouse of the main notebook will serve as the default lakehouse for the session during reference runs.
 
@@ -432,23 +429,23 @@ Similar to testing, observability should be part of a system design from the beg
 
 Applications/systems/processes should be having testing in place from the very begining. Not only this helps to ensure to avoid costly re-runs/re-work it also helps the team adopt best practices.
 
-See [testing data projects](../DataTesting.md) for details.
+See [testing data projects](./DataTesting.md) for details.
 
 ## Value proposition - DQ
 
 In addition to having the system available for use, a key measurement of success is meeting business requirements. This means that the system is delivering data to the right audience, with expected levels of *data quality*, frequency and granularity.
 
-< WIP> - <Need to add references and code samples>
+==== <WIP> - <Need to add references and code samples>
 Data quality checks can be performed using mutliple ways:
 
-- Using tools like GreatExpectations 
+- Using tools like GreatExpectations
   - Great for running rules on data at rest. Data in transit checks are tough. Validation of entire data set can be very verbose as outputs are in Json.
 - Custom coding
   - Need custom development and build, but can be applied for data inflight as well. We can build something like a rule engine - which can attach the results to the record itself for later processing.
 
 ## Combining Operations with Business data
 
-- See [Observability section](../MonitoringAndObservabilityUsingOpenTelemetry.md#sample-usecases-for-telemetry-data) for sample use case.
+- See [Observability section](./MonitoringAndObservabilityUsingOpenTelemetry.md#sample-usecases-for-telemetry-data) for sample use case.
 
 ## Visualizations
 
