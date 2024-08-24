@@ -415,7 +415,6 @@ In both cases, the file can be accessed using python file operations. Here is a 
   # Reading file stored as environment resource
   config.read(f"{mssparkutils.nbResPath}/env/<your_config_file>")        
   ```
-
 Note:
 
 - `configparser` can only read from local file structure (but not ADLS paths). So, in this case we need a way to copy config file to (environment or notebook) resource path.
