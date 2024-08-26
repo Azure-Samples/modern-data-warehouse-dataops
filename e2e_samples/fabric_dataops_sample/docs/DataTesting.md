@@ -356,9 +356,3 @@ print(stderr)
 1. [Notebook testing - MS Learn](https://learn.microsoft.com/azure/databricks/notebooks/testing)
 1. [Testbook - Python Unittesting for notebooks](https://github.com/nteract/testbook)
 1. [MDW Parking sensor testing - Azure samples](https://github.com/Azure-Samples/modern-data-warehouse-dataops/tree/main/e2e_samples/parking_sensors#testing)
-
-Revise and delete:
-
-- https://www.losant.com/blog/automating-unit-tests-for-jupyter-python-notebooks-using-ipynb-and-nbmake
-- https://stackoverflow.com/questions/40172281/unit-tests-for-functions-in-a-jupyter-notebook
-- https://www.practitest.com/resource-center/article/system-testing-vs-integration-testing/#:~:text=The%20integration%20testing%20is%20performed,test%20engineers%2C%20and%20also%20developers.
