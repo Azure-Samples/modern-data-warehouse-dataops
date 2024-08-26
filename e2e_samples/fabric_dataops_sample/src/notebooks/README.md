@@ -58,7 +58,7 @@ with Diagram("Process flow", show=False, curvestyle="curved" ):
         blob_storage >> synapse_analytics >> [kusto_db, lakehouse_folder, log_analytics_workspaces]
 ```
 
-![process_flow.png](attachment:c0844d77-f1ee-4813-b714-a01fc91c9f1f.png)
+![process_flow.png](../../images/city-safety-process-flow.png)
 
 ### Telemetry instrumentation flow diagram code
 
@@ -85,12 +85,14 @@ with Diagram("OpenTelemetry Trace output", show=False, direction="LR"):  # Graph
         data_activities >> second_child_span >> third_child_span
 ```
 
-Here There is a *root span* under which all other child/nested spans are created. Under this *rootspan* - we have one *etl_steps_span* which acts as the parent span for each of the city level span i.e., a span while processing for a city (*city level span*) is created as a nested span under *etl_steps_span*. In our example, this process is pretty isolated and has no upstreams/downstream processes. In cases where is part of a pipeline of processes, then we should ensure to maintain Correlation ids (by using ingecting context from upstream processes). 
+Here, you have a *root span* under which all other child/nested spans are created. Under this *rootspan* - there is one *etl_steps_span* which acts as the parent span for each of the city level span i.e., a span while processing for a city (*city level span*) is created as a nested span under *etl_steps_span*. In this example, the process is an isolated one and has no upstreams/downstream processes. In cases where is part of a pipeline of processes, then you should ensure to maintain Correlation ids (by using [injecting context](https://opentelemetry.io/docs/concepts/signals/traces/#context-propagation) from upstream processes).
 
-TO DO: Give examples here.
-
-![opentelemetry_trace_output.png](attachment:1fbb91dc-3a17-4a84-a308-122709b3511d.png)
+![opentelemetry_trace_output.png](../../images/opentelemetry_trace_output.png)
 
 ## Sample - Covid data
 
-Implementation: Refer to [nb-covid-data.ipynb](./nb-covid-data.ipynb)
+Implementation: Refer to [nb-covid-data.ipynb](./nb-covid-data.ipynb).
+
+This notebook is part of a data pipeline.
+
+TO DO: Add more details.
