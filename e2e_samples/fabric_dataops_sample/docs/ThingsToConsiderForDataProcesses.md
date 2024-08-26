@@ -443,6 +443,10 @@ Data quality checks can be performed using mutliple ways:
 - Custom coding
   - Need custom development and build, but can be applied for data inflight as well. We can build something like a rule engine - which can attach the results to the record itself for later processing.
 
+- Add integration with Purview
+- Greatexpectations usgae (static - aggregate metrics)
+- Record level checks (custom dq engine)
+
 ## Combining Operations with Business data
 
 - See [Observability section](./MonitoringAndObservabilityUsingOpenTelemetry.md#sample-usecases-for-telemetry-data) for sample use case.
@@ -459,6 +463,8 @@ Adding other aspects of monitoring - user data and security data
 
 - Monitoring hub data as of now is not available
 - we can run item execution apis and store those details periodically
+
+see [Data reporting](./DataReporting.md).
 
 ## Maintenance tools
 

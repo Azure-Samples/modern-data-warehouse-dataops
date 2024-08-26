@@ -3,6 +3,11 @@ TO DO:
 
 WIP
 
+
+
+
+
+- 
 Merge this with Obervability writeup - the generic one with all the possible stuff
 
 - db utils
@@ -22,7 +27,8 @@ AI centric:
 - ofeten used resources based on the queries
 - resources going frequent changes - etimate the freq of changes
   - identify usgae patterns and plan for maintenance - don't perform vaccum every single day
-
+ - Fabric AI skill (more configurable) VS copilot (less configurable): See Serra's blog - https://www.jamesserra.com/archive/2024/08/microsoft-fabric-ai-skill/ and https://www.jamesserra.com/archive/2024/06/introduction-to-openai-and-llms-part-2/
+ 
 Others
 - Vaccum 
 - disbaled/invalid assets asset identfication
@@ -55,5 +61,4 @@ Data presentation
 - current resource usage
 - last used resource times
 - high priortiy source systems satus
-
 

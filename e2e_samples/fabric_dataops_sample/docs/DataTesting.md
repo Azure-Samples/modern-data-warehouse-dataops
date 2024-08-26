@@ -211,16 +211,17 @@ Listed below are the common ways of code existence in Microft Fabric and the rel
      - If the test cases are written inside a notebook - Using `ipytest`.
      - If the notebook is saved as a `.py` file - [Testing Pyspak application](https://spark.apache.org/docs/latest/api/python/getting_started/testing_pyspark.html) using frameworks like [unittest](https://docs.python.org/3/library/unittest.html) and [pytest](https://docs.pytest.org/).
    - Code organization:
-     - Option 1: Unit tests use the same notebook as the code being tested.
+     - Option 1: **Unit tests use the same notebook as the code being tested**.
        - Pros:
          - Less number of notebooks to maintain compared to sepearate notebook option.
          - No other tools required other than the notebook.
          - Environment settings/globals are readily available from the main code in the same notebook.
+         - One scenario, where this can be consideered is running [shakoeut tests](#environment-shakeout-tests) before each execution to avoid connection issues and not even kick-off the maincode incase of failures.
        - Cons:
          - Unit tests will run everytime code is run unless additional logic introduced to exclude unit tests based on some input arguments.
          - Diminished ability to use as code modules in another notebook without additional code.
          - Limited support for linting/formatting, no support for code coverage and testing can only be done using a notebook.
-     - Option 2: Unit tests use a separate notebook than the code being tested.
+     - Option 2: **Unit tests use a separate notebook than the code being tested**.
        - Pros:
          - No other tools required other than the notebook.
          - Unit test cases can be run indendeptly from the code being tested.
@@ -354,6 +355,7 @@ print(stderr)
 1. [DevOps Shifting left - MS Learn](https://learn.microsoft.com/devops/develop/shift-left-make-testing-fast-reliable)
 1. [Notebook testing - MS Learn](https://learn.microsoft.com/azure/databricks/notebooks/testing)
 1. [Testbook - Python Unittesting for notebooks](https://github.com/nteract/testbook)
+1. [MDW Parking sensor testing - Azure samples](https://github.com/Azure-Samples/modern-data-warehouse-dataops/tree/main/e2e_samples/parking_sensors#testing)
 
 Revise and delete:
 
