@@ -1,4 +1,13 @@
 #!/bin/bash
+
+#######################################################
+# Deploys all necessary azure and Fabric resources
+#
+# Prerequisites:
+# - User is logged in to the azure cli
+# - Correct Azure subscription is selected
+#######################################################
+
 source .env
 
 ## Environment variables

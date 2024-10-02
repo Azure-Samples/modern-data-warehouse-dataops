@@ -13,9 +13,9 @@ variable "location" {
   type        = string
 }
 
-variable "admin_email" {
-  type        = string
-  description = "Fabric capacity admin email"
+variable "admin_members" {
+  type        = list(string)
+  description = "Fabric capacity admin members, can be email (for user) or id (for service principal)"
 }
 
 variable "sku" {
