@@ -40,14 +40,18 @@ pipeline_names=("pl-covid-data")
 deploy_terraform_resources() {
     cd "$1" || exit
 
-    user_principal_name=$(az ad signed-in-user show --query userPrincipalName -o tsv)
+    user_principal_name=$(az account show --query user.name -o tsv)
+    user_principal_type=$(az account show --query user.type -o tsv)
+    if [[$user_principal_type == "user"]]; then use_cli="true"; else use_cli="false"; fi
+
 
     terraform init
     terraform apply \
         -auto-approve \
         -var "base_name=$base_name" \
         -var "location=$location" \
-        -var "fabric_capacity_admin=$user_principal_name"
+        -var "fabric_capacity_admin=$user_principal_name" \
+        -var "use_cli=$use_cli"
 
     tf_storage_container_name=$(terraform output --raw storage_container_name)
     tf_fabric_capacity_name=$(terraform output --raw fabric_capacity_name)

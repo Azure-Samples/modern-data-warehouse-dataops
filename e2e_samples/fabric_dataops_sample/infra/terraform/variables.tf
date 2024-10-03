@@ -1,3 +1,8 @@
+variable "use_cli" {
+  description = "Select whether you are using a user context or managed credential login (0/1)"
+  type = bool
+}
+
 variable "base_name" {
   description = "The base name of the deployed Azure resources"
   type        = string

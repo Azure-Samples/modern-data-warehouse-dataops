@@ -27,7 +27,7 @@ terraform {
 provider "random" {}
 provider "azuread" {}
 provider "fabric" {
-  use_cli = true
+  use_cli = var.use_cli
 }
 provider "azurerm" {
   resource_provider_registrations = "none"
@@ -214,6 +214,8 @@ module "fabric_data_pipeline" {
 }
 
 # domain/sub-domain?
-# trigger pipeline
 # connect to git
-# deployment pipeline
+# shortcut
+
+# deployment pipeline is not supported by TF yet
+# trigger pipeline not IaC
