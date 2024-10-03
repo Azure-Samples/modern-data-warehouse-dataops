@@ -29,3 +29,27 @@ variable "rg_name" {
   description = "The resource group name where the Azure resources will be created"
   type = string  
 }
+variable "git_organization_name" {
+  type        = string
+  description = "The Git organization name"
+}
+
+variable "git_project_name" {
+  type        = string
+  description = "The Git project name"
+}
+
+variable "git_repository_name" {
+  type        = string
+  description = "The Git repository name"
+}
+
+variable "git_branch_name" {
+  type        = string
+  description = "The Git branch name"
+}
+
+variable "git_directory_name" {
+  type        = string
+  description = "The directory name for Fabric artifacts"
+}

@@ -202,6 +202,8 @@ module "fabric_notebook" {
   notebook_definition_path  = local.notebook_defintion_path
 }
 
+# below modules currently do not support Service Principal/Managed Identities execution context
+
 module "fabric_data_pipeline" {
   source                        = "./modules/fabric/data_pipeline"
   data_pipeline_name            = "pl-${local.base_name}"
@@ -213,9 +215,18 @@ module "fabric_data_pipeline" {
   }
 }
 
-# domain/sub-domain?
-# connect to git
-# shortcut
+module "fabric_workspace_git_integration" {
+  source                  = "./modules/fabric/git_integration"
+  workspace_id            = module.fabric_workspace.workspace_id
+  initialization_strategy = "PreferWorkspace"
+  project_name            = var.git_project_name
+  organization_name       = var.git_organization_name
+  branch_name             = var.git_branch_name
+  directory_name          = var.git_directory_name
+  repository_name         = var.git_repository_name
+  git_provider_type       = "AzureDevOps" 
+}
 
-# deployment pipeline is not supported by TF yet
-# trigger pipeline not IaC
+# EXCLUDED:
+# deployment pipeline as is not supported by TF yet
+# trigger data pipeline not IaC

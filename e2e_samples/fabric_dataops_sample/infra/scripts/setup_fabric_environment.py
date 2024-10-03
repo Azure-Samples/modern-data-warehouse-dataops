@@ -169,8 +169,8 @@ def get_libraries(workspace_id, environment_id, status):
             print(f"[E] Failed to retrieve '{status}' libraries.")
             print(f"[E] {response_json}")
 
-def update_spark_setting(workspace_id, environment_name, runtime_version = "1.2"):
-    update_spark_setting_url = f"{fabric_api_endpoint}/workspaces/{workspace_id}/spark/settings"
+def update_spark_settings(workspace_id, environment_name, runtime_version = "1.2"):
+    update_spark_settings_url = f"{fabric_api_endpoint}/workspaces/{workspace_id}/spark/settings"
     payload = {
         "environment": {
             "name": environment_name,
@@ -181,7 +181,7 @@ def update_spark_setting(workspace_id, environment_name, runtime_version = "1.2"
         }
     }
 
-    response = requests.patch(update_spark_setting_url, headers=headers, json=payload)
+    response = requests.patch(update_spark_settings_url, headers=headers, json=payload)
 
     if response.status_code == 200:
         print(f"[I] Spark settings (default environment) updated successfully for the workspace.")
@@ -217,4 +217,4 @@ if __name__ == "__main__":
     get_libraries(workspace_id, environment_id, status="published")
     get_libraries(workspace_id, environment_id, status="staging")
 
-    update_spark_setting(workspace_id, environment_name, runtime_version = "1.2")
+    update_spark_settings(workspace_id, environment_name, runtime_version = "1.2")
