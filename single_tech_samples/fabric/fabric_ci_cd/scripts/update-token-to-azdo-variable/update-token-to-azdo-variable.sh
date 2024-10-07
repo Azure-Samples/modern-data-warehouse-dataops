@@ -35,7 +35,7 @@ if [ -z "$variable_group_id" ]; then
 fi
 
 # Check if the variable exists
-variable_value=$(az pipelines variable-group variable list \
+variable_exists=$(az pipelines variable-group variable list \
                     --org "$organization_url" \
                     --project "$project" \
                     --group-id "$variable_group_id" \
@@ -43,7 +43,7 @@ variable_value=$(az pipelines variable-group variable list \
                     -o tsv)
 
 # Check if the variable exists
-if [ "$variable_value" == "true" ]; then
+if [ "$variable_exists" == "true" ]; then
   echo "[I] Variable '$variable_name' found in the variable group '$variable_group_name', updating the variable."
   az pipelines variable-group variable update \
     --org "$organization_url" \
