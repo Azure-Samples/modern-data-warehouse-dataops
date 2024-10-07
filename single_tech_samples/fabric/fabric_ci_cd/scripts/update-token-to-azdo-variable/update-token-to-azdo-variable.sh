@@ -39,13 +39,13 @@ variable_value=$(az pipelines variable-group variable list \
                     --org "$organization_url" \
                     --project "$project" \
                     --group-id "$variable_group_id" \
-                    --query "$variable_name.value" \
+                    --query "contains(keys(@), '$variable_name')" \
                     -o tsv)
 
 # Check if the variable exists
-if [ -z "$variable_value" ]; then
-  echo "[I] Variable '$variable_name' not found in the variable group '$variable_group_name', creating the variable."
-  az pipelines variable-group variable create \
+if [ "$variable_value" == "true" ]; then
+  echo "[I] Variable '$variable_name' found in the variable group '$variable_group_name', updating the variable."
+  az pipelines variable-group variable update \
     --org "$organization_url" \
     --project "$project" \
     --group-id "$variable_group_id" \
@@ -53,8 +53,8 @@ if [ -z "$variable_value" ]; then
     --name "$variable_name" \
     --value "$token"
 else
-  echo "[I] Variable '$variable_name' found in the variable group '$variable_group_name', updating the variable."
-  az pipelines variable-group variable update \
+  echo "[I] Variable '$variable_name' not found in the variable group '$variable_group_name', creating the variable."
+  az pipelines variable-group variable create \
     --org "$organization_url" \
     --project "$project" \
     --group-id "$variable_group_id" \
