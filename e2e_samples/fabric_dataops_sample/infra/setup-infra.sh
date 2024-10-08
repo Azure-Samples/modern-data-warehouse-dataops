@@ -432,4 +432,8 @@ fi
 # fi
 
 echo "[I] ############ Uploading packages to Environment ############"
-python3 ./../scripts/setup_fabric_environment.py --workspace_name "$workspace_name" --environment_name "$environment_name" --bearer_token "$fabric_bearer_token"
+if [[ "$use_cli" ]]; then
+    python3 ./../scripts/setup_fabric_environment.py --workspace_name "$workspace_name" --environment_name "$environment_name" --bearer_token "$fabric_bearer_token"
+else
+    echo "[I] Service Principal does not support loading environments, skipping."
+fi
