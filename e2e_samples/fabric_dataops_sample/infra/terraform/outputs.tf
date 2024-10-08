@@ -1,3 +1,19 @@
+output "workspace_name" {
+  value = module.fabric_workspace.workspace_name
+}
+
+output "environment_name" {
+  value = module.fabric_environment.environment_name
+}
+
+output "storage_container_name" {
+  value = module.adls.storage_container_name
+}
+
+output "storage_account_primary_dfs_endpoint" {
+  value = module.adls.primary_dfs_endpoint
+}
+
 # output "security_group_id" {
 #   value = azuread_group.sg.id
 # }
@@ -12,14 +28,6 @@
 
 # output "storage_account_name" {
 #   value = module.adls.storage_account_name
-# }
-
-# output "storage_account_primary_dfs_endpoint" {
-#   value = module.adls.primary_dfs_endpoint
-# }
-
-# output "storage_container_name" {
-#   value = module.adls.storage_container_name
 # }
 
 # output "storage_account_key" {

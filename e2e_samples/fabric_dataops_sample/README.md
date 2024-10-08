@@ -49,6 +49,7 @@ The Fabric resources are deployed using the Fabric REST APIs. Once the terraform
   - [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli?view=azure-cli-latest)
   - [jq](https://jqlang.github.io/jq/download/)
   - terraform
+  - python version ?
 - Access to Azure DevOps organization and project.
 - Contributor permissions to an Azure Repo in such Azure DevOps environment.
 
@@ -83,6 +84,8 @@ The Fabric resources are deployed using the Fabric REST APIs. Once the terraform
     source .env
     az login --service-principal -u $FABRIC_CLIENT_ID -p $FABRIC_CLIENT_SECRET --tenant $FABRIC_TENANT_ID
     ```
+
+1. TODO: add requirements.txt
 
 1. Review [setup-infra.sh](./infra/setup-infra.sh) script and see if you want to adjust the derived naming of variable names of Azure/Fabric resources.
 

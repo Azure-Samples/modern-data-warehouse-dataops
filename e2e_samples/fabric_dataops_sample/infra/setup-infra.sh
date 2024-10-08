@@ -20,7 +20,6 @@ tenant_id="$FABRIC_TENANT_ID"
 tf_storage_account_name=""
 tf_storage_container_name=""
 tf_storage_account_url=""
-tf_fabric_capacity_name=""
 
 # Fabric bearer token variables, set globally
 fabric_bearer_token=""
@@ -63,9 +62,9 @@ deploy_terraform_resources() {
         # -var "git_directory_name=$TF_VAR_git_directory_name"
 
     tf_storage_container_name=$(terraform output --raw storage_container_name)
-    tf_fabric_capacity_name=$(terraform output --raw fabric_capacity_name)
-    tf_security_group_name=$(terraform output --raw security_group_display_name)
     tf_storage_account_url=$(terraform output --raw storage_account_primary_dfs_endpoint)
+    workspace_name=$(terraform output --raw workspace_name)
+    environment_name=$(terraform output --raw workspace_name)
 }
 
 # function get_tenant_id() {
@@ -433,4 +432,4 @@ fi
 # fi
 
 echo "[I] ############ Uploading packages to Environment ############"
-python3 ./../scripts/setup_fabric_environment.py --workspace_name "$fabric_workspace_name" --environment_name "$environment_name" --bearer_token "$fabric_bearer_token"
+python3 ./../scripts/setup_fabric_environment.py --workspace_name "$workspace_name" --environment_name "$environment_name" --bearer_token "$fabric_bearer_token"
