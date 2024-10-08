@@ -37,23 +37,26 @@ The Fabric resources are deployed using the Fabric REST APIs. Once the terraform
 
 ### Prerequisites
 
-- An Azure subscription.
-- A user account with elevated privileges:
+- A user account with elevated privileges, such as:
   - Ability to create service principals and Entra security groups.
   - Ability to create and manage Azure resources including Fabric capacity.
-  - "Fabric Administrator" role.
-- [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli?view=azure-cli-latest) and [jq](https://jqlang.github.io/jq/download/)
+  - [Microsoft Fabric admin](https://learn.microsoft.com/fabric/admin/microsoft-fabric-admin) role.
+- An Azure subscription.
+  - On your Azure subscription you should register the Microsoft.Fabric [resource provider](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#register-resource-provider).
+  - A resource group to which you should have Contributor + User Access Administrator permissions.
+  - A Service Principal with Contributor + User Access Administrator permissions to the above mentioned resource group. For detailed steps on Service Principal and secret creation, [follow the Microsoft Fabric Terraform provider instructions for authenticating with Service Principal and Client Secret](https://registry.terraform.io/providers/microsoft/fabric/latest/docs/guides/auth_spn_secret).
+- A bash shell with the following installed:
+  - [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli?view=azure-cli-latest)
+  - [jq](https://jqlang.github.io/jq/download/)
+  - terraform
 - Access to Azure DevOps organization and project.
-- An Azure Repo.
+- Contributor permissions to an Azure Repo in such Azure DevOps environment.
 
 ### Setting up the Infrastructure
 
 1. Clone the repository:
 
     ```bash
-    # Optional
-    az login --tenant "<tenant_id>"
-    az account set -s "<subscription_id>"
     cd "<installation_folder>"
     # Repo clone
     git clone https://github.com/Azure-Samples/modern-data-warehouse-dataops.git
@@ -75,6 +78,12 @@ The Fabric resources are deployed using the Fabric REST APIs. Once the terraform
 
     Leave `ALDS_GEN2_CONNECTION_ID` blank for the first run.
 
+1. Import the environment variables file and authenticate to Azure with Service Principal
+    ```bash
+    source .env
+    az login --service-principal -u $FABRIC_CLIENT_ID -p $FABRIC_CLIENT_SECRET --tenant $FABRIC_TENANT_ID
+    ```
+
 1. Review [setup-infra.sh](./infra/setup-infra.sh) script and see if you want to adjust the derived naming of variable names of Azure/Fabric resources.
 
 1. The Azure resources are created using Terraform. The naming of the Azure resources is derived from the `BASE_NAME` environment variable. Please review the [main.tf](./infra/terraform/main.tf) file to understand the naming convention, and adjust it as needed.
@@ -94,6 +103,18 @@ The Fabric resources are deployed using the Fabric REST APIs. Once the terraform
     ![fetching-connection-id](./images/cloud-connection.png)
 
 1. Update variable `ALDS_GEN2_CONNECTION_ID` in `.env` file with the connection id fetched above and rerun the [setup-infra.sh](./infra/setup-infra.sh) script. This time, it would create the Lakehouse shortcut to ALDS Gen2 storage account. Rest of the resources would remain unchanged.
+
+1. From this step onward you will need to authenticate using your user context. Modify the value of the environment variable "TF_VAR_use_cli" and set it to true:
+    ```bash
+    TF_VAR_use_cli="true"
+    ```
+
+1. Import the environment file once again and authenticate **with user context** (required for the second run):
+
+    ```bash
+    source .env
+    az login --allow-no-subscriptions --tenant $FABRIC_TENANT_ID --scope api://fabric_terraform_provider/.default
+    ```
 
 ## Understanding the CI Process
 

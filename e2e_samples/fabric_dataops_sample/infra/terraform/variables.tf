@@ -3,6 +3,12 @@ variable "use_cli" {
   type = bool
 }
 
+
+variable "tenant_id" {
+  type = string
+  description = "Tenant ID"
+}
+
 variable "base_name" {
   description = "The base name of the deployed Azure resources"
   type        = string
@@ -20,8 +26,8 @@ variable "fabric_capacity_admin" {
 }
 
 
-variable "fabric_workspace_admin" {
-  description = "The Object ID of the group of Fabric capacity admins"
+variable "fabric_workspace_admins" {
+  description = "The Object ID of the group of Fabric Workspace admins"
   type        = string
 }
 

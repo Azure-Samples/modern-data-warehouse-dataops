@@ -5,7 +5,7 @@ terraform {
     }
     fabric = {
       source  = "microsoft/fabric"
-      version = "0.1.0-beta.3"
+      version = "0.1.0-beta.4"
     }
   }
 }
