@@ -29,8 +29,8 @@ fabric_api_endpoint="https://api.fabric.microsoft.com/v1"
 # fabric_workspace_name="ws-$base_name"
 # onelake_name="onelake"
 # lakehouse_name="lh_main"
-# alds_gen2_shortcut_name="sc_adls_gen2_main"
-# alds_gen2_shortcut_path="Files"
+alds_gen2_shortcut_name="sc_adls_gen2_main"
+alds_gen2_shortcut_path="Files"
 # environment_name="env_$base_name"
 # environment_desc="Default Fabric environment for '$base_name' project"
 # lakehouse_desc="Lakehouse for '$base_name' project"
@@ -64,6 +64,8 @@ deploy_terraform_resources() {
     tf_storage_container_name=$(terraform output --raw storage_container_name)
     tf_storage_account_url=$(terraform output --raw storage_account_primary_dfs_endpoint)
     workspace_name=$(terraform output --raw workspace_name)
+    workspace_id=$(terraform output --raw workspace_id)
+    lakehouse_id=$(terraform output --raw lakehouse_id)
     environment_name=$(terraform output --raw workspace_name)
 }
 
@@ -408,7 +410,7 @@ echo "[I] ############ ALDS Gen2 Shortcut Creation ############"
 if [[ -z "$adls_gen2_connection_id" ]]; then
     echo "[W] ADLS Gen2 connection ID not provided. Skipping ALDS Gen2 connection creation."
 else
-    if if_shortcut_exist "$fabric_workspace_id" "$lakehouse_id" "$alds_gen2_shortcut_name" "$alds_gen2_shortcut_path"; then
+    if if_shortcut_exist "$workspace_id" "$lakehouse_id" "$alds_gen2_shortcut_name" "$alds_gen2_shortcut_path"; then
         echo "[W] Shortcut '$alds_gen2_shortcut_name' already exists, please review it manually."
     else
         adls_gen2_connection_object=$(get_adls_gen2_connection_object "$adls_gen2_connection_id" "$tf_storage_account_url" "$tf_storage_container_name")

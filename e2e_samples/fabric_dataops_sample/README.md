@@ -107,17 +107,12 @@ The Fabric resources are deployed using the Fabric REST APIs. Once the terraform
 
 1. Update variable `ALDS_GEN2_CONNECTION_ID` in `.env` file with the connection id fetched above and rerun the [setup-infra.sh](./infra/setup-infra.sh) script. This time, it would create the Lakehouse shortcut to ALDS Gen2 storage account. Rest of the resources would remain unchanged.
 
-1. From this step onward you will need to authenticate using your user context. Modify the value of the environment variable "TF_VAR_use_cli" and set it to true:
-    ```bash
-    TF_VAR_use_cli="true"
-    ```
-
-1. Import the environment file once again and authenticate **with user context** (required for the second run):
+1. From this step onward you will need to authenticate using your user context. Authenticate **with user context** (required for the second run) and run the setup script again:
 
     ```bash
-    source .env
     az login --allow-no-subscriptions --tenant $FABRIC_TENANT_ID --scope api://fabric_terraform_provider/.default
-    ```
+    ./setup-infra.sh
+    ```az a
 
 ## Understanding the CI Process
 
