@@ -8,12 +8,12 @@
 # - Correct Azure subscription is selected
 #######################################################
 
-source .env
+source ./.env
 
 ## Environment variables
 base_name="$TF_VAR_base_name"
 location="$TF_VAR_location"
-adls_gen2_connection_id="$ALDS_GEN2_CONNECTION_ID"
+adls_gen2_connection_id="$ADLS_GEN2_CONNECTION_ID"
 tenant_id="$FABRIC_TENANT_ID"
 
 # Variable set based on Terraform output
@@ -311,6 +311,7 @@ function create_shortcut() {
     shortcut_path=$4
     target=$5
     create_shortcut_url="$fabric_api_endpoint/workspaces/$workspace_id/items/$item_id/shortcuts"
+
     create_shortcut_body=$(cat <<EOF
 {
     "name": "$shortcut_name",
@@ -319,6 +320,8 @@ function create_shortcut() {
 }
 EOF
 )
+    echo "[DEBUG] shortcut url is $create_shortcut_url"
+    echo "[DEBUG] shortcut body is '$create_shortcut_body'"    
     response=$(curl -s -X POST -H "Authorization: Bearer $fabric_bearer_token" -H "Content-Type: application/json" -d "$create_shortcut_body" "$create_shortcut_url")
     sc_name=$(echo "$response" | jq -r '.name')
     if [[ -n "$sc_name" ]] && [[ "$sc_name" != "null" ]]; then
@@ -437,5 +440,5 @@ echo "[I] ############ Uploading packages to Environment ############"
 if [[ "$use_cli" == "true" ]]; then
     python3 ./../scripts/setup_fabric_environment.py --workspace_name "$workspace_name" --environment_name "$environment_name" --bearer_token "$fabric_bearer_token"
 else
-    echo "[I] Service Principal does not support loading environments, skipping."
+    echo "[I] Service Principal login does not support loading environments, skipping."
 fi

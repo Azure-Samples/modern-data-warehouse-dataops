@@ -112,7 +112,7 @@ The Fabric resources are deployed using the Fabric REST APIs. Once the terraform
     ```bash
     az login --allow-no-subscriptions --tenant $FABRIC_TENANT_ID --scope api://fabric_terraform_provider/.default
     ./setup-infra.sh
-    ```az a
+    ```
 
 ## Understanding the CI Process
 
