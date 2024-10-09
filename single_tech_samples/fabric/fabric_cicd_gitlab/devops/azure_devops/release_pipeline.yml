@@ -1,0 +1,54 @@
+trigger:
+- development_branch
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+- stage: deploy_to_dev_ws
+  displayName: 'Deploy to Dev WS'
+  variables:
+  - group: var-group-option-2-common
+  - group: var-group-option-2-dev
+  - name: BRANCHNAME
+    value: $[replace(variables['Build.SourceBranch'], 'refs/heads/', '')]
+
+  jobs:
+    - job: Job_Deploy_To_Dev_Ws
+      steps:   
+        - checkout: self
+          persistCredentials: true
+
+        - task: PowerShell@2
+          displayName: 'Deploy to Dev Workspace Job'
+          inputs:
+            filePath: "./src/option_2/update_from_git_to_ws.ps1"
+            arguments: '-baseUrl "$(fabricRestApiEndpoint)" -fabricToken $(token) -workspaceName "$(workspaceName)" -capacityId "$(capacityId)" -folder "$(directoryName)"'
+            pwsh: true
+
+        - script: |
+            git config user.email pipeline@demo.com && git config user.name "Deployment Pipeline"
+          workingDirectory: $(System.DefaultWorkingDirectory)
+          displayName: 'Set git user'
+
+        - script: |
+            git checkout -b $(BRANCHNAME)
+
+            # make sure we are tracking item-config.json files
+            git update-index --no-assume-unchanged $(git ls-files | grep "item-config.json" | tr '\n' ' ')
+
+            echo 'branch name is $(BRANCHNAME)'
+
+            # add all modified item-config.json files to our commit to dev
+            git add .
+
+            echo $(git status -s)
+
+            # add commit message and remember to skip ci
+            git commit -m "This is a commit message [skip ci]"
+
+            echo 'step 3 done'
+            git push --set-upstream origin $(BRANCHNAME)
+        
+          displayName: 'Push Config to branch'
+          workingDirectory: $(System.DefaultWorkingDirectory)

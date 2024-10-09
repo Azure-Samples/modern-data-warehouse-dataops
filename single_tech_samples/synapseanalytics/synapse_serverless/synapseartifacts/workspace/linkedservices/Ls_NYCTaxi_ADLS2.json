@@ -1,0 +1,15 @@
+{
+  "name": "Ls_NYCTaxi_ADLS2",
+  "type": "Microsoft.Synapse/workspaces/linkedservices",
+  "properties": {
+    "type": "AzureBlobFS",
+    "connectVia": {
+      "referenceName": "AutoResolveIntegrationRuntime",
+      "type": "IntegrationRuntimeReference"
+    },
+    "annotations": [],
+    "typeProperties": {
+      "url": ""
+    }
+  }
+}

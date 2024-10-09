@@ -1,0 +1,53 @@
+{
+    "name": "Df_SaveToSQL",
+    "properties": {
+        "type": "MappingDataFlow",
+        "typeProperties": {
+            "sources": [
+                {
+                    "dataset": {
+                        "referenceName": "Ds_AdlsGen2_Interim",
+                        "type": "DatasetReference"
+                    },
+                    "name": "source1"
+                }
+            ],
+            "sinks": [
+                {
+                    "dataset": {
+                        "referenceName": "Ds_SqlDW_Table",
+                        "type": "DatasetReference"
+                    },
+                    "name": "sink1"
+                }
+            ],
+            "transformations": [
+                {
+                    "name": "alterRow1"
+                },
+                {
+                    "name": "derivedColumn1"
+                }
+            ],
+            "scriptLines": [
+                "source(allowSchemaDrift: true,",
+                "     validateSchema: false,",
+                "     ignoreNoFilesFound: false,",
+                "     format: 'parquet') ~> source1",
+                "derivedColumn1 alterRow(insertIf(true())) ~> alterRow1",
+                "source1 derive(status = \"processed\") ~> derivedColumn1",
+                "alterRow1 sink(allowSchemaDrift: true,",
+                "     validateSchema: false,",
+                "     deletable:false,",
+                "     insertable:true,",
+                "     updateable:false,",
+                "     upsertable:false,",
+                "     format: 'table',",
+                "     staged: false,",
+                "     skipDuplicateMapInputs: true,",
+                "     skipDuplicateMapOutputs: true,",
+                "     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+            ]
+        }
+    }
+}

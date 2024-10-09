@@ -13,12 +13,12 @@ variables:
   pythonWorkingDir: 'e2e_samples/parking_sensors/src/ddo_transform'
 
 pool:
-  vmImage: 'Ubuntu-16.04'
+  vmImage: 'ubuntu-latest'
 
 steps:
 - task: UsePythonVersion@0
   inputs:
-    versionSpec: '3.6'
+    versionSpec: '3.8'
     architecture: 'x64'
 
 - script: pip install -r requirements_dev.txt && pip install -r requirements.txt

@@ -1,0 +1,27 @@
+{
+        "name": "<triggername>",
+        "properties": {
+            "annotations": [],
+            "runtimeState": "Started",
+            "pipelines": [
+                {
+                    "pipelineReference": {
+                        "referenceName": "<pipelinename>",
+                        "type": "PipelineReference"
+                    },
+                    "parameters": {
+                        "filename": "@trigger().outputs.body.fileName"
+                    }
+                }
+            ],
+            "type": "BlobEventsTrigger",
+            "typeProperties": {
+                "blobPathBeginsWith": "/datalake/blobs/",
+                "ignoreEmptyBlobs": true,
+                "scope": "<storagescope>",
+                "events": [
+                    "Microsoft.Storage.BlobCreated"
+                ]
+            }
+        }
+    }

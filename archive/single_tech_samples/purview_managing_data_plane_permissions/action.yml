@@ -1,0 +1,27 @@
+name: 'Purview Permissions Github Action'
+description: 'Set permissions for purview'
+branding:
+  icon: 'table'
+  color: 'blue'
+
+inputs:
+  purview_name:
+    description: 'Name of the purview instance'
+    required: true
+  object_id:
+    description: 'Identity to associate permission with'
+    required: true
+  user_type:
+    description: 'U for user and G for security group'
+    required: true
+  roles:
+    description: 'Set roles to assign'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Assign permissions
+      run: |
+        ${{ github.action_path }}/entrypoint.sh ${{ inputs.purview_name }} ${{ inputs.object_id }} ${{ inputs.user_type}} ${{ inputs.roles }} ${{ github.action_path }}
+      shell: bash

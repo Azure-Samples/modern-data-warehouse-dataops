@@ -1,0 +1,77 @@
+trigger:
+- main
+pool:
+  vmImage: ubuntu-latest
+steps:
+
+- task: Npm@1
+  displayName: 'Install Azure stream analytics ci cd'
+  inputs:
+    command: custom
+    verbose: false
+    customCommand: 'install -g azure-streamanalytics-cicd'
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: azure-streamanalytics-cicd test -project ./asaproj.json -outputPath ./output/
+  displayName: 'Run Unit Tests'
+
+- task: AzureCLI@2  
+  inputs:
+    azureSubscription: '$(subscription)'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: 'az group create -n rg-$(app)-$(env) -l $(location)'
+  displayName: 'Create Resource Group'
+
+- task: AzureCLI@2  
+  inputs:
+    azureSubscription: '$(subscription)'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: 'az deployment group create -f ./main.bicep -g rg-$(app)-$(env) --parameters query=''@./streamanalytics-tech-sample.asaql'' name=$(app) env=$(env)'
+  displayName: 'Deploy Infrastructure'
+
+- task: AzureCLI@2  
+  inputs:
+    azureSubscription: '$(subscription)'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      az config set extension.use_dynamic_install=yes_without_prompt
+      az iot hub device-identity create --hub-name iot-$(app)-$(env) --device-id iot-$(app)-$(env) --edge-enabled
+  displayName: 'Create device'
+
+- task: AzureCLI@2  
+  inputs:
+    azureSubscription: '$(subscription)'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      az config set extension.use_dynamic_install=yes_without_prompt
+      export DEVICE_CONNECTION_STRING=$(az iot hub device-identity connection-string show --hub-name iot-$(app)-$(env) --device-id iot-$(app)-$(env) --output tsv)
+      export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string -n st$(app)$(env) --query connectionString -o tsv)      
+      cd e2e
+      npm install 
+      npm test
+  displayName: 'Run E2E tests'
+
+- task: AzureCLI@2 
+  condition: always() 
+  inputs:
+    azureSubscription: '$(subscription)'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      az config set extension.use_dynamic_install=yes_without_prompt
+      az iot hub device-identity delete --hub-name iot-$(app)-$(env) --device-id iot-$(app)-$(env)
+  displayName: 'Delete device'
+
+- task: AzureCLI@2  
+  condition: always()
+  inputs:
+    azureSubscription: '$(subscription)'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: 'az group delete -n rg-$(app)-$(env) -y'    
+  displayName: 'Delete resource group'

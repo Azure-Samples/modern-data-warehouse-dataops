@@ -1,0 +1,184 @@
+{
+  "name": "Pl_NYCTaxi_2_IngestData",
+  "properties": {
+    "activities": [
+      {
+        "name": "Copy parquet from url to adls",
+        "type": "Copy",
+        "dependsOn": [
+          {
+            "activity": "Delete Previous Versions",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "userProperties": [],
+        "typeProperties": {
+          "source": {
+            "type": "ParquetSource",
+            "storeSettings": {
+              "type": "HttpReadSettings",
+              "requestMethod": "GET"
+            }
+          },
+          "sink": {
+            "type": "ParquetSink",
+            "storeSettings": {
+              "type": "AzureBlobFSWriteSettings"
+            },
+            "formatSettings": {
+              "type": "ParquetWriteSettings"
+            }
+          },
+          "enableStaging": false,
+          "translator": {
+            "type": "TabularTranslator",
+            "typeConversion": true,
+            "typeConversionSettings": {
+              "allowDataTruncation": true,
+              "treatBooleanAsNumber": false
+            }
+          }
+        },
+        "inputs": [
+          {
+            "referenceName": "Ds_NYCTaxi_HTTP",
+            "type": "DatasetReference",
+            "parameters": {
+              "sourcefile": {
+                "value": "@concat('yellow_tripdata_',pipeline().parameters.dynamicyear,'-', pipeline().parameters.dynamicmonth,'.parquet')",
+                "type": "Expression"
+              }
+            }
+          }
+        ],
+        "outputs": [
+          {
+            "referenceName": "Ds_NYCTaxi_ADLS2",
+            "type": "DatasetReference",
+            "parameters": {
+              "month": {
+                "value": "@pipeline().parameters.dynamicmonth",
+                "type": "Expression"
+              },
+              "year": {
+                "value": "@pipeline().parameters.dynamicyear",
+                "type": "Expression"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Transform parquet to delta",
+        "type": "SynapseNotebook",
+        "dependsOn": [
+          {
+            "activity": "Copy parquet from url to adls",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "userProperties": [],
+        "typeProperties": {
+          "notebook": {
+            "referenceName": "Nb_NYCTaxi_Convert_Parquet_to_Delta",
+            "type": "NotebookReference"
+          },
+          "parameters": {
+            "dynamicyear": {
+              "value": {
+                "value": "@pipeline().parameters.dynamicyear",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "dynamicmonth": {
+              "value": {
+                "value": "@pipeline().parameters.dynamicmonth",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "stgAccountName": {
+              "value": "",
+              "type": "string"
+            }
+          },
+          "sparkPool": {
+            "referenceName": "",
+            "type": "BigDataPoolReference"
+          },
+          "conf": {
+            "spark.dynamicAllocation.enabled": null,
+            "spark.dynamicAllocation.minExecutors": null,
+            "spark.dynamicAllocation.maxExecutors": null
+          },
+          "numExecutors": null
+        }
+      },
+      {
+        "name": "Delete Previous Versions",
+        "type": "Delete",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "userProperties": [],
+        "typeProperties": {
+          "dataset": {
+            "referenceName": "Ds_NYCTaxi_ADLS2_Folder",
+            "type": "DatasetReference",
+            "parameters": {
+              "year": {
+                "value": "@pipeline().parameters.dynamicyear",
+                "type": "Expression"
+              },
+              "month": {
+                "value": "@pipeline().parameters.dynamicmonth",
+                "type": "Expression"
+              }
+            }
+          },
+          "enableLogging": false,
+          "storeSettings": {
+            "type": "AzureBlobFSReadSettings",
+            "recursive": true,
+            "enablePartitionDiscovery": false
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "dynamicmonth": {
+        "type": "string"
+      },
+      "dynamicyear": {
+        "type": "string"
+      }
+    },
+    "annotations": [],
+    "lastPublishTime": "2023-01-19T12:10:56Z"
+  },
+  "type": "Microsoft.Synapse/workspaces/pipelines"
+}

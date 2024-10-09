@@ -24,7 +24,7 @@ set -o nounset
 # REQUIRED VARIABLES:
 #
 # DATABRICKS_HOST
-# DATABRICKS_TOKEN - this needs to be a Azure AD user token (not PAT token or Azure AD application token that belongs to a service principal)
+# DATABRICKS_TOKEN - this needs to be a Microsoft Entra ID user token (not PAT token or Microsoft Entra ID application token that belongs to a service principal)
 # KEYVAULT_RESOURCE_ID
 # KEYVAULT_DNS_NAME
 

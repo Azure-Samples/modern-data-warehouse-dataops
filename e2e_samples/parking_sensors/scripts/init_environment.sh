@@ -47,6 +47,5 @@ fi
 AZURESQL_SERVER_PASSWORD=${AZURESQL_SERVER_PASSWORD:-}
 if [ -z "$AZURESQL_SERVER_PASSWORD" ]
 then 
-    export AZURESQL_SERVER_PASSWORD="mdwdo-azsql-SqlP@ss-${DEPLOYMENT_ID}"
-    echo "No password for sql server specified, defaulting to $AZURESQL_SERVER_PASSWORD"
+    export AZURESQL_SERVER_PASSWORD="$(makepasswd --chars 16)"
 fi

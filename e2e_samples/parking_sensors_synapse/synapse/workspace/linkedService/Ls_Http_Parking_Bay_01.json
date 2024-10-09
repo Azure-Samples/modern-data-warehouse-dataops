@@ -1,0 +1,13 @@
+{
+    "name": "Ls_Http_Parking_Bay_01",
+    "type": "Microsoft.DataFactory/factories/linkedservices",
+    "properties": {
+        "annotations": [],
+        "type": "HttpServer",
+        "typeProperties": {
+            "url": "https://data.melbourne.vic.gov.au/api/explore/v2.1/catalog/datasets/",
+            "enableServerCertificateValidation": true,
+            "authenticationType": "Anonymous"
+        }
+    }
+}

@@ -8,7 +8,7 @@ import sys
 import pytest
 import datetime
 
-sys.path.append('../ddo_transform/')
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from ddo_transform import transform
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))

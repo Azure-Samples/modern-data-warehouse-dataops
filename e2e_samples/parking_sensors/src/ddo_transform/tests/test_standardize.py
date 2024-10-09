@@ -9,7 +9,7 @@ import pytest
 import datetime
 from pyspark.sql.functions import isnull
 
-sys.path.append('../ddo_transform/')
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from ddo_transform import standardize
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -42,6 +42,9 @@ def test_standardize_parking_bay(spark):
     assert t_parkingbay_sdf.count() != 0
     assert t_parkingbay_malformed_sdf.count() == 0
     assert t_parkingbay_sdf.filter(isnull("bay_id")).count() == 0
+
+    # Ensure that each bay_id occurs only once
+    assert t_parkingbay_sdf.groupBy("bay_id").count().filter("count > 1").count() == 0
 
 
 def test_standardize_sensordata(spark):

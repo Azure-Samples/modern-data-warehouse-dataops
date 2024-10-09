@@ -1,0 +1,13 @@
+{
+    "annotations": [],
+    "type": "AzureBatch",
+    "typeProperties": {
+        "batchUri": "https://batchaccountdevfjlocrrv.eastus.batch.azure.com",
+        "poolName": "orchestratorpool",
+        "accountName": "batchaccountdevfjlocrrv",
+        "linkedServiceName": {
+            "referenceName": "AzureBlobStorage_LS",
+            "type": "LinkedServiceReference"
+        }
+    }
+}

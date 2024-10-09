@@ -1,0 +1,3 @@
+rosbagTimestamp,header,seq,stamp,secs,nsecs,frame_id,front_left,front_right,rear_left,rear_right
+1479513000173169587,,723,,1479513000,173103009,'',234.0,236.0,232.0,229.0
+1479513000672960285,,724,,1479513000,672862610,'',234.0,236.0,232.0,229.0

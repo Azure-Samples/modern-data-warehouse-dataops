@@ -1,0 +1,27 @@
+{
+    "name": "Ds_NYCTaxi_ADLS2_Year_Folder",
+    "properties": {
+        "linkedServiceName": {
+            "referenceName": "Ls_NYCTaxi_ADLS2_Folder",
+            "type": "LinkedServiceReference"
+        },
+        "parameters": {
+            "year": {
+                "type": "string"
+            }
+        },
+        "annotations": [],
+        "type": "Binary",
+        "typeProperties": {
+            "location": {
+                "type": "AzureBlobFSLocation",
+                "folderPath": {
+                    "value": "@dataset().year",
+                    "type": "Expression"
+                },
+                "fileSystem": "datalake"
+            }
+        }
+    },
+    "type": "Microsoft.Synapse/workspaces/datasets"
+}

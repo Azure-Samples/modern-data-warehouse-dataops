@@ -1,0 +1,9 @@
+runtime_version: '1.1'
+spark_conf:
+  - spark.fsd.client_id: <sp-client-id>
+  - spark.fsd.tenant_id: <sp-tenant-id>
+  - spark.fsd.subscription_id: <subscription-id>
+  - spark.fsd.rg_name: <feature-store-resouce-group>
+  - spark.fsd.name: <feature-store-name>
+  - spark.fsd.fabric.tenant: <fabric-tenant-name> # Fetch from Fabric base URL, like https://<fabric-tenant-name>.powerbi.com/
+  - spark.fsd.purview.account: <purview-account-name>

@@ -1,0 +1,97 @@
+{
+  "name": "Pl_NYCTaxi_1_Setup",
+  "properties": {
+    "activities": [
+      {
+        "name": "CreateServerlessDatabase",
+        "type": "Script",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "userProperties": [],
+        "linkedServiceName": {
+          "referenceName": "Ls_NYCTaxi_Synapse_Serverless_master",
+          "type": "LinkedServiceReference"
+        },
+        "typeProperties": {
+          "scripts": [
+            {
+              "type": "Query",
+              "text": "IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'db_serverless')\nBEGIN\n    create database db_serverless COLLATE Latin1_General_100_BIN2_UTF8\nEND"
+            }
+          ]
+        }
+      },
+      {
+        "name": "CreateExternalDataSource",
+        "type": "Script",
+        "dependsOn": [
+          {
+            "activity": "CreateServerlessDatabase",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "userProperties": [],
+        "linkedServiceName": {
+          "referenceName": "Ls_NYCTaxi_Synapse_Serverless_db",
+          "type": "LinkedServiceReference"
+        },
+        "typeProperties": {
+          "scripts": [
+            {
+              "type": "Query",
+              "text": "IF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'ext_ds_datalake') BEGIN CREATE EXTERNAL DATA SOURCE [ext_ds_datalake] WITH (LOCATION = N'https://') END"
+            }
+          ]
+        }
+      },
+      {
+        "name": "CreateStoredProcedure",
+        "type": "Script",
+        "dependsOn": [
+          {
+            "activity": "CreateExternalDataSource",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "userProperties": [],
+        "linkedServiceName": {
+          "referenceName": "Ls_NYCTaxi_Synapse_Serverless_db",
+          "type": "LinkedServiceReference"
+        },
+        "typeProperties": {
+          "scripts": [
+            {
+              "type": "Query",
+              "text": "CREATE OR ALTER PROC [dbo].[CreateDynamicSQLServerlessView]  @viewName varchar(50), @deltaTableName varchar(50), @externalDataSourceName varchar(50), @viewAliasName varchar(50), @format varchar(30)\nAS \nBEGIN\nDECLARE @sql_statement varchar(MAX)\nSET @sql_statement = N'CREATE OR ALTER VIEW ' + @viewName + ' \n\tAs SELECT * \n\tFROM\n\t\tOPENROWSET(\n\t\tBULK ''' + @deltaTableName + ''',\n\t\tDATA_SOURCE = ''' +  @externalDataSourceName + ''',\n\t\tFORMAT = ''' + @format + '''\n\t)as [' + @viewAliasName + '] \n\t'\nEXEC (@sql_statement)\nEND"
+            }
+          ]
+        }
+      }
+    ],
+    "annotations": []
+  }
+}

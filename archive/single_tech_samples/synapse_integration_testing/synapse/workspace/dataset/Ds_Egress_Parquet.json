@@ -1,0 +1,29 @@
+{
+    "name": "Ds_Egress_Parquet",
+    "properties": {
+        "linkedServiceName": {
+            "referenceName": "Ls_AdlsGen2_01",
+            "type": "LinkedServiceReference"
+        },
+        "parameters": {
+            "filename": {
+                "type": "string"
+            }
+        },
+        "annotations": [],
+        "type": "Parquet",
+        "typeProperties": {
+            "location": {
+                "type": "AzureBlobFSLocation",
+                "fileName": {
+                    "value": "@concat(dataset().filename, '.parquet')",
+                    "type": "Expression"
+                },
+                "fileSystem": "saveddata"
+            },
+            "compressionCodec": "snappy"
+        },
+        "schema": []
+    },
+    "type": "Microsoft.Synapse/workspaces/datasets"
+}

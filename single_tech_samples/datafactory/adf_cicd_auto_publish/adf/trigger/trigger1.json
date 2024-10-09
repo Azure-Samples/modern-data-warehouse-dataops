@@ -1,0 +1,22 @@
+{
+	"name": "trigger1",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Month",
+				"interval": 15,
+				"startTime": "2023-01-03T09:16:00Z",
+				"timeZone": "UTC",
+				"schedule": {
+					"monthDays": [
+						-1
+					]
+				}
+			}
+		}
+	}
+}

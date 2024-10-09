@@ -1,0 +1,36 @@
+{
+    "name": "Ds_NYCTaxi_ADLS2",
+    "properties": {
+        "linkedServiceName": {
+            "referenceName": "Ls_NYCTaxi_ADLS2",
+            "type": "LinkedServiceReference"
+        },
+        "parameters": {
+            "month": {
+                "type": "string"
+            },
+            "year": {
+                "type": "string"
+            }
+        },
+        "annotations": [],
+        "type": "Parquet",
+        "typeProperties": {
+            "location": {
+                "type": "AzureBlobFSLocation",
+                "fileName": {
+                    "value": "@concat('yellow_tripdata_',dataset().year,'-',dataset().month,'.parquet')",
+                    "type": "Expression"
+                },
+                "folderPath": {
+                    "value": "@concat(dataset().year,'/',dataset().month)",
+                    "type": "Expression"
+                },
+                "fileSystem": "datalake"
+            },
+            "compressionCodec": "snappy"
+        },
+        "schema": []
+    },
+    "type": "Microsoft.Synapse/workspaces/datasets"
+}

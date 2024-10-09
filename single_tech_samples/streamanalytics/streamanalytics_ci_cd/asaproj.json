@@ -1,0 +1,10 @@
+{
+    "name": "streamanalytics",
+    "startFile": "streamanalytics-tech-sample.asaql",
+    "configurations": [
+        {
+            "filePath": "JobConfig.json",
+            "subType": "JobConfig"
+        }
+    ]
+}

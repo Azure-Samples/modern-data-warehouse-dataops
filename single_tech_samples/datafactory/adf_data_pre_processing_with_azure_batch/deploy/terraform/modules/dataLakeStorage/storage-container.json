@@ -1,0 +1,33 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "storageAccountName": {
+            "type": "String"
+        },
+        "defaultContainerName": {
+            "type": "String"
+        },
+        "location": {
+            "type": "String"
+        }
+    },
+    "resources": [
+        {
+            "name": "[parameters('storageAccountName')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2021-09-01",
+            "location": "[parameters('location')]",
+            "resources": [
+                {
+                    "name": "[concat('default/', parameters('defaultContainerName'))]",
+                    "type": "blobServices/containers",
+                    "apiVersion": "2021-09-01",
+                    "dependsOn": [
+                        "[parameters('storageAccountName')]"
+                    ]
+                }
+            ]
+        }
+    ]
+}

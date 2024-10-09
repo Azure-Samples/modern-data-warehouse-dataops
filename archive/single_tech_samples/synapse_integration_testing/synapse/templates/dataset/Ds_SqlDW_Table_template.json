@@ -1,0 +1,19 @@
+{
+        "name": "Ds_SqlDW_Table",
+        "properties": {
+            "linkedServiceName": {
+                "referenceName": "<servername>",
+                "type": "LinkedServiceReference",
+                "parameters": {
+                    "DBName": "<sqldbname>"
+                }
+            },
+            "schema": [],
+            "annotations": [],
+            "type": "AzureSqlDWTable",
+            "typeProperties": {
+                "schema": "dbo",
+                "table": "status"
+            }
+        }
+    }

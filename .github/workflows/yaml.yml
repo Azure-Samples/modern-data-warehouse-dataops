@@ -3,11 +3,9 @@ on:
   push:
     branches:
     - main
-    - single-tech/databricks
   pull_request:
     branches:
     - main
-    - single-tech/databricks
 
 jobs:
   yml-lint:

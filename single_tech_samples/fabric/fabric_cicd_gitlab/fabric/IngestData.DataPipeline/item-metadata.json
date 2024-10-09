@@ -1,0 +1,5 @@
+{
+  "displayName": "IngestData",
+  "type": "DataPipeline",
+  "description": "Data Pipeline for ingesting Data from public blob storage"
+}

@@ -1,0 +1,113 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "name": "Copy from Blob Storage",
+        "type": "Copy",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "source": {
+            "type": "DelimitedTextSource",
+            "storeSettings": {
+              "type": "AzureBlobStorageReadSettings",
+              "recursive": true
+            },
+            "formatSettings": {
+              "type": "DelimitedTextReadSettings"
+            },
+            "datasetSettings": {
+              "annotations": [],
+              "linkedService": {
+                "name": "covid_tracking_project",
+                "properties": {
+                  "type": "AzureBlobStorage",
+                  "typeProperties": {
+                    "containerUri": "https://pandemicdatalake.blob.core.windows.net/public",
+                    "authenticationType": "Anonymous"
+                  }
+                }
+              },
+              "type": "DelimitedText",
+              "typeProperties": {
+                "location": {
+                  "type": "AzureBlobStorageLocation",
+                  "fileName": "covid_tracking.csv",
+                  "folderPath": "curated/covid-19/covid_tracking/latest",
+                  "container": "public"
+                },
+                "columnDelimiter": ",",
+                "rowDelimiter": "\n",
+                "escapeChar": "\\",
+                "firstRowAsHeader": true,
+                "quoteChar": "\""
+              },
+              "schema": []
+            }
+          },
+          "sink": {
+            "type": "DelimitedTextSink",
+            "storeSettings": {
+              "type": "LakehouseWriteSettings"
+            },
+            "formatSettings": {
+              "type": "DelimitedTextWriteSettings",
+              "quoteAllText": true,
+              "fileExtension": ".txt"
+            },
+            "datasetSettings": {
+              "annotations": [],
+              "linkedService": {
+                "name": "35cdedd2_9539_4e06_ad7b_9ea20abdebe7",
+                "properties": {
+                  "annotations": [],
+                  "type": "Lakehouse",
+                  "typeProperties": {
+                    "workspaceId": "@pipeline().parameters.workspaceId",
+                    "artifactId": "@pipeline().parameters.lakehouseId",
+                    "rootFolder": "Files"
+                  }
+                }
+              },
+              "type": "DelimitedText",
+              "typeProperties": {
+                "location": {
+                  "type": "LakehouseLocation",
+                  "folderPath": "covid"
+                },
+                "columnDelimiter": ",",
+                "escapeChar": "\\",
+                "firstRowAsHeader": true,
+                "quoteChar": "\""
+              },
+              "schema": []
+            }
+          },
+          "enableStaging": false,
+          "translator": {
+            "type": "TabularTranslator",
+            "typeConversion": true,
+            "typeConversionSettings": {
+              "allowDataTruncation": true,
+              "treatBooleanAsNumber": false
+            }
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "workspaceId": {
+        "type": "string"
+      },
+      "lakehouseId": {
+        "type": "string"
+      }
+    }
+  }
+}

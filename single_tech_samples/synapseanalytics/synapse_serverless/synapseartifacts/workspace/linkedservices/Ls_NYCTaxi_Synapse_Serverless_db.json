@@ -1,0 +1,14 @@
+{
+  "name": "Ls_NYCTaxi_Synapse_Serverless_db",
+  "properties": {
+    "annotations": [],
+    "type": "AzureSqlDatabase",
+    "typeProperties": {
+      "connectionString": ""
+    },
+    "connectVia": {
+      "referenceName": "AutoResolveIntegrationRuntime",
+      "type": "IntegrationRuntimeReference"
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+    "name": "Ds_NYCTaxi_HTTP",
+    "properties": {
+        "linkedServiceName": {
+            "referenceName": "Ls_NYCTaxi_HTTP",
+            "type": "LinkedServiceReference"
+        },
+        "parameters": {
+            "sourcefile": {
+                "type": "string"
+            }
+        },
+        "annotations": [],
+        "type": "Parquet",
+        "typeProperties": {
+            "location": {
+                "type": "HttpServerLocation",
+                "relativeUrl": {
+                    "value": "@concat(dataset().sourcefile)",
+                    "type": "Expression"
+                }
+            },
+            "compressionCodec": "snappy"
+        },
+        "schema": []
+    },
+    "type": "Microsoft.Synapse/workspaces/datasets"
+}
