@@ -12,14 +12,14 @@ In ADF, CI/CD essentially means deploying the various data factory entities such
 
 ### ADF Modes
 
-1) ADF consists of two modes namely `live mode` and `Git Mode`.
+1. ADF consists of two modes namely `live mode` and `Git Mode`.
 
 - Live mode is the standalone ADF which is not connected to Git. All operations on ADF happens via Portal.
 
 - Git Mode is when ADF is connected to Git and all the ADF entities are stored as code in Git.
 
-2)Git integration in ADF consists of selecting two branches Collaboration branch and Publish branch.
-3)Collaboration branch is where all the feature branch is merged (will be mapped to ‘develop’ branch for our case). Publish branch is where all the changes including auto generated ARM templates gets published (by default, ADF creates ‘adf_publish’ branch for that).
+2. Git integration in ADF consists of selecting two branches Collaboration branch and Publish branch.
+3. Collaboration branch is where all the feature branch is merged (will be mapped to ‘develop’ branch for our case). Publish branch is where all the changes including auto generated ARM templates gets published (by default, ADF creates ‘adf_publish’ branch for that).
 
 > NOTE: Only the ADF instance in the DEV environment should be linked to git. The deployment are propagated to the other environments by CI/CD pipelines.
 
