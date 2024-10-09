@@ -21,7 +21,7 @@ setup(
         'azure-core==1.26.2',
         'azure-storage-blob==12.14.1',
         'azure-storage-file-datalake==12.9.1',
-        'certifi==2023.7.22',
+        'certifi==2024.7.4',
         'cffi==1.15.1',
         'charset-normalizer==3.0.1',
         'cryptography==41.0.6',
