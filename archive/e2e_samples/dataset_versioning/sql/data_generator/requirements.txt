@@ -1,6 +1,6 @@
 azure-common==1.1.27
 azure-core==1.13.0
-azure-identity==1.5.0
+azure-identity==1.16.1
 azure-keyvault-secrets==4.2.0
 certifi==2022.12.7
 cffi==1.14.5
