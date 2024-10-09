@@ -28,7 +28,6 @@ provider "random" {}
 provider "azuread" {}
 provider "fabric" {
   use_cli = var.use_cli
-  tenant_id = var.tenant_id
 }
 provider "azurerm" {
   resource_provider_registrations = "none"

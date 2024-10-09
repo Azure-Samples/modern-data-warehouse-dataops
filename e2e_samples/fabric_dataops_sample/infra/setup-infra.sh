@@ -43,7 +43,7 @@ deploy_terraform_resources() {
     #user_principal_name=$(az account show --query user.name -o tsv)
     user_principal_type=$(az account show --query user.type -o tsv)
     if [[ "$user_principal_type" == "user" ]]; then use_cli="true"; else use_cli="false"; fi
-    echo "use_cli is ${use_cli}"
+    echo "[DEBUG] use_cli is ${use_cli}"
 
 
     terraform init
@@ -66,7 +66,7 @@ deploy_terraform_resources() {
     workspace_name=$(terraform output --raw workspace_name)
     workspace_id=$(terraform output --raw workspace_id)
     lakehouse_id=$(terraform output --raw lakehouse_id)
-    environment_name=$(terraform output --raw workspace_name)
+    environment_name=$(terraform output --raw environment_name)
 }
 
 # function get_tenant_id() {
@@ -413,12 +413,13 @@ echo "[I] ############ ALDS Gen2 Shortcut Creation ############"
 if [[ -z "$adls_gen2_connection_id" ]]; then
     echo "[W] ADLS Gen2 connection ID not provided. Skipping ALDS Gen2 connection creation."
 else
+    echo "[DEBUG] workspace_id is $workspace_id"
     if if_shortcut_exist "$workspace_id" "$lakehouse_id" "$alds_gen2_shortcut_name" "$alds_gen2_shortcut_path"; then
         echo "[W] Shortcut '$alds_gen2_shortcut_name' already exists, please review it manually."
     else
         adls_gen2_connection_object=$(get_adls_gen2_connection_object "$adls_gen2_connection_id" "$tf_storage_account_url" "$tf_storage_container_name")
         create_shortcut \
-            "$fabric_workspace_id" \
+            "$workspace_id" \
             "$lakehouse_id" \
             "$alds_gen2_shortcut_name" \
             "$alds_gen2_shortcut_path" \
