@@ -1,7 +1,5 @@
 output "capacity_id" {
-  value = (
-    length(azapi_resource.fab_capacity) > 0 ? azapi_resource.fab_capacity.id : ""
-  )
+  value = data.fabric_capacity.returned_capacity_id.id
   description = "Resource identifier of the instance of Microsoft Fabric capacity"
 }
 
