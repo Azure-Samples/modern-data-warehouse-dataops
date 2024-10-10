@@ -44,14 +44,18 @@ The Fabric resources are deployed using the Fabric REST APIs. Once the terraform
 - An Azure subscription.
   - On your Azure subscription you should register the Microsoft.Fabric [resource provider](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#register-resource-provider).
   - A resource group to which you should have Contributor + User Access Administrator permissions.
-  - A Service Principal with Contributor + User Access Administrator permissions to the above mentioned resource group. For detailed steps on Service Principal and secret creation, [follow the Microsoft Fabric Terraform provider instructions for authenticating with Service Principal and Client Secret](https://registry.terraform.io/providers/microsoft/fabric/latest/docs/guides/auth_spn_secret).
+  - *If you **cannot** create a Service Principal in your Entra ID*:
+    - A Service Principal that [can use Fabric APIs](https://learn.microsoft.com/en-us/fabric/admin/service-admin-portal-developer#service-principals-can-use-fabric-apis).
+    - Make sure you are the **Owner** of such principal
+  - *If you **can** create a Service Principal in your Entra ID*, you can follow the step by step instructions below.
+
 - A bash shell with the following installed:
   - [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli?view=azure-cli-latest)
   - [jq](https://jqlang.github.io/jq/download/)
   - terraform
-  - python version ?
+  - python version 3.9+ with `requests` package installed
 - Access to Azure DevOps organization and project.
-- Contributor permissions to an Azure Repo in such Azure DevOps environment.
+  - Contributor permissions to an Azure Repo in such Azure DevOps environment.
 
 ### Setting up the Infrastructure
 
@@ -68,13 +72,21 @@ The Fabric resources are deployed using the Fabric REST APIs. Once the terraform
     ```bash
     cd ./modern-data-warehouse-dataops/e2e_samples/fabric_dataops_sample/infra
     ```
+1. Create and/or configure your Service Principal [following the Microsoft Fabric Terraform provider instructions for authenticating with Service Principal and Client Secret](https://registry.terraform.io/providers/microsoft/fabric/latest/docs/guides/auth_spn_secret). 
+   1. Make sure your Fabric Admin has enabled the Developer Setting [Service Principals can use Fabric APIs](https://learn.microsoft.com/en-us/fabric/admin/service-admin-portal-developer#service-principals-can-use-fabric-apis) and your Service Principal is allowed to use Fabric APIs.
+   1. Grant your Service Principal Contributor + User Access Administrator permissions on the Azure resource group (see pre-requisites).
+   1. Create a secret and save it for the following step.
+
 
 1. Rename the [.envtemplate](./.envtemplate) file to `.env` and fill in the necessary environment variables. Here is the detailed explanation of the environment variables:
 
     ```bash
-    BASE_NAME="The base name of the Fabric project. This name is used for naming the Azure and Fabric resources."
-    LOCATION="The location of the Azure resources. This location is used for creating the Azure resources."
-    ALDS_GEN2_CONNECTION_ID="The connection ID for the ADLS Gen2 'Cloud Connection'. If not provided, the ALDS Gen2 shortcut creation would be skipped."
+    # Fabric TF provider env variables
+    export FABRIC_TENANT_ID="The Entra ID (Azure AD Tenant Id) of your Fabric tenant"
+    export FABRIC_CLIENT_ID="The Service Principal Client ID (App Id)"
+    export FABRIC_CLIENT_SECRET="The Service Principal Client secret"
+    #
+    # ... (more variables in the file)
     ```
 
     Leave `ALDS_GEN2_CONNECTION_ID` blank for the first run.
@@ -84,8 +96,6 @@ The Fabric resources are deployed using the Fabric REST APIs. Once the terraform
     source .env
     az login --service-principal -u $FABRIC_CLIENT_ID -p $FABRIC_CLIENT_SECRET --tenant $FABRIC_TENANT_ID
     ```
-
-1. TODO: add requirements.txt
 
 1. Review [setup-infra.sh](./infra/setup-infra.sh) script and see if you want to adjust the derived naming of variable names of Azure/Fabric resources.
 
@@ -110,7 +120,9 @@ The Fabric resources are deployed using the Fabric REST APIs. Once the terraform
 1. From this step onward you will need to authenticate using your user context. Authenticate **with user context** (required for the second run) and run the setup script again:
 
     ```bash
+    az config set core.login_experience_v2=off
     az login --allow-no-subscriptions --tenant $FABRIC_TENANT_ID --scope api://fabric_terraform_provider/.default
+    az config set core.login_experience_v2=on
     ./setup-infra.sh
     ```
 
