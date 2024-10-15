@@ -40,9 +40,9 @@ The Fabric resources are deployed using the Fabric REST APIs. Once the terraform
 - A user account with elevated privileges, such as:
   - Ability to create service principals and Entra security groups.
   - Ability to create and manage Azure resources including Fabric capacity.
-  - [Microsoft Fabric admin](https://learn.microsoft.com/fabric/admin/microsoft-fabric-admin) role. As an alternative you can ask your Fabric admin to grant your service principal access to Fabric REST APIs. See step by step guide for details.
+  - [Microsoft Fabric admin](https://learn.microsoft.com/fabric/admin/microsoft-fabric-admin) role. As an alternative you can ask your Fabric admin to grant your service principal access to Fabric REST APIs. See [Setting up the Infrastructure](#setting-up-the-infrastructure) section for details.
 - An Azure subscription.
-  - On your Azure subscription you should register the Microsoft.Fabric [resource provider](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#register-resource-provider).
+  - Make sure that the `Microsoft.Fabric` [resource provider](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#register-resource-provider) is registered on the Azure subscription.
   - A resource group to which you should have Contributor + User Access Administrator permissions.
   - *If you **cannot** create a Service Principal in your Entra ID*:
     - A Service Principal that [can use Fabric APIs](https://learn.microsoft.com/en-us/fabric/admin/service-admin-portal-developer#service-principals-can-use-fabric-apis).
@@ -78,7 +78,7 @@ The Fabric resources are deployed using the Fabric REST APIs. Once the terraform
    1. Create a secret and save it for the following step.
 
 
-1. Rename the [.envtemplate](./.envtemplate) file to `.env` and fill in the necessary environment variables. Here is the detailed explanation of the environment variables:
+1. Rename the [.envtemplate](./infra/.envtemplate) file to `.env` and fill in the necessary environment variables. Here is the detailed explanation of the environment variables:
 
     ```bash
     # Fabric TF provider env variables
