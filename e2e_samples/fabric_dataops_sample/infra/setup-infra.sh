@@ -18,9 +18,12 @@ adls_gen2_connection_id="$ADLS_GEN2_CONNECTION_ID"
 tenant_id="$FABRIC_TENANT_ID"
 
 # Variable set based on Terraform output
-tf_storage_account_name=""
 tf_storage_container_name=""
 tf_storage_account_url=""
+tf_workspace_name=""
+tf_workspace_id=""
+tf_lakehouse_id=""
+tf_environment_name=""
 
 # Fabric bearer token variables, set globally
 fabric_bearer_token=""
@@ -36,7 +39,7 @@ deploy_terraform_resources() {
     #user_principal_name=$(az account show --query user.name -o tsv)
     user_principal_type=$(az account show --query user.type -o tsv)
     if [[ "$user_principal_type" == "user" ]]; then use_cli="true"; else use_cli="false"; fi
-    echo "[DEBUG] use_cli is ${use_cli}"
+    echo "[I] use_cli is ${use_cli}"
 
 
     terraform init
@@ -105,9 +108,7 @@ function create_shortcut() {
     "target": $target
 }
 EOF
-)
-    echo "[DEBUG] shortcut url is $create_shortcut_url"
-    echo "[DEBUG] shortcut body is '$create_shortcut_body'"    
+)   
     response=$(curl -s -X POST -H "Authorization: Bearer $fabric_bearer_token" -H "Content-Type: application/json" -d "$create_shortcut_body" "$create_shortcut_url")
     sc_name=$(echo "$response" | jq -r '.name')
     if [[ -n "$sc_name" ]] && [[ "$sc_name" != "null" ]]; then
@@ -129,7 +130,6 @@ echo "[I] ############ ALDS Gen2 Shortcut Creation ############"
 if [[ -z "$adls_gen2_connection_id" ]]; then
     echo "[W] ADLS Gen2 connection ID not provided. Skipping ALDS Gen2 connection creation."
 else
-    echo "[DEBUG] workspace_id is $tf_workspace_name"
     if if_shortcut_exist "$tf_workspace_name" "$tf_lakehouse_id" "$alds_gen2_shortcut_name" "$alds_gen2_shortcut_path"; then
         echo "[W] Shortcut '$alds_gen2_shortcut_name' already exists, please review it manually."
     else
