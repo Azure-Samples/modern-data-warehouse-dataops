@@ -71,7 +71,7 @@ To reduce the number of manual actions, consider including an additional step af
 
 This new step involves running a script to update the definition of specific items. This script can be integrated into your CD pipeline. 
 
-The goal is to leverage the the [Fabric Item Definition Rest API](https://learn.microsoft.com/en-us/rest/api/fabric/core/items/update-item-definition?tabs=HTTP) to update the definition item as needed. 
+The goal is to leverage the [Fabric Item Definition Rest API](https://learn.microsoft.com/en-us/rest/api/fabric/core/items/update-item-definition?tabs=HTTP) to update the definition item as needed. 
 
 The process for moving to a new stage could look like this:
 ![alt text](./images/fabric-cicd-update-definition-focus.png)
@@ -81,9 +81,11 @@ The process for moving to a new stage could look like this:
 Consider the following scenario:
 - A data Pipeline (which is not currently supporting in deployment rules)
 - A SQL script inside this data pipeline referencing a warehouse
-- Each stage has its own warehouse
+- Each stage has its own warehouse so for example:
+  - Source stage references a warehouse in the source workspace
+  - Target stage references a warehouse in the target workspace
 
-When deploying to a new stage, the data pipeline will still reference the warehouse from the source stage instead of the target one. By calling the Item Definition Rest API, you can automate this manual update required for deployment.
+When deploying to the target stage, the data pipeline will still reference the warehouse from the source stage instead of the target one. By calling the Item Definition Rest API, you can automate this manual update required for deployment.
 
 Here is a simple example:
 - `workspace id`, `warehouse_endpoint` and `warehouse_id` are parameters provided that correspond to the value for the stage you deploying to
@@ -144,7 +146,7 @@ foreach ($item in $workspace_items.value) {
                             $callApi = $true
                         }
     
-                        $modifiedPayload = $jsonObject | ConvertTo-Json -Depth 10
+                        $modifiedPayload = $jsonObject | ConvertTo-Json -Depth 100
                         Write-Output "Warehouse definition could have been modified"
                                 
                 
@@ -163,7 +165,7 @@ foreach ($item in $workspace_items.value) {
                                             }
                                         )
                                     } 
-                        } | ConvertTo-Json -Depth 10
+                        } | ConvertTo-Json -Depth 100
                         $url = "https://api.fabric.microsoft.com/v1/workspaces/"+"$workspaceId/items/$id/updateDefinition"
                         Invoke-RestMethod -Uri $url -Method Post -Body $body -Headers $headers -ContentType "application/json"
                         Write-Output "Pipeline Definition modified"
