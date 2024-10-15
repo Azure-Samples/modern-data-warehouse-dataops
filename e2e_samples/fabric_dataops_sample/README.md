@@ -82,9 +82,9 @@ The Fabric resources are deployed using the Fabric REST APIs. Once the terraform
 
     ```bash
     # Fabric TF provider env variables
-    export FABRIC_TENANT_ID="The Entra ID (Azure AD Tenant Id) of your Fabric tenant"
-    export FABRIC_CLIENT_ID="The Service Principal Client ID (App Id)"
-    export FABRIC_CLIENT_SECRET="The Service Principal Client secret"
+    FABRIC_TENANT_ID="The Entra ID (Azure AD Tenant Id) of your Fabric tenant"
+    FABRIC_CLIENT_ID="The Service Principal Client ID (App Id)"
+    FABRIC_CLIENT_SECRET="The Service Principal Client secret"
     #
     # ... (more variables in the file)
     ```
