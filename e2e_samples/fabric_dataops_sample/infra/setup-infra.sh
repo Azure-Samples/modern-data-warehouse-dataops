@@ -56,7 +56,6 @@ deploy_terraform_resources() {
 }
 
 function set_bearer_token() {
-    # tenant_id=get_tenant_id
     fabric_bearer_token=$(az account get-access-token \
         --resource "https://login.microsoftonline.com/${tenant_id}" \
         --query accessToken \
