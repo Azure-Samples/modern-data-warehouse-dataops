@@ -1,6 +1,26 @@
-# The base name of the Fabric project. This name is used for naming the Azure and Fabric resources.
-BASE_NAME=""
-# The location of the Azure resources. This location is used for creating the Azure resources.
-LOCATION=""
-# The connection ID for the ADLS Gen2 "Cloud Connection". If not provided, the ALDS Gen2 shortcut creation would be skipped.
-ALDS_GEN2_CONNECTION_ID=""
+# Fabric TF provider env variables
+FABRIC_TENANT_ID="The Entra ID (Azure AD Tenant Id) of your Fabric tenant"
+FABRIC_CLIENT_ID="The Service Principal Client ID (App Id)"
+FABRIC_CLIENT_SECRET="The Service Principal Client secret"
+
+# AzureRM TF provider env variables
+ARM_CLIENT_ID=$FABRIC_CLIENT_ID
+ARM_TENANT_ID=$FABRIC_TENANT_ID
+ARM_CLIENT_SECRET=$FABRIC_CLIENT_SECRET
+ARM_SUBSCRIPTION_ID="The Azure Subscription ID that will be used to deploy Azure resources."
+ARM_STORAGE_USE_AZUREAD="true" # Terraform will use Entra ID authentication authenticating against Azure Storage
+
+# GIT integration variables
+TF_VAR_git_organization_name="Your AzureDevOps organization"
+TF_VAR_git_project_name="Your AzureDevops project"
+TF_VAR_git_repository_name="Your repository under the Azure DevOps project above"
+TF_VAR_git_branch_name="The branch where Fabric items will be committed to."
+TF_VAR_git_directory_name="The folder where Fabric items will be committed" #note that the, other than the root folder "/", the directory has to be created ahead of time, the REST API does not yet support creating new directories
+# Other variables
+TF_VAR_fabric_workspace_admins="The Object ID of the Entra Security Group that will be assigned as an Admin of the workspace."
+TF_VAR_fabric_capacity_admin="yourusername@yourdomain" # (Recommended: use your username) The Entra user name that will be granted capacity Admin to the newly created Fabric Capacity.
+TF_VAR_base_name="The base name of the Fabric project. This name is used for naming the Azure and Fabric resources."
+TF_VAR_location="The location of the Azure resources. This location is used for creating the Azure resources."
+ADLS_GEN2_CONNECTION_ID="The connection ID for the ADLS Gen2 Cloud Connection. If not provided, the ALDS Gen2 shortcut creation would be skipped."
+TF_VAR_rg_name="The Azure Resource Group where all Azure resources will be deployed."
+TF_VAR_tenant_id=$FABRIC_TENANT_ID

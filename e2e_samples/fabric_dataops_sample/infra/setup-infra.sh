@@ -1,4 +1,5 @@
 #!/bin/bash
+set -o errexit
 
 #######################################################
 # Deploys all necessary azure and Fabric resources
