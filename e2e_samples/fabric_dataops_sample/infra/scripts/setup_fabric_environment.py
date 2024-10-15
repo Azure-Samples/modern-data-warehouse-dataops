@@ -107,17 +107,6 @@ def get_environment_id(workspace_id, environment_name):
             return environment.get('id')
     return None
 
-# def connect_workspace_to_git(workspace_id, branch_name):
-#     response = requests.post(workspace_id, headers=headers, json=branch_name)
-
-#     if response.status_code == 200:
-#         print("[I] Workspace updated successfully.")
-#     elif response.status_code == 202:
-#         print("[I] Workspace update is in progress.")
-#         poll_long_running_operation(response.headers)
-#     else:
-#         print(f"[E] Failed to update workspace: {response.status_code} - {response.text}")
-
 def upload_staging_libraries (workspace_id, environment_id, file_path, file_name, content_type):
     staging_libraries_url = f"{fabric_api_endpoint}/workspaces/{workspace_id}/environments/{environment_id}/staging/libraries"
     payload = {}
