@@ -1,3 +1,6 @@
+# Requirements for developing or testing the code,
+# in addition to requirements defined in requirements.txt.
+#
 pip
 wheel
 watchdog
@@ -5,7 +8,6 @@ flake8
 tox
 coverage
 twine
-click
 pytest
 pytest-runner
 databricks-cli

@@ -1,4 +1,4 @@
-.PHONY: clean clean-test clean-pyc clean-build docs help
+.PHONY: clean clean-test clean-pyc clean-build help
 .DEFAULT_GOAL := help
 
 PYTHON_PACKAGE := ddo_transform
@@ -53,7 +53,7 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr .pytest_cache
 
 lint: ## check style with flake8
-	flake8 $(PYTHON_PACKAGE)
+	flake8
 
 test: ## run tests quickly with the default Python
 	py.test
