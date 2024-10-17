@@ -12,10 +12,18 @@ set -o errexit
 source ./.env
 
 ## Environment variables
-base_name="$TF_VAR_base_name"
-location="$TF_VAR_location"
+base_name="$base_name"
+location="$location"
 adls_gen2_connection_id="$ADLS_GEN2_CONNECTION_ID"
 tenant_id="$FABRIC_TENANT_ID"
+fabric_capacity_admin="$fabric_capacity_admin"
+fabric_workspace_admins="$fabric_workspace_admins"
+rg_name="$rg_name"
+git_organization_name="$git_organization_name"
+git_project_name="$git_project_name"
+git_repository_name="$git_repository_name"
+git_branch_name="$git_branch_name"
+git_directory_name="$git_directory_name" 
 
 # Variable set based on Terraform output
 tf_storage_container_name=""
@@ -45,7 +53,18 @@ deploy_terraform_resources() {
     terraform init
     terraform apply \
         -auto-approve \
-        -var "use_cli=$use_cli"
+        -var "use_cli=$use_cli" \
+        -var "tenant_id=$tenant_id" \
+        -var "base_name=$base_name" \
+        -var "location=$location" \
+        -var "fabric_capacity_admin=$fabric_capacity_admin" \
+        -var "fabric_workspace_admins=$fabric_workspace_admins" \
+        -var "rg_name=$rg_name" \
+        -var "git_organization_name=$git_organization_name" \
+        -var "git_project_name=$git_project_name" \
+        -var "git_repository_name=$git_repository_name" \
+        -var "git_branch_name=$git_branch_name" \
+        -var "git_directory_name=$git_directory_name" 
 
     tf_storage_container_name=$(terraform output --raw storage_container_name)
     tf_storage_account_url=$(terraform output --raw storage_account_primary_dfs_endpoint)

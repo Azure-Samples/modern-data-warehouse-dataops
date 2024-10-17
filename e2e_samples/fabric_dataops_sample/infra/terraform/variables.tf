@@ -3,7 +3,6 @@ variable "use_cli" {
   type = bool
 }
 
-
 variable "tenant_id" {
   type = string
   description = "Tenant ID"
@@ -25,7 +24,6 @@ variable "fabric_capacity_admin" {
   type        = string
 }
 
-
 variable "fabric_workspace_admins" {
   description = "The Object ID of the group of Fabric Workspace admins"
   type        = string
@@ -35,6 +33,7 @@ variable "rg_name" {
   description = "The resource group name where the Azure resources will be created"
   type = string  
 }
+
 variable "git_organization_name" {
   type        = string
   description = "The Git organization name"
