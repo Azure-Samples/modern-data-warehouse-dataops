@@ -68,15 +68,15 @@ data "azurerm_role_definition" "keyvault_administrator_role" {
   name = "Key Vault Administrator"
 }
 
-resource "azuread_group" "sg" {
-  display_name = "sg-${local.base_name}-admins"
-  description  = "Admins for ${local.base_name} project"
-  members = [
-    data.azuread_client_config.current.object_id
-  ]
-  security_enabled = true
-  prevent_duplicate_names = true
-}
+# resource "azuread_group" "sg" {
+#   display_name = "sg-${local.base_name}-admins"
+#   description  = "Admins for ${local.base_name} project"
+#   members = [
+#     data.azuread_client_config.current.object_id
+#   ]
+#   security_enabled = true
+#   prevent_duplicate_names = true
+# }
 
 data "azurerm_resource_group" "rg" {
   name     = var.rg_name
@@ -94,7 +94,7 @@ module "adls" {
 
 module "storage_blob_contributor_assignment" {
   source               = "./modules/role_assignment"
-  principal_id         = azuread_group.sg.id
+  principal_id         = var.fabric_workspace_admins
   role_definition_name = data.azurerm_role_definition.storage_blob_contributor_role.name
   scope                = module.adls.storage_account_id
 }
@@ -105,7 +105,7 @@ module "keyvault" {
   location            = data.azurerm_resource_group.rg.location
   keyvault_name       = "kv-${local.base_name}"
   tenant_id           = data.azuread_client_config.current.tenant_id
-  object_id           = azuread_group.sg.id
+  object_id           = var.fabric_workspace_admins
   tags                = local.tags
   purge_protection = false #toberemoved
 }
@@ -156,15 +156,15 @@ module "fabric_workspace" {
   workspace_identity_type = "SystemAssigned"
 }
 
-module "fabric_workspace_role_assignment" {
-  source = "./modules/fabric/workspace_role_assignment"
-  workspace_id    = module.fabric_workspace.workspace_id
-  principal_id    = azuread_group.sg.object_id
-  principal_type  = "Group"
-  role            = "Admin"  
-}
+# module "fabric_workspace_role_assignment" {
+#   source = "./modules/fabric/workspace_role_assignment"
+#   workspace_id    = module.fabric_workspace.workspace_id
+#   principal_id    = azuread_group.sg.object_id
+#   principal_type  = "Group"
+#   role            = "Admin"  
+# }
 
-module "fabric_workspace_role_assignment2" {
+module "fabric_workspace_role_assignment" {
   source = "./modules/fabric/workspace_role_assignment"
   workspace_id    = module.fabric_workspace.workspace_id
   principal_id    = var.fabric_workspace_admins

@@ -134,7 +134,7 @@ else
     else
         adls_gen2_connection_object=$(get_adls_gen2_connection_object "$adls_gen2_connection_id" "$tf_storage_account_url" "$tf_storage_container_name")
         create_shortcut \
-            "$tf_workspace_name" \
+            "$tf_workspace_id" \
             "$tf_lakehouse_id" \
             "$alds_gen2_shortcut_name" \
             "$alds_gen2_shortcut_path" \
