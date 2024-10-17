@@ -28,6 +28,8 @@ provider "random" {}
 provider "azuread" {}
 provider "fabric" {
   use_cli = var.use_cli
+  use_msi = !var.use_cli
+  tenant_id = var.tenant_id
 }
 provider "azurerm" {
   resource_provider_registrations = "none"
@@ -203,7 +205,6 @@ module "fabric_notebook" {
 # below modules currently do not support Service Principal/Managed Identities execution context
 # therefore they are enabled only when using user context (var_use_cli==true)
 
-# this is currently not working
 module "fabric_spark_environment_settings" {
   enable          = var.use_cli
   source          = "./modules/fabric/spark_environment_settings"
