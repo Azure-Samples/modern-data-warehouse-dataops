@@ -64,8 +64,8 @@ data "azurerm_role_definition" "storage_blob_contributor_role" {
   name = "Storage Blob Data Contributor"
 }
 
-data "azurerm_role_definition" "keyvault_administrator_role" {
-  name = "Key Vault Administrator"
+data "azurerm_role_definition" "keyvault_secrets_officer" {
+  name = "Key Vault Secrets Officer"
 }
 
 # resource "azuread_group" "sg" {
@@ -110,10 +110,10 @@ module "keyvault" {
   purge_protection = false #toberemoved
 }
 
-module "keyvault_administrator_role_assignment" {
+module "keyvault_secrets_officer_role_assignment" {
   source               = "./modules/role_assignment"
-  principal_id         = data.azuread_client_config.current.object_id
-  role_definition_name = data.azurerm_role_definition.keyvault_administrator_role.name
+  principal_id         = var.fabric_workspace_admins
+  role_definition_name = data.azurerm_role_definition.keyvault_secrets_officer.name
   scope                = module.keyvault.keyvault_id
 }
 
