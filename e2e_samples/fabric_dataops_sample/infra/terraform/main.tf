@@ -56,10 +56,6 @@ locals {
 
 data "azuread_client_config" "current" {}
 
-# data "azuread_user" "current_user" {
-#   object_id = data.azuread_client_config.current.object_id
-# }
-
 data "azurerm_role_definition" "storage_blob_contributor_role" {
   name = "Storage Blob Data Contributor"
 }
@@ -67,16 +63,6 @@ data "azurerm_role_definition" "storage_blob_contributor_role" {
 data "azurerm_role_definition" "keyvault_secrets_officer" {
   name = "Key Vault Secrets Officer"
 }
-
-# resource "azuread_group" "sg" {
-#   display_name = "sg-${local.base_name}-admins"
-#   description  = "Admins for ${local.base_name} project"
-#   members = [
-#     data.azuread_client_config.current.object_id
-#   ]
-#   security_enabled = true
-#   prevent_duplicate_names = true
-# }
 
 data "azurerm_resource_group" "rg" {
   name     = var.rg_name
@@ -157,14 +143,6 @@ module "fabric_workspace" {
   workspace_description   = "Fabric workspace for ${local.base_name} project"
   workspace_identity_type = "SystemAssigned"
 }
-
-# module "fabric_workspace_role_assignment" {
-#   source = "./modules/fabric/workspace_role_assignment"
-#   workspace_id    = module.fabric_workspace.workspace_id
-#   principal_id    = azuread_group.sg.object_id
-#   principal_type  = "Group"
-#   role            = "Admin"  
-# }
 
 module "fabric_workspace_role_assignment" {
   source = "./modules/fabric/workspace_role_assignment"
