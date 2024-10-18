@@ -1,5 +1,10 @@
 variable "use_cli" {
-  description = "Select whether you are using a user context or managed credential login (0/1)"
+  description = "Select whether for authentication you are using a user context or other kind of identity (true/false)"
+  type = bool
+}
+
+variable "use_msi" {
+  description = "Indicate whether for authentication you are using a managed credential or service principal (true/false)"
   type = bool
 }
 

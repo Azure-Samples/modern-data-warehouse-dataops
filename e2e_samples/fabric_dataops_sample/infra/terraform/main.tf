@@ -28,7 +28,7 @@ provider "random" {}
 provider "azuread" {}
 provider "fabric" {
   use_cli = var.use_cli
-  use_msi = !var.use_cli
+  use_msi = var.use_msi
   tenant_id = var.tenant_id
 }
 provider "azurerm" {

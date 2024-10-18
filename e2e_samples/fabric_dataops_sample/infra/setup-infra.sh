@@ -47,8 +47,16 @@ deploy_terraform_resources() {
 
     #user_principal_name=$(az account show --query user.name -o tsv)
     user_principal_type=$(az account show --query user.type -o tsv)
-    if [[ "$user_principal_type" == "user" ]]; then use_cli="true"; else use_cli="false"; fi
+    if [[ "$user_principal_type" == "user" ]]; then
+        use_cli="true"
+        use_msi="false"
+    else
+        use_cli="false"
+        msi=$(az account show --query user.assignedIdentityInfo -o tsv)
+        if [[ "$msi" == "" ]]; then use_msi=false; else use_msi=true; fi
+    fi
     echo "[I] use_cli is ${use_cli}"
+    echo "[I] use_msi is ${use_msi}"
     if [[ -n "$fabric_capacity_id" ]] || [[ "$fabric_capacity_id" == "" ]]; then
         create_fabric_capacity=true
         echo "[I] Variable fabric_capacity_id was empty, a new Fabric capacity will be created"
@@ -62,6 +70,7 @@ deploy_terraform_resources() {
     terraform apply \
         -auto-approve \
         -var "use_cli=$use_cli" \
+        -var "use_msi=$use_msi" \
         -var "tenant_id=$tenant_id" \
         -var "base_name=$base_name" \
         -var "location=$location" \
