@@ -31,3 +31,5 @@ export location="The location of the Azure resources. This location is used for 
 export ADLS_GEN2_CONNECTION_ID="The connection ID for the ADLS Gen2 Cloud Connection. If not provided, the ALDS Gen2 shortcut creation would be skipped."
 export rg_name="The Azure Resource Group where all Azure resources will be deployed."
 export tenant_id=$FABRIC_TENANT_ID
+export fabric_capacity_id="" # the ID of an EXISTING capacity, if this is empty then a new capacity will be created
+#[TODO] README if capacity name is provided then the MSI/SPN needs to be an admin as a prereq

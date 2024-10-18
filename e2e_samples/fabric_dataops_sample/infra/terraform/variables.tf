@@ -34,6 +34,17 @@ variable "rg_name" {
   type = string  
 }
 
+variable "create_fabric_capacity" {
+  description = "A flag to indicate whether a new Fabric capacity should/should not be created"
+  type = bool
+}
+
+variable "fabric_capacity_id" {
+  description = "The ID of an existing Fabric capacity"
+  type = string
+  default = ""
+}
+
 variable "git_organization_name" {
   type        = string
   description = "The Git organization name"

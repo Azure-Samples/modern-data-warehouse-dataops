@@ -1,3 +1,14 @@
+variable "create_fabric_capacity" {
+  description = "A flag to indicate whether a new Fabric capacity should/should not be created"
+  type = bool
+}
+
+variable "fabric_capacity_id" {
+  description = "The ID of an existing Fabric capacity. A valid ID is required if create_fabric_capacity is true"
+  type = string
+  default = ""
+}
+
 variable "capacity_name" {
   type        = string
   description = "Name of the Fabric capacity."

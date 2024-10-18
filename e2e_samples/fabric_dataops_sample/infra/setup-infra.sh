@@ -19,11 +19,12 @@ tenant_id="$FABRIC_TENANT_ID"
 fabric_capacity_admin="$fabric_capacity_admin"
 fabric_workspace_admins="$fabric_workspace_admins"
 rg_name="$rg_name"
+fabric_capacity_id="$fabric_capacity_id"
 git_organization_name="$git_organization_name"
 git_project_name="$git_project_name"
 git_repository_name="$git_repository_name"
 git_branch_name="$git_branch_name"
-git_directory_name="$git_directory_name" 
+git_directory_name="$git_directory_name"
 
 # Variable set based on Terraform output
 tf_storage_container_name=""
@@ -48,6 +49,13 @@ deploy_terraform_resources() {
     user_principal_type=$(az account show --query user.type -o tsv)
     if [[ "$user_principal_type" == "user" ]]; then use_cli="true"; else use_cli="false"; fi
     echo "[I] use_cli is ${use_cli}"
+    if [[ -n "$fabric_capacity_id" ]] || [[ "$fabric_capacity_id" == "" ]]; then
+        create_fabric_capacity=true
+        echo "[I] Variable fabric_capacity_id was empty, a new Fabric capacity will be created"
+    else
+        create_fabric_capacity=false
+        echo "[I] Variable fabric_capacity_id was NOT empty, the provided Fabric capacity will be used"
+    fi
 
 
     terraform init
@@ -60,6 +68,8 @@ deploy_terraform_resources() {
         -var "fabric_capacity_admin=$fabric_capacity_admin" \
         -var "fabric_workspace_admins=$fabric_workspace_admins" \
         -var "rg_name=$rg_name" \
+        -var "create_fabric_capacity=$create_fabric_capacity" \
+        -var "fabric_capacity_id=$fabric_capacity_id" \
         -var "git_organization_name=$git_organization_name" \
         -var "git_project_name=$git_project_name" \
         -var "git_repository_name=$git_repository_name" \

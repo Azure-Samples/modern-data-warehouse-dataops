@@ -138,13 +138,15 @@ module "application_insights" {
 # Pre-req: register the Microsoft.Fabric resource provider
 
 module "fabric_capacity" {
-  source            = "./modules/fabric/capacity"
-  capacity_name     = "cap${local.base_name_trimmed}"
-  resource_group_id = data.azurerm_resource_group.rg.id
-  location          = data.azurerm_resource_group.rg.location
-  admin_members     = [data.azuread_client_config.current.object_id, var.fabric_capacity_admin]
-  sku               = "F2"
-  tags              = local.tags
+  source                  = "./modules/fabric/capacity"
+  create_fabric_capacity  = var.create_fabric_capacity
+  fabric_capacity_id      = var.fabric_capacity_id
+  capacity_name           = "cap${local.base_name_trimmed}"
+  resource_group_id       = data.azurerm_resource_group.rg.id
+  location                = data.azurerm_resource_group.rg.location
+  admin_members           = [data.azuread_client_config.current.object_id, var.fabric_capacity_admin]
+  sku                     = "F2"
+  tags                    = local.tags
 }
 
 module "fabric_workspace" {
