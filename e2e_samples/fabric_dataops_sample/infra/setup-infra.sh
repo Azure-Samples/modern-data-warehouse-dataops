@@ -19,7 +19,7 @@ tenant_id="$FABRIC_TENANT_ID"
 fabric_capacity_admin="$fabric_capacity_admin"
 fabric_workspace_admins="$fabric_workspace_admins"
 rg_name="$rg_name"
-fabric_capacity_id="$fabric_capacity_id"
+fabric_capacity_id=$(echo "$fabric_capacity_id" | tr '[:upper:]' '[:lower:]' )
 git_organization_name="$git_organization_name"
 git_project_name="$git_project_name"
 git_repository_name="$git_repository_name"
@@ -57,7 +57,7 @@ deploy_terraform_resources() {
     fi
     echo "[I] use_cli is ${use_cli}"
     echo "[I] use_msi is ${use_msi}"
-    if [[ -n "$fabric_capacity_id" ]] || [[ "$fabric_capacity_id" == "" ]]; then
+    if [[ "$fabric_capacity_id" == "" ]]; then
         create_fabric_capacity=true
         echo "[I] Variable fabric_capacity_id was empty, a new Fabric capacity will be created"
     else

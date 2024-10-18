@@ -4,6 +4,6 @@ output "capacity_id" {
 }
 
 output "capacity_name" {
-  value = var.create_fabric_capacity ? data.fabric_capacity.provided_capacity_id[0].display_name : data.fabric_capacity.provided_capacity_id[0].display_name
+  value = var.create_fabric_capacity ? data.fabric_capacity.created_capacity_id[0].display_name : data.fabric_capacity.provided_capacity_id[0].display_name
   description = "Microsoft Fabric capacity name"
 }
