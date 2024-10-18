@@ -15,7 +15,7 @@ source ./.env
 base_name="$base_name"
 location="$location"
 adls_gen2_connection_id="$ADLS_GEN2_CONNECTION_ID"
-tenant_id="$FABRIC_TENANT_ID"
+tenant_id="$tenant_id"
 fabric_capacity_admin="$fabric_capacity_admin"
 fabric_workspace_admins="$fabric_workspace_admins"
 rg_name="$rg_name"
@@ -46,6 +46,8 @@ deploy_terraform_resources() {
     cd "$1" || exit
 
     #user_principal_name=$(az account show --query user.name -o tsv)
+    client_id=""
+    client_secret=""
     user_principal_type=$(az account show --query user.type -o tsv)
     if [[ "$user_principal_type" == "user" ]]; then
         use_cli="true"
@@ -53,11 +55,19 @@ deploy_terraform_resources() {
     else
         use_cli="false"
         msi=$(az account show --query user.assignedIdentityInfo -o tsv)
-        if [[ "$msi" == "" ]]; then use_msi=false; else use_msi=true; fi
+        if [[ -z "${msi}" ]]; then
+            use_msi=false;
+            client_id="$FABRIC_CLIENT_ID"
+            client_secret="$FABRIC_CLIENT_SECRET"
+        else 
+            use_msi=true;
+        fi
     fi
     echo "[I] use_cli is ${use_cli}"
     echo "[I] use_msi is ${use_msi}"
-    if [[ "$fabric_capacity_id" == "" ]]; then
+    echo "[I] executing as client_id ${client_id}"
+    
+    if [[ -z "${fabric_capacity_id}" ]]; then
         create_fabric_capacity=true
         echo "[I] Variable fabric_capacity_id was empty, a new Fabric capacity will be created"
     else
@@ -71,6 +81,8 @@ deploy_terraform_resources() {
         -auto-approve \
         -var "use_cli=$use_cli" \
         -var "use_msi=$use_msi" \
+        -var "client_id=$client_id" \
+        -var "client_secret=$client_secret" \
         -var "tenant_id=$tenant_id" \
         -var "base_name=$base_name" \
         -var "location=$location" \
