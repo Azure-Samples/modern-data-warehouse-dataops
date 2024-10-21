@@ -76,7 +76,6 @@ locals {
   base_name         = var.base_name != "" ? lower(var.base_name) : random_string.base_name[0].result
   base_name_trimmed = replace(lower(local.base_name), "-", "")
   tags = {
-    owner    = data.azuread_client_config.current.client_id
     basename = local.base_name
   }
   notebook_001_defintion_path      = "../../src//notebooks/nb-city-safety.ipynb"
@@ -105,7 +104,7 @@ module "keyvault" {
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
   keyvault_name       = "kv-${local.base_name}"
-  tenant_id           = data.azuread_client_config.current.tenant_id
+  tenant_id           = var.tenant_id
   object_id           = data.azuread_group.sg.object_id
   tags                = local.tags
   purge_protection    = false #toberemoved
