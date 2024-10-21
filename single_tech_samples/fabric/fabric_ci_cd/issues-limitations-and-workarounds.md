@@ -69,7 +69,7 @@ To reduce the number of manual actions, consider including an additional step af
 
 ![Deployment Pipeline](./images/fabric-cicd-update-definition.drawio.png)
 
-This new step involves running a script to update the definition of specific items. This script can be integrated into your CD pipeline. 
+This new step involves running a script to update the definition of specific items. This script can be integrated into your CD pipeline.
 
 The goal is to leverage the [Fabric Item Definition Rest API](https://learn.microsoft.com/en-us/rest/api/fabric/core/items/update-item-definition?tabs=HTTP) to update the definition item as needed.
 
@@ -180,6 +180,7 @@ foreach ($item in $workspace_items.value) {
     }
 }
 ```
+
 Following this approach will eliminate manual interventions until items not supported in deployment rules are supported in deployment rules.
 
 ## Direct changes made to the "main" branch
