@@ -25,8 +25,8 @@ variable "object_id" {
 
 variable "purge_protection" {
   description = "Whether to enable or not KeyVault purge protection"
-  type = bool
-  default = true
+  type        = bool
+  default     = true
 }
 
 variable "tags" {

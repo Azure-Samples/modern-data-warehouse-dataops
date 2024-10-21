@@ -1,28 +1,33 @@
 variable "use_cli" {
   description = "Select whether for authentication you are using a user context or other kind of identity (true/false)"
-  type = bool
+  type        = bool
 }
 
 variable "use_msi" {
   description = "Indicate whether for authentication you are using a managed credential or service principal (true/false)"
-  type = bool
+  type        = bool
 }
 
 variable "client_id" {
   description = "The Application ID of the SPN or MI to be used to authenticate with the Fabric terraform provider"
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 variable "client_secret" {
   description = "The secret of the SPN to be used to authenticate with the Fabric terraform provider"
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 variable "tenant_id" {
-  type = string
+  type        = string
   description = "Tenant ID"
+}
+
+variable "subscription_id" {
+  type        = string
+  description = "Subscription ID"
 }
 
 variable "base_name" {
@@ -30,36 +35,30 @@ variable "base_name" {
   type        = string
 }
 
-variable "location" {
-  description = "The Azure region where the resources will be created"
-  type        = string
-  default     = "westus3"
-}
-
 variable "fabric_capacity_admin" {
-  description = "The Object ID of the group of Fabric capacity admins"
+  description = "The user principal name of Fabric capacity admin"
   type        = string
 }
 
-variable "fabric_workspace_admins" {
-  description = "The Object ID of the group of Fabric Workspace admins"
+variable "fabric_workspace_admin_sg" {
+  description = "The Entra security group of Fabric Workspace admins"
   type        = string
 }
 
 variable "rg_name" {
   description = "The resource group name where the Azure resources will be created"
-  type = string  
+  type        = string
 }
 
 variable "create_fabric_capacity" {
   description = "A flag to indicate whether a new Fabric capacity should/should not be created"
-  type = bool
+  type        = bool
 }
 
 variable "fabric_capacity_id" {
   description = "The ID of an existing Fabric capacity"
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 variable "git_organization_name" {

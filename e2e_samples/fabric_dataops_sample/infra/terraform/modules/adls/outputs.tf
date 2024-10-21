@@ -6,6 +6,10 @@ output "storage_account_name" {
   value = azurerm_storage_account.storage.name
 }
 
+output "storage_account_location" {
+  value = azurerm_storage_account.storage.location
+}
+
 output "primary_access_key" {
   value = azurerm_storage_account.storage.primary_access_key
 }

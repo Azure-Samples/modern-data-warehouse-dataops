@@ -12,19 +12,21 @@ set -o errexit
 source ./.env
 
 ## Environment variables
-base_name="$base_name"
-location="$location"
+tenant_id="$TENANT_ID"
+subscription_id="$SUBSCRIPTION_ID"
+rg_name="$RESOURCE_GROUP_NAME"
+base_name="$BASE_NAME"
+# GIT integration variables
+git_organization_name="$GIT_ORGANIZATION_NAME"
+git_project_name="$GIT_PROJECT_NAME"
+git_repository_name="$GIT_REPOSITORY_NAME"
+git_branch_name="$GIT_BRANCH_NAME"
+git_directory_name="$GIT_DIRECTORY_NAME"
+# Admin users and groups
+fabric_capacity_admin="$FABRIC_CAPACITY_ADMIN"
+fabric_workspace_admin_sg="$FABRIC_WORKSPACE_ADMIN_SG"
+fabric_capacity_id=$(echo "$FABRIC_CAPACITY_ID" | tr '[:upper:]' '[:lower:]' )
 adls_gen2_connection_id="$ADLS_GEN2_CONNECTION_ID"
-tenant_id="$tenant_id"
-fabric_capacity_admin="$fabric_capacity_admin"
-fabric_workspace_admins="$fabric_workspace_admins"
-rg_name="$rg_name"
-fabric_capacity_id=$(echo "$fabric_capacity_id" | tr '[:upper:]' '[:lower:]' )
-git_organization_name="$git_organization_name"
-git_project_name="$git_project_name"
-git_repository_name="$git_repository_name"
-git_branch_name="$git_branch_name"
-git_directory_name="$git_directory_name"
 
 # Variable set based on Terraform output
 tf_storage_container_name=""
@@ -57,8 +59,8 @@ deploy_terraform_resources() {
         msi=$(az account show --query user.assignedIdentityInfo -o tsv)
         if [[ -z "${msi}" ]]; then
             use_msi=false;
-            client_id="$FABRIC_CLIENT_ID"
-            client_secret="$FABRIC_CLIENT_SECRET"
+            client_id="$APP_CLIENT_ID"
+            client_secret="$APP_CLIENT_SECRET"
         else 
             use_msi=true;
         fi
@@ -84,11 +86,11 @@ deploy_terraform_resources() {
         -var "client_id=$client_id" \
         -var "client_secret=$client_secret" \
         -var "tenant_id=$tenant_id" \
-        -var "base_name=$base_name" \
-        -var "location=$location" \
-        -var "fabric_capacity_admin=$fabric_capacity_admin" \
-        -var "fabric_workspace_admins=$fabric_workspace_admins" \
+        -var "subscription_id=$subscription_id" \
         -var "rg_name=$rg_name" \
+        -var "base_name=$base_name" \
+        -var "fabric_capacity_admin=$fabric_capacity_admin" \
+        -var "fabric_workspace_admin_sg=$fabric_workspace_admin_sg" \
         -var "create_fabric_capacity=$create_fabric_capacity" \
         -var "fabric_capacity_id=$fabric_capacity_id" \
         -var "git_organization_name=$git_organization_name" \

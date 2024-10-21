@@ -1,35 +1,21 @@
-# Fabric TF provider env variables
-export FABRIC_TENANT_ID="The Entra ID (Azure AD Tenant Id) of your Fabric tenant"
+export TENANT_ID="The Entra ID (Azure AD Tenant Id) of your Fabric tenant"
+export SUBSCRIPTION_ID="The Azure subscription ID that will be used to deploy azure resources."
+export RESOURCE_GROUP_NAME="The Azure resource group where all azure resources will be deployed."
+export BASE_NAME="The base name of the Fabric project. This name is used for naming the Azure and Fabric resources."
 # Service Principal Authentication only: Use the below only if you are authenticating with a Service principal with the terraform provider
-export FABRIC_CLIENT_ID="The Service Principal Client ID (App Id)"
-export FABRIC_CLIENT_SECRET="The Service Principal Client secret"
-# MSI Authentication only: As an alternative to the above, use the below if you are authenticating with a managed identity
-export FABRIC_USE_MSI="true"
-
-# AzureRM TF provider env variables
-export ARM_SUBSCRIPTION_ID="The Azure Subscription ID that will be used to deploy Azure resources."
-export ARM_STORAGE_USE_AZUREAD="true" # Terraform will use Entra ID authentication authenticating against Azure Storage
-export ARM_TENANT_ID=$FABRIC_TENANT_ID
-# Service Principal Authentication only: Use the below only if you are authenticating with a Service principal with the terraform provider
-export ARM_CLIENT_ID=$FABRIC_CLIENT_ID
-export ARM_CLIENT_SECRET=$FABRIC_CLIENT_SECRET
-# MSI Authentication only: As an alternative to the above, use the below if you are authenticating with a managed identity
-export ARM_USE_MSI=$FABRIC_USE_MSI
-
-
+export APP_CLIENT_ID="The service principal client ID."
+export APP_CLIENT_SECRET="The service principal client secret."
 # GIT integration variables
-export git_organization_name="Your AzureDevOps organization"
-export git_project_name="Your AzureDevops project"
-export git_repository_name="Your repository under the Azure DevOps project above"
-export git_branch_name="The branch where Fabric items will be committed to."
-export git_directory_name="The folder where Fabric items will be committed" #note that the, other than the root folder "/", the directory has to be created ahead of time, the REST API does not yet support creating new directories
-# Other variables
-export fabric_workspace_admins="The Object ID of the Entra Security Group that will be assigned as an Admin of the workspace."
-export fabric_capacity_admin="yourusername@yourdomain" # (Recommended: use your username) The Entra user name that will be granted capacity Admin to the newly created Fabric Capacity.
-export base_name="The base name of the Fabric project. This name is used for naming the Azure and Fabric resources."
-export location="The location of the Azure resources. This location is used for creating the Azure resources."
-export ADLS_GEN2_CONNECTION_ID="The connection ID for the ADLS Gen2 Cloud Connection. If not provided, the ALDS Gen2 shortcut creation would be skipped."
-export rg_name="The Azure Resource Group where all Azure resources will be deployed."
-export tenant_id=$FABRIC_TENANT_ID
-export fabric_capacity_id="" # the ID of an EXISTING capacity, if this is empty then a new capacity will be created
+export GIT_ORGANIZATION_NAME="The Azure DevOps organization."
+export GIT_PROJECT_NAME="The Azure Devops project."
+export GIT_REPOSITORY_NAME="Your repository under the Azure DevOps project."
+export GIT_BRANCH_NAME="The branch where Fabric items will be committed to."
+export GIT_DIRECTORY_NAME="The folder where Fabric items will be committed" # Note: Other than the root folder "/", the directory must already exist.
+# Admin users and groups
+export FABRIC_WORKSPACE_ADMIN_SG="The name of the Entra security groups with admin members."
+export FABRIC_CAPACITY_ADMIN="yourusername@yourdomain" # (Recommended: use your username) The Entra user name that will be granted capacity Admin to the newly created Fabric Capacity.
+# Other Variables
+export ADLS_GEN2_CONNECTION_ID="" # The connection ID for the ADLS Gen2 Cloud Connection. If not provided, the ALDS Gen2 shortcut creation would be skipped.
+export FABRIC_CAPACITY_ID="" # The ID of an existing Fabric capacity. If this is empty, then a new capacity will be created.
+export ARM_STORAGE_USE_AZUREAD="true" # Terraform will use Entra ID authentication authenticating against Azure Storage
 #[TODO] README if capacity name is provided then the MSI/SPN needs to be an admin as a prereq and the location of the provided fabric capacity needs to be compatible with the location variable

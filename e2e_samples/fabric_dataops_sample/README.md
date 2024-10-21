@@ -94,7 +94,7 @@ The Fabric resources are deployed using the Fabric REST APIs. Once the terraform
 1. Import the environment variables file and authenticate to Azure with Service Principal
     ```bash
     source .env
-    az login --service-principal -u $FABRIC_CLIENT_ID -p $FABRIC_CLIENT_SECRET --tenant $FABRIC_TENANT_ID
+    az login --service-principal -u $APP_CLIENT_ID -p $APP_CLIENT_SECRET --tenant $TENANT_ID --allow-no-subscriptions
     ```
 
 1. Review [setup-infra.sh](./infra/setup-infra.sh) script and see if you want to adjust the derived naming of variable names of Azure/Fabric resources.
