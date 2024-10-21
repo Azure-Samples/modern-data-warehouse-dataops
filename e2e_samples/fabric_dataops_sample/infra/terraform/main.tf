@@ -30,6 +30,8 @@ provider "fabric" {
   use_cli = var.use_cli
   use_msi = var.use_msi
   tenant_id = var.tenant_id
+  client_id = var.use_msi ? null : var.client_id
+  client_secret = var.use_msi ? null : var.client_secret
 }
 
 provider "azurerm" {

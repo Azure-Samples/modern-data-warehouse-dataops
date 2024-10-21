@@ -10,7 +10,12 @@ variable "use_msi" {
 
 variable "client_id" {
   type = string
-  description = "The Application ID of the SPN/MI used to run this script and that will be granted Capacity Admin access"
+  description = "The Application ID of the SPN/MI used to run this deployment and that will be granted Capacity Admin access"
+}
+
+variable "client_secret" {
+  type = string
+  description = "The secret of the SPN used to run this deployment."
 }
 
 variable "tenant_id" {
