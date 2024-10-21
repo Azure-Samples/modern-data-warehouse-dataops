@@ -17,6 +17,7 @@ location="$location"
 adls_gen2_connection_id="$ADLS_GEN2_CONNECTION_ID"
 tenant_id="$tenant_id"
 client_id="$client_id"
+client_secret="$client_secret"
 fabric_capacity_admin="$fabric_capacity_admin"
 fabric_workspace_admins="$fabric_workspace_admins"
 rg_name="$rg_name"
@@ -79,6 +80,7 @@ deploy_terraform_resources() {
         -var "use_msi=$use_msi" \
         -var "tenant_id=$tenant_id" \
         -var "client_id=$client_id" \
+        -var "client_secret=$client_secret" \
         -var "base_name=$base_name" \
         -var "location=$location" \
         -var "fabric_capacity_admin=$fabric_capacity_admin" \
