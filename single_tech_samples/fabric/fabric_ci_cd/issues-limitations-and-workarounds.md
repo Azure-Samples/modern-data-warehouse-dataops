@@ -61,6 +61,128 @@ For achieving the step 1, the script [update-workspace-from-git.ps1](./devops/de
 
 Unfortunately, the functionality to undo the local workspace changes is only available on Fabric UI, and can't be done programmatically for now. This is currently a limitation that you should be aware of. As soon as the undo APIs are available, the script will be updated to include this functionality.
 
+## Deployment rules limitation and workaround
+
+Current [deployment rules](https://learn.microsoft.com/en-us/fabric/cicd/deployment-pipelines/create-rules) do not support all Fabric items. As a result, you might need to manually update some items when deploying to a new stage.  
+
+To reduce the number of manual actions, consider including an additional step after programmatically running the deployment pipeline.
+
+![Deployment Pipeline](./images/fabric-cicd-update-definition.drawio.png)
+
+This new step involves running a script to update the definition of specific items. This script can be integrated into your CD pipeline.
+
+The goal is to leverage the [Fabric Item Definition Rest API](https://learn.microsoft.com/en-us/rest/api/fabric/core/items/update-item-definition?tabs=HTTP) to update the definition item as needed.
+
+The process for moving to a new stage could look like this:
+![alt text](./images/fabric-cicd-update-definition-focus.png)
+
+### Example Scenario
+
+Consider the following scenario:
+
+- A data Pipeline (which is not currently supporting in deployment rules)
+- A SQL script inside this data pipeline referencing a warehouse
+- Each stage has its own warehouse so for example:
+  - Source stage references a warehouse in the source workspace
+  - Target stage references a warehouse in the target workspace
+
+When deploying to the target stage, the data pipeline will still reference the warehouse from the source stage instead of the target one. By calling the Item Definition Rest API, you can automate this manual update required for deployment.
+
+Here is a simple example:
+
+- `workspace id`, `warehouse_endpoint` and `warehouse_id` are parameters provided that correspond to the value for the stage you deploying to
+
+```powershell
+param(
+    [string]$token,
+    [string]$workspace_id,
+    [string]$warehouse_endpoint,
+    [string]$warehouse_id
+)
+
+$headers = @{
+    "Content-Type" = "application/json"
+    "Authorization" = "Bearer $token"
+}
+
+
+$workspace_items_url = "https://api.fabric.microsoft.com/v1/workspaces/$workspace_id/items"
+
+$workspace_items = Invoke-RestMethod  -Uri $workspace_items_url -Method Get -Headers $headers -ContentType "application/json"
+
+Write-Output "Parsing definition"
+
+foreach ($item in $workspace_items.value) {
+
+    if ($item.type -eq "DataPipeline") {    
+        $workspaceId = $item.workspaceId
+        $id = $item.id
+        $url = "https://api.fabric.microsoft.com/v1/workspaces/"+"$workspaceId/items/$id/getDefinition"
+        Write-Output "checking DataPipeline:" $($item.displayName)
+        Write-Output "Deploying to workspace ID" "Workspace ID: $workspaceId"
+        Write-Output "Processing Pipeline" "ID: $id"
+        $dataPipelineDefinition = Invoke-RestMethod  -Uri $url -Method Post -Headers $headers -ContentType "application/json"
+        foreach ($part in $dataPipelineDefinition.definition.parts) {
+            if ($part.path -eq "pipeline-content.json") {
+                $decodedPayload = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($part.payload))
+                
+                $jsonObject = ConvertFrom-Json $decodedPayload
+                $activities = $jsonObject.properties.activities
+                $callApi = $false
+                foreach ($activity in $activities) {
+                    #Warehouse case
+                    if ($activity.linkedService -and $activity.linkedService.properties.type -eq "DataWarehouse") {
+                        if ($activity.linkedService.properties.typeProperties.endpoint -ne $warehouse_endpoint){
+                            $activity.linkedService.properties.typeProperties.endpoint = $warehouse_endpoint
+                            $callApi = $true
+                        }
+                        if ($activity.linkedService.objectid -ne $warehouse_id){
+                            $activity.linkedService.objectid = $warehouse_id
+                            $callApi = $true
+                        }
+                        if ($activity.linkedService.properties.typeProperties.artifactId -ne $warehouse_id){
+                            $activity.linkedService.properties.typeProperties.artifactId = $warehouse_id
+                            $callApi = $true
+                        }
+                        if ($activity.linkedService.properties.typeProperties.workspaceId -ne $workspace_id){
+                            $activity.linkedService.properties.typeProperties.workspaceId = $workspace_id
+                            $callApi = $true
+                        }
+    
+                        $modifiedPayload = $jsonObject | ConvertTo-Json -Depth 100
+                        Write-Output "Warehouse definition could have been modified"
+                                
+                
+                    }
+
+                    if ($callApi) {
+                        $modifiedPayloadBase64 = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($modifiedPayload))
+
+                        $body = @{
+                                "definition"= @{ 
+                                        "parts"= @(
+                                            @{ 
+                                                "path"= "pipeline-content.json"; 
+                                                "payload"= $modifiedPayloadBase64; 
+                                                "payloadType" = "InlineBase64" 
+                                            }
+                                        )
+                                    } 
+                        } | ConvertTo-Json -Depth 100
+                        $url = "https://api.fabric.microsoft.com/v1/workspaces/"+"$workspaceId/items/$id/updateDefinition"
+                        Invoke-RestMethod -Uri $url -Method Post -Body $body -Headers $headers -ContentType "application/json"
+                        Write-Output "Pipeline Definition modified"
+                    }
+                }
+                
+            }
+        }
+    }
+}
+```
+
+Following this approach will eliminate manual interventions until items not supported in deployment rules are supported in deployment rules.
+
 ## Direct changes made to the "main" branch
 
 Ideally, the changes to the "main" branch should only be made through the "feature" branches and then merged into the "main" branch. This is to ensure that the changes are validated and tested before they are promoted to the "main" branch.
