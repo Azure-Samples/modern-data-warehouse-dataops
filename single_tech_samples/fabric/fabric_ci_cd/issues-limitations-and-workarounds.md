@@ -63,22 +63,23 @@ Unfortunately, the functionality to undo the local workspace changes is only ava
 
 ## Deployment rules limitation and workaround
 
-Current [deployment rules](https://learn.microsoft.com/en-us/fabric/cicd/deployment-pipelines/create-rules) do not support all Fabric items. 
-As a result, you might need to manually update some items when deploying to a new stage.. 
+Current [deployment rules](https://learn.microsoft.com/en-us/fabric/cicd/deployment-pipelines/create-rules) do not support all Fabric items. As a result, you might need to manually update some items when deploying to a new stage.  
 
 To reduce the number of manual actions, consider including an additional step after programmatically running the deployment pipeline.
+
 ![Deployment Pipeline](./images/fabric-cicd-update-definition.drawio.png)
 
 This new step involves running a script to update the definition of specific items. This script can be integrated into your CD pipeline. 
 
-The goal is to leverage the [Fabric Item Definition Rest API](https://learn.microsoft.com/en-us/rest/api/fabric/core/items/update-item-definition?tabs=HTTP) to update the definition item as needed. 
+The goal is to leverage the [Fabric Item Definition Rest API](https://learn.microsoft.com/en-us/rest/api/fabric/core/items/update-item-definition?tabs=HTTP) to update the definition item as needed.
 
 The process for moving to a new stage could look like this:
 ![alt text](./images/fabric-cicd-update-definition-focus.png)
 
-**Example Scenario** 
+### Example Scenario
 
 Consider the following scenario:
+
 - A data Pipeline (which is not currently supporting in deployment rules)
 - A SQL script inside this data pipeline referencing a warehouse
 - Each stage has its own warehouse so for example:
@@ -88,7 +89,9 @@ Consider the following scenario:
 When deploying to the target stage, the data pipeline will still reference the warehouse from the source stage instead of the target one. By calling the Item Definition Rest API, you can automate this manual update required for deployment.
 
 Here is a simple example:
+
 - `workspace id`, `warehouse_endpoint` and `warehouse_id` are parameters provided that correspond to the value for the stage you deploying to
+
 ```powershell
 param(
     [string]$token,
@@ -177,11 +180,7 @@ foreach ($item in $workspace_items.value) {
     }
 }
 ```
-
 Following this approach will eliminate manual interventions until items not supported in deployment rules are supported in deployment rules.
-
-
-
 
 ## Direct changes made to the "main" branch
 
