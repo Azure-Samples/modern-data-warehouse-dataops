@@ -9,15 +9,8 @@ variable "use_msi" {
 }
 
 variable "client_id" {
-  description = "The Application ID of the SPN or MI to be used to authenticate with the Fabric terraform provider"
   type = string
-  default = ""
-}
-
-variable "client_secret" {
-  description = "The secret of the SPN to be used to authenticate with the Fabric terraform provider"
-  type = string
-  default = ""
+  description = "The Application ID of the SPN/MI used to run this script and that will be granted Capacity Admin access"
 }
 
 variable "tenant_id" {
