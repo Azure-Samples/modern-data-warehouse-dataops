@@ -23,6 +23,11 @@ variable "tenant_id" {
   description = "Tenant ID"
 }
 
+variable "subscription_id" {
+  type = string
+  description = "Azure subscription ID"
+}
+
 variable "base_name" {
   description = "The base name of the deployed Azure resources"
   type        = string
