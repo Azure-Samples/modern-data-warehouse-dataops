@@ -30,15 +30,15 @@ provider "fabric" {
   use_cli = var.use_cli
   use_msi = var.use_msi
   tenant_id = var.tenant_id
-  client_id = var.use_msi ? null : var.client_id
-  client_secret = var.use_msi ? null : var.client_secret
+  client_id = var.use_msi || var.use_cli ? null : var.client_id
+  client_secret = var.use_msi || var.use_cli ? null : var.client_secret
 }
 
 provider "azurerm" {
   tenant_id = var.tenant_id
   subscription_id = var.subscription_id
-  client_id = var.use_msi ? null : var.client_id
-  client_secret = var.use_msi ? null : var.client_secret
+  client_id = var.use_msi || var.use_cli ? null : var.client_id
+  client_secret = var.use_msi || var.use_cli ? null : var.client_secret
   use_msi = var.use_msi
   use_cli = var.use_cli
   storage_use_azuread = true
@@ -49,8 +49,8 @@ provider "azurerm" {
 provider "azapi" {
   tenant_id = var.tenant_id
   subscription_id = var.subscription_id
-  client_id = var.use_msi ? null : var.client_id
-  client_secret = var.use_msi ? null : var.client_secret
+  client_id = var.use_msi || var.use_cli ? null : var.client_id
+  client_secret = var.use_msi || var.use_cli ? null : var.client_secret
   use_msi = var.use_msi
   use_cli = var.use_cli
 }
@@ -67,7 +67,7 @@ locals {
   base_name_trimmed = replace(lower(local.base_name), "-", "")
   tags = {
     owner_user  = var.fabric_capacity_admin
-    owner_app   = data.azuread_application.deployment_principal.display_name
+    owner_app   = data.azuread_service_principal.deployment_principal.display_name
     basename    = local.base_name
   }
   notebook_defintion_path = "../../src/notebooks/nb-city-safety.ipynb"
@@ -75,7 +75,7 @@ locals {
 }
 
 #data "azuread_client_config" "current" {}
-data "azuread_application" "deployment_principal" {
+data "azuread_service_principal" "deployment_principal" {
   client_id = var.client_id
 }
 
@@ -153,7 +153,7 @@ module "fabric_capacity" {
   capacity_name           = "cap${local.base_name_trimmed}"
   resource_group_id       = data.azurerm_resource_group.rg.id
   location                = data.azurerm_resource_group.rg.location
-  admin_members           = [data.azuread_application.deployment_principal.object_id, var.fabric_capacity_admin]
+  admin_members           = [data.azuread_service_principal.deployment_principal.object_id, var.fabric_capacity_admin]
   sku                     = "F2"
   tags                    = local.tags
 }
