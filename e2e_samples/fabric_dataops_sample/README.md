@@ -121,7 +121,7 @@ The Fabric resources are deployed using the Fabric REST APIs. Once the terraform
 
     ```bash
     az config set core.login_experience_v2=off
-    az login --allow-no-subscriptions --tenant $FABRIC_TENANT_ID --scope api://fabric_terraform_provider/.default
+    az login --allow-no-subscriptions --tenant $tenant_id --scope api://fabric_terraform_provider/.default
     az config set core.login_experience_v2=on
     ./setup-infra.sh
     ```

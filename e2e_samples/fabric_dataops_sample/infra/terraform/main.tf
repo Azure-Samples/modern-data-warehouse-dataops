@@ -95,7 +95,7 @@ data "azurerm_resource_group" "rg" {
 module "adls" {
   source               = "./modules/adls"
   resource_group_name  = data.azurerm_resource_group.rg.name
-  location             = data.azurerm_resource_group.rg.location
+  location             = var.location
   storage_account_name = "st${local.base_name_trimmed}"
   container_name       = "main"
   tags                 = local.tags
@@ -111,7 +111,7 @@ module "storage_blob_contributor_assignment" {
 module "keyvault" {
   source              = "./modules/keyvault"
   resource_group_name = data.azurerm_resource_group.rg.name
-  location            = data.azurerm_resource_group.rg.location
+  location            = var.location
   keyvault_name       = "kv-${local.base_name}"
   tenant_id           = var.tenant_id
   object_id           = var.fabric_workspace_admins
@@ -129,7 +129,7 @@ module "keyvault_secrets_officer_role_assignment" {
 module "loganalytics" {
   source              = "./modules/loganalytics"
   resource_group_name = data.azurerm_resource_group.rg.name
-  location            = data.azurerm_resource_group.rg.location
+  location            = var.location
   log_analytics_name  = "la-${local.base_name}"
   tags                = local.tags
 }
@@ -137,7 +137,7 @@ module "loganalytics" {
 module "application_insights" {
   source              = "./modules/appinsights"
   resource_group_name = data.azurerm_resource_group.rg.name
-  location            = data.azurerm_resource_group.rg.location
+  location            = var.location
   name                = "appi-${local.base_name}"
   workspace_id        = module.loganalytics.workspace_id
   application_type    = "other"
@@ -152,7 +152,7 @@ module "fabric_capacity" {
   fabric_capacity_id      = var.fabric_capacity_id
   capacity_name           = "cap${local.base_name_trimmed}"
   resource_group_id       = data.azurerm_resource_group.rg.id
-  location                = data.azurerm_resource_group.rg.location
+  location                = var.location
   admin_members           = [data.azuread_service_principal.deployment_principal.object_id, var.fabric_capacity_admin]
   sku                     = "F2"
   tags                    = local.tags
