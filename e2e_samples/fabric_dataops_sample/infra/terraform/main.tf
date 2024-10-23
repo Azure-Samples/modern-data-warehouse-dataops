@@ -144,8 +144,6 @@ module "application_insights" {
   tags                = local.tags
 }
 
-# Pre-req: register the Microsoft.Fabric resource provider
-
 module "fabric_capacity" {
   source                  = "./modules/fabric/capacity"
   create_fabric_capacity  = var.create_fabric_capacity
@@ -252,8 +250,3 @@ module "fabric_workspace_git_integration" {
 
   depends_on = [ module.fabric_data_pipeline]
 }
-
-# EXCLUDED:
-# deployment pipeline as is not supported by TF yet
-# shortcut as it's not supported by TF yet
-# trigger data pipeline not IaC
