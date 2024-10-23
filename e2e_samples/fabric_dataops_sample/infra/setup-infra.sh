@@ -27,6 +27,19 @@ fabric_capacity_admin="$FABRIC_CAPACITY_ADMIN"
 fabric_workspace_admin_sg="$FABRIC_WORKSPACE_ADMIN_SG"
 fabric_capacity_id=$(echo "$FABRIC_CAPACITY_ID" | tr '[:upper:]' '[:lower:]' )
 adls_gen2_connection_id="$ADLS_GEN2_CONNECTION_ID"
+tenant_id="$tenant_id"
+subscription_id="$subscription_id"
+client_id="$client_id"
+client_secret="$client_secret"
+fabric_capacity_admin="$fabric_capacity_admin"
+fabric_workspace_admins="$fabric_workspace_admins"
+rg_name="$rg_name"
+fabric_capacity_id=$(echo "$fabric_capacity_id" | tr '[:upper:]' '[:lower:]' )
+git_organization_name="$git_organization_name"
+git_project_name="$git_project_name"
+git_repository_name="$git_repository_name"
+git_branch_name="$git_branch_name"
+git_directory_name="$git_directory_name"
 
 # Variable set based on Terraform output
 tf_storage_container_name=""
@@ -47,9 +60,6 @@ alds_gen2_shortcut_path="Files"
 deploy_terraform_resources() {
     cd "$1" || exit
 
-    #user_principal_name=$(az account show --query user.name -o tsv)
-    client_id=""
-    client_secret=""
     user_principal_type=$(az account show --query user.type -o tsv)
     if [[ "$user_principal_type" == "user" ]]; then
         use_cli="true"
@@ -59,8 +69,11 @@ deploy_terraform_resources() {
         msi=$(az account show --query user.assignedIdentityInfo -o tsv)
         if [[ -z "${msi}" ]]; then
             use_msi=false;
+<<<<<<< HEAD
             client_id="$APP_CLIENT_ID"
             client_secret="$APP_CLIENT_SECRET"
+=======
+>>>>>>> 0a9ca3d3a8dff013b8fb439d8f6e574b3ee1570a
         else 
             use_msi=true;
         fi
@@ -68,7 +81,7 @@ deploy_terraform_resources() {
     echo "[I] use_cli is ${use_cli}"
     echo "[I] use_msi is ${use_msi}"
     echo "[I] executing as client_id ${client_id}"
-    
+
     if [[ -z "${fabric_capacity_id}" ]]; then
         create_fabric_capacity=true
         echo "[I] Variable fabric_capacity_id was empty, a new Fabric capacity will be created"
@@ -83,10 +96,19 @@ deploy_terraform_resources() {
         -auto-approve \
         -var "use_cli=$use_cli" \
         -var "use_msi=$use_msi" \
-        -var "client_id=$client_id" \
-        -var "client_secret=$client_secret" \
         -var "tenant_id=$tenant_id" \
         -var "subscription_id=$subscription_id" \
+        -var "client_id=$client_id" \
+        -var "client_secret=$client_secret" \
+<<<<<<< HEAD
+        -var "tenant_id=$tenant_id" \
+        -var "subscription_id=$subscription_id" \
+=======
+        -var "base_name=$base_name" \
+        -var "location=$location" \
+        -var "fabric_capacity_admin=$fabric_capacity_admin" \
+        -var "fabric_workspace_admins=$fabric_workspace_admins" \
+>>>>>>> 0a9ca3d3a8dff013b8fb439d8f6e574b3ee1570a
         -var "rg_name=$rg_name" \
         -var "base_name=$base_name" \
         -var "fabric_capacity_admin=$fabric_capacity_admin" \

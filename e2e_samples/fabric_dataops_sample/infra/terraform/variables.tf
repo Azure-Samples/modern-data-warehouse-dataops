@@ -9,15 +9,13 @@ variable "use_msi" {
 }
 
 variable "client_id" {
-  description = "The Application ID of the SPN or MI to be used to authenticate with the Fabric terraform provider"
-  type        = string
-  default     = ""
+  type = string
+  description = "The Application ID of the SPN/MI used to run this deployment and that will be granted Capacity Admin access"
 }
 
 variable "client_secret" {
-  description = "The secret of the SPN to be used to authenticate with the Fabric terraform provider"
-  type        = string
-  default     = ""
+  type = string
+  description = "The secret of the SPN used to run this deployment."
 }
 
 variable "tenant_id" {
@@ -26,8 +24,13 @@ variable "tenant_id" {
 }
 
 variable "subscription_id" {
+<<<<<<< HEAD
   type        = string
   description = "Subscription ID"
+=======
+  type = string
+  description = "Azure subscription ID"
+>>>>>>> 0a9ca3d3a8dff013b8fb439d8f6e574b3ee1570a
 }
 
 variable "base_name" {

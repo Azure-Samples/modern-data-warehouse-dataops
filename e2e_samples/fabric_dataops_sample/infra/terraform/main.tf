@@ -31,19 +31,36 @@ provider "azuread" {
   tenant_id     = var.tenant_id
 }
 provider "fabric" {
-  use_cli       = var.use_cli
-  use_msi       = var.use_msi
-  tenant_id     = var.tenant_id
-  client_id     = var.client_id
-  client_secret = var.client_secret
+  use_cli = var.use_cli
+  use_msi = var.use_msi
+  tenant_id = var.tenant_id
+  client_id = var.use_msi || var.use_cli ? null : var.client_id
+  client_secret = var.use_msi || var.use_cli ? null : var.client_secret
 }
+
 provider "azurerm" {
+  tenant_id = var.tenant_id
+  subscription_id = var.subscription_id
+  client_id = var.use_msi || var.use_cli ? null : var.client_id
+  client_secret = var.use_msi || var.use_cli ? null : var.client_secret
+  use_msi = var.use_msi
+  use_cli = var.use_cli
+  storage_use_azuread = true
   resource_provider_registrations = "none"
   subscription_id                 = var.subscription_id
   client_id                       = var.client_id
   client_secret                   = var.client_secret
   tenant_id                       = var.tenant_id
   features {}
+}
+
+provider "azapi" {
+  tenant_id = var.tenant_id
+  subscription_id = var.subscription_id
+  client_id = var.use_msi || var.use_cli ? null : var.client_id
+  client_secret = var.use_msi || var.use_cli ? null : var.client_secret
+  use_msi = var.use_msi
+  use_cli = var.use_cli
 }
 
 resource "random_string" "base_name" {
@@ -53,7 +70,26 @@ resource "random_string" "base_name" {
   upper   = false
 }
 
+<<<<<<< HEAD
 data "azuread_client_config" "current" {}
+=======
+locals {
+  base_name         = var.base_name != "" ? lower(var.base_name) : random_string.base_name[0].result
+  base_name_trimmed = replace(lower(local.base_name), "-", "")
+  tags = {
+    owner_user  = var.fabric_capacity_admin
+    owner_app   = data.azuread_service_principal.deployment_principal.display_name
+    basename    = local.base_name
+  }
+  notebook_defintion_path = "../../src/notebooks/nb-city-safety.ipynb"
+  data_pipeline_defintion_path = "../../src/data-pipelines/pl-covid-data-content.json"
+}
+
+#data "azuread_client_config" "current" {}
+data "azuread_service_principal" "deployment_principal" {
+  client_id = var.client_id
+}
+>>>>>>> 0a9ca3d3a8dff013b8fb439d8f6e574b3ee1570a
 
 data "azurerm_role_definition" "storage_blob_contributor_role" {
   name = "Storage Blob Data Contributor"
@@ -105,7 +141,11 @@ module "keyvault" {
   location            = data.azurerm_resource_group.rg.location
   keyvault_name       = "kv-${local.base_name}"
   tenant_id           = var.tenant_id
+<<<<<<< HEAD
   object_id           = data.azuread_group.sg.object_id
+=======
+  object_id           = var.fabric_workspace_admins
+>>>>>>> 0a9ca3d3a8dff013b8fb439d8f6e574b3ee1570a
   tags                = local.tags
   purge_protection    = false #toberemoved
 }
@@ -138,6 +178,7 @@ module "application_insights" {
 # Pre-req: register the Microsoft.Fabric resource provider
 
 module "fabric_capacity" {
+<<<<<<< HEAD
   source                 = "./modules/fabric/capacity"
   create_fabric_capacity = var.create_fabric_capacity
   fabric_capacity_id     = var.fabric_capacity_id
@@ -147,6 +188,17 @@ module "fabric_capacity" {
   admin_members          = [data.azuread_client_config.current.object_id, var.fabric_capacity_admin]
   sku                    = "F2"
   tags                   = local.tags
+=======
+  source                  = "./modules/fabric/capacity"
+  create_fabric_capacity  = var.create_fabric_capacity
+  fabric_capacity_id      = var.fabric_capacity_id
+  capacity_name           = "cap${local.base_name_trimmed}"
+  resource_group_id       = data.azurerm_resource_group.rg.id
+  location                = data.azurerm_resource_group.rg.location
+  admin_members           = [data.azuread_service_principal.deployment_principal.object_id, var.fabric_capacity_admin]
+  sku                     = "F2"
+  tags                    = local.tags
+>>>>>>> 0a9ca3d3a8dff013b8fb439d8f6e574b3ee1570a
 }
 
 module "fabric_workspace" {
