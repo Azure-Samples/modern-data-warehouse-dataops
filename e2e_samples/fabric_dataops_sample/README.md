@@ -22,7 +22,7 @@ Azure resources are deployed using Terraform. The sample uses the local backend 
 - Azure Key Vault
 - Azure Log Analytics Workspace
 - Azure Application Insights
-- Microsoft Fabric Capacity
+- Optional: Microsoft Fabric Capacity (an existing Capacity can be used)
 
 ### Fabric Resources
 
@@ -41,12 +41,13 @@ Microsoft Fabric resources are deployed using the [Microsoft Fabric terraform pr
 - An Azure subscription with the following:
   - The `Microsoft.Fabric` [resource provider](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#register-resource-provider) has been registered on the Azure subscription.
   - A resource group to which your user has been granted Contributor + User Access Administrator permissions.
-  - A Service Principal:
+  - A Managed Identity OR a Service Principal:
     - *If you **cannot** create a Service Principal in your Entra ID*:
       - Request that a Service Principal be created
       - Make sure you are the **Owner** of such service principal
     - *If you **can** create a Service Principal in your Entra ID*, follow the [setting up the Infrastructure](#setting-up-the-infrastructure) section for details.
-  - Request that a Fabric Administrator grant to the above service principal permission to [use Fabric APIs](https://learn.microsoft.com/en-us/fabric/admin/service-admin-portal-developer#service-principals-can-use-fabric-apis).
+  - Request that a Fabric Administrator grant to the above Service Principal/Managed Identity permission to [use Fabric APIs](https://learn.microsoft.com/en-us/fabric/admin/service-admin-portal-developer#service-principals-can-use-fabric-apis).
+- Only required if an **existing** Microsoft Fabric Capacity will be used: make sure that your user and the Principal (Service Principal or Managed Identity) are [added as Capacity Administrators](https://learn.microsoft.com/fabric/admin/capacity-settings?tabs=fabric-capacity#add-and-remove-admins) to the provided Capacity.
 - A bash shell with the following installed:
   - [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli?view=azure-cli-latest)
   - [jq](https://jqlang.github.io/jq/download/)
