@@ -40,14 +40,14 @@ Microsoft Fabric resources are deployed using the [Microsoft Fabric terraform pr
 - An Entra user that can access Microsoft Fabric (Free license is enough).
 - An Azure subscription with the following:
   - The `Microsoft.Fabric` [resource provider](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#register-resource-provider) has been registered on the Azure subscription.
-  - A resource group to which your user has been granted Contributor + User Access Administrator permissions.
+  - A resource group to which your user should be granted Contributor + User Access Administrator permissions.
   - A Managed Identity OR a Service Principal:
     - *If you **cannot** create a Service Principal in your Entra ID*:
       - Request that a Service Principal be created
       - Make sure you are the **Owner** of such service principal
     - *If you **can** create a Service Principal in your Entra ID*, follow the [setting up the Infrastructure](#setting-up-the-infrastructure) section for details.
   - Request that a Fabric Administrator grant to the above Service Principal/Managed Identity permission to [use Fabric APIs](https://learn.microsoft.com/en-us/fabric/admin/service-admin-portal-developer#service-principals-can-use-fabric-apis).
-- Only required if an **existing** Microsoft Fabric Capacity will be used: make sure that your user and the Principal (Service Principal or Managed Identity) are [added as Capacity Administrators](https://learn.microsoft.com/fabric/admin/capacity-settings?tabs=fabric-capacity#add-and-remove-admins) to the provided Capacity.
+- If you want to use an **existing** Microsoft Fabric Capacity: make sure that your user and the Principal (Service Principal or Managed Identity) are [added as Capacity Administrators](https://learn.microsoft.com/fabric/admin/capacity-settings?tabs=fabric-capacity#add-and-remove-admins) to the provided Capacity.
 - A bash shell with the following installed:
   - [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli?view=azure-cli-latest)
   - [jq](https://jqlang.github.io/jq/download/)
@@ -93,7 +93,7 @@ Microsoft Fabric resources are deployed using the [Microsoft Fabric terraform pr
     1. Service Principal + Client Secret authentication (required that you rotate secrets).
 
 1. Option 1: Managed Identity Authentication
-    1. Create or use an existing Azure VM and assign it a Managed Identity. For detailed steps follow the [Authenticating with Managed Identity](#optional-setting-up-an-azure-vm-for-authentication-with-managed-identity) section.
+    1. Create or use an existing Azure VM and assign it a Managed Identity. If you need to create a new VM, follow the instructions in the [Setting up an Azure VM for Authentication with Managed Identity](#optional-setting-up-an-azure-vm-for-authentication-with-managed-identity) section.
     1. Connect to the VM and open a bash shell
     1. Authenticate to Azure using the VM Managed Identity
           ```bash
@@ -149,19 +149,21 @@ Microsoft Fabric resources are deployed using the [Microsoft Fabric terraform pr
 
 ## Optional: Setting up an Azure VM for Authentication with Managed Identity
 
-We recommend:
-- creating an [Ubuntu VM](https://learn.microsoft.com/azure/virtual-machines/linux/quick-create-portal?tabs=ubuntu) and [assigning a Managed Identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/how-to-configure-managed-identities) to it.
+If you need to create a new Linux VM, it is recommended that you:
+- create an [Ubuntu VM](https://learn.microsoft.com/azure/virtual-machines/linux/quick-create-portal?tabs=ubuntu).
 
-- enabling [Entra login to the VM](https://learn.microsoft.com/entra/identity/devices/howto-vm-sign-in-azure-ad-linux), this way you will have to deal with less secrets as you will be able to login to the VM from Azure cloud shell.
+- enable [Entra login to the VM](https://learn.microsoft.com/entra/identity/devices/howto-vm-sign-in-azure-ad-linux), this way you will have to deal with less secrets as you will be able to login to the VM from Azure cloud shell.
 
-- leaving ssh access to the VM [disabled by default](https://learn.microsoft.com/azure/defender-for-cloud/just-in-time-access-overview), and [enabling just-in-time (JIT) ssh access to the VM](https://learn.microsoft.com/azure/defender-for-cloud/just-in-time-access-usage).
+- leave access to the VM [disabled by default](https://learn.microsoft.com/azure/defender-for-cloud/just-in-time-access-overview), and [enable just-in-time (JIT) access to the VM](https://learn.microsoft.com/azure/defender-for-cloud/just-in-time-access-usage).
 
-On the VM make sure you have installed the following (instructions are for Ubuntu):
+Follow the steps to [assign a Managed Identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/how-to-configure-managed-identities) to your VM.
+
+On the VM make sure you have installed the following (below instructions are for Ubuntu):
 - Install nano or shell text editor:
   ```bash
   sudo apt install nano
   ```
-- Install az cli. Below instructions are for Ubuntu, for other distributions see instructions for [installing Azure CLI on Linux](https://learn.microsoft.com/cli/azure/install-azure-cli-linux?):
+- Install Azure CLI. Below instructions are for Ubuntu, for other distributions see instructions for [installing Azure CLI on Linux](https://learn.microsoft.com/cli/azure/install-azure-cli-linux?):
   ```bash
   curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
   ```
@@ -182,7 +184,6 @@ On the VM make sure you have installed the following (instructions are for Ubunt
   ```bash
   python -m pip install requests
   ``` 
-
 
 ## Understanding the CI Process
 
