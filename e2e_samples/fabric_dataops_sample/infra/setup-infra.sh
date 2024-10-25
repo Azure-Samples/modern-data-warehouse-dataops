@@ -67,7 +67,7 @@ deploy_terraform_resources() {
     fi
     echo "[I] use_cli is ${use_cli}"
     echo "[I] use_msi is ${use_msi}"
-    echo "[I] executing as client_id ${client_id}"
+    echo "[I] client_id is ${client_id}"
 
     if [[ -z "${existing_fabric_capacity_name}" ]]; then
         create_fabric_capacity=true
