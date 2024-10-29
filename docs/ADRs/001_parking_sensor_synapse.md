@@ -91,6 +91,7 @@ This proposes a completely new E2E sample with no common artifacts and reuse of 
 /e2e_samples
   /parking_sensors
   /parking_sensors_synapse
+/single_tech_samples
 ```
 
 **End-user experience to deploy sample:**
