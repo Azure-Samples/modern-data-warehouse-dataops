@@ -13,7 +13,7 @@ products:
 - azure-databricks
 - azure-stream-analytics
 - azure-synapse-analytics
-description: "Code samples showcasing how to apply DevOps concepts to the modern data warehouse architecture leveraging different Azure data technologies."
+description: "Code samples showcasing how to apply DevOps concepts to common data engineering patterns and architectures leveraging different Microsoft data platform technologies."
 ---
 
 # DataOps
