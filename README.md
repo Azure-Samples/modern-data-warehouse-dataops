@@ -43,7 +43,7 @@ The samples are either focused on a single azure service (**Single Tech Samples*
 
 This [sample](e2e_samples/parking_sensors/) demonstrates batch, end-to-end data pipeline utilizing Azure Data Factory and Azure Databricks built according to the [Medallion architecture](https://learn.microsoft.com/en-us/azure/databricks/lakehouse/medallion), along with a corresponding CI/CD process, Observability and automated testing.
 
-[![Medallion with Azure Data Factory and Azure Databricks](docs/images/CI_CD_process_simplified.png?raw=true "Architecture")](e2e_samples/parking_sensors/)
+[![Medallion with Azure Data Factory and Azure Databricks](docs/images/CI_CD_process_simplified.png "Architecture")](e2e_samples/parking_sensors/)
 
 ### DataOps for Medallion with Microsoft Fabric
 
