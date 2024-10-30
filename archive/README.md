@@ -25,4 +25,4 @@ Here is a list of the archived samples:
 - [Azure Storage lifecycle management](./../archive/single_tech_samples/storage_lifecycle_management/README.md)
 - [Metadata driven module loading in Azure Synapse](./../archive/single_tech_samples/synapse_loading_dynamic_modules/README.md)
 - [Azure Synapse integration testing](./../archive/single_tech_samples/synapse_integration_testing/README.md)
-- [Serverless pool best practices](./synapse_serverless/README.md)
+- [Serverless pool best practices](./../archive/single_tech_samples/synapse_serverless/README.md)
