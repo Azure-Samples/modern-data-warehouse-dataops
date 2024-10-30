@@ -1,19 +1,19 @@
-# Tenant and Subscription variables
-export base_name="The base name of the Fabric project. This name is used for naming the Azure and Fabric resources."
-export location="The location of the Azure resources. This location is used for creating the Azure resources."
-export tenant_id="The Entra ID (Azure AD Tenant Id) of your Fabric tenant"
-export subscription_id="The Azure Subscription ID that will be used to deploy Azure resources."
-export client_id="the Client ID of the Service Principal or the Managed Identity used to deploy this script"
-export client_secret="The Service Principal Client secret"
-export rg_name="The Azure Resource Group where all Azure resources will be deployed."
-export fabric_capacity_id="" # the ID of an EXISTING capacity, if this is empty then a new capacity will be created
-export fabric_workspace_admins="The Object ID of the Entra Security Group that will be assigned as an Admin of the workspace."
-export fabric_capacity_admin="yourusername@yourdomain" # (Recommended: use your username) The Entra user name that will be granted capacity Admin to the newly created Fabric Capacity.
-export ADLS_GEN2_CONNECTION_ID="The connection ID for the ADLS Gen2 Cloud Connection. If not provided, the ALDS Gen2 shortcut creation would be skipped."
-
-# GIT integration variables
-export git_organization_name="Your AzureDevOps organization"
-export git_project_name="Your AzureDevops project"
-export git_repository_name="Your repository under the Azure DevOps project above"
-export git_branch_name="The branch where Fabric items will be committed to."
-export git_directory_name="The folder where Fabric items will be committed" #note that the, other than the root folder "/", the directory has to be created ahead of time, the REST API does not yet support creating new directories
+export TENANT_ID="The Entra ID (Azure AD Tenant Id) of your Fabric tenant"
+export SUBSCRIPTION_ID="The Azure subscription ID that will be used to deploy azure resources."
+export RESOURCE_GROUP_NAME="The Azure resource group where all azure resources will be deployed."
+export BASE_NAME="The base name of the Fabric project. This name is used for naming the Azure and Fabric resources."
+# Service Principal Authentication only: Use the below only if you are authenticating with a Service principal with the terraform provider
+export APP_CLIENT_ID="The service principal client ID."
+export APP_CLIENT_SECRET="The service principal client secret."
+export GIT_ORGANIZATION_NAME="The Azure DevOps organization."
+export GIT_PROJECT_NAME="The Azure Devops project."
+export GIT_REPOSITORY_NAME="Your repository under the Azure DevOps project."
+export GIT_BRANCH_NAME="The branch where Fabric items will be committed to."
+export GIT_DIRECTORY_NAME="The folder where Fabric items will be committed" # Note: Other than the root folder "/", the directory must already exist.
+# Workspace admin variables
+export FABRIC_WORKSPACE_ADMIN_SG_NAME="The name of the Entra security groups with admin members."
+# Fabric Capacity variables
+export EXISTING_FABRIC_CAPACITY_NAME="" # The name of an existing Fabric capacity. If this is empty, then a new capacity will be created.
+export FABRIC_CAPACITY_ADMINS="yourusername@yourdomain,sp_object_id" # Comma separated list. When creating a new Fabric capacity, these users/apps would be added as capacity admin.
+# ADLS Gen2 connection variable
+export ADLS_GEN2_CONNECTION_ID="" # The connection ID for the ADLS Gen2 Cloud Connection. If not provided, the ALDS Gen2 shortcut creation would be skipped.

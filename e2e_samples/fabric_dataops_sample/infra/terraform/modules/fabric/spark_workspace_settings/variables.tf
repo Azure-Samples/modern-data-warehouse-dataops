@@ -1,7 +1,7 @@
 variable "enable" {
-  type = bool
+  type        = bool
   description = "whether this module should do anything at all"
-  default = false
+  default     = false
 }
 
 variable "workspace_id" {

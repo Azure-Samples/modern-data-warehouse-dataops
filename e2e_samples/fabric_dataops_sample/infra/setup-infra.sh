@@ -12,22 +12,26 @@ set -o errexit
 source ./.env
 
 ## Environment variables
-base_name="$base_name"
-location="$location"
+tenant_id="$TENANT_ID"
+subscription_id="$SUBSCRIPTION_ID"
+resource_group_name="$RESOURCE_GROUP_NAME"
+base_name="$BASE_NAME"
+## Service Principal details
+client_id="$APP_CLIENT_ID"
+client_secret="$APP_CLIENT_SECRET"
+# GIT integration details
+git_organization_name="$GIT_ORGANIZATION_NAME"
+git_project_name="$GIT_PROJECT_NAME"
+git_repository_name="$GIT_REPOSITORY_NAME"
+git_branch_name="$GIT_BRANCH_NAME"
+git_directory_name="$GIT_DIRECTORY_NAME"
+# Workspace admin variables
+fabric_workspace_admin_sg_name="$FABRIC_WORKSPACE_ADMIN_SG_NAME"
+# Fabric Capacity variables
+existing_fabric_capacity_name="$EXISTING_FABRIC_CAPACITY_NAME"
+fabric_capacity_admins="$FABRIC_CAPACITY_ADMINS"
+# ADLS Gen2 connection variable
 adls_gen2_connection_id="$ADLS_GEN2_CONNECTION_ID"
-tenant_id="$tenant_id"
-subscription_id="$subscription_id"
-client_id="$client_id"
-client_secret="$client_secret"
-fabric_capacity_admin="$fabric_capacity_admin"
-fabric_workspace_admins="$fabric_workspace_admins"
-rg_name="$rg_name"
-fabric_capacity_id=$(echo "$fabric_capacity_id" | tr '[:upper:]' '[:lower:]' )
-git_organization_name="$git_organization_name"
-git_project_name="$git_project_name"
-git_repository_name="$git_repository_name"
-git_branch_name="$git_branch_name"
-git_directory_name="$git_directory_name"
 
 # Variable set based on Terraform output
 tf_storage_container_name=""
@@ -65,12 +69,12 @@ deploy_terraform_resources() {
     echo "[I] use_msi is ${use_msi}"
     echo "[I] client_id is ${client_id}"
 
-    if [[ -z "${fabric_capacity_id}" ]]; then
+    if [[ -z "${existing_fabric_capacity_name}" ]]; then
         create_fabric_capacity=true
-        echo "[I] Variable fabric_capacity_id was empty, a new Fabric capacity will be created"
+        echo "[I] Variable 'EXISTING_FABRIC_CAPACITY_NAME' was empty, a new Fabric capacity will be created."
     else
         create_fabric_capacity=false
-        echo "[I] Variable fabric_capacity_id was NOT empty, the provided Fabric capacity will be used"
+        echo "[I] Variable 'EXISTING_FABRIC_CAPACITY_NAME' was NOT empty, the provided Fabric capacity will be used."
     fi
 
 
@@ -81,20 +85,19 @@ deploy_terraform_resources() {
         -var "use_msi=$use_msi" \
         -var "tenant_id=$tenant_id" \
         -var "subscription_id=$subscription_id" \
+        -var "resource_group_name=$resource_group_name" \
+        -var "base_name=$base_name" \
         -var "client_id=$client_id" \
         -var "client_secret=$client_secret" \
-        -var "base_name=$base_name" \
-        -var "location=$location" \
-        -var "fabric_capacity_admin=$fabric_capacity_admin" \
-        -var "fabric_workspace_admins=$fabric_workspace_admins" \
-        -var "rg_name=$rg_name" \
+        -var "fabric_workspace_admin_sg_name=$fabric_workspace_admin_sg_name" \
         -var "create_fabric_capacity=$create_fabric_capacity" \
-        -var "fabric_capacity_id=$fabric_capacity_id" \
+        -var "fabric_capacity_name=$fabric_capacity_name" \
+        -var "fabric_capacity_admins=$fabric_capacity_admins" \
         -var "git_organization_name=$git_organization_name" \
         -var "git_project_name=$git_project_name" \
         -var "git_repository_name=$git_repository_name" \
         -var "git_branch_name=$git_branch_name" \
-        -var "git_directory_name=$git_directory_name" 
+        -var "git_directory_name=$git_directory_name"
 
     tf_storage_container_name=$(terraform output --raw storage_container_name)
     tf_storage_account_url=$(terraform output --raw storage_account_primary_dfs_endpoint)
