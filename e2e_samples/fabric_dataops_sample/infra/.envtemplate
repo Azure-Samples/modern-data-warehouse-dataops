@@ -5,6 +5,7 @@ export BASE_NAME="The base name of the Fabric project. This name is used for nam
 # Service Principal Authentication only: Use the below only if you are authenticating with a Service principal with the terraform provider
 export APP_CLIENT_ID="The service principal client ID."
 export APP_CLIENT_SECRET="The service principal client secret."
+# Azure DevOps variables
 export GIT_ORGANIZATION_NAME="The Azure DevOps organization."
 export GIT_PROJECT_NAME="The Azure Devops project."
 export GIT_REPOSITORY_NAME="Your repository under the Azure DevOps project."
