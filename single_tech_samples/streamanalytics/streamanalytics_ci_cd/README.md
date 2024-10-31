@@ -1,6 +1,6 @@
 # Azure Stream Analytics
 
-![introductory diagram](./docs/images/ASA-job.PNG)
+![introductory diagram](./docs/images/ASA-job.png)
 
 [Azure Stream Analytics](https://azure.microsoft.com/en-us/products/stream-analytics/) is a serverless real-time analytics service. The goal of this sample is to demonstrate how to develop a streaming pipeline, with IaC and testability in mind.
 
@@ -90,7 +90,7 @@ az group delete -n rg-${APP}
 
 This sample's infrastructure is created using [Bicep](https://github.com/Azure/bicep#what-is-bicep) templates. `Bicep` is a DSL that is transpiled into `Azure`'s native `ARM Templates`. It's currently in preview but already has been integrated into the `Azure Cli`. Also [ARM template reference documentation](https://docs.microsoft.com/en-us/azure/templates/microsoft.devices/iothubs?tabs=bicep) lists `Bicep` along side `ARM Templates`:
 
-![Bicep template screen capture](docs/images/Bicep-doc.PNG)
+![Bicep template screen capture](docs/images/Bicep-doc.png)
 
 Alternatively, `Terraform` can also be used.
 
@@ -147,7 +147,7 @@ Functional testing can be done using the online tool [Raspberry Pi Web Client Si
 
 You can manually check the blob storage to see that events are coming through correctly.
 
-![blob container screen cap](docs/images/BLOB-OUT.PNG)
+![blob container screen cap](docs/images/BLOB-OUT.png)
 
 > One aspect to consider, is that events will be batched on the scale of seconds due to the `pathPattern` defined in [streamingjobs.bicep](./streamingjobs.bicep) for `bloboutput`. This is done to aid automated testing. You can adjust during functional testing, and for production as required:
 >
@@ -163,7 +163,7 @@ You can manually check the blob storage to see that events are coming through co
 
 This sample combines [Azure IoT device SDK](https://www.npmjs.com/package/azure-iot-device) and [Microsoft Azure Storage SDK for JavaScript](https://www.npmjs.com/package/@azure/storage-blob) to create a Node.js (TypeScript) based End-to-End test solution. As mentioned under __Functional__ by default blob output partitioning is done on the seconds resolution to prevent the automated test from waiting an impractical amount of time. This can be made configurable according to your requirements on deploy by altering the `Bicep` template.
 
-![test result output screen capture](docs/images/e2e-test.PNG)
+![test result output screen capture](docs/images/e2e-test.png)
 
 Within the test file [e2e/e2e.ts](e2e/e2e.ts) there is the `EXPECTED_E2E_LATENCY_MS` defined to be 1s. So this would also need to be adjusted for a real implementation.
 

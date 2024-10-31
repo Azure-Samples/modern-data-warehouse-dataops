@@ -126,7 +126,7 @@ To setup the samples, run the following:
 Once you've setup the sample, you should have the following deployed:
 
 1. Azure resource group with a AzureSQL server and database called `salesdb`.
-   ![azuresql_azure_resources](./docs/images/azuresql_azure_resources.PNG)
+   ![azuresql_azure_resources](./docs/images/azuresql_azure_resources.png)
 
 2. A service principal with collaborator rights over the deployed resource group.
 
@@ -134,14 +134,14 @@ Once you've setup the sample, you should have the following deployed:
    1. **mdw-dataops-azure** - An AzureRM service connection configured with the Service Principal. This is used to deploy to the AzureSQL database.
    2. **github-mdw-dataops** - A Github service connection used to pull from the forked repository. It uses the Github PAT token to authenticate.
 
-     ![azuresql_devops_service_connections](./docs/images/azuresql_service_connections.PNG)
+     ![azuresql_devops_service_connections](./docs/images/azuresql_service_connections.png)
 
 4. Three Azure DevOps pipelines found under `Pipelines > Builds`. See [Key concepts/Azure DevOps Pipelines](./README.md#Azure-DevOps-Pipelines) below for explanation of each:
    1. azuresql-validate-pr
    2. azuresql-build
    3. azuresql-simple-multi-stage
 
-     ![azuresql_devops_pipelines](./docs/images/azuresql_pipelines.PNG).
+     ![azuresql_devops_pipelines](./docs/images/azuresql_pipelines.png).
      Each of the pipelines should have run (or is currently running) at least once.
 
 ### Running the samples
@@ -152,33 +152,33 @@ The following shows how to deploy changes to the AzureSQL database using the CI/
 
 1. In local clone of your forked repo, create a local branch of `main` and call it `dev/sample_change`. Checkout this branch.
 
-     ![azuresql_git_checkout](./docs/images/azuresql_gitbranchcheckout.PNG)
+     ![azuresql_git_checkout](./docs/images/azuresql_gitbranchcheckout.png)
 
 2. Open the Visual Studio solution `src/ddo_samples_azuresql.sln`.
 
 3. Add a new CompanyAddress column to the `SaleLT.Customer` table, as seen below.
 
-     ![azuresql_add_column](./docs/images/azuresql_addcolumn.PNG)
+     ![azuresql_add_column](./docs/images/azuresql_addcolumn.png)
 
 4. Commit and push the change to the remote branch in Github.
 
-     ![azuresql_add_column](./docs/images/azuresql_gitcommitpush.PNG)
+     ![azuresql_add_column](./docs/images/azuresql_gitcommitpush.png)
 
 5. Raise a Pull Request to merge `dev/sample_change` to `main`. This should trigger the the `azuresql-validate-pr` pipeline.
 
-     ![azuresql_pr_validation](./docs/images/azuresql_prvalidation.PNG)
+     ![azuresql_pr_validation](./docs/images/azuresql_prvalidation.png)
 
 6. Typically, a code review would take place. After this, merge changes to `main` by completing the Pull Request. This should trigger the `azuresql-build` and `azuresql-simple-multi-stage`.
 
-     ![azuresql_pr_validation](./docs/images/azuresql_builds.PNG)
+     ![azuresql_pr_validation](./docs/images/azuresql_builds.png)
 
 7. In Azure DevOps, navigate to the `azuresql-simple-muli-stage` pipeline run. The second stage of this pipeline will deploy the changes to the AzureSQL Database.
 
-     ![azuresql_release](./docs/images/azuresql_release.PNG)
+     ![azuresql_release](./docs/images/azuresql_release.png)
 
 8. Connect to the AzureSQL Database. Notice that the new column has been deployed.
 
-     ![azuresql_viewchanges](./docs/images/azuresql_viewchanges.PNG)
+     ![azuresql_viewchanges](./docs/images/azuresql_viewchanges.png)
 
 Congratulations! You've deployed changes via CI/CD process.
 

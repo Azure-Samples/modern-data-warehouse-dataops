@@ -44,7 +44,7 @@ In this sample, a stamp is defined with ARM templates which includes following r
 
 ### Architecture
 
-![architecture-without-routing.JPG](docs/.images/architecture-without-routing.JPG)
+![architecture-without-routing.jpg](docs/.images/architecture-without-routing.jpg)
 
 ### How does it work?
 
