@@ -22,7 +22,7 @@ In addition to this, the sample also includes:
 - Terraform scripts to automate the provisioning Azure infrastructure.
 - Local python script inject data to data source (SQL Database) incrementally, in order to simulate data source update. For example, injecting 2020 data at first, then injecting succeeding years data to data source.
 
-![architecture](./docs/images/architecture.PNG)
+![architecture](./docs/images/architecture.png)
 
 ### Data used
 
@@ -44,7 +44,7 @@ We refer to [LendingClub issued Loans](https://www.kaggle.com/husainsb/lendingcl
         2. Click pencil button at left pane, then select `DeltaCopyPipeline`.
         3. Click **Debug** button to run pipeline.
 
-        ![ADF Pipelines](./docs/images/adf_pipeline.JPG)
+        ![ADF Pipelines](./docs/images/adf_pipeline.jpg)
     3. Use Databricks to query Delta versions - [detailed steps](./databricks/README.md#setup_and_deployment)
     4. Repeat loading data and running data factory to see multiple versioned data getting populated.
         1. Insert next version of data (ex. version 1)

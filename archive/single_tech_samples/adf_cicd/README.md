@@ -39,15 +39,15 @@ The main purpose of this sample is not to showcase the data flows, but rather ho
 ### Architecture
 
 The following shows the simple architecture of the Azure Data Factory Data Pipeline.
-![Architecture](docs/images/architecture.PNG "Architecture")
+![Architecture](docs/images/architecture.png "Architecture")
 
 ### Continuous Integration and Continuous Delivery
 
 The following shows the logical flow of performing CI/CD with Azure Data Factory.
-![CICD Process](./docs/images/CICD-logical.PNG "CICD Process")
+![CICD Process](./docs/images/CICD-logical.png "CICD Process")
 
 The following shows the overall CI/CD process as built with Azure DevOps Pipelines.
-![CICD Process](docs/images/CICDv2.PNG "CICD Process")
+![CICD Process](docs/images/CICDv2.png "CICD Process")
 
 ### Technologies used
 
@@ -222,14 +222,14 @@ This deployment was tested using WSL 2 (Ubuntu 20.04)
    1. In the **DEV** Data Factory portal, click `Publish` to publish changes.
       - Publishing a change is **required** to generate the `adf_publish` branch which is required in the Release pipelines.
       - Tips：in some case after you click the 'Publish' button and publish succeed then you check the `adf_publish` there is no any data factory ARM Template json code here, please try Data Factory portal -> Manage -> Git Configuration -> Overwrite live mode then check `adf_publish` branch again ARM Template should be there.
-      ![Publish ADF](docs/images/PublishADF.PNG "Publish ADF]")
+      ![Publish ADF](docs/images/PublishADF.png "Publish ADF]")
    2. In Azure DevOps, notice a new run of the Build Pipeline (**mdw-adf-ci-artifacts**) off `main`.
    3. After completion, this should automatically trigger the Release Pipeline (**mdw-adf-cd-release**). This will deploy the artifacts across environments.
       - You may need to authorize the Pipelines initially to use the Service Connection for the first time.
       - Integration tests are automatically performed before the deployment to the Prod environment
-      ![Release Pipeline](docs/images/ReleasePipelinev3.PNG "Release Pipelines")
+      ![Release Pipeline](docs/images/ReleasePipelinev3.png "Release Pipelines")
       - If you want check more information about test results, you can view the test report
-       ![Integration Test Result](docs/images/integrationTestResultv2.PNG "Integration Test Result")
+       ![Integration Test Result](docs/images/integrationTestResultv2.png "Integration Test Result")
    4. **Optional**. Trigger the Data Factory Pipelines per environment.
       1. In the Data Factory portal of each environment, navigate to "Author", then select the `ParkingSensors\IngestToBronze` pipeline.
       2. Select "Trigger > Trigger Now".
