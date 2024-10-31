@@ -119,26 +119,23 @@ Here is a list of resources that are deployed:
 
 * For the following step you have 2 authentication options:
 
-  1. Managed Identity authentication (Recommended as it does not require dealing with secrets)
-
-    - Create or use an existing Azure VM and assign it a Managed Identity. If you need to create a new VM, follow the instructions in the [Setting up an Azure VM for Authentication with Managed Identity](#optional-setting-up-an-azure-vm-for-authentication-with-managed-identity) section.
-    - Connect to the VM and open a bash shell
-    - Authenticate to Azure using the VM Managed Identity
-      ```bash
-      az login --identity
-      ```
-    - Execute following steps from this authenticated shell
-
-  1. Service Principal + Client Secret authentication (Consider using [certificate credentials](https://registry.terraform.io/providers/microsoft/fabric/latest/docs/guides/auth_spn_cert) instead of secrets)
-
-    - [Create a secret](https://registry.terraform.io/providers/microsoft/fabric/latest/docs/guides/auth_spn_secret#creating-client-secret) for the service principal. If you are not permitted to create secrets, request the secret from the team responsible for secret management.
-    - Update `.env` file with the `APP_CLIENT_ID` and `APP_CLIENT_SECRET` values.
-    - Import the environment variables file and authenticate to Azure with Service Principal
-      ```bash
-      source .env
-      az login --service-principal -u $APP_CLIENT_ID -p $APP_CLIENT_SECRET --tenant $TENANT_ID
-      ```
-    - Execute following steps from this authenticated shell
+  1. **Managed Identity authentication** (Recommended as it does not require dealing with secrets)
+      - Create or use an existing Azure VM and assign it a Managed Identity. If you need to create a new VM, follow the instructions in the [Setting up an Azure VM for Authentication with Managed Identity](#optional-setting-up-an-azure-vm-for-authentication-with-managed-identity) section.
+      - Connect to the VM and open a bash shell
+      - Authenticate to Azure using the VM Managed Identity
+        ```bash
+        az login --identity
+        ```
+      - Execute following steps from this authenticated shell
+  2. **Service Principal + Client Secret authentication** (Consider using [certificate credentials](https://registry.terraform.io/providers/microsoft/fabric/latest/docs/guides/auth_spn_cert) instead of secrets)
+      - [Create a secret](https://registry.terraform.io/providers/microsoft/fabric/latest/docs/guides/auth_spn_secret#creating-client-secret) for the service principal. If you are not permitted to create secrets, request the secret from the team responsible for secret management.
+      - Update `.env` file with the `APP_CLIENT_ID` and `APP_CLIENT_SECRET` values.
+      - Import the environment variables file and authenticate to Azure with Service Principal
+        ```bash
+        source .env
+        az login --service-principal -u $APP_CLIENT_ID -p $APP_CLIENT_SECRET --tenant $TENANT_ID
+        ```
+      - Execute following steps from this authenticated shell
 
 * Review [setup-infra.sh](./infra/setup-infra.sh) script and see if you want to adjust the derived naming of variable names of Azure/Fabric resources. The Azure and Fabric resources are created using Terraform. The naming of the Azure resources is derived from the `BASE_NAME` environment variable. Please review the [main.tf](./infra/terraform/main.tf) file to understand the naming convention, and adjust it as needed.
 
@@ -190,37 +187,27 @@ Here is a list of resources that are deployed:
 
   On the VM make sure you have installed the following (below instructions are for Ubuntu):
 
-  - Install nano or shell text editor:
-    ```bash 
-    sudo apt install nano
-    ```
+  ```bash
+  # Install nano or shell text editor of your choice
+  sudo apt install nano
 
-  - Install Azure CLI. Below instructions are for Ubuntu, for other distributions see instructions for [installing Azure CLI on Linux](https://learn.microsoft.com/cli/azure/install-azure-cli-linux?):
-    ```bash
-    curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-    ```
+  # Install Azure CLI. Below instructions are for Ubuntu, for other distributions see https://learn.microsoft.com/cli/azure/install-azure-cli-linux?
+  curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
-  - Install git:
-    ```bash
-    sudo apt install git
-    ```
+  # Install git
+  sudo apt install git
 
-  - [Install terraform](https://developer.hashicorp.com/terraform/install)
+  # Install terraform - https://developer.hashicorp.com/terraform/install
 
-  - Install jq:
-    ```bash
-    sudo apt install jq -y
-    ```
+  # Install jq
+  sudo apt install jq -y
 
-  - Install pip:
-    ```bash
-    sudo apt install python3-pip -y
-    ```
+  # Install pip
+  sudo apt install python3-pip -y
 
-  - Install python requests package:
-    ```bash
-    python -m pip install requests
-    ```
+  # Install python requests package
+  python -m pip install requests
+  ```
 
 ## References
 
