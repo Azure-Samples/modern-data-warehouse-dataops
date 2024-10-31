@@ -3,15 +3,20 @@
 	"dockerComposeFile": "docker-compose.yml",
 	"workspaceFolder": "/workspace/e2e_samples/parking_sensors",
 	"service": "parking_sensor_dc",
-	"extensions": [
-		"ms-python.python",
-		"eamodio.gitlens",
-		"DavidAnson.vscode-markdownlint",
-		"yzhang.markdown-all-in-one",
-		"ms-azuretools.vscode-bicep"
-	],
-	"settings": {
-		"python.pythonPath": "/usr/local/bin/python"
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.python",
+				"eamodio.gitlens",
+				"DavidAnson.vscode-markdownlint",
+				"yzhang.markdown-all-in-one",
+				"ms-azuretools.vscode-bicep"
+			]
+		},
+		"settings": {
+			"python.pythonPath": "/usr/local/bin/python"
+		}
 	},
+	"remoteUser": "mdwuser",
 	"postCreateCommand": "./.devcontainer/post_create.sh"
 }
