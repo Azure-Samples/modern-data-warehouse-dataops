@@ -71,7 +71,7 @@ Here is a list of resources that are deployed:
 
 ### Deploying infrastructure
 
-1. Clone the repository:
+* Clone the repository:
 
     ```bash
     cd "<installation_folder>"
@@ -79,13 +79,13 @@ Here is a list of resources that are deployed:
     git clone https://github.com/Azure-Samples/modern-data-warehouse-dataops.git
     ```
 
-1. Change the directory to the `infra` folder of the sample:
+* Change the directory to the `infra` folder of the sample:
 
     ```bash
     cd ./modern-data-warehouse-dataops/e2e_samples/fabric_dataops_sample/infra
     ```
 
-2. Rename the [.envtemplate](./infra/.envtemplate) file to `.env` and fill in the required environment variables. Here is a list of all the variables:
+* Rename the [.envtemplate](./infra/.envtemplate) file to `.env` and fill in the required environment variables. Here is a list of all the variables:
 
     ```bash
     export TENANT_ID="The Entra ID (Azure AD Tenant Id) of your Fabric tenant"
@@ -118,19 +118,19 @@ Here is a list of resources that are deployed:
     - `FABRIC_CAPACITY_ADMINS` is a comma-separated list of users and service principals that will be added as capacity admins to the newly created Fabric capacity. If you are using an existing capacity, you can leave this blank. But in that case, make sure that your account and the principal (service principal or managed identity) are [added as Capacity Administrators](https://learn.microsoft.com/fabric/admin/capacity-settings?tabs=fabric-capacity#add-and-remove-admins) to that capacity, as mentioned in the [pre-requisites](#pre-requisites).
     - Leave `ALDS_GEN2_CONNECTION_ID` blank for the first run. The creation of the Fabric connection to ADLS Gen2 is a manual step which is done after the deployment of the resources. Once the connection is manually created, the connection ID is then updated in the `.env` file and the script is run again. This time, the script will create the Lakehouse shortcut to your ALDS Gen2 storage account.
 
-3. For the following step you have 2 authentication options:
-  
-    1. Managed Identity authentication (Recommended as it does not require dealing with secrets)
+* For the following step you have 2 authentication options:
+
+   1. Managed Identity authentication (Recommended as it does not require dealing with secrets)
 
       - Create or use an existing Azure VM and assign it a Managed Identity. If you need to create a new VM, follow the instructions in the [Setting up an Azure VM for Authentication with Managed Identity](#optional-setting-up-an-azure-vm-for-authentication-with-managed-identity) section.
       - Connect to the VM and open a bash shell
       - Authenticate to Azure using the VM Managed Identity
-        ```bash
-        az login --identity
-        ```
+         ```bash
+         az login --identity
+         ```
       - Execute following steps from this authenticated shell
 
-    2. Service Principal + Client Secret authentication (Consider using [certificate credentials](https://registry.terraform.io/providers/microsoft/fabric/latest/docs/guides/auth_spn_cert) instead of secrets)
+   2. Service Principal + Client Secret authentication (Consider using [certificate credentials](https://registry.terraform.io/providers/microsoft/fabric/latest/docs/guides/auth_spn_cert) instead of secrets)
 
       - [Create a secret](https://registry.terraform.io/providers/microsoft/fabric/latest/docs/guides/auth_spn_secret#creating-client-secret) for the service principal. If you are not permitted to create secrets, request the secret from the team responsible for secret management.
       - Update `.env` file with the `APP_CLIENT_ID` and `APP_CLIENT_SECRET` values.
@@ -139,39 +139,38 @@ Here is a list of resources that are deployed:
         source .env
         az login --service-principal -u $client_id -p $client_secret --tenant $tenant_id
         ```
-       - Execute following steps from this authenticated shell
+      - Execute following steps from this authenticated shell
 
-4. Review [setup-infra.sh](./infra/setup-infra.sh) script and see if you want to adjust the derived naming of variable names of Azure/Fabric resources.
+* Review [setup-infra.sh](./infra/setup-infra.sh) script and see if you want to adjust the derived naming of variable names of Azure/Fabric resources.
 
-5. The Azure and Fabric resources are created using Terraform. The naming of the Azure resources is derived from the `BASE_NAME` environment variable. Please review the [main.tf](./infra/terraform/main.tf) file to understand the naming convention, and adjust it as needed.
+* The Azure and Fabric resources are created using Terraform. The naming of the Azure resources is derived from the `BASE_NAME` environment variable. Please review the [main.tf](./infra/terraform/main.tf) file to understand the naming convention, and adjust it as needed.
 
-6. Run the [setup-infra.sh](./infra/setup-infra.sh) script:
+* Run the [setup-infra.sh](./infra/setup-infra.sh) script:
 
-    ```bash
-    ./setup-infra.sh
-    ```
+   ```bash
+   ./setup-infra.sh
+   ```
 
-    The script is designed to be idempotent. Running the script multiple times will not result in duplicate resources. Instead, it will either skip or update existing resources. However, it is recommended to review the script, the output logs, and the created resources to ensure everything is as expected.
+   The script is designed to be idempotent. Running the script multiple times will not result in duplicate resources. Instead, it will either skip or update existing resources. However, it is recommended to review the script, the output logs, and the created resources to ensure everything is as expected.
 
-    Also, note that the bash script calls a python script [setup_fabric_environment.py](./infra/scripts/setup_fabric_environment.py) to upload custom libraries to the Fabric environment.
+   Also, note that the bash script calls a python script [setup_fabric_environment.py](./infra/scripts/setup_fabric_environment.py) to upload custom libraries to the Fabric environment.
 
-7.  Once the deployment is complete, login to Fabric Portal and create the cloud connection to ADLS Gen2 based on the [documentation](https://learn.microsoft.com/en-us/fabric/data-factory/connector-azure-data-lake-storage-gen2#set-up-your-connection-in-a-data-pipeline). Note down the connection id.
+* Once the deployment is complete, login to Fabric Portal and create the cloud connection to ADLS Gen2 based on the [documentation](https://learn.microsoft.com/en-us/fabric/data-factory/connector-azure-data-lake-storage-gen2#set-up-your-connection-in-a-data-pipeline). Note down the connection id.
 
     ![fetching-connection-id](./images/cloud-connection.png)
 
-8.  Update the `ALDS_GEN2_CONNECTION_ID` variable in the `.env` file with the connection id fetched above.
+* Update the `ALDS_GEN2_CONNECTION_ID` variable in the `.env` file with the connection id fetched above.
 
-9.  From this step onward you will need to authenticate using your user context. Authenticate **with user context** (required for the second run) and run the setup script again:
+* From this step onward you will need to authenticate using your user context. Authenticate **with user context** (required for the second run) and run the setup script again:
 
-    ```bash
-    az config set core.login_experience_v2=off
-    az login --tenant $tenant_id
-    az config set core.login_experience_v2=on
-    ./setup-infra.sh
-    ```
-    
-    This time, the script will create the Lakehouse shortcut to your ALDS Gen2 storage account.
-    All previously deployed resources will remain unchanged.
+   ```bash
+   az config set core.login_experience_v2=off
+   az login --tenant $tenant_id
+   az config set core.login_experience_v2=on
+   ./setup-infra.sh
+   ```
+
+    This time, the script will create the Lakehouse shortcut to your ALDS Gen2 storage account. All previously deployed resources will remain unchanged.
     Fabric items whose REST APIs and terrafrom provider don't support Service Principal / Managed Identity authentication (i.e. Data Pipelines and others) will be deployed with user context authentication.
 
 ## Optional: Setting up an Azure VM for authentication with managed identity
