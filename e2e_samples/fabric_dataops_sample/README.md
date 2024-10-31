@@ -1,53 +1,64 @@
-# Microsoft Fabric DataOps Sample
+# Microsoft Fabric DataOps Sample <!-- omit in toc -->
+
+## Contents <!-- omit in toc -->
+
+- [Architecture](#architecture)
+  - [Deployed resources](#deployed-resources)
+- [How to use the sample](#how-to-use-the-sample)
+  - [Pre-requisites](#pre-requisites)
+  - [Deploying infrastructure](#deploying-infrastructure)
+- [Optional: Setting up an Azure VM for authentication with managed identity](#optional-setting-up-an-azure-vm-for-authentication-with-managed-identity)
+- [Cleaning up](#cleaning-up)
+- [Frquently asked questions](#frquently-asked-questions)
+  - [Deploymeny related FAQs](#deploymeny-related-faqs)
+- [References](#references)
 
 Microsoft Fabric is an end-to-end analytics and data platform designed for enterprises that require a unified solution. It encompasses data movement, processing, ingestion, transformation, real-time event routing, and report building. Operating on a Software as a Service (SaaS) model, Fabric brings simplicity and integration to data and analytics solutions.
 
-This simplification comes at a cost, however. The SaaS nature of Fabric makes the DataOps process more complex. Customer needs to learn new ways of deploying, testing, and handling workspace artifacts. The CI/CD process for Fabric workspaces also differs from traditional CI/CD pipelines. For example, using Fabric deployment pipelines for promoting artifacts across environments is a unique feature of Fabric, and doesn't have a direct equivalent in other CI/CD tools.
+However, this simplification comes with a cost. The SaaS nature of Fabric makes the DataOps process more complex. Customer needs to learn new ways of deploying, testing, and handling workspace artifacts. The CI/CD process for Fabric workspaces also differs from traditional CI/CD pipelines. For example, using Fabric deployment pipelines for promoting artifacts across environments is a unique feature of Fabric, and doesn't have a direct equivalent in other CI/CD tools.
 
-This sample aims to provide customers a reference end-to-end (E2E) implementation of DataOps on Microsoft Fabric.
+This sample aims to provide customers with a reference end-to-end (E2E) implementation of DataOps on Microsoft Fabric, covering non-functional aspects such as observability, security, data quality, and testing. It is designed as a reference implementation and should be customized to meet specific customer requirements.
 
-## Overview
+## Architecture
 
 While Fabric is an end-to-end platform, it works best when integrated with other Azure services such as Application Insights, Azure Key Vault, ADLS Gen2, Microsoft Purview and so. This dependency is also because customers have existing investments in these services and want to leverage them with Fabric.
 
-## Infrastructure Setup
+### Deployed resources
 
-The infrastructure setup for this sample is broadly divided into two parts:
+The sample deploys both Azure and Fabric resources.
 
-### Azure Resources
+The Azure resources are deployed using Terraform. The sample uses the local backend for storing the Terraform state, but it can be easily modified to use remote backends.
 
-Azure resources are deployed using Terraform. The sample uses the local backend for storing the Terraform state, but it can be easily modified to use remote backends. The following resources are deployed:
+Microsoft Fabric resources are deployed using the [Microsoft Fabric terraform provider](https://registry.terraform.io/providers/microsoft/fabric/latest/docs) whenever possible, or using [Microsoft Fabric REST APIs](https://learn.microsoft.com/rest/api/fabric/articles/) for resources that are still not supported by the terraform provider.
 
-- Azure Data Lake Storage Gen2 (ADLS Gen2)
-- Azure Key Vault
-- Azure Log Analytics Workspace
-- Azure Application Insights
-- Optional: Microsoft Fabric Capacity (an existing Capacity can be used)
+Here is a list of resources that are deployed:
 
-### Fabric Resources
+- Azure Resources
+  - Azure Data Lake Storage Gen2 (ADLS Gen2)
+  - Azure Key Vault
+  - Azure Log Analytics Workspace
+  - Azure Application Insights
+  - Optional: Microsoft Fabric Capacity (an existing Capacity can be used)
+- Fabric Resources
+  - Microsoft Fabric Workspace
+  - Microsoft Fabric Lakehouse
+  - Azure Data Lake Storage Gen2 shortcut
+  - Microsoft Fabric Environment
+  - Microsoft Fabric Notebooks
+  - Microsoft Fabric Data pipelines
 
-Microsoft Fabric resources are deployed using the [Microsoft Fabric terraform provider](https://registry.terraform.io/providers/microsoft/fabric/latest/docs) whenever possible, or using [Microsoft Fabric REST APIs](https://learn.microsoft.com/rest/api/fabric/articles/) for resources that are still not supported by the terraform provider. The following resources are deployed:
+## How to use the sample
 
-- Microsoft Fabric Workspace
-- Microsoft Fabric Lakehouse
-- Azure Data Lake Storage Gen2 shortcut
-- Microsoft Fabric Environment
-- Microsoft Fabric Notebooks
-- Microsoft Fabric Data pipelines
-
-### Prerequisites
+### Pre-requisites
 
 - An Entra user that can access Microsoft Fabric (Free license is enough).
 - An Azure subscription with the following:
   - The `Microsoft.Fabric` [resource provider](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#register-resource-provider) has been registered on the Azure subscription.
-  - A resource group to which your user should be granted Contributor + User Access Administrator permissions.
-  - A Managed Identity OR a Service Principal:
-    - *If you **cannot** create a Service Principal in your Entra ID*:
-      - Request that a Service Principal be created
-      - Make sure you are the **Owner** of such service principal
-    - *If you **can** create a Service Principal in your Entra ID*, follow the [setting up the Infrastructure](#setting-up-the-infrastructure) section for details.
-  - Request that a Fabric Administrator grant to the above Service Principal/Managed Identity permission to [use Fabric APIs](https://learn.microsoft.com/en-us/fabric/admin/service-admin-portal-developer#service-principals-can-use-fabric-apis).
-- If you want to use an **existing** Microsoft Fabric Capacity: make sure that your user and the Principal (Service Principal or Managed Identity) are [added as Capacity Administrators](https://learn.microsoft.com/fabric/admin/capacity-settings?tabs=fabric-capacity#add-and-remove-admins) to the provided Capacity.
+  - A resource group to which your user should be granted [Contributor](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/privileged#contributor) and [User Access Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/privileged#user-access-administrator) privileged roles.
+  - A [managed identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview) OR a [service principal](https://learn.microsoft.com/entra/identity-platform/app-objects-and-service-principals):
+    - If you **cannot** create a service principal on your own, request the creation of a service principal as per your organization's policy.
+  - Request that a Fabric administrator grant the above service principal or managed identity permission to [use Fabric APIs](https://learn.microsoft.com/fabric/admin/service-admin-portal-developer#service-principals-can-use-fabric-apis).
+- If you want to use an **existing** Microsoft Fabric capacity, ensure that both your user account and the principal (service principal or managed identity) are [added as Capacity Administrators](https://learn.microsoft.com/fabric/admin/capacity-settings?tabs=fabric-capacity#add-and-remove-admins) to that capacity.
 - A bash shell with the following installed:
   - [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli?view=azure-cli-latest)
   - [jq](https://jqlang.github.io/jq/download/)
@@ -56,7 +67,7 @@ Microsoft Fabric resources are deployed using the [Microsoft Fabric terraform pr
 - Access to an Azure DevOps organization and project.
   - Contributor permissions to an Azure Repo in such Azure DevOps environment.
 
-### Setting up the Infrastructure
+### Deploying infrastructure
 
 1. Clone the repository:
 
@@ -147,7 +158,7 @@ Microsoft Fabric resources are deployed using the [Microsoft Fabric terraform pr
     All previously deployed resources will remain unchanged.
     Fabric items whose REST APIs and terrafrom provider don't support Service Principal / Managed Identity authentication (i.e. Data Pipelines and others) will be deployed with user context authentication.
 
-## Optional: Setting up an Azure VM for Authentication with Managed Identity
+## Optional: Setting up an Azure VM for authentication with managed identity
 
 If you need to create a new Linux VM, it is recommended that you:
 - create an [Ubuntu VM](https://learn.microsoft.com/azure/virtual-machines/linux/quick-create-portal?tabs=ubuntu).
@@ -183,15 +194,17 @@ On the VM make sure you have installed the following (below instructions are for
 - Install python requests package:
   ```bash
   python -m pip install requests
-  ``` 
-
-## Understanding the CI Process
-
-## Running the Sample
+  ```
 
 ## Cleaning up
 
-## Known Issues, Limitations, and Workarounds
+## Frquently asked questions
+
+### Deploymeny related FAQs
+
+* Why is an existing resource group required? Why can't the script create one instead?
+
+   This sample adheres to the principle of least privilege and aligns with enterprise practices, where the IT infrastructure or platform team creates the resource group and grants only the required permissions on that specific group. This approach avoids the need for subscription-level permissions
 
 ## References
 
