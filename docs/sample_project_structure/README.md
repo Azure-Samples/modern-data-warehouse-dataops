@@ -73,7 +73,7 @@ Engineering concepts demonstrated.
 - [Visual Studio Code Remote Development Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
 
 1. Rename `.envtemplate` to `devcontainer.env` and update the values as explained in the **Initial Setup** section.
-2. Open the project inside the vscode dev container (see details [here](docs/devcontainer.md))
+2. Open the project inside the vscode dev container.
 3. `cd` into the `e2e/<name-sample>` or `single-tech/<name-of-technology>` folder and run `./deploy.sh` inside the dev container terminal.
 
 ### Setup and Deployment
