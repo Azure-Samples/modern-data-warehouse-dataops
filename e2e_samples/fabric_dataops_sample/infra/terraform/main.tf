@@ -25,7 +25,9 @@ terraform {
 }
 
 provider "random" {}
-provider "azuread" {}
+provider "azuread" {
+  tenant_id = var.tenant_id
+}
 provider "fabric" {
   use_cli       = var.use_cli
   use_msi       = var.use_msi
@@ -103,7 +105,8 @@ data "azurerm_resource_group" "rg" {
 }
 
 data "azuread_group" "fabric_workspace_admin" {
-  display_name = var.fabric_workspace_admin_sg_name
+  display_name     = var.fabric_workspace_admin_sg_name
+  security_enabled = true
 }
 
 module "adls" {
@@ -125,10 +128,10 @@ module "storage_blob_contributor_assignment" {
 module "keyvault" {
   source              = "./modules/keyvault"
   resource_group_name = data.azurerm_resource_group.rg.name
-  location            = data.azuread_group.fabric_workspace_admin.object_id
+  location            = data.azurerm_resource_group.rg.location
   keyvault_name       = local.keyvault_name
   tenant_id           = var.tenant_id
-  object_id           = data.azuread
+  object_id           = data.azuread_group.fabric_workspace_admin.object_id
   tags                = local.tags
   purge_protection    = false #toberemoved
 }
@@ -143,8 +146,8 @@ module "keyvault_secrets_officer_role_assignment" {
 module "loganalytics" {
   source              = "./modules/loganalytics"
   resource_group_name = data.azurerm_resource_group.rg.name
-  location            = local.log_analytics_name
-  log_analytics_name  = "la-${local.base_name}"
+  location            = data.azurerm_resource_group.rg.location
+  log_analytics_name  = local.log_analytics_name
   tags                = local.tags
 }
 

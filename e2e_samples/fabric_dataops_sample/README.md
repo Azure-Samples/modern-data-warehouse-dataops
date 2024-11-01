@@ -133,7 +133,7 @@ Here is a list of resources that are deployed:
       - Import the environment variables file and authenticate to Azure with Service Principal
         ```bash
         source .env
-        az login --service-principal -u $APP_CLIENT_ID -p $APP_CLIENT_SECRET --tenant $TENANT_ID
+        az login --service-principal -u $APP_CLIENT_ID -p $APP_CLIENT_SECRET --tenant $TENANT_ID --allow-no-subscription
         ```
       - Execute following steps from this authenticated shell
 

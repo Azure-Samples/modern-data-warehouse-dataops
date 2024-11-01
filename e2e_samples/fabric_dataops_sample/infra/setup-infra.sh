@@ -65,16 +65,16 @@ deploy_terraform_resources() {
             use_msi=true;
         fi
     fi
-    echo "[I] use_cli is ${use_cli}"
-    echo "[I] use_msi is ${use_msi}"
-    echo "[I] client_id is ${client_id}"
+    echo "[I] use_cli is '${use_cli}'"
+    echo "[I] use_msi is '${use_msi}'"
+    echo "[I] client_id is '${client_id}'"
 
     if [[ -z "${existing_fabric_capacity_name}" ]]; then
         create_fabric_capacity=true
-        echo "[I] Variable 'EXISTING_FABRIC_CAPACITY_NAME' was empty, a new Fabric capacity will be created."
+        echo "[I] Variable 'EXISTING_FABRIC_CAPACITY_NAME' is empty, a new Fabric capacity will be created."
     else
         create_fabric_capacity=false
-        echo "[I] Variable 'EXISTING_FABRIC_CAPACITY_NAME' was NOT empty, the provided Fabric capacity will be used."
+        echo "[I] Variable 'EXISTING_FABRIC_CAPACITY_NAME' is NOT empty, the provided Fabric capacity will be used."
     fi
 
 
