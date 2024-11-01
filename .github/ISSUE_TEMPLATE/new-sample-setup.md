@@ -9,15 +9,14 @@ assignees: ''
 
 ## New Sample Checklist
 
-<!-- markdown-link-check-disable-next-line -->
-Ensure you've read the [Contributing Guide (Microsoft Internal only.)](https://dev.azure.com/csedtd/_git/DataOps?path=%2FCONTRIBUTING.md&_a=preview)
+Ensure you've read the [Contributing Guide](/CONTRIBUTING.md).
 
 ## Tooling
 
 - [ ] Setup/Configure Azure Subscriptions (if applicable)
 - [ ] CI/CD Tooling (Azure DevOps)
-- [ ] Setup Work Item tracking Tooling (GitHub Project)
-- [ ] Collaboration and Communication Tooling  (Teams)
+- [ ] Setup Work Item tracking Tooling (ie. GitHub Projects - Microsoft Employees only)
+- [ ] Collaboration and Communication Tooling  (ie. Teams)
 - [ ] Plan to create Devcontainer with appropriate linters and markdown link checkers.
 
 ## Planning
@@ -31,12 +30,11 @@ Ensure you've read the [Contributing Guide (Microsoft Internal only.)](https://d
 ## Execution
 
 - [ ] Branching - Create feature branch (if not exists already) and ensure branch policies to enforce PR process is applied.
-- [ ] Ceremonies scheduled (ei. Standups, Backlog Grooming, Planning, Retro)
-- [ ] Sprint Plan (if applicable)
+- [ ] Ceremonies scheduled (ei. Standups, Backlog Grooming, Planning, Retro), if applicable.
+- [ ] Sprint Plan, if applicable.
 - [ ] Ensure appropriate labelling of Github issues.
 
 ## Next Steps
 
-<!-- markdown-link-check-disable-next-line -->
-- [ ] Reuse [sample project template](https://dev.azure.com/csedtd/_git/DataOps?path=%2Fsample_project_structure).
-- [ ] Define User Stories (Github Issues/Card) in Github Project Board
+- [ ] Reuse [sample project template](/docs/sample_project_structure/).
+- [ ] [Microsoft employees only] Define User Stories (Github Issues/Card) in Github Project Board.
