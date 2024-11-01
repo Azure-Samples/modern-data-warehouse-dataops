@@ -36,13 +36,13 @@ The DataOps repo is a collection of end-to-end samples, smaller single technolog
 
 **Second**, once you've confirmed this, you need to decide whether you are creating either an End-to-End Sample or a Single Technology Sample.
 
-1. [End-to-End Samples](../e2e_samples/) - Reference-architecture style DataOps samples typically utilizing a number of Microsoft services and technologies.
+1. [End-to-End Samples](/e2e_samples/) - Reference-architecture style DataOps samples typically utilizing a number of Microsoft services and technologies.
    - **Purpose**: Showcase a number of DataOps key concepts in a concrete, end-to-end data pipeline.
 
-2. [Single Technology Samples](../single_tech_samples/) - Smaller, modular samples focusing on a single Azure service showcasing one or two DataOps key concepts.
+2. [Single Technology Samples](/single_tech_samples/) - Smaller, modular samples focusing on a single Azure service showcasing one or two DataOps key concepts.
    - **Purpose**: allows Developers and Data Engineers to easily choose and reuse individual samples depending on their requirements without the complexity of an end-to-end sample. Being small and modular also allows for showcasing different implementations for the same concept.
 
-3. [Utilities](../utilities/) - Reusable, standalone scripts that help with a specific operational task.
+3. [Utilities](/utilities/) - Reusable, standalone scripts that help with a specific operational task.
    - **Purpose**: Easily find helpful scripts used in common tasks to manage a data engineering system.
 
 **Third**, decide which [key concepts](https://docs.microsoft.com/en-us/azure/architecture/framework/) are you showcasing in your sample. See [Microsoft Azure Well-Architected Framework](https://docs.microsoft.com/en-us/azure/architecture/framework/) for additional information. If you've decided to build a Single Technology Sample, decide which technology will be showcasing the key concepts.
