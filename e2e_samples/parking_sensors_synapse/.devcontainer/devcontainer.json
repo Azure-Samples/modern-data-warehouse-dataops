@@ -3,20 +3,15 @@
 	"dockerComposeFile": "docker-compose.yml",
 	"workspaceFolder": "/workspace/e2e_samples/parking_sensors_synapse",
 	"service": "parking_sensor_synapse_dc",
-	"customizations": {
-		"vscode": {
-			"extensions": [
-				"ms-python.python",
-				"eamodio.gitlens",
-				"DavidAnson.vscode-markdownlint",
-				"yzhang.markdown-all-in-one",
-				"ms-azuretools.vscode-bicep"
-			]
-		},
-		"settings": {
-			"python.pythonPath": "/usr/local/bin/python"
-		}
+	"extensions": [
+		"ms-python.python",
+		"eamodio.gitlens",
+		"DavidAnson.vscode-markdownlint",
+		"yzhang.markdown-all-in-one",
+		"ms-azuretools.vscode-bicep"
+	],
+	"settings": {
+		"python.pythonPath": "/usr/local/bin/python"
 	},
-	"remoteUser": "mdwuser",
 	"postCreateCommand": "./.devcontainer/post_create.sh"
 }
