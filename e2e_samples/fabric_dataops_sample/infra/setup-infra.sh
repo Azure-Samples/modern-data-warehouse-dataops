@@ -196,7 +196,8 @@ fi
 
 echo "[I] ############ Uploading packages to Environment ############"
 if [[ "$use_cli" == "true" ]]; then
-    python3 ./../scripts/setup_fabric_environment.py --workspace_name "$tf_workspace_name" --environment_name "$tf_environment_name" --bearer_token "$fabric_bearer_token"
+    echo "[I] Skipped for now as the APIs are not working."
+    # python3 ./../scripts/setup_fabric_environment.py --workspace_name "$tf_workspace_name" --environment_name "$tf_environment_name" --bearer_token "$fabric_bearer_token"
 else
     echo "[I] Service Principal login does not support loading environments, skipping."
 fi
