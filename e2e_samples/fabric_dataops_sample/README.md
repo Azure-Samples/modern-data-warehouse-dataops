@@ -108,7 +108,7 @@ Here is a list of resources that are deployed:
   export EXISTING_FABRIC_CAPACITY_NAME="" # The name of an existing Fabric capacity. If this is empty, then a new capacity will be created.
   export FABRIC_CAPACITY_ADMINS="yourusername@yourdomain,sp_object_id" # Comma separated list. When creating a new Fabric capacity, these users/apps would be added as capacity admin.
   # ADLS Gen2 connection variable
-  export ADLS_GEN2_CONNECTION_ID="" # The connection ID for the ADLS Gen2 Cloud Connection. If not provided, the ALDS Gen2 shortcut creation would be skipped.
+  export ADLS_GEN2_CONNECTION_ID="" # The connection ID for the ADLS Gen2 Cloud Connection. If not provided, the ADLS Gen2 shortcut creation would be skipped.
   ```
 
   Most of these variables are self-explanatory. Here are a few additional notes:
@@ -145,7 +145,7 @@ Here is a list of resources that are deployed:
 
 - Review [setup-infra.sh](./infra/setup-infra.sh) script and see if you want to adjust the derived naming of variable names of Azure/Fabric resources. The Azure and Fabric resources are created using Terraform. The naming of the Azure resources is derived from the `BASE_NAME` environment variable. Please review the [main.tf](./infra/terraform/main.tf) file to understand the naming convention, and adjust it as needed.
 
-- Run the [setup-infra.sh](./infra/setup-infra.sh) script from the authenticed shell in the previous step to deploy the Azure and Fabric resources:
+- Run the [setup-infra.sh](./infra/setup-infra.sh) script from the authenticated shell in the previous step to deploy the Azure and Fabric resources:
 
   ```bash
   ./setup-infra.sh
@@ -171,7 +171,7 @@ Here is a list of resources that are deployed:
   ./setup-infra.sh
   ```
 
-  This time, the script will create the Lakehouse shortcut to your ALDS Gen2 storage account. All previously deployed resources will remain unchanged. Fabric items whose REST APIs and terrafrom provider don't support service principal / managed identity authentication (i.e. data pipelines and others) will be deployed with user context authentication.
+  This time, the script will create the Lakehouse shortcut to your ADLS Gen2 storage account. All previously deployed resources will remain unchanged. Fabric items whose REST APIs and terraform provider don't support service principal / managed identity authentication (i.e. data pipelines and others) will be deployed with user context authentication.
 
 ## Cleaning up
 
@@ -185,7 +185,7 @@ Here is a list of resources that are deployed:
 
 #### How to use a managed identity for authentication?
 
-  When using a user-assigned managed identity, you assign the managed identity to the "source" azure resourse, such as Virtual Machine (VM), Azure Function and such. Here are the instructions to setup up an Azure VM for authentication with managed identity.
+  When using a user-assigned managed identity, you assign the managed identity to the "source" azure resource, such as Virtual Machine (VM), Azure Function and such. Here are the instructions to setup up an Azure VM for authentication with managed identity.
 
   If you need to create a new Linux VM, it is recommended that you create an [Ubuntu VM](https://learn.microsoft.com/azure/virtual-machines/linux/quick-create-portal?tabs=ubuntu) and enable [Entra login to the VM](https://learn.microsoft.com/entra/identity/devices/howto-vm-sign-in-azure-ad-linux). Leave access to the VM [disabled by default](https://learn.microsoft.com/azure/defender-for-cloud/just-in-time-access-overview), and [enable just-in-time (JIT) access to the VM](https://learn.microsoft.com/azure/defender-for-cloud/just-in-time-access-usage).
 
