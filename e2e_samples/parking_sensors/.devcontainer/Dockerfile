@@ -5,7 +5,8 @@
 FROM python:3
 
 ARG USERNAME=mdwuser
-ARG USER_UID=1000
+# Add non-root user: https://code.visualstudio.com/remote/advancedcontainers/add-nonroot-user
+ARG USER_UID=1000 
 ARG USER_GID=$USER_UID
 
 # Configure apt
