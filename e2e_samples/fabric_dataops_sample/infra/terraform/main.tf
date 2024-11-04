@@ -118,7 +118,7 @@ module "adls" {
   tags                 = local.tags
 }
 
-module "storage_blob_contributor_assignment" {
+module "storage_blob_contributor_assignment_001" {
   source               = "./modules/role_assignment"
   principal_id         = data.azuread_group.fabric_workspace_admin.object_id
   role_definition_name = data.azurerm_role_definition.storage_blob_contributor_role.name
@@ -179,6 +179,15 @@ module "fabric_workspace" {
   workspace_name          = local.fabric_workspace_name
   workspace_description   = "Fabric workspace for ${local.base_name} project"
   workspace_identity_type = "SystemAssigned"
+}
+
+module "storage_blob_contributor_assignment_002" {
+  source               = "./modules/role_assignment"
+  principal_id         = module.fabric_workspace.workspace_identity_service_principal_id
+  role_definition_name = data.azurerm_role_definition.storage_blob_contributor_role.name
+  scope                = module.adls.storage_account_id
+
+  depends_on = [ module.fabric_workspace ]
 }
 
 module "fabric_workspace_role_assignment" {
