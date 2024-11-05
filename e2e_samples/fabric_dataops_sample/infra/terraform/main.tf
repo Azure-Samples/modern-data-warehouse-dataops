@@ -187,7 +187,7 @@ module "storage_blob_contributor_assignment_002" {
   role_definition_name = data.azurerm_role_definition.storage_blob_contributor_role.name
   scope                = module.adls.storage_account_id
 
-  depends_on = [ module.fabric_workspace ]
+  depends_on = [module.fabric_workspace]
 }
 
 module "fabric_workspace_role_assignment" {
