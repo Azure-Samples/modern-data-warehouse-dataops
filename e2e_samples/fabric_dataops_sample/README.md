@@ -53,14 +53,16 @@ Here is a list of resources that are deployed:
 ### Pre-requisites
 
 - An Entra user that can access Microsoft Fabric (Free license is enough).
+- An existing Entra [security group](https://learn.microsoft.com/entra/fundamentals/concept-learn-about-groups) for Fabric Workspace admins. This group is added as an admin to the deployed Fabric workspace.
 - An Azure subscription with the following:
   - The `Microsoft.Fabric` [resource provider](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#register-resource-provider) has been registered on the Azure subscription.
   - A resource group to which your user should be granted [Contributor](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/privileged#contributor) and [User Access Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/privileged#user-access-administrator) privileged roles.
   - A [managed identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview) OR a [service principal](https://learn.microsoft.com/entra/identity-platform/app-objects-and-service-principals):
     - If you **cannot** create a service principal on your own, request the creation of a service principal as per your organization's policy.
   - Request that a Fabric administrator grant the above service principal or managed identity permission to [use Fabric APIs](https://learn.microsoft.com/fabric/admin/service-admin-portal-developer#service-principals-can-use-fabric-apis).
-  - Grant the service principal or managed identity the `Contributor` and `User Access Administrator` privileged roles on the Azure resource group.
-- An existing Entra [security group](https://learn.microsoft.com/entra/fundamentals/concept-learn-about-groups) for Fabric Workspace admins. This group is added as an admin to the deployed Fabric workspace.
+  - Grant the service principal or managed identity the `Contributor` and `User Access Administrator` privileged roles on the Azure resource group. For `User Access Administrator` role, you would need to add delegate condition during role assignment. A condition is an additional check to provide more fine-grained access control. Check the [documentation](https://learn.microsoft.com/azure/role-based-access-control/delegate-role-assignments-portal?tabs=template) for more details. During the deployment, the `Storage Blob Data Contributor` and the `Key Vault Secrets Officer` roles are granted to a newly created service principal (Fabric workspace identity) and an existing Entra security group (Fabric workspace admins).
+  - For the service principal, also grant the Graph API application permission `Group.Read.All` to read the security group properties.
+    ![Graph API Permissions](./images/graph-api-permission.png)
 - If you want to use an **existing** Microsoft Fabric capacity, ensure that both your user account and the principal (service principal or managed identity) are [added as Capacity Administrators](https://learn.microsoft.com/fabric/admin/capacity-settings?tabs=fabric-capacity#add-and-remove-admins) to that capacity.
 - A bash shell with the following installed:
   - [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli?view=azure-cli-latest)
