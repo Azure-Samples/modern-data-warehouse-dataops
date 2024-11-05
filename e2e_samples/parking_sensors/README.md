@@ -292,6 +292,7 @@ More resources:
 
    - Run `./deploy.sh`.
       - This may take around **~30mins or more** to run end to end. So grab yourself a cup of coffee... ☕
+      - However, there are 3 points in time where you will need to authenticate to the databricks workspace, before the script continues to run. You will find the following message for the deployment of the dev, stage and production environments:  ![image](docs/images/databricks_ws.png)
       - After a successful deployment, you will find `.env.{environment_name}` files containing essential configuration information per environment. See [here](#deployed-resources) for list of deployed resources.
       - Note that if you are using **dev container**, you would run the same script but inside the dev container terminal.
    - As part of the deployment script, this updated the Azure DevOps Release Pipeline YAML definition to point to your Github repository. **Commit and push up these changes.**

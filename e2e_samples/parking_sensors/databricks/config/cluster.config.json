@@ -1,10 +1,11 @@
 {
     "cluster_name": "ddo_cluster",
     "autoscale": { "min_workers": 1, "max_workers": 2 },
-    "spark_version": "10.4.x-scala2.12",
+    "spark_version": "14.3.x-scala2.12",
     "autotermination_minutes": 30,
-    "node_type_id": "Standard_DS3_v2",
-    "driver_node_type_id": "Standard_DS3_v2",
+    "node_type_id": "Standard_DC4as_v5",
+    "data_security_mode": "SINGLE_USER",
+    "runtime_engine": "PHOTON",
     "spark_env_vars": {
         "PYSPARK_PYTHON": "/databricks/python3/bin/python3",
         "MOUNT_DATA_PATH": "/mnt/datalake",
