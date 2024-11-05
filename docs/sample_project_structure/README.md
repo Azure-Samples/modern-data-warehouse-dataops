@@ -78,7 +78,7 @@ Engineering concepts demonstrated.
 
 ### Setup and Deployment
 
-> IMPORTANT NOTE: As with all Azure Deployments, this will **incur associated costs**. Remember to teardown all related resources after use to avoid unnecessary costs. See [here](#deployed-resources) for a list of deployed resources.
+> IMPORTANT NOTE: As with all Azure deployments, this will **incur associated costs**. Remember to teardown all related resources after use to avoid unnecessary costs. See [here](#deployed-resources) for a list of deployed resources.
 
 1. **Initial Setup**
 

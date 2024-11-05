@@ -15,8 +15,8 @@ Ensure you've read the [Contributing Guide](/CONTRIBUTING.md).
 
 - [ ] Setup/Configure Azure Subscriptions (if applicable)
 - [ ] CI/CD Tooling (Azure DevOps)
-- [ ] Setup Work Item tracking Tooling (ie. GitHub Projects - Microsoft Employees only)
-- [ ] Collaboration and Communication Tooling  (ie. Teams)
+- [ ] Setup Work Item tracking Tooling (i.e., GitHub Projects - Microsoft Employees only)
+- [ ] Collaboration and Communication Tooling  (i.e., Teams)
 - [ ] Plan to create Devcontainer with appropriate linters and markdown link checkers.
 
 ## Planning
@@ -30,11 +30,11 @@ Ensure you've read the [Contributing Guide](/CONTRIBUTING.md).
 ## Execution
 
 - [ ] Branching - Create feature branch (if not exists already) and ensure branch policies to enforce PR process is applied.
-- [ ] Ceremonies scheduled (ei. Standups, Backlog Grooming, Planning, Retro), if applicable.
+- [ ] Ceremonies scheduled (e.g., Standups, Backlog Grooming, Planning, Retro), if applicable.
 - [ ] Sprint Plan, if applicable.
 - [ ] Ensure appropriate labelling of Github issues.
 
 ## Next Steps
 
 - [ ] Reuse [sample project template](/docs/sample_project_structure/).
-- [ ] [Microsoft employees only] Define User Stories (Github Issues/Card) in Github Project Board.
+- [ ] [Microsoft employees only] Define user stories (github issues/card) in Github project board.
