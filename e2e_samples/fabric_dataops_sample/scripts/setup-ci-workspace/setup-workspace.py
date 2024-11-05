@@ -1,10 +1,11 @@
-import requests
 import json
-import time
 import os
-from dotenv import load_dotenv
 import random
 import string
+import time
+
+import requests
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -30,10 +31,11 @@ azure_devops_details = {
     "projectName": project_name,
     "repositoryName": repo_name,
     "branchName": "<branch>",
-    "directoryName": directory_name
+    "directoryName": directory_name,
 }
 
-fabric_api_endpoint="https://api.fabric.microsoft.com/v1"
+fabric_api_endpoint = "https://api.fabric.microsoft.com/v1"
+
 
 def disconnect_workspace(workspace_id):
     # Set the URL for disconnecting the workspace
@@ -52,31 +54,32 @@ def disconnect_workspace(workspace_id):
             print("[E] The workspace disconnection from git failed.")
             print(f"[E] {response_json}")
 
+
 def get_workspace_name(project_name):
-    random_string = ''.join(random.choice(string.ascii_lowercase) for _ in range(5))
+    random_string = "".join(random.choice(string.ascii_lowercase) for _ in range(5))
     return f"ws-{project_name}-{random_string}"
+
 
 def set_headers(fabric_bearer_token):
     global headers
-    headers = {
-        "Authorization": f"Bearer {fabric_bearer_token}",
-        "Content-Type": "application/json"
-    }
+    headers = {"Authorization": f"Bearer {fabric_bearer_token}", "Content-Type": "application/json"}
+
 
 def get_workspace_id(workspace_name):
     get_workspaces_url = f"{fabric_api_endpoint}/workspaces"
     response = requests.get(get_workspaces_url, headers=headers)
-    
+
     if response.status_code != 200:
         print(f"[I] Failed to retrieve workspaces: {response.status_code} - {response.text}")
         return None
 
-    workspaces = response.json().get('value', [])
+    workspaces = response.json().get("value", [])
 
     for workspace in workspaces:
-        if workspace.get('displayName') == workspace_name:
-            return workspace.get('id')
+        if workspace.get("displayName") == workspace_name:
+            return workspace.get("id")
     return None
+
 
 def create_workspace(workspace_name, capacity_id):
     json_payload = {
@@ -85,16 +88,13 @@ def create_workspace(workspace_name, capacity_id):
         "description": f"Workspace {workspace_name}",
     }
 
-    response = requests.post(
-        f"{fabric_api_endpoint}/workspaces",
-        headers=headers,
-        data=json.dumps(json_payload)
-    )
+    response = requests.post(f"{fabric_api_endpoint}/workspaces", headers=headers, data=json.dumps(json_payload))
 
     if response.status_code == 201:
         print(f"[I] Workspace '{workspace_name}' created successfully")
     else:
         print(f"[E] Failed to create workspace '{workspace_name}': {response.status_code} - {response.text}")
+
 
 def get_capacity_id(capacity_name):
     get_capacities_url = f"{fabric_api_endpoint}/capacities"
@@ -104,19 +104,21 @@ def get_capacity_id(capacity_name):
         print(f"[E] Failed to retrieve capacities: {response.status_code} - {response.text}")
         return None
 
-    capacities = response.json().get('value', [])
+    capacities = response.json().get("value", [])
     for capacity in capacities:
-        if capacity.get('displayName') == capacity_name:
-            return capacity.get('id')
+        if capacity.get("displayName") == capacity_name:
+            return capacity.get("id")
     return None
 
-def initialize_connection(workspace_id):
-    initialize_connection_url=f"{fabric_api_endpoint}/workspaces/{workspace_id}/git/initializeConnection"
-    initialize_connection_body='{"InitializationStrategy": "PreferRemote"}'
 
-    response = requests.post(initialize_connection_url, headers=headers, data=initialize_connection_body)
+def initialize_connection(workspace_id):
+    initialize_connection_url = f"{fabric_api_endpoint}/workspaces/{workspace_id}/git/initializeConnection"
+    initialize_connection_body = '{"InitializationStrategy": "PreferRemote"}'
+
+    _ = requests.post(initialize_connection_url, headers=headers, data=initialize_connection_body)
 
     print("[I] The Git connection has been successfully initialized.")
+
 
 def get_workspace_git_status(workspace_id):
     workspace_git_status_url = f"{fabric_api_endpoint}/workspaces/{workspace_id}/git/status"
@@ -127,12 +129,11 @@ def get_workspace_git_status(workspace_id):
     else:
         print(f"[E] Failed to retrieve workspace status: {response.status_code} - {response.text}")
 
+
 def connect_workspace_to_git(workspace_id, branch_name):
     connect_workspace_url = f"{fabric_api_endpoint}/workspaces/{workspace_id}/git/connect"
     azure_devops_details["branchName"] = branch_name
-    connect_workspace_body = {
-        "gitProviderDetails": azure_devops_details
-    }
+    connect_workspace_body = {"gitProviderDetails": azure_devops_details}
     response = requests.post(connect_workspace_url, headers=headers, json=connect_workspace_body)
 
     if response.status_code == 200:
@@ -147,6 +148,7 @@ def connect_workspace_to_git(workspace_id, branch_name):
             print("[E] The workspace connection to git failed.")
             print(f"[E] {response_json}")
 
+
 def delete_workspace(workspace_id):
     delete_workspace_url = f"{fabric_api_endpoint}/workspaces/{workspace_id}"
     response = requests.delete(delete_workspace_url, headers=headers)
@@ -155,6 +157,7 @@ def delete_workspace(workspace_id):
         print("[I] Workspace deleted successfully.")
     else:
         print(f"[E] Failed to delete workspace: {response.status_code} - {response.text}")
+
 
 def poll_long_running_operation(response_headers):
     operation_id = response_headers.get("x-ms-operation-id")
@@ -178,25 +181,19 @@ def poll_long_running_operation(response_headers):
             print(f"[E] Failed to retrieve operation status: {response.status_code} - {response.text}")
             break
 
+
 def update_workspace_from_git(workspace_id):
     git_status = get_workspace_git_status(workspace_id)
     workspace_head = git_status["workspaceHead"]
     remote_commit_hash = git_status["remoteCommitHash"]
 
     update_workspace_url = f"{fabric_api_endpoint}/workspaces/{workspace_id}/git/updateFromGit"
+    update_workspace_body = {"updateStrategy": "PreferRemote"}
     update_workspace_body = {
-        "updateStrategy": "PreferRemote"
-    }
-    update_workspace_body = { 
         "remoteCommitHash": remote_commit_hash,
         "workspaceHead": workspace_head,
-        "conflictResolution": {
-            "conflictResolutionType": "Workspace",
-            "conflictResolutionPolicy": "PreferRemote"
-        },
-        "options": {
-            "allowOverrideItems": True
-        }
+        "conflictResolution": {"conflictResolutionType": "Workspace", "conflictResolutionPolicy": "PreferRemote"},
+        "options": {"allowOverrideItems": True},
     }
     response = requests.post(update_workspace_url, headers=headers, json=update_workspace_body)
 
@@ -207,6 +204,7 @@ def update_workspace_from_git(workspace_id):
         poll_long_running_operation(response.headers)
     else:
         print(f"[E] Failed to update workspace: {response.status_code} - {response.text}")
+
 
 if __name__ == "__main__":
     if workspace_name == "":
