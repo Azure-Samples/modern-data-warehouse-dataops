@@ -18,7 +18,7 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
   - [Infrastructure deployment related](#infrastructure-deployment-related)
     - [Why an existing resource group is required?](#why-an-existing-resource-group-is-required)
     - [How to use a managed identity for authentication?](#how-to-use-a-managed-identity-for-authentication)
-    - [Why is the variable `FABRIC_CAPACITY_ADMINS` required?](#why-is-the-variable-fabric_capacity_admins-required)
+    - [Why is the variable FABRIC\_CAPACITY\_ADMINS required?](#why-is-the-variable-fabric_capacity_admins-required)
 - [References](#references)
 
 ## Architecture
@@ -225,7 +225,7 @@ sudo apt install python3-pip -y
 python -m pip install requests
 ```
 
-#### Why is the variable `FABRIC_CAPACITY_ADMINS` required?
+#### Why is the variable FABRIC_CAPACITY_ADMINS required?
 
 This variable is required due to a current Fabric limitation, where adding a security group as a capacity administrator is not supported. Ideally, customers would create a security group for capacity administrators and assign that group as an admin for the capacity. However, due to this limitation, the script requires a list of users and service principals to be added as capacity admins to the newly created Fabric capacity.
 
