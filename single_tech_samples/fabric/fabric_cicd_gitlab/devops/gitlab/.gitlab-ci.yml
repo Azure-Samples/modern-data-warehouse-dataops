@@ -1,0 +1,59 @@
+before_script:
+  - git config --global --add safe.directory "$(pwd)"
+
+build-job:
+  stage: build
+  variables:
+    GIT_STRATEGY: clone
+    GIT_DEPTH: 0
+  script:
+    - echo "This is a build validation job."
+    - git config --global core.autocrlf true
+    - var=$(git --no-pager diff --name-status --diff-filter=AMR ${CI_MERGE_REQUEST_DIFF_BASE_SHA}..${CI_COMMIT_SHA} | grep "item-config.json" || true)
+    - echo "content of var is $var"
+    - if [ -z "${var}" ]; then exit 0; else exit 1; fi;
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+deploy-to-dev:
+  stage: build
+  image: mcr.microsoft.com/powershell:alpine-3.17
+  before_script:
+    - which git || ( apk update && apk add git )
+    - 'which ssh-agent || ( apk update && apk add openssh-client )'
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$GIT_SSH_PRIV_KEY" | tr -d ' ' | base64 -d)
+    - git config --global user.name "${GITLAB_USER_NAME}"
+    - git config --global user.email "${GITLAB_USER_EMAIL}"
+    - mkdir -p ~/.ssh && chmod 700 ~/.ssh && touch ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+    - ssh-keyscan -t rsa gitlab.com >> ~/.ssh/known_hosts
+  script:
+    - echo "This job deloys to the dev environment and commits back config files. Folder is $directoryName and capacity id is $capacityId"
+    - git clone -v git@gitlab.com:${CI_PROJECT_PATH}.git
+    - git checkout -b ${CI_COMMIT_BRANCH}
+    - cd ${CI_PROJECT_NAME}
+    - pwsh -f ./src/update_from_git_to_ws.ps1 -baseUrl ${fabricRestApiEndpoint} -fabricToken ${token} -workspaceName ${workspaceName} -capacityId ${capacityId} -folder ${directoryName}
+    - var=$(git status -s)
+    - if [ -z "${var}" ]; then exit 0; fi;
+    - git add .
+    - git commit -m "Commit config files after updates [skip ci]"
+    - git push --set-upstream origin ${CI_COMMIT_BRANCH}
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+deploy-test:
+  stage: test
+  script:
+    - echo "This job deploys something from the $CI_COMMIT_BRANCH branch. Lastly baseUrl is $fabricRestApiEndpoint"
+  environment: production
+  rules:
+    - if: $CI_COMMIT_BRANCH == "test"
+
+deploy-prod:
+  stage: deploy
+  script:
+    - echo "This job deploys something from the $CI_COMMIT_BRANCH branch. Lastly baseUrl is $fabricRestApiEndpoint"
+  environment: production
+  rules:
+    - if: $CI_COMMIT_BRANCH == "prod"

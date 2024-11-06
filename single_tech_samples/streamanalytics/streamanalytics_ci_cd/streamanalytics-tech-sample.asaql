@@ -1,0 +1,5 @@
+SELECT 
+    * INTO bloboutput
+FROM 
+    iothub
+WHERE TEMPERATURE > 27

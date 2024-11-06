@@ -1,14 +1,14 @@
 # Troubleshooting - Parking Sensors
 
-## AAD Token expiration
+## Microsoft Entra Access Token expiration
 
 **Problem**:
 
-AAD token expires prior to deployment completing.
+Microsoft Entra access token expires prior to deployment completing.
 
 **Solution**:
 
-This error can occur in very rare cases when the deployment takes too long that the AAD token expires. You can  try rerunning the `deploy.sh` script.
+This error can occur in very rare cases when the deployment takes too long that the Microsoft Entra access token expires. You can  try rerunning the `deploy.sh` script.
 
 If error persists, you can try deploying one environment at a time. Do this by by navigating `deploy.sh` and changing the following highlighted line (below) from `dev stg prod` to only `dev` first, then running the deployment script. Do the same for `stg` and `prod`.
 
@@ -38,11 +38,11 @@ This error seems to only happen when:
 
 1. Running from the devcontainer.
 2. Base OS is Mac.
-3. Target AAD tenant has [Conditional Access Policy](https://docs.microsoft.com/en-us/azure/active-directory/conditional-access/overview) turned on.
+3. Target Microsoft Entra tenant has [Conditional Access Policy](https://learn.microsoft.com/en-us/entra/identity/conditional-access/overview) turned on.
 
 **Solution**:
 
-Assuming that your target AAD tenant Conditional Access Policy supports the base machine OS you are running the deployment process from, you have two potential workarounds:
+Assuming that your target Microsoft Entra tenant Conditional Access Policy supports the base machine OS you are running the deployment process from, you have two potential workarounds:
 
 - Avoid using the devcontainer. Deploy from base OS.
 - Generating the databricks_aad_token first prior to running the deployment script, then hard-coding this to the variable `databricks_aad_token` in the `scripts/deploy_infrastructure.sh` script.

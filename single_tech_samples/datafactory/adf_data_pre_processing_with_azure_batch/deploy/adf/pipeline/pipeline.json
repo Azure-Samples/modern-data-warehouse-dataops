@@ -1,0 +1,34 @@
+{
+    "name": "sample-pipeline",
+    "properties": {
+        "activities": [
+            {
+                "name": "AzureBatchActivity",
+                "type": "Custom",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "command": "/bin/bash -c \"cd $AZ_BATCH_APP_PACKAGE_orchestratorapp_1_0_0/app && python3 extract.py --inputFile /data/raw/sample-data.bag --outputPath /data/extracted\"",
+                    "referenceObjects": {
+                        "linkedServices": [],
+                        "datasets": []
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "AzureBatch_LS",
+                    "type": "LinkedServiceReference"
+                }
+            }
+        ],
+        "annotations": [],
+        "lastPublishTime": "2023-02-12T11:27:07Z"
+    },
+    "type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,15 @@
+###
+# OPTIONAL. Environment variables for deployment script.
+# Uncomment to set values.
+
+# Azure location to deploy resources. Default: default azure region.
+# AZURE_LOCATION=
+
+# Azure subscription id to use to deploy resources. Default: default azure subscription.
+# AZURE_SUBSCRIPTION_ID=
+
+# String appended to all resource names to ensure uniqueness of azure resource names. Default: random five character string
+# DEPLOYMENT_ID=
+
+# Password of the Synapse SQL instance. Default: random string
+# SYNAPSE_SQL_PASSWORD=

@@ -1,0 +1,40 @@
+###################################################################
+### YOU CAN COPY THE .env.dev OUTPUTS AFTER DEPLOYING THE INFRASTRUCTURE AND PASTE HERE
+### FOR THE AZURE RELATED SECTIONS.
+
+###
+# REQUIRED. Service principal account details used to connect to Azure, fill in:
+AZ_SERVICE_PRINCIPAL_CLIENT_ID=
+AZ_SERVICE_PRINCIPAL_SECRET=
+AZ_SERVICE_PRINCIPAL_TENANT_ID=
+
+###
+# REQUIRED. For Azure related resource like Azure Synapse, fill in:
+AZ_SUBSCRIPTION_ID=
+AZ_RESOURCE_GROUP_NAME=
+AZ_SYNAPSE_NAME=
+AZ_SYNAPSE_ENDPOINT_SUFFIX=
+
+###
+# REQUIRED. Azure Synapse output(s) connection information, fill in:
+AZ_SYNAPSE_DEDICATED_SQLPOOL_SERVER=
+AZ_SYNAPSE_SQLPOOL_ADMIN_USERNAME=
+AZ_SYNAPSE_SQLPOOL_ADMIN_PASSWORD=
+AZ_SYNAPSE_DEDICATED_SQLPOOL_DATABASE_NAME=
+PIPELINE_NAME=
+TRIGGER_NAME=
+
+###
+# REQUIRED. For Azure storage related resources, fill in:
+ADLS_ACCOUNT_NAME=
+ADLS_ACCOUNT_ENDPOINT_SUFFIX=
+ADLS_DESTINATION_CONTAINER=
+ADLS_PROCESSED_CONTAINER=
+
+###################################################################
+### THE INFORMATION BELOW WILL NOT BE IN THE ENV.DEV FILE
+
+###
+# REQUIRED. Local file information, fill in:
+SOURCE_FILE_PATH="data"
+SOURCE_FILE_NAME="dim_date.csv"

@@ -1,5 +1,0 @@
-SELECT 
-    * INTO bloboutput
-FROM 
-    iothub
-HAVING Temperature > 27 
