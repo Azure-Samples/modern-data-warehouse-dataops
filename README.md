@@ -18,7 +18,7 @@ description: "Code samples showcasing how to apply DevOps concepts to common dat
 
 # DataOps
 
-This repository contains numerous code samples and artifacts on how to apply DevOps principles to common data engineering patterns and architectures utilizing Microsoft Data Platform technologies.
+This repository contains numerous code samples and artifacts on how to apply DevOps principles to common data engineering patterns and architectures utilizing Microsoft data platform technologies.
 
 The samples are either focused on a single azure service (**Single Tech Samples**) or showcases an end to end data pipeline solution as a reference implementation (**End to End Samples**). Each sample contains code and artifacts relating one or more of the following capabilities:
 
