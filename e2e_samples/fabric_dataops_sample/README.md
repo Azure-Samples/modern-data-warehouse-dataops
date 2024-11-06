@@ -18,6 +18,7 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
   - [Infrastructure deployment related](#infrastructure-deployment-related)
     - [Why an existing resource group is required?](#why-an-existing-resource-group-is-required)
     - [How to use a managed identity for authentication?](#how-to-use-a-managed-identity-for-authentication)
+    - [Why is the variable `FABRIC_CAPACITY_ADMINS` required?](#why-is-the-variable-fabric_capacity_admins-required)
 - [References](#references)
 
 ## Architecture
@@ -63,7 +64,9 @@ Here is a list of resources that are deployed:
   - Grant the service principal or managed identity the `Contributor` and `User Access Administrator` privileged roles on the Azure resource group. For `User Access Administrator` role, you would need to add delegate condition during role assignment. A condition is an additional check to provide more fine-grained access control. Check the [documentation](https://learn.microsoft.com/azure/role-based-access-control/delegate-role-assignments-portal?tabs=template) for more details. During the deployment, the `Storage Blob Data Contributor` and the `Key Vault Secrets Officer` roles are granted to a newly created service principal (Fabric workspace identity) and an existing Entra security group (Fabric workspace admins).
   - For the service principal, also grant the Graph API application permission `Group.Read.All` to read the security group properties.
     ![Graph API Permissions](./images/graph-api-permission.png)
-- If you want to use an **existing** Microsoft Fabric capacity, ensure that both your user account and the principal (service principal or managed identity) are [added as Capacity Administrators](https://learn.microsoft.com/fabric/admin/capacity-settings?tabs=fabric-capacity#add-and-remove-admins) to that capacity.
+- Configure Fabric capacity administrators.
+  - If you want to use an **existing** Fabric capacity, ensure that both your user account and the principal (service principal or managed identity) are [added as Capacity Administrators](https://learn.microsoft.com/fabric/admin/capacity-settings?tabs=fabric-capacity#add-and-remove-admins) to that capacity.
+  - If you are creating a **new** Fabric capacity, you need to provide a list of users and principals (service principal or managed identity) that will be added as capacity admins in the `FABRIC_CAPACITY_ADMINS` environment variable. For users, mention "userPrincipalName". For principals (sp/mi), mention "Object ID". Don't add spaces after the comma.
 - A bash shell with the following installed:
   - [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli?view=azure-cli-latest)
   - [jq](https://jqlang.github.io/jq/download/)
@@ -95,10 +98,10 @@ Here is a list of resources that are deployed:
   export SUBSCRIPTION_ID="The Azure subscription ID that will be used to deploy azure resources."
   export RESOURCE_GROUP_NAME="The Azure resource group where all azure resources will be deployed."
   export BASE_NAME="The base name of the Fabric project. This name is used for naming the Azure and Fabric resources."
-  # Service Principal Authentication only: Use the below only if you are authenticating with a Service principal with the terraform provider
+  # Service principal authentication: For managed identity or Entra ID user authentication, you can leave the following two variables blank.
   export APP_CLIENT_ID="The service principal client ID."
   export APP_CLIENT_SECRET="The service principal client secret."
-  # Azure DevOps variables
+  # Azure DevOps variables (The project, repository, branch, and folder must be created in advance)
   export GIT_ORGANIZATION_NAME="The Azure DevOps organization."
   export GIT_PROJECT_NAME="The Azure Devops project."
   export GIT_REPOSITORY_NAME="Your repository under the Azure DevOps project."
@@ -108,7 +111,7 @@ Here is a list of resources that are deployed:
   export FABRIC_WORKSPACE_ADMIN_SG_NAME="The name of the Entra security groups with admin members."
   # Fabric Capacity variables
   export EXISTING_FABRIC_CAPACITY_NAME="" # The name of an existing Fabric capacity. If this is empty, then a new capacity will be created.
-  export FABRIC_CAPACITY_ADMINS="yourusername@yourdomain,sp_object_id" # Comma separated list. When creating a new Fabric capacity, these users/apps would be added as capacity admin.
+  export FABRIC_CAPACITY_ADMINS="yourusername@yourdomain,sp_mi_object_id" # Comma separated list. When creating a new Fabric capacity, these users/apps would be added as capacity admin. For users, mention "userPrincipalName". For principals (sp/mi), mention "Object ID". Don't add spaces after the comma.
   # ADLS Gen2 connection variable
   export ADLS_GEN2_CONNECTION_ID="" # The connection ID for the ADLS Gen2 Cloud Connection. If not provided, the ADLS Gen2 shortcut creation would be skipped.
   ```
@@ -183,39 +186,47 @@ Here is a list of resources that are deployed:
 
 #### Why an existing resource group is required?
 
-  This sample adheres to the principle of least privilege and aligns with enterprise practices, where the IT infrastructure or platform team creates the resource group and grants only the required permissions on that specific group. If a new resource group is to be created as part of the deployment, it would require subscription-level permissions, which is not recommended.
+This sample adheres to the principle of least privilege and aligns with enterprise practices, where the IT infrastructure or platform team creates the resource group and grants only the required permissions on that specific group. If a new resource group is to be created as part of the deployment, it would require subscription-level permissions, which is not recommended.
 
 #### How to use a managed identity for authentication?
 
-  When using a user-assigned managed identity, you assign the managed identity to the "source" azure resource, such as Virtual Machine (VM), Azure Function and such. Here are the instructions to setup up an Azure VM for authentication with managed identity.
+When using a user-assigned managed identity, you assign the managed identity to the "source" azure resource, such as Virtual Machine (VM), Azure Function and such. Here are the instructions to setup up an Azure VM for authentication with managed identity.
 
-  If you need to create a new Linux VM, it is recommended that you create an [Ubuntu VM](https://learn.microsoft.com/azure/virtual-machines/linux/quick-create-portal?tabs=ubuntu) and enable [Entra login to the VM](https://learn.microsoft.com/entra/identity/devices/howto-vm-sign-in-azure-ad-linux). Leave access to the VM [disabled by default](https://learn.microsoft.com/azure/defender-for-cloud/just-in-time-access-overview), and [enable just-in-time (JIT) access to the VM](https://learn.microsoft.com/azure/defender-for-cloud/just-in-time-access-usage).
+If you need to create a new Linux VM, it is recommended that you create an [Ubuntu VM](https://learn.microsoft.com/azure/virtual-machines/linux/quick-create-portal?tabs=ubuntu) and enable [Entra login to the VM](https://learn.microsoft.com/entra/identity/devices/howto-vm-sign-in-azure-ad-linux). Leave access to the VM [disabled by default](https://learn.microsoft.com/azure/defender-for-cloud/just-in-time-access-overview), and [enable just-in-time (JIT) access to the VM](https://learn.microsoft.com/azure/defender-for-cloud/just-in-time-access-usage).
 
-  Next, you need to assign a managed identity to this virtual machine. Refer to [assign a Managed Identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/how-to-configure-managed-identities) for detail.
+Next, you need to assign a managed identity to this virtual machine. Refer to [assign a Managed Identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/how-to-configure-managed-identities) for detail.
 
-  On the VM make sure you have installed the following (below instructions are for Ubuntu):
+On the VM make sure you have installed the following (below instructions are for Ubuntu):
 
-  ```bash
-  # Install nano or shell text editor of your choice
-  sudo apt install nano
+```bash
+# Install nano or shell text editor of your choice
+sudo apt install nano
 
-  # Install Azure CLI. Below instructions are for Ubuntu, for other distributions see https://learn.microsoft.com/cli/azure/install-azure-cli-linux?
-  curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+# Install Azure CLI. Below instructions are for Ubuntu, for other distributions see https://learn.microsoft.com/cli/azure/install-azure-cli-linux?
+curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
-  # Install git
-  sudo apt install git
+# Install git
+sudo apt install git
 
-  # Install terraform - https://developer.hashicorp.com/terraform/install
+# Install terraform - https://developer.hashicorp.com/terraform/install
 
-  # Install jq
-  sudo apt install jq -y
+# Install jq
+sudo apt install jq -y
 
-  # Install pip
-  sudo apt install python3-pip -y
+# Install pip
+sudo apt install python3-pip -y
 
-  # Install python requests package
-  python -m pip install requests
-  ```
+# Install python requests package
+python -m pip install requests
+```
+
+#### Why is the variable `FABRIC_CAPACITY_ADMINS` required?
+
+This variable is required due to a current Fabric limitation, where adding a security group as a capacity administrator is not supported. Ideally, customers would create a security group for capacity administrators and assign that group as an admin for the capacity. However, due to this limitation, the script requires a list of users and service principals to be added as capacity admins to the newly created Fabric capacity.
+
+Additionally, the current design of the Fabric capacity template results in all existing capacity admins being removed and replaced with only those specified in the `FABRIC_CAPACITY_ADMINS` variable. Therefore, it’s essential to include all intended capacity admins in this variable.
+
+For an existing capacity, the principal executing the script must have permission to read the capacity details. As a prerequisite, all user accounts and the principal (service principal or managed identity) used for deployment should already be assigned as Capacity Administrators for that capacity.
 
 ## References
 
