@@ -58,29 +58,32 @@ Here is a list of resources that are deployed:
 - An Azure subscription with the following:
   - The `Microsoft.Fabric` [resource provider](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#register-resource-provider) has been registered on the Azure subscription.
   - A resource group to which your user should be granted [Contributor](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/privileged#contributor) and [User Access Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/privileged#user-access-administrator) privileged roles.
-  - A [managed identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview) OR a [service principal](https://learn.microsoft.com/entra/identity-platform/app-objects-and-service-principals):
-    - If you **cannot** create a service principal on your own, request the creation of a service principal as per your organization's policy.
+  - A [managed identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview) OR a [service principal](https://learn.microsoft.com/entra/identity-platform/app-objects-and-service-principals)
   - Request that a Fabric administrator grant the above service principal or managed identity permission to [use Fabric APIs](https://learn.microsoft.com/fabric/admin/service-admin-portal-developer#service-principals-can-use-fabric-apis).
   - Grant the service principal or managed identity the `Contributor` and `User Access Administrator` privileged roles on the Azure resource group. For `User Access Administrator` role, you would need to add delegate condition during role assignment. A condition is an additional check to provide more fine-grained access control. Check the [documentation](https://learn.microsoft.com/azure/role-based-access-control/delegate-role-assignments-portal?tabs=template) for more details. During the deployment, the `Storage Blob Data Contributor` and the `Key Vault Secrets Officer` roles are granted to a newly created service principal (Fabric workspace identity) and an existing Entra security group (Fabric workspace admins).
-  - For the service principal, also grant the Graph API application permission `Group.Read.All` to read the security group properties.
+- Microsoft Graph API permissions:
+  - For service principal, grant the Graph API application permission `Group.Read.All` to read the security group properties.
     ![Graph API Permissions](./images/graph-api-permission.png)
+  - For managed identity, assign the elevated [Directory Readers](https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference#directory-readers) role to read the security group properties. For this, go to `Azure Active Directory > Roles and administrators > Directory Readers > Add assignment`, and add the the managed identity.
+    ![Managed Identity Permissions](./images/managed-identity-permission.png)
 - Configure Fabric capacity administrators.
   - If you want to use an **existing** Fabric capacity, ensure that both your user account and the principal (service principal or managed identity) are [added as Capacity Administrators](https://learn.microsoft.com/fabric/admin/capacity-settings?tabs=fabric-capacity#add-and-remove-admins) to that capacity.
-  - If you are creating a **new** Fabric capacity, you need to provide a list of users and principals (service principal or managed identity) that will be added as capacity admins in the `FABRIC_CAPACITY_ADMINS` environment variable. For users, mention "userPrincipalName". For principals (sp/mi), mention "Object ID". Don't add spaces after the comma.
+  - If you are creating a **new** Fabric capacity, you need to provide a list of users and principals (service principal or managed identity) that will be added as capacity admins in the `FABRIC_CAPACITY_ADMINS` environment variable. For users, mention 'userPrincipalName'. For principals (sp/mi), mention 'Object ID'. Don't add spaces after the comma.
 - A bash shell with the following installed:
   - [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli?view=azure-cli-latest)
   - [jq](https://jqlang.github.io/jq/download/)
   - terraform
   - python version 3.9+ with `requests` package installed
-- Access to an Azure DevOps organization and project.
+- Access to an Azure DevOps organization and project:
   - Contributor permissions to an Azure Repo in such Azure DevOps environment.
+  - A branch and a folder in the repository where the Fabric items will be committed. The folder must already exist.
 
 ### Deploying infrastructure
 
 - Clone the repository:
 
   ```bash
-  cd "<installation_folder>"
+  cd '<installation_folder>'
   # Repo clone
   git clone https://github.com/Azure-Samples/modern-data-warehouse-dataops.git
   ```
@@ -188,9 +191,11 @@ Here is a list of resources that are deployed:
 
 This sample adheres to the principle of least privilege and aligns with enterprise practices, where the IT infrastructure or platform team creates the resource group and grants only the required permissions on that specific group. If a new resource group is to be created as part of the deployment, it would require subscription-level permissions, which is not recommended.
 
+For the same reason, the script requires an existing security group for Fabric workspace admins instead of creating a new one.
+
 #### How to use a managed identity for authentication?
 
-When using a user-assigned managed identity, you assign the managed identity to the "source" azure resource, such as Virtual Machine (VM), Azure Function and such. Here are the instructions to setup up an Azure VM for authentication with managed identity.
+When using a user-assigned managed identity, you assign the managed identity to the 'source' azure resource, such as Virtual Machine (VM), Azure Function and such. Here are the instructions to setup up an Azure VM for authentication with managed identity.
 
 If you need to create a new Linux VM, it is recommended that you create an [Ubuntu VM](https://learn.microsoft.com/azure/virtual-machines/linux/quick-create-portal?tabs=ubuntu) and enable [Entra login to the VM](https://learn.microsoft.com/entra/identity/devices/howto-vm-sign-in-azure-ad-linux). Leave access to the VM [disabled by default](https://learn.microsoft.com/azure/defender-for-cloud/just-in-time-access-overview), and [enable just-in-time (JIT) access to the VM](https://learn.microsoft.com/azure/defender-for-cloud/just-in-time-access-usage).
 
