@@ -32,5 +32,5 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e .[ci]
 
-      - name: Analyze all pre-commit checks
+      - name: Analyze Code Quality via pre-commit checks.
         run: pre-commit run --all-files
