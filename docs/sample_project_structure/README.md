@@ -36,7 +36,7 @@ The following is the overall architecture of the sample.
 
 This sample uses:
 
-- [Azure Technology](www.microsoft.com)
+- [Microsoft Fabric](https://www.microsoft.com/microsoft-fabric)
 
 ## Key Learnings
 

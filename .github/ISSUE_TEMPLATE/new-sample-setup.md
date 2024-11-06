@@ -21,11 +21,11 @@ Ensure you've read the [Contributing Guide](/CONTRIBUTING.md).
 
 ## Planning
 
-- [ ] Decide whether you are creating an End-to-End sample or Single-Technology sample
-- [ ] Decide which DataOps Key Concepts (ei. IaC, CI/CD, Testing, Observability, etc.) will you be demonstrating in the sample
-- [ ] Decide which Well-Architected Framework Concepts your sample will be demonstrating
+- [ ] Decide whether you are creating an end-to-end sample or single-technology sample.
+- [ ] Decide which DataOps key concepts (e.g., IaC, CI/CD, Testing, Observability) will you be demonstrating in the sample.
+- [ ] Decide which Well-Architected Framework concepts your sample will be demonstrating.
 - [ ] Decide on the name of the sample and located where in the repository structure your sample will sit.
-- [ ] Overall business / industry scenario of the sample identified (ei. City Parking Sensor tracking solution) if applicable.
+- [ ] Overall business / industry scenario of the sample identified (e.g., City Parking Sensor tracking solution) if applicable.
 
 ## Execution
 
