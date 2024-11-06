@@ -27,7 +27,7 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 
 ## What should I know before I get started?
 
-The DataOps repo is a collection of end-to-end samples, smaller single-technology samples, and utility code snippets, which aim to help data engineers operationalize their data systems using DevOps principles with Microsoft technologies. Each sample showcases one or more of the following engineering fundamental pillars: **Infrastructure-as-code (IaC)**, **CI/CD**, **automated testing**, and **observability** but may also cover additional principals as covered by the [Microsoft Azure Well-Architected Framework](https://docs.microsoft.com/en-us/azure/architecture/framework/).
+The DataOps repo is a collection of end-to-end samples, smaller single-technology samples, and utility code snippets, which aim to help data engineers operationalize their data systems using DevOps principles with Microsoft technologies. Each sample showcases one or more of the following engineering fundamental pillars: **Infrastructure-as-code (IaC)**, **CI/CD**, **automated testing**, and **observability** but may also cover additional principals as detailed in the [Microsoft Azure Well-Architected Framework](https://docs.microsoft.com/en-us/azure/architecture/framework/).
 
 ## Creating a new sample
 
@@ -38,7 +38,7 @@ The DataOps repo is a collection of end-to-end samples, smaller single-technolog
 **Second**, once you've confirmed this, you need to decide whether you are creating either an end-to-end sample or a single-technology sample.
 
 1. [End-to-end samples](/e2e_samples/) - Reference-architecture style DataOps samples typically utilizing a number of Microsoft services and technologies.
-   - **Purpose**: Showcase a number of DataOps key concepts in a concrete, end-to-end data pipeline.
+   - **Purpose**: Showcase a number of DataOps key concepts in a concrete, end-to-end data sample.
 
 2. [Single-technology samples](/single_tech_samples/) - Smaller, modular samples focusing on a single Azure service showcasing one or two key DataOps concepts.
    - **Purpose**: Allows developers and data engineers to easily choose and reuse individual samples based on their requirements, without the complexity of an end-to-end sample. The small and modular design also allows for showcasing different implementations for the same concept.
