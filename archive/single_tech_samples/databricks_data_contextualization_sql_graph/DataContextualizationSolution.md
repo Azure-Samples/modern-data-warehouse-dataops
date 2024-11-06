@@ -24,7 +24,7 @@ The data in the Silver layer has been stored in [Delta Lake](https://docs.databr
 
 The solution performs incremental data processing i.e., only the data which has been modified or added since the last run is processed. This is a typical requirement for batch processing so that the data can be processed quickly and economically.
 
-Refer to the [incremental data load](#incremental-data-load-1) section for more detials.
+Refer to the [incremental data load](#incremental-data-load-1) section for more details.
 
 ### Data Contextualization
 
@@ -46,7 +46,7 @@ For storing the contextualized data, [Azure SQL database](https://azure.microsof
 
 As show in the architecture diagram above, the data flow goes through the following steps:
 
-* The incoming to-be-contextulaized data is appended in the delta table in the 'Silver Layer'
+* The incoming to-be-contextualized data is appended in the delta table in the 'Silver Layer'
 * The incoming data is incrementally loaded to Azure Databricks
 * Look up the graph database to get the context information
 * Contextualize the incoming data
@@ -63,7 +63,7 @@ As show in the architecture diagram above, the data flow goes through the follow
 
 The sample solution in this article is derived from the scenario described below.
 
-Let’s imagine Gary is an operation engineer from Contoso company and one of his reponsibility is to provide a weekly health check report for the enterprise assets from Contoso’s factories within his city.
+Let's imagine Gary is an operation engineer from Contoso company and one of his responsibility is to provide a weekly health check report for the enterprise assets from Contoso's factories within his city.
 
 First, Gary has to fetch all the asset ID he is interested in from the company’s ‘Asset’ system,  then look for all the attributes belong to the asset as the input for the health check report, e.g., the operation efficiency data of the asset with ID ‘AE0520’.
 
@@ -73,13 +73,13 @@ Contoso has many market leading products and applications to help factory owners
 
 So Gary logged in the ‘Quality system’ and used the asset ID ‘AE0520’ to look up the table from AE_OP_EFF which contains the all the key attributes for operation efficiency data.
 
-There are many columns in the AE_OP_EFF table and Gary is speficially interested in the ‘alarm’ status. However the details for the most critical alarms of the asset is kept in another table called ‘alarm’. Gary needs to record the key ID ‘MA_0520’ of ‘alarm’ table which correspoinding to the asset ‘AE0520’, as they are using different naming conventions.
+There are many columns in the AE_OP_EFF table and Gary is specifically interested in the ‘alarm’ status. However the details for the most critical alarms of the asset is kept in another table called ‘alarm’. Gary needs to record the key ID ‘MA_0520’ of ‘alarm’ table which corresponding to the asset ‘AE0520’, as they are using different naming conventions.
 
-In the reality, the relationship is much more complicated than this. Gary has to search for more than one attribute of the asset and has to log in to many more tables from different systems to get all the data for a complete report. Gary used query and script to faciliate his work but the queries become complicated and hard to maintain. Even worse thing is, the systems are growing and the demand of the report is changing, that more data needs to be added to the report for different decision makers’ perspectives.
+In the reality, the relationship is much more complicated than this. Gary has to search for more than one attribute of the asset and has to log in to many more tables from different systems to get all the data for a complete report. Gary used query and script to facilitate his work but the queries become complicated and hard to maintain. Even worse thing is, the systems are growing and the demand of the report is changing, that more data needs to be added to the report for different decision makers’ perspectives.
 
-One of the major pain points for Gary is, the ID of one asset in different system are different, as these systems have been developed and  mainained  separately and even using different protocols. He has to manually query the different tables to get the data for the same asset, that caused his query not only complex but also difficult to understand without domain expertise. He uses a lot of time to recruit to the newly onboarded operation engineer and explain the relationships behind.
+One of the major pain points for Gary is, the ID of one asset in different system are different, as these systems have been developed and maintained separately and even using different protocols. He has to manually query the different tables to get the data for the same asset, that caused his query not only complex but also difficult to understand without domain expertise. He uses a lot of time to recruit to the newly onboarded operation engineer and explain the relationships behind.
 
-If there is a mechnism to ‘link’ the different names but belong to the same asset across systems, Gary’s life will be much easier and his report query will be much simplier.
+If there is a mechanism to ‘link’ the different names but belong to the same asset across systems, Gary’s life will be much easier and his report query will be much simpler.
 
 ## Potential Use Cases
 
@@ -104,8 +104,8 @@ As mentioned previously, in the market, there are many graph databases to choose
 |Scale|automatic horizontal [partitioning](https://learn.microsoft.com/en-us/azure/cosmos-db/partitioning-overview)|scales writes vertically and reads horizontally|horizontal and vertical scaling|horizontal and vertical scaling|horizontal and vertical scaling|
 |[Partitioning methods](https://db-engines.com/en/system/Microsoft+Azure+Cosmos+DB%3BMicrosoft+SQL+Server%3BNeo4j%3BPostgreSQL%3BRedis)|Sharding|Neo4j Fabric|Partitioning by range, list and by hash|Sharding|Sharding|
 |[Multi-Tenancy](https://learn.microsoft.com/en-us/azure/architecture/guide/multitenant/overview)|Container per tenant, Database per tenant, Database account per tenant|Database per tenant,(Community edition limited to single database)|Schema per tenant, Database per tenant|Database per tenant|Graph Per Tenant|
-|Filter|Perform filters using Gremlin's has and hasLabel|CypherQL for filitering|Hybrid Querying|using T-SQL|A query can filter out entities by creating predicates like using where argument|
-|[Benchmark](https://github.com/RedisGraph/graph-database-benchmark)|[For a 1 KB document: a read costs 1 RU, a write costs 5 RU](https://learn.microsoft.com/en-us/azure/cosmos-db/request-units)|Cypher O(1) access using fixed-size array|12,000TPS/2.1ms per query with 5 bilion nodes|-|[RedisGraph is able to create over 1 million nodes under half a second and form 500K relations within 0.3 of a second, inserting a new relationship is done in O(1)](https://redis.io/docs/stack/graph/design/)|
+|Filter|Perform filters using Gremlin's has and hasLabel|CypherQL for filtering|Hybrid Querying|using T-SQL|A query can filter out entities by creating predicates like using where argument|
+|[Benchmark](https://github.com/RedisGraph/graph-database-benchmark)|[For a 1 KB document: a read costs 1 RU, a write costs 5 RU](https://learn.microsoft.com/en-us/azure/cosmos-db/request-units)|Cypher O(1) access using fixed-size array|12,000TPS/2.1ms per query with 5 billion nodes|-|[RedisGraph is able to create over 1 million nodes under half a second and form 500K relations within 0.3 of a second, inserting a new relationship is done in O(1)](https://redis.io/docs/stack/graph/design/)|
 |Support Shortest path|[Yes](https://tinkerpop.apache.org/docs/current/recipes/#shortest-path)|[Yes](https://neo4j.com/docs/graph-data-science/current/algorithms/pathfinding/)|Not provide any such function|[SHORTEST_PATH](https://learn.microsoft.com/en-us/sql/relational-databases/graphs/sql-graph-shortest-path?view=sql-server-ver16) function can only be used inside MATCH, which finds an unweighted shortest path|[Yes](https://github.com/RedisGraph/RedisGraph/blob/master/docs/commands/graph.query.md#path-functions)|
 |Support Page ranking|[Yes](https://tinkerpop.apache.org/docs/current/recipes/#pagerank-centrality)|[Yes](https://neo4j.com/docs/graph-data-science/current/algorithms/page-rank/)|Not provide any such function|Not provide any such function|[Yes](https://github.com/RedisGraph/RedisGraph/blob/master/docs/commands/graph.query.md#path-functions)|
 |[Deployment Options](https://cycode.engineering/blog/aws-neptune-neo4j-arangodb-or-redisgraph-how-we-at-cycode-chose-our-graph-database/)|Cloud Offering|Cloud & Self-Hosted (Enterprise Edition requires commercial license)|Cloud Offering, but Apache AGE (AGE) Extension is not supported on Azure database for PostgreSQL|Cloud Offering|Cloud & Self-Hosted|
@@ -118,10 +118,10 @@ Reference Links:
 4. [Redis Graph](https://redis.io/docs/stack/graph/)
 5. [PostgreSQL Apache Age](https://age.apache.org/age-manual/master/intro/overview.html)
 
-Finnally we choose to use Azure SQL Database, because:
+Finally, we chose to use Azure SQL Database because:
 
-* It's an Azure managed relational database servcie with graph capabilities.
-* It's easy to get started since we are farmiliar with SQL Server or Azure SQL Database.
+* It's an Azure managed relational database service with graph capabilities.
+* It's easy to get started since we are familiar with SQL Server or Azure SQL Database.
 * We'll also benefit from using Transact-SQL since the graph database is based on SQL Database.
 
 ### Graph Design
@@ -134,10 +134,10 @@ A graph database is a collection of nodes (or vertices) and edges (or relationsh
 
 #### Design the Graph Model for the Demo
 
-For the scenario described preiously, we can design the graph model as below:
+For the scenario described previously, we can design the graph model as below:
 
 * 'Alarm' is one of the metrics that belong to the 'Quality System'
-* The 'Quality System' is assocated with an 'Asset'
+* The 'Quality System' is associated with an 'Asset'
 
 ![Graph](images/graph08.png)
 
@@ -362,7 +362,7 @@ df_alarm_master.write \
 
 Graph databases have advantages for use cases such as social networking, recommendation engines, and fraud detection, when you need to create relationships between data and quickly query these relationships. Here we provide a sample of using a graph database to setup the context model for a manufacturing scenario.
 
-Azure SQL database graph feature enables us to build graph models to decribe hierarchical data, maintain complex many-to-many relationships and analyze interconnected data and relationships. By using this feature, users can still benifit from the power of Transact-SQL and the advantanges of using Azure SQL database as the foundational database management system.
+Azure SQL database graph feature enables us to build graph models to describe hierarchical data, maintain complex many-to-many relationships and analyze interconnected data and relationships. By using this feature, users can still benefit from the power of Transact-SQL and the advantages of using Azure SQL database as the foundational database management system.
 
 ## References
 

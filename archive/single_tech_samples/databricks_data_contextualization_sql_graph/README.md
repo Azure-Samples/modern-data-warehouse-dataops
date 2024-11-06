@@ -22,12 +22,12 @@ Take the following steps to run the sample solution:
     ![import](./images/import_databricks.png)
     - select notebook sample code to upload
         - [demo-setup.py](./src/notebooks/demo-setup.py)
-        - [demo-contextualizaion.py](./src/notebooks/demo-contextualizaion.py)
+        - [demo-contextualization.py](./src/notebooks/demo-contextualizaion.py)
             - Please replace your database connection information
 
             ![import](./images/demo-databricks-notebook-01.png)
     - Run demo-setup notebook
-    - Run demo-contextualizaion notebook
-    - If you successfully run the nodebook, you will see contextualized tables in the database.
+    - Run demo-contextualization notebook
+    - If you successfully run the notebook, you will see contextualized tables in the database.
 
     ![import](./images/contextualizedTable.png)
