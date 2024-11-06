@@ -72,7 +72,6 @@ The DataOps repo is a collection of end-to-end samples, smaller single-technolog
   /databricks
 ```
 
-
 ### Getting Started
 
 Once you have done all of the above, refer to this [sample structure](/docs/sample_project_structure/README.md) to get started and use it as the starting point.
@@ -80,7 +79,6 @@ Once you have done all of the above, refer to this [sample structure](/docs/samp
 #### Sample's README.md file
 
 This is arguably the *most important* part of your sample. It is recommended to consolidate most content in a single README to prevent information from being 'lost' or overlooked through through deep linking. Below is a brief description of the different sections in this file:
-
 
 1. **Table of Contents** - Use [this VSCode extension](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one) to generate the Table of Contents (TOC).
 1. **Solution Overview** - Provide the background of the solution (i.e., What problem are you trying to solve?), solution architecture and key technologies used.
