@@ -87,11 +87,6 @@ locals {
   fabric_data_pipeline_name    = "pl-${local.base_name}"
 }
 
-#data "azuread_client_config" "current" {}
-data "azuread_service_principal" "deployment_principal" {
-  client_id = var.client_id
-}
-
 data "azurerm_role_definition" "storage_blob_contributor_role" {
   name = "Storage Blob Data Contributor"
 }
