@@ -33,24 +33,24 @@ The DataOps repo is a collection of end-to-end samples, smaller single-technolog
 
 ### Pre-requisites
 
-**First**, review existing samples to ensure you are not duplicating work. Additionally, check [Github issues](https://github.com/Azure-Samples/modern-data-warehouse-dataops/issues) for any similar work in progress (i.e., issues with associated PRs).
+1. Review existing samples to ensure you are not duplicating work. Additionally, check [Github issues](https://github.com/Azure-Samples/modern-data-warehouse-dataops/issues) for any similar work in progress (i.e., issues with associated PRs).
 
-**Second**, once you've confirmed this, you need to decide whether you are creating either an end-to-end sample or a single-technology sample.
+2. Once you've confirmed this, you need to decide whether you are creating either an end-to-end sample or a single-technology sample:
 
-1. [End-to-end samples](/e2e_samples/) - Reference-architecture style DataOps samples typically utilizing a number of Microsoft services and technologies.
-   - **Purpose**: Showcase a number of DataOps key concepts in a concrete, end-to-end data sample.
+    - [End-to-end samples](/e2e_samples/) - Reference-architecture style DataOps samples typically utilizing a number of Microsoft services and technologies.
+       - **Purpose**: Showcase a number of DataOps key concepts in a concrete, end-to-end data sample.
 
-2. [Single-technology samples](/single_tech_samples/) - Smaller, modular samples focusing on a single Azure service showcasing one or two key DataOps concepts.
-   - **Purpose**: Allows developers and data engineers to easily choose and reuse individual samples based on their requirements, without the complexity of an end-to-end sample. The small and modular design also allows for showcasing different implementations for the same concept.
+    - [Single-technology samples](/single_tech_samples/) - Smaller, modular samples focusing on a single Azure service showcasing one or two key DataOps concepts.
+       - **Purpose**: Allows developers and data engineers to easily choose and reuse individual samples based on their requirements, without the complexity of an end-to-end sample. The small and modular design also allows for showcasing different implementations for the same concept.
 
-3. [Utilities](/utilities/) - Reusable, standalone scripts that help with a specific operational task.
-   - **Purpose**: Easily find helpful scripts used in common tasks to manage a data engineering system.
+    - [Utilities](/utilities/) - Reusable, standalone scripts that help with a specific operational task.
+       - **Purpose**: Easily find helpful scripts used in common tasks to manage a data engineering system.
 
-**Third**, decide which [key concepts](https://docs.microsoft.com/en-us/azure/architecture/framework/) are you showcasing in your sample. See [Microsoft Azure Well-Architected Framework](https://docs.microsoft.com/en-us/azure/architecture/framework/) for additional information. If you've decided to build a single-technology sample, decide which technology will be showcasing the key concepts.
+3. Decide which [key concepts](https://docs.microsoft.com/en-us/azure/architecture/framework/) are you showcasing in your sample. See [Microsoft Azure Well-Architected Framework](https://docs.microsoft.com/en-us/azure/architecture/framework/) for additional information. If you've decided to build a single-technology sample, decide which technology will be showcasing the key concepts.
 
-**Fourth**, determine the appropriate location for your sample within the [repository structure](#repo-structure). Select a short, descriptive name for the sample, avoiding lengthy or complex names, as it will be used throughout the repo (e.g., folder names, script paths, documentation links, and labels).
+4. Determine the appropriate location for your sample within the [repository structure](#repo-structure). Select a short, descriptive name for the sample, avoiding lengthy or complex names, as it will be used throughout the repo (e.g., folder names, script paths, documentation links, and labels).
 
-**Fifth**, Create a github issue using the [new sample setup](./.github/ISSUE_TEMPLATE/new-sample-setup.md) template and fill in the information required. This template includes a detailed checklist to guide you through the sample development process.
+5. Create a github issue using the [new sample setup](./.github/ISSUE_TEMPLATE/new-sample-setup.md) template and fill in the information required. This template includes a detailed checklist to guide you through the sample development process.
 
 ### Repo Structure
 
@@ -97,13 +97,13 @@ Ensure you have a `deploy.sh` or `deploy.ps1` in the root of the sample as the e
 
 ## Contributing to an existing sample
 
-**First**, Look through Github issues if there are any similar work in progress (i.e., issues with PRs associated to them) to avoid duplicate efforts.
+1. Look through Github issues if there are any similar work in progress (i.e., issues with PRs associated to them) to avoid duplicate efforts.
 
-**Second**, Create a Github issue detailing your work using the [Feature](.github/ISSUE_TEMPLATE/feature.md) issue template. Tag the issue using the relevant label (i.e., 'single-tech: databricks', 'e2e: fabric'). See [Labels](#labels) below.
+2. Create a Github issue detailing your work using the [Feature](.github/ISSUE_TEMPLATE/feature.md) issue template. Tag the issue using the relevant label (i.e., 'single-tech: databricks', 'e2e: fabric'). See [Labels](#labels) below.
 
-**Third**, Develop your changes. If you are not a member of the [Azure-Samples](https://github.com/Azure-Samples) organization (Microsoft employees only), you will need to fork the repository. Otherwise, familiarize yourself with the [branching structure](#branching-structure). Every sample should include developer setup information, and most should provide a Devcontainer.
+3. Develop your changes. If you are not a member of the [Azure-Samples](https://github.com/Azure-Samples) organization (Microsoft employees only), you will need to fork the repository. Otherwise, familiarize yourself with the [branching structure](#branching-structure). Every sample should include developer setup information, and most should provide a Devcontainer.
 
-**Fourth**, Raise a PR and fill up the PR template including associating it to the correct Github issue. Ensure you apply the correct label to the PR. This repo has a number of automated checks such as linting, link checks, and more. See [.github/workflows](/.github/workflows/) folder for details.
+4. Raise a PR and fill up the PR template including associating it to the correct Github issue. Ensure you apply the correct label to the PR. This repo has a number of automated checks such as linting, link checks, and more. See [.github/workflows](/.github/workflows/) folder for details.
 
 ## Labels
 
