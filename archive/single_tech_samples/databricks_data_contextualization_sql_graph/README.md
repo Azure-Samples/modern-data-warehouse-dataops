@@ -13,7 +13,7 @@ Take the following steps to run the sample solution:
     - Enter the following query in the Query editor pane.
 
     ![Create-SQL-graph](./images/Create-SQL-graph.png)
-    - Enter the [Create Graph Table Script](src\sql\create-graph.sql) in the Query editor pane.
+    - Enter the [Create Graph Table Script](./src/sql/create-graph.sql) in the Query editor pane.
 
     ![Create-SQL-graph](./images/Run-SQL-graph.png)
 5. Import notebooks into Azure Databricks
@@ -21,8 +21,8 @@ Take the following steps to run the sample solution:
 
     ![import](./images/import_databricks.png)
     - select notebook sample code to upload
-        - [demo-setup.py](src\notebooks\demo-setup.py)
-        - [demo-contextualizaion.py](src\notebooks\demo-contextualizaion.py)
+        - [demo-setup.py](./src/notebooks/demo-setup.py)
+        - [demo-contextualizaion.py](./src/notebooks/demo-contextualizaion.py)
             - Please replace your database connection information
 
             ![import](./images/demo-databricks-notebook-01.png)

@@ -106,8 +106,8 @@ As mentioned previously, in the market, there are many graph databases to choose
 |[Multi-Tenancy](https://learn.microsoft.com/en-us/azure/architecture/guide/multitenant/overview)|Container per tenant, Database per tenant, Database account per tenant|Database per tenant,(Community edition limited to single database)|Schema per tenant, Database per tenant|Database per tenant|Graph Per Tenant|
 |Filter|Perform filters using Gremlin's has and hasLabel|CypherQL for filitering|Hybrid Querying|using T-SQL|A query can filter out entities by creating predicates like using where argument|
 |[Benchmark](https://github.com/RedisGraph/graph-database-benchmark)|[For a 1 KB document: a read costs 1 RU, a write costs 5 RU](https://learn.microsoft.com/en-us/azure/cosmos-db/request-units)|Cypher O(1) access using fixed-size array|12,000TPS/2.1ms per query with 5 bilion nodes|-|[RedisGraph is able to create over 1 million nodes under half a second and form 500K relations within 0.3 of a second, inserting a new relationship is done in O(1)](https://redis.io/docs/stack/graph/design/)|
-|Support Shortest path|[Yes](https://tinkerpop.apache.org/docs/current/recipes/#shortest-path)|[Yes](https://neo4j.com/docs/graph-data-science/current/algorithms/pathfinding/)|Not provide any such function|[SHORTEST_PATH](https://learn.microsoft.com/en-us/sql/relational-databases/graphs/sql-graph-shortest-path?view=sql-server-ver16) function can only be used inside MATCH, which finds an unweighted shortest path|[Yes](https://redis.io/commands/graph.query/#path-functions)|
-|Support Page ranking|[Yes](https://tinkerpop.apache.org/docs/current/recipes/#pagerank-centrality)|[Yes](https://neo4j.com/docs/graph-data-science/current/algorithms/page-rank/)|Not provide any such function|Not provide any such function|[Yes](https://redis.io/commands/graph.query/#path-functions)|
+|Support Shortest path|[Yes](https://tinkerpop.apache.org/docs/current/recipes/#shortest-path)|[Yes](https://neo4j.com/docs/graph-data-science/current/algorithms/pathfinding/)|Not provide any such function|[SHORTEST_PATH](https://learn.microsoft.com/en-us/sql/relational-databases/graphs/sql-graph-shortest-path?view=sql-server-ver16) function can only be used inside MATCH, which finds an unweighted shortest path|[Yes](https://github.com/RedisGraph/RedisGraph/blob/master/docs/commands/graph.query.md#path-functions)|
+|Support Page ranking|[Yes](https://tinkerpop.apache.org/docs/current/recipes/#pagerank-centrality)|[Yes](https://neo4j.com/docs/graph-data-science/current/algorithms/page-rank/)|Not provide any such function|Not provide any such function|[Yes](https://github.com/RedisGraph/RedisGraph/blob/master/docs/commands/graph.query.md#path-functions)|
 |[Deployment Options](https://cycode.engineering/blog/aws-neptune-neo4j-arangodb-or-redisgraph-how-we-at-cycode-chose-our-graph-database/)|Cloud Offering|Cloud & Self-Hosted (Enterprise Edition requires commercial license)|Cloud Offering, but Apache AGE (AGE) Extension is not supported on Azure database for PostgreSQL|Cloud Offering|Cloud & Self-Hosted|
 
 Reference Links:
@@ -149,7 +149,7 @@ In the graph model, the nodes and edges (relationships) can be defined as the fo
 
 ![Graph](images/graph09.png =300x)
 
-After creating the graph model by using the [scripts](src\sql\create-graph.sql), you'll be able to find the 'Graph Tables' shown as below:
+After creating the graph model by using the [scripts](./src/sql/create-graph.sql), you'll be able to find the 'Graph Tables' shown as below:
 
 ![Graph](images/graph04.png)
 
@@ -250,7 +250,7 @@ Please note that enabling CDF will not make significant impact for the system pe
 
 #### Create SQL Graph
 
-As mentioned previously, we can use [sql script](src\sql\create-graph.sql) to build the graph model.
+As mentioned previously, we can use [sql script](./src/sql/create-graph.sql) to build the graph model.
 
 #### Create Tbl_alarm_master and Insert Dummy Data
 
