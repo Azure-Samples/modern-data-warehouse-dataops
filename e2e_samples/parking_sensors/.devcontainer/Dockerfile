@@ -45,6 +45,9 @@ RUN apt-get update \
     temurin-21-jdk
 ENV JAVA_HOME=/usr/lib/jvm/temurin-21-jdk-amd64
 
+RUN [ -f /usr/local/bin/databricks ] && rm /usr/local/bin/databricks || echo "File not found, skipping removal"
+RUN curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+
 RUN groupadd --gid $USER_GID $USERNAME \
     && useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USERNAME
 
