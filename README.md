@@ -27,7 +27,7 @@ The samples are either focused on a single microsoft service ([Single-Technology
 - Testing
 - Observability / Monitoring
 
-In addition to the samples, this repository also contains [Utilities](#utilities). These are simple script or code snippets that can be used as-is or as a starting point for more complex automation tasks.
+In addition to the samples, this repository also contains [Utilities](#utilities). These are simple scripts or code snippets that can be used as-is or as a starting point for more complex automation tasks.
 
 ## Single-Technology Samples
 
