@@ -52,7 +52,6 @@ builtins = ["mssparkutils", "spark", "display"]
 
 
 [tool.nbqa]
-line_length = 80
 # [tool.nbqa.files]  # include only below folders
 # black = "^e2e_samples/fabric_dataops_sample/"
 # ruff = "^e2e_samples/fabric_dataops_sample/"
@@ -67,9 +66,13 @@ line_length = 80
 # [tool.markdownlint]
 # config = "markdownlint.yml"
 
-# [tool.pytest.ini_options]
-# addopts = "-ra"
-# norecursedirs = ["old_and_archived_samples"]
+[tool.mypy]
+disallow_untyped_defs = true
+ignore_missing_imports = true
+show_error_codes = true
+disable_error_code = ["name-defined"]
+exclude = [".venv"]
+
 
 [build-system]
 requires = ["setuptools", "wheel"]

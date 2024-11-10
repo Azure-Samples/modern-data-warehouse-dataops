@@ -81,13 +81,16 @@ repos:
       - id: nbqa-black
       - id: nbqa-ruff
         args: ["--fix"]
+      - id: nbqa-mypy
 
   # - repo: https://github.com/antonbabenko/pre-commit-terraform
   #   rev: v1.96.2
   #   hooks:
-  #   - id: terraform_fmt
-  #     files: "e2e_samples/fabric_dataops_sample/"
-  #   - id: terraform_tflint
-  #     files: "e2e_samples/fabric_dataops_sample/"
-  #   - id: terraform_tfsec
-  #     files: "e2e_samples/fabric_dataops_sample/"
+  #     - id: terraform_fmt
+  #     # - id: terraform_tflint
+  #     # - id: terraform_validate
+  #     # - id: terraform_tfsec
+  #     - id: terraform_trivy
+  #       args:
+  #         - --args=--severity=HIGH,MEDIUM
+  #         - --args=--skip-dirs="**/.terraform"
