@@ -1,4 +1,4 @@
-name: Formatting, Linting & Testing
+name: Formatting, Linting & Other Pre-Commit Checks
 
 on:
   push:
