@@ -27,6 +27,8 @@ The samples are either focused on a single microsoft service ([Single-Technology
 - Testing
 - Observability / Monitoring
 
+In addition to the samples, this repository also contains [Utilities](#utilities). These are simple script or code snippets that can be used as-is or as a starting point for more complex automation tasks.
+
 ## Single-Technology Samples
 
 | Technology | Samples |
@@ -48,6 +50,12 @@ This [sample](e2e_samples/parking_sensors/) demonstrates batch, end-to-end data 
 ### DataOps for Medallion with Microsoft Fabric
 
 - Coming soon.
+
+## Utilities
+
+| Technology | Utility Description |
+| ---------- | ------------------- |
+| Microsoft Fabric | ▪️ [Script to upload file in GIT repo to Fabric lakehouse](./utilities/fabric/README.md#python-script-to-upload-file-in-git-repo-to-fabric-lakehouse)|
 
 ## Contributing
 
