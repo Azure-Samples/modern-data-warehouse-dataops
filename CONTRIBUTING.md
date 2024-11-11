@@ -6,7 +6,7 @@ Thank you for considering contributing to Modern Data Estate! This guide provide
 
 - [Code of Conduct](#code-of-conduct)
 - [Getting Started](#getting-started)
-- [Linting, Formatting & Other pre-commit checks](./docs/linting-guide.md)
+- [Linting, Formatting & Other pre-commit checks](#linting-formatting--other-pre-commit-checks)
 
 ## Code of Conduct
 
@@ -36,3 +36,7 @@ We expect all contributors to adhere to our [Code of Conduct](./CODE_OF_CONDUCT.
     # install pre-commit
     pre-commit install
     ```
+
+## Linting, Formatting & Other pre-commit checks
+
+Information related to this is present in our [lint-guide](./docs/linting-guide.md)
