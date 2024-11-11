@@ -4,10 +4,10 @@ version = "0.1.0"
 description = "Modern Data Estate"
 authors = [{ name = "Microsoft ISE Data Tech Domain", email = "your.email@example.com" }]
 
-dependencies = ["pandas", "numpy"]
+dependencies = ["pandas", "numpy", "requests"]
 
 [project.optional-dependencies]
-code_qa = ["black", "isort", "ruff", "yamllint", "nbqa", "pre-commit"]
+code_qa = ["black", "isort", "ruff", "mypy", "yamllint", "nbqa", "pre-commit"]
 test = ["pytest", "pytest-cov"]
 release = ["build", "twine"]
 
@@ -53,9 +53,6 @@ builtins = ["mssparkutils", "spark", "display"]
 
 [tool.nbqa]
 # [tool.nbqa.files]  # include only below folders
-# black = "^e2e_samples/fabric_dataops_sample/"
-# ruff = "^e2e_samples/fabric_dataops_sample/"
-# isort = "^e2e_samples/fabric_dataops_sample/"
 
 
 # not supported yet
