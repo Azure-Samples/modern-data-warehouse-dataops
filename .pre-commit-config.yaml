@@ -88,7 +88,7 @@ repos:
     rev: v1.96.2
     hooks:
       - id: terraform_fmt
-      # - id: terraform_tflint
+      - id: terraform_tflint
       - id: terraform_validate
       # - id: terraform_tfsec
       - id: terraform_trivy
