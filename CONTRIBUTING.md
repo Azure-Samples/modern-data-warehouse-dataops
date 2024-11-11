@@ -6,6 +6,7 @@ Thank you for considering contributing to Modern Data Estate! This guide provide
 
 - [Code of Conduct](#code-of-conduct)
 - [Getting Started](#getting-started)
+- [Linting, Formatting & Other pre-commit checks](./docs/linting-guide.md)
 
 ## Code of Conduct
 
@@ -13,14 +14,14 @@ We expect all contributors to adhere to our [Code of Conduct](./CODE_OF_CONDUCT.
 
 ## Getting Started
 
-1. Clone the repository:
+- Clone the repository:
 
    ```bash
    git clone <github link of repository>
    cd repository_folder
    ```
 
-2. Run below steps:
+- Run below steps:
 
     ```python
     # setup venv
