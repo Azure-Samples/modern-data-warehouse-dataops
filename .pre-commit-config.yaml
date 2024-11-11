@@ -84,14 +84,14 @@ repos:
         args: ["--fix"]
       - id: nbqa-mypy
 
-  # - repo: https://github.com/antonbabenko/pre-commit-terraform
-  #   rev: v1.96.2
-  #   hooks:
-  #     - id: terraform_fmt
-  #     # - id: terraform_tflint
-  #     - id: terraform_validate
-  #     # - id: terraform_tfsec
-  #     # - id: terraform_trivy
-  #     #   args:
-  #     #     - --args=--severity=HIGH,MEDIUM
-  #     # - --args=--skip-dirs="**/.terraform"
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.96.2
+    hooks:
+      - id: terraform_fmt
+      # - id: terraform_tflint
+      - id: terraform_validate
+      # - id: terraform_tfsec
+      - id: terraform_trivy
+        args:
+          - --args=--severity=HIGH,MEDIUM
+          # - --args=--skip-dirs="**/.terraform"
