@@ -16,8 +16,8 @@ We expect all contributors to adhere to our [Code of Conduct](./CODE_OF_CONDUCT.
 1. Clone the repository:
 
    ```bash
-   git clone <github link of project>
-   cd project-folder
+   git clone <github link of repository>
+   cd repository_folder
    ```
 
 2. Run below steps:
@@ -32,6 +32,6 @@ We expect all contributors to adhere to our [Code of Conduct](./CODE_OF_CONDUCT.
     # install necessary development libraries
     pip install -e .[dev]
 
-    # install pre-commit 
+    # install pre-commit
     pre-commit install
     ```
