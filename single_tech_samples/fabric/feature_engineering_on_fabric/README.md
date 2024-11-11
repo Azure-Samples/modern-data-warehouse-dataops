@@ -59,7 +59,7 @@ The sample uses the public yellow taxi trip dataset from [New York City Taxi & L
 
 Base URL: [https://stmdwpublic.blob.core.windows.net/](https://stmdwpublic.blob.core.windows.net/)
 
-This subset of the yellow taxi trip dataset contains data from Jan. 2022 to Jan. 2023, and each month is available as a separate parquet file. The data includes anonymized travel details like departure points, destinations, times, distances, and costs. The data, in conjunction with taxi zone maps and lookup tables, aids in various research fields such as identifying frequent pickup and drop-off zones in the city.
+The yellow taxi trip dataset spans from Jan. 2022 to Jan. 2023, providing data for each month in distinct parquet files. It encompasses anonymized information about travel details, including departure points, destinations, times, distances, and costs. In conjunction with taxi zone maps and lookup tables, this dataset supports research in areas like identifying frequent pickup and drop-off zones in the city.
 
 While the historical weather dataset contains data for a same time period, and the data includes hourly weather variables like temperature, precipitation, cloud cover, wind speed, etc.
 
