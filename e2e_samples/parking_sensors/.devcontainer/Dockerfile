@@ -4,11 +4,6 @@
 #-----------------------------------------------------------------------------------------
 FROM python:3
 
-ARG USERNAME=mdwuser
-# Add non-root user: https://code.visualstudio.com/remote/advancedcontainers/add-nonroot-user
-ARG USER_UID=1000 
-ARG USER_GID=$USER_UID
-
 # Configure apt
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update
@@ -28,9 +23,6 @@ RUN az config set extension.dynamic_install_allow_preview=true
 RUN az extension add --name application-insights
 RUN az extension add --name azure-devops
 
-# Install Databricks CLI
-RUN pip install databricks-cli
-
 # Install jq & makepasswd for some frequently used utility
 RUN apt-get update \
     && apt-get -y install jq makepasswd
@@ -45,14 +37,11 @@ RUN apt-get update \
     temurin-21-jdk
 ENV JAVA_HOME=/usr/lib/jvm/temurin-21-jdk-amd64
 
+# Check if Databricks already exists and remove it
 RUN [ -f /usr/local/bin/databricks ] && rm /usr/local/bin/databricks || echo "File not found, skipping removal"
-RUN curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
 
-RUN groupadd --gid $USER_GID $USERNAME \
-    && useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USERNAME
-
-RUN mkdir /home/$USERNAME/workspace
-WORKDIR /home/$USERNAME/workspace
+RUN mkdir /workspace
+WORKDIR /workspace
 
 # Clean up
 RUN apt-get autoremove -y \
