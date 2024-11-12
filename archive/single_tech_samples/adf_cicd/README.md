@@ -227,9 +227,9 @@ This deployment was tested using WSL 2 (Ubuntu 20.04)
    3. After completion, this should automatically trigger the Release Pipeline (**mdw-adf-cd-release**). This will deploy the artifacts across environments.
       - You may need to authorize the Pipelines initially to use the Service Connection for the first time.
       - Integration tests are automatically performed before the deployment to the Prod environment
-      ![Release Pipeline](docs/images/ReleasePipelinev3.png "Release Pipelines")
+      ![Release Pipeline](docs/images/ReleasePipelinev3.PNG "Release Pipelines")
       - If you want check more information about test results, you can view the test report
-       ![Integration Test Result](docs/images/integrationTestResultv2.png "Integration Test Result")
+       ![Integration Test Result](docs/images/integrationTestResultv2.PNG "Integration Test Result")
    4. **Optional**. Trigger the Data Factory Pipelines per environment.
       1. In the Data Factory portal of each environment, navigate to "Author", then select the `ParkingSensors\IngestToBronze` pipeline.
       2. Select "Trigger > Trigger Now".
