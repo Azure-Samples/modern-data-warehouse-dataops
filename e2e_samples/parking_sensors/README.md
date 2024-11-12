@@ -263,6 +263,14 @@ More resources:
         az devops configure --defaults organization=https://dev.azure.com/<MY_ORG>/ project=<MY_PROJECT>
         ```
 
+        - Create a cluster.config.json Spark configuration from the cluster.config.template.json. For the "node_type_id" field, select a SKU that is available from the following command in your subscription:
+  
+        ```bash
+        az vm list-usage --location "<YOUR_REGION>" -o table
+        ```
+
+        In the repository we provide an example, but you need to make sure that the SKU exists on your region and that is available for your subscription.
+
    - **Fork** this repository into a new Github repo.
    - Set the following **required** environment variables:
       - **GITHUB_REPO** - Name of your forked github repo in this form `<my_github_handle>/<repo>`. (ei. "devlace/mdw-dataops-import")

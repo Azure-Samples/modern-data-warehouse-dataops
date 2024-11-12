@@ -57,8 +57,6 @@ az group create --name "$resource_group_name" --location "$AZURE_LOCATION" --tag
 # Retrieve KeyVault User Id
 kv_owner_object_id=$(az ad signed-in-user show --output json | jq -r '.id')
 kv_owner_name=$(az ad user show --id "$kv_owner_object_id" --output json | jq -r '.userPrincipalName')
-echo "KY Owner NAME:" $kv_owner_name
-
 
 # Validate arm template
 echo "Validating deployment"
