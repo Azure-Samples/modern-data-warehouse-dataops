@@ -17,6 +17,5 @@
 			"python.pythonPath": "/usr/local/bin/python"
 		}
 	},
-	"remoteUser": "mdwuser",
 	"postCreateCommand": "./.devcontainer/post_create.sh"
 }
