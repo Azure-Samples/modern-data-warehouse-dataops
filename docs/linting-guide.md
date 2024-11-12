@@ -16,7 +16,7 @@ Make sure that you have followed steps in [Getting Started](../CONTRIBUTING.md#g
    pre-commit run --all-files
    ```
 
-   ![pre-commit-2](images/pre_commit_2_manual_run.png)  
+   ![pre-commit-2](images/pre_commit_2_manual_run.png)
 
 ---
 
