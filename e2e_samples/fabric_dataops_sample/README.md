@@ -59,8 +59,12 @@ Here is a list of resources that are deployed:
   - The `Microsoft.Fabric` [resource provider](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#register-resource-provider) has been registered on the Azure subscription.
   - A resource group to which your user should be granted [Contributor](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/privileged#contributor) and [User Access Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/privileged#user-access-administrator) privileged roles.
   - A [managed identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview) OR a [service principal](https://learn.microsoft.com/entra/identity-platform/app-objects-and-service-principals)
-  - Request that a Fabric administrator grant the above service principal or managed identity permission to [use Fabric APIs](https://learn.microsoft.com/fabric/admin/service-admin-portal-developer#service-principals-can-use-fabric-apis).
-  - Grant the service principal or managed identity the `Contributor` and `User Access Administrator` privileged roles on the Azure resource group. For `User Access Administrator` role, you would need to add delegate condition during role assignment. A condition is an additional check to provide more fine-grained access control. Check the [documentation](https://learn.microsoft.com/azure/role-based-access-control/delegate-role-assignments-portal?tabs=template) for more details. During the deployment, the `Storage Blob Data Contributor` and the `Key Vault Secrets Officer` roles are granted to a newly created service principal (Fabric workspace identity) and an existing Entra security group (Fabric workspace admins).
+  - Request that a Fabric administrator grant the above service principal or managed identity permission to [use Fabric APIs](https://learn.microsoft.com/rest/api/fabric/articles/identity-support#service-principals-and-managed-identities-support). To allow an app to use a service principal as an authentication method, the service principal must be added to an allowed security group. Note that this is a different security group than the one used for workspace admins. This group is then mentioned in the tenant settings as shown below:
+
+    ![Fabric API Permissions](./images/admin-portal-allow-apis.png)
+
+  - Grant the service principal or managed identity the `Contributor` and `User Access Administrator` privileged roles on the Azure resource group. For `User Access Administrator` role, you would need to add delegate condition during role assignment. A condition is an additional check to provide more fine-grained access control. Check the [documentation](https://learn.microsoft.com/azure/role-based-access-control/delegate-role-assignments-portal?tabs=template) for more details. During the deployment, the `Storage Blob Data Contributor` and the `Key Vault Secrets Officer` roles are granted to a newly created service principal (Fabric workspace identity) and an existing Entra security group (Fabric workspace admins). Here is a valid sample condition for the `User Access Administrator` role assignment:
+    ![Role Assignment Condition](./images/role-assignment-condition.png)
 - Microsoft Graph API permissions:
   - For service principal, grant the Graph API application permission `Group.Read.All` to read the security group properties.
     ![Graph API Permissions](./images/graph-api-permission.png)
@@ -125,7 +129,7 @@ Here is a list of resources that are deployed:
   - `APP_CLIENT_ID` and `APP_CLIENT_SECRET` are required only if you are using service principal authentication. If you are using Managed Identity authentication, you can leave these blank.
   - `EXISTING_FABRIC_CAPACITY_NAME` is the name of an existing Fabric capacity. If you want to create a new capacity, leave this blank.
   - `FABRIC_CAPACITY_ADMINS` is a comma-separated list of users and service principals that will be added as capacity admins to the newly created Fabric capacity. If you are using an existing capacity, you can leave this blank. But in that case, make sure that your account and the principal (service principal or managed identity) are [added as Capacity Administrators](https://learn.microsoft.com/fabric/admin/capacity-settings?tabs=fabric-capacity#add-and-remove-admins) to that capacity, as mentioned in the [pre-requisites](#pre-requisites).
-  - Leave `ALDS_GEN2_CONNECTION_ID` blank for the first run. The creation of the Fabric connection to ADLS Gen2 is a manual step which is done after the deployment of the resources. Once the connection is manually created, the connection ID is then updated in the `.env` file and the script is run again. This time, the script will create the Lakehouse shortcut to your ALDS Gen2 storage account.
+  - Leave `ADLS_GEN2_CONNECTION_ID` blank for the first run. The creation of the Fabric connection to ADLS Gen2 is a manual step which is done after the deployment of the resources. Once the connection is manually created, the connection ID is then updated in the `.env` file and the script is run again. This time, the script will create the Lakehouse shortcut to your ADLS Gen2 storage account.
 
 - For the following step you have 2 authentication options:
 
@@ -163,11 +167,15 @@ Here is a list of resources that are deployed:
 
   Also, note that the bash script calls a python script [setup_fabric_environment.py](./infra/scripts/setup_fabric_environment.py) to upload custom libraries to the Fabric environment.
 
-- Once the deployment is complete, login to Fabric Portal and create a cloud connection to ADLS Gen2 based on the [documentation](https://learn.microsoft.com/en-us/fabric/data-factory/connector-azure-data-lake-storage-gen2#set-up-your-connection-in-a-data-pipeline). Note down the 'Connection ID'.
+- Once the deployment is complete, login to Fabric Portal and create a cloud connection to ADLS Gen2 based on the [documentation](https://learn.microsoft.com/en-us/fabric/data-factory/connector-azure-data-lake-storage-gen2#set-up-your-connection-in-a-data-pipeline).
 
-  ![fetching-connection-id](./images/cloud-connection.png)
+  ![Creating Cloud Connection to ADLS Gen2](./images/cloud-connection-adls-gen2.png)
 
-- Update the `ALDS_GEN2_CONNECTION_ID` variable in the `.env` file with the 'Connection ID' fetched above.
+  Once the connection has been created successfully, note down the 'Connection ID'.
+
+  ![ADLS Gen2 Connection ID](./images/fetching-connection-id.png)
+
+- Update the `ADLS_GEN2_CONNECTION_ID` variable in the `.env` file with the 'Connection ID' fetched above.
 
 - From this step onward, you will need to authenticate using your user context. Authenticate **with user context** (required for the second run) and run the setup script again:
 
