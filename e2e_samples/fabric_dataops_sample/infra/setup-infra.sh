@@ -61,7 +61,7 @@ deploy_terraform_resources() {
         msi=$(az account show --query user.assignedIdentityInfo -o tsv)
         if [[ -z "${msi}" ]]; then
             use_msi=false;
-        else 
+        else
             use_msi=true;
         fi
     fi
@@ -159,7 +159,7 @@ function create_shortcut() {
     "target": $target
 }
 EOF
-)   
+)
     response=$(curl -s -X POST -H "Authorization: Bearer $fabric_bearer_token" -H "Content-Type: application/json" -d "$create_shortcut_body" "$create_shortcut_url")
     sc_name=$(echo "$response" | jq -r '.name')
     if [[ -n "$sc_name" ]] && [[ "$sc_name" != "null" ]]; then
