@@ -10,7 +10,7 @@ export GIT_ORGANIZATION_NAME="The Azure DevOps organization."
 export GIT_PROJECT_NAME="The Azure Devops project."
 export GIT_REPOSITORY_NAME="Your repository under the Azure DevOps project."
 export GIT_BRANCH_NAME="The branch where Fabric items will be committed to."
-export GIT_DIRECTORY_NAME="The folder where Fabric items will be committed" # Note: Other than the root folder "/", the directory must already exist.
+export GIT_DIRECTORY_NAME="The folder where Fabric items will be committed" # Note: Other than the root folder "/", the directory must already exist. Must start with a forward-slash. Example: "/fabric"
 # Workspace admin variables
 export FABRIC_WORKSPACE_ADMIN_SG_NAME="The name of the Entra security groups with admin members."
 # Fabric Capacity variables
