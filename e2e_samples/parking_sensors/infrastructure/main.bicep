@@ -7,6 +7,7 @@ param keyvault_owner_object_id string
 @secure()
 param sql_server_password string
 param enable_monitoring bool
+param entra_admin_login string
 
 
 module datafactory './modules/datafactory.bicep' = {
@@ -49,6 +50,9 @@ module synapse_sql_pool './modules/synapse_sql_pool.bicep' = {
     location: location
     deployment_id: deployment_id
     sql_server_password: sql_server_password
+    entra_admin_login: entra_admin_login
+    keyvault_owner_object_id: keyvault_owner_object_id
+    tenant_id: subscription().tenantId
   }
 }
 

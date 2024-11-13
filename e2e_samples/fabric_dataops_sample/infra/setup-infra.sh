@@ -65,16 +65,16 @@ deploy_terraform_resources() {
             use_msi=true;
         fi
     fi
-    echo "[I] use_cli is '${use_cli}'"
-    echo "[I] use_msi is '${use_msi}'"
-    echo "[I] client_id is '${client_id}'"
+    echo "[Info] use_cli is '${use_cli}'"
+    echo "[Info] use_msi is '${use_msi}'"
+    echo "[Info] client_id is '${client_id}'"
 
     if [[ -z "${existing_fabric_capacity_name}" ]]; then
         create_fabric_capacity=true
-        echo "[I] Variable 'EXISTING_FABRIC_CAPACITY_NAME' is empty, a new Fabric capacity will be created."
+        echo "[Info] Variable 'EXISTING_FABRIC_CAPACITY_NAME' is empty, a new Fabric capacity will be created."
     else
         create_fabric_capacity=false
-        echo "[I] Variable 'EXISTING_FABRIC_CAPACITY_NAME' is NOT empty, the provided Fabric capacity will be used."
+        echo "[Info] Variable 'EXISTING_FABRIC_CAPACITY_NAME' is NOT empty, the provided Fabric capacity will be used."
     fi
 
 
@@ -163,26 +163,26 @@ EOF
     response=$(curl -s -X POST -H "Authorization: Bearer $fabric_bearer_token" -H "Content-Type: application/json" -d "$create_shortcut_body" "$create_shortcut_url")
     sc_name=$(echo "$response" | jq -r '.name')
     if [[ -n "$sc_name" ]] && [[ "$sc_name" != "null" ]]; then
-        echo "[I] Shortcut '$shortcut_name' created successfully."
+        echo "[Info] Shortcut '$shortcut_name' created successfully."
     else
-        echo "[E] Shortcut '$shortcut_name' creation failed."
-        echo "[E] $response"
+        echo "[Error] Shortcut '$shortcut_name' creation failed."
+        echo "[Error] $response"
     fi
 }
 
-echo "[I] ############ START ############"
-echo "[I] ############ Deploying terraform resources ############"
+echo "[Info] ############ START ############"
+echo "[Info] ############ Deploying terraform resources ############"
 deploy_terraform_resources "./terraform"
 
-echo "[I] ############ Terraform resources deployed, setting up fabric bearer token ############"
+echo "[Info] ############ Terraform resources deployed, setting up fabric bearer token ############"
 set_bearer_token
 
-echo "[I] ############ ALDS Gen2 Shortcut Creation ############"
+echo "[Info] ############ ALDS Gen2 Shortcut Creation ############"
 if [[ -z "$adls_gen2_connection_id" ]]; then
-    echo "[W] ADLS Gen2 connection ID not provided. Skipping ALDS Gen2 connection creation."
+    echo "[Warning] ADLS Gen2 connection ID not provided. Skipping ALDS Gen2 connection creation."
 else
     if if_shortcut_exist "$tf_workspace_name" "$tf_lakehouse_id" "$alds_gen2_shortcut_name" "$alds_gen2_shortcut_path"; then
-        echo "[W] Shortcut '$alds_gen2_shortcut_name' already exists, please review it manually."
+        echo "[Warning] Shortcut '$alds_gen2_shortcut_name' already exists, please review it manually."
     else
         adls_gen2_connection_object=$(get_adls_gen2_connection_object "$adls_gen2_connection_id" "$tf_storage_account_url" "$tf_storage_container_name")
         create_shortcut \
@@ -194,10 +194,12 @@ else
     fi
 fi
 
-echo "[I] ############ Uploading packages to Environment ############"
+echo "[Info] ############ Uploading packages to Environment ############"
 if [[ "$use_cli" == "true" ]]; then
-    echo "[I] Skipped for now as the APIs are not working."
+    echo "[Info] Skipped for now as the APIs are not working."
     # python3 ./../scripts/setup_fabric_environment.py --workspace_name "$tf_workspace_name" --environment_name "$tf_environment_name" --bearer_token "$fabric_bearer_token"
 else
-    echo "[I] Service Principal login does not support loading environments, skipping."
+    echo "[Info] Service Principal login does not support loading environments, skipping."
 fi
+
+echo "[Info] ############ END ############"
