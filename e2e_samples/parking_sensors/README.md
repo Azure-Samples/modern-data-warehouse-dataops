@@ -1,6 +1,6 @@
 # DataOps - Parking Sensor Demo <!-- omit in toc -->
 
-The sample demonstrate how DevOps principles can be applied end to end Data Pipeline Solution built according to the [Modern Data Warehouse (MDW)](https://learn.microsoft.com/en-au/azure/architecture/solution-ideas/articles/enterprise-data-warehouse) pattern.
+The sample demonstrate how DevOps principles can be applied end to end Data Pipeline Solution built according to the [Medallion architecture](https://learn.microsoft.com/en-us/azure/architecture/solution-ideas/articles/azure-databricks-modern-analytics-architecture) pattern.
 
 ## Contents <!-- omit in toc -->
 
@@ -263,6 +263,14 @@ More resources:
         az devops configure --defaults organization=https://dev.azure.com/<MY_ORG>/ project=<MY_PROJECT>
         ```
 
+      - Create a cluster.config.json Spark configuration from the cluster.config.template.json. For the "node_type_id" field, select a SKU that is available from the following command in your subscription:
+
+        ```bash
+        az vm list-usage --location "<YOUR_REGION>" -o table
+        ```
+
+      In the repository we provide an example, but you need to make sure that the SKU exists on your region and that is available for your subscription.
+
    - **Fork** this repository into a new Github repo.
    - Set the following **required** environment variables:
       - **GITHUB_REPO** - Name of your forked github repo in this form `<my_github_handle>/<repo>`. (ei. "devlace/mdw-dataops-import")
@@ -292,6 +300,8 @@ More resources:
 
    - Run `./deploy.sh`.
       - This may take around **~30mins or more** to run end to end. So grab yourself a cup of coffee... ☕
+      - If you encounter an error with `cannot execute: required file not found` verify the line ending settings of your git configuration. This error is likely that the lines in the file are ending with CRLF. Using VSCode, verify that `./deploy.sh` is set to LF only. This can be done using the control pallet and typing `>Change End of Line Sequence`. Also, verify the files in the `scripts` folder are also set to LF only.
+      - However, there are 3 points in time where you will need to authenticate to the databricks workspace, before the script continues to run. You will find the following message for the deployment of the dev, stage and production environments. Click the link highlighted in green, consent to authenticate to the databricks workspace and when the workspace opens successfully, return to the deployment windows and press Enter to continue:  ![image](docs/images/databricks_ws.png)
       - After a successful deployment, you will find `.env.{environment_name}` files containing essential configuration information per environment. See [here](#deployed-resources) for list of deployed resources.
       - Note that if you are using **dev container**, you would run the same script but inside the dev container terminal.
    - As part of the deployment script, this updated the Azure DevOps Release Pipeline YAML definition to point to your Github repository. **Commit and push up these changes.**
