@@ -56,6 +56,7 @@ az group create --name "$resource_group_name" --location "$AZURE_LOCATION" --tag
 # By default, set all KeyVault permission to deployer
 # Retrieve KeyVault User Id
 kv_owner_object_id=$(az ad signed-in-user show --output json | jq -r '.id')
+kv_owner_name=$(az ad user show --id "$kv_owner_object_id" --output json | jq -r '.userPrincipalName')
 
 # Validate arm template
 echo "Validating deployment"
@@ -63,7 +64,7 @@ arm_output=$(az deployment group validate \
     --resource-group "$resource_group_name" \
     --template-file "./infrastructure/main.bicep" \
     --parameters @"./infrastructure/main.parameters.${ENV_NAME}.json" \
-    --parameters project="${PROJECT}" keyvault_owner_object_id="${kv_owner_object_id}" deployment_id="${DEPLOYMENT_ID}" sql_server_password="${AZURESQL_SERVER_PASSWORD}" \
+    --parameters project="${PROJECT}" keyvault_owner_object_id="${kv_owner_object_id}" deployment_id="${DEPLOYMENT_ID}" sql_server_password="${AZURESQL_SERVER_PASSWORD}" entra_admin_login="${kv_owner_name}" \
     --output json)
 
 # Deploy arm template
@@ -72,7 +73,7 @@ arm_output=$(az deployment group create \
     --resource-group "$resource_group_name" \
     --template-file "./infrastructure/main.bicep" \
     --parameters @"./infrastructure/main.parameters.${ENV_NAME}.json" \
-    --parameters project="${PROJECT}" deployment_id="${DEPLOYMENT_ID}" keyvault_owner_object_id="${kv_owner_object_id}" sql_server_password="${AZURESQL_SERVER_PASSWORD}" \
+    --parameters project="${PROJECT}" deployment_id="${DEPLOYMENT_ID}" keyvault_owner_object_id="${kv_owner_object_id}" sql_server_password="${AZURESQL_SERVER_PASSWORD}" entra_admin_login="${kv_owner_name}" \
     --output json)
 
 if [[ -z $arm_output ]]; then
@@ -204,8 +205,20 @@ echo "Generate Databricks token"
 databricks_host=https://$(echo "$arm_output" | jq -r '.properties.outputs.databricks_output.value.properties.workspaceUrl')
 databricks_workspace_resource_id=$(echo "$arm_output" | jq -r '.properties.outputs.databricks_id.value')
 databricks_aad_token=$(az account get-access-token --resource 2ff814a6-3304-4ab8-85cb-cd0e6f879c1d --output json | jq -r .accessToken) # Databricks app global id
+databricks_workspace_url=$(echo "$arm_output" | jq -r '.properties.outputs.databricks_output.value.properties.workspaceUrl')
 
-# Use AAD token to generate PAT token
+databricks_workspace_name="${PROJECT}-dbw-${ENV_NAME}-${DEPLOYMENT_ID}"
+databricks_complete_url="https://$databricks_workspace_url/aad/auth?has=&Workspace=/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$resource_group_name/providers/Microsoft.Databricks/workspaces/$databricks_workspace_name&WorkspaceResourceGroupUri=/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$$resource_group_name&l=en"
+
+NC='\033[0m' # No Color
+GREEN='\033[0;32m'
+# Display the URL
+echo -e "${GREEN}Please visit the following URL and authenticate: $databricks_complete_url${NC}"
+
+# Prompt the user for Enter after they authenticate
+read -p "Press Enter after you authenticate to the Azure Databricks workspace..."
+
+# Use Microsoft Entra access token to generate PAT token
 databricks_token=$(DATABRICKS_TOKEN=$databricks_aad_token \
     DATABRICKS_HOST=$databricks_host \
     bash -c "databricks tokens create --comment 'deployment'" | jq -r .token_value)
@@ -216,14 +229,13 @@ az keyvault secret set --vault-name "$kv_name" --name "databricksToken" --value 
 az keyvault secret set --vault-name "$kv_name" --name "databricksWorkspaceResourceId" --value "$databricks_workspace_resource_id"
 
 # Configure databricks (KeyVault-backed Secret scope, mount to storage via SP, databricks tables, cluster)
-# NOTE: must use AAD token, not PAT token
+# NOTE: must use Microsoft Entra access token, not PAT token
 DATABRICKS_TOKEN=$databricks_aad_token \
 DATABRICKS_HOST=$databricks_host \
 KEYVAULT_DNS_NAME=$kv_dns_name \
+USER_NAME=$kv_owner_name \
 KEYVAULT_RESOURCE_ID=$(echo "$arm_output" | jq -r '.properties.outputs.keyvault_resource_id.value') \
     bash -c "./scripts/configure_databricks.sh"
-
-
 
 ####################
 # DATA FACTORY
