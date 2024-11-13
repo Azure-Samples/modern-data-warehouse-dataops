@@ -167,7 +167,7 @@ As described above, the sample uses Microsoft Fabric as the data analytics platf
 
    In this environment, you will setup the python environment under 'Public Libraries'. This can be done by adding `azureml-featurestore` package using PyPI, or by clicking 'Add from yml' and selecting [src/environment/Publiclibrary.yml](./src/environment/Publiclibrary.yml) from this repo.
 
-   ![fabric_spark_env_1](./images/fabric_spark_env_1.gif)
+   ![fabric_spark_env_1](./images/fabric_spark_env_1.png)
 
    You will also need to edit the 'Spark properties' by clicking 'Add from .yml' and selecting [src/environment/sparkProperties.yml](./src/environment/sparkProperties.yml) file from this repo, then replace the placeholders with values of relevant resources that you created, or you can firstly replace the values in the yaml template and then add it to the 'Spark properties'.
 
