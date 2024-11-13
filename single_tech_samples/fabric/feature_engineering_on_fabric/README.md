@@ -232,22 +232,22 @@ The configuration of this 'ForEach' activity follows a series of steps as below.
     Default Value:
 
     ``` json
-    ["datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-01.parquet",
-    "datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-02.parquet",
-    "datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-03.parquet",
-    "datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-04.parquet",
-    "datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-05.parquet",
-    "datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-06.parquet",
-    "datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-07.parquet",
-    "datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-08.parquet",
-    "datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-09.parquet",
-    "datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-10.parquet",
-    "datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-11.parquet",
-    "datasets/nyc-yellow-tripdata-2022/yellow_tripdata_2022-12.parquet",
-    "datasets/nyc-yellow-tripdata-2022/taxi_zone_lookup.csv",
-    "datasets/nyc-yellow-tripdata-2022/nyc_weather_2022.csv",
-    "datasets/nyc-yellow-tripdata-2023/yellow_tripdata_2023-01.parquet",
-    "datasets/nyc-yellow-tripdata-2023/nyc_weather_2023-01.csv"]
+    ["data/nyc-yellow-tripdata-2022/yellow_tripdata_2022-01.parquet",
+    "data/nyc-yellow-tripdata-2022/yellow_tripdata_2022-02.parquet",
+    "data/nyc-yellow-tripdata-2022/yellow_tripdata_2022-03.parquet",
+    "data/nyc-yellow-tripdata-2022/yellow_tripdata_2022-04.parquet",
+    "data/nyc-yellow-tripdata-2022/yellow_tripdata_2022-05.parquet",
+    "data/nyc-yellow-tripdata-2022/yellow_tripdata_2022-06.parquet",
+    "data/nyc-yellow-tripdata-2022/yellow_tripdata_2022-07.parquet",
+    "data/nyc-yellow-tripdata-2022/yellow_tripdata_2022-08.parquet",
+    "data/nyc-yellow-tripdata-2022/yellow_tripdata_2022-09.parquet",
+    "data/nyc-yellow-tripdata-2022/yellow_tripdata_2022-10.parquet",
+    "data/nyc-yellow-tripdata-2022/yellow_tripdata_2022-11.parquet",
+    "data/nyc-yellow-tripdata-2022/yellow_tripdata_2022-12.parquet",
+    "data/nyc-yellow-tripdata-2022/taxi_zone_lookup.csv",
+    "data/nyc-yellow-tripdata-2022/nyc_weather_2022.csv",
+    "data/nyc-yellow-tripdata-2023/yellow_tripdata_2023-01.parquet",
+    "data/nyc-yellow-tripdata-2023/nyc_weather_2023-01.csv"]
     ```
 
   - __landing_path__
