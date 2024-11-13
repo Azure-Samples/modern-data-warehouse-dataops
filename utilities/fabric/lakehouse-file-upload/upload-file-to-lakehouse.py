@@ -12,17 +12,16 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Environment variables
-account_name = os.environ.get("ACCOUNT_NAME")
-workspace_id = os.environ.get("WORKSPACE_ID")
-lakehouse_id = os.environ.get("LAKEHOUSE_ID")
-folder_path = os.environ.get("FOLDER_PATH")
+account_name = os.environ.get("ONELAKE_ACCOUNT_NAME")
+workspace_id = os.environ.get("FABRIC_WORKSPACE_ID")
+lakehouse_id = os.environ.get("FABRIC_LAKEHOUSE_ID")
 
 # Azure Repo Details
-organization_url = os.environ.get("ORGANIZATIONAL_URL")
-personal_access_token = os.environ.get("PERSONAL_ACCESS_TOKEN")
-project_name = os.environ.get("PROJECT_NAME")
-repo_name = os.environ.get("REPO_NAME")
-branch_name = os.environ.get("BRANCH_NAME")
+organization_name = os.environ.get("GIT_ORGANIZATION_NAME")
+personal_access_token = os.environ.get("GIT_PERSONAL_ACCESS_TOKEN")
+project_name = os.environ.get("GIT_PROJECT_NAME")
+repo_name = os.environ.get("GIT_REPO_NAME")
+branch_name = os.environ.get("GIT_BRANCH_NAME")
 
 def get_authentication_token() -> DefaultAzureCredential:
     """Get the default Azure credential for authentication."""
@@ -36,6 +35,7 @@ def get_file_system_client(token_credential: DefaultAzureCredential) -> FileSyst
 
 def get_azure_repo_connection() -> Connection:
     """Establish a connection to Azure DevOps using personal access token."""
+    organization_url = f"https://dev.azure.com/{organization_name}"
     return Connection(base_url=organization_url, creds=BasicAuthentication('', personal_access_token))
 
 def read_file_from_repo(connection: Connection, project_name: str, branch_name: str, src_file_name: str) -> Generator:
