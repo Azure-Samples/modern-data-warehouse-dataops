@@ -1,3 +1,8 @@
+variable "create_fabric_capacity" {
+  description = "A flag to indicate whether a new Fabric capacity should/should not be created"
+  type        = bool
+}
+
 variable "capacity_name" {
   type        = string
   description = "Name of the Fabric capacity."
@@ -13,9 +18,9 @@ variable "location" {
   type        = string
 }
 
-variable "admin_email" {
-  type        = string
-  description = "Fabric capacity admin email"
+variable "admin_members" {
+  type        = list(string)
+  description = "Fabric capacity admin members, can be email (for user) or id (for service principal)"
 }
 
 variable "sku" {

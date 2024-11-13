@@ -23,6 +23,12 @@ variable "object_id" {
   type        = string
 }
 
+variable "purge_protection" {
+  description = "Whether to enable or not KeyVault purge protection"
+  type        = bool
+  default     = true
+}
+
 variable "tags" {
   description = "A map of tags to add to all resources"
   type        = map(string)
