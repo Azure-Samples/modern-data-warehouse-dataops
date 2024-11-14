@@ -51,7 +51,7 @@ This [sample](e2e_samples/parking_sensors/) demonstrates batch, end-to-end data 
 
 - This [sample](./e2e_samples/fabric_dataops_sample/) would demonstrate end-to-end batch data processing utilizing Microsoft Fabric built according to the [medallion architecture](https://learn.microsoft.com/azure/databricks/lakehouse/medallion), along with a corresponding CI/CD process, observability and automated testing.
 
-  In the current version, the sample demonstrates deploying Azure and Fabric resources together using Terraform. The deployment uses a service principal or managed identity for authentication where supported and falls back to Entra user authentication where it is not.
+  In the current version, the sample is showcasing the deployment of Azure and Fabric resources together using Terraform. The deployment uses a service principal or managed identity for authentication where supported and falls back to Entra user authentication where it is not.
 
 ## Utilities
 
