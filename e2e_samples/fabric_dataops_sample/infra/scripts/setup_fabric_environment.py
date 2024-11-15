@@ -3,18 +3,19 @@ import argparse
 import json
 import os
 import time
+from typing import Optional
 
 import requests
 
 
-def display_usage():
+def display_usage() -> None:
     print(
         """Usage: python setup_fabric_environment.py --workspace_name <workspace_name>
                         --environment_name <environment_name> --bearer_token <bearer_token>"""
     )
 
 
-def parse_arguments():
+def parse_arguments() -> tuple:
     parser = argparse.ArgumentParser()
     parser.add_argument("--workspace_name", help="Fabric workspace name")
     parser.add_argument("--environment_name", help="Fabric environment name")
@@ -32,11 +33,11 @@ def parse_arguments():
     return workspace_name, environment_name, fabric_bearer_token
 
 
-headers = {}
+headers: dict[str, str] = {}
 fabric_api_endpoint = "https://api.fabric.microsoft.com/v1"
 
 
-def validate_token(fabric_bearer_token):
+def validate_token(fabric_bearer_token: str) -> None:
     validation_url = f"{fabric_api_endpoint}/workspaces"
     response = requests.get(validation_url, headers=headers)
 
@@ -53,16 +54,16 @@ def validate_token(fabric_bearer_token):
         exit(1)
 
 
-def pretty_print_json(json_data):
+def pretty_print_json(json_data: dict) -> None:
     print(json.dumps(json_data, indent=4))
 
 
-def set_headers(fabric_bearer_token):
+def set_headers(fabric_bearer_token: str) -> None:
     global headers
     headers = {"Authorization": f"Bearer {fabric_bearer_token}", "Content-Type": "application/json"}
 
 
-def poll_long_running_operation(response_headers):
+def poll_long_running_operation(response_headers: dict) -> None:
     operation_id = response_headers.get("x-ms-operation-id")
     retry_after = response_headers.get("Retry-After")
     print(f"[I] Polling long running operation with id '{operation_id}' every '{retry_after}' seconds.")
@@ -85,7 +86,7 @@ def poll_long_running_operation(response_headers):
             break
 
 
-def get_workspace_id(workspace_name):
+def get_workspace_id(workspace_name: str) -> Optional[str]:
     get_workspaces_url = f"{fabric_api_endpoint}/workspaces"
     response = requests.get(get_workspaces_url, headers=headers)
 
@@ -101,7 +102,7 @@ def get_workspace_id(workspace_name):
     return None
 
 
-def get_environment_id(workspace_id, environment_name):
+def get_environment_id(workspace_id: str, environment_name: str) -> Optional[str]:
     get_environments_url = f"{fabric_api_endpoint}/workspaces/{workspace_id}/environments"
     response = requests.get(get_environments_url, headers=headers)
 
@@ -117,11 +118,13 @@ def get_environment_id(workspace_id, environment_name):
     return None
 
 
-def upload_staging_libraries(workspace_id, environment_id, file_path, file_name, content_type):
+def upload_staging_libraries(
+    workspace_id: str, environment_id: str, file_path: str, file_name: str, content_type: str
+) -> None:
     staging_libraries_url = (
         f"{fabric_api_endpoint}/workspaces/{workspace_id}/environments/{environment_id}/staging/libraries"
     )
-    payload = {}
+    payload: dict[str, str] = {}
     files = {"file": (file_name, open(os.path.join(file_path, file_name), "rb"), content_type)}
     file_headers = headers
     file_headers.pop("Content-Type", None)
@@ -134,7 +137,7 @@ def upload_staging_libraries(workspace_id, environment_id, file_path, file_name,
         print(response.text)
 
 
-def publish_environment(workspace_id, environment_id):
+def publish_environment(workspace_id: str, environment_id: str) -> None:
     publish_environment_url = (
         f"{fabric_api_endpoint}/workspaces/{workspace_id}/environments/{environment_id}/staging/publish"
     )
@@ -149,7 +152,7 @@ def publish_environment(workspace_id, environment_id):
         print(f"[E] Failed to publish environment: {response.status_code} - {response.text}")
 
 
-def get_libraries(workspace_id, environment_id, status):
+def get_libraries(workspace_id: str, environment_id: str, status: str) -> None:
     if status == "published":
         libraries_url = f"{fabric_api_endpoint}/workspaces/{workspace_id}/environments/{environment_id}/libraries"
     elif status == "staging":
@@ -175,7 +178,7 @@ def get_libraries(workspace_id, environment_id, status):
             print(f"[E] {response_json}")
 
 
-def update_spark_settings(workspace_id, environment_name, runtime_version="1.2"):
+def update_spark_settings(workspace_id: str, environment_name: str, runtime_version: str = "1.2") -> None:
     update_spark_settings_url = f"{fabric_api_endpoint}/workspaces/{workspace_id}/spark/settings"
     payload = {
         "environment": {"name": environment_name, "runtimeVersion": runtime_version},
