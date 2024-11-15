@@ -8,9 +8,9 @@ RUN useradd -m $USERNAME
 RUN mkdir /workspace
 WORKDIR /workspace
 
-# Install Python, pip, git, zsh and other required packages
+# Install Python, pip, git, curl, wget, gnupg, lsb-release, and other required packages
 RUN apt-get update && apt-get install -y \
-    python3 python3-pip git curl zsh lsb-release unzip gnupg software-properties-common
+    python3 python3-pip git curl zsh lsb-release unzip gnupg wget software-properties-common
 
 # Upgrade pip, setuptools, and wheel
 RUN pip install --upgrade pip setuptools wheel
@@ -31,10 +31,13 @@ RUN apt-get update && apt-get install -y terraform
 RUN curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
 
 # Install TFSec
-RUN curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
+# RUN curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
 
 # Install Trivy
-RUN curl -sfL https://github.com/aquasecurity/trivy/releases/download/v0.38.0/trivy_0.38.0_Linux-64bit.tar.gz | tar -xzv -C /usr/local/bin trivy
+RUN wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | tee /usr/share/keyrings/trivy.gpg > /dev/null \
+    && echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | tee -a /etc/apt/sources.list.d/trivy.list \
+    && apt-get update \
+    && apt-get install -y trivy
 
 # Set the user to USERNAME
 USER $USERNAME
