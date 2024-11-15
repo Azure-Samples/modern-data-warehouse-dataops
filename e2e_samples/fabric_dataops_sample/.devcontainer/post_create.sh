@@ -6,5 +6,6 @@ chmod +x ~/.zshrc
 source ~/.zshrc
 cd /workspace
 pip install -e ".[dev]"
+git config --global --add safe.directory /workspace
 pre-commit install
 find . -type d -name "*.egg-info" -exec rm -rf {} +
