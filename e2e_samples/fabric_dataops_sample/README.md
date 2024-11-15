@@ -9,6 +9,8 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
 ## Contents <!-- omit in toc -->
 
 - [Architecture](#architecture)
+  - [Data Pipeline Architecture](#data-pipeline-architecture)
+  - [Additional Services](#additional-services)
   - [Deployed resources](#deployed-resources)
 - [How to use the sample](#how-to-use-the-sample)
   - [Pre-requisites](#pre-requisites)
@@ -22,6 +24,12 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
 - [References](#references)
 
 ## Architecture
+
+### Data Pipeline Architecture
+
+![Microsoft Fabric Data Pipeline Architecture](./images/fabric_archi.png)
+
+### Additional Services
 
 While Fabric is an end-to-end platform, it works best when integrated with other Azure services such as Application Insights, Azure Key Vault, ADLS Gen2, Microsoft Purview and so. This dependency is also because customers have existing investments in these services and want to leverage them with Fabric.
 
