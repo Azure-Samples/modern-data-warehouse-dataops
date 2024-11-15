@@ -84,6 +84,13 @@ repos:
         args: ["--fix"]
       - id: nbqa-mypy
 
+
+  - repo: https://github.com/scop/pre-commit-shfmt
+    rev: v3.10.0-1
+    hooks:
+      - id: shfmt         # prebuilt upstream executable
+
+
   - repo: https://github.com/antonbabenko/pre-commit-terraform
     rev: v1.96.2
     hooks:
