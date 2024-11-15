@@ -17,3 +17,15 @@ variable "tags" {
   description = "A mapping of tags to assign to the resource."
   type        = map(string)
 }
+
+variable "expiration_date" {
+  description = "(Optional) The expiration date of the Key Vault Secret."
+  type        = string
+  default     = "2099-12-31T23:59:59Z"
+}
+
+variable "content_type" {
+  description = "(Optional) The content type of the Key Vault Secret."
+  type        = string
+  default     = "Secret"
+}

@@ -1,12 +1,3 @@
-terraform {
-  required_providers {
-    fabric = {
-      source  = "microsoft/fabric"
-      version = "0.1.0-beta.4"
-    }
-  }
-}
-
 resource "fabric_domain" "domain" {
   display_name       = var.domain_name
   description        = var.domain_description

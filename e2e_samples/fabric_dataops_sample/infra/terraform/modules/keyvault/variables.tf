@@ -23,10 +23,16 @@ variable "object_id" {
   type        = string
 }
 
-variable "purge_protection" {
+variable "purge_protection_enabled" {
   description = "Whether to enable or not KeyVault purge protection"
   type        = bool
   default     = true
+}
+
+variable "soft_delete_retention_days" {
+  description = "The number of days that items should be retained for once soft-deleted"
+  type        = number
+  default     = 7
 }
 
 variable "tags" {

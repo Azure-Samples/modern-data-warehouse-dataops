@@ -8,5 +8,4 @@ twine
 click
 pytest
 pytest-runner
-databricks-cli
 autopep8

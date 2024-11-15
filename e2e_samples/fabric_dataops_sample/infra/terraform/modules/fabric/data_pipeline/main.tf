@@ -1,12 +1,3 @@
-terraform {
-  required_providers {
-    fabric = {
-      source  = "microsoft/fabric"
-      version = "0.1.0-beta.4"
-    }
-  }
-}
-
 resource "fabric_data_pipeline" "data_pipeline" {
   count        = var.enable ? 1 : 0
   display_name = var.data_pipeline_name

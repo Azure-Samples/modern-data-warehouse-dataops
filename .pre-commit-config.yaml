@@ -1,11 +1,3 @@
-# repos:
-# - repo: git://github.com/antonbabenko/pre-commit-terraform
-#   rev: v1.45.0
-#   hooks:
-#   - id: terraform_fmt
-#   - id: terraform_tflint
-#   - id: terraform_tfsec
-
 exclude: |
   (?x) (
   archive/|
@@ -13,6 +5,7 @@ exclude: |
   e2e_samples/parking_sensors_synapse/|
   e2e_samples/parking_sensors/
   )
+
 repos:
   # General checks for style
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -54,11 +47,19 @@ repos:
         name: black (formatting python code)
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.7.2
+    rev: v0.7.3
     hooks:
       - id: ruff
         args: [--fix]
         name: ruff (linting python code)
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.13.0
+    hooks:
+      - id: mypy
+        name: mypy (static type checker for Python)
+        additional_dependencies:
+          - types-requests
 
   - repo: https://github.com/adrienverge/yamllint.git
     rev: v1.35.1
@@ -74,7 +75,7 @@ repos:
 
   # nbQA is a tool to run all the other tools on Jupyter Notebooks
   - repo: https://github.com/nbQA-dev/nbQA
-    rev: 1.8.7
+    rev: 1.9.1
     hooks:
       - id: nbqa-isort
         args: ["--float-to-top"]
@@ -83,14 +84,21 @@ repos:
         args: ["--fix"]
       - id: nbqa-mypy
 
-  # - repo: https://github.com/antonbabenko/pre-commit-terraform
-  #   rev: v1.96.2
-  #   hooks:
-  #     - id: terraform_fmt
-  #     # - id: terraform_tflint
-  #     # - id: terraform_validate
-  #     # - id: terraform_tfsec
-  #     - id: terraform_trivy
-  #       args:
-  #         - --args=--severity=HIGH,MEDIUM
-  #         - --args=--skip-dirs="**/.terraform"
+
+  - repo: https://github.com/scop/pre-commit-shfmt
+    rev: v3.10.0-1
+    hooks:
+      - id: shfmt         # prebuilt upstream executable
+
+
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.96.2
+    hooks:
+      - id: terraform_fmt
+      - id: terraform_tflint
+      - id: terraform_validate
+      #- id: terraform_tfsec
+      - id: terraform_trivy
+        args:
+          - --args=--severity=HIGH,MEDIUM
+          - --args=--skip-dirs="**/.terraform"

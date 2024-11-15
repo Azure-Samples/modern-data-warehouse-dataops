@@ -1,112 +1,8 @@
-terraform {
-  required_providers {
-    fabric = {
-      source  = "microsoft/fabric"
-      version = "0.1.0-beta.4"
-    }
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~> 4.0"
-    }
-    azuread = {
-      source  = "hashicorp/azuread"
-      version = "2.53.1"
-    }
-    azapi = {
-      source  = "azure/azapi"
-      version = "1.14.0"
-    }
-    random = {
-      source  = "hashicorp/random"
-      version = "3.6.2"
-    }
-  }
-
-}
-
-provider "random" {}
-provider "azuread" {
-  tenant_id = var.tenant_id
-}
-provider "fabric" {
-  use_cli       = var.use_cli
-  use_msi       = var.use_msi
-  tenant_id     = var.tenant_id
-  client_id     = var.use_msi || var.use_cli ? null : var.client_id
-  client_secret = var.use_msi || var.use_cli ? null : var.client_secret
-}
-
-provider "azurerm" {
-  tenant_id                       = var.tenant_id
-  subscription_id                 = var.subscription_id
-  client_id                       = var.use_msi || var.use_cli ? null : var.client_id
-  client_secret                   = var.use_msi || var.use_cli ? null : var.client_secret
-  use_msi                         = var.use_msi
-  use_cli                         = var.use_cli
-  storage_use_azuread             = true
-  resource_provider_registrations = "none"
-  features {}
-}
-
-provider "azapi" {
-  tenant_id       = var.tenant_id
-  subscription_id = var.subscription_id
-  client_id       = var.use_msi || var.use_cli ? null : var.client_id
-  client_secret   = var.use_msi || var.use_cli ? null : var.client_secret
-  use_msi         = var.use_msi
-  use_cli         = var.use_cli
-}
-
 resource "random_string" "base_name" {
   count   = var.base_name == "" ? 1 : 0
   length  = 6
   special = false
   upper   = false
-}
-
-locals {
-  base_name             = var.base_name != "" ? lower(var.base_name) : random_string.base_name[0].result
-  base_name_trimmed     = replace(local.base_name, "-", "")
-  base_name_underscored = replace(local.base_name, "-", "_")
-  tags = {
-    basename = local.base_name
-  }
-  notebook_defintion_path      = "../../src/notebooks/nb-city-safety.ipynb"
-  data_pipeline_defintion_path = "../../src/data-pipelines/pl-covid-data-content.json"
-  storage_account_name         = "st${local.base_name_trimmed}"
-  keyvault_name                = "kv-${local.base_name}"
-  log_analytics_name           = "la-${local.base_name}"
-  application_insights_name    = "appi-${local.base_name}"
-  fabric_capacity_name         = var.create_fabric_capacity ? "cap${local.base_name_trimmed}" : var.fabric_capacity_name
-  fabric_capacity_admins       = split(",", var.fabric_capacity_admins)
-  fabric_workspace_name        = "ws-${local.base_name}"
-  fabric_lakehouse_name        = "lh_${local.base_name_underscored}"
-  fabric_environment_name      = "env-${local.base_name}"
-  fabric_custom_pool_name      = "sprk-${local.base_name}"
-  fabric_notebook_name         = "nb-${local.base_name}"
-  fabric_data_pipeline_name    = "pl-${local.base_name}"
-}
-
-#data "azuread_client_config" "current" {}
-data "azuread_service_principal" "deployment_principal" {
-  client_id = var.client_id
-}
-
-data "azurerm_role_definition" "storage_blob_contributor_role" {
-  name = "Storage Blob Data Contributor"
-}
-
-data "azurerm_role_definition" "keyvault_secrets_officer" {
-  name = "Key Vault Secrets Officer"
-}
-
-data "azurerm_resource_group" "rg" {
-  name = var.resource_group_name
-}
-
-data "azuread_group" "fabric_workspace_admin" {
-  display_name     = var.fabric_workspace_admin_sg_name
-  security_enabled = true
 }
 
 module "adls" {
@@ -126,14 +22,14 @@ module "storage_blob_contributor_assignment_001" {
 }
 
 module "keyvault" {
-  source              = "./modules/keyvault"
-  resource_group_name = data.azurerm_resource_group.rg.name
-  location            = data.azurerm_resource_group.rg.location
-  keyvault_name       = local.keyvault_name
-  tenant_id           = var.tenant_id
-  object_id           = data.azuread_group.fabric_workspace_admin.object_id
-  tags                = local.tags
-  purge_protection    = false #toberemoved
+  source                   = "./modules/keyvault"
+  resource_group_name      = data.azurerm_resource_group.rg.name
+  location                 = data.azurerm_resource_group.rg.location
+  keyvault_name            = local.keyvault_name
+  tenant_id                = var.tenant_id
+  object_id                = data.azuread_group.fabric_workspace_admin.object_id
+  tags                     = local.tags
+  purge_protection_enabled = true
 }
 
 module "keyvault_secrets_officer_role_assignment" {
@@ -187,7 +83,7 @@ module "storage_blob_contributor_assignment_002" {
   role_definition_name = data.azurerm_role_definition.storage_blob_contributor_role.name
   scope                = module.adls.storage_account_id
 
-  depends_on = [ module.fabric_workspace ]
+  depends_on = [module.fabric_workspace]
 }
 
 module "fabric_workspace_role_assignment" {
@@ -214,7 +110,6 @@ module "fabric_environment" {
 
 # shortcut creation will be done through python/bash script
 # spark environment compute and libraries settings will also be done via scripts (not supported currently by TF provider)
-
 module "fabric_spark_custom_pool" {
   source           = "./modules/fabric/spark_custom_pool"
   workspace_id     = module.fabric_workspace.workspace_id
@@ -230,7 +125,6 @@ module "fabric_notebook" {
 
 # below modules currently do not support Service Principal/Managed Identities execution context
 # therefore they are enabled only when using user context (var_use_cli==true)
-
 module "fabric_spark_environment_settings" {
   enable          = var.use_cli
   source          = "./modules/fabric/spark_environment_settings"
