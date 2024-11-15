@@ -1,12 +1,3 @@
-terraform {
-  required_providers {
-    fabric = {
-      source  = "microsoft/fabric"
-      version = "0.1.0-beta.4"
-    }
-  }
-}
-
 resource "fabric_spark_workspace_settings" "settings" {
   count        = var.enable ? 1 : 0
   workspace_id = var.workspace_id

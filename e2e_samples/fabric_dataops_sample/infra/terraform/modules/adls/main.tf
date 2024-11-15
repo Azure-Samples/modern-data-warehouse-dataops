@@ -8,6 +8,7 @@ resource "azurerm_storage_account" "storage" {
   allow_nested_items_to_be_public = false
   local_user_enabled              = false
   shared_access_key_enabled       = false
+  min_tls_version                 = var.min_tls_version
   tags                            = var.tags
 }
 

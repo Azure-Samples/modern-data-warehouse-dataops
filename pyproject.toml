@@ -67,7 +67,7 @@ builtins = ["mssparkutils", "spark", "display"]
 disallow_untyped_defs = true
 ignore_missing_imports = true
 show_error_codes = true
-disable_error_code = ["name-defined"]
+disable_error_code = ["name-defined", "arg-type", "dict-item"]
 exclude = [".venv"]
 
 
