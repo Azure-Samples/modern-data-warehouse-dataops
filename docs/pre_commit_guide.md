@@ -3,6 +3,8 @@
 
 This guide explains how to set up and use the pre-commit hooks configured in this repository. These hooks help ensure code quality and consistency by automatically checking and formatting code before it is committed.
 
+**Note:** These are currently enabled only on e2e_samples/fabric_dataops_sample.
+
 ## Table of Contents <!-- omit in toc -->
 
 - [Introduction](#introduction)
@@ -145,7 +147,7 @@ Below is a list of the currently configured hooks with brief descriptions. **Not
 
 ## Integration with GitHub Actions
 
-In addition to running pre-commit hooks locally, these hooks are also invoked as part of the **GitHub Actions** workflow. This ensures that code quality checks are performed automatically during pull requests and pushes to the repository.
+In addition to running pre-commit hooks locally, these hooks are also invoked as part of the **GitHub Actions** [workflow](../.github/workflows/code_quality_checks.yaml). This ensures that code quality checks are performed automatically during pull requests and pushes to the repository.
 
 ## Troubleshooting
 
