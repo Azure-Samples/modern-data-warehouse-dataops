@@ -1,5 +1,5 @@
 
-# Pre-commit Guide <!-- omit in toc -->
+# Pre-commit Guide (Formatting, Linting & Other code quality checks) <!-- omit in toc -->
 
 This guide explains how to set up and use the pre-commit hooks configured in this repository. These hooks help ensure code quality and consistency by automatically checking and formatting code before it is committed.
 
