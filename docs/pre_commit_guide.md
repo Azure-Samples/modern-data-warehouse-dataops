@@ -57,13 +57,13 @@ If you are using Dev Container setup, all these are pre-configured/pre-installed
 
 - Apart from these, there are few tools you need to install on your local machine (like Terraform,TFLint, Trivy). Please refer to the tool documentation to get installation instructions depending on your Operating System. Sample Ubuntu instructions can be found inside [Dev Container's Docker File](../e2e_samples/fabric_dataops_sample/.devcontainer/Dockerfile)
 
-This command sets up the hooks to run automatically before every commit.
+These steps will set up the hooks to run automatically before every commit.
 
 ## Configuration
 
-The pre-commit hooks are configured in the `.pre-commit-config.yaml` file. This file specifies the repositories and hooks to be used, along with their versions and any specific arguments.
+The pre-commit hooks are configured in the [`.pre-commit-config.yaml`](../.pre-commit-config.yaml) file. This file specifies the repositories and hooks to be used, along with their versions and any specific arguments.
 
-In addition to `.pre-commit-config.yaml`, we use `pyproject.toml` for configuring tools like **Black**, **isort**, **Ruff**, and **Mypy**. This file allows us to define custom inclusions, exclusions, and other tool-specific settings.
+In addition to [`.pre-commit-config.yaml`](../.pre-commit-config.yaml), we use [`pyproject.toml`](../pyproject.toml) for configuring tools like **Black**, **isort**, **Ruff**, and **Mypy**. This file allows us to define custom inclusions, exclusions, and other tool-specific settings.
 
 ## Usage
 
@@ -112,7 +112,7 @@ pre-commit run terraform_tflint --all-files
 
 ## List of Hooks
 
-Below is a list of the currently configured hooks with brief descriptions. Note that this list may change or evolve as the repository and workflows are updated.
+Below is a list of the currently configured hooks with brief descriptions. **Note** that this list may change or evolve as the repository and workflows are updated.
 
 1. **General Checks:**
    - `no-commit-to-branch`: Prevents committing directly to the `main` branch.
