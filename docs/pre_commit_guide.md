@@ -3,7 +3,7 @@
 
 This guide explains how to set up and use the pre-commit hooks configured in this repository. These hooks help ensure code quality and consistency by automatically checking and formatting code before it is committed.
 
-**Note:** These are currently enabled only on e2e_samples/fabric_dataops_sample.
+**Note:** These are currently enabled only on [e2e_samples/fabric_dataops_sample](../e2e_samples/fabric_dataops_sample/).
 
 ## Table of Contents <!-- omit in toc -->
 
