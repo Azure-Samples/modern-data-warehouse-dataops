@@ -37,9 +37,6 @@ RUN apt-get update \
     temurin-21-jdk
 ENV JAVA_HOME=/usr/lib/jvm/temurin-21-jdk-amd64
 
-# Check if Databricks already exists and remove it
-RUN [ -f /usr/local/bin/databricks ] && rm /usr/local/bin/databricks || echo "File not found, skipping removal"
-
 RUN mkdir /workspace
 WORKDIR /workspace
 
