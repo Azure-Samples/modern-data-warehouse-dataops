@@ -126,7 +126,7 @@ Please delete the source branches after merging the content. Stale branches (no 
 
 ### Code Quality Checks
 
-All code changes go through these automated checks to ensure consistency, code quality, and adherence to repository standards before they are merged.
+All code changes go through a set of automated checks to ensure consistency, code quality, and adherence to repository standards before they are merged.
 
 Please refer to the [Pre-commit Guide](./docs/pre_commit_guide.md) to learn about the various pre-commit checks applied to the code.
 
