@@ -43,7 +43,7 @@
 					},
 					"libraries": [
 						{
-							"egg": "dbfs:/mnt/datalake/sys/databricks/libs/ddo_transform-localdev-py2.py3-none-any.whl"
+							"egg": "dbfs:/ddo_transform-localdev-py2.py3-none-any.whl"
 						},
 						{
 							"pypi": {
@@ -102,10 +102,10 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "Ds_REST_MelbParkingData",
+						"referenceName": "Ds_Http_Parking_Bay",
 						"type": "DatasetReference",
 						"parameters": {
-							"relativeurl": "dtpv-d4pf.json"
+							"relativeurl": "on-street-parking-bays/exports/json"
 						}
 					}
 				],
@@ -156,10 +156,10 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "Ds_REST_MelbParkingData",
+						"referenceName": "Ds_Http_Parking_Bay_Sensors",
 						"type": "DatasetReference",
 						"parameters": {
-							"relativeurl": "wuf8-susg.json"
+							"relativeurl": "on-street-parking-bay-sensors/exports/json"
 						}
 					}
 				],
@@ -207,7 +207,7 @@
 					},
 					"libraries": [
 						{
-							"egg": "dbfs:/mnt/datalake/sys/databricks/libs/ddo_transform-localdev-py2.py3-none-any.whl"
+							"egg": "dbfs:/ddo_transform-localdev-py2.py3-none-any.whl"
 						},
 						{
 							"pypi": {
