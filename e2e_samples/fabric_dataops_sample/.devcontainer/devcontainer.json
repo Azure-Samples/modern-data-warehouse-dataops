@@ -1,5 +1,5 @@
 {
-    "name": "My App Dev Container",
+    "name": "MDW - Fabric DataOps Sample",
     "dockerComposeFile": "./docker-compose.yaml",
     "service": "fabric_dataops_sample_dc",
     "workspaceFolder": "/workspace/e2e_samples/fabric_dataops_sample",
