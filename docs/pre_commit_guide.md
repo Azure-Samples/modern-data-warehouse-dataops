@@ -139,10 +139,7 @@ Below is a list of the currently configured hooks with brief descriptions. Note 
 5. **Jupyter Notebook Checks:**
    - `nbqa-isort`, `nbqa-black`, `nbqa-ruff`, `nbqa-mypy`: Runs respective checks on Jupyter Notebooks.
 
-6. **Shell Script Formatting:**
-   - `shfmt`: Formats shell scripts.
-
-7. **Terraform Checks:**
+6. **Terraform Checks:**
    - `terraform_fmt`, `terraform_tflint`, `terraform_validate`, `terraform_trivy`: Runs formatting, linting, validation, and vulnerability scans on Terraform files.
 
 ## Integration with github actions

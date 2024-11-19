@@ -78,14 +78,6 @@ repos:
         args: ["--fix"]
       - id: nbqa-mypy
 
-
-  - repo: https://github.com/scop/pre-commit-shfmt
-    rev: v3.10.0-1
-    hooks:
-      - id: shfmt
-        name: Shell Script Formatter
-
-
   - repo: https://github.com/antonbabenko/pre-commit-terraform
     rev: v1.96.2
     hooks:
