@@ -7,7 +7,7 @@ echo "PROMPT='%F{green}%n@%F{blue}%m:%F{yellow}%~%F{reset}%# '" >>~/.zshrc
 chmod +x ~/.zshrc
 source ~/.zshrc
 
-# # Navigate to the workspace directory, (MDW's repo root where .git folder is present).
+# Navigate to the workspace directory, (MDW's repo root where .git folder is present).
 cd /workspace
 
 # Install the package in editable mode with development dependencies
