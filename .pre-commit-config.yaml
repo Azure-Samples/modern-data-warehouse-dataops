@@ -54,6 +54,7 @@ repos:
         name: mypy (static type checker for Python)
         additional_dependencies:
           - types-requests
+          - types-PyYAML
 
   - repo: https://github.com/adrienverge/yamllint.git
     rev: v1.35.1

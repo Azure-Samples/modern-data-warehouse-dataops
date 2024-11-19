@@ -1,0 +1,46 @@
+# ##############################################################
+# See - https://docs.python.org/3/library/configparser.html
+# Tips:
+# - ${section:option} can be used for interpolation of values from another section in the same file.
+# - When creating stage specific resources like ADLS, whose names are globally unique
+#    - make sure we can create them i.e, those names are available.
+# we can also have env specific sections like [dev] , [test] etc.,
+# but it could cause maintenance issues and may not be ideal.
+# Instead, define common sections and here make env specific derivations
+# based on the input "env/stage" value in the code.
+#
+##############################################################
+
+# Important:
+# - DONOT use quotes for wrapping strings
+# - All file paths used are relative to the attached lakehouse's "Files/" path
+#
+
+[DEFAULT]
+service_name = <some unique service name. Ex: parking_sensors_fabric_e2e>
+service_version = <service version numner>
+
+# Parking sensor workspace name and id
+parking_ws = {{parking_ws}}
+parking_ws_id = {{parking_ws_id}}
+# parking sensor lakehouse located in workspace specified in Parking Workspace name
+#   this will be passed as the default lakehouse during runtime
+parking_lakehouse = {{parking_lakehouse}}
+
+[keyvault]
+name = {{key_vault_name}}
+uri = https://${keyvault:name}.vault.azure.net/
+
+[setup]
+process_name = 010_setup
+# ddl file path is
+ddl_file = config/parking_sensor_ddls.yaml
+
+[standardize]
+process_name = 020_setup
+
+[transform]
+process_name = 030_transform
+
+[otel]
+appinsights_connection_name = {{appinsights-connection-name}}
