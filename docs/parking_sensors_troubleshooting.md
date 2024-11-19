@@ -64,7 +64,7 @@ When running the deploy.sh with WSL (Windows Subsystem Linux) environment, it mi
 
 - AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY
 - AZURE_DEVOPS_EXT_GITHUB_PAT
-  
+
 and this error will result in deployment process stopped and failed.
 
 The detail issue can refer the following:
