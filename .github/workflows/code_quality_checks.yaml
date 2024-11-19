@@ -6,7 +6,7 @@ on:
       - main
   pull_request:
     branches:
-      - '**'  # Triggers on pull requests for any branch
+      - '**'
 
 jobs:
   build:

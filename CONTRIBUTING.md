@@ -17,7 +17,7 @@ The following is a set of guidelines to contributing to the DataOps repo.
 - [Contributing to an existing sample](#contributing-to-an-existing-sample)
 - [Labels](#labels)
 - [Branching structure](#branching-structure)
-  - [Code Quality Checks](#code-quality-checks)
+- [Code Quality Checks](#code-quality-checks)
 - [Contributor License Agreement (CLA)](#contributor-license-agreement-cla)
 
 ## Code of Conduct
@@ -124,7 +124,7 @@ Developers can also choose to fork the repo and work off that. Make sure to subm
 
 Please delete the source branches after merging the content. Stale branches (no commits in last 120 days) may be deleted without prior notice.
 
-### Code Quality Checks
+## Code Quality Checks
 
 All code changes go through a set of automated checks to ensure consistency, code quality, and adherence to repository standards before they are merged.
 

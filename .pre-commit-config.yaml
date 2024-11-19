@@ -2,7 +2,6 @@ exclude: |
   (?x) (
   archive/|
   single_tech_samples/|
-  e2e_samples/parking_sensors_synapse/|
   e2e_samples/parking_sensors/
   )
 
@@ -27,11 +26,6 @@ repos:
         args: [--fix=auto]
       - id: check-added-large-files
         args: [--maxkb=1024]
-        exclude: |
-          (?x) (
-            ^example/large/file.csv|
-            ^example/large/sklearn-model.pkl
-          )
 
   - repo: https://github.com/pycqa/isort
     rev: 5.13.2

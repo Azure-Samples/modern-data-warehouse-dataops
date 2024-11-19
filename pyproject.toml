@@ -29,7 +29,6 @@ exclude = '''
     \.git
     | \.venv
     | archive
-    | e2e_samples/parking_sensors_synapse
     | e2e_samples/parking_sensors
     | single_tech_samples
 )/
@@ -43,11 +42,12 @@ lint.select = ["E", "F", "B"]
 lint.fixable = ["E", "F", "B"]
 line-length = 120
 target-version = "py311"
-exclude = ["*.ipynb", "archive/*",
-            "old_and_archived_samples/*",
-            "e2e_samples/parking_sensors_synapse/*",
-            "e2e_samples/parking_sensors/*",
-            "single_tech_samples/*"]
+exclude = [
+    "*.ipynb",
+    "archive/*",
+    "e2e_samples/parking_sensors/*",
+    "single_tech_samples/*"
+]
 builtins = ["mssparkutils", "spark", "display"]
 
 
