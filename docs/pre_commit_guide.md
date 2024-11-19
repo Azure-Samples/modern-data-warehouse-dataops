@@ -37,7 +37,7 @@ If you are using dev container setup, all these are pre-configured/pre-installed
 
    ```bash
    git clone https://github.com/Azure-Samples/modern-data-warehouse-dataops.git
-   cd <sample-folder>
+   cd <repo-folder>
    ```
 
 - Run below steps:
