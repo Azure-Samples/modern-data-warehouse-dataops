@@ -1,15 +1,15 @@
-name: Documentation Lint
+name: Broken Hyperlinks Check
 on:
   push:
     branches:
       - main
   pull_request:
     branches:
-      - main
+      - '**'
 
 jobs:
   check-links:
-    name: runner / linkspector
+    name: linkspector
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -22,11 +22,3 @@ jobs:
           reporter: github-pr-review
           fail_on_error: true
           config_file: '.linkspector.yml'
-  markdown-lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: docker://avtodev/markdown-lint:v1
-        with:
-          args: '**/*.md'
-          config: '.markdownlint.yml'
