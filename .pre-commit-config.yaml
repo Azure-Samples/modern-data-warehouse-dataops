@@ -23,7 +23,7 @@ repos:
       - id: check-yaml
         args: ["--unsafe"]
       - id: mixed-line-ending
-        args: [--fix=auto]
+        args: [--fix=lf]
       - id: check-added-large-files
         args: [--maxkb=1024]
 
