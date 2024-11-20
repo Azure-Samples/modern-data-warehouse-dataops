@@ -299,6 +299,7 @@ KV_URL=$kv_dns_name \
 DATABRICKS_TOKEN=$databricks_token \
 DATABRICKS_HOST=$databricks_host \
 DATABRICKS_WORKSPACE_RESOURCE_ID=$databricks_workspace_resource_id \
+DATABRICKS_CLUSTER_ID=$(echo "$arm_output" | jq -r '.properties.outputs.databricks_cluster_id.value') \
 SQL_SERVER_NAME=$sql_server_name \
 SQL_SERVER_USERNAME=$sql_server_username \
 SQL_SERVER_PASSWORD=$AZURESQL_SERVER_PASSWORD \
