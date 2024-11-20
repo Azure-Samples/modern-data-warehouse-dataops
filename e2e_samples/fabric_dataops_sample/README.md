@@ -9,7 +9,6 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
 ## Contents <!-- omit in toc -->
 
 - [Architecture](#architecture)
-  - [Data Pipeline Architecture](#data-pipeline-architecture)
   - [Additional Services](#additional-services)
   - [Deployed resources](#deployed-resources)
 - [How to use the sample](#how-to-use-the-sample)
@@ -25,9 +24,7 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
 
 ## Architecture
 
-### Data Pipeline Architecture
-
-![Microsoft Fabric Data Pipeline Architecture](./images/fabric_archi.png)
+![Microsoft Fabric Architecture](./images/fabric_archi.png)
 
 ### Additional Services
 
