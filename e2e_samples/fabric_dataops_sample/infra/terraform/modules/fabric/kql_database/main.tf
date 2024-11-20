@@ -1,12 +1,3 @@
-terraform {
-  required_providers {
-    fabric = {
-      source  = "microsoft/fabric"
-      version = "0.1.0-beta.4"
-    }
-  }
-}
-
 resource "fabric_kql_database" "kql_database" {
   display_name = var.database_name
   description  = var.database_description

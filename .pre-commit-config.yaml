@@ -1,15 +1,90 @@
-repos:
-- repo: git://github.com/antonbabenko/pre-commit-terraform
-  rev: v1.45.0
-  hooks:
-  - id: terraform_fmt
-  - id: terraform_tflint
-  - id: terraform_tfsec
+exclude: |
+  (?x) (
+  archive/|
+  single_tech_samples/|
+  e2e_samples/parking_sensors/
+  )
 
-- repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v2.3.0
-  hooks:
-  - id: end-of-file-fixer
-  - id: trailing-whitespace
-  - id: check-yaml
-  - id: no-commit-to-branch
+repos:
+  # General checks for style
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: no-commit-to-branch
+        args: [--branch, main]
+      - id: check-merge-conflict
+      - id: trailing-whitespace
+      - id: check-ast
+      - id: check-json
+      - id: detect-private-key
+      - id: debug-statements
+      - id: end-of-file-fixer
+      - id: check-toml
+      - id: check-yaml
+        args: ["--unsafe"]
+      - id: mixed-line-ending
+        args: [--fix=auto]
+      - id: check-added-large-files
+        args: [--maxkb=1024]
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        name: isort (sorting imports)
+
+  - repo: https://github.com/psf/black
+    rev: 24.10.0
+    hooks:
+      - id: black
+        # args: [--check]
+        name: black (formatting python code)
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.7.3
+    hooks:
+      - id: ruff
+        args: [--fix]
+        name: ruff (linting python code)
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.13.0
+    hooks:
+      - id: mypy
+        name: mypy (static type checker for Python)
+        additional_dependencies:
+          - types-requests
+
+  - repo: https://github.com/adrienverge/yamllint.git
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+        args: [--strict, -c=./.yamllint.yaml]
+
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.42.0
+    hooks:
+      - id: markdownlint
+        args: [--config, ./.markdownlint.yml]
+
+  # nbQA is a tool to run all the other tools on Jupyter Notebooks
+  - repo: https://github.com/nbQA-dev/nbQA
+    rev: 1.9.1
+    hooks:
+      - id: nbqa-isort
+        args: ["--float-to-top"]
+      - id: nbqa-black
+      - id: nbqa-ruff
+        args: ["--fix"]
+      - id: nbqa-mypy
+
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.96.2
+    hooks:
+      - id: terraform_fmt
+      - id: terraform_tflint
+      - id: terraform_validate
+      - id: terraform_trivy
+        args:
+          - --args=--severity=HIGH,MEDIUM
+          - --args=--skip-dirs="**/.terraform"

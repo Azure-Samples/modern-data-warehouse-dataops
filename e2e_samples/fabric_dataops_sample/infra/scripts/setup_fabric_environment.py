@@ -1,15 +1,21 @@
 ## python3 setup_fabric_environment.py --workspace_name "" --environment_name "" --bearer_token "${FABRIC_TOKEN}"
-import requests
-import json
-import time
-import os
-import random
 import argparse
+import json
+import os
+import time
+from typing import Optional
 
-def display_usage():
-    print("Usage: python setup_fabric_environment.py --workspace_name <workspace_name> --environment_name <environment_name> --bearer_token <bearer_token>")
+import requests
 
-def parse_arguments():
+
+def display_usage() -> None:
+    print(
+        """Usage: python setup_fabric_environment.py --workspace_name <workspace_name>
+                        --environment_name <environment_name> --bearer_token <bearer_token>"""
+    )
+
+
+def parse_arguments() -> tuple:
     parser = argparse.ArgumentParser()
     parser.add_argument("--workspace_name", help="Fabric workspace name")
     parser.add_argument("--environment_name", help="Fabric environment name")
@@ -26,10 +32,12 @@ def parse_arguments():
 
     return workspace_name, environment_name, fabric_bearer_token
 
-headers = {}
-fabric_api_endpoint="https://api.fabric.microsoft.com/v1"
 
-def validate_token(fabric_bearer_token):
+headers: dict[str, str] = {}
+fabric_api_endpoint = "https://api.fabric.microsoft.com/v1"
+
+
+def validate_token(fabric_bearer_token: str) -> None:
     validation_url = f"{fabric_api_endpoint}/workspaces"
     response = requests.get(validation_url, headers=headers)
 
@@ -41,21 +49,21 @@ def validate_token(fabric_bearer_token):
         if error_code == "TokenExpired":
             print("[E] Fabric token has expired.")
         else:
-            print(f"[E] Failed to validate Fabric token.")
+            print("[E] Failed to validate Fabric token.")
             print(f"[E] {response_json}")
         exit(1)
 
-def pretty_print_json(json_data):
+
+def pretty_print_json(json_data: dict) -> None:
     print(json.dumps(json_data, indent=4))
 
-def set_headers(fabric_bearer_token):
-    global headers
-    headers = {
-        "Authorization": f"Bearer {fabric_bearer_token}",
-        "Content-Type": "application/json"
-    }
 
-def poll_long_running_operation(response_headers):
+def set_headers(fabric_bearer_token: str) -> None:
+    global headers
+    headers = {"Authorization": f"Bearer {fabric_bearer_token}", "Content-Type": "application/json"}
+
+
+def poll_long_running_operation(response_headers: dict) -> None:
     operation_id = response_headers.get("x-ms-operation-id")
     retry_after = response_headers.get("Retry-After")
     print(f"[I] Polling long running operation with id '{operation_id}' every '{retry_after}' seconds.")
@@ -77,42 +85,47 @@ def poll_long_running_operation(response_headers):
             print(f"[E] Failed to retrieve operation status: {response.status_code} - {response.text}")
             break
 
-def get_workspace_id(workspace_name):
+
+def get_workspace_id(workspace_name: str) -> Optional[str]:
     get_workspaces_url = f"{fabric_api_endpoint}/workspaces"
     response = requests.get(get_workspaces_url, headers=headers)
-    
+
     if response.status_code != 200:
         print(f"[I] Failed to retrieve workspaces: {response.status_code} - {response.text}")
         return None
 
-    workspaces = response.json().get('value', [])
+    workspaces = response.json().get("value", [])
 
     for workspace in workspaces:
-        if workspace.get('displayName') == workspace_name:
-            return workspace.get('id')
+        if workspace.get("displayName") == workspace_name:
+            return workspace.get("id")
     return None
 
-def get_environment_id(workspace_id, environment_name):
+
+def get_environment_id(workspace_id: str, environment_name: str) -> Optional[str]:
     get_environments_url = f"{fabric_api_endpoint}/workspaces/{workspace_id}/environments"
     response = requests.get(get_environments_url, headers=headers)
-    
+
     if response.status_code != 200:
         print(f"[I] Failed to retrieve environments: {response.status_code} - {response.text}")
         return None
 
-    environments = response.json().get('value', [])
+    environments = response.json().get("value", [])
 
     for environment in environments:
-        if environment.get('displayName') == environment_name:
-            return environment.get('id')
+        if environment.get("displayName") == environment_name:
+            return environment.get("id")
     return None
 
-def upload_staging_libraries (workspace_id, environment_id, file_path, file_name, content_type):
-    staging_libraries_url = f"{fabric_api_endpoint}/workspaces/{workspace_id}/environments/{environment_id}/staging/libraries"
-    payload = {}
-    files = {
-        "file": (file_name, open(os.path.join(file_path, file_name), 'rb'), content_type)
-    }
+
+def upload_staging_libraries(
+    workspace_id: str, environment_id: str, file_path: str, file_name: str, content_type: str
+) -> None:
+    staging_libraries_url = (
+        f"{fabric_api_endpoint}/workspaces/{workspace_id}/environments/{environment_id}/staging/libraries"
+    )
+    payload: dict[str, str] = {}
+    files = {"file": (file_name, open(os.path.join(file_path, file_name), "rb"), content_type)}
     file_headers = headers
     file_headers.pop("Content-Type", None)
     response = requests.post(staging_libraries_url, headers=file_headers, files=files, data=payload)
@@ -123,8 +136,11 @@ def upload_staging_libraries (workspace_id, environment_id, file_path, file_name
         print(f"[E] Staging libraries upload from file '{file_name}' failed: {response.status_code} - {response.text}")
         print(response.text)
 
-def publish_environment(workspace_id, environment_id):
-    publish_environment_url = f"{fabric_api_endpoint}/workspaces/{workspace_id}/environments/{environment_id}/staging/publish"
+
+def publish_environment(workspace_id: str, environment_id: str) -> None:
+    publish_environment_url = (
+        f"{fabric_api_endpoint}/workspaces/{workspace_id}/environments/{environment_id}/staging/publish"
+    )
     response = requests.post(publish_environment_url, headers=headers)
 
     if response.status_code == 200:
@@ -135,11 +151,14 @@ def publish_environment(workspace_id, environment_id):
     else:
         print(f"[E] Failed to publish environment: {response.status_code} - {response.text}")
 
-def get_libraries(workspace_id, environment_id, status):
+
+def get_libraries(workspace_id: str, environment_id: str, status: str) -> None:
     if status == "published":
         libraries_url = f"{fabric_api_endpoint}/workspaces/{workspace_id}/environments/{environment_id}/libraries"
     elif status == "staging":
-        libraries_url = f"{fabric_api_endpoint}/workspaces/{workspace_id}/environments/{environment_id}/{status}/libraries"
+        libraries_url = (
+            f"{fabric_api_endpoint}/workspaces/{workspace_id}/environments/{environment_id}/{status}/libraries"
+        )
     else:
         print(f"[E] Invalid status: {status}")
         return
@@ -158,24 +177,21 @@ def get_libraries(workspace_id, environment_id, status):
             print(f"[E] Failed to retrieve '{status}' libraries.")
             print(f"[E] {response_json}")
 
-def update_spark_settings(workspace_id, environment_name, runtime_version = "1.2"):
+
+def update_spark_settings(workspace_id: str, environment_name: str, runtime_version: str = "1.2") -> None:
     update_spark_settings_url = f"{fabric_api_endpoint}/workspaces/{workspace_id}/spark/settings"
     payload = {
-        "environment": {
-            "name": environment_name,
-            "runtimeVersion": runtime_version
-        },
-        "automaticLog": {
-            "enabled": True
-        }
+        "environment": {"name": environment_name, "runtimeVersion": runtime_version},
+        "automaticLog": {"enabled": True},
     }
 
     response = requests.patch(update_spark_settings_url, headers=headers, json=payload)
 
     if response.status_code == 200:
-        print(f"[I] Spark settings (default environment) updated successfully for the workspace.")
+        print("[I] Spark settings (default environment) updated successfully for the workspace.")
     else:
         print(f"[E] Failed to update Spark settings: {response.status_code} - {response.text}")
+
 
 if __name__ == "__main__":
 
@@ -198,12 +214,20 @@ if __name__ == "__main__":
         print(f"[E] Failed to retrieve environment id for '{environment_name}'")
         exit(1)
 
-    upload_staging_libraries (workspace_id, environment_id, "./../../config/fabric_environment", "environment.yml", "multipart/form-data")
-    upload_staging_libraries (workspace_id, environment_id, "./../../config/fabric_environment", "azure_monitor_opentelemetry-1.6.1-py3-none-any.whl", "application/x-python-wheel")
+    upload_staging_libraries(
+        workspace_id, environment_id, "./../../config/fabric_environment", "environment.yml", "multipart/form-data"
+    )
+    upload_staging_libraries(
+        workspace_id,
+        environment_id,
+        "./../../config/fabric_environment",
+        "azure_monitor_opentelemetry-1.6.1-py3-none-any.whl",
+        "application/x-python-wheel",
+    )
 
     publish_environment(workspace_id, environment_id)
 
     get_libraries(workspace_id, environment_id, status="published")
     get_libraries(workspace_id, environment_id, status="staging")
 
-    update_spark_settings(workspace_id, environment_name, runtime_version = "1.2")
+    update_spark_settings(workspace_id, environment_name, runtime_version="1.2")

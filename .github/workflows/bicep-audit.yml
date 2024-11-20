@@ -2,14 +2,14 @@ name: Validate AZD template
 on:
   push:
     branches:
-    - main
+      - main
     paths:
-    - "infra/**"
+      - "infra/**"
   pull_request:
     branches:
-    - main
+      - main
     paths:
-    - "infra/**"
+      - "infra/**"
   workflow_dispatch:
 
 jobs:
@@ -18,18 +18,18 @@ jobs:
     permissions:
       security-events: write
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Run Microsoft Security DevOps Analysis
-      uses: microsoft/security-devops-action@preview
-      id: msdo
-      continue-on-error: true
-      with:
-        tools: templateanalyzer
+      - name: Run Microsoft Security DevOps Analysis
+        uses: microsoft/security-devops-action@preview
+        id: msdo
+        continue-on-error: true
+        with:
+          tools: templateanalyzer
 
-    - name: Upload alerts to Security tab
-      uses: github/codeql-action/upload-sarif@v3
-      if: github.repository_owner == 'Azure-Samples'
-      with:
-        sarif_file: ${{ steps.msdo.outputs.sarifFile }}
+      - name: Upload alerts to Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: github.repository_owner == 'Azure-Samples'
+        with:
+          sarif_file: ${{ steps.msdo.outputs.sarifFile }}

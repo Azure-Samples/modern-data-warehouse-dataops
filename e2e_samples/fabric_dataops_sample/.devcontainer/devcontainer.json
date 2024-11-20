@@ -1,0 +1,29 @@
+{
+    "name": "MDW - Fabric DataOps Sample",
+    "dockerComposeFile": "./docker-compose.yaml",
+    "service": "fabric_dataops_sample_dc",
+    "workspaceFolder": "/workspace/e2e_samples/fabric_dataops_sample",
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "python.formatting.provider": "black",
+                "editor.formatOnSave": true,
+                "python.linting.enabled": true,
+                "python.linting.ruffEnabled": true,
+                "python.sortImports.args": ["--profile", "black"],
+                "terminal.integrated.shell.linux": "/bin/zsh"
+            },
+            "extensions": [
+                "ms-python.python",
+                "ms-python.black-formatter",
+                "charliermarsh.ruff",
+                "ms-python.isort",
+                "ms-toolsai.jupyter",
+                "ms-toolsai.jupyter-keymap",
+                "ms-toolsai.jupyter-renderers"
+            ]
+        }
+    },
+    "remoteUser": "vscode",
+    "postCreateCommand": "./.devcontainer/post_create.sh"
+}

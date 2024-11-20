@@ -22,14 +22,14 @@ module "storage_blob_contributor_assignment_001" {
 }
 
 module "keyvault" {
-  source              = "./modules/keyvault"
-  resource_group_name = data.azurerm_resource_group.rg.name
-  location            = data.azurerm_resource_group.rg.location
-  keyvault_name       = local.keyvault_name
-  tenant_id           = var.tenant_id
-  object_id           = data.azuread_group.fabric_workspace_admin.object_id
-  tags                = local.tags
-  purge_protection    = false #toberemoved
+  source                   = "./modules/keyvault"
+  resource_group_name      = data.azurerm_resource_group.rg.name
+  location                 = data.azurerm_resource_group.rg.location
+  keyvault_name            = local.keyvault_name
+  tenant_id                = var.tenant_id
+  object_id                = data.azuread_group.fabric_workspace_admin.object_id
+  tags                     = local.tags
+  purge_protection_enabled = true
 }
 
 module "keyvault_secrets_officer_role_assignment" {

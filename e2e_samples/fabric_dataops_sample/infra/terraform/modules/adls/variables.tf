@@ -18,6 +18,12 @@ variable "container_name" {
   type        = string
 }
 
+variable "min_tls_version" {
+  description = "The minimum supported TLS version for the storage account"
+  type        = string
+  default     = "TLS1_2"
+}
+
 variable "tags" {
   description = "A map of tags to add to all resources"
   type        = map(string)

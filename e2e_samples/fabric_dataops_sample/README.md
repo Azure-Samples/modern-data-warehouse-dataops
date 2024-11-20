@@ -9,7 +9,7 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
 ## Contents <!-- omit in toc -->
 
 - [Architecture](#architecture)
-  - [Additional Services](#additional-services)
+  - [High-level deployment sequence](#high-level-deployment-sequence)
   - [Deployed resources](#deployed-resources)
 - [How to use the sample](#how-to-use-the-sample)
   - [Pre-requisites](#pre-requisites)
@@ -24,17 +24,27 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
 
 ## Architecture
 
-![Microsoft Fabric Architecture](./images/fabric_archi.png)
+### Data Pipeline Architecture
 
-### Additional Services
+![Microsoft Fabric Data Pipeline Architecture](./images/fabric_archi.png)
 
-While Fabric is an end-to-end platform, it works best when integrated with other Azure services such as Application Insights, Azure Key Vault, ADLS Gen2, Microsoft Purview and so. This dependency is also because customers have existing investments in these services and want to leverage them with Fabric.
+### High-level deployment sequence
+
+At a high level, the deployment sequence proceeds as follows:
+
+- Update the `.env` file with the required environment variables.
+- Run the deployment script to create Azure and supported Fabric resources, **using either a service principal or managed identity** for authentication.
+- Manually set up a cloud connection to ADLS Gen2 in the newly created Fabric workspace.
+- Update the `.env` file with the ADLS Gen2 connection ID.
+- Run the deployment script again, **this time using an Entra ID user** for authentication. This step will create the Lakehouse shortcut to the ADLS Gen2 storage account and deploy Fabric items that cannot be authenticated via service principal or managed identity.
+
+Please follow the [How to use the sample](#how-to-use-the-sample) section for detailed instructions.
 
 ### Deployed resources
 
-The sample deploys both Azure and Fabric resources.
+While Fabric is an end-to-end platform, it works best when integrated with other Azure services such as Application Insights, Azure Key Vault, ADLS Gen2, Microsoft Purview and so. This dependency is also because customers have existing investments in these services and want to leverage them with Fabric.
 
-The Azure resources are deployed using Terraform. The sample uses the local backend for storing the Terraform state, but it can be easily modified to use remote backends.
+The sample deploys both Azure and Fabric resources, primarily utilizing Terraform for resource provisioning. By default, the Terraform state is stored in a local backend; however, the configuration can be easily adjusted to use remote backends if needed.
 
 Microsoft Fabric resources are deployed using the [Microsoft Fabric terraform provider](https://registry.terraform.io/providers/microsoft/fabric/latest/docs) whenever possible, or using [Microsoft Fabric REST APIs](https://learn.microsoft.com/rest/api/fabric/articles/) for resources that are still not supported by the terraform provider.
 
@@ -49,10 +59,13 @@ Here is a list of resources that are deployed:
 - Fabric Resources
   - Microsoft Fabric Workspace
   - Microsoft Fabric Lakehouse
-  - Azure Data Lake Storage Gen2 shortcut
+  - ADLS Gen2 shortcut
   - Microsoft Fabric Environment
   - Microsoft Fabric Notebooks
   - Microsoft Fabric Data pipelines
+- Additional Resources
+  - Fabric workspace GIT integration
+  - Azure Role assignments to entra security group and workspace identity
 
 ## How to use the sample
 

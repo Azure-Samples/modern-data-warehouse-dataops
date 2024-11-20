@@ -1,15 +1,3 @@
-terraform {
-  required_providers {
-    azapi = {
-      source = "azure/azapi"
-    }
-    fabric = {
-      source  = "microsoft/fabric"
-      version = "0.1.0-beta.4"
-    }
-  }
-}
-
 resource "azapi_resource" "fab_capacity" {
   count                     = var.create_fabric_capacity ? 1 : 0
   type                      = "Microsoft.Fabric/capacities@2023-11-01"

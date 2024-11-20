@@ -1,12 +1,3 @@
-terraform {
-  required_providers {
-    fabric = {
-      source  = "microsoft/fabric"
-      version = "0.1.0-beta.4"
-    }
-  }
-}
-
 resource "fabric_notebook" "notebook" {
   display_name = var.notebook_name
   description  = var.notebook_description

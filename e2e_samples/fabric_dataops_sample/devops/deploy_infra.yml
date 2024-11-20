@@ -1,5 +1,5 @@
 trigger:
-- main
+  - main
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -10,31 +10,31 @@ variables:
   ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
 
 steps:
-- task: AzureCLI@2
-  inputs:
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      echo $(AZURE_PASSWORD) | az login -u $(AZURE_USERNAME) --password $(AZURE_PASSWORD) --output none
-      az account set --subscription $(ARM_SUBSCRIPTION_ID)
+  - task: AzureCLI@2
+    inputs:
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        echo $(AZURE_PASSWORD) | az login -u $(AZURE_USERNAME) --password $(AZURE_PASSWORD) --output none
+        az account set --subscription $(ARM_SUBSCRIPTION_ID)
 
-- task: TerraformInstaller@0
-  inputs:
-    terraformVersion: 'latest'
+  - task: TerraformInstaller@0
+    inputs:
+      terraformVersion: 'latest'
 
-- task: Terraform@0
-  inputs:
-    command: 'init'
-    workingDirectory: '<path to your Terraform configuration>'
+  - task: Terraform@0
+    inputs:
+      command: 'init'
+      workingDirectory: '<path to your Terraform configuration>'
 
-- task: Terraform@0
-  inputs:
-    command: 'plan'
-    workingDirectory: '<path to your Terraform configuration>'
-    additionalArgs: '-out=tfplan'
+  - task: Terraform@0
+    inputs:
+      command: 'plan'
+      workingDirectory: '<path to your Terraform configuration>'
+      additionalArgs: '-out=tfplan'
 
-- task: Terraform@0
-  inputs:
-    command: 'apply'
-    workingDirectory: '<path to your Terraform configuration>'
-    additionalArgs: '-auto-approve "tfplan"'
+  - task: Terraform@0
+    inputs:
+      command: 'apply'
+      workingDirectory: '<path to your Terraform configuration>'
+      additionalArgs: '-auto-approve "tfplan"'

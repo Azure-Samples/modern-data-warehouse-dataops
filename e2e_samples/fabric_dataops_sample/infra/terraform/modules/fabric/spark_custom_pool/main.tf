@@ -1,12 +1,3 @@
-terraform {
-  required_providers {
-    fabric = {
-      source  = "microsoft/fabric"
-      version = "0.1.0-beta.4"
-    }
-  }
-}
-
 resource "fabric_spark_custom_pool" "spark_custom_pool" {
   workspace_id = var.workspace_id
   name         = var.custom_pool_name
