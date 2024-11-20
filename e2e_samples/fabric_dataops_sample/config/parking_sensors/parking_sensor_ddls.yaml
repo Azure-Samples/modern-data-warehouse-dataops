@@ -41,7 +41,7 @@ table_types:
         description: "Dimension table for {parking_ws}.{parking_lakehouse}.dw.dim_st_marker"
         data_file:
         create_sql: |
-          CREATE TABLE dw.dim_st_marker (
+          CREATE TABLE {parking_ws}.{parking_lakehouse}.dw.dim_st_marker (
             dim_st_marker_id STRING,
             st_marker_id STRING,
             load_id STRING,

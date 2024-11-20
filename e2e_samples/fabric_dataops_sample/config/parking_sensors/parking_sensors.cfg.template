@@ -17,8 +17,8 @@
 #
 
 [DEFAULT]
-service_name = <some unique service name. Ex: parking_sensors_fabric_e2e>
-service_version = <service version numner>
+service_name = parking_sensors_fabric_e2e
+service_version = 0.1
 
 # Parking sensor workspace name and id
 parking_ws = {{parking_ws}}
