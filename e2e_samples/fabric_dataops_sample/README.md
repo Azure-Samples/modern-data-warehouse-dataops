@@ -24,9 +24,7 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
 
 ## Architecture
 
-### Data Pipeline Architecture
-
-![Microsoft Fabric Data Pipeline Architecture](./images/fabric_archi.png)
+![Microsoft Fabric Architecture](./images/fabric_archi.png)
 
 ### High-level deployment sequence
 
