@@ -23,7 +23,7 @@ repos:
       - id: check-yaml
         args: ["--unsafe"]
       - id: mixed-line-ending
-        args: [--fix=auto]
+        args: [--fix=lf]
       - id: check-added-large-files
         args: [--maxkb=1024]
 
@@ -54,6 +54,7 @@ repos:
         name: mypy (static type checker for Python)
         additional_dependencies:
           - types-requests
+          - types-PyYAML
 
   - repo: https://github.com/adrienverge/yamllint.git
     rev: v1.35.1
