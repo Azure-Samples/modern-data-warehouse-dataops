@@ -142,6 +142,13 @@ Below is a list of the currently configured hooks with brief descriptions. Note 
 6. **Terraform Checks:**
    - `terraform_fmt`, `terraform_tflint`, `terraform_validate`, `terraform_trivy`: Runs formatting, linting, validation, and vulnerability scans on Terraform files.
 
+7. **Shell Script Formatter (Optional):**
+   - `shfmt`: Formats shell scripts. Due to limitations around passing arguments via pre-commit hooks, this check is not enabled by default. However, it is included in the dev container setup. You can run [shfmt](https://github.com/mvdan/sh/blob/master/cmd/shfmt/shfmt.1.scd) manually if needed, as shown below:
+
+     ```bash
+     shfmt -i 2 -ci -bn <file-name>
+     ```
+
 ## Integration with github actions
 
 In addition to running pre-commit hooks locally, these hooks are also invoked as part of the **GitGub Actions** [workflow](../.github/workflows/code_quality_checks.yaml). This ensures that code quality checks are performed automatically during pull requests and pushes to the repository.
