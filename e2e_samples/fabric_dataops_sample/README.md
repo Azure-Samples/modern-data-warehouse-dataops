@@ -200,7 +200,7 @@ Here is a list of resources that are deployed:
   az config set core.login_experience_v2=off
   az login --tenant $TENANT_ID
   az config set core.login_experience_v2=on
-  ./setup-infra.sh
+  ./deploy.sh
   ```
 
   This time, the script will create the Lakehouse shortcut to your ADLS Gen2 storage account. All previously deployed resources will remain unchanged. Fabric items whose REST APIs and terraform provider don't support service principal / managed identity authentication (i.e. data pipelines and others) will be deployed with user context authentication.
