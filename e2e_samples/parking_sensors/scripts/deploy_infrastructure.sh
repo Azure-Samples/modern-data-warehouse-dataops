@@ -187,11 +187,9 @@ validate_password() {
         echo "Invalid password. The first character cannot be a hyphen. Replacing..."
         password="R${password:1}"
         echo "$password"
-        return 1
     fi
     echo "Password Validated"
     echo "$password"
-    return 0
 }
 
 
