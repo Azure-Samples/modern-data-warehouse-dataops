@@ -119,7 +119,11 @@ module "fabric_notebook" {
   source                   = "./modules/fabric/notebook"
   workspace_id             = module.fabric_workspace.workspace_id
   notebook_name            = local.fabric_notebook_name
-  notebook_definition_path = local.notebook_defintion_path
+  notebook_definition_path = local.notebook_definition_path
+  tokens = {
+    "workspace_name" = module.fabric_workspace.workspace_name
+    "lakehouse_name" = module.fabric_lakehouse.lakehouse_name
+  }
 }
 
 # below modules currently do not support Service Principal/Managed Identities execution context
@@ -146,7 +150,7 @@ module "fabric_data_pipeline" {
   enable                        = var.use_cli
   source                        = "./modules/fabric/data_pipeline"
   data_pipeline_name            = local.fabric_data_pipeline_name
-  data_pipeline_definition_path = local.data_pipeline_defintion_path
+  data_pipeline_definition_path = local.data_pipeline_definition_path
   workspace_id                  = module.fabric_workspace.workspace_id
   tokens = {
     "workspace_name" = module.fabric_workspace.workspace_name
