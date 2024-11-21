@@ -108,13 +108,13 @@ Here is a list of resources that are deployed:
   git clone https://github.com/Azure-Samples/modern-data-warehouse-dataops.git
   ```
 
-- Change the directory to the `infra` folder of the sample:
+- Change the directory to the `infrastructure` folder of the sample:
 
   ```bash
-  cd ./modern-data-warehouse-dataops/e2e_samples/fabric_dataops_sample/infra
+  cd ./modern-data-warehouse-dataops/e2e_samples/fabric_dataops_sample/infrastructure
   ```
 
-- Rename the [.envtemplate](./infra/.envtemplate) file to `.env` and fill in the required environment variables. Here is a list of all the variables:
+- Rename the [.envtemplate](./infrastructure/.envtemplate) file to `.env` and fill in the required environment variables. Here is a list of all the variables:
 
   ```bash
   export TENANT_ID="The Entra ID (Azure AD Tenant Id) of your Fabric tenant"
@@ -171,9 +171,9 @@ Here is a list of resources that are deployed:
 
       - Execute following steps from this authenticated shell
 
-- Review [setup-infra.sh](./infra/setup-infra.sh) script and see if you want to adjust the derived naming of variable names of Azure/Fabric resources. The Azure and Fabric resources are created using Terraform. The naming of the Azure resources is derived from the `BASE_NAME` environment variable. Please review the [main.tf](./infra/terraform/main.tf) file to understand the naming convention, and adjust it as needed.
+- Review [setup-infra.sh](./infrastructure/setup-infra.sh) script and see if you want to adjust the derived naming of variable names of Azure/Fabric resources. The Azure and Fabric resources are created using Terraform. The naming of the Azure resources is derived from the `BASE_NAME` environment variable. Please review the [main.tf](./infrastructure/terraform/main.tf) file to understand the naming convention, and adjust it as needed.
 
-- Run the [setup-infra.sh](./infra/setup-infra.sh) script from the authenticated shell in the previous step to deploy the Azure and Fabric resources:
+- Run the [setup-infra.sh](./infrastructure/setup-infra.sh) script from the authenticated shell in the previous step to deploy the Azure and Fabric resources:
 
   ```bash
   ./setup-infra.sh
@@ -181,7 +181,7 @@ Here is a list of resources that are deployed:
 
   The script is designed to be idempotent. Running the script multiple times will not result in duplicate resources. Instead, it will either skip or update existing resources. However, it is recommended to review the script, the output logs, and the created resources to ensure everything is as expected.
 
-  Also, note that the bash script calls a python script [setup_fabric_environment.py](./infra/scripts/setup_fabric_environment.py) to upload custom libraries to the Fabric environment.
+  Also, note that the bash script calls a python script [setup_fabric_environment.py](./infrastructure/scripts/setup_fabric_environment.py) to upload custom libraries to the Fabric environment.
 
 - Once the deployment is complete, login to Fabric Portal and create a cloud connection to ADLS Gen2 based on the [documentation](https://learn.microsoft.com/en-us/fabric/data-factory/connector-azure-data-lake-storage-gen2#set-up-your-connection-in-a-data-pipeline).
 
