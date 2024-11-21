@@ -40,7 +40,7 @@ RUN wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --
     && apt-get install -y trivy
 
 # Install shfmt
-RUN apt-get update && apt-get install -y shfmt
+RUN apt-get update && apt-get install -y shfmt && apt-get install -y jq
 
 # Set the user to USERNAME
 USER $USERNAME
