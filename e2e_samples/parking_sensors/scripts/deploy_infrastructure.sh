@@ -190,7 +190,7 @@ validate_password() {
             echo "Error: Failed to generate a valid password after $max_retries retries." >&2
             exit 1
         fi
-        echo "Invalid password as the hyphen is the first character. Retrying... Attempt $retry_count"
+        echo "Invalid password. The first character cannot be a hyphen. Retrying... Attempt $retry_count"
         return 1  
     fi
     return 0 
