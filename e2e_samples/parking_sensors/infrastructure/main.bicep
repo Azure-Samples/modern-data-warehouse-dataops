@@ -7,6 +7,7 @@ param keyvault_owner_object_id string
 @secure()
 param sql_server_password string
 param enable_monitoring bool
+param enable_keyvault_soft_delete bool = true
 param entra_admin_login string
 
 
@@ -63,6 +64,7 @@ module keyvault './modules/keyvault.bicep' = {
     env: env
     location: location
     deployment_id: deployment_id
+    enable_soft_delete: enable_keyvault_soft_delete
     keyvault_owner_object_id: keyvault_owner_object_id
     datafactory_principal_id: datafactory.outputs.datafactory_principal_id
   }

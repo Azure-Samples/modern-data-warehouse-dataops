@@ -10,6 +10,7 @@ param deployment_id string
 
 param keyvault_owner_object_id string
 param datafactory_principal_id string
+param enable_soft_delete bool = true
 
 
 resource keyvault 'Microsoft.KeyVault/vaults@2019-09-01' = {
@@ -24,6 +25,7 @@ resource keyvault 'Microsoft.KeyVault/vaults@2019-09-01' = {
       family: 'A'
       name: 'standard'
     }
+    enableSoftDelete: enable_soft_delete
     enabledForTemplateDeployment: true
     tenantId: subscription().tenantId
     accessPolicies: [
