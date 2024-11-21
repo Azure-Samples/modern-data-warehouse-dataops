@@ -11,7 +11,8 @@
                 "python.linting.enabled": true,
                 "python.linting.ruffEnabled": true,
                 "python.sortImports.args": ["--profile", "black"],
-                "terminal.integrated.shell.linux": "/bin/zsh"
+                "terminal.integrated.shell.linux": "/bin/zsh",
+                "terminal.integrated.defaultProfile.linux": "zsh"
             },
             "extensions": [
                 "ms-python.python",
