@@ -20,7 +20,9 @@
                 "ms-python.isort",
                 "ms-toolsai.jupyter",
                 "ms-toolsai.jupyter-keymap",
-                "ms-toolsai.jupyter-renderers"
+                "ms-toolsai.jupyter-renderers",
+                "hashicorp.terraform",
+                "tamasfe.even-better-toml"
             ]
         }
     },
