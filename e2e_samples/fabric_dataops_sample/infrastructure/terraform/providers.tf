@@ -20,7 +20,12 @@ provider "azurerm" {
   use_cli                         = var.use_cli
   storage_use_azuread             = true
   resource_provider_registrations = "none"
-  features {}
+
+  features {
+    key_vault {
+      purge_soft_delete_on_destroy = true
+    }
+  }
 }
 
 provider "azapi" {
