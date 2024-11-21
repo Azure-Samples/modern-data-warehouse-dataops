@@ -10,8 +10,10 @@ import requests
 
 def display_usage() -> None:
     print(
-        """Usage: python setup_fabric_environment.py --workspace_name <workspace_name>
-                        --environment_name <environment_name> --bearer_token <bearer_token>"""
+        "Usage: python setup_fabric_environment.py "
+        "--workspace_name <workspace_name> "
+        "-environment_name <environment_name> "
+        "--bearer_token <bearer_token>"
     )
 
 

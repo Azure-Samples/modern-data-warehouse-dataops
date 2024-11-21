@@ -9,9 +9,8 @@ set -o errexit
 # - Correct Azure subscription is selected
 #######################################################
 
-source ./.env
-
 ## Environment variables
+environment="$ENVIRONMENT_NAME"
 tenant_id="$TENANT_ID"
 subscription_id="$SUBSCRIPTION_ID"
 resource_group_name="$RESOURCE_GROUP_NAME"
@@ -46,7 +45,7 @@ fabric_bearer_token=""
 fabric_api_endpoint="https://api.fabric.microsoft.com/v1"
 
 # Fabric related variables
-alds_gen2_shortcut_name="sc_adls_gen2_main"
+alds_gen2_shortcut_name="sc-adls-main"
 alds_gen2_shortcut_path="Files"
 
 deploy_terraform_resources() {
@@ -82,6 +81,7 @@ deploy_terraform_resources() {
     -auto-approve \
     -var "use_cli=$use_cli" \
     -var "use_msi=$use_msi" \
+    -var "environment_name=$environment" \
     -var "tenant_id=$tenant_id" \
     -var "subscription_id=$subscription_id" \
     -var "resource_group_name=$resource_group_name" \
@@ -102,6 +102,7 @@ deploy_terraform_resources() {
   tf_storage_account_url=$(terraform output --raw storage_account_primary_dfs_endpoint)
   tf_workspace_name=$(terraform output --raw workspace_name)
   tf_workspace_id=$(terraform output --raw workspace_id)
+  tf_lakehouse_name=$(terraform output --raw lakehouse_name)
   tf_lakehouse_id=$(terraform output --raw lakehouse_id)
   tf_environment_name=$(terraform output --raw environment_name)
 }
@@ -170,9 +171,9 @@ EOF
   fi
 }
 
-echo "[Info] ############ START ############"
+echo "[Info] ############ STARTING INFRA DEPLOYMENT ############"
 echo "[Info] ############ Deploying terraform resources ############"
-deploy_terraform_resources "./terraform"
+deploy_terraform_resources "./infrastructure/terraform"
 
 echo "[Info] ############ Terraform resources deployed, setting up fabric bearer token ############"
 set_bearer_token
@@ -194,12 +195,4 @@ else
   fi
 fi
 
-echo "[Info] ############ Uploading packages to Environment ############"
-if [[ $use_cli == "true" ]]; then
-  echo "[Info] Skipped for now as the APIs are not working."
-  # python3 ./../scripts/setup_fabric_environment.py --workspace_name "$tf_workspace_name" --environment_name "$tf_environment_name" --bearer_token "$fabric_bearer_token"
-else
-  echo "[Info] Service Principal login does not support loading environments, skipping."
-fi
-
-echo "[Info] ############ END ############"
+echo "[Info] ############ FINISHED INFRA DEPLOYMENT ############"
