@@ -28,7 +28,7 @@
 set -o errexit
 set -o pipefail
 set -o nounset
-set -o xtrace # For debugging
+#set -o xtrace # For debugging
 
 ###################
 # REQUIRED ENV VARIABLES:
@@ -176,26 +176,72 @@ az keyvault secret set --vault-name "$kv_name" --name "applicationInsightsKey" -
 az keyvault secret set --vault-name "$kv_name" --name "applicationInsightsConnectionString" --value "$appinsights_connstr"
 
 # ###########################
+echo "validate_password function."
+# ###########################
+validate_password() {
+    local password="$1"
+    local max_retries="$2"
+    local retry_count="$3"
+
+    if [[ -z "$password" || "$password" == "-" ]]; then
+        ###if there is an hyphen retry
+        ((retry_count++))
+        if [[ $retry_count -ge $max_retries ]]; then
+            echo "Error: Failed to generate a valid password after $max_retries retries." >&2
+            exit 1
+        fi
+        echo "Invalid password. The first character cannot be a hyphen. Retrying... Attempt $retry_count"
+        return 1  
+    fi
+    return 0 
+}
+
+
+# ###########################
 # # RETRIEVE DATABRICKS INFORMATION AND CONFIGURE WORKSPACE
 
 # Note: SP is required because Credential Passthrough does not support ADF (MSI) as of July 2021
 echo "Creating Service Principal (SP) for access to ADLA Gen2 used in Databricks mounting"
-stor_id=$(az storage account show \
-    --name "$azure_storage_account" \
-    --resource-group "$resource_group_name" \
-    --output json |
-    jq -r '.id')
-sp_stor_name="${PROJECT}-stor-${ENV_NAME}-${DEPLOYMENT_ID}-sp"
-sp_stor_out=$(az ad sp create-for-rbac \
-    --role "Storage Blob Data Contributor" \
-    --scopes "$stor_id" \
-    --name "$sp_stor_name" \
-    --output json)
 
-# store storage service principal details in Keyvault
-sp_stor_id=$(echo "$sp_stor_out" | jq -r '.appId')
-sp_stor_pass=$(echo "$sp_stor_out" | jq -r '.password')
-sp_stor_tenant=$(echo "$sp_stor_out" | jq -r '.tenant')
+# ###########################
+###if there is an hyphen retry and recreate the SP with a new password
+# ###########################
+
+max_retries=2
+retry_count=0
+while true; do
+
+    stor_id=$(az storage account show \
+        --name "$azure_storage_account" \
+        --resource-group "$resource_group_name" \
+        --output json |
+        jq -r '.id')
+    sp_stor_name="${PROJECT}-stor-${ENV_NAME}-${DEPLOYMENT_ID}-sp"
+    sp_stor_out=$(az ad sp create-for-rbac \
+        --role "Storage Blob Data Contributor" \
+        --scopes "$stor_id" \
+        --name "$sp_stor_name" \
+        --output json)
+
+    
+    # store storage service principal details in Keyvault
+    sp_stor_id=$(echo "$sp_stor_out" | jq -r '.appId')
+    sp_stor_pass=$(echo "$sp_stor_out" | jq -r '.password')
+    sp_stor_tenant=$(echo "$sp_stor_out" | jq -r '.tenant')
+
+    # Validate the password
+    validate_password "$sp_stor_pass" "$max_retries" "$retry_count"
+    if [[ $? -eq 0 ]]; then
+        break  
+    fi
+
+    ((retry_count++))
+    sleep 2  
+done
+
+echo "ADLS - Valid password obtained"
+
+
 az keyvault secret set --vault-name "$kv_name" --name "spStorName" --value "$sp_stor_name"
 az keyvault secret set --vault-name "$kv_name" --name "spStorId" --value "$sp_stor_id"
 az keyvault secret set --vault-name "$kv_name" --name "spStorPass" --value "$sp_stor_pass"
@@ -263,15 +309,35 @@ ADF_DIR=$adfTempDir \
     bash -c "./scripts/deploy_adf_artifacts.sh"
 
 # ADF SP for integration tests
-sp_adf_name="${PROJECT}-adf-${ENV_NAME}-${DEPLOYMENT_ID}-sp"
-sp_adf_out=$(az ad sp create-for-rbac \
-    --role "Data Factory contributor" \
-    --scopes "/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$resource_group_name/providers/Microsoft.DataFactory/factories/$datafactory_name" \
-    --name "$sp_adf_name" \
-    --output json)
-sp_adf_id=$(echo "$sp_adf_out" | jq -r '.appId')
-sp_adf_pass=$(echo "$sp_adf_out" | jq -r '.password')
-sp_adf_tenant=$(echo "$sp_adf_out" | jq -r '.tenant')
+
+echo "Create Service Principal (SP) for Data Factory"
+max_retries=2
+retry_count=0
+# ###########################
+###if there is an hyphen retry and recreate the SP with a new password
+# ###########################
+while true; do
+    sp_adf_name="${PROJECT}-adf-${ENV_NAME}-${DEPLOYMENT_ID}-sp"
+    sp_adf_out=$(az ad sp create-for-rbac \
+        --role "Data Factory contributor" \
+        --scopes "/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$resource_group_name/providers/Microsoft.DataFactory/factories/$datafactory_name" \
+        --name "$sp_adf_name" \
+        --output json)
+    sp_adf_id=$(echo "$sp_adf_out" | jq -r '.appId')
+    sp_adf_pass=$(echo "$sp_adf_out" | jq -r '.password')
+    sp_adf_tenant=$(echo "$sp_adf_out" | jq -r '.tenant')
+
+    # Validate the password
+    validate_password "$sp_adf_pass" "$max_retries" "$retry_count"
+    if [[ $? -eq 0 ]]; then
+        break  # Exit loop if password is valid
+    fi
+
+    ((retry_count++))
+    sleep 2  # Optional delay before retrying
+done
+
+echo "ADF - Valid password obtained"
 
 # Save ADF SP credentials in Keyvault
 az keyvault secret set --vault-name "$kv_name" --name "spAdfName" --value "$sp_adf_name"
