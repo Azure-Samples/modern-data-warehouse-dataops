@@ -26,13 +26,19 @@ variable "object_id" {
 variable "purge_protection_enabled" {
   description = "Whether to enable or not KeyVault purge protection"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "soft_delete_retention_days" {
   description = "The number of days that items should be retained for once soft-deleted"
   type        = number
   default     = 7
+}
+
+variable "enable_rbac_authorization" {
+  description = "Boolean flag to specify whether Azure Key Vault uses RBAC for authorization of data actions."
+  type        = bool
+  default     = true
 }
 
 variable "tags" {

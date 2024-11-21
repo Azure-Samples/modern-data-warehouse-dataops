@@ -22,14 +22,13 @@ module "storage_blob_contributor_assignment_001" {
 }
 
 module "keyvault" {
-  source                   = "./modules/keyvault"
-  resource_group_name      = data.azurerm_resource_group.rg.name
-  location                 = data.azurerm_resource_group.rg.location
-  keyvault_name            = local.keyvault_name
-  tenant_id                = var.tenant_id
-  object_id                = data.azuread_group.fabric_workspace_admin.object_id
-  tags                     = local.tags
-  purge_protection_enabled = true
+  source              = "./modules/keyvault"
+  resource_group_name = data.azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.rg.location
+  keyvault_name       = local.keyvault_name
+  tenant_id           = var.tenant_id
+  object_id           = data.azuread_group.fabric_workspace_admin.object_id
+  tags                = local.tags
 }
 
 module "keyvault_secrets_officer_role_assignment" {
@@ -151,7 +150,9 @@ module "fabric_data_pipeline" {
   workspace_id                  = module.fabric_workspace.workspace_id
   tokens = {
     "workspace_name" = module.fabric_workspace.workspace_name
+    "workspace_id"   = module.fabric_workspace.workspace_id
     "lakehouse_name" = module.fabric_lakehouse.lakehouse_name
+    "notebook_id"    = module.fabric_notebook.notebook_id
   }
 }
 

@@ -6,7 +6,7 @@ resource "azapi_resource" "fab_capacity" {
   location                  = var.location
   schema_validation_enabled = false
 
-  body = jsonencode({
+  body = {
     properties = {
       administration = {
         members = var.admin_members
@@ -16,7 +16,7 @@ resource "azapi_resource" "fab_capacity" {
       name = var.sku,
       tier = "Fabric"
     }
-  })
+  }
 
   tags                    = var.tags
   ignore_missing_property = true

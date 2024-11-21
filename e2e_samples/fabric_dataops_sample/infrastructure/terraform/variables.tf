@@ -8,6 +8,12 @@ variable "use_msi" {
   type        = bool
 }
 
+variable "environment_name" {
+  description = "The name of the deployment environment. e.g. dev, test, prod"
+  type        = string
+  default     = "dev"
+}
+
 variable "client_id" {
   type        = string
   description = "The Application ID of the SPN/MI used to run this deployment and that will be granted Capacity Admin access"
