@@ -48,7 +48,7 @@ exclude = [
     "e2e_samples/parking_sensors/*",
     "single_tech_samples/*"
 ]
-builtins = ["mssparkutils", "spark", "display"]
+builtins = ["notebookutils", "mssparkutils", "spark", "display"]
 
 
 [tool.nbqa]

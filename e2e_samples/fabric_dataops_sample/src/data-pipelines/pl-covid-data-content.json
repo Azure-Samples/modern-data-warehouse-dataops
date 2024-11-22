@@ -40,8 +40,8 @@
         {
           "type": "TridentNotebook",
           "typeProperties": {
-            "notebookId": "<<notebook_id>>",
-            "workspaceId": "<<workspace_id>>",
+            "notebookId": "{{ .notebook_id }}",
+            "workspaceId": " {{ .workspace_id }}",
             "parameters": {
               "onelake_name": {
                 "value": {
@@ -91,11 +91,11 @@
         },
         "workspace_name": {
           "type": "string",
-          "defaultValue": "ws-fabric-cicd-dev"
+          "defaultValue": "{{ .workspace_name }}"
         },
         "lakehouse_name": {
           "type": "string",
-          "defaultValue": "lh_main"
+          "defaultValue": "{{ .lakehouse_name }}"
         }
       },
       "annotations": []

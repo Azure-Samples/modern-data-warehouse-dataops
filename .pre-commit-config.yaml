@@ -23,7 +23,8 @@ repos:
       - id: check-yaml
         args: ["--unsafe"]
       - id: mixed-line-ending
-        args: [--fix=auto]
+        exclude: \.(drawio|drawio\.svg)$
+        args: [--fix=lf]
       - id: check-added-large-files
         args: [--maxkb=1024]
 
@@ -31,6 +32,7 @@ repos:
     rev: 5.13.2
     hooks:
       - id: isort
+        args: ["--float-to-top"]
         name: isort (sorting imports)
 
   - repo: https://github.com/psf/black
@@ -54,6 +56,7 @@ repos:
         name: mypy (static type checker for Python)
         additional_dependencies:
           - types-requests
+          - types-PyYAML
 
   - repo: https://github.com/adrienverge/yamllint.git
     rev: v1.35.1
@@ -72,7 +75,7 @@ repos:
     rev: 1.9.1
     hooks:
       - id: nbqa-isort
-        args: ["--float-to-top"]
+        # args: ["--float-to-top"]  # to prevent all imports to go to the top
       - id: nbqa-black
       - id: nbqa-ruff
         args: ["--fix"]
