@@ -1,0 +1,24 @@
+name: Broken Hyperlinks Check
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  check-links:
+    name: linkspector
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run linkspector
+        uses: umbrelladocs/action-linkspector@v1
+        with:
+          reporter: github-pr-review
+          fail_on_error: true
+          config_file: '.linkspector.yml'

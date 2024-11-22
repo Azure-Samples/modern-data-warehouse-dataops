@@ -9,8 +9,7 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
 ## Contents <!-- omit in toc -->
 
 - [Architecture](#architecture)
-  - [Data Pipeline Architecture](#data-pipeline-architecture)
-  - [Additional Services](#additional-services)
+  - [High-level deployment sequence](#high-level-deployment-sequence)
   - [Deployed resources](#deployed-resources)
 - [How to use the sample](#how-to-use-the-sample)
   - [Pre-requisites](#pre-requisites)
@@ -25,19 +24,25 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
 
 ## Architecture
 
-### Data Pipeline Architecture
+![Microsoft Fabric Architecture](./images/fabric_archi.png)
 
-![Microsoft Fabric Data Pipeline Architecture](./images/fabric_archi.png)
+### High-level deployment sequence
 
-### Additional Services
+At a high level, the deployment sequence proceeds as follows:
 
-While Fabric is an end-to-end platform, it works best when integrated with other Azure services such as Application Insights, Azure Key Vault, ADLS Gen2, Microsoft Purview and so. This dependency is also because customers have existing investments in these services and want to leverage them with Fabric.
+- Update the `.env` file with the required environment variables.
+- Run the deployment script to create Azure and supported Fabric resources, **using either a service principal or managed identity** for authentication.
+- Manually set up a cloud connection to ADLS Gen2 in the newly created Fabric workspace.
+- Update the `.env` file with the ADLS Gen2 connection ID.
+- Run the deployment script again, **this time using an Entra ID user** for authentication. This step will create the Lakehouse shortcut to the ADLS Gen2 storage account and deploy Fabric items that cannot be authenticated via service principal or managed identity.
+
+Please follow the [How to use the sample](#how-to-use-the-sample) section for detailed instructions.
 
 ### Deployed resources
 
-The sample deploys both Azure and Fabric resources.
+While Fabric is an end-to-end platform, it works best when integrated with other Azure services such as Application Insights, Azure Key Vault, ADLS Gen2, Microsoft Purview and so. This dependency is also because customers have existing investments in these services and want to leverage them with Fabric.
 
-The Azure resources are deployed using Terraform. The sample uses the local backend for storing the Terraform state, but it can be easily modified to use remote backends.
+The sample deploys both Azure and Fabric resources, primarily utilizing Terraform for resource provisioning. By default, the Terraform state is stored in a local backend; however, the configuration can be easily adjusted to use remote backends if needed.
 
 Microsoft Fabric resources are deployed using the [Microsoft Fabric terraform provider](https://registry.terraform.io/providers/microsoft/fabric/latest/docs) whenever possible, or using [Microsoft Fabric REST APIs](https://learn.microsoft.com/rest/api/fabric/articles/) for resources that are still not supported by the terraform provider.
 
@@ -52,10 +57,13 @@ Here is a list of resources that are deployed:
 - Fabric Resources
   - Microsoft Fabric Workspace
   - Microsoft Fabric Lakehouse
-  - Azure Data Lake Storage Gen2 shortcut
+  - ADLS Gen2 shortcut
   - Microsoft Fabric Environment
   - Microsoft Fabric Notebooks
   - Microsoft Fabric Data pipelines
+- Additional Resources
+  - Fabric workspace GIT integration
+  - Azure Role assignments to entra security group and workspace identity
 
 ## How to use the sample
 
@@ -100,13 +108,13 @@ Here is a list of resources that are deployed:
   git clone https://github.com/Azure-Samples/modern-data-warehouse-dataops.git
   ```
 
-- Change the directory to the `infra` folder of the sample:
+- Change the directory to the sample folder:
 
   ```bash
-  cd ./modern-data-warehouse-dataops/e2e_samples/fabric_dataops_sample/infra
+  cd ./modern-data-warehouse-dataops/e2e_samples/fabric_dataops_sample
   ```
 
-- Rename the [.envtemplate](./infra/.envtemplate) file to `.env` and fill in the required environment variables. Here is a list of all the variables:
+- Rename the [.envtemplate](./.envtemplate) file to `.env` and fill in the required environment variables. Here is a list of all the variables:
 
   ```bash
   export TENANT_ID="The Entra ID (Azure AD Tenant Id) of your Fabric tenant"
@@ -163,17 +171,17 @@ Here is a list of resources that are deployed:
 
       - Execute following steps from this authenticated shell
 
-- Review [setup-infra.sh](./infra/setup-infra.sh) script and see if you want to adjust the derived naming of variable names of Azure/Fabric resources. The Azure and Fabric resources are created using Terraform. The naming of the Azure resources is derived from the `BASE_NAME` environment variable. Please review the [main.tf](./infra/terraform/main.tf) file to understand the naming convention, and adjust it as needed.
+- Review [deploy.sh](./deploy.sh) script and see if you want to adjust the derived naming of variable names of Azure/Fabric resources. The Azure and Fabric resources are created using Terraform. The naming of the Azure resources is derived from the `BASE_NAME` environment variable. Please review the [main.tf](./infrastructure/terraform/main.tf) file to understand the naming convention, and adjust it as needed.
 
-- Run the [setup-infra.sh](./infra/setup-infra.sh) script from the authenticated shell in the previous step to deploy the Azure and Fabric resources:
+- Run the [deploy.sh](./deploy.sh) script from the authenticated shell in the previous step to deploy the Azure and Fabric resources:
 
   ```bash
-  ./setup-infra.sh
+  ./deploy.sh
   ```
 
   The script is designed to be idempotent. Running the script multiple times will not result in duplicate resources. Instead, it will either skip or update existing resources. However, it is recommended to review the script, the output logs, and the created resources to ensure everything is as expected.
 
-  Also, note that the bash script calls a python script [setup_fabric_environment.py](./infra/scripts/setup_fabric_environment.py) to upload custom libraries to the Fabric environment.
+  Also, note that the bash script calls a python script [setup_fabric_environment.py](./scripts/setup_fabric_environment.py) to upload custom libraries to the Fabric environment.
 
 - Once the deployment is complete, login to Fabric Portal and create a cloud connection to ADLS Gen2 based on the [documentation](https://learn.microsoft.com/en-us/fabric/data-factory/connector-azure-data-lake-storage-gen2#set-up-your-connection-in-a-data-pipeline).
 
@@ -192,10 +200,12 @@ Here is a list of resources that are deployed:
   az config set core.login_experience_v2=off
   az login --tenant $TENANT_ID
   az config set core.login_experience_v2=on
-  ./setup-infra.sh
+  ./deploy.sh
   ```
 
   This time, the script will create the Lakehouse shortcut to your ADLS Gen2 storage account. All previously deployed resources will remain unchanged. Fabric items whose REST APIs and terraform provider don't support service principal / managed identity authentication (i.e. data pipelines and others) will be deployed with user context authentication.
+
+  _**Note: Please note that the Fabric notebook and pipeline deployed are placeholder items and are not functional. These are included to demonstrate the [tokenization](https://registry.terraform.io/providers/microsoft/fabric/latest/docs/guides/gotemplates) functionality during the Terraform deployment of these resources. These items will be replaced with functional versions in the next release._
 
 ## Cleaning up
 

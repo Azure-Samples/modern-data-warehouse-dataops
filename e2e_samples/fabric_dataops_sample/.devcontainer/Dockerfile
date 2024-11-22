@@ -10,7 +10,7 @@ WORKDIR /workspace
 
 # Install Python, pip, git, curl, wget, gnupg, lsb-release, and other required packages
 RUN apt-get update && apt-get install -y \
-    python3 python3-pip git curl zsh lsb-release unzip gnupg wget software-properties-common
+    python3 python3-pip git curl zsh lsb-release unzip gnupg wget software-properties-common shfmt jq gh
 
 # Upgrade pip, setuptools, and wheel
 RUN pip install --upgrade pip setuptools wheel
@@ -38,9 +38,6 @@ RUN wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --
     && echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | tee -a /etc/apt/sources.list.d/trivy.list \
     && apt-get update \
     && apt-get install -y trivy
-
-# Install shfmt
-RUN apt-get update && apt-get install -y shfmt
 
 # Set the user to USERNAME
 USER $USERNAME

@@ -37,7 +37,7 @@ If you are using dev container setup, all these are pre-configured/pre-installed
 
    ```bash
    git clone https://github.com/Azure-Samples/modern-data-warehouse-dataops.git
-   cd <sample-folder>
+   cd <repo-folder>
    ```
 
 - Run below steps:
@@ -141,6 +141,13 @@ Below is a list of the currently configured hooks with brief descriptions. Note 
 
 6. **Terraform Checks:**
    - `terraform_fmt`, `terraform_tflint`, `terraform_validate`, `terraform_trivy`: Runs formatting, linting, validation, and vulnerability scans on Terraform files.
+
+7. **Shell Script Formatter (Optional):**
+   - `shfmt`: Formats shell scripts. Due to limitations around passing arguments via pre-commit hooks, this check is not enabled by default. However, it is included in the dev container setup. You can run [shfmt](https://github.com/mvdan/sh/blob/master/cmd/shfmt/shfmt.1.scd) manually if needed, as shown below:
+
+     ```bash
+     shfmt -i 2 -ci -bn <file-name>
+     ```
 
 ## Integration with github actions
 
