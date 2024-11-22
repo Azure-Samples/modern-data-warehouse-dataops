@@ -1,13 +1,19 @@
-#############################################
+######################################################################################
+# About this file: Config file to hold all DDLs for lakehouse
 # NOTE:
-# Use {parking_ws} and {parking_lakehouse} to indicate workspace and lakehouse names,
-#       these values will be replaced during runtime.
+# - Use {workspace_name} and {lakehouse_name}to indicate workspace and lakehouse names.
+#       These values will be replaced during runtime.
+# - Ideally a full qualified name to query across workspaces would be composed of:
+#    {workspace_name}.{lakehouse_name}.{schema_name}.{table_name}
+#    However, as there is a known issue (as of Nov 2024), with workspace names having special characters
+#      in them, we are using {lakehouse_name}.{schema_name}.{table_name} for now. This way we can
+#      still have support for schemas as long we are querying in the same (currently working) workspace.
 #
 # Field Descriptions
 # ------------------
 # type: grouping indicator for tables
 # table_name: table name with schema
-# data_file: Path relative to Files/ in {parking_ws}.{parking_lakehouse}.
+# data_file: Path relative to Files/ in {workspace_name}.{lakehouse_name}.
 #    If specified this data is loaded into the table name mentioned in table_name
 #    in overwrite mode. Ex: if path is "Files/data/dim_time.csv" then this should be
 #    set as "data/dim_time.csv"
@@ -24,7 +30,7 @@ table_types:
         description: "Fact table for parking data"
         data_file:
         create_sql: |
-          CREATE TABLE {parking_ws}.{parking_lakehouse}.dw.fact_parking (
+          CREATE TABLE {lakehouse_name}.dw.fact_parking (
             dim_date_id STRING,
             dim_time_id STRING,
             dim_parking_bay_id STRING,
@@ -38,10 +44,10 @@ table_types:
   - type: dimension
     tables:
       - table_name: dw.dim_st_marker
-        description: "Dimension table for {parking_ws}.{parking_lakehouse}.dw.dim_st_marker"
+        description: "Dimension table for {workspace_name}.{lakehouse_name}.dw.dim_st_marker"
         data_file:
         create_sql: |
-          CREATE TABLE {parking_ws}.{parking_lakehouse}.dw.dim_st_marker (
+          CREATE TABLE {lakehouse_name}.dw.dim_st_marker (
             dim_st_marker_id STRING,
             st_marker_id STRING,
             load_id STRING,
@@ -49,10 +55,10 @@ table_types:
           )
           USING DELTA
       - table_name: dw.dim_location
-        description: "Dimension table for {parking_ws}.{parking_lakehouse}.dw.dim_location"
+        description: "Dimension table for {workspace_name}.{lakehouse_name}.dw.dim_location"
         data_file:
         create_sql: |
-          CREATE TABLE {parking_ws}.{parking_lakehouse}.dw.dim_location (
+          CREATE TABLE {lakehouse_name}.dw.dim_location (
             dim_location_id STRING,
             lat FLOAT,
             lon FLOAT,
@@ -61,10 +67,10 @@ table_types:
           )
           USING DELTA
       - table_name: dw.dim_parking_bay
-        description: "Dimension table for {parking_ws}.{parking_lakehouse}.dw.dim_parking_bay"
+        description: "Dimension table for {workspace_name}.{lakehouse_name}.dw.dim_parking_bay"
         data_file:
         create_sql: |
-          CREATE TABLE {parking_ws}.{parking_lakehouse}.dw.dim_parking_bay (
+          CREATE TABLE {lakehouse_name}.dw.dim_parking_bay (
             dim_parking_bay_id STRING,
             bay_id INT,
             marker_id STRING,
@@ -78,18 +84,18 @@ table_types:
   - type: reference
     tables:
       - table_name: dw.dim_date
-        description: "Dimension table for {parking_ws}.{parking_lakehouse}.dw.dim_date"
-        data_file: data/dim_date.csv
+        description: "Dimension table for {workspace_name}.{lakehouse_name}.dw.dim_date"
+        data_file: sc-adls-main/reference/dim_date.csv
       - table_name: dw.dim_time
-        description: "Dimension table for {parking_ws}.{parking_lakehouse}.dw.dim_time"
-        data_file: data/dim_time.csv
+        description: "Dimension table for {workspace_name}.{lakehouse_name}.dw.dim_time"
+        data_file: sc-adls-main/reference/dim_time.csv
   - type: interim
     tables:
       - table_name: interim.parking_bay
-        description: "Dimension table for {parking_ws}.{parking_lakehouse}.interim.parking_bay"
+        description: "Dimension table for {workspace_name}.{lakehouse_name}.interim.parking_bay"
         data_file:
         create_sql: |
-          CREATE TABLE {parking_ws}.{parking_lakehouse}.interim.parking_bay (
+          CREATE TABLE {lakehouse_name}.interim.parking_bay (
             bay_id INT,
             last_edit TIMESTAMP,
             marker_id STRING,
@@ -102,10 +108,10 @@ table_types:
           )
           USING DELTA
       - table_name: interim.sensor
-        description: "Dimension table for {parking_ws}.{parking_lakehouse}.interim.sensor"
+        description: "Dimension table for {workspace_name}.{lakehouse_name}.interim.sensor"
         data_file:
         create_sql: |
-          CREATE TABLE {parking_ws}.{parking_lakehouse}.interim.sensor (
+          CREATE TABLE {lakehouse_name}.interim.sensor (
             bay_id INT,
             st_marker_id STRING,
             lat FLOAT,
@@ -119,10 +125,10 @@ table_types:
   - type: error
     tables:
       - table_name: malformed.parking_bay
-        description: "Dimension table for {parking_ws}.{parking_lakehouse}.malformed.parking_bay"
+        description: "Dimension table for {workspace_name}.{lakehouse_name}.malformed.parking_bay"
         data_file:
         create_sql: |
-          CREATE TABLE {parking_ws}.{parking_lakehouse}.malformed.parking_bay (
+          CREATE TABLE {lakehouse_name}.malformed.parking_bay (
             bay_id INT,
             last_edit TIMESTAMP,
             marker_id STRING,
@@ -135,10 +141,10 @@ table_types:
           )
           USING DELTA
       - table_name: malformed.sensor
-        description: "Dimension table for {parking_ws}.{parking_lakehouse}.malformed.sensor"
+        description: "Dimension table for {workspace_name}.{lakehouse_name}.malformed.sensor"
         data_file:
         create_sql: |
-          CREATE TABLE {parking_ws}.{parking_lakehouse}.malformed.sensor (
+          CREATE TABLE {lakehouse_name}.malformed.sensor (
             bay_id INT,
             st_marker_id STRING,
             lat FLOAT,

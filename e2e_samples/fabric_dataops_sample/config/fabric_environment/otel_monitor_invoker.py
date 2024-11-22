@@ -1,8 +1,8 @@
 # This examples uses advanced config using monotor exporters using:
 # ref: https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/monitor/azure-monitor-opentelemetry-exporter#microsoft-opentelemetry-exporter-for-azure-monitor
 
-# Simple configuration could also be done using as below in which case, tracer, logger and meter \
-#    are prefconfigured to send data to azure-monitor.
+# Simple configuration could also be done using as below in which case, tracer, logger and meter are
+#    prefconfigured to send data to azure-monitor.
 # ref: https://learn.microsoft.com/en-us/azure/azure-monitor/app/opentelemetry-enable?tabs=python
 # ```
 # from azure.monitor.opentelemetry import configure_azure_monitor
@@ -19,11 +19,12 @@
 # )
 # ```
 # - https://learn.microsoft.com/en-us/python/api/overview/azure/monitor-opentelemetry-exporter-readme?view=azure-python-preview
+# - https://learn.microsoft.com/en-us/python/api/overview/azure/monitor-opentelemetry-exporter-readme?view=azure-python-preview#examples
 
 import logging
 
-# from azure.monitor.opentelemetry import configure_azure_monitor # We are using the\
-# advanced configs shown below using AzureMonitor*Exporter.
+# from azure.monitor.opentelemetry import configure_azure_monitor # We are using the advanced
+#    configs shown below using AzureMonitor*Exporter.
 from azure.monitor.opentelemetry.exporter import (
     AzureMonitorLogExporter,
     AzureMonitorMetricExporter,
@@ -33,19 +34,15 @@ from azure.monitor.opentelemetry.exporter import (
 # metrics
 # traces
 from opentelemetry import metrics, trace
+
+# logs
 from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
 from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
 from opentelemetry.sdk.resources import Resource
-
-# from opentelemetry.trace import SpanKind
-# from opentelemetry.trace.status import StatusCode
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
-
-# logs
-
 
 logging.basicConfig(level=logging.INFO)
 
@@ -59,6 +56,7 @@ class OpenTelemetryAppInsightsExporter:
             conn_string (str): Azure AppInsights connection string.
         """
         self.conn_string = conn_string
+
         return None
 
     def get_otel_tracer(self, trace_resource_attributes: dict, tracer_name: str = __name__) -> object:
@@ -72,8 +70,18 @@ class OpenTelemetryAppInsightsExporter:
             tracer: OpenTelemetry tracer object
         """
         resource = Resource(attributes=trace_resource_attributes)
+        tracer_provider = TracerProvider(resource=resource)
+        # Exporter to send data to AppInsights
+        trace_exporter = AzureMonitorTraceExporter(connection_string=self.conn_string)
+        span_processor = BatchSpanProcessor(trace_exporter)
+        tracer_provider.add_span_processor(span_processor)
+        tracer = trace.get_tracer(tracer_name, tracer_provider=tracer_provider)
+
+        return tracer
+
+        resource = Resource(attributes=trace_resource_attributes)
         trace.set_tracer_provider(TracerProvider(resource=resource))
-        tracer = trace.get_tracer(__name__)
+        tracer = trace.get_tracer(tracer_name)
         # Exporter to send data to AppInsights
         trace_exporter = AzureMonitorTraceExporter(connection_string=self.conn_string)
         span_processor = BatchSpanProcessor(trace_exporter)

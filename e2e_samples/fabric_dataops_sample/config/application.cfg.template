@@ -12,35 +12,37 @@
 ##############################################################
 
 # Important:
-# - DONOT use quotes for wrapping strings
-# - All file paths used are relative to the attached lakehouse's "Files/" path
-#
+# - DO NOT use quotes for wrapping strings
+# - Note that workspace_name etc are not defined at each section level
+#   rather in DEFAULT section. This way we can use individual sections
+#   like `setup` or `standardize` or `transform` to over-ride
+#   the values from `DEFAULT` section if needed.
 
 [DEFAULT]
 service_name = parking_sensors_fabric_e2e
 service_version = 0.1
-
-# Parking sensor workspace name and id
-parking_ws = {{parking_ws}}
-parking_ws_id = {{parking_ws_id}}
-# parking sensor lakehouse located in workspace specified in Parking Workspace name
-#   this will be passed as the default lakehouse during runtime
-parking_lakehouse = {{parking_lakehouse}}
+workspace_name = {{ .workspace_name }}
+workspace_id = {{ .workspace_id }}
+lakehouse_name = {{ .lakehouse_name }}
+lakehouse_id = {{ .lakehouse_id }}
 
 [keyvault]
-name = {{key_vault_name}}
+name = parking-sensor
 uri = https://${keyvault:name}.vault.azure.net/
 
 [setup]
-process_name = 010_setup
-# ddl file path is
-ddl_file = config/parking_sensor_ddls.yaml
+# --------- Globals for nb-010-setup.ipynb
+process_name = nb-010-setup
+# ddl file path is relative to the attached lakehouse's Files/ location
+ddl_file = sc-adls-main/config/lakehouse_ddls.yaml
 
 [standardize]
-process_name = 020_setup
+# --------- Globals for nb-020-standardize.ipynb
+process_name = nb-020-standardize
 
 [transform]
-process_name = 030_transform
+# --------- Globals for nb-030-transform.ipynb
+process_name = nb-030-transform
 
 [otel]
-appinsights_connection_name = {{appinsights-connection-name}}
+appinsights_connection_name = app-insights-connection-string
