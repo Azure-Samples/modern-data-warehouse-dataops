@@ -1,14 +1,18 @@
 #!/bin/bash
 # Set your variables
+# Refer to the Readme on how to get and set your variables
 organization_url="<AZURE_DEVOPS_ORGANIZATION_URL>"
 tenant_id="<TENANT_ID>"
 project="<AZURE_DEVOPS_PROJECT_NAME>"
 variable_group_name="<AZURE_DEVOPS_VARIABLE_GROUP_NAME>"
 variable_name="token"
 
-# Do "az login" to get the access token
-az config set core.login_experience_v2=off
-az login --tenant ${tenant_id}
+# Check if user is logged in
+# If user is not logged in then abort and guide them to look at the Readme file
+[[ -n $(az account show 2> /dev/null) ]] || { echo "Please login via the Azure CLI and restart the deployment. Check the prerequisites in the Readme. Aborting."; exit 1; }
+
+# Follow the instructions in the Readme on how to do "az login" to get the access token
+# The subscription should already be logged in and thus you can get the access token
 token=$(az account get-access-token \
           --resource "https://login.microsoftonline.com/${tenant_id}" \
           --query accessToken \
