@@ -1,8 +1,8 @@
-# This examples uses advanced config using monotor exporters using:
+# This examples uses advanced config using monitor exporters using:
 # ref: https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/monitor/azure-monitor-opentelemetry-exporter#microsoft-opentelemetry-exporter-for-azure-monitor
 
 # Simple configuration could also be done using as below in which case, tracer, logger and meter are
-#    prefconfigured to send data to azure-monitor.
+#    pre-configured to send data to azure-monitor.
 # ref: https://learn.microsoft.com/en-us/azure/azure-monitor/app/opentelemetry-enable?tabs=python
 # ```
 # from azure.monitor.opentelemetry import configure_azure_monitor
@@ -77,15 +77,6 @@ class OpenTelemetryAppInsightsExporter:
         tracer_provider.add_span_processor(span_processor)
         tracer = trace.get_tracer(tracer_name, tracer_provider=tracer_provider)
 
-        return tracer
-
-        resource = Resource(attributes=trace_resource_attributes)
-        trace.set_tracer_provider(TracerProvider(resource=resource))
-        tracer = trace.get_tracer(tracer_name)
-        # Exporter to send data to AppInsights
-        trace_exporter = AzureMonitorTraceExporter(connection_string=self.conn_string)
-        span_processor = BatchSpanProcessor(trace_exporter)
-        trace.get_tracer_provider().add_span_processor(span_processor)
         return tracer
 
     def get_otel_logger(
