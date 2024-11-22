@@ -272,12 +272,13 @@ class OpenTelemetryAppInsightsExporter:
             tracer: OpenTelemetry tracer object
         """
         resource = Resource(attributes=trace_resource_attributes)
-        trace.set_tracer_provider(TracerProvider(resource=resource))
-        tracer = trace.get_tracer(__name__)
+        tracer_provider = TracerProvider(resource=resource)
         # Exporter to send data to AppInsights
         trace_exporter = AzureMonitorTraceExporter(connection_string=self.conn_string)
         span_processor = BatchSpanProcessor(trace_exporter)
-        trace.get_tracer_provider().add_span_processor(span_processor)
+        tracer_provider.add_span_processor(span_processor)
+        tracer = trace.get_tracer(tracer_name, tracer_provider=tracer_provider)
+
         return tracer
 
 
