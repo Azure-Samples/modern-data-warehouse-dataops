@@ -84,7 +84,7 @@ The following are the prerequisites for deploying this template :
 
 ### 2.2. Infrastructure as Code (IaC)
 
-You need have 3 databricks workspace for 'develop', 'staging' and 'product'. You setup Azure Databricks services by the IaC samples from [here](https://github.com/Azure-Samples/modern-data-warehouse-dataops/tree/master/single_tech_samples/databricks)
+You need have 3 databricks workspace for 'develop', 'staging' and 'product'. You setup Azure Databricks services by the IaC sample from [here](./../databricks_basic_azure_databricks_environment/README.md).
 
 ### 2.3. Project Structure
 
@@ -150,7 +150,7 @@ You need have 3 databricks workspace for 'develop', 'staging' and 'product'. You
 
 ### 2.4. The Notebook Approach
 
-This is to support the job of [Notebook](https://docs.microsoft.com/en-us/azure/databricks/jobs ) and it is the typical approach of databricks application. In this template, there are 4 notebooks and 4 testing notebooks based on [nutter](https://github.com/microsoft/nutter)
+This is to support the job of [Notebook](https://docs.microsoft.com/en-us/azure/databricks/jobs ) and it is the typical approach of databricks application. In this template, there are 4 notebooks and 4 testing notebooks based on [nutter](https://github.com/microsoft/nutter).
 
 - [main_notebook_a.py](./notebook_jobs/main_notebook_a.py)
 
