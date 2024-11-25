@@ -13,57 +13,49 @@ products:
 - azure-databricks
 - azure-stream-analytics
 - azure-synapse-analytics
-description: "Code samples showcasing how to apply DevOps concepts to the modern data warehouse architecture leveraging different Azure data technologies."
+description: "Code samples showcasing how to apply DevOps concepts to common data engineering patterns and architectures leveraging different Microsoft data platform technologies."
 ---
 
-# DataOps for the Modern Data Warehouse
+# DataOps
 
-This repository contains numerous code samples and artifacts on how to apply DevOps principles to data pipelines built according to the [Modern Data Warehouse (MDW)](https://learn.microsoft.com/en-au/azure/architecture/solution-ideas/articles/enterprise-data-warehouse) architectural pattern on Microsoft Azure.
+This repository contains numerous code samples and artifacts on how to apply DevOps principles to common data engineering patterns and architectures utilizing Microsoft data platform technologies.
 
-The samples are either focused on a single azure service (**Single Tech Samples**) or showcases an end to end data pipeline solution as a reference implementation (**End to End Samples**). Each sample contains code and artifacts relating one or more of the following
+The samples are either focused on a single microsoft service ([Single-Technology Samples](#single-technology-samples)) or showcases an end-to-end data pipeline solution as a reference implementation ([End-to-End Samples](#end-to-end-samples)). Each sample contains code and artifacts related to one or more of the following capabilities:
 
 - Infrastructure as Code (IaC)
 - Build and Release Pipelines (CI/CD)
 - Testing
 - Observability / Monitoring
 
-## Single Technology Samples
+In addition to the samples, this repository also contains [Utilities](#utilities). These are simple scripts or code snippets that can be used as-is or as a starting point for more complex automation tasks.
 
-- [Microsoft Fabric](./single_tech_samples/fabric/README.md)
-  - [Feature engineering on Microsoft Fabric](./single_tech_samples/fabric/feature_engineering_on_fabric/README.md)
-- [Azure SQL database](./single_tech_samples/azuresql/README.md)
-  - [CI/CD - Azure SQL database](./single_tech_samples/azuresql/azuresql_ci_cd/README.md)
-- [Azure Data Factory](./single_tech_samples/datafactory/README.md)
-  - [CI/CD - Auto publish](./single_tech_samples/datafactory/adf_cicd_auto_publish/README.md)
-  - [Data pre-processing using Azure Batch](./single_tech_samples/datafactory/adf_data_pre_processing_with_azure_batch/README.md)
-- [Azure Synapse Analytics](./single_tech_samples/synapseanalytics/README.md)
-  - [Serverless best practices](./single_tech_samples/synapseanalytics/synapse_serverless/README.md)
-- [Azure Stream Analytics](./single_tech_samples/streamanalytics/README.md)
-  - [CI/CD - Azure Stream Analytics](./single_tech_samples/streamanalytics/streamanalytics_ci_cd/README.md)
+## Single-Technology Samples
 
-## End to End samples
+| Technology | Samples |
+| ---------- | ------- |
+| [Microsoft Fabric](./single_tech_samples/fabric/README.md) | ▪️ [CI/CD for Microsoft Fabric](./single_tech_samples/fabric/fabric_ci_cd/README.md)<br> ▪️ [Feature engineering on Microsoft Fabric](./single_tech_samples/fabric/feature_engineering_on_fabric/README.md) |
+| [Azure SQL database](./single_tech_samples/azuresql/README.md) | ▪️ [CI/CD for Azure SQL database](./single_tech_samples/azuresql/azuresql_ci_cd/README.md) |
+| [Azure Data Factory](./single_tech_samples/datafactory/README.md) | ▪️ [CI/CD for ADF with Auto publish](./single_tech_samples/datafactory/adf_cicd_auto_publish/README.md)<br> ▪️ [Data pre-processing using Azure Batch](./single_tech_samples/datafactory/adf_data_pre_processing_with_azure_batch/README.md) |
+| [Azure Stream Analytics](./single_tech_samples/streamanalytics/README.md) | ▪️ [CI/CD for Azure Stream Analytics](./single_tech_samples/streamanalytics/streamanalytics_ci_cd/README.md) |
 
-### Parking Sensor Solution
+## End-to-End Samples
 
-This demonstrates batch, end-to-end data pipeline following the MDW architecture, along with a corresponding CI/CD process.
+### DataOps for Medallion with Azure Data Factory and Azure Databricks
 
-![Architecture](docs/images/CI_CD_process_simplified.png?raw=true "Architecture")
+This [sample](e2e_samples/parking_sensors/) demonstrates batch, end-to-end data pipeline utilizing Azure Data Factory and Azure Databricks built according to the [medallion architecture](https://learn.microsoft.com/en-us/azure/databricks/lakehouse/medallion), along with a corresponding CI/CD process, observability and automated testing.
 
-This has two version of the solution:
+[![Medallion with Azure Data Factory and Azure Databricks](docs/images/CI_CD_process_simplified.png "Architecture")](e2e_samples/parking_sensors/)
 
-- [Azure Data Factory and Azure Databricks Version](e2e_samples/parking_sensors/)
-- [Azure Synapse Version](e2e_samples/parking_sensors_synapse/)
+### DataOps for Medallion with Microsoft Fabric
+
+- Coming soon.
+
+## Utilities
+
+| Technology | Utility Description |
+| ---------- | ------------------- |
+| Microsoft Fabric | ▪️ [Script to upload file in GIT repo to Fabric lakehouse](./utilities/fabric/README.md#python-script-to-upload-file-in-git-repo-to-fabric-lakehouse)|
 
 ## Contributing
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit [https://cla.opensource.microsoft.com](https://cla.opensource.microsoft.com).
-
-When you submit a pull request, a CLA bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
-
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+This project welcomes contributions and suggestions. Please see our [Contributing guide](/CONTRIBUTING.md).

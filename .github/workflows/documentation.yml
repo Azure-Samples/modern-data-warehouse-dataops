@@ -3,23 +3,25 @@ on:
   push:
     branches:
     - main
-    - single-tech/databricks
   pull_request:
     branches:
     - main
-    - single-tech/databricks
 
 jobs:
-  markdown-link-check:
+  check-links:
+    name: runner / linkspector
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
-    - uses: actions/checkout@v2
-    - uses: gaurav-nelson/github-action-markdown-link-check@v1
+    - uses: actions/checkout@v4
+    - name: Run linkspector
+      uses: umbrelladocs/action-linkspector@v1
       with:
-        use-quiet-mode: 'yes'
-        use-verbose-mode: 'yes'
-        config-file: '.markdownlinkcheck.json'
-        file-extension: '.md'
+        reporter: github-pr-review
+        fail_on_error: true
+        config_file: '.linkspector.yml'
   markdown-lint:
     runs-on: ubuntu-latest
     steps:

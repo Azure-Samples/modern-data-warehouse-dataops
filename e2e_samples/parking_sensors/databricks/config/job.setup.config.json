@@ -1,0 +1,14 @@
+{
+  "name": "databricks_job_setup",
+  "timeout_seconds": 3600,
+  "max_concurrent_runs": 1,
+  "tasks": [{
+      "task_key": "run-setup-nb",
+      "run_if": "ALL_SUCCESS",
+      "notebook_task": {
+        "notebook_path": "",
+        "source": "WORKSPACE"
+    },
+    "existing_cluster_id": ""
+    }]  
+}
