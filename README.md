@@ -33,8 +33,6 @@ The samples are either focused on a single azure service (**Single Tech Samples*
   - [Feature engineering on Microsoft Fabric](./single_tech_samples/fabric/feature_engineering_on_fabric/README.md)
 - [Azure SQL database](./single_tech_samples/azuresql/README.md)
   - [CI/CD - Azure SQL database](./single_tech_samples/azuresql/azuresql_ci_cd/README.md)
-- [Azure Databricks](single_tech_samples/databricks/)
-  - [IaC - Basic deployment](single_tech_samples/databricks/databricks_ci_cd/README.md)
 - [Azure Data Factory](./single_tech_samples/datafactory/README.md)
   - [CI/CD - Auto publish](./single_tech_samples/datafactory/adf_cicd_auto_publish/README.md)
   - [Data pre-processing using Azure Batch](./single_tech_samples/datafactory/adf_data_pre_processing_with_azure_batch/README.md)
