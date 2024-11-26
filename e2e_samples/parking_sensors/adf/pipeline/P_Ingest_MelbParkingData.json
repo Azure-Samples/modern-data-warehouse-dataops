@@ -91,10 +91,15 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "RestSource",
-						"httpRequestTimeout": "00:01:40",
-						"requestInterval": "00.00:00:00.010"
-					},
+                        "type": "JsonSource",
+                        "storeSettings": {
+                            "type": "HttpReadSettings",
+                            "requestMethod": "GET"
+                        },
+                        "formatSettings": {
+                            "type": "JsonReadSettings"
+                        }
+                    },
 					"sink": {
 						"type": "AzureBlobFSSink"
 					},
@@ -103,10 +108,7 @@
 				"inputs": [
 					{
 						"referenceName": "Ds_Http_Parking_Bay",
-						"type": "DatasetReference",
-						"parameters": {
-							"relativeurl": "on-street-parking-bays/exports/json"
-						}
+						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
@@ -144,11 +146,16 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"source": {
-						"type": "RestSource",
-						"httpRequestTimeout": "00:01:40",
-						"requestInterval": "00.00:00:00.010"
-					},
+                    "source": {
+                        "type": "JsonSource",
+                        "storeSettings": {
+                            "type": "HttpReadSettings",
+                            "requestMethod": "GET"
+                        },
+                        "formatSettings": {
+                            "type": "JsonReadSettings"
+                        }
+                    },
 					"sink": {
 						"type": "AzureBlobFSSink"
 					},
@@ -157,10 +164,7 @@
 				"inputs": [
 					{
 						"referenceName": "Ds_Http_Parking_Bay_Sensors",
-						"type": "DatasetReference",
-						"parameters": {
-							"relativeurl": "on-street-parking-bay-sensors/exports/json"
-						}
+						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
