@@ -194,7 +194,6 @@ validate_password() {
     echo "$password"
 }
 
-
 # ###########################
 # # RETRIEVE DATABRICKS INFORMATION AND CONFIGURE WORKSPACE
 
@@ -238,7 +237,6 @@ databricks_workspace_url=$(echo "$arm_output" | jq -r '.properties.outputs.datab
 
 databricks_workspace_name="${PROJECT}-dbw-${ENV_NAME}-${DEPLOYMENT_ID}"
 databricks_complete_url="https://$databricks_workspace_url/aad/auth?has=&Workspace=/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$resource_group_name/providers/Microsoft.Databricks/workspaces/$databricks_workspace_name&WorkspaceResourceGroupUri=/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$$resource_group_name&l=en"
-
 NC='\033[0m' # No Color
 GREEN='\033[0;32m'
 # Display the URL
@@ -268,6 +266,11 @@ KEYVAULT_RESOURCE_ID=$(echo "$arm_output" | jq -r '.properties.outputs.keyvault_
 
 ####################
 # DATA FACTORY
+databricks_folder_name="/Users/${kv_owner_name,,}"
+databricks_folder_name_standardize="${databricks_folder_name}/02_standardize.py"
+databricks_folder_name_transform="${databricks_folder_name}/03_transform.py"
+echo "databricks_folder_name_standardize: ${databricks_folder_name_standardize}"
+echo "databricks_folder_name_transform: ${databricks_folder_name_transform}"
 
 echo "Updating Data Factory LinkedService to point to newly deployed resources (KeyVault and DataLake)."
 # Create a copy of the ADF dir into a .tmp/ folder.
@@ -275,15 +278,20 @@ adfTempDir=.tmp/adf
 mkdir -p $adfTempDir && cp -a adf/ .tmp/
 # Update ADF LinkedServices to point to newly deployed Datalake URL, KeyVault URL, and Databricks workspace URL
 tmpfile=.tmpfile
+tmpfile2=.tmpfile2
 adfLsDir=$adfTempDir/linkedService
+adfPlDir=$adfTempDir/pipeline
 jq --arg kvurl "$kv_dns_name" '.properties.typeProperties.baseUrl = $kvurl' $adfLsDir/Ls_KeyVault_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_KeyVault_01.json
 jq --arg databricksWorkspaceUrl "$databricks_host" '.properties.typeProperties.domain = $databricksWorkspaceUrl' $adfLsDir/Ls_AzureDatabricks_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AzureDatabricks_01.json
 jq --arg databricksWorkspaceResourceId "$databricks_workspace_resource_id" '.properties.typeProperties.workspaceResourceId = $databricksWorkspaceResourceId' $adfLsDir/Ls_AzureDatabricks_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AzureDatabricks_01.json
 jq --arg datalakeUrl "https://$azure_storage_account.dfs.core.windows.net" '.properties.typeProperties.url = $datalakeUrl' $adfLsDir/Ls_AdlsGen2_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AdlsGen2_01.json
+jq --arg databricks_folder_name_standardize "$databricks_folder_name_standardize" '.properties.activities[0].typeProperties.notebookPath = $databricks_folder_name_standardize' $adfPlDir/P_Ingest_MelbParkingData.json > "$tmpfile" && mv "$tmpfile" $adfPlDir/P_Ingest_MelbParkingData.json
+jq --arg databricks_folder_name_transform  "$databricks_folder_name_transform" '.properties.activities[4].typeProperties.notebookPath = $databricks_folder_name_transform' $adfPlDir/P_Ingest_MelbParkingData.json > "$tmpfile" && mv "$tmpfile" $adfPlDir/P_Ingest_MelbParkingData.json
 
 datafactory_name=$(echo "$arm_output" | jq -r '.properties.outputs.datafactory_name.value')
 az keyvault secret set --vault-name "$kv_name" --name "adfName" --value "$datafactory_name"
 
+echo $adfTempDir
 # Deploy ADF artifacts
 AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID \
 RESOURCE_GROUP_NAME=$resource_group_name \
@@ -292,7 +300,6 @@ ADF_DIR=$adfTempDir \
     bash -c "./scripts/deploy_adf_artifacts.sh"
 
 # ADF SP for integration tests
-
 echo "Create Service Principal (SP) for Data Factory"
 max_retries=2
 retry_count=0
@@ -310,6 +317,7 @@ sp_adf_tenant=$(echo "$sp_adf_out" | jq -r '.tenant')
 sp_adf_pass=$(validate_password "$sp_adf_pass")
 
 echo "ADF - Valid password obtained"
+
 
 # Save ADF SP credentials in Keyvault
 az keyvault secret set --vault-name "$kv_name" --name "spAdfName" --value "$sp_adf_name"
@@ -337,6 +345,7 @@ KV_URL=$kv_dns_name \
 DATABRICKS_TOKEN=$databricks_token \
 DATABRICKS_HOST=$databricks_host \
 DATABRICKS_WORKSPACE_RESOURCE_ID=$databricks_workspace_resource_id \
+DATABRICKS_CLUSTER_ID=$(echo "$arm_output" | jq -r '.properties.outputs.databricks_cluster_id.value') \
 SQL_SERVER_NAME=$sql_server_name \
 SQL_SERVER_USERNAME=$sql_server_username \
 SQL_SERVER_PASSWORD=$AZURESQL_SERVER_PASSWORD \
