@@ -178,6 +178,8 @@ az keyvault secret set --vault-name "$kv_name" --name "applicationInsightsConnec
 # ###########################
 echo "validate_password function..."
 # ###########################
+###if there is an hyphen in the first position replace by R
+# ###########################
 validate_password() {
     local password="$1"
     echo "Validating...$password"
@@ -197,11 +199,8 @@ validate_password() {
 # # RETRIEVE DATABRICKS INFORMATION AND CONFIGURE WORKSPACE
 
 # Note: SP is required because Credential Passthrough does not support ADF (MSI) as of July 2021
-echo "Creating Service Principal (SP) for access to ADLA Gen2 used in Databricks mounting"
+echo "Creating Service Principal (SP) for access to ADLS Gen2 used in Databricks mounting"
 
-# ###########################
-###if there is an hyphen in the first position replace by R
-# ###########################
 stor_id=$(az storage account show \
     --name "$azure_storage_account" \
     --resource-group "$resource_group_name" \
@@ -297,9 +296,6 @@ ADF_DIR=$adfTempDir \
 echo "Create Service Principal (SP) for Data Factory"
 max_retries=2
 retry_count=0
-# ###########################
-###if there is an hyphen retry and recreate the SP with a new password
-# ###########################
 sp_adf_name="${PROJECT}-adf-${ENV_NAME}-${DEPLOYMENT_ID}-sp"
 sp_adf_out=$(az ad sp create-for-rbac \
     --role "Data Factory contributor" \
