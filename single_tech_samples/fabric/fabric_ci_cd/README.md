@@ -68,7 +68,7 @@ Here are the steps to use the bootstrap script:
     # Repo clone
     git clone https://github.com/Azure-Samples/modern-data-warehouse-dataops.git
     ```
-
+Note: While running the az login --tenant command you may be prompted for a number that refers to the Subscription ID. If you are prompted for this number then there is no need to run the az account set command again.
 1. Change the directory to the sample folder:
 
     ```bash
