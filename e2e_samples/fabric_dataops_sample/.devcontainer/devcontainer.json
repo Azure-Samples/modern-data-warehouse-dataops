@@ -1,5 +1,5 @@
 {
-    "name": "MDE - Fabric DataOps Sample- dummycomment",
+    "name": "MDE - Fabric DataOps Sample",
     "dockerComposeFile": "./docker-compose.yaml",
     "service": "fabric_dataops_sample_dc",
     "workspaceFolder": "/workspace/",
