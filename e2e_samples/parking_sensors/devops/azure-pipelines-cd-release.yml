@@ -13,7 +13,7 @@ resources:
   - repository: mdwdataops_adfpublish
     type: github
     endpoint: mdwdops-github
-    name: devlace/mdw-dataops-clone
+    name: elenaterenzi/modern-data-warehouse-dataops
     ref: adf_publish
 
 # The deployment script sets this as a Pipeline Variable, but you may choose to set it here in the definition
