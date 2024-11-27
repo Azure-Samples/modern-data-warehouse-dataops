@@ -57,16 +57,19 @@ Refer to the [know issues, limitations, and workarounds](./issues-limitations-an
 
 Here are the steps to use the bootstrap script:
 
-1. Clone the repository:
+1. Clone the repository and get the subscription information for your environment variables:
 
     ```bash
     # Optional
     az login --tenant "<tenant_id>"
     az account set -s "<subscription_id>"
+    az account show
     cd "<installation_folder>"
     # Repo clone
     git clone https://github.com/Azure-Samples/modern-data-warehouse-dataops.git
     ```
+
+Note: While running the az login --tenant command you may be prompted for a number that refers to the Subscription ID. If you are prompted for this number then there is no need to run the az account set command again.
 
 1. Change the directory to the sample folder:
 
@@ -330,6 +333,12 @@ To automate this process to some extent, you can use the [update-token-to-azdo-v
 
 - Prompts the user to run `az login` interactively and generates the Fabric bearer token with the appropriate scope.
 - Adds or updates the "token" variable in the Azure DevOps variable group, marking it as "secret".
+- In order to run this script you will need to retrieve and modify the following variables at the beginning of the script:
+  - organization_url="<AZURE_DEVOPS_ORGANIZATION_URL>"
+  - tenant_id="<TENANT_ID>"
+  - project="<AZURE_DEVOPS_PROJECT_NAME>"
+  - variable_group_name="<AZURE_DEVOPS_VARIABLE_GROUP_NAME>"
+  - variable_name="token"
 
 You can modify this script to update the "token" variable in your Azure DevOps variable group(s) by running it before triggering the Azure DevOps pipeline. It is recommended that this script be run by a user with the "Fabric administrator" role and "Edit" permissions on the Azure DevOps variable group(s).
 
