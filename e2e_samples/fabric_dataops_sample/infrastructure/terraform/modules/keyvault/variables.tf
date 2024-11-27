@@ -18,11 +18,6 @@ variable "tenant_id" {
   type        = string
 }
 
-variable "object_id" {
-  description = "The Object ID to assign permissions to"
-  type        = string
-}
-
 variable "purge_protection_enabled" {
   description = "Whether to enable or not KeyVault purge protection"
   type        = bool

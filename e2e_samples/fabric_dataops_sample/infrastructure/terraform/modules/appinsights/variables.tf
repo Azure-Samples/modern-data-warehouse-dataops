@@ -1,5 +1,5 @@
 variable "name" {
-  description = "the name of the Application Insights component"
+  description = "The name of the Application Insights component"
   type        = string
 }
 

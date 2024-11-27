@@ -89,3 +89,8 @@ variable "git_directory_name" {
   type        = string
   description = "The directory name for Fabric artifacts"
 }
+
+variable "kv_appinsights_connection_string_name" {
+  type        = string
+  description = "Key Vault secret name for Application Insights connection string"
+}

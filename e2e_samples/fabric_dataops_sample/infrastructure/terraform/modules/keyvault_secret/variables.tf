@@ -1,3 +1,9 @@
+variable "enable" {
+  type        = bool
+  description = "whether this module should do anything at all"
+  default     = false
+}
+
 variable "name" {
   description = "The name of the Key Vault Secret. Changing this forces a new resource to be created."
   type        = string

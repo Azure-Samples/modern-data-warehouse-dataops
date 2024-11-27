@@ -21,20 +21,21 @@
 [DEFAULT]
 service_name = parking_sensors_fabric_e2e
 service_version = 0.1
-workspace_name = {{ .workspace_name }}
-workspace_id = {{ .workspace_id }}
-lakehouse_name = {{ .lakehouse_name }}
-lakehouse_id = {{ .lakehouse_id }}
+workspace_name = <workspace-name>
+workspace_id = <workspace-id>
+lakehouse_name = <lakehouse-name>
+lakehouse_id = <lakehouse-id>
 
 [keyvault]
-name = parking-sensor
+name = <keyvault-name>
 uri = https://${keyvault:name}.vault.azure.net/
 
 [setup]
 # --------- Globals for nb-010-setup.ipynb
 process_name = nb-010-setup
 # ddl file path is relative to the attached lakehouse's Files/ location
-ddl_file = sc-adls-main/config/lakehouse_ddls.yaml
+adls_shortcut_name = <adls-shortcut-name>
+ddl_file = ${setup:adls_shortcut_name}/config/lakehouse_ddls.yaml
 
 [standardize]
 # --------- Globals for nb-020-standardize.ipynb
@@ -45,4 +46,4 @@ process_name = nb-020-standardize
 process_name = nb-030-transform
 
 [otel]
-appinsights_connection_name = app-insights-connection-string
+appinsights_connection_name = <appinsights-connection-string>

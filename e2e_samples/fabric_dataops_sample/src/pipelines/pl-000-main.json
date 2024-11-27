@@ -64,7 +64,7 @@
           "secureInput": false,
           "secureOutput": false
         },
-        "name": "nb-000-setup",
+        "name": "nb-010-setup",
         "dependsOn": []
       },
       {
@@ -133,7 +133,7 @@
         "name": "nb-020-standardize",
         "dependsOn": [
           {
-            "activity": "nb-000-setup",
+            "activity": "nb-010-setup",
             "dependencyConditions": [
               "Succeeded"
             ]
