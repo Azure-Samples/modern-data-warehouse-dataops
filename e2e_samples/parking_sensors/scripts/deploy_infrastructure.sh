@@ -28,7 +28,7 @@
 set -o errexit
 set -o pipefail
 set -o nounset
-#set -o xtrace # For debugging
+##set -o xtrace # For debugging
 
 ###################
 # REQUIRED ENV VARIABLES:
@@ -178,20 +178,20 @@ az keyvault secret set --vault-name "$kv_name" --name "applicationInsightsConnec
 # ###########################
 echo "validate_password function..."
 # ###########################
-###if there is an hyphen in the first position replace by R
+###if there is an hyphen reset
 # ###########################
 validate_password() {
     local password="$1"
-    echo "Validating...$password"
-
+    local sprincipal="$2"
+   
     if [[ -z "$password" || "${password:0:1}" == "-" ]]; then
-        ### if there is a hyphen retry
-        echo "Invalid password. The first character cannot be a hyphen. Replacing..."
-        password="R${password:1}"
-        echo "$password"
+       local sp_stor_outval
+       sp_stor_outval=$(az ad sp credential reset --id "$sprincipal" )
+       password=$(echo "$sp_stor_outval" | jq -r '.password')
+       echo "$password"
     fi
-    echo "Password Validated"
-    echo "$password"
+       echo "$password"
+     
 }
 
 # ###########################
@@ -219,7 +219,8 @@ sp_stor_pass=$(echo "$sp_stor_out" | jq -r '.password')
 sp_stor_tenant=$(echo "$sp_stor_out" | jq -r '.tenant')
 
 # Validate the password
-sp_stor_pass=$(validate_password "$sp_stor_pass")
+sp_stor_pass=$(validate_password "$sp_stor_pass" "$sp_stor_id" )
+
 
 echo "ADLS - Valid password obtained"
 
@@ -301,8 +302,6 @@ ADF_DIR=$adfTempDir \
 
 # ADF SP for integration tests
 echo "Create Service Principal (SP) for Data Factory"
-max_retries=2
-retry_count=0
 sp_adf_name="${PROJECT}-adf-${ENV_NAME}-${DEPLOYMENT_ID}-sp"
 sp_adf_out=$(az ad sp create-for-rbac \
     --role "Data Factory contributor" \
@@ -314,7 +313,8 @@ sp_adf_pass=$(echo "$sp_adf_out" | jq -r '.password')
 sp_adf_tenant=$(echo "$sp_adf_out" | jq -r '.tenant')
 
 # Validate the password
-sp_adf_pass=$(validate_password "$sp_adf_pass")
+sp_adf_pass=$(validate_password "$sp_stor_pass" "$sp_stor_id" )
+
 
 echo "ADF - Valid password obtained"
 
@@ -360,7 +360,8 @@ SP_ADF_TENANT=$sp_adf_tenant \
 
 
 ####################
-# BUILD ENV FILE FROM CONFIG INFORMATION
+#####BUILD ENV FILE FROM CONFIG INFORMATION
+####################
 
 env_file=".env.${ENV_NAME}"
 echo "Appending configuration to .env file."
