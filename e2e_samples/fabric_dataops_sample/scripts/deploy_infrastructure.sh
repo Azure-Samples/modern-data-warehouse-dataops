@@ -106,7 +106,7 @@ deploy_terraform_resources() {
     -var "client_secret=$client_secret" \
     -var "fabric_workspace_admin_sg_name=$fabric_workspace_admin_sg_name" \
     -var "create_fabric_capacity=$create_fabric_capacity" \
-    -var "fabric_capacity_name=$fabric_capacity_name" \
+    -var "fabric_capacity_name=$existing_fabric_capacity_name" \
     -var "fabric_capacity_admins=$fabric_capacity_admins" \
     -var "git_organization_name=$git_organization_name" \
     -var "git_project_name=$git_project_name" \
