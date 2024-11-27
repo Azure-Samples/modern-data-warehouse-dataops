@@ -182,16 +182,15 @@ echo "validate_password function..."
 # ###########################
 validate_password() {
     local password="$1"
-    echo "Validating...$password"
+    #echo "Validating...$password"
 
     if [[ -z "$password" || "${password:0:1}" == "-" ]]; then
-        ### if there is a hyphen retry
-        echo "Invalid password. The first character cannot be a hyphen. Replacing..."
         password="R${password:1}"
         echo "$password"
+        #echo "Invalid password. The first character cannot be a hyphen. Replacing..."
     fi
-    echo "Password Validated"
-    echo "$password"
+        echo "$password"
+        #echo "Password Validated"
 }
 
 # ###########################
