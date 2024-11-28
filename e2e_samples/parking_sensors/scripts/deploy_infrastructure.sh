@@ -46,7 +46,7 @@ set -o nounset
 #####################
 
 # ###########################
-echo "validate_password function..."
+echo "Creation of validate_password function..."
 # ###########################
 ###if there is an hyphen reset until valid password in found in case of error empty the pwd.
 # ###########################
