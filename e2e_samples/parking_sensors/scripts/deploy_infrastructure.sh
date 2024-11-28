@@ -325,7 +325,7 @@ sp_adf_pass=$(echo "$sp_adf_out" | jq -r '.password')
 sp_adf_tenant=$(echo "$sp_adf_out" | jq -r '.tenant')
 
 # Validate the password
-sp_adf_pass=$(validate_password "$sp_stor_pass" "$sp_stor_id" )
+sp_adf_pass=$(validate_password "$sp_adf_pass" "$sp_adf_id" )
 
 
 echo "ADF - Valid password obtained"
