@@ -59,4 +59,9 @@ To be agreed
 
 ## Next steps
 
-If accepted, the naming convention details will be included in the CONTRIBUTING.md file.
+If accepted:
+
+- The naming convention will be followed for all existing components in the Fabric E2E sample.
+- The naming convention will be followed for all new components added to the Fabric E2E sample.
+- The main [README.md](./../README.md) will be updated with the default resource naming.
+- The team will discuss the possibility of adopting the naming convention for the whole MDE repository.
