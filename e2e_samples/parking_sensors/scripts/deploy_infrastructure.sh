@@ -178,20 +178,25 @@ az keyvault secret set --vault-name "$kv_name" --name "applicationInsightsConnec
 # ###########################
 echo "validate_password function..."
 # ###########################
-###if there is an hyphen reset
+###if there is an hyphen reset until valid password in found in case of error empty the pwd.
 # ###########################
+
 validate_password() {
     local password="$1"
     local sprincipal="$2"
-   
-    if [[ -z "$password" || "${password:0:1}" == "-" ]]; then
-       local sp_stor_outval
-       sp_stor_outval=$(az ad sp credential reset --id "$sprincipal" )
-       password=$(echo "$sp_stor_outval" | jq -r '.password')
-       echo "$password"
-    fi
-       echo "$password"
-     
+
+   while [[ -z "$password" || "${password:0:1}" == "-" ]]; do
+      local sp_stor_outval
+      sp_stor_outval=$(az ad sp credential reset --id "$sprincipal" 2>/dev/null)
+         
+      if [[ $? -ne 0 ]]; then
+            echo "Error: Failed to reset credentials for Service Principal: $sprincipal" >&2
+            password=""  
+            break  
+      fi
+      password=$(echo "$sp_stor_outval" | jq -r '.password')
+   done
+   echo "$password"
 }
 
 # ###########################
