@@ -42,7 +42,36 @@ set -o nounset
 
 
 #####################
-# DEPLOY ARM TEMPLATE
+### Function to validate the password
+#####################
+
+# ###########################
+echo "validate_password function..."
+# ###########################
+###if there is an hyphen reset until valid password in found in case of error empty the pwd.
+# ###########################
+
+validate_password() {
+    local password="$1"
+    local sprincipal="$2"
+
+   while [[ -z "$password" || "${password:0:1}" == "-" ]]; do
+      local sp_stor_outval
+      sp_stor_outval=$(az ad sp credential reset --id "$sprincipal" 2>/dev/null)
+         
+      if [[ $? -ne 0 ]]; then
+            echo "Error: Failed to reset credentials for Service Principal: $sprincipal" >&2
+            password=""  
+            break  
+      fi
+      password=$(echo "$sp_stor_outval" | jq -r '.password')
+   done
+   echo "$password"
+}
+
+#####################
+### DEPLOY ARM TEMPLATE
+#####################
 
 # Set account to where ARM template will be deployed to
 echo "Deploying to Subscription: $AZURE_SUBSCRIPTION_ID"
@@ -175,29 +204,7 @@ appinsights_connstr=$(az monitor app-insights component show \
 az keyvault secret set --vault-name "$kv_name" --name "applicationInsightsKey" --value "$appinsights_key"
 az keyvault secret set --vault-name "$kv_name" --name "applicationInsightsConnectionString" --value "$appinsights_connstr"
 
-# ###########################
-echo "validate_password function..."
-# ###########################
-###if there is an hyphen reset until valid password in found in case of error empty the pwd.
-# ###########################
 
-validate_password() {
-    local password="$1"
-    local sprincipal="$2"
-
-   while [[ -z "$password" || "${password:0:1}" == "-" ]]; do
-      local sp_stor_outval
-      sp_stor_outval=$(az ad sp credential reset --id "$sprincipal" 2>/dev/null)
-         
-      if [[ $? -ne 0 ]]; then
-            echo "Error: Failed to reset credentials for Service Principal: $sprincipal" >&2
-            password=""  
-            break  
-      fi
-      password=$(echo "$sp_stor_outval" | jq -r '.password')
-   done
-   echo "$password"
-}
 
 # ###########################
 # # RETRIEVE DATABRICKS INFORMATION AND CONFIGURE WORKSPACE
