@@ -32,6 +32,18 @@ As the Fabric E2E sample is a complex solution with multiple components, it is i
 | Configuration files | kebab-case | Use lowercase and "-" | `dataops-config.cfg` |
 | Wheel files | [pep-427](https://peps.python.org/pep-0427/) | {distribution}-{version}(-{build tag})?-{python tag}-{abi tag}-{platform tag}.whl | `azure_monitor_opentelemetry-1.6.1-py3-none-any.whl` |
 
+### Variables/Functions naming convention
+
+| Variable Type | Convention | Additional Details | Example |
+| --- | --- | --- | --- |
+| Environment variables | UPPER_SNAKE_CASE | Use uppercase and "_" | `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET` |
+| Shell script variables to read Terraform output | `tf_`snake_case | Prefix with "tf_" | `tf_storage_account_name` |
+| Shell/Python script variables (in general) | snake_case | Use lowercase and "_" | `storage_account_name` |
+| PowerShell script variables | `$`camelCase |  | `$storageAccountName` |
+| Shell/Python Functions | snake_case | Use lowercase and "_" | `get_storage_account_name` |
+| PowerShell Functions | PascalCase | Use "Verb-Noun" structure | `Get-StorageAccountName` |
+| Terraform variables | snake_case | Use lowercase and "-" | `environment_name` |
+
 ### Azure/Fabric resource naming convention
 
 | Resource/Item Name | Convention | Default Name |
