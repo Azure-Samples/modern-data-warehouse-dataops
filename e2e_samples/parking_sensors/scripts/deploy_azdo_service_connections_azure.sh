@@ -62,10 +62,11 @@ az_sp_tenant_id=$(echo "$az_sp" | jq -r '.tenant')
 azure_devops_ext_azure_rm_service_principal_key=$(echo "$az_sp" | jq -r '.password')
 export AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY=$azure_devops_ext_azure_rm_service_principal_key
 
-if sc_id=$(az devops service-endpoint list -o tsv | grep "$az_service_connection_name" | awk '{print $3}'); then
-    echo "Service connection: $az_service_connection_name already exists. Deleting..."
+if sc_id=$(az devops service-endpoint list -o json | jq -r -e --arg sc_name "$az_service_connection_name" '.[] | select(.name==$sc_name) | .id'); then
+    echo "Service connection: $az_service_connection_name already exists. Deleting service connection id $sc_id ..."
     az devops service-endpoint delete --id "$sc_id" -y
 fi
+
 echo "Creating Azure service connection Azure DevOps"
 sc_id=$(az devops service-endpoint azurerm create \
     --name "$az_service_connection_name" \

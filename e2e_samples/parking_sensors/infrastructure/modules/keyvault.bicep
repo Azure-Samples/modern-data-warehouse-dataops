@@ -11,9 +11,10 @@ param deployment_id string
 param keyvault_owner_object_id string
 param datafactory_principal_id string
 param enable_soft_delete bool = true
+param enable_purge_protection bool = true
 
 
-resource keyvault 'Microsoft.KeyVault/vaults@2019-09-01' = {
+resource keyvault 'Microsoft.KeyVault/vaults@2023-07-01' = {
   name: '${project}-kv-${env}-${deployment_id}'
   location: location
   tags: {
@@ -26,6 +27,7 @@ resource keyvault 'Microsoft.KeyVault/vaults@2019-09-01' = {
       name: 'standard'
     }
     enableSoftDelete: enable_soft_delete
+    enablePurgeProtection: enable_soft_delete && enable_purge_protection ? true : null
     enabledForTemplateDeployment: true
     tenantId: subscription().tenantId
     accessPolicies: [

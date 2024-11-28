@@ -41,5 +41,8 @@ AZDO_ORGANIZATION_URL=
 # Password of the SQL Server instance. Default: random string
 # AZURESQL_SERVER_PASSWORD=
 
-# Whether to enable or not Keyvault Soft Delete. Deault: true
-# ENABLE_KEYVAULT_SOFT_DELETE
+# Whether to enable or not Keyvault Soft Delete. Deault if unset: true
+# ENABLE_KEYVAULT_SOFT_DELETE=
+
+# Whether to enable or not Keyvault Purge Protection. Default if unset: true
+# ENABLE_KEYVAULT_PURGE_PROTECTION=
