@@ -42,34 +42,6 @@ set -o nounset
 
 
 #####################
-### Function to validate the password
-#####################
-
-# ###########################
-echo "Creation of validate_password function..."
-# ###########################
-###if there is an hyphen reset until valid password in found in case of error empty the pwd.
-# ###########################
-
-validate_password() {
-    local password="$1"
-    local sprincipal="$2"
-
-   while [[ -z "$password" || "${password:0:1}" == "-" ]]; do
-      local sp_stor_outval
-      sp_stor_outval=$(az ad sp credential reset --id "$sprincipal" 2>/dev/null)
-         
-      if [[ $? -ne 0 ]]; then
-            echo "Error: Failed to reset credentials for Service Principal: $sprincipal" >&2
-            password=""  
-            break  
-      fi
-      password=$(echo "$sp_stor_outval" | jq -r '.password')
-   done
-   echo "$password"
-}
-
-#####################
 ### DEPLOY ARM TEMPLATE
 #####################
 
@@ -230,16 +202,12 @@ sp_stor_id=$(echo "$sp_stor_out" | jq -r '.appId')
 sp_stor_pass=$(echo "$sp_stor_out" | jq -r '.password')
 sp_stor_tenant=$(echo "$sp_stor_out" | jq -r '.tenant')
 
-# Validate the password
-sp_stor_pass=$(validate_password "$sp_stor_pass" "$sp_stor_id" )
-
-
 echo "ADLS - Valid password obtained"
 
 
 az keyvault secret set --vault-name "$kv_name" --name "spStorName" --value "$sp_stor_name"
 az keyvault secret set --vault-name "$kv_name" --name "spStorId" --value "$sp_stor_id"
-az keyvault secret set --vault-name "$kv_name" --name "spStorPass" --value "$sp_stor_pass"
+az keyvault secret set --vault-name "$kv_name" --name "spStorPass" --value="$sp_stor_pass" ##=handles hyphen passwords
 az keyvault secret set --vault-name "$kv_name" --name "spStorTenantId" --value "$sp_stor_tenant"
 
 echo "Generate Databricks token"
@@ -324,17 +292,13 @@ sp_adf_id=$(echo "$sp_adf_out" | jq -r '.appId')
 sp_adf_pass=$(echo "$sp_adf_out" | jq -r '.password')
 sp_adf_tenant=$(echo "$sp_adf_out" | jq -r '.tenant')
 
-# Validate the password
-sp_adf_pass=$(validate_password "$sp_adf_pass" "$sp_adf_id" )
-
-
 echo "ADF - Valid password obtained"
 
 
 # Save ADF SP credentials in Keyvault
 az keyvault secret set --vault-name "$kv_name" --name "spAdfName" --value "$sp_adf_name"
 az keyvault secret set --vault-name "$kv_name" --name "spAdfId" --value "$sp_adf_id"
-az keyvault secret set --vault-name "$kv_name" --name "spAdfPass" --value "$sp_adf_pass"
+az keyvault secret set --vault-name "$kv_name" --name "spAdfPass" --value="$sp_adf_pass"##=handles hyphen passwords
 az keyvault secret set --vault-name "$kv_name" --name "spAdfTenantId" --value "$sp_adf_tenant"
 
 ####################
