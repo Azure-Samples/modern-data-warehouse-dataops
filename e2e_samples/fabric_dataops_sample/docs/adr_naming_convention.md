@@ -21,16 +21,16 @@ As the Fabric E2E sample is a complex solution with multiple components, it is i
 
 | Item Type | Convention | Additional Details | Example |
 | --- | --- | --- | --- |
-| Folders | **snake_case** | Use lowercase and "_" | `fabric_dataops_sample`, `dataops_pipeline` |
-| Markdown files | **snake-case** | Use lowercase and "_" | "README.md", `naming_convention.md` |
-| Python scripts | **snake_case** | Use lowercase and "_" | `setup_fabric_environment.py` |
-| Shell scripts | **snake_case** | Use lowercase and "_" | `deploy_infrastructure.sh` |
-| PowerShell scripts | **PascalCase** | Use "-" and "verb-noun" structure | `Set-DeploymentPipelines.ps1` |
-| Images (diagrams, screenshots etc.) | **kebab-case** | Use lowercase and "-" | `graph-api-permission.png`, `fabric_architecture.drawio`|
-| YAML files | **kebab-case** | Use lowercase and "-" | `deploy-infra.yml` |
-| JSON files | **kebab-case** | Use lowercase and "-" | `fabric-config.json` |
-| Configuration files | **kebab-case** | Use lowercase and "-" | `dataops-config.cfg` |
-| Wheel files | **pep-427** | {distribution}-{version}(-{build tag})?-{python tag}-{abi tag}-{platform tag}.whl | `azure_monitor_opentelemetry-1.6.1-py3-none-any.whl` |
+| Folders | snake_case | Use lowercase and "_" | `fabric_dataops_sample`, `dataops_pipeline` |
+| Markdown files | snake-case | Use lowercase and "_" | "README.md", `adr_naming_convention.md` |
+| Python scripts | snake_case | Use lowercase and "_" | `setup_fabric_environment.py` |
+| Shell scripts | snake_case | Use lowercase and "_" | `deploy_infrastructure.sh` |
+| PowerShell scripts | PascalCase | Use "-" and "verb-noun" structure | `Set-DeploymentPipelines.ps1` |
+| Images (diagrams, screenshots etc.) | kebab-case | Use lowercase and "-" | `graph-api-permission.png`, `fabric-architecture.drawio`|
+| YAML files | kebab-case | Use lowercase and "-" | `deploy-infra.yml` |
+| JSON files | kebab-case | Use lowercase and "-" | `fabric-config.json` |
+| Configuration files | kebab-case | Use lowercase and "-" | `dataops-config.cfg` |
+| Wheel files | [pep-427](https://peps.python.org/pep-0427/) | {distribution}-{version}(-{build tag})?-{python tag}-{abi tag}-{platform tag}.whl | `azure_monitor_opentelemetry-1.6.1-py3-none-any.whl` |
 
 ### Azure/Fabric resource naming convention
 
