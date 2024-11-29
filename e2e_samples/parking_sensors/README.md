@@ -267,7 +267,8 @@ More resources:
    - To further customize the solution, set parameters in `arm.parameters` files located in the `infrastructure` folder.
       - To enable Observability and Monitoring components through code(Observability-as-code), please set enable_monitoring parameter to true in  `arm.parameters` files located in the `infrastructure` folder. This will deploy log analytics workspace to collect monitoring data from key resources, setup an Azure dashboards to monitor key metrics and configure alerts for ADF pipelines.
    - Ensure that:
-      - You have loaded your environment file. To do so run
+      - You have loaded your environment file. To do so run:
+
         ```bash
         source .devcontainer/.env
         ```
