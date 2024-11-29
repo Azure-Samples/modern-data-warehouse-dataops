@@ -6,7 +6,7 @@
 version: '3'
 services:
   parking_sensor_dc:
-    env_file: devcontainer.env
+    env_file: .env
     build:
       context: ../../../
       dockerfile: e2e_samples/parking_sensors/.devcontainer/Dockerfile

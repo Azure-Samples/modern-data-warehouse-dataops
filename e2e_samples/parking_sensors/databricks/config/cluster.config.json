@@ -3,7 +3,7 @@
     "autoscale": { "min_workers": 1, "max_workers": 2 },
     "spark_version": "14.3.x-scala2.12",
     "autotermination_minutes": 30,
-    "node_type_id": "Standard_DC4as_v5",
+    "node_type_id": "Standard_D4as_v5",
     "data_security_mode": "SINGLE_USER",
     "runtime_engine": "PHOTON",
     "spark_env_vars": {
