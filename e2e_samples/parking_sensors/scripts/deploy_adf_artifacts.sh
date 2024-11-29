@@ -77,10 +77,11 @@ createLinkedService "Ls_KeyVault_01"
 createLinkedService "Ls_AdlsGen2_01"
 createLinkedService "Ls_AzureSQLDW_01"
 createLinkedService "Ls_AzureDatabricks_01"
-createLinkedService "Ls_Rest_MelParkSensors_01"
+createLinkedService "Ls_Http_Parking_Bay_01"
 # Deploy all Datasets
 createDataset "Ds_AdlsGen2_MelbParkingData"
-createDataset "Ds_REST_MelbParkingData"
+createDataset "Ds_Http_Parking_Bay"
+createDataset "Ds_Http_Parking_Bay_Sensors"
 # Deploy all Pipelines
 createPipeline "P_Ingest_MelbParkingData"
 # Deploy triggers

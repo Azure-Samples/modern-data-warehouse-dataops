@@ -43,7 +43,7 @@
 					},
 					"libraries": [
 						{
-							"egg": "dbfs:/mnt/datalake/sys/databricks/libs/ddo_transform-localdev-py2.py3-none-any.whl"
+							"egg": "dbfs:/ddo_transform-localdev-py2.py3-none-any.whl"
 						},
 						{
 							"pypi": {
@@ -91,10 +91,15 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "RestSource",
-						"httpRequestTimeout": "00:01:40",
-						"requestInterval": "00.00:00:00.010"
-					},
+                        "type": "JsonSource",
+                        "storeSettings": {
+                            "type": "HttpReadSettings",
+                            "requestMethod": "GET"
+                        },
+                        "formatSettings": {
+                            "type": "JsonReadSettings"
+                        }
+                    },
 					"sink": {
 						"type": "AzureBlobFSSink"
 					},
@@ -102,11 +107,8 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "Ds_REST_MelbParkingData",
-						"type": "DatasetReference",
-						"parameters": {
-							"relativeurl": "dtpv-d4pf.json"
-						}
+						"referenceName": "Ds_Http_Parking_Bay",
+						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
@@ -144,11 +146,16 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"source": {
-						"type": "RestSource",
-						"httpRequestTimeout": "00:01:40",
-						"requestInterval": "00.00:00:00.010"
-					},
+                    "source": {
+                        "type": "JsonSource",
+                        "storeSettings": {
+                            "type": "HttpReadSettings",
+                            "requestMethod": "GET"
+                        },
+                        "formatSettings": {
+                            "type": "JsonReadSettings"
+                        }
+                    },
 					"sink": {
 						"type": "AzureBlobFSSink"
 					},
@@ -156,11 +163,8 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "Ds_REST_MelbParkingData",
-						"type": "DatasetReference",
-						"parameters": {
-							"relativeurl": "wuf8-susg.json"
-						}
+						"referenceName": "Ds_Http_Parking_Bay_Sensors",
+						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
@@ -207,7 +211,7 @@
 					},
 					"libraries": [
 						{
-							"egg": "dbfs:/mnt/datalake/sys/databricks/libs/ddo_transform-localdev-py2.py3-none-any.whl"
+							"egg": "dbfs:/ddo_transform-localdev-py2.py3-none-any.whl"
 						},
 						{
 							"pypi": {

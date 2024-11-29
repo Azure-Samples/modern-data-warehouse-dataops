@@ -44,10 +44,11 @@ set -o xtrace # For debugging
 github_sc_name="${PROJECT}-github"
 export AZURE_DEVOPS_EXT_GITHUB_PAT=$GITHUB_PAT_TOKEN
 
-if sc_id=$(az devops service-endpoint list -o tsv | grep "$github_sc_name" | awk '{print $3}'); then
-    echo "Service connection: $github_sc_name already exists. Deleting..."
+if sc_id=$(az devops service-endpoint list -o json | jq -r -e --arg sc_name "$github_sc_name" '.[] | select(.name==$sc_name) | .id'); then
+    echo "Service connection: $github_sc_name already exists. Deleting service connection id $sc_id ..."
     az devops service-endpoint delete --id "$sc_id" -y
 fi
+
 echo "Creating Github service connection: $github_sc_name in Azure DevOps"
 github_sc_id=$(az devops service-endpoint github create \
     --name "$github_sc_name" \

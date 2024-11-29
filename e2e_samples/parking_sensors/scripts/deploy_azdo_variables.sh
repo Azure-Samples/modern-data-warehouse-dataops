@@ -44,6 +44,7 @@ set -o xtrace # For debugging
 # DATABRICKS_HOST
 # DATABRICKS_TOKEN
 # DATABRICKS_WORKSPACE_RESOURCE_ID
+# DATABRICKS_CLUSTER_ID
 # SQL_SERVER_NAME
 # SQL_SERVER_USERNAME
 # SQL_SERVER_PASSWORD
@@ -69,6 +70,8 @@ else
     databricksNotebookPath='/releases/$(Build.BuildId)'
 fi
 
+databricksClusterId="$DATABRICKS_CLUSTER_ID"
+
 # Create vargroup
 vargroup_name="${PROJECT}-release-$ENV_NAME"
 if vargroup_id=$(az pipelines variable-group list -o tsv | grep "$vargroup_name" | awk '{print $3}'); then
@@ -85,6 +88,7 @@ az pipelines variable-group create \
         adfName="$DATAFACTORY_NAME" \
         databricksDbfsLibPath="$databricksDbfsLibPath" \
         databricksNotebookPath="$databricksNotebookPath" \
+        databricksClusterId="$databricksClusterId" \
         apiBaseUrl="$apiBaseUrl" \
     --output json
 
