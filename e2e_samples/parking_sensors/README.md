@@ -249,7 +249,7 @@ More resources:
       - **TENANT_ID** - an Entra ID. Used to login to a specific tenant with Azure CLI
       - **AZURE_SUBSCRIPTION_ID** - Azure subscription id to use to deploy resources. Default: default azure subscription.
       - **AZDO_PROJECT** - Target Azure DevOps project where Azure Pipelines and Variable groups will be deployed
-      - **AZDO_ORGANIZATION_URL** - Target Azure DevOps Organization of Azure DevOps project in this form `https://dev.azure.com/<organization>/`. (ei. https://dev.azure.com/my_azdo_org/). Must be in the same tenant as $TENANT_ID
+      - **AZDO_ORGANIZATION_URL** - Target Azure DevOps Organization of Azure DevOps project in this form `https://dev.azure.com/<organization>/`. Must be in the same tenant as $TENANT_ID
       - **GITHUB_REPO** - Name of your forked github repo in this form `<my_github_handle>/<repo>`. (ei. "devlace/mdw-dataops-import")
       - **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). The token is needed to connect to the GitHub repository. When generating a token use a `fine-grained` token, select your repository and under repository permissions select Read access to Content and Webhooks. Under Account permissions select read access to Email.
 
@@ -267,7 +267,8 @@ More resources:
    - To further customize the solution, set parameters in `arm.parameters` files located in the `infrastructure` folder.
       - To enable Observability and Monitoring components through code(Observability-as-code), please set enable_monitoring parameter to true in  `arm.parameters` files located in the `infrastructure` folder. This will deploy log analytics workspace to collect monitoring data from key resources, setup an Azure dashboards to monitor key metrics and configure alerts for ADF pipelines.
    - Ensure that:
-      - You have loaded your environment file. To do so run
+      - You have loaded your environment file. To do so run:
+
         ```bash
         source .devcontainer/.env
         ```
@@ -278,20 +279,27 @@ More resources:
         az config set core.login_experience_v2=off
         az login --tenant $TENANT_ID
         az config set core.login_experience_v2=on
+        az config set core.login_experience_v2=off
+        az login --tenant $TENANT_ID
+        az config set core.login_experience_v2=on
         ```
 
       - Azure CLI is targeting the Azure Subscription you want to deploy the resources to. To set target Azure Subscription, run
 
         ```bash
         az account set -s $AZURE_SUBSCRIPTION_ID
+        az account set -s $AZURE_SUBSCRIPTION_ID
         ```
 
+      - (Skip this if you are using our devcontainer) Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to. To set target Azure DevOps project, run
       - (Skip this if you are using our devcontainer) Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to. To set target Azure DevOps project, run
 
         ```bash
         az devops configure --defaults organization=$AZDO_ORGANIZATION_URL project=$AZDO_PROJECT
+        az devops configure --defaults organization=$AZDO_ORGANIZATION_URL project=$AZDO_PROJECT
         ```
 
+      - Create a `cluster.config.json` Spark configuration from the [`cluster.config.template.json`](./databricks/config/cluster.config.template.json) file. For the "node_type_id" field, select a SKU that is available from the following command in your subscription:
       - Create a `cluster.config.json` Spark configuration from the [`cluster.config.template.json`](./databricks/config/cluster.config.template.json) file. For the "node_type_id" field, select a SKU that is available from the following command in your subscription:
 
         ```bash
@@ -308,6 +316,7 @@ More resources:
       - However, there are 3 points in time where you will need to authenticate to the databricks workspace, before the script continues to run. You will find the following message for the deployment of the dev, stage and production environments. Click the link highlighted in green, consent to authenticate to the databricks workspace and when the workspace opens successfully, return to the deployment windows and press Enter to continue:  ![image](docs/images/databricks_ws.png)
       - After a successful deployment, you will find `.env.{environment_name}` files containing essential configuration information per environment. See [here](#deployed-resources) for list of deployed resources.
       - Note that if you are using **dev container**, you would run the same script but inside the dev container terminal.
+   - As part of the deployment script, the Azure DevOps Release Pipeline YAML definition has been updated to point to your Github repository. **Commit and push these changes.**
    - As part of the deployment script, the Azure DevOps Release Pipeline YAML definition has been updated to point to your Github repository. **Commit and push these changes.**
       - This will trigger a Build and Release which will fail due to a lacking `adf_publish` branch -- this is expected. This branch will be created once you've setup git integration with your DEV Data Factory and publish a change.
 

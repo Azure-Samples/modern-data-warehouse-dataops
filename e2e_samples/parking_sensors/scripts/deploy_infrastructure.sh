@@ -263,7 +263,6 @@ adfTempDir=.tmp/adf
 mkdir -p $adfTempDir && cp -a adf/ .tmp/
 # Update ADF LinkedServices to point to newly deployed Datalake URL, KeyVault URL, and Databricks workspace URL
 tmpfile=.tmpfile
-tmpfile2=.tmpfile2
 adfLsDir=$adfTempDir/linkedService
 adfPlDir=$adfTempDir/pipeline
 jq --arg kvurl "$kv_dns_name" '.properties.typeProperties.baseUrl = $kvurl' $adfLsDir/Ls_KeyVault_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_KeyVault_01.json
