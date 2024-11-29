@@ -21,72 +21,105 @@ set -o pipefail
 set -o nounset
 # set -o xtrace # For debugging
 
+. ./scripts/common.sh
+. ./scripts/verify_prerequisites.sh
+. ./scripts/init_environment.sh
 
 ###################
 # PARAMETERS
 #
 # RESOURCE_GROUP_NAME_PREFIX
-prefix="mdwdops"
+prefix="mdwdops" # CONSTANT - this is prefixes to all resources of the Parking Sensor sample
 
-echo "!! WARNING: !!"
-echo "THIS SCRIPT WILL DELETE RESOURCES PREFIXED WITH $prefix !!"
+delete_by_prefix() {
+    local prefix=$1
 
-if [[ -n $prefix ]]; then
+    echo "!! WARNING: !!"
+    echo "THIS SCRIPT WILL DELETE RESOURCES PREFIXED WITH $prefix !!"
 
-    printf "\nPIPELINES:\n"
-    az pipelines list -o tsv --only-show-errors | { grep "$prefix" || true; } | awk '{print $8}'
-    
-    printf "\nVARIABLE GROUPS:\n"
-    az pipelines variable-group list -o tsv --only-show-errors | { grep "$prefix" || true; } | awk '{print $6}'
-    
-    printf "\nSERVICE CONNECTIONS:\n"
-    az devops service-endpoint list -o tsv --only-show-errors | { grep "$prefix" || true; } | awk '{print $6}'
-    
-    printf "\nSERVICE PRINCIPALS:\n"
-    az ad sp list --query "[?contains(appDisplayName,'$prefix')].displayName" -o tsv --show-mine
-    
-    printf "\nRESOURCE GROUPS:\n"
+    if [[ -n $prefix ]]; then
+
+        printf "\nPIPELINES:\n"
+        az pipelines list --query "[?contains(name,'$prefix')].name"  -o tsv
+        
+        printf "\nVARIABLE GROUPS:\n"
+        az pipelines variable-group list -o tsv --only-show-errors | { grep "$prefix" || true; } | awk '{print $6}'
+        
+        printf "\nSERVICE CONNECTIONS:\n"
+        az devops service-endpoint list -o tsv --only-show-errors | { grep "$prefix" || true; } | awk '{print $6}'
+        
+        printf "\nSERVICE PRINCIPALS:\n"
+        az ad sp list --query "[?contains(appDisplayName,'$prefix')].displayName" -o tsv --show-mine
+        
+        printf "\nRESOURCE GROUPS:\n"
+        az group list --query "[?contains(name,'$prefix') && ! contains(name,'dbw')].name" -o tsv
+
+        printf "\nEND OF SUMMARY\n"
+
+
+        read -r -p "Do you wish to DELETE above? [y/N] " response
+        case "$response" in
+            [yY][eE][sS]|[yY]) 
+                echo "Delete pipelines that start with '$prefix' in name..."
+                [[ -n $prefix ]] &&
+                    az pipelines list -o tsv |
+                    { grep "$prefix" || true; } |
+                    awk '{print $4}' |
+                    xargs -r -I % az pipelines delete --id % --yes
+
+                echo "Delete variable groups that start with '$prefix' in name..."
+                [[ -n $prefix ]] &&
+                    az pipelines variable-group list -o tsv |
+                    { grep "$prefix" || true; } | 
+                    awk '{print $3}' |
+                    xargs -r -I % az pipelines variable-group delete --id % --yes
+
+                echo "Delete service connections that start with '$prefix' in name..."
+                [[ -n $prefix ]] &&
+                    az devops service-endpoint list -o tsv |
+                    { grep "$prefix" || true; } |
+                    awk '{print $3}' |
+                    xargs -r -I % az devops service-endpoint delete --id % --yes
+
+                echo "Delete service principal that start with '$prefix' in name, created by yourself..."
+                [[ -n $prefix ]] &&
+                    az ad sp list --query "[?contains(appDisplayName,'$prefix')].appId" -o tsv --show-mine | 
+                    xargs -r -I % az ad sp delete --id %
+
+                echo "Delete resource group that start with '$prefix' in name..."
+                [[ -n $prefix ]] &&
+                    az group list --query "[?contains(name,'$prefix') && ! contains(name,'dbw')].name" -o tsv |
+                    xargs -I % az group delete --verbose --name % -y
+                ;;
+            *)
+                exit
+                ;;
+        esac
+    fi
+
+}
+
+delete_by_deployment_id(){
+    local prefix=$1 #foo
+    echo "do something"
+    for env_name in dev stg prod; do
+        echo "do something"
+    done
     az group list --query "[?contains(name,'$prefix') && ! contains(name,'dbw')].name" -o tsv
+}
 
-    printf "\nEND OF SUMMARY\n"
-
-
-    read -r -p "Do you wish to DELETE above? [y/N] " response
-    case "$response" in
-        [yY][eE][sS]|[yY]) 
-            echo "Delete pipelines the start with '$prefix' in name..."
-            [[ -n $prefix ]] &&
-                az pipelines list -o tsv |
-                { grep "$prefix" || true; } |
-                awk '{print $4}' |
-                xargs -r -I % az pipelines delete --id % --yes
-
-            echo "Delete variable groups the start with '$prefix' in name..."
-            [[ -n $prefix ]] &&
-                az pipelines variable-group list -o tsv |
-                { grep "$prefix" || true; } | 
-                awk '{print $3}' |
-                xargs -r -I % az pipelines variable-group delete --id % --yes
-
-            echo "Delete service connections the start with '$prefix' in name..."
-            [[ -n $prefix ]] &&
-                az devops service-endpoint list -o tsv |
-                { grep "$prefix" || true; } |
-                awk '{print $3}' |
-                xargs -r -I % az devops service-endpoint delete --id % --yes
-
-            echo "Delete service principal the start with '$prefix' in name, created by yourself..."
-            [[ -n $prefix ]] &&
-                az ad sp list --query "[?contains(appDisplayName,'$prefix')].appId" -o tsv --show-mine | 
-                xargs -r -I % az ad sp delete --id %
-
-            echo "Delete resource group the start with '$prefix' in name..."
-            [[ -n $prefix ]] &&
-                az group list --query "[?contains(name,'$prefix') && ! contains(name,'dbw')].name" -o tsv |
-                xargs -I % az group delete --verbose --name % -y
-            ;;
-        *)
-            exit
-            ;;
-    esac
-fi
+read -r -p "Do you wish to DELETE by"$'\n'"  1) PREFIX ($prefix)?"$'\n'"  2) DEPLOYMENT_ID ($DEPLOYMENT_ID)?"$'\n'" Choose 1 or 2: " response
+case "$response" in
+    1) 
+        echo "Delete by prefix..."
+        delete_by_prefix $prefix
+        ;;
+    2)
+        echo "Delete by deployment id..."
+        delete_by_prefix "$prefix-$DEPLOYMENT_ID"
+        ;;
+    *)
+        echo "Invalid choice. Exiting..."
+        exit
+        ;;
+esac
