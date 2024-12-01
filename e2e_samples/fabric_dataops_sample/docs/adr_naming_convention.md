@@ -22,7 +22,7 @@ As the Fabric E2E sample is a complex solution with multiple components, it is i
 | Item Type | Convention | Additional Details | Example |
 | --- | --- | --- | --- |
 | Folders | snake_case | Use lowercase and "_" | `fabric_dataops_sample`, `dataops_pipeline` |
-| Markdown files | snake-case | Use lowercase and "_" | "README.md", `adr_naming_convention.md` |
+| Markdown files | UPPERCASE or snake_case | Use UPPERCASE only for standard files such as README, CONTRIBUTING etc. | `README.md`, `adr_naming_convention.md` |
 | Python scripts | snake_case | Use lowercase and "_" | `setup_fabric_environment.py` |
 | Shell scripts | snake_case | Use lowercase and "_" | `deploy_infrastructure.sh` |
 | PowerShell scripts | PascalCase | Use "-" and "verb-noun" structure | `Set-DeploymentPipelines.ps1` |
@@ -58,7 +58,6 @@ As the Fabric E2E sample is a complex solution with multiple components, it is i
 | Fabric Capacity | `cap*` | `cap<base-name-trimmed>` |
 | Fabric Workspace | `ws-*` | `ws-<base-name>` |
 | Fabric Lakehouse | `lh_*` | `lh_<base-name>` |
-| Fabric Environment | `env-*` | `env-<base-name>` |
 | Fabric Notebooks | `nb-*` | "nb-010-setup.ipynb", "nb-020-standardize.ipynb", "nb-030-transform.ipynb" |
 | Fabric Pipelines | `pl-*` | "pl-000-main.json" |
 | Fabric Environment | `env-*` | `env-<base-name>` |
