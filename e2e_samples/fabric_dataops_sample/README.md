@@ -20,6 +20,7 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
     - [Why an existing resource group is required?](#why-an-existing-resource-group-is-required)
     - [How to use a managed identity for authentication?](#how-to-use-a-managed-identity-for-authentication)
     - [Why is the variable FABRIC\_CAPACITY\_ADMINS required?](#why-is-the-variable-fabric_capacity_admins-required)
+    - [What is the significance of `use_cli` and `use_msi` flags?](#what-is-the-significance-of-use_cli-and-use_msi-flags)
 - [References](#references)
 
 ## Architecture
@@ -258,6 +259,20 @@ This variable is required due to a current Fabric limitation, where adding a sec
 Additionally, the current design of the Fabric capacity template results in all existing capacity admins being removed and replaced with only those specified in the `FABRIC_CAPACITY_ADMINS` variable. Therefore, it’s essential to include all intended capacity admins in this variable.
 
 For an existing capacity, the principal executing the script must have permission to read the capacity details. As a prerequisite, all user accounts and the principal (service principal or managed identity) used for deployment should already be assigned as Capacity Administrators for that capacity.
+
+#### What is the significance of `use_cli` and `use_msi` flags?
+
+These flags are used to determine the authentication method to be used during the deployment based on the login context. The following table covers the possible scenarios:
+
+| Logged-in As | `use_cli` | `use_msi` | `APP_CLIENT_ID` | `APP_CLIENT_SECRET` |
+| --- | --- | --- | --- | --- |
+| Service Principal | `false` | `false` | Required | Required |
+| Managed Identity | `false` | `true` | Not Required | Not Required |
+| Entra ID User | `true` | `false` | Not Required | Not Required |
+
+Terraform also uses these flags to determine the authentication method for the Fabric provider. If both `use_cli` and `use_msi` are set to `false`, the `client_id` and `client_secret` attributes are set for the provider to use service principal authentication.
+
+Additionally, in [main.tf](./infrastructure/terraform/main.tf), some modules are deployed only when `use_cli` is set to `true`. This is necessary for Fabric items that do not support service principal or managed identity authentication. These items are deployed using user-context authentication.
 
 ## References
 
