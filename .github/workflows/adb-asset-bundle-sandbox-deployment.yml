@@ -29,7 +29,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-      
+
       - name: Setup Databricks CLI
         uses: databricks/setup-cli@main
 
@@ -54,7 +54,7 @@ jobs:
         with:
           version: 3.x
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - name: Set Test Flows
         if: github.event_name == 'push'
         run: task collect-tests

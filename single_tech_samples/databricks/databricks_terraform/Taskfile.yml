@@ -1,9 +1,9 @@
-version: '3'
+version: "3"
 
 tasks:
   collect-tests:
     desc: "Collect test workflows"
-    dir: 'single_tech_samples/databricks/databricks_terraform'
+    dir: "single_tech_samples/databricks/databricks_terraform"
     cmds:
       - |
         echo "Collecting test workflows"
@@ -14,10 +14,10 @@ tasks:
         fi
         echo "Test flows found: $TEST_FLOWS"
         echo "test_flows=$TEST_FLOWS" >> $GITHUB_ENV
-  
+
   run-tests:
     desc: "Run Databricks test workflows"
-    dir: 'single_tech_samples/databricks/databricks_terraform'
+    dir: "single_tech_samples/databricks/databricks_terraform"
     cmds:
       - |
         # Read test flows into a variable

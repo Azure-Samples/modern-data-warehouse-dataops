@@ -25,7 +25,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-      
+
       - name: Setup Databricks CLI
         uses: databricks/setup-cli@main
 
@@ -41,7 +41,7 @@ jobs:
         working-directory: .
         env:
           DATABRICKS_BUNDLE_ENV: ${{ env.ENV }}
-      
+
       - name: Install Task
         uses: arduino/setup-task@v2
         with:
