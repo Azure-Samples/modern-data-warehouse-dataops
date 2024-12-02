@@ -6,14 +6,14 @@ locals {
     basename    = local.base_name
     environment = var.environment_name
   }
-  fabric_setup_notebook_name           = "nb-010-setup"
-  fabric_standardize_notebook_name     = "nb-020-standardize"
-  fabric_transform_notebook_name       = "nb-030-transform"
-  fabric_main_pipeline_name            = "pl-000-main"
-  setup_notebook_definition_path       = "../../src/notebooks/${local.fabric_setup_notebook_name}.ipynb"
-  standardize_notebook_definition_path = "../../src/notebooks/${local.fabric_standardize_notebook_name}.ipynb"
-  transform_notebook_definition_path   = "../../src/notebooks/${local.fabric_transform_notebook_name}.ipynb"
-  main_pipeline_definition_path        = "../../src/pipelines/${local.fabric_main_pipeline_name}.json"
+  fabric_setup_notebook_name           = "nb-setup"
+  fabric_standardize_notebook_name     = "nb-standardize"
+  fabric_transform_notebook_name       = "nb-transform"
+  fabric_main_pipeline_name            = "pl-main"
+  setup_notebook_definition_path       = "../../src/notebooks/00_setup.ipynb"
+  standardize_notebook_definition_path = "../../src/notebooks/02_standardize.ipynb"
+  transform_notebook_definition_path   = "../../src/notebooks/03_transform.ipynb"
+  main_pipeline_definition_path        = "../../src/pipelines/00-main.json"
   storage_account_name                 = "st${local.base_name_trimmed}"
   keyvault_name                        = "kv-${local.base_name}"
   log_analytics_name                   = "la-${local.base_name}"

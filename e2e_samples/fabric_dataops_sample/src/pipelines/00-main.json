@@ -64,7 +64,7 @@
           "secureInput": false,
           "secureOutput": false
         },
-        "name": "nb-010-setup",
+        "name": "nb-setup",
         "dependsOn": []
       },
       {
@@ -130,10 +130,10 @@
           "secureInput": false,
           "secureOutput": false
         },
-        "name": "nb-020-standardize",
+        "name": "nb-standardize",
         "dependsOn": [
           {
-            "activity": "nb-010-setup",
+            "activity": "nb-setup",
             "dependencyConditions": [
               "Succeeded"
             ]
@@ -203,10 +203,10 @@
           "secureInput": false,
           "secureOutput": false
         },
-        "name": "nb-030-transform",
+        "name": "nb-transform",
         "dependsOn": [
           {
-            "activity": "nb-020-standardize",
+            "activity": "nb-standardize",
             "dependencyConditions": [
               "Succeeded"
             ]

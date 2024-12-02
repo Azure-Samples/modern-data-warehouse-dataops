@@ -31,19 +31,19 @@ name = <keyvault-name>
 uri = https://${keyvault:name}.vault.azure.net/
 
 [setup]
-# --------- Globals for nb-010-setup.ipynb
-process_name = nb-010-setup
+# --------- Globals for nb-setup notebook
+process_name = setup
 # ddl file path is relative to the attached lakehouse's Files/ location
 adls_shortcut_name = <adls-shortcut-name>
 ddl_file = ${setup:adls_shortcut_name}/config/lakehouse_ddls.yaml
 
 [standardize]
-# --------- Globals for nb-020-standardize.ipynb
-process_name = nb-020-standardize
+# --------- Globals for nb-standardize notebook
+process_name = standardize
 
 [transform]
-# --------- Globals for nb-030-transform.ipynb
-process_name = nb-030-transform
+# --------- Globals for nb-transform notebook
+process_name = transform
 
 [otel]
 appinsights_connection_name = <appinsights-connection-string>
