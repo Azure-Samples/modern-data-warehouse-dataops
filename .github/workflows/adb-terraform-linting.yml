@@ -1,4 +1,4 @@
-name: "ADB Terraform CI Linting"
+name: "ADB Asset Bundle CI Linting"
 
 on:
   push:
