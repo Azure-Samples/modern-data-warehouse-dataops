@@ -24,6 +24,7 @@ As the Fabric E2E sample is a complex solution with multiple components, it is i
 | Folders | snake_case | Use lowercase and "_" | `fabric_dataops_sample`, `dataops_pipeline` |
 | Markdown files | UPPERCASE or snake_case | Use UPPERCASE only for standard files such as README, CONTRIBUTING etc. | `README.md`, `adr_naming_convention.md` |
 | Python scripts | snake_case | Use lowercase and "_" | `setup_fabric_environment.py` |
+| Python notebooks | snake_case | Start with "xx_" where x=[0, 9] | `00_setup.ipynb`, `02_standardize.ipynb`, `03_transform.ipynb` |
 | Shell scripts | snake_case | Use lowercase and "_" | `deploy_infrastructure.sh` |
 | PowerShell scripts | PascalCase | Use "-" and "verb-noun" structure | `Set-DeploymentPipelines.ps1` |
 | Images (diagrams, screenshots etc.) | kebab-case | Use lowercase and "-" | `graph-api-permission.png`, `fabric-architecture.drawio`|
@@ -58,8 +59,8 @@ As the Fabric E2E sample is a complex solution with multiple components, it is i
 | Fabric Capacity | `cap*` | `cap<base-name-trimmed>` |
 | Fabric Workspace | `ws-*` | `ws-<base-name>` |
 | Fabric Lakehouse | `lh_*` | `lh_<base-name>` |
-| Fabric Notebooks | `nb-*` | "nb-010-setup.ipynb", "nb-020-standardize.ipynb", "nb-030-transform.ipynb" |
-| Fabric Pipelines | `pl-*` | "pl-000-main.json" |
+| Fabric Notebooks | `nb-*` | "nb-setup", "nb-standardize", "nb-transform" |
+| Fabric Pipelines | `pl-*` | "pl-main.json" |
 | Fabric Environment | `env-*` | `env-<base-name>` |
 | Fabric Custom Pool | `sprk-*` | `sprk-<base-name>` |
 | Azure DevOps Variable Group | `vg-*` | `vg-<base-name>` |
