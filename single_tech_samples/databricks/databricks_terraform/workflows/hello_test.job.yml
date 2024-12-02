@@ -1,0 +1,27 @@
+resources:
+  jobs:
+    hello_test:
+      name: hello_test
+      tasks:
+        - task_key: hello_test
+          notebook_task:
+            notebook_path: single_tech_samples/databricks/databricks_terraform/tests/hello_test
+            base_parameters:
+              env: ${bundle.target}
+            source: GIT
+
+      git_source:
+        git_url: https://github.com/Azure-Samples/modern-data-warehouse-dataops
+        git_provider: gitHub
+        git_branch: main
+      queue:
+        enabled: true
+
+      job_clusters:
+        - job_cluster_key: job_cluster
+          new_cluster:
+            spark_version: 15.4.x-scala2.12
+            node_type_id: Standard_D4ds_v5
+            autoscale:
+                min_workers: 1
+                max_workers: 4
