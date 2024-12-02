@@ -35,7 +35,6 @@ In addition to the samples, this repository also contains [Utilities](#utilities
 | ---------- | ------- |
 | [Microsoft Fabric](./single_tech_samples/fabric/README.md) | ▪️ [CI/CD for Microsoft Fabric](./single_tech_samples/fabric/fabric_ci_cd/README.md)<br> ▪️ [Feature engineering on Microsoft Fabric](./single_tech_samples/fabric/feature_engineering_on_fabric/README.md) |
 | [Azure SQL database](./single_tech_samples/azuresql/README.md) | ▪️ [CI/CD for Azure SQL database](./single_tech_samples/azuresql/azuresql_ci_cd/README.md) |
-| [Azure Databricks](single_tech_samples/databricks/) | ▪️ [CI/CD for Azure Databricks](single_tech_samples/databricks/databricks_ci_cd/README.md) |
 | [Azure Data Factory](./single_tech_samples/datafactory/README.md) | ▪️ [CI/CD for ADF with Auto publish](./single_tech_samples/datafactory/adf_cicd_auto_publish/README.md)<br> ▪️ [Data pre-processing using Azure Batch](./single_tech_samples/datafactory/adf_data_pre_processing_with_azure_batch/README.md) |
 | [Azure Stream Analytics](./single_tech_samples/streamanalytics/README.md) | ▪️ [CI/CD for Azure Stream Analytics](./single_tech_samples/streamanalytics/streamanalytics_ci_cd/README.md) |
 

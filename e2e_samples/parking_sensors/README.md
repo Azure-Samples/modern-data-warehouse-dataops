@@ -244,26 +244,56 @@ More resources:
 *NOTE: This deployment was tested using WSL 2 (Ubuntu 18.04) and Debian GNU/Linux 9.9 (stretch)*
 
 1. **Initial Setup**
+   - **Fork** this repository into a new Github repo.
+   - Set the following **required** environment variables:
+      - **TENANT_ID** - an Entra ID. Used to login to a specific tenant with Azure CLI
+      - **AZURE_SUBSCRIPTION_ID** - Azure subscription id to use to deploy resources. Default: default azure subscription.
+      - **AZDO_PROJECT** - Target Azure DevOps project where Azure Pipelines and Variable groups will be deployed
+      - **AZDO_ORGANIZATION_URL** - Target Azure DevOps Organization of Azure DevOps project in this form `https://dev.azure.com/<organization>/`. Must be in the same tenant as $TENANT_ID
+      - **GITHUB_REPO** - Name of your forked github repo in this form `<my_github_handle>/<repo>`. (ei. "devlace/mdw-dataops-import")
+      - **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). The token is needed to connect to the GitHub repository. When generating a token use a `fine-grained` token, select your repository and under repository permissions select Read access to Content and Webhooks. Under Account permissions select read access to Email.
+
+      Optionally, set the following environment variables:
+      - **AZURE_LOCATION** - Azure location to deploy resources. *Default*: `westus`.
+      - **DEPLOYMENT_ID** - string appended to all resource names. This is to ensure uniqueness of azure resource names. *Default*: random five character string.
+      - **AZDO_PIPELINES_BRANCH_NAME** - git branch where Azure DevOps pipelines definitions are retrieved from. *Default*: main.
+      - **AZURESQL_SERVER_PASSWORD** - Password of the SQL Server instance. *Default*: random string.
+
+   - If you are using **dev container**, follow the below steps:
+      - Rename `.envtemplate` under ".devcontainer" folder to `.env` and update the values as mentioned above instead of setting those as environment variables.
+      - Open the project inside the vscode dev container (see details [here](docs/devcontainer.md)).
+      > Note that the environment file is only loaded once, during the container build process. If you modify any environment variables after building your devcontainer, you will need to manually reload the new values by running `source .devcontainer/.env`
+
+   - To further customize the solution, set parameters in `arm.parameters` files located in the `infrastructure` folder.
+      - To enable Observability and Monitoring components through code(Observability-as-code), please set enable_monitoring parameter to true in  `arm.parameters` files located in the `infrastructure` folder. This will deploy log analytics workspace to collect monitoring data from key resources, setup an Azure dashboards to monitor key metrics and configure alerts for ADF pipelines.
    - Ensure that:
+      - You have loaded your environment file. To do so run:
+
+        ```bash
+        source .devcontainer/.env
+        ```
+
       - You are logged in to the Azure CLI. To login, run
 
         ```bash
-        az login
+        az config set core.login_experience_v2=off
+        az login --tenant $TENANT_ID
+        az config set core.login_experience_v2=on
         ```
 
       - Azure CLI is targeting the Azure Subscription you want to deploy the resources to. To set target Azure Subscription, run
 
         ```bash
-        az account set -s <AZURE_SUBSCRIPTION_ID>
+        az account set -s $AZURE_SUBSCRIPTION_ID
         ```
 
-      - Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to. To set target Azure DevOps project, run
+      - (Skip this if you are using our devcontainer) Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to. To set target Azure DevOps project, run
 
         ```bash
-        az devops configure --defaults organization=https://dev.azure.com/<MY_ORG>/ project=<MY_PROJECT>
+        az devops configure --defaults organization=$AZDO_ORGANIZATION_URL project=$AZDO_PROJECT
         ```
 
-      - Create a cluster.config.json Spark configuration from the cluster.config.template.json. For the "node_type_id" field, select a SKU that is available from the following command in your subscription:
+      - Create a `cluster.config.json` Spark configuration from the [`cluster.config.template.json`](./databricks/config/cluster.config.template.json) file. For the "node_type_id" field, select a SKU that is available from the following command in your subscription:
 
         ```bash
         az vm list-usage --location "<YOUR_REGION>" -o table
@@ -271,40 +301,15 @@ More resources:
 
       In the repository we provide an example, but you need to make sure that the SKU exists on your region and that is available for your subscription.
 
-   - **Fork** this repository into a new Github repo.
-   - Set the following **required** environment variables:
-      - **GITHUB_REPO** - Name of your forked github repo in this form `<my_github_handle>/<repo>`. (ei. "devlace/mdw-dataops-import")
-      - **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). This requires "repo" scope.
-
-      Optionally, set the following environment variables:
-      - **AZURE_LOCATION** - Azure location to deploy resources. *Default*: `westus`.
-      - **AZURE_SUBSCRIPTION_ID** - Azure subscription id to use to deploy resources. *Default*: default azure subscription. To see your default, run `az account list`.
-      - **DEPLOYMENT_ID** - string appended to all resource names. This is to ensure uniqueness of azure resource names. *Default*: random five character string.
-      - **AZDO_PIPELINES_BRANCH_NAME** - git branch where Azure DevOps pipelines definitions are retrieved from. *Default*: main.
-      - **AZURESQL_SERVER_PASSWORD** - Password of the SQL Server instance. *Default*: random string.
-
-   - If you are using **dev container**, follow the below steps:
-      - Rename `.envtemplate` under ".devcontainer" folder to `devcontainer.env` and update the values as mentioned above instead of setting those as environment variables.
-      - Open the project inside the vscode dev container (see details [here](docs/devcontainer.md)).
-
-   - To further customize the solution, set parameters in `arm.parameters` files located in the `infrastructure` folder.
-      - To enable Observability and Monitoring components through code(Observability-as-code), please set enable_monitoring parameter to true in  `arm.parameters` files located in the `infrastructure` folder. This will deploy log analytics workspace to collect monitoring data from key resources, setup an Azure dashboards to monitor key metrics and configure alerts for ADF pipelines.
-
 2. **Deploy Azure resources**
    - `cd` into the `e2e_samples/parking_sensors` folder of the repo.
-   - Configure your default AzDo Organization and Project
-
-      ```bash
-      az devops configure --defaults organization="$AZDO_ORGANIZATION_URL" project="$AZDO_PROJECT"
-      ```
-
    - Run `./deploy.sh`.
       - This may take around **~30mins or more** to run end to end. So grab yourself a cup of coffee... ☕
       - If you encounter an error with `cannot execute: required file not found` verify the line ending settings of your git configuration. This error is likely that the lines in the file are ending with CRLF. Using VSCode, verify that `./deploy.sh` is set to LF only. This can be done using the control pallet and typing `>Change End of Line Sequence`. Also, verify the files in the `scripts` folder are also set to LF only.
       - However, there are 3 points in time where you will need to authenticate to the databricks workspace, before the script continues to run. You will find the following message for the deployment of the dev, stage and production environments. Click the link highlighted in green, consent to authenticate to the databricks workspace and when the workspace opens successfully, return to the deployment windows and press Enter to continue:  ![image](docs/images/databricks_ws.png)
       - After a successful deployment, you will find `.env.{environment_name}` files containing essential configuration information per environment. See [here](#deployed-resources) for list of deployed resources.
       - Note that if you are using **dev container**, you would run the same script but inside the dev container terminal.
-   - As part of the deployment script, this updated the Azure DevOps Release Pipeline YAML definition to point to your Github repository. **Commit and push up these changes.**
+   - As part of the deployment script, the Azure DevOps Release Pipeline YAML definition has been updated to point to your Github repository. **Commit and push these changes.**
       - This will trigger a Build and Release which will fail due to a lacking `adf_publish` branch -- this is expected. This branch will be created once you've setup git integration with your DEV Data Factory and publish a change.
 
 3. **Setup ADF git integration in DEV Data Factory**

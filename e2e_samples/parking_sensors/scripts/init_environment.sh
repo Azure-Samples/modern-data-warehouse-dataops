@@ -50,3 +50,17 @@ then
     #Increase the complexity by appending the complex string, as some passwords are not cmplex enough.
     export AZURESQL_SERVER_PASSWORD="P@_Sens0r$(makepasswd --chars 16)"
 fi
+
+# set soft delete variable to true if the env variable has not been set
+if [ -z "$ENABLE_KEYVAULT_SOFT_DELETE" ]
+then 
+    export ENABLE_KEYVAULT_SOFT_DELETE=${ENABLE_KEYVAULT_SOFT_DELETE:-true}
+    echo "No ENABLE_KEYVAULT_SOFT_DELETE specified. Defaulting to $ENABLE_KEYVAULT_SOFT_DELETE"
+fi
+
+# set purge protection variable to true if the env variable has not been set
+if [ -z "$ENABLE_KEYVAULT_PURGE_PROTECTION" ]
+then 
+    export ENABLE_KEYVAULT_PURGE_PROTECTION=${ENABLE_KEYVAULT_PURGE_PROTECTION:-true}
+    echo "No ENABLE_KEYVAULT_PURGE specified. Defaulting to $ENABLE_KEYVAULT_PURGE_PROTECTION"
+fi

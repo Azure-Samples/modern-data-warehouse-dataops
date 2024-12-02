@@ -28,7 +28,7 @@
 set -o errexit
 set -o pipefail
 set -o nounset
-#set -o xtrace # For debugging
+##set -o xtrace # For debugging
 
 ###################
 # REQUIRED ENV VARIABLES:
@@ -42,7 +42,8 @@ set -o nounset
 
 
 #####################
-# DEPLOY ARM TEMPLATE
+### DEPLOY ARM TEMPLATE
+#####################
 
 # Set account to where ARM template will be deployed to
 echo "Deploying to Subscription: $AZURE_SUBSCRIPTION_ID"
@@ -64,7 +65,9 @@ arm_output=$(az deployment group validate \
     --resource-group "$resource_group_name" \
     --template-file "./infrastructure/main.bicep" \
     --parameters @"./infrastructure/main.parameters.${ENV_NAME}.json" \
-    --parameters project="${PROJECT}" keyvault_owner_object_id="${kv_owner_object_id}" deployment_id="${DEPLOYMENT_ID}" sql_server_password="${AZURESQL_SERVER_PASSWORD}" entra_admin_login="${kv_owner_name}" \
+    --parameters project="${PROJECT}" keyvault_owner_object_id="${kv_owner_object_id}" deployment_id="${DEPLOYMENT_ID}" \
+    --parameters sql_server_password="${AZURESQL_SERVER_PASSWORD}" entra_admin_login="${kv_owner_name}" \
+    --parameters enable_keyvault_soft_delete="${ENABLE_KEYVAULT_SOFT_DELETE}" enable_keyvault_purge_protection="${ENABLE_KEYVAULT_PURGE_PROTECTION}"\
     --output json)
 
 # Deploy arm template
@@ -73,7 +76,9 @@ arm_output=$(az deployment group create \
     --resource-group "$resource_group_name" \
     --template-file "./infrastructure/main.bicep" \
     --parameters @"./infrastructure/main.parameters.${ENV_NAME}.json" \
-    --parameters project="${PROJECT}" deployment_id="${DEPLOYMENT_ID}" keyvault_owner_object_id="${kv_owner_object_id}" sql_server_password="${AZURESQL_SERVER_PASSWORD}" entra_admin_login="${kv_owner_name}" \
+    --parameters project="${PROJECT}" keyvault_owner_object_id="${kv_owner_object_id}" deployment_id="${DEPLOYMENT_ID}" \
+    --parameters sql_server_password="${AZURESQL_SERVER_PASSWORD}" entra_admin_login="${kv_owner_name}" \
+    --parameters enable_keyvault_soft_delete="${ENABLE_KEYVAULT_SOFT_DELETE}" enable_keyvault_purge_protection="${ENABLE_KEYVAULT_PURGE_PROTECTION}"\
     --output json)
 
 if [[ -z $arm_output ]]; then
@@ -175,24 +180,7 @@ appinsights_connstr=$(az monitor app-insights component show \
 az keyvault secret set --vault-name "$kv_name" --name "applicationInsightsKey" --value "$appinsights_key"
 az keyvault secret set --vault-name "$kv_name" --name "applicationInsightsConnectionString" --value "$appinsights_connstr"
 
-# ###########################
-echo "validate_password function..."
-# ###########################
-###if there is an hyphen in the first position replace by R
-# ###########################
-validate_password() {
-    local password="$1"
-    echo "Validating...$password"
 
-    if [[ -z "$password" || "${password:0:1}" == "-" ]]; then
-        ### if there is a hyphen retry
-        echo "Invalid password. The first character cannot be a hyphen. Replacing..."
-        password="R${password:1}"
-        echo "$password"
-    fi
-    echo "Password Validated"
-    echo "$password"
-}
 
 # ###########################
 # # RETRIEVE DATABRICKS INFORMATION AND CONFIGURE WORKSPACE
@@ -218,15 +206,12 @@ sp_stor_id=$(echo "$sp_stor_out" | jq -r '.appId')
 sp_stor_pass=$(echo "$sp_stor_out" | jq -r '.password')
 sp_stor_tenant=$(echo "$sp_stor_out" | jq -r '.tenant')
 
-# Validate the password
-sp_stor_pass=$(validate_password "$sp_stor_pass")
-
 echo "ADLS - Valid password obtained"
 
 
 az keyvault secret set --vault-name "$kv_name" --name "spStorName" --value "$sp_stor_name"
 az keyvault secret set --vault-name "$kv_name" --name "spStorId" --value "$sp_stor_id"
-az keyvault secret set --vault-name "$kv_name" --name "spStorPass" --value "$sp_stor_pass"
+az keyvault secret set --vault-name "$kv_name" --name "spStorPass" --value="$sp_stor_pass" ##=handles hyphen passwords
 az keyvault secret set --vault-name "$kv_name" --name "spStorTenantId" --value "$sp_stor_tenant"
 
 echo "Generate Databricks token"
@@ -278,7 +263,6 @@ adfTempDir=.tmp/adf
 mkdir -p $adfTempDir && cp -a adf/ .tmp/
 # Update ADF LinkedServices to point to newly deployed Datalake URL, KeyVault URL, and Databricks workspace URL
 tmpfile=.tmpfile
-tmpfile2=.tmpfile2
 adfLsDir=$adfTempDir/linkedService
 adfPlDir=$adfTempDir/pipeline
 jq --arg kvurl "$kv_dns_name" '.properties.typeProperties.baseUrl = $kvurl' $adfLsDir/Ls_KeyVault_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_KeyVault_01.json
@@ -301,8 +285,6 @@ ADF_DIR=$adfTempDir \
 
 # ADF SP for integration tests
 echo "Create Service Principal (SP) for Data Factory"
-max_retries=2
-retry_count=0
 sp_adf_name="${PROJECT}-adf-${ENV_NAME}-${DEPLOYMENT_ID}-sp"
 sp_adf_out=$(az ad sp create-for-rbac \
     --role "Data Factory contributor" \
@@ -313,16 +295,13 @@ sp_adf_id=$(echo "$sp_adf_out" | jq -r '.appId')
 sp_adf_pass=$(echo "$sp_adf_out" | jq -r '.password')
 sp_adf_tenant=$(echo "$sp_adf_out" | jq -r '.tenant')
 
-# Validate the password
-sp_adf_pass=$(validate_password "$sp_adf_pass")
-
 echo "ADF - Valid password obtained"
 
 
 # Save ADF SP credentials in Keyvault
 az keyvault secret set --vault-name "$kv_name" --name "spAdfName" --value "$sp_adf_name"
 az keyvault secret set --vault-name "$kv_name" --name "spAdfId" --value "$sp_adf_id"
-az keyvault secret set --vault-name "$kv_name" --name "spAdfPass" --value "$sp_adf_pass"
+az keyvault secret set --vault-name "$kv_name" --name "spAdfPass" --value="$sp_adf_pass"##=handles hyphen passwords
 az keyvault secret set --vault-name "$kv_name" --name "spAdfTenantId" --value "$sp_adf_tenant"
 
 ####################
@@ -360,7 +339,8 @@ SP_ADF_TENANT=$sp_adf_tenant \
 
 
 ####################
-# BUILD ENV FILE FROM CONFIG INFORMATION
+#####BUILD ENV FILE FROM CONFIG INFORMATION
+####################
 
 env_file=".env.${ENV_NAME}"
 echo "Appending configuration to .env file."
