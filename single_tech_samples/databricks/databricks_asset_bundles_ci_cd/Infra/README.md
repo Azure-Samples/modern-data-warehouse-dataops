@@ -21,6 +21,7 @@
 
 ### Pre-requisites
 - Clone the repository
+- Create Azure EntraID groups `"account_unity_admin", "data_engineer", "data_analyst", "data_scientist"`
 - Install Terraform CLI if not installed already [Terraform Installation](https://learn.hashicorp.com/tutorials/terraform/install-cli)
 - Install Azure CLI if not installed already [Azure CLI Installation](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 - `Infra/envs/development/variables.tf` - Update the values as per your requirement
@@ -38,12 +39,14 @@
   environment = var.environment
   }
 
-    // module "metastore_and_users" {
+    /* module "metastore_and_users" {
         ...
     }
-    // module "adb_unity_catalog" {
+    */
+    /* module "adb_unity_catalog" {
         ...
     }
+    */
     ```
 
 - Run the following command to deploy the workspace

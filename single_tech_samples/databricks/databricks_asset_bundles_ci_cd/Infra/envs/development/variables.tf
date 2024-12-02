@@ -11,6 +11,7 @@ variable "subscription_id" {
 }
 
 # use your add groups here
+# they should exist in Azure EntraID before running the terraform 
 variable "aad_groups" {
   default = ["account_unity_admin", "data_engineer", "data_analyst", "data_scientist"]
 }
