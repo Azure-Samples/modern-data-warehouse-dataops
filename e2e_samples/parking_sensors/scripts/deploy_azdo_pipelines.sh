@@ -29,7 +29,7 @@
 set -o errexit
 set -o pipefail
 set -o nounset
-set -o xtrace # For debugging
+#set -o xtrace # For debugging
 
 ###################
 # REQUIRED ENV VARIABLES:
@@ -43,6 +43,30 @@ set -o xtrace # For debugging
 github_sc_name="${PROJECT}-github"
 github_sc_id=$(az devops service-endpoint list --output json |
     jq -r --arg NAME "$github_sc_name" '.[] | select(.name==$NAME) | .id')
+
+ifexistsoverwrite() {
+    declare pipeline_name=$1
+    full_pipeline_name=$PROJECT-$pipeline_name
+    
+    pipeline_id=$(az pipelines show --name "$full_pipeline_name" --output json 2>/dev/null | jq -r .id)
+
+    if [ -z "$pipeline_id" ]; then
+        echo "pipeline_id is null or empty"
+    else
+        echo "pipeline_id is not empty: $pipeline_id"
+    fi
+
+
+    if [ -n "$pipeline_id" ]; then
+        az pipelines delete --id "$pipeline_id" --yes
+        echo "Deleted existing pipeline: $full_pipeline_name"
+    else
+        echo "Pipeline $full_pipeline_name does not exist."
+    fi
+    echo "Cleanup - Pipeline ID: $pipeline_id"
+
+}
+
 
 createPipeline () {
     declare pipeline_name=$1
@@ -61,11 +85,17 @@ createPipeline () {
 }
 
 # Build Pipelines
+ifexistsoverwrite "ci-qa-python" 
 createPipeline "ci-qa-python" "This pipeline runs python unit tests and linting."
+
+ifexistsoverwrite "ci-qa-sql" 
 createPipeline "ci-qa-sql" "This pipeline builds the sql dacpac"
+
+ifexistsoverwrite "ci-artifacts" 
 createPipeline "ci-artifacts" "This pipeline publishes build artifacts"
 
 # Release Pipelines
+ifexistsoverwrite "cd-release" 
 cd_release_pipeline_id=$(createPipeline "cd-release" "This pipeline releases across environments")
 
 az pipelines variable create \
