@@ -3,14 +3,14 @@ name: "Asset Bundle Sandbox Deployment"
 on:
   push:
     branches:
-      - main
+    - main
     paths:
-      - "single_tech_samples/databricks/databricks_terraform/**"
+    - "single_tech_samples/databricks/databricks_terraform/**"
   pull_request:
     branches:
-      - main
+    - main
     paths:
-      - "single_tech_samples/databricks/databricks_terraform/**"
+    - "single_tech_samples/databricks/databricks_terraform/**"
 
 env:
   ENV: sandbox
@@ -27,44 +27,44 @@ jobs:
         working-directory: ${{ env.WORKING_DIR }}
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+    - name: Checkout Repository
+      uses: actions/checkout@v4
 
-      - name: Setup Databricks CLI
-        uses: databricks/setup-cli@main
+    - name: Setup Databricks CLI
+      uses: databricks/setup-cli@main
 
-      - name: Azure Login Using Service Principal
-        uses: azure/login@v2
-        with:
-          creds: ${{ secrets.AZURE_INT_CREDENTIALS }}
+    - name: Azure Login Using Service Principal
+      uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_INT_CREDENTIALS }}
 
-      - name: Deploy Databricks Bundle
-        run: |
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
-            databricks bundle validate -t ${{ env.ENV }} -o json
-          elif [ "${{ github.event_name }}" == "push" ]; then
-            databricks bundle deploy -t ${{ env.ENV }} -o json
-          fi
-        env:
-          DATABRICKS_BUNDLE_ENV: ${{ env.ENV }}
+    - name: Deploy Databricks Bundle
+      run: |
+        if [ "${{ github.event_name }}" == "pull_request" ]; then
+          databricks bundle validate -t ${{ env.ENV }} -o json
+        elif [ "${{ github.event_name }}" == "push" ]; then
+          databricks bundle deploy -t ${{ env.ENV }} -o json
+        fi
+      env:
+        DATABRICKS_BUNDLE_ENV: ${{ env.ENV }}
 
-      - name: Install Task
-        if: github.event_name == 'push'
-        uses: arduino/setup-task@v2
-        with:
-          version: 3.x
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Install Task
+      if: github.event_name == 'push'
+      uses: arduino/setup-task@v2
+      with:
+        version: 3.x
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set Test Flows
-        if: github.event_name == 'push'
-        run: task collect-tests
+    - name: Set Test Flows
+      if: github.event_name == 'push'
+      run: task collect-tests
 
-      - name: Run test workflows
-        if: github.event_name == 'push'
-        run: task run-tests
-        env:
-          # gets test_flows from Set Test Flows step
-          # and passes to the run-tests task
-          test_flows: ${{ env.test_flows }}
-          # bundle file required variables
-          DATABRICKS_BUNDLE_ENV: ${{ env.ENV }}
+    - name: Run test workflows
+      if: github.event_name == 'push'
+      run: task run-tests
+      env:
+        # gets test_flows from Set Test Flows step
+        # and passes to the run-tests task
+        test_flows: ${{ env.test_flows }}
+        # bundle file required variables
+        DATABRICKS_BUNDLE_ENV: ${{ env.ENV }}
