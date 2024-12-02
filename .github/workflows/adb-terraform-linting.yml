@@ -1,12 +1,15 @@
 name: "ADB Asset Bundle CI Linting"
 
 on:
-  push:
+  push: 
     branches:
-      - dilmurod-Mak/*
+      - dilmurod-Mak/* # For testing purposes only 
   pull_request:
     branches:
       - main
+    paths:
+      - "single_tech_samples/databricks/databricks_terraform/**"
+
       
 env:
   UV_VERSION: ">=0.4.26"
