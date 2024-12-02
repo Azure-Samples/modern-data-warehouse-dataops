@@ -1,9 +1,6 @@
 name: "ADB Asset Bundle CI Linting"
 
 on:
-  push: 
-    branches:
-      - dilmurod-Mak/* # For testing purposes only 
   pull_request:
     branches:
       - main
