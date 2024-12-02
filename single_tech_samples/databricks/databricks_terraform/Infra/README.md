@@ -34,93 +34,93 @@ The **`Infra/envs/development/main.tf`** file references the three modules and p
 
 1. Navigate to the environment directory:
 
-    ```bash
-    cd Infra/envs/development
-    ```
+   ```bash
+   cd Infra/envs/development
+   ```
 
 2. Comment out the other modules in `main.tf`:
 
-    ```hcl
-    module "azure_databricks_workspace" {
-      source      = "../../modules/adb-workspace"
-      region      = var.region
-      environment = var.environment
-    }
+   ```hcl
+   module "azure_databricks_workspace" {
+     source      = "../../modules/adb-workspace"
+     region      = var.region
+     environment = var.environment
+   }
 
-    /* module "metastore_and_users" {
-         ...
-    }
+   /* module "metastore_and_users" {
+        ...
+   }
 
-    module "adb_unity_catalog" {
-         ...
-    } */
-    ```
+   module "adb_unity_catalog" {
+        ...
+   } */
+   ```
 
 3. Deploy the workspace:
 
-    ```bash
-    terraform init
-    terraform plan
-    terraform apply
-    ```
+   ```bash
+   terraform init
+   terraform plan
+   terraform apply
+   ```
 
 4. After the workspace is deployed, delete the existing metastore from the Databricks workspace:
-    - In the Databricks workspace, click on the top-right corner (`your_workspace_name`) and select **Account Management**.
-    - This opens the admin-level Databricks account. Navigate to **Catalog** on the left side.
-    - Select the metastore in the region and delete it.
+   - In the Databricks workspace, click on the top-right corner (`your_workspace_name`) and select **Account Management**.
+   - This opens the admin-level Databricks account. Navigate to **Catalog** on the left side.
+   - Select the metastore in the region and delete it.
 
 #### Deploy Metastore and Users
 
 1. Uncomment the next module in `main.tf`:
 
-    ```hcl
-    module "azure_databricks_workspace" {
-      ...
-    }
+   ```hcl
+   module "azure_databricks_workspace" {
+     ...
+   }
 
-    module "metastore_and_users" {
-      source      = "../../modules/metastore-and-users"
-      region      = var.region
-      environment = var.environment
-    }
+   module "metastore_and_users" {
+     source      = "../../modules/metastore-and-users"
+     region      = var.region
+     environment = var.environment
+   }
 
-    /* module "adb_unity_catalog" {
-         ...
-    } */
-    ```
+   /* module "adb_unity_catalog" {
+        ...
+   } */
+   ```
 
 2. Deploy the metastore and users:
 
-    ```bash
-    terraform init
-    terraform plan
-    terraform apply
-    ```
+   ```bash
+   terraform init
+   terraform plan
+   terraform apply
+   ```
 
 #### Deploy Unity Catalog
 
 1. Uncomment the final module in `main.tf`:
 
-    ```hcl
-    module "azure_databricks_workspace" {
-      ...
-    }
+   ```hcl
+   module "azure_databricks_workspace" {
+     ...
+   }
 
-    module "metastore_and_users" {
-      ...
-    }
+   module "metastore_and_users" {
+     ...
+   }
 
-    module "adb_unity_catalog" {
-      source      = "../../modules/adb-unity-catalog"
-      region      = var.region
-      environment = var.environment
-    }
-    ```
+   module "adb_unity_catalog" {
+     source      = "../../modules/adb-unity-catalog"
+     region      = var.region
+     environment = var.environment
+   }
+   ```
 
 2. Deploy the Unity Catalog:
 
-    ```bash
-    terraform init
-    terraform plan
-    terraform apply
-    ```
+   ```bash
+   terraform init
+   terraform plan
+   terraform apply
+   ```
