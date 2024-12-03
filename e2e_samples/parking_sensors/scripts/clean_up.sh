@@ -39,7 +39,7 @@ delete_all(){
     echo "THIS SCRIPT WILL DELETE RESOURCES PREFIXED WITH $prefix AND HAVING DEPLOYMENT_ID $DEPLOYMENT_ID!!"
 
     printf "\nDEVOPS PIPELINES:\n"
-    az pipelines list --query "[?contains(name,'$prefix')].name"  -o tsv
+    az pipelines list -o tsv --only-show-errors --query "[?contains(name,'$prefix')].name"
     
     printf "\nDEVOPS VARIABLE GROUPS:\n"
     az pipelines variable-group list -o tsv --only-show-errors --query "[?contains(name, '$prefix')].name"
@@ -50,17 +50,17 @@ delete_all(){
     printf "\nENTRA SERVICE PRINCIPALS:\n"
     if [[ -z $DEPLOYMENT_ID ]] 
     then
-        az ad sp list --query "[?contains(appDisplayName,'$prefix')].displayName" -o tsv --show-mine
+        az ad sp list -o tsv --show-mine --query "[?contains(appDisplayName,'$prefix')].displayName"
     else
-        az ad sp list --query "[?contains(appDisplayName,'$prefix') && contains(appDisplayName,'$DEPLOYMENT_ID')].displayName" -o tsv --show-mine
+        az ad sp list -o tsv --show-mine --query "[?contains(appDisplayName,'$prefix') && contains(appDisplayName,'$DEPLOYMENT_ID')].displayName"
     fi
 
     printf "\nRESOURCE GROUPS:\n"
     if [[ -z $DEPLOYMENT_ID ]] 
     then
-        az group list --query "[?contains(name,'$prefix') && ! contains(name,'dbw')].name" -o tsv
+        az group list -o tsv --query "[?contains(name,'$prefix') && ! contains(name,'dbw')].name"
     else
-        az group list --query "[?contains(name,'$prefix-$DEPLOYMENT_ID') && ! contains(name,'dbw')].name" -o tsv
+        az group list -o tsv --query "[?contains(name,'$prefix-$DEPLOYMENT_ID') && ! contains(name,'dbw')].name"
     fi
 
     printf "\nEND OF SUMMARY\n"
