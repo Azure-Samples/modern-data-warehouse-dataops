@@ -70,7 +70,7 @@ if [[ $(echo "$kv_list" | jq -r '.[0]') != null ]]; then
     kv_purge_scheduled_date=$(echo "$kv_list" | jq -r '.[0].properties.scheduledPurgeDate')
     # If purge protection is enabled and scheduled date is in the future, then we can't create a new KeyVault with the same name
     if [[ $kv_purge_protection_enabled == true && $kv_purge_scheduled_date > $(date -u +"%Y-%m-%dT%H:%M:%SZ") ]]; then
-        echo >&2 "Existing Soft-Deleted KeyVault has Purge Protection enabled. Scheduled Purge Date: $kv_purge_scheduled_date."$'\n'"As it is not possible to proceed, please change your deployment id."$'\n'"Exiting..."
+        echo "Existing Soft-Deleted KeyVault has Purge Protection enabled. Scheduled Purge Date: $kv_purge_scheduled_date."$'\n'"As it is not possible to proceed, please change your deployment id."$'\n'"Exiting..."
         exit 1
     else
         # if purge scheduled date is not in the future or purge protection was not enabled, then ask if user wants to purge the keyvault
