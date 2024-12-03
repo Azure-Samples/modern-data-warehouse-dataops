@@ -59,6 +59,35 @@ az group create --name "$resource_group_name" --location "$AZURE_LOCATION" --tag
 kv_owner_object_id=$(az ad signed-in-user show --output json | jq -r '.id')
 kv_owner_name=$(az ad user show --id "$kv_owner_object_id" --output json | jq -r '.userPrincipalName')
 
+# Handle KeyVault Soft Delete and Purge Protection
+echo "Checking if the KeyVault name can be used..."
+kv_name="$PROJECT-kv-$ENV_NAME-$DEPLOYMENT_ID"
+kv_list=$(az keyvault list-deleted -o json --query "[?contains(name,'$kv_name')]")
+
+if [[ -n $kv_list ]]; then
+    echo "Existing Soft-Deleted KeyVault found: $kv_name. This script will try to replace it."
+    kv_purge_protection_enabled=$(echo "$kv_list" | jq -r '.[0].properties.purgeProtectionEnabled') #can be null or true
+    kv_purge_scheduled_date=$(echo "$kv_list" | jq -r '.[0].properties.scheduledPurgeDate')
+    # If purge protection is enabled and scheduled date is in the future, then we can't create a new KeyVault with the same name
+    if [[ $kv_purge_protection_enabled == true && $kv_purge_scheduled_date > $(date -u +"%Y-%m-%dT%H:%M:%SZ") ]]; then
+        echo >&2 "Existing Soft-Deleted KeyVault has Purge Protection enabled. Scheduled Purge Date: $kv_purge_scheduled_date."$'\n'"As it is not possible to proceed, please change your deployment id."$'\n'"Exiting..."
+        exit 1
+    else
+        # if purge scheduled date is not in the future or purge protection was not enabled, then ask if user wants to purge the keyvault
+        read -p "Deleted KeyVault with the same name exists but can be purged. Do you want to purge the existing KeyVault?"$'\n'"Answering YES will mean you WILL NOT BE ABLE TO RECOVER the old KeyVault and its contents. Answer [y/N]: " response
+
+        case "$response" in
+            [yY][eE][sS]|[yY])
+            az keyvault purge --name "$kv_name" --no-wait
+            ;;
+            *)
+            echo "You selected not to purge the existing KeyVault. Please change deployment id. Exiting..."
+            exit 1
+            ;;
+        esac
+    fi
+fi
+
 # Validate arm template
 echo "Validating deployment"
 arm_output=$(az deployment group validate \
@@ -67,7 +96,8 @@ arm_output=$(az deployment group validate \
     --parameters @"./infrastructure/main.parameters.${ENV_NAME}.json" \
     --parameters project="${PROJECT}" keyvault_owner_object_id="${kv_owner_object_id}" deployment_id="${DEPLOYMENT_ID}" \
     --parameters sql_server_password="${AZURESQL_SERVER_PASSWORD}" entra_admin_login="${kv_owner_name}" \
-    --parameters enable_keyvault_soft_delete="${ENABLE_KEYVAULT_SOFT_DELETE}" enable_keyvault_purge_protection="${ENABLE_KEYVAULT_PURGE_PROTECTION}"\
+    --parameters keyvault_name="${kv_name}" enable_keyvault_soft_delete="${ENABLE_KEYVAULT_SOFT_DELETE}" \
+    --parameters enable_keyvault_purge_protection="${ENABLE_KEYVAULT_PURGE_PROTECTION}"\
     --output json)
 
 # Deploy arm template
@@ -78,7 +108,8 @@ arm_output=$(az deployment group create \
     --parameters @"./infrastructure/main.parameters.${ENV_NAME}.json" \
     --parameters project="${PROJECT}" keyvault_owner_object_id="${kv_owner_object_id}" deployment_id="${DEPLOYMENT_ID}" \
     --parameters sql_server_password="${AZURESQL_SERVER_PASSWORD}" entra_admin_login="${kv_owner_name}" \
-    --parameters enable_keyvault_soft_delete="${ENABLE_KEYVAULT_SOFT_DELETE}" enable_keyvault_purge_protection="${ENABLE_KEYVAULT_PURGE_PROTECTION}"\
+    --parameters keyvault_name="${kv_name}" enable_keyvault_soft_delete="${ENABLE_KEYVAULT_SOFT_DELETE}" \
+    --parameters enable_keyvault_purge_protection="${ENABLE_KEYVAULT_PURGE_PROTECTION}"\
     --output json)
 
 if [[ -z $arm_output ]]; then
@@ -92,7 +123,7 @@ fi
 
 echo "Retrieving KeyVault information from the deployment."
 
-kv_name=$(echo "$arm_output" | jq -r '.properties.outputs.keyvault_name.value')
+#kv_name=$(echo "$arm_output" | jq -r '.properties.outputs.keyvault_name.value')
 kv_dns_name=https://${kv_name}.vault.azure.net/
 
 # Store in KeyVault
