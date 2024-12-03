@@ -3,6 +3,11 @@
 	"dockerComposeFile": "docker-compose.yml",
 	"workspaceFolder": "/workspace/e2e_samples/parking_sensors",
 	"service": "parking_sensor_dc",
+	"features": {
+		"ghcr.io/devcontainers/features/azure-cli:1": {
+			"version": "2.64.0"
+		}
+	},
 	"customizations": {
 		"vscode": {
 			"extensions": [
