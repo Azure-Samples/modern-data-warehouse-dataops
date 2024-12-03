@@ -25,9 +25,12 @@ The sample demonstrate how DevOps principles can be applied end to end Data Pipe
     - [Databricks](#databricks)
     - [Data Factory](#data-factory)
 - [How to use the sample](#how-to-use-the-sample)
-  - [Prerequisites](#prerequisites)
-    - [Software pre-requisites if you use dev container](#software-pre-requisites-if-you-use-dev-container)
-  - [Setup and Deployment](#setup-and-deployment)
+  - [Setup](#setup)
+    - [Prerequisites](#prerequisites)
+    - [Deployment Environment](#deployment-environment)
+      - [Software Prerequisites if you use Dev Container](#software-prerequisites-if-you-use-dev-container)
+      - [Software Prerequisites if you do not use dev container](#software-prerequisites-if-you-do-not-use-dev-container)
+  - [Configuration and Deployment](#configuration-and-deployment)
   - [Deployed Resources](#deployed-resources)
     - [Clean up](#clean-up)
   - [Data Lake Physical layout](#data-lake-physical-layout)
@@ -209,15 +212,37 @@ More resources:
 
 ## How to use the sample
 
-### Prerequisites
+This sample has certain prerequisites for deployment, which will be detailed below. Please note that using the development container is optional. However, we recommend using the development container because it streamlines the setup process, ensures consistency across environments, and simplifies dependency management.
 
-1. [Github account](https://github.com/)
+### Setup
+
+Following the setup prerequisites, permissions, and deployment environment options.
+
+#### Prerequisites
+
+1. [Github account](https://github.com/) : If you do not have already, create your GitHub Account.
 2. [Azure Account](https://azure.microsoft.com/en-us/free/)
    - *Permissions needed*: ability to create and deploy to an azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
-3. [Azure DevOps Project](https://azure.microsoft.com/en-us/products/devops/)
+3. [Azure DevOps Project](https://azure.microsoft.com/en-us/products/devops/) : Follow the documentation to create a new project, or use an existing project you wish to deploy these resources to.
    - *Permissions needed*: ability to create [service connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml), [pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops&tabs=yaml) and [variable groups](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml).
 
-#### Software pre-requisites if you don't use dev container<!-- omit in toc -->
+#### Deployment Environment
+
+As mentioned earlier, there are two options for setting up the deployment environment. The prerequisites for each option will be outlined next. We recommend using the development container as it simplifies the setup process, ensures consistency, and reduces configuration overhead.
+
+##### Software Prerequisites if you use Dev Container
+
+**(Recommended)**
+
+- [Docker](https://www.docker.com/)
+
+- [VSCode](https://code.visualstudio.com/)
+
+- [Visual Studio Code Remote Development Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
+
+  It is strongly recommended to use dev container for the deployment to avoid environment related issue
+
+##### Software Prerequisites if you do not use dev container
 
 - For Windows users, [Windows Subsystem For Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
 - [az cli 2.6+](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
@@ -230,50 +255,52 @@ More resources:
 - [jq](https://stedolan.github.io/jq/)
 - [makepasswd](https://manpages.debian.org/stretch/makepasswd/makepasswd.1.en.html)
 
-#### Software pre-requisites if you use dev container
+### Configuration and Deployment
 
-- [Docker](https://www.docker.com/)
-- [VSCode](https://code.visualstudio.com/)
-- [Visual Studio Code Remote Development Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
-
-  It is strongly recommended to use dev container for the deployment to avoid environment related issues.
-
-### Setup and Deployment
+Proceed in configure the environment variables as outlined below, fork the GitHub repository, and log into your Azure account before proceeding with the deployment.
 
 **IMPORTANT NOTE:** As with all Azure Deployments, this will **incur associated costs**. Remember to teardown all related resources after use to avoid unnecessary costs. See [here](#deployed-resources) for list of deployed resources.
 *NOTE: This deployment was tested using WSL 2 (Ubuntu 18.04) and Debian GNU/Linux 9.9 (stretch)*
 
-1. **Initial Setup**
+1. **Configuration: Variables and Login**
+
    - **Fork** this repository into a new Github repo.
+
    - Set the following **required** environment variables:
-      - **TENANT_ID** - an Entra ID. Used to login to a specific tenant with Azure CLI
-      - **AZURE_SUBSCRIPTION_ID** - Azure subscription id to use to deploy resources. Default: default azure subscription.
-      - **AZDO_PROJECT** - Target Azure DevOps project where Azure Pipelines and Variable groups will be deployed
-      - **AZDO_ORGANIZATION_URL** - Target Azure DevOps Organization of Azure DevOps project in this form `https://dev.azure.com/<organization>/`. Must be in the same tenant as $TENANT_ID
-      - **GITHUB_REPO** - Name of your forked github repo in this form `<my_github_handle>/<repo>`. (ei. "devlace/mdw-dataops-import")
-      - **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). The token is needed to connect to the GitHub repository. When generating a token use a `fine-grained` token, select your repository and under repository permissions select Read access to Content and Webhooks. Under Account permissions select read access to Email.
 
-      Optionally, set the following environment variables:
-      - **AZURE_LOCATION** - Azure location to deploy resources. *Default*: `westus`.
-      - **DEPLOYMENT_ID** - string appended to all resource names. This is to ensure uniqueness of azure resource names. *Default*: random five character string.
-      - **AZDO_PIPELINES_BRANCH_NAME** - git branch where Azure DevOps pipelines definitions are retrieved from. *Default*: main.
-      - **AZURESQL_SERVER_PASSWORD** - Password of the SQL Server instance. *Default*: random string.
+     - **TENANT_ID** - an Entra ID. Used to login to a specific tenant with Azure CLI
+     - **AZURE_SUBSCRIPTION_ID** - Azure subscription id to use to deploy resources. Default: default azure subscription.
+     - **AZDO_PROJECT** - Target Azure DevOps project where Azure Pipelines and Variable groups will be deployed
+     - **AZDO_ORGANIZATION_URL** - Target Azure DevOps Organization of Azure DevOps project in this form `https://dev.azure.com/<organization>/`. Must be in the same tenant as $TENANT_ID
+     - **GITHUB_REPO** - Name of your forked github repo in this form `<my_github_handle>/<repo>`. (ei. "devlace/mdw-dataops-import")
+     - **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). The token is needed to connect to the GitHub repository. When generating a token use a `fine-grained` token, select your repository and under repository permissions select Read access to Content and Webhooks. Under Account permissions select read access to Email.
 
-   - If you are using **dev container**, follow the below steps:
-      - Rename `.envtemplate` under ".devcontainer" folder to `.env` and update the values as mentioned above instead of setting those as environment variables.
-      - Open the project inside the vscode dev container (see details [here](docs/devcontainer.md)).
+     Optionally, set the following environment variables:
+
+     - **AZURE_LOCATION** - Azure location to deploy resources. *Default*: `westus`.
+     - **DEPLOYMENT_ID** - string appended to all resource names. This is to ensure uniqueness of azure resource names. *Default*: random five character string.
+     - **AZDO_PIPELINES_BRANCH_NAME** - git branch where Azure DevOps pipelines definitions are retrieved from. *Default*: main.
+     - **AZURESQL_SERVER_PASSWORD** - Password of the SQL Server instance. *Default*: random string.
+
+   - **Additionally** -  If you are using **Dev Container** which is the recommended option, follow the below steps:
+
+     - Rename `.envtemplate` under ".devcontainer" folder to `.env` and update the values as mentioned above instead of setting those as environment variables.
+     - Open the project inside the vscode dev container (see details [here](docs/devcontainer.md)).
       > Note that the environment file is only loaded once, during the container build process. If you modify any environment variables after building your devcontainer, you will need to manually reload the new values by running `source .devcontainer/.env`
 
    - To further customize the solution, set parameters in `arm.parameters` files located in the `infrastructure` folder.
       - To enable Observability and Monitoring components through code(Observability-as-code), please set enable_monitoring parameter to true in  `arm.parameters` files located in the `infrastructure` folder. This will deploy log analytics workspace to collect monitoring data from key resources, setup an Azure dashboards to monitor key metrics and configure alerts for ADF pipelines.
-   - Ensure that:
-      - You have loaded your environment file. To do so run:
+  
+  **Login**
+
+- Ensure that:
+  - You have loaded your environment file. To do so run:
 
         ```bash
         source .devcontainer/.env
         ```
 
-      - You are logged in to the Azure CLI. To login, run
+  - You are logged in to the Azure CLI. To login, run
 
         ```bash
         az config set core.login_experience_v2=off
@@ -281,19 +308,19 @@ More resources:
         az config set core.login_experience_v2=on
         ```
 
-      - Azure CLI is targeting the Azure Subscription you want to deploy the resources to. To set target Azure Subscription, run
+  - Azure CLI is targeting the Azure Subscription you want to deploy the resources to. To set target Azure Subscription, run
 
         ```bash
         az account set -s $AZURE_SUBSCRIPTION_ID
         ```
 
-      - (Skip this if you are using our devcontainer) Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to. To set target Azure DevOps project, run
+  - (Skip this if you are using our devcontainer) Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to. To set target Azure DevOps project, run
 
         ```bash
         az devops configure --defaults organization=$AZDO_ORGANIZATION_URL project=$AZDO_PROJECT
         ```
 
-      - Create a `cluster.config.json` Spark configuration from the [`cluster.config.template.json`](./databricks/config/cluster.config.template.json) file. For the "node_type_id" field, select a SKU that is available from the following command in your subscription:
+  - Create a `cluster.config.json` Spark configuration from the [`cluster.config.template.json`](./databricks/config/cluster.config.template.json) file. For the "node_type_id" field, select a SKU that is available from the following command in your subscription:
 
         ```bash
         az vm list-usage --location "<YOUR_REGION>" -o table
