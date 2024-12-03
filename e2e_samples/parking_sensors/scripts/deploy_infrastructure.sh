@@ -64,7 +64,7 @@ echo "Checking if the KeyVault name can be used..."
 kv_name="$PROJECT-kv-$ENV_NAME-$DEPLOYMENT_ID"
 kv_list=$(az keyvault list-deleted -o json --query "[?contains(name,'$kv_name')]")
 
-if [[ -n $(echo "$kv_list" | jq -r '.[0]') ]]; then
+if [[ $(echo "$kv_list" | jq -r '.[0]') != null ]]; then
     echo "Existing Soft-Deleted KeyVault found: $kv_name. This script will try to replace it."
     kv_purge_protection_enabled=$(echo "$kv_list" | jq -r '.[0].properties.purgeProtectionEnabled') #can be null or true
     kv_purge_scheduled_date=$(echo "$kv_list" | jq -r '.[0].properties.scheduledPurgeDate')
