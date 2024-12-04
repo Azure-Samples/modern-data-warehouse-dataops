@@ -6,7 +6,7 @@ parameters:
 
 jobs:
 - deployment: deploy_adf
-  # dependsOn: deploy_databricks
+  dependsOn: deploy_databricks
   displayName: 'Deploy to Azure Data Factory'
   pool:
     vmImage: 'windows-2019'

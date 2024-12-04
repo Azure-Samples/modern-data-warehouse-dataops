@@ -48,4 +48,5 @@ resource datafactory 'Microsoft.DataFactory/factories@2018-06-01' = {
 
 
 output datafactory_principal_id string = datafactory.identity.principalId
+output datafactory_id string = datafactory.id
 output datafactory_name string = datafactory.name

@@ -51,6 +51,7 @@ set -o xtrace # For debugging
 # SQL_DW_DATABASE_NAME
 # AZURE_STORAGE_ACCOUNT
 # AZURE_STORAGE_KEY
+# DATAFACTORY_ID
 # DATAFACTORY_NAME
 # SP_ADF_ID
 # SP_ADF_PASS
@@ -137,6 +138,8 @@ az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
     --secret "true" --name "spAdfPass" --value "$SP_ADF_PASS"
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
     --secret "true" --name "spAdfTenantId" --value "$SP_ADF_TENANT"
-
+az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
+    --secret "true" --name "adfResourceId" --value "$DATAFACTORY_ID"
+    
 # Delete dummy vars
 az pipelines variable-group variable delete --group-id "$vargroup_secrets_id" --name "foo" -y
