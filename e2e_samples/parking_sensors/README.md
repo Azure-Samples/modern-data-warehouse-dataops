@@ -27,7 +27,7 @@ The sample demonstrate how DevOps principles can be applied end to end Data Pipe
 - [How to use the sample](#how-to-use-the-sample)
   - [Setup](#setup)
     - [Prerequisites](#prerequisites)
-    - [Deployment Environment](#deployment-environment)
+    - [Deployment Options](#deployment-options)
       - [Software Prerequisites if you use Dev Container](#software-prerequisites-if-you-use-dev-container)
       - [Software Prerequisites if you do not use dev container](#software-prerequisites-if-you-do-not-use-dev-container)
   - [Configuration and Deployment](#configuration-and-deployment)
