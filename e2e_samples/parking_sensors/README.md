@@ -286,7 +286,7 @@ Set up the environment variables as specified, fork the GitHub repository, and l
 
      - Rename `.envtemplate` under ".devcontainer" folder to `.env` and update the values as mentioned above instead of setting those as environment variables.
      - Open the project inside the vscode Dev Container (see details [here](docs/devcontainer.md)).
-      > Note that the environment file is only loaded once, during the container build process. If you modify any environment variables after building your devcontainer, you will need to manually reload the new values by running `source .devcontainer/.env`
+      > Note that the environment file is only loaded once, during the container build process. If you modify any environment variables after building your Dev Container, you will need to manually reload the new values by running `source .devcontainer/.env`
 
    - To further customize the solution, set parameters in `arm.parameters` files located in the `infrastructure` folder.
       - To enable Observability and Monitoring components through code(Observability-as-code), please set enable_monitoring parameter to true in  `arm.parameters` files located in the `infrastructure` folder. This will deploy log analytics workspace to collect monitoring data from key resources, setup an Azure dashboards to monitor key metrics and configure alerts for ADF pipelines.
