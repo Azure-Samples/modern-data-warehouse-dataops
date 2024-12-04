@@ -39,27 +39,22 @@ set -o nounset
 # AZDO_PIPELINES_BRANCH_NAME
 # DEV_DATAFACTORY_NAME
 
-##Functions created in the common.sh script
 source ./common.sh
 # Retrieve Github Service Connection Id
 github_sc_name="${PROJECT}-github"
 github_sc_id=$(az devops service-endpoint list --output json |
     jq -r --arg NAME "$github_sc_name" '.[] | select(.name==$NAME) | .id')
 
-
+##Functions created in the common.sh script
 
 # Build Pipelines
-ifexistsoverwrite "ci-qa-python" 
 createPipeline "ci-qa-python" "This pipeline runs python unit tests and linting."
 
-ifexistsoverwrite "ci-qa-sql" 
 createPipeline "ci-qa-sql" "This pipeline builds the sql dacpac"
 
-ifexistsoverwrite "ci-artifacts" 
 createPipeline "ci-artifacts" "This pipeline publishes build artifacts"
 
 # Release Pipelines
-ifexistsoverwrite "cd-release" 
 cd_release_pipeline_id=$(createPipeline "cd-release" "This pipeline releases across environments")
 
 az pipelines variable create \
