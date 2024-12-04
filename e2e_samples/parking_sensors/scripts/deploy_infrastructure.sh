@@ -272,6 +272,7 @@ jq --arg datalakeUrl "https://$azure_storage_account.dfs.core.windows.net" '.pro
 jq --arg databricks_folder_name_standardize "$databricks_folder_name_standardize" '.properties.activities[0].typeProperties.notebookPath = $databricks_folder_name_standardize' $adfPlDir/P_Ingest_MelbParkingData.json > "$tmpfile" && mv "$tmpfile" $adfPlDir/P_Ingest_MelbParkingData.json
 jq --arg databricks_folder_name_transform  "$databricks_folder_name_transform" '.properties.activities[4].typeProperties.notebookPath = $databricks_folder_name_transform' $adfPlDir/P_Ingest_MelbParkingData.json > "$tmpfile" && mv "$tmpfile" $adfPlDir/P_Ingest_MelbParkingData.json
 
+datafactory_id=$(echo "$arm_output" | jq -r '.properties.outputs.datafactory_id.value')
 datafactory_name=$(echo "$arm_output" | jq -r '.properties.outputs.datafactory_name.value')
 az keyvault secret set --vault-name "$kv_name" --name "adfName" --value "$datafactory_name"
 
@@ -301,7 +302,7 @@ echo "ADF - Valid password obtained"
 # Save ADF SP credentials in Keyvault
 az keyvault secret set --vault-name "$kv_name" --name "spAdfName" --value "$sp_adf_name"
 az keyvault secret set --vault-name "$kv_name" --name "spAdfId" --value "$sp_adf_id"
-az keyvault secret set --vault-name "$kv_name" --name "spAdfPass" --value="$sp_adf_pass"##=handles hyphen passwords
+az keyvault secret set --vault-name "$kv_name" --name "spAdfPass" --value="$sp_adf_pass" ##=handles hyphen passwords
 az keyvault secret set --vault-name "$kv_name" --name "spAdfTenantId" --value "$sp_adf_tenant"
 
 ####################
@@ -331,6 +332,7 @@ SQL_SERVER_PASSWORD=$AZURESQL_SERVER_PASSWORD \
 SQL_DW_DATABASE_NAME=$sql_dw_database_name \
 AZURE_STORAGE_KEY=$azure_storage_key \
 AZURE_STORAGE_ACCOUNT=$azure_storage_account \
+DATAFACTORY_ID=$datafactory_id \
 DATAFACTORY_NAME=$datafactory_name \
 SP_ADF_ID=$sp_adf_id \
 SP_ADF_PASS=$sp_adf_pass \
