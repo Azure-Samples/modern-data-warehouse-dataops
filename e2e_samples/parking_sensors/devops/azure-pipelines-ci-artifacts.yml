@@ -52,6 +52,7 @@ stages:
       displayName: 'Publish Dist Artifacts'
 
   - job: 'publish_static_artifacts'
+    dependsOn: publish_python_packages
     displayName: 'Publish Static Artifacts'
     pool:
       vmImage: 'ubuntu-latest'
@@ -69,6 +70,7 @@ stages:
       displayName: 'Publish ADF Scripts'
 
   - job: 'publish_sql_packages'
+    dependsOn: publish_static_artifacts
     displayName: 'Publish SQL Packages'
     pool:
       vmImage: 'windows-latest'
