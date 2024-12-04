@@ -314,7 +314,7 @@ Set up the environment variables as specified, fork the GitHub repository, and l
         az account set -s $AZURE_SUBSCRIPTION_ID
         ```
 
-  - (Skip this if you are using our devcontainer) Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to. To set target Azure DevOps project, run
+  - (Skip this if you are using our Dev Container) Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to. To set target Azure DevOps project, run
 
         ```bash
         az devops configure --defaults organization=$AZDO_ORGANIZATION_URL project=$AZDO_PROJECT
