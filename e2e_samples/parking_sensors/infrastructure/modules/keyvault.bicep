@@ -1,13 +1,7 @@
-param project string
-@allowed([
-  'dev'
-  'stg'
-  'prod'
-])
 param env string
 param location string = resourceGroup().location
-param deployment_id string
 
+param keyvault_name string
 param keyvault_owner_object_id string
 param datafactory_principal_id string
 param enable_soft_delete bool = true
@@ -15,7 +9,7 @@ param enable_purge_protection bool = true
 
 
 resource keyvault 'Microsoft.KeyVault/vaults@2023-07-01' = {
-  name: '${project}-kv-${env}-${deployment_id}'
+  name: keyvault_name
   location: location
   tags: {
     DisplayName: 'Keyvault'
