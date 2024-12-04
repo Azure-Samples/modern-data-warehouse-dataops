@@ -72,3 +72,4 @@ createPipeline ()
     echo "$pipeline_id"
 
 }
+
