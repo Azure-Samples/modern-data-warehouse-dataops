@@ -64,17 +64,17 @@ The solution pulls near realtime [Melbourne Parking Sensor data](https://www.mel
 
 The following shows the overall architecture of the solution.
 
-![Architecture](../../docs/images/architecture.png?raw=true "Architecture")
+![Architecture](docs/images/architecture.png "Architecture")
 
 Sample PowerBI report
 
-![PowerBI report](../../docs/images/PBI_parking_sensors.png?raw=true "PowerBI Report")
+![PowerBI report](docs/images/PBI_parking_sensors.png "PowerBI Report")
 
 ### Continuous Integration and Continuous Delivery (CI/CD)
 
 The following shows the overall CI/CD process end to end.
 
-![CI/CD](../../docs/images/CI_CD_process.png?raw=true "CI/CD")
+![CI/CD](docs/images/CI_CD_process.png "CI/CD")
 
 See [here](#build-and-release-pipeline) for details.
 
@@ -156,7 +156,7 @@ The Build and Release Pipelines definitions can be found [here](devops/README.md
 
 There are eight numbered orange boxes describing the sequence from sandbox development to target environments:
 
-![CI/CD](../../docs/images/CI_CD_process_sequence.png?raw=true "CI/CD")
+![CI/CD](docs/images/CI_CD_process_sequence.png "CI/CD")
 
 1. Developers develop in their own Sandbox environments within the DEV resource group and commit changes into their own short-lived git branches. (i.e. <developer_name>/<branch_name>)
 2. When changes are complete, developers raise a PR to `main` for review. This automatically kicks-off the PR validation pipeline which runs the unit tests, linting and DACPAC builds.
@@ -339,12 +339,12 @@ More resources:
    - In Azure DevOps, notice a new run of the Build Pipeline (**mdw-park-ci-artifacts**) off `main`. This will build the Python package and SQL DACPAC, then publish these as Pipeline Artifacts.
    - After completion, this should automatically trigger the Release Pipeline (**mdw-park-cd-release**). This will deploy the artifacts across environments.
       - You may need to authorize the Pipelines initially to use the Service Connection and deploy the target environments for the first time.
-      ![Release Pipeline](../../docs/images/ReleasePipeline.png?raw=true "Release Pipelines")
+      ![Release Pipeline](docs/images/ReleasePipeline.png "Release Pipelines")
    - **Optional**. Trigger the Data Factory Pipelines per environment.
       - In the Data Factory portal of each environment, navigate to "Author", then select the `P_Ingest_MelbParkingData`.
       - Select "Trigger > Trigger Now".
       - To monitor the run, go to "Monitor > Pipeline runs".
-      ![Data Factory Run](../../docs/images/ADFRun.png?raw=true "Data Factory Run]")
+      ![Data Factory Run](docs/images/ADFRun.png "Data Factory Run]")
       - Currently, the data pipeline is configured to use "on-demand" databricks clusters so it takes a few minutes to spin up. That said, it is not uncommon to change these to point to "existing" running clusters in Development for faster data pipeline runs.
 
 5. **Optional. Visualize data in PowerBI**
