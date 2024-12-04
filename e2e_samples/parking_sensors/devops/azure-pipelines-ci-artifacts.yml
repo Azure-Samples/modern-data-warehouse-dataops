@@ -65,6 +65,11 @@ stages:
         ArtifactName: 'databricks'
       displayName: 'Publish Databricks Artifacts'
 
+    - task: UseNode@1
+      inputs:
+        version: '18.x'
+      displayName: 'Install Node.js'
+      
     - task: Npm@1
       inputs:
         command: 'install'
