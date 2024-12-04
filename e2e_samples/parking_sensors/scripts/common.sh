@@ -32,3 +32,33 @@ print_style () {
 
     printf "$STARTCOLOR%b$ENDCOLOR" "$1";
 }
+
+createPipeline () {
+    declare pipeline_name=$1
+    declare pipeline_description=$2
+    full_pipeline_name=$PROJECT-$pipeline_name
+    pipeline_id=$(az pipelines create \
+        --name "$full_pipeline_name" \
+        --description "$pipeline_description" \
+        --repository "$GITHUB_REPO_URL" \
+        --branch "$AZDO_PIPELINES_BRANCH_NAME" \
+        --yaml-path "/e2e_samples/parking_sensors/devops/azure-pipelines-$pipeline_name.yml" \
+        --service-connection "$github_sc_id" \
+        --skip-first-run true \
+        --output json | jq -r '.id')
+    echo "$pipeline_id"
+}
+
+ifexistsoverwrite() {
+    declare pipeline_name=$1
+    full_pipeline_name=$PROJECT-$pipeline_name
+    
+    pipeline_id=$(az pipelines show --name "$full_pipeline_name" --output json 2>/dev/null | jq -r .id)
+
+    if [ -n "$pipeline_id" ]; then
+        az pipelines delete --id "$pipeline_id" --yes
+        echo "Deleted existing pipeline: $full_pipeline_name (Pipeline ID: $pipeline_id)"
+    else
+        echo "Pipeline $full_pipeline_name does not exist."
+    fi
+}
