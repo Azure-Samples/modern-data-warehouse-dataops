@@ -255,7 +255,7 @@ As mentioned earlier, there are two options for setting up the deployment enviro
 - [jq](https://stedolan.github.io/jq/)
 - [makepasswd](https://manpages.debian.org/stretch/makepasswd/makepasswd.1.en.html)
 
-### Configuration and Deployment
+### Deployment
 
 Proceed in configure the environment variables as outlined below, fork the GitHub repository, and log into your Azure account before proceeding with the deployment.
 
