@@ -75,13 +75,13 @@ stages:
       inputs:
         command: 'custom'
         workingDir: '$(Build.Repository.LocalPath)/$(basePath)/adf' #replace with the package.json folder
-        customCommand: 'run build export $(Build.Repository.LocalPath)/$(basePath)/adf $(adfResourceId) "arm-template"'
+        customCommand: 'run build export $(Build.Repository.LocalPath)/$(basePath)/adf $(adfResourceId) "armtemplate"'
       displayName: 'Validate and Generate ARM template'
 
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: '$(basePath)/adf/_scripts/deploymentadf.ps1'
-        ArtifactName: 'adf/scripts'
+        ArtifactName: 'adf\scripts'
       displayName: 'Publish ADF Resources'
 
   - job: 'publish_sql_packages'
