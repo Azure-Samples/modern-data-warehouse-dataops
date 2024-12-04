@@ -1,6 +1,8 @@
 parameters:
 - name: environmentName
   type: string
+- name: dbclusterid
+  type: string
 
 jobs:
 - deployment: deploy_databricks
