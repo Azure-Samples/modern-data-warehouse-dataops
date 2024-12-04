@@ -39,12 +39,14 @@ set -o nounset
 # AZDO_PIPELINES_BRANCH_NAME
 # DEV_DATAFACTORY_NAME
 
+##Functions created in the common.sh script
+source ./common.sh
 # Retrieve Github Service Connection Id
 github_sc_name="${PROJECT}-github"
 github_sc_id=$(az devops service-endpoint list --output json |
     jq -r --arg NAME "$github_sc_name" '.[] | select(.name==$NAME) | .id')
 
-##Functions created in the common.sh script
+
 
 # Build Pipelines
 ifexistsoverwrite "ci-qa-python" 
