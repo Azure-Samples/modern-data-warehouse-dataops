@@ -257,7 +257,7 @@ As mentioned earlier, there are two options for setting up the deployment enviro
 
 ### Deployment
 
-Proceed in configure the environment variables as outlined below, fork the GitHub repository, and log into your Azure account before proceeding with the deployment.
+Set up the environment variables as specified, fork the GitHub repository, and log in to your Azure account before moving forward with the deploymet.
 
 **IMPORTANT NOTE:** As with all Azure Deployments, this will **incur associated costs**. Remember to teardown all related resources after use to avoid unnecessary costs. See [here](#deployed-resources) for list of deployed resources.
 *NOTE: This deployment was tested using WSL 2 (Ubuntu 18.04) and Debian GNU/Linux 9.9 (stretch)*
