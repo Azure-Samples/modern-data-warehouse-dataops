@@ -30,7 +30,7 @@ The sample demonstrate how DevOps principles can be applied end to end Data Pipe
     - [Deployment Options](#deployment-options)
       - [Software Prerequisites if you use Dev Container](#software-prerequisites-if-you-use-dev-container)
       - [Software Prerequisites if you do not use Dev Container](#software-prerequisites-if-you-do-not-use-dev-container)
-  - [Configuration and Deployment](#configuration-and-deployment)
+  - [Deployment](#deployment)
   - [Deployed Resources](#deployed-resources)
     - [Clean up](#clean-up)
   - [Data Lake Physical layout](#data-lake-physical-layout)
