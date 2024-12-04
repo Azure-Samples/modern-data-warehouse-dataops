@@ -123,6 +123,7 @@ module "fabric_setup_notebook" {
     "lakehouse_name" = module.fabric_lakehouse.lakehouse_name
     "lakehouse_id"   = module.fabric_lakehouse.lakehouse_id
     "workspace_id"   = module.fabric_workspace.workspace_id
+    "environment_id" = module.fabric_environment.environment_id
   }
 }
 
@@ -135,6 +136,7 @@ module "fabric_standardize_notebook" {
     "lakehouse_name" = module.fabric_lakehouse.lakehouse_name
     "lakehouse_id"   = module.fabric_lakehouse.lakehouse_id
     "workspace_id"   = module.fabric_workspace.workspace_id
+    "environment_id" = module.fabric_environment.environment_id
   }
 }
 
@@ -147,6 +149,7 @@ module "fabric_transform_notebook" {
     "lakehouse_name" = module.fabric_lakehouse.lakehouse_name
     "lakehouse_id"   = module.fabric_lakehouse.lakehouse_id
     "workspace_id"   = module.fabric_workspace.workspace_id
+    "environment_id" = module.fabric_environment.environment_id
   }
 }
 
