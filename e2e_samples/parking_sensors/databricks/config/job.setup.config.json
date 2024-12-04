@@ -6,9 +6,9 @@
       "task_key": "run-setup-nb",
       "run_if": "ALL_SUCCESS",
       "notebook_task": {
-        "notebook_path": "",
+        "notebook_path": "/Workspace/Users/raafat.zarka@mngenvmcap841869.onmicrosoft.com/00_setup.py",
         "source": "WORKSPACE"
     },
-    "existing_cluster_id": ""
+    "existing_cluster_id": "1203-225221-6g5ehtr0"
     }]  
 }

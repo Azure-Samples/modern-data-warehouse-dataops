@@ -51,6 +51,7 @@ then
     export AZURESQL_SERVER_PASSWORD="P@_Sens0r$(makepasswd --chars 16)"
 fi
 
+ENABLE_KEYVAULT_SOFT_DELETE=${ENABLE_KEYVAULT_SOFT_DELETE:-}
 # set soft delete variable to true if the env variable has not been set
 if [ -z "$ENABLE_KEYVAULT_SOFT_DELETE" ]
 then 
@@ -58,6 +59,7 @@ then
     echo "No ENABLE_KEYVAULT_SOFT_DELETE specified. Defaulting to $ENABLE_KEYVAULT_SOFT_DELETE"
 fi
 
+ENABLE_KEYVAULT_PURGE_PROTECTION=${ENABLE_KEYVAULT_PURGE_PROTECTION:-}
 # set purge protection variable to true if the env variable has not been set
 if [ -z "$ENABLE_KEYVAULT_PURGE_PROTECTION" ]
 then 
