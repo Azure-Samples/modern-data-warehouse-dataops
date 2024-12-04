@@ -23,7 +23,7 @@ jobs:
           inputs:
             azureSubscription: ${{ parameters.serviceConnection }}
             ScriptPath: '$(Pipeline.Workspace)/ciartifacts/adf_scripts/deploymentadf.ps1'
-            ScriptArguments: '-armTemplate "$(Pipeline.Workspace)\adf_arm_template\ARMTemplateForFactory.json" -ResourceGroupName "$(rgName)" -DataFactoryName "$(adfName)" -predeployment $true'
+            ScriptArguments: '-armTemplate "$(Pipeline.Workspace)\ciartifacts\adf_arm_template\ARMTemplateForFactory.json" -ResourceGroupName "$(rgName)" -DataFactoryName "$(adfName)" -predeployment $true'
             azurePowerShellVersion: LatestVersion
           displayName: 'Azure PowerShell script: Stop ADF triggers'
 
@@ -34,8 +34,8 @@ jobs:
             azureSubscription: ${{ parameters.serviceConnection }}
             resourceGroupName: '$(rgName)'
             location: '$(azureLocation)'
-            csmFile: '$(Pipeline.Workspace)/adf_arm_template/ARMTemplateForFactory.json'
-            csmParametersFile: '$(Pipeline.Workspace)/adf_arm_template/ARMTemplateParametersForFactory.json'
+            csmFile: '$(Pipeline.Workspace)/ciartifacts/adf_arm_template/ARMTemplateForFactory.json'
+            csmParametersFile: '$(Pipeline.Workspace)/ciartifacts/adf_arm_template/ARMTemplateParametersForFactory.json'
             overrideParameters: -factoryName "$(adfName)" -P_Ingest_MelbParkingData_properties_0_typeProperties_notebookPath "$(databricksNotebookPath)/02_standardize" -P_Ingest_MelbParkingData_properties_0_typeProperties_0_egg "$(databricksDbfsLibPath)/$(packageWheelName)" -P_Ingest_MelbParkingData_properties_4_typeProperties_0_egg "$(databricksDbfsLibPath)/$(packageWheelName)" -Ls_AdlsGen2_01_properties_typeProperties_url "https://$(datalakeAccountName).dfs.core.windows.net/" -Ls_KeyVault_01_properties_typeProperties_baseUrl "$(kvUrl)" -Ls_Rest_MelParkSensors_01_properties_typeProperties_url "$(apiBaseUrl)" -P_Ingest_MelbParkingData_properties_4_typeProperties_notebookPath "$(databricksNotebookPath)/03_transform" -Ls_AzureDatabricks_01_properties_typeProperties_domain "$(databricksDomain)" -Ls_AzureDatabricks_01_properties_typeProperties_workspaceResourceId "$(databricksWorkspaceResourceId)"
 
 
@@ -45,5 +45,5 @@ jobs:
           inputs:
             azureSubscription: ${{ parameters.serviceConnection }}
             ScriptPath: '$(Pipeline.Workspace)/ciartifacts/adf_scripts/deploymentadf.ps1'
-            ScriptArguments: '-armTemplate "$(Pipeline.Workspace)\adf_arm_template\ARMTemplateForFactory.json" -ResourceGroupName "$(rgName)" -DataFactoryName "$(adfName)" -predeployment $false'
+            ScriptArguments: '-armTemplate "$(Pipeline.Workspace)\ciartifacts\adf_arm_template\ARMTemplateForFactory.json" -ResourceGroupName "$(rgName)" -DataFactoryName "$(adfName)" -predeployment $false'
             azurePowerShellVersion: LatestVersion
