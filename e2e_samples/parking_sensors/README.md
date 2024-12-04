@@ -226,7 +226,7 @@ Follow the setup prerequisites, permissions, and deployment environment options.
 3. [Azure DevOps Project](https://azure.microsoft.com/en-us/products/devops/) : Follow the documentation to create a new project, or use an existing project you wish to deploy these resources to.
    - *Permissions needed*: ability to create [service connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml), [pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops&tabs=yaml) and [variable groups](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml).
 
-#### Deployment Environment
+#### Deployment Options
 
 As mentioned earlier, there are two options for setting up the deployment environment. The prerequisites for each option will be outlined next. We recommend using the development container as it simplifies the setup process, ensures consistency, and reduces configuration overhead.
 
