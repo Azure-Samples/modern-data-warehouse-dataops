@@ -62,7 +62,7 @@ As the Fabric E2E sample is a complex solution with multiple components, it is i
 | Fabric Notebooks | `nb-*` | "nb-setup", "nb-standardize", "nb-transform" |
 | Fabric Pipelines | `pl-*` | "pl-main.json" |
 | Fabric Environment | `env-*` | `env-<base-name>` |
-| Fabric Custom Pool | `sprk-*` | `sprk-<base-name>` |
+| Fabric Custom Spark Pool | `sprk-*` | `sprk-<base-name>` |
 | Azure DevOps Variable Group | `vg-*` | `vg-<base-name>` |
 
 ## Decision
