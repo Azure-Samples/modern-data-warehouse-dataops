@@ -301,7 +301,7 @@ echo "ADF - Valid password obtained"
 # Save ADF SP credentials in Keyvault
 az keyvault secret set --vault-name "$kv_name" --name "spAdfName" --value "$sp_adf_name"
 az keyvault secret set --vault-name "$kv_name" --name "spAdfId" --value "$sp_adf_id"
-az keyvault secret set --vault-name "$kv_name" --name "spAdfPass" --value="$sp_adf_pass"##=handles hyphen passwords
+az keyvault secret set --vault-name "$kv_name" --name "spAdfPass" --value="$sp_adf_pass" ##=handles hyphen passwords
 az keyvault secret set --vault-name "$kv_name" --name "spAdfTenantId" --value "$sp_adf_tenant"
 
 ####################
