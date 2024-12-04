@@ -216,7 +216,7 @@ This sample has certain prerequisites for deployment, which will be detailed bel
 
 ### Setup
 
-Following the setup prerequisites, permissions, and deployment environment options.
+Follow the setup prerequisites, permissions, and deployment environment options.
 
 #### Prerequisites
 
