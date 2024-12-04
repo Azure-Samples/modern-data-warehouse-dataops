@@ -2,16 +2,27 @@
 name = "modern_data_estate"
 version = "0.1.0"
 description = "Modern Data Estate"
-authors = [{ name = "Microsoft ISE Data Tech Domain", email = "your.email@example.com" }]
+authors = [
+    { name = "Microsoft ISE Data Tech Domain", email = "your.email@example.com" },
+]
 
 dependencies = ["pandas", "numpy", "requests"]
 
 [project.optional-dependencies]
-code_qa = ["black", "isort", "ruff", "mypy", "yamllint", "nbqa", "pre-commit"]
+code_qa = [
+    "black",
+    "isort",
+    "ruff",
+    "mypy",
+    "yamllint",
+    "nbqa",
+    "pre-commit",
+    "types-PyYAML",
+]
 test = ["pytest", "pytest-cov"]
 release = ["build", "twine"]
 
-dev = ["modern_data_estate[code_qa, test, release]" , "ipykernel"]
+dev = ["modern_data_estate[code_qa, test, release]", "ipykernel"]
 ci = ["modern_data_estate[test]", "pre-commit"]
 cd = ["modern_data_estate[release]"]
 
@@ -46,7 +57,7 @@ exclude = [
     "*.ipynb",
     "archive/*",
     "e2e_samples/parking_sensors/*",
-    "single_tech_samples/*"
+    "single_tech_samples/*",
 ]
 builtins = ["notebookutils", "mssparkutils", "spark", "display"]
 

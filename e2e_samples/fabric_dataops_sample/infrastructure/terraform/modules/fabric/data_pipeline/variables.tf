@@ -34,5 +34,5 @@ variable "tokens" {
 variable "definition_update_enabled" {
   description = "Update definition on change of source content."
   type        = bool
-  default     = false
+  default     = true
 }

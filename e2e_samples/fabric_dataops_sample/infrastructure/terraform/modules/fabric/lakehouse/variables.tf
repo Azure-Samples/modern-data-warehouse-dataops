@@ -12,3 +12,9 @@ variable "lakehouse_description" {
   description = "Microsoft Fabric lakehouse description"
   type        = string
 }
+
+variable "enable_schemas" {
+  description = "Enable schemas in the Lakehouse"
+  type        = bool
+  default     = true
+}

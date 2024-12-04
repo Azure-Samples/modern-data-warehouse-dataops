@@ -1,0 +1,154 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" version="24.9.1">
+  <diagram name="Page-1" id="SktumR7-EWXTwfsnRiKQ">
+    <mxGraphModel dx="1434" dy="795" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-9" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="200" y="80" width="1000" height="440" as="geometry" />
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-17" value="" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="690" y="110" width="470" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-16" value="" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="690" y="210" width="470" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-15" value="" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;fillColor=#fad9d5;strokeColor=#ae4132;" vertex="1" parent="1">
+          <mxGeometry x="690" y="310" width="470" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fillColor=#f8cecc;strokeColor=#b85450;strokeWidth=3;exitX=0.75;exitY=1;exitDx=0;exitDy=0;endArrow=openThin;endFill=0;" edge="1" parent="1" source="PB_dgITb9dCGjBoE4hCu-1" target="PB_dgITb9dCGjBoE4hCu-3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="365" y="350" />
+              <mxPoint x="540" y="350" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-1" value="&lt;div style=&quot;&quot;&gt;&lt;b style=&quot;background-color: initial;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;GitHub&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;b style=&quot;background-color: initial;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;/config&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;&amp;nbsp;&lt;div&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;application.cfg.template&amp;nbsp;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="230" y="210" width="175" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-2" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;ADLS Gen2&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&lt;br&gt;application.cfg" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="700" y="130" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=3;strokeColor=#0000FF;endArrow=openThin;endFill=0;" edge="1" parent="1" source="PB_dgITb9dCGjBoE4hCu-3" target="PB_dgITb9dCGjBoE4hCu-2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="660" y="250" />
+              <mxPoint x="660" y="150" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;strokeWidth=3;strokeColor=#0000FF;endArrow=openThin;endFill=0;" edge="1" parent="1" source="PB_dgITb9dCGjBoE4hCu-3">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="614" y="270" as="sourcePoint" />
+            <mxPoint x="689" y="350" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="660" y="250" />
+              <mxPoint x="660" y="350" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-31" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#0000FF;strokeWidth=3;endArrow=openThin;endFill=0;" edge="1" parent="1" source="PB_dgITb9dCGjBoE4hCu-3" target="PB_dgITb9dCGjBoE4hCu-16">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-3" value="&lt;b&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;AzDo Repo&lt;/font&gt;&lt;/b&gt;&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;/Fabric&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;...&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;/config&amp;nbsp;&amp;nbsp;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;&lt;span style=&quot;background-color: initial;&quot;&gt;application.cfg&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="440" y="210" width="170" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1;" edge="1" parent="1" source="PB_dgITb9dCGjBoE4hCu-5" target="PB_dgITb9dCGjBoE4hCu-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-5" value="&lt;b&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;Fabric Notebook&lt;/font&gt;&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="950" y="130" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-10" value="&lt;b&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;ADLS Gen2&lt;/font&gt;&lt;/b&gt;&lt;br&gt;application.cfg" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="700" y="230" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="PB_dgITb9dCGjBoE4hCu-11" target="PB_dgITb9dCGjBoE4hCu-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-11" value="&lt;b&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;Fabric Notebook&lt;/font&gt;&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="950" y="230" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-12" value="&lt;b&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;ADLS Gen2&lt;/font&gt;&lt;/b&gt;&amp;nbsp;&lt;br&gt;application.cfg" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="700" y="330" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="PB_dgITb9dCGjBoE4hCu-13" target="PB_dgITb9dCGjBoE4hCu-12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-13" value="&lt;b&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;Fabric Notebook&lt;/font&gt;&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="950" y="330" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-18" value="&lt;b&gt;DEV&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=#d5e8d4;strokeColor=default;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="1130" y="100" width="50" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-19" value="&lt;b&gt;TEST&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=#ffe6cc;strokeColor=default;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="1130" y="200" width="50" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-20" value="&lt;b&gt;PROD&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;dashed=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="1130" y="300" width="50" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-27" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Copy the &quot;template&quot; file from GitHub to AzDo repo&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="280" y="390" width="330" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-30" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Update the &quot;template&quot; file with env specific values and upload it to respective ADLS storage&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="280" y="430" width="580" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-32" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;1&lt;/b&gt;&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fontColor=#ab646c;" vertex="1" parent="1">
+          <mxGeometry x="435" y="330" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-34" value="&lt;font color=&quot;#0000ff&quot; style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;2&lt;/b&gt;&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="630" y="230" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-38" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;1&lt;/b&gt;&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fontColor=#b85550;" vertex="1" parent="1">
+          <mxGeometry x="260" y="400" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-39" value="&lt;font color=&quot;#0000ff&quot; style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;2&lt;/b&gt;&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="260" y="440" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-42" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;strokeColor=#006600;strokeWidth=3;endArrow=openThin;endFill=0;" edge="1" parent="1" source="PB_dgITb9dCGjBoE4hCu-40" target="PB_dgITb9dCGjBoE4hCu-15">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="630" y="370" />
+              <mxPoint x="630" y="370" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-43" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;strokeColor=#006600;strokeWidth=3;endArrow=openThin;endFill=0;" edge="1" parent="1" source="PB_dgITb9dCGjBoE4hCu-40" target="PB_dgITb9dCGjBoE4hCu-16">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="630" y="370" />
+              <mxPoint x="630" y="270" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-44" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;strokeColor=#006600;strokeWidth=3;endArrow=openThin;endFill=0;" edge="1" parent="1" source="PB_dgITb9dCGjBoE4hCu-40" target="PB_dgITb9dCGjBoE4hCu-17">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="630" y="370" />
+              <mxPoint x="630" y="170" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-40" value="" style="image;sketch=0;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/mscae/Azure_Pipelines.svg;" vertex="1" parent="1">
+          <mxGeometry x="590" y="350" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-41" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=-0.067;entryY=0.567;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.75;exitY=1;exitDx=0;exitDy=0;strokeColor=#006600;strokeWidth=3;endArrow=none;endFill=0;" edge="1" parent="1" source="PB_dgITb9dCGjBoE4hCu-3" target="PB_dgITb9dCGjBoE4hCu-40">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="568" y="367" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-45" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;3&lt;/b&gt;&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#000000;fontColor=#006600;" vertex="1" parent="1">
+          <mxGeometry x="630" y="370" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-46" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;3&lt;/b&gt;&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#000000;fontColor=#006600;" vertex="1" parent="1">
+          <mxGeometry x="260" y="480" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="PB_dgITb9dCGjBoE4hCu-47" value="&lt;span style=&quot;font-size: 14px;&quot;&gt;Any change to &quot;application.cfg&quot; in AzDo repo would trigger an AzDo pipeline to update the config on ADLS storage&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="280" y="470" width="730" height="40" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

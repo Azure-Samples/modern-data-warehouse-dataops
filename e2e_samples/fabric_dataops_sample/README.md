@@ -81,12 +81,18 @@ Here is a list of resources that are deployed:
     ![Fabric API Permissions](./images/admin-portal-allow-apis.png)
 
   - Grant the service principal or managed identity the `Contributor` and `User Access Administrator` privileged roles on the Azure resource group. For `User Access Administrator` role, you would need to add delegate condition during role assignment. A condition is an additional check to provide more fine-grained access control. Check the [documentation](https://learn.microsoft.com/azure/role-based-access-control/delegate-role-assignments-portal?tabs=template) for more details. During the deployment, the `Storage Blob Data Contributor` and the `Key Vault Secrets Officer` roles are granted to a newly created service principal (Fabric workspace identity) and an existing Entra security group (Fabric workspace admins). Here is a valid sample condition for the `User Access Administrator` role assignment:
+
     ![Role Assignment Condition](./images/role-assignment-condition.png)
+
 - Microsoft Graph API permissions:
   - For service principal, grant the Graph API application permission `Group.Read.All` to read the security group properties.
+
     ![Graph API Permissions](./images/graph-api-permission.png)
+
   - For managed identity, assign the elevated [Directory Readers](https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference#directory-readers) role to read the security group properties. For this, go to `Azure Active Directory > Roles and administrators > Directory Readers > Add assignment`, and add the the managed identity.
+
     ![Managed Identity Permissions](./images/managed-identity-permission.png)
+
 - Configure Fabric capacity administrators.
   - If you want to use an **existing** Fabric capacity, ensure that both your user account and the principal (service principal or managed identity) are [added as Capacity Administrators](https://learn.microsoft.com/fabric/admin/capacity-settings?tabs=fabric-capacity#add-and-remove-admins) to that capacity.
   - If you are creating a **new** Fabric capacity, you need to provide a list of users and principals (service principal or managed identity) that will be added as capacity admins in the `FABRIC_CAPACITY_ADMINS` environment variable. For users, mention 'userPrincipalName'. For principals (sp/mi), mention 'Object ID'. Don't add spaces after the comma.

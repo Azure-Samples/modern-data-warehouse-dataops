@@ -1,7 +1,6 @@
 dependencies:
   - pip:
-      - jupyter-black==0.3.4
-      - black==24.4.2
-      - pytest==8.2.2
+      - jupyter-black==0.4.0
+      - pytest==8.3.3
       - ipytest==0.14.2
-      - opentelemetry-exporter-otlp==1.25.0
+      - azure-monitor-opentelemetry-exporter==1.0.0b32

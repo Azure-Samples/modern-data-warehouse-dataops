@@ -27,11 +27,10 @@ module "keyvault" {
   location            = data.azurerm_resource_group.rg.location
   keyvault_name       = local.keyvault_name
   tenant_id           = var.tenant_id
-  object_id           = data.azuread_group.fabric_workspace_admin.object_id
   tags                = local.tags
 }
 
-module "keyvault_secrets_officer_role_assignment" {
+module "keyvault_secrets_officer_assignment_001" {
   source               = "./modules/role_assignment"
   principal_id         = data.azuread_group.fabric_workspace_admin.object_id
   role_definition_name = data.azurerm_role_definition.keyvault_secrets_officer.name
@@ -46,11 +45,11 @@ module "loganalytics" {
   tags                = local.tags
 }
 
-module "application_insights" {
+module "appinsights" {
   source              = "./modules/appinsights"
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
-  name                = local.application_insights_name
+  name                = local.appinsights_name
   workspace_id        = module.loganalytics.workspace_id
   application_type    = "other"
   tags                = local.tags
@@ -115,19 +114,76 @@ module "fabric_spark_custom_pool" {
   custom_pool_name = local.fabric_custom_pool_name
 }
 
-module "fabric_notebook" {
+module "fabric_setup_notebook" {
   source                   = "./modules/fabric/notebook"
   workspace_id             = module.fabric_workspace.workspace_id
-  notebook_name            = local.fabric_notebook_name
-  notebook_definition_path = local.notebook_definition_path
+  notebook_name            = local.fabric_setup_notebook_name
+  notebook_definition_path = local.setup_notebook_definition_path
   tokens = {
-    "workspace_name" = module.fabric_workspace.workspace_name
     "lakehouse_name" = module.fabric_lakehouse.lakehouse_name
+    "lakehouse_id"   = module.fabric_lakehouse.lakehouse_id
+    "workspace_id"   = module.fabric_workspace.workspace_id
+    "environment_id" = module.fabric_environment.environment_id
   }
 }
 
-# below modules currently do not support Service Principal/Managed Identities execution context
-# therefore they are enabled only when using user context (var_use_cli==true)
+module "fabric_standardize_notebook" {
+  source                   = "./modules/fabric/notebook"
+  workspace_id             = module.fabric_workspace.workspace_id
+  notebook_name            = local.fabric_standardize_notebook_name
+  notebook_definition_path = local.standardize_notebook_definition_path
+  tokens = {
+    "lakehouse_name" = module.fabric_lakehouse.lakehouse_name
+    "lakehouse_id"   = module.fabric_lakehouse.lakehouse_id
+    "workspace_id"   = module.fabric_workspace.workspace_id
+    "environment_id" = module.fabric_environment.environment_id
+  }
+}
+
+module "fabric_transform_notebook" {
+  source                   = "./modules/fabric/notebook"
+  workspace_id             = module.fabric_workspace.workspace_id
+  notebook_name            = local.fabric_transform_notebook_name
+  notebook_definition_path = local.transform_notebook_definition_path
+  tokens = {
+    "lakehouse_name" = module.fabric_lakehouse.lakehouse_name
+    "lakehouse_id"   = module.fabric_lakehouse.lakehouse_id
+    "workspace_id"   = module.fabric_workspace.workspace_id
+    "environment_id" = module.fabric_environment.environment_id
+  }
+}
+
+# The service principal/managed identity is not grated RBAC permissions to access secrets.
+# Therefore, the secrets are stored in the AKV only when using user context (var_use_cli==true).
+module "key_vault_secret_001" {
+  enable       = var.use_cli
+  source       = "./modules/keyvault_secret"
+  name         = var.kv_appinsights_connection_string_name
+  value        = module.appinsights.connection_string
+  key_vault_id = module.keyvault.keyvault_id
+  content_type = "Application Insights Connection String"
+  tags         = local.tags
+}
+
+# Below modules currently do not support service principal/managed identity execution context.
+# Therefore they are enabled only when using user context (var_use_cli==true).
+module "fabric_data_pipeline" {
+  enable                        = var.use_cli
+  source                        = "./modules/fabric/data_pipeline"
+  data_pipeline_name            = local.fabric_main_pipeline_name
+  data_pipeline_definition_path = local.main_pipeline_definition_path
+  workspace_id                  = module.fabric_workspace.workspace_id
+  tokens = {
+    "workspace_name"          = module.fabric_workspace.workspace_name
+    "workspace_id"            = module.fabric_workspace.workspace_id
+    "lakehouse_name"          = module.fabric_lakehouse.lakehouse_name
+    "lakehouse_id"            = module.fabric_lakehouse.lakehouse_id
+    "setup_notebook_id"       = module.fabric_setup_notebook.notebook_id
+    "standardize_notebook_id" = module.fabric_standardize_notebook.notebook_id
+    "transform_notebook_id"   = module.fabric_transform_notebook.notebook_id
+  }
+}
+
 module "fabric_spark_environment_settings" {
   enable          = var.use_cli
   source          = "./modules/fabric/spark_environment_settings"
@@ -144,20 +200,6 @@ module "fabric_spark_workspace_settings" {
   default_pool_name = module.fabric_spark_custom_pool.spark_custom_pool_name
 
   depends_on = [module.fabric_spark_environment_settings]
-}
-
-module "fabric_data_pipeline" {
-  enable                        = var.use_cli
-  source                        = "./modules/fabric/data_pipeline"
-  data_pipeline_name            = local.fabric_data_pipeline_name
-  data_pipeline_definition_path = local.data_pipeline_definition_path
-  workspace_id                  = module.fabric_workspace.workspace_id
-  tokens = {
-    "workspace_name" = module.fabric_workspace.workspace_name
-    "workspace_id"   = module.fabric_workspace.workspace_id
-    "lakehouse_name" = module.fabric_lakehouse.lakehouse_name
-    "notebook_id"    = module.fabric_notebook.notebook_id
-  }
 }
 
 module "fabric_workspace_git_integration" {

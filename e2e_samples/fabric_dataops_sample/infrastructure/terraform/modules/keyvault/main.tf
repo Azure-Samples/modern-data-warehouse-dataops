@@ -9,18 +9,4 @@ resource "azurerm_key_vault" "keyvault" {
   soft_delete_retention_days = var.soft_delete_retention_days
   enable_rbac_authorization  = var.enable_rbac_authorization
   tags                       = var.tags
-
-  access_policy {
-    tenant_id = var.tenant_id
-    object_id = var.object_id
-
-    secret_permissions = [
-      "Set",
-      "Get",
-      "Delete",
-      "Purge",
-      "Recover",
-      "List"
-    ]
-  }
 }
