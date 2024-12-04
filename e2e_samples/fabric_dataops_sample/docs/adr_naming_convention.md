@@ -1,6 +1,6 @@
-# Naming convention for Fabric E2E sample
+# Naming conventions for Fabric E2E sample
 
-This document describes the naming convention for the Fabric E2E sample. It includes the naming convention for the following:
+This document describes the naming conventions for the Fabric E2E sample. It includes the naming conventions for the following:
 
 - Git Folders
 - Scripts (python, shell, powershell etc.)
