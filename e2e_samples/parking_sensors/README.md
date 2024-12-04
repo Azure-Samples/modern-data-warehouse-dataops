@@ -212,7 +212,7 @@ More resources:
 
 ## How to use the sample
 
-This sample requires certain prerequisites for deployment, which will be outlined below. While using the dev container is optional, we highly recommend it as it simplifies the setup process, ensures consistency across environments, and makes managing dependencies easier.
+This sample requires certain prerequisites for deployment, which will be outlined below. While using the Dev Container is optional, we highly recommend it as it simplifies the setup process, ensures consistency across environments, and makes managing dependencies easier.
 
 ### Setup
 
