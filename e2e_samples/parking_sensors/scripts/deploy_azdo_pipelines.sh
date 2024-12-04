@@ -39,7 +39,7 @@ set -o nounset
 # AZDO_PIPELINES_BRANCH_NAME
 # DEV_DATAFACTORY_NAME
 
-source ./common.sh
+source ./scripts/common.sh
 # Retrieve Github Service Connection Id
 github_sc_name="${PROJECT}-github"
 github_sc_id=$(az devops service-endpoint list --output json |
