@@ -228,7 +228,7 @@ Follow the setup prerequisites, permissions, and deployment environment options.
 
 #### Deployment Options
 
-As mentioned earlier, there are two options for setting up the deployment environment. The prerequisites for each option will be outlined next. We recommend using the dev container as it simplifies the setup process, ensures consistency, and reduces configuration overhead.
+As mentioned earlier, there are two options for setting up the deployment environment. The prerequisites for each option will be outlined next. We recommend using the Dev Container as it simplifies the setup process, ensures consistency, and reduces configuration overhead.
 
 ##### Software Prerequisites if you use Dev Container
 
@@ -240,9 +240,9 @@ As mentioned earlier, there are two options for setting up the deployment enviro
 
 - [Visual Studio Code Remote Development Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
 
-  It is strongly recommended to use dev container for the deployment to avoid environment related issue
+  It is strongly recommended to use Dev Container for the deployment to avoid environment related issue
 
-##### Software Prerequisites if you do not use dev container
+##### Software Prerequisites if you do not use Dev Container
 
 - For Windows users, [Windows Subsystem For Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
 - [az cli 2.6+](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
@@ -285,7 +285,7 @@ Set up the environment variables as specified, fork the GitHub repository, and l
    - **Additionally** -  If you are using **Dev Container** which is the recommended option, follow the below steps:
 
      - Rename `.envtemplate` under ".devcontainer" folder to `.env` and update the values as mentioned above instead of setting those as environment variables.
-     - Open the project inside the vscode dev container (see details [here](docs/devcontainer.md)).
+     - Open the project inside the vscode Dev Container (see details [here](docs/devcontainer.md)).
       > Note that the environment file is only loaded once, during the container build process. If you modify any environment variables after building your devcontainer, you will need to manually reload the new values by running `source .devcontainer/.env`
 
    - To further customize the solution, set parameters in `arm.parameters` files located in the `infrastructure` folder.
@@ -336,7 +336,7 @@ Set up the environment variables as specified, fork the GitHub repository, and l
         - There are 3 points in time where you will need to authenticate to the databricks workspace, before the script continues to run. You will find the following message for the deployment of the dev, stage and production environments. Click the link highlighted in green, consent to authenticate to the databricks workspace and when the workspace opens successfully, return to the deployment windows and press Enter to continue:  ![image](docs/images/databricks_ws.png)
       - If you encounter an error with `cannot execute: required file not found` verify the line ending settings of your git configuration. This error is likely that the lines in the file are ending with CRLF. Using VSCode, verify that `./deploy.sh` is set to LF only. This can be done using the control pallet and typing `>Change End of Line Sequence`. Also, verify the files in the `scripts` folder are also set to LF only.
       - After a successful deployment, you will find `.env.{environment_name}` files containing essential configuration information per environment. See [here](#deployed-resources) for list of deployed resources.
-      - Note that if you are using **dev container**, you would run the same script but inside the dev container terminal.
+      - Note that if you are using **Dev Container**, you would run the same script but inside the Dev Container terminal.
    - As part of the deployment script, the Azure DevOps Release Pipeline YAML definition has been updated to point to your Github repository. **Commit and push these changes.**
       - This will trigger a Build and Release which will fail due to a lacking `adf_publish` branch -- this is expected. This branch will be created once you've setup git integration with your DEV Data Factory and publish a change.
 
