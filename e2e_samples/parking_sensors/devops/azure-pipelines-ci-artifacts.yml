@@ -82,7 +82,7 @@ stages:
       inputs:
         PathtoPublish: '$(basePath)/adf/_scripts/deploymentadf.ps1'
         ArtifactName: 'adf_scripts'
-      displayName: 'Publish ADF Resources'
+      displayName: 'Publish ADF Scripts'
 
     - task: PublishBuildArtifacts@1
       inputs:
