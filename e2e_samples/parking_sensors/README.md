@@ -220,7 +220,7 @@ Follow the setup prerequisites, permissions, and deployment environment options.
 
 #### Prerequisites
 
-1. [Github account](https://github.com/) : If you do not have already, create your GitHub Account.
+1. [Github account](https://github.com/) : If you do not have one already, create a GitHub Account.
 2. [Azure Account](https://azure.microsoft.com/en-us/free/)
    - *Permissions needed*: ability to create and deploy to an azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
 3. [Azure DevOps Project](https://azure.microsoft.com/en-us/products/devops/) : Follow the documentation to create a new project, or use an existing project you wish to deploy these resources to.
