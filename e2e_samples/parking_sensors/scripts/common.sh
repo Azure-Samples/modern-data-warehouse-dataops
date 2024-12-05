@@ -34,7 +34,7 @@ print_style () {
 }
 
 
-ifexistsoverwrite() {
+deletePipelineIfExists() {
     declare pipeline_name=$1
     full_pipeline_name=$PROJECT-$pipeline_name
     
@@ -46,7 +46,7 @@ ifexistsoverwrite() {
     if [[ -z "$pipeline_id" || "$pipeline_id" == "null" ]]; then
         echo "Pipeline $full_pipeline_name does not exist.Creating..."
     else
-        az pipelines delete --id "$pipeline_id" --yes
+        az pipelines delete --id "$pipeline_id" --yes 1>/dev/null
         echo "Deleted existing pipeline: $full_pipeline_name (Pipeline ID: $pipeline_id)"
         
     fi
@@ -57,6 +57,9 @@ createPipeline ()
     declare pipeline_name=$1
     declare pipeline_description=$2
     full_pipeline_name=$PROJECT-$pipeline_name
+
+
+    
     pipeline_id=$(az pipelines create \
         --name "$full_pipeline_name" \
         --description "$pipeline_description" \
