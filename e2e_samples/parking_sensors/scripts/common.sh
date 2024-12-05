@@ -37,6 +37,8 @@ ifexistsoverwrite() {
     declare pipeline_name=$1
     full_pipeline_name=$PROJECT-$pipeline_name
     
+    ## when returning a pipeline that does not exist. This is an unhandled result for the variable. So I made the validation direct in the IF
+    
     if [[ -n "$(az pipelines show --name "$full_pipeline_name" --output json 2>/dev/null)" ]]; then
         pipeline_id=$(az pipelines show --name "$full_pipeline_name" --output json 2>/dev/null | jq -r .id)
         az pipelines delete --id "$pipeline_id" --yes
