@@ -37,7 +37,7 @@ print_style () {
 deletePipelineIfExists() {
     declare pipeline_name=$1
     full_pipeline_name=$PROJECT-$pipeline_name
-    
+       
     ## when returning a pipeline that does exist, delete.
     
     pipeline_output=$(az pipelines list --query "[?name=='$full_pipeline_name']" --output json)
