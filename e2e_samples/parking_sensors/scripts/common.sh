@@ -33,7 +33,6 @@ print_style () {
     printf "$STARTCOLOR%b$ENDCOLOR" "$1";
 }
 
-
 deletePipelineIfExists() {
     declare pipeline_name=$1
     full_pipeline_name=$PROJECT-$pipeline_name
