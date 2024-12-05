@@ -29,7 +29,7 @@
 set -o errexit
 set -o pipefail
 set -o nounset
-#set -o xtrace # For debugging
+set -o xtrace # For debugging
 
 ###################
 # REQUIRED ENV VARIABLES:
@@ -50,17 +50,17 @@ github_sc_id=$(az devops service-endpoint list --output json |
 
 # Build Pipelines
 #Functions are to be called in separated as cd-release needs the ID to proceed with the next step
-ifexistsoverwrite "ci-qa-python" 
+deletePipelineIfExists "ci-qa-python" 
 createPipeline "ci-qa-python" "This pipeline runs python unit tests and linting."
 
-ifexistsoverwrite "ci-qa-sql" 
+deletePipelineIfExists "ci-qa-sql" 
 createPipeline "ci-qa-sql" "This pipeline builds the sql dacpac"
 
-ifexistsoverwrite "ci-artifacts" 
+deletePipelineIfExists "ci-artifacts" 
 createPipeline "ci-artifacts" "This pipeline publishes build artifacts"
 
 # Release Pipelines
-ifexistsoverwrite "cd-release" 
+deletePipelineIfExists "cd-release" 
 cd_release_pipeline_id=$(createPipeline "cd-release" "This pipeline releases across environments")
 
 
