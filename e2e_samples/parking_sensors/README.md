@@ -228,7 +228,7 @@ Follow the setup prerequisites, permissions, and deployment environment options.
 
 #### Deployment Options
 
-As mentioned earlier, there are two options for setting up the deployment environment. The prerequisites for each option will be outlined next. We recommend using the Dev Container as it simplifies the setup process, ensures consistency, and reduces configuration overhead.
+As previously mentioned, there are two approaches to setting up the deployment environment, and the prerequisites for each will be detailed below. We recommend opting for the Dev Container, as it streamlines the setup process, ensures consistency, and minimizes configuration effort. Using the Dev Container requires installation and configuration; refer to the documentation linked below for further details.
 
 ##### Software Prerequisites if you use Dev Container
 
