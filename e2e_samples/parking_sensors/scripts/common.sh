@@ -33,18 +33,22 @@ print_style () {
     printf "$STARTCOLOR%b$ENDCOLOR" "$1";
 }
 
+
 ifexistsoverwrite() {
     declare pipeline_name=$1
     full_pipeline_name=$PROJECT-$pipeline_name
     
-    ## when returning a pipeline that does not exist. This is an unhandled result for the variable. So I made the validation direct in the IF
+    ## when returning a pipeline that does exist, delete.
     
-    if [[ -n "$(az pipelines show --name "$full_pipeline_name" --output json 2>/dev/null)" ]]; then
-        pipeline_id=$(az pipelines show --name "$full_pipeline_name" --output json 2>/dev/null | jq -r .id)
+    pipeline_output=$(az pipelines list --query "[?name=='$full_pipeline_name']" --output json)
+    pipeline_id=$(echo "$pipeline_output" | jq -r '.[0].id')
+    
+    if [[ -z "$pipeline_id" || "$pipeline_id" == "null" ]]; then
+        echo "Pipeline $full_pipeline_name does not exist.Creating..."
+    else
         az pipelines delete --id "$pipeline_id" --yes
         echo "Deleted existing pipeline: $full_pipeline_name (Pipeline ID: $pipeline_id)"
-    else
-        echo "Pipeline $full_pipeline_name does not exist."
+        
     fi
 }
 
