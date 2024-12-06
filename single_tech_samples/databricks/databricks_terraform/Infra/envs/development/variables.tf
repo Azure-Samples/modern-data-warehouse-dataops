@@ -20,8 +20,8 @@ variable "metastore_name"{
   default = ""
 }
 
-# Once databricks workspace has been create
-# This value can be added
+# login https://accounts.azuredatabricks.net 
+# click on the profile icon on the top right corner to get the account_id
 variable "account_id" {
   description = ""
   default = ""
