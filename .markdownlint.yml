@@ -3,4 +3,4 @@ MD024: false
 MD037: false
 MD033:
   allowed_elements:
-  - "br"
+    - "br"
