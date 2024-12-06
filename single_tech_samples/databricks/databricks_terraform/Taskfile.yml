@@ -1,0 +1,35 @@
+version: "3"
+
+tasks:
+  collect-tests:
+    desc: "Collect test workflows"
+    dir: "single_tech_samples/databricks/databricks_terraform"
+    cmds:
+      - |
+        echo "Collecting test workflows"
+        TEST_FLOWS=$(find ./workflows -name "*_test.job.yml" -exec basename {} .job.yml \; | tr '\n' ',' | sed 's/,$//')
+        if [ -z "$TEST_FLOWS" ]; then
+          echo "No test workflows found."
+          exit 0
+        fi
+        echo "Test flows found: $TEST_FLOWS"
+        echo "test_flows=$TEST_FLOWS" >> $GITHUB_ENV
+
+  run-tests:
+    desc: "Run Databricks test workflows"
+    dir: "single_tech_samples/databricks/databricks_terraform"
+    cmds:
+      - |
+        # Read test flows into a variable
+        TEST_FLOWS="{{.test_flows}}"
+
+        # Set the Internal Field Separator to comma
+        IFS=',' 
+
+        # Loop through each flow and run it separately
+        for flow in $TEST_FLOWS; do
+          if [ -n "$flow" ]; then
+            echo "Running test flow: $flow"
+            databricks bundle run -t {{.ENV}} "$flow"
+          fi
+        done
