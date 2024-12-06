@@ -39,34 +39,30 @@ set -o xtrace # For debugging
 # AZDO_PIPELINES_BRANCH_NAME
 # DEV_DATAFACTORY_NAME
 
+source ./scripts/common.sh
 # Retrieve Github Service Connection Id
 github_sc_name="${PROJECT}-github"
 github_sc_id=$(az devops service-endpoint list --output json |
     jq -r --arg NAME "$github_sc_name" '.[] | select(.name==$NAME) | .id')
 
-createPipeline () {
-    declare pipeline_name=$1
-    declare pipeline_description=$2
-    full_pipeline_name=$PROJECT-$pipeline_name
-    pipeline_id=$(az pipelines create \
-        --name "$full_pipeline_name" \
-        --description "$pipeline_description" \
-        --repository "$GITHUB_REPO_URL" \
-        --branch "$AZDO_PIPELINES_BRANCH_NAME" \
-        --yaml-path "/e2e_samples/parking_sensors/devops/azure-pipelines-$pipeline_name.yml" \
-        --service-connection "$github_sc_id" \
-        --skip-first-run true \
-        --output json | jq -r '.id')
-    echo "$pipeline_id"
-}
+##Functions created in the common.sh script
+
 
 # Build Pipelines
+#Functions are to be called in separated as cd-release needs the ID to proceed with the next step
+deletePipelineIfExists "ci-qa-python" 
 createPipeline "ci-qa-python" "This pipeline runs python unit tests and linting."
+
+deletePipelineIfExists "ci-qa-sql" 
 createPipeline "ci-qa-sql" "This pipeline builds the sql dacpac"
+
+deletePipelineIfExists "ci-artifacts" 
 createPipeline "ci-artifacts" "This pipeline publishes build artifacts"
 
 # Release Pipelines
+deletePipelineIfExists "cd-release" 
 cd_release_pipeline_id=$(createPipeline "cd-release" "This pipeline releases across environments")
+
 
 az pipelines variable create \
     --name devAdfName \

@@ -241,7 +241,7 @@ echo "ADLS - Valid password obtained"
 
 az keyvault secret set --vault-name "$kv_name" --name "spStorName" --value "$sp_stor_name"
 az keyvault secret set --vault-name "$kv_name" --name "spStorId" --value "$sp_stor_id"
-az keyvault secret set --vault-name "$kv_name" --name "spStorPass" --value="$sp_stor_pass" ##=handles hyphen passwords
+az keyvault secret set --vault-name "$kv_name" --name "spStorPass" --value="$sp_stor_pass" 
 az keyvault secret set --vault-name "$kv_name" --name "spStorTenantId" --value "$sp_stor_tenant"
 
 echo "Generate Databricks token"
@@ -331,7 +331,7 @@ echo "ADF - Valid password obtained"
 # Save ADF SP credentials in Keyvault
 az keyvault secret set --vault-name "$kv_name" --name "spAdfName" --value "$sp_adf_name"
 az keyvault secret set --vault-name "$kv_name" --name "spAdfId" --value "$sp_adf_id"
-az keyvault secret set --vault-name "$kv_name" --name "spAdfPass" --value="$sp_adf_pass"##=handles hyphen passwords
+az keyvault secret set --vault-name "$kv_name" --name "spAdfPass" --value="$sp_adf_pass"
 az keyvault secret set --vault-name "$kv_name" --name "spAdfTenantId" --value "$sp_adf_tenant"
 
 ####################
