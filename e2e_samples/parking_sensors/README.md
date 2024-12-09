@@ -335,8 +335,7 @@ More resources:
 
    - In the **DEV** Data Factory portal, navigate to "Manage > Triggers". Select the `T_Sched` trigger and activate it by clicking on the "Play" icon next to it.
      - Publishing of the Data Factory changes is implemented automatically in the CI/CD pipelines using the generally available npm package. There is no need to click "Publish" in the Data Factory portal anymore.
-       - https://learn.microsoft.com/en-us/answers/questions/282058/automated-publishing-of-data-factory-with-devops
-       - https://microsoft-bitools.blogspot.com/2021/09/adf-deploy-missing-publishconfigjson.html
+       - https://techcommunity.microsoft.com/blog/azuredatafactoryblog/automated-publish-improvement-in-adfs-cicd-flow/2117350
    - In Azure DevOps, notice a new run of the Build Pipeline (**mdw-park-ci-artifacts**) off `main`. This will build the Python package and SQL DACPAC, then publish these as Pipeline Artifacts.
    - After completion, this should automatically trigger the Release Pipeline (**mdw-park-cd-release**). This will deploy the artifacts across environments.
       - You may need to authorize the Pipelines initially to use the Service Connection and deploy the target environments for the first time.
@@ -434,3 +433,6 @@ The following lists some limitations of the solution and associated deployment s
   - **Workaround**: Deployment add sensitive configuration as "secrets" in Variable Groups with the downside of duplicated information. If you wish, you may manually link a second Variable Group to KeyVault to pull out the secrets. KeyVault secret names should line up with required variables in the Azure DevOps pipelines. See [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml#link-secrets-from-an-azure-key-vault) for more information.
 - Azure DevOps Environment and Approval Gates can only be managed via the UI, cannot be managed programmatically and was not incorporated in the automated deployment of the solution.
   - **Workaround**: Approval Gates can be easily configured manually. See [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/environments?view=azure-devops#approvals) for more information.
+- ADF publishing through the CI/CD pipeline using the npm task still throws and error in the logs due to the missing publish_config.json file but the pipeline completes successfully.
+  - https://learn.microsoft.com/en-us/answers/questions/282058/automated-publishing-of-data-factory-with-devops
+  - https://microsoft-bitools.blogspot.com/2021/09/adf-deploy-missing-publishconfigjson.html

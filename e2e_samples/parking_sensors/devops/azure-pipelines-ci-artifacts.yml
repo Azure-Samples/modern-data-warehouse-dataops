@@ -65,8 +65,7 @@ stages:
       displayName: 'Publish Databricks Artifacts'
 
     # using npm to validate and generate ARM template
-    # https://learn.microsoft.com/en-us/answers/questions/282058/automated-publishing-of-data-factory-with-devops
-    # https://microsoft-bitools.blogspot.com/2021/09/adf-deploy-missing-publishconfigjson.html
+    # https://techcommunity.microsoft.com/blog/azuredatafactoryblog/automated-publish-improvement-in-adfs-cicd-flow/2117350
     - task: Npm@1
       inputs:
         command: 'install'
@@ -74,6 +73,9 @@ stages:
         verbose: true
       displayName: 'Install npm package'
 
+    # still throwing an error, but the ARM template is generated and pipeline completes successfully
+    # https://learn.microsoft.com/en-us/answers/questions/282058/automated-publishing-of-data-factory-with-devops
+    # https://microsoft-bitools.blogspot.com/2021/09/adf-deploy-missing-publishconfigjson.html
     - task: Npm@1
       inputs:
         command: 'custom'
