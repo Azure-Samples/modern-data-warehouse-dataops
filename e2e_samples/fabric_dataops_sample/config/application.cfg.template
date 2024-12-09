@@ -46,4 +46,4 @@ process_name = standardize
 process_name = transform
 
 [otel]
-appinsights_connection_name = <appinsights-connection-string>
+appinsights_connection_name = appinsights-connection-string
