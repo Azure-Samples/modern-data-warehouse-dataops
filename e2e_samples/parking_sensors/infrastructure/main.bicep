@@ -175,5 +175,6 @@ output databricks_id string = databricks.outputs.databricks_id
 output appinsights_name string = appinsights.outputs.appinsights_name
 output keyvault_name string = keyvault.outputs.keyvault_name
 output keyvault_resource_id string = keyvault.outputs.keyvault_resource_id
+output datafactory_id string = datafactory.outputs.datafactory_id
 output datafactory_name string = datafactory.outputs.datafactory_name
 output loganalytics_name string = loganalytics.outputs.loganalyticswsname
