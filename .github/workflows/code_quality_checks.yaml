@@ -51,5 +51,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y trivy
 
+      - name: Check versions
+        run: |
+          terraform version
+          trivy --version
+          trivy config --version
+
       - name: Analyze Code Quality via pre-commit checks.
         run: pre-commit run --all-files
