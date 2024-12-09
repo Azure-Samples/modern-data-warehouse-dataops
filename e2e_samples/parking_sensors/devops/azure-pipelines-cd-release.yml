@@ -17,7 +17,7 @@ resources:
 
 stages:
 - stage: deploy_to_dev
-  displayName: 'Deploy to DEV'  # In DEV, excludes publishing to ADF as this is a manual publish step
+  displayName: 'Deploy to DEV'
   variables:
   - group: mdwdops-release-dev
   - group: mdwdops-secrets-dev
@@ -30,7 +30,11 @@ stages:
     parameters:
       environmentName: 'DEV'
       serviceConnection: 'mdwdops-serviceconnection-dev'
-
+  - template: templates/jobs/deploy-adf-job.yml
+    parameters:
+      environmentName: 'DEV'
+      serviceConnection: 'mdwdops-serviceconnection-dev'
+      
 - stage: deploy_to_stg
   displayName: 'Deploy to Stage'
   variables:

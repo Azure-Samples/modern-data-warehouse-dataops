@@ -64,6 +64,9 @@ stages:
         ArtifactName: 'databricks'
       displayName: 'Publish Databricks Artifacts'
 
+    # using npm to validate and generate ARM template
+    # https://learn.microsoft.com/en-us/answers/questions/282058/automated-publishing-of-data-factory-with-devops
+    # https://microsoft-bitools.blogspot.com/2021/09/adf-deploy-missing-publishconfigjson.html
     - task: Npm@1
       inputs:
         command: 'install'
@@ -89,7 +92,6 @@ stages:
         PathtoPublish: '$(basePath)/adf/arm-template'
         ArtifactName: 'adf_arm_template'
       displayName: 'Publish ADF ARM Template'
-
   - job: 'publish_sql_packages'
     displayName: 'Publish SQL Packages'
     pool:
