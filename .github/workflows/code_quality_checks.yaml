@@ -55,7 +55,6 @@ jobs:
         run: |
           terraform version
           trivy --version
-          trivy config --version
 
       - name: Analyze Code Quality via pre-commit checks.
         run: pre-commit run --all-files
