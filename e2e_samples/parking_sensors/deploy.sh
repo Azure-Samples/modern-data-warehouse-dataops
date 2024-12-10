@@ -22,8 +22,9 @@ set -o nounset
 # set -o xtrace # For debugging
 
 . ./scripts/common.sh
-. ./scripts/verify_prerequisites.sh
 . ./scripts/init_environment.sh
+. ./scripts/verify_prerequisites.sh
+
 
 
 project=mdwdops # CONSTANT - this is prefixes to all resources of the Parking Sensor sample
