@@ -3,6 +3,7 @@ param project string
   'dev'
   'stg'
   'prod'
+  'sandbox'
 ])
 param env string
 param location string = resourceGroup().location
@@ -13,7 +14,8 @@ param contributor_principal_id string
 var storage_blob_data_contributor = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')
 
 resource storage 'Microsoft.Storage/storageAccounts@2021-04-01' = {
-  name: '${project}st${env}${deployment_id}'
+  // name: '${project}st${env}${deployment_id}'
+  name: 'mdekos${env}${deployment_id}'
   location: location
   tags: {
     DisplayName: 'Data Lake Storage'

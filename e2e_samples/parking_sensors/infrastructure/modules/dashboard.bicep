@@ -3,6 +3,7 @@ param project string
   'dev'
   'stg'
   'prod'
+  'sandbox'
 ])
 param env string
 param location string = resourceGroup().location

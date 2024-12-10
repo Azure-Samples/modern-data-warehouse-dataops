@@ -3,6 +3,7 @@ param project string
   'dev'
   'stg'
   'prod'
+  'sandbox'
 ])
 param env string
 param deployment_id string
