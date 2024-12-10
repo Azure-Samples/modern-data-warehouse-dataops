@@ -1,0 +1,49 @@
+# ##############################################################
+# See - https://docs.python.org/3/library/configparser.html
+# Tips:
+# - ${section:option} can be used for interpolation of values from another section in the same file.
+# - When creating stage specific resources like ADLS, whose names are globally unique
+#    - make sure we can create them i.e, those names are available.
+# we can also have env specific sections like [dev] , [test] etc.,
+# but it could cause maintenance issues and may not be ideal.
+# Instead, define common sections and here make env specific derivations
+# based on the input "env/stage" value in the code.
+#
+##############################################################
+
+# Important:
+# - DO NOT use quotes for wrapping strings
+# - Note that workspace_name etc are not defined at each section level
+#   rather in DEFAULT section. This way we can use individual sections
+#   like `setup` or `standardize` or `transform` to over-ride
+#   the values from `DEFAULT` section if needed.
+
+[DEFAULT]
+service_name = parking_sensors_fabric_e2e
+service_version = 0.1
+workspace_name = <workspace-name>
+workspace_id = <workspace-id>
+lakehouse_name = <lakehouse-name>
+lakehouse_id = <lakehouse-id>
+
+[keyvault]
+name = <keyvault-name>
+uri = https://${keyvault:name}.vault.azure.net/
+
+[setup]
+# --------- Globals for nb-setup notebook
+process_name = setup
+# ddl file path is relative to the attached lakehouse's Files/ location
+adls_shortcut_name = <adls-shortcut-name>
+ddl_file = ${setup:adls_shortcut_name}/config/lakehouse_ddls.yaml
+
+[standardize]
+# --------- Globals for nb-standardize notebook
+process_name = standardize
+
+[transform]
+# --------- Globals for nb-transform notebook
+process_name = transform
+
+[otel]
+appinsights_connection_name = appinsights-connection-string

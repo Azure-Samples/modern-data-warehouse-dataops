@@ -42,13 +42,15 @@ In addition to the samples, this repository also contains [Utilities](#utilities
 
 ### DataOps for Medallion with Azure Data Factory and Azure Databricks
 
-This [sample](e2e_samples/parking_sensors/) demonstrates batch, end-to-end data pipeline utilizing Azure Data Factory and Azure Databricks built according to the [medallion architecture](https://learn.microsoft.com/en-us/azure/databricks/lakehouse/medallion), along with a corresponding CI/CD process, observability and automated testing.
+This [sample](e2e_samples/parking_sensors/) demonstrates batch, end-to-end data pipeline utilizing Azure Data Factory and Azure Databricks built according to the [medallion architecture](https://learn.microsoft.com/azure/databricks/lakehouse/medallion), along with a corresponding CI/CD process, observability and automated testing.
 
 [![Medallion with Azure Data Factory and Azure Databricks](docs/images/CI_CD_process_simplified.png "Architecture")](e2e_samples/parking_sensors/)
 
 ### DataOps for Medallion with Microsoft Fabric
 
-- Coming soon.
+- This [sample](./e2e_samples/fabric_dataops_sample/) would demonstrate end-to-end batch data processing utilizing Microsoft Fabric built according to the [medallion architecture](https://learn.microsoft.com/azure/databricks/lakehouse/medallion), along with a corresponding CI/CD process, observability and automated testing.
+
+  In the current version, the sample is showcasing the deployment of Azure and Fabric resources together using Terraform. The deployment uses a service principal or managed identity for authentication where supported and falls back to Entra user authentication where it is not.
 
 ## Utilities
 
