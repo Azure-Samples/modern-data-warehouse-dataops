@@ -333,14 +333,14 @@ More resources:
 
 4. **Trigger an initial Release**
 
-   - In the **DEV** Data Factory portal, navigate to Pipelines and open the "P_Ingest_MelbParkingData" pipeline. 
+   - In the **DEV** Data Factory portal, navigate to Pipelines and open the "P_Ingest_MelbParkingData" pipeline.
    - In the top left corner, open the git drop down and create a Dev branch by clicking in "New Branch".
    - Once the Dev branch is created, select the branch from the drop-down list and make a change in the Description fields from one of the pipeline tasks.
    - Save the pipeline.
    - Go to the Git drop down box in the top left corner again, but this time create a Pull request.
    - Once the Pull request is merged, the CI and the CD pipelines will be triggered and you will be able to see the description change on your staging and production Data Factory.
      - Publishing of the Data Factory changes is implemented automatically in the CI/CD pipelines using the generally available npm package. There is no need to click "Publish" in the Data Factory portal anymore.
-       - https://techcommunity.microsoft.com/blog/azuredatafactoryblog/automated-publish-improvement-in-adfs-cicd-flow/2117350
+       - [Automated publish improvement in ADF's CI/CD flow](https://techcommunity.microsoft.com/blog/azuredatafactoryblog/automated-publish-improvement-in-adfs-cicd-flow/2117350)
    - In Azure DevOps, notice a new run of the Build Pipeline (**mdw-park-ci-artifacts**) off `main`. This will build the Python package and SQL DACPAC, then publish these as Pipeline Artifacts.
    - After completion, this should automatically trigger the Release Pipeline (**mdw-park-cd-release**). This will deploy the artifacts across environments.
       - You may need to authorize the Pipelines initially to use the Service Connection and deploy the target environments for the first time.
@@ -439,5 +439,5 @@ The following lists some limitations of the solution and associated deployment s
 - Azure DevOps Environment and Approval Gates can only be managed via the UI, cannot be managed programmatically and was not incorporated in the automated deployment of the solution.
   - **Workaround**: Approval Gates can be easily configured manually. See [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/environments?view=azure-devops#approvals) for more information.
 - ADF publishing through the CI/CD pipeline using the npm task still throws and error in the logs due to the missing publish_config.json file but the pipeline completes successfully.
-  - https://learn.microsoft.com/en-us/answers/questions/282058/automated-publishing-of-data-factory-with-devops
-  - https://microsoft-bitools.blogspot.com/2021/09/adf-deploy-missing-publishconfigjson.html
+  - [Automated publishing of Data Factory with DevOps](https://learn.microsoft.com/en-us/answers/questions/282058/automated-publishing-of-data-factory-with-devops)
+  - [ADF Build - missing publish_config.json](https://microsoft-bitools.blogspot.com/2021/09/adf-deploy-missing-publishconfigjson.html)
