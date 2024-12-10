@@ -1,5 +1,30 @@
 #!/bin/bash
 
+
+# Azlogin using enviroment variables
+
+source .devcontainer/.env
+
+#Prompt login.
+#if more than one subcription, choose the one that will be used to deploy the resources.
+# Check if already logged in, it will logout first
+
+if az account show > /dev/null 2>&1; then
+    echo "Already logged in. Logging out and logging in again."
+    az logout
+fi
+
+az config set core.login_experience_v2=off
+az login --tenant $TENANT_ID
+az config set core.login_experience_v2=on
+
+az account set -s $AZURE_SUBSCRIPTION_ID
+
+
+
+az devops configure --defaults organization=$AZDO_ORGANIZATION_URL project=$AZDO_PROJECT
+
+
 # check required variables are specified.
 
 if [ -z "$GITHUB_REPO" ]
