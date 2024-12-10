@@ -333,7 +333,12 @@ More resources:
 
 4. **Trigger an initial Release**
 
-   - In the **DEV** Data Factory portal, navigate to "Manage > Triggers". Select the `T_Sched` trigger and activate it by clicking on the "Play" icon next to it.
+   - In the **DEV** Data Factory portal, navigate to Pipelines and open the "P_Ingest_MelbParkingData" pipeline. 
+   - In the top left corner, open the git drop down and create a Dev branch by clicking in "New Branch".
+   - Once the Dev branch is created, select the branch from the drop-down list and make a change in the Description fields from one of the pipeline tasks.
+   - Save the pipeline.
+   - Go to the Git drop down box in the top left corner again, but this time create a Pull request.
+   - Once the Pull request is merged, the CI and the CD pipelines will be triggered and you will be able to see the description change on your staging and production Data Factory.
      - Publishing of the Data Factory changes is implemented automatically in the CI/CD pipelines using the generally available npm package. There is no need to click "Publish" in the Data Factory portal anymore.
        - https://techcommunity.microsoft.com/blog/azuredatafactoryblog/automated-publish-improvement-in-adfs-cicd-flow/2117350
    - In Azure DevOps, notice a new run of the Build Pipeline (**mdw-park-ci-artifacts**) off `main`. This will build the Python package and SQL DACPAC, then publish these as Pipeline Artifacts.
