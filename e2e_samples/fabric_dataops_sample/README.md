@@ -40,6 +40,14 @@ At a high level, the deployment sequence proceeds as follows:
 
 Please follow the [How to use the sample](#how-to-use-the-sample) section for detailed instructions.
 
+### Continuous Integration and Continuous Delivery (CI/CD)
+
+Fabric has a number of options for CI/CD workflows as documented [here](https://learn.microsoft.com/fabric/cicd/manage-deployment). This utilizes Option 1 - Git-based deployments.
+
+The following shows the overall CI/CD process end to end.
+
+![Fabric CI/CD diagram](./images/fabric_cicd_option1.png)
+
 ### Deployed resources
 
 While Fabric is an end-to-end platform, it works best when integrated with other Azure services such as Application Insights, Azure Key Vault, ADLS Gen2, Microsoft Purview and so. This dependency is also because customers have existing investments in these services and want to leverage them with Fabric.
