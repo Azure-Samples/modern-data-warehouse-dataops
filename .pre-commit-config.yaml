@@ -89,5 +89,6 @@ repos:
       - id: terraform_validate
       - id: terraform_trivy
         args:
+          - --hook-config=--parallelism-limit=1
           - --args=--severity=HIGH,MEDIUM
           - --args=--skip-dirs="**/.terraform"
