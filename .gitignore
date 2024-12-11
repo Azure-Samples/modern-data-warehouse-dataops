@@ -462,6 +462,7 @@ MigrationBackup/
 
 .terraform
 .terraform.lock.hcl
+plan.tfplan
 terraform.tfstate
 terraform.tfstate.backup
 
