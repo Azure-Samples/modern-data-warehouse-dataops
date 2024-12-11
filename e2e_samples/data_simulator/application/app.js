@@ -143,7 +143,7 @@ const server = app.listen(PORT, () => {
   }
 })();
 
-app.get('/', (req, res) => {
+app.get('/sensors', (req, res) => {
   if (process.env.WRITETEMPLATE == "true") {
     console.log(process.env.WRITETEMPLATE);
     res.send(sensors[0].outputForFile(sensors));
@@ -151,6 +151,11 @@ app.get('/', (req, res) => {
   else {
     res.send(sensors.map((sensor) => sensor.output()));
   }
+});
+
+app.get('/locations', (req, res) => {
+  // send file in ./collections/sensorLocations.json
+  res.sendFile('./collections/sensorLocations.json', { root: __dirname });
 });
 
 // Handle shutdown signals
