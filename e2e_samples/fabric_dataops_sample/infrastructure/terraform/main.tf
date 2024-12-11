@@ -163,6 +163,7 @@ module "key_vault_secret_001" {
   key_vault_id = module.keyvault.keyvault_id
   content_type = "Application Insights Connection String"
   tags         = local.tags
+  depends_on   = [module.keyvault_secrets_officer_assignment_001]
 }
 
 # Below modules currently do not support service principal/managed identity execution context.
