@@ -57,7 +57,7 @@ resource "databricks_metastore" "this" {
 resource "time_sleep" "wait_30_seconds" {
   depends_on = [databricks_metastore.this]
 
-  create_duration = "30s"
+  create_duration = "120s"
 }
 
 // Assign managed identity to metastore, 
