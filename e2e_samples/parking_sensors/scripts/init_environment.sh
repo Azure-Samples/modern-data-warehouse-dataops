@@ -23,7 +23,6 @@ az account set -s $AZURE_SUBSCRIPTION_ID
 
 az devops configure --defaults organization=$AZDO_ORGANIZATION_URL project=$AZDO_PROJECT
 
-
 # check required variables are specified.
 
 if [ -z "$GITHUB_REPO" ]
