@@ -1,0 +1,15 @@
+const { registerSensorType } = require('../helpers/sensorTypeRegistry');
+const Sensor = require('./Sensor');
+
+class <sensorname> extends Sensor {
+  constructor(data) {
+    super(data);
+  }
+
+  output() {
+    // return the data that will be converted to JSON and sent to the server
+    return { data: this.data };
+  }
+}
+
+registerSensorType('<friendlyname>', <sensorname>);
