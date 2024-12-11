@@ -38,31 +38,31 @@ Here is a sample usage of the script:
   ```bash
   # Create a virtual environment
   $ python3 -m venv .venv
-  
+
   # Activate the virtual environment
   source .venv/bin/activate
-  
+
   # Install the dependencies
   $ pip install -r requirements.txt
-  
+
   # View the help
   $ python3 upload-file-to-lakehouse.py -h
     usage: upload-file-to-lakehouse.py [-h] [--upload_from {local,git}] source_file_path target_file_path
-  
+
     Script to upload local file or file from Azure Repo to Fabric lakehouse.
-  
+
     positional arguments:
       source_file_path      The source file path of the local file or in the Azure Repo.
       target_file_path      The target file path in the Fabric lakehouse.
-  
+
     options:
       -h, --help            show this help message and exit
       --upload_from {local,git}
                             Specify the source of the file to upload: 'local' or 'git'. Default is 'local'.
-  
+
   # Run the script to upload a file from the local file system to the lakehouse
   $ python3 upload-file-to-lakehouse.py --upload_from local requirements.txt config/requirements.txt
-  
+
     [I] Fabric workspace id: a6730feb-5c55-4b6b-8ff7-7cde1d746452
     [I] Fabric lakehouse id: 4fd95a9f-160c-488c-8341-887974929c36
     [I] Source file path: ./requirements.txt

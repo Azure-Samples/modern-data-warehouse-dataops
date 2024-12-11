@@ -1,0 +1,236 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "{{ .setup_notebook_id }}",
+          "workspaceId": "{{ .workspace_id }}",
+          "parameters": {
+            "workspace_id": {
+              "value": {
+                "value": "@pipeline().parameters.workspace_id",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "local_mount": {
+              "value": {
+                "value": "@concat('abfss://', pipeline().parameters.workspace_id, '@onelake.dfs.fabric.microsoft.com/', pipeline().parameters.lakehouse_id, '/Files')",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "lakehouse_id": {
+              "value": {
+                "value": "@pipeline().parameters.lakehouse_id",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "lakehouse_name": {
+              "value": {
+                "value": "@pipeline().parameters.lakehouse_name",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "execution_mode": {
+              "value": "all",
+              "type": "string"
+            },
+            "job_exec_instance": {
+              "value": "",
+              "type": "string"
+            },
+            "env_stage": {
+              "value": "test",
+              "type": "string"
+            },
+            "config_file_path": {
+              "value": "sc-adls-main/config/application.cfg",
+              "type": "string"
+            }
+          },
+          "sessionTag": {
+            "value": "@substring(pipeline().RunId, 1, 5)",
+            "type": "Expression"
+          }
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "nb-setup",
+        "dependsOn": []
+      },
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "{{ .standardize_notebook_id }}",
+          "workspaceId": "{{ .workspace_id }}",
+          "parameters": {
+            "workspace_id": {
+              "value": {
+                "value": "@pipeline().parameters.workspace_id",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "local_mount": {
+              "value": {
+                "value": "@concat('abfss://', pipeline().parameters.workspace_id, '@onelake.dfs.fabric.microsoft.com/', pipeline().parameters.lakehouse_id, '/Files')",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "lakehouse_id": {
+              "value": {
+                "value": "@pipeline().parameters.lakehouse_id",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "lakehouse_name": {
+              "value": {
+                "value": "@pipeline().parameters.lakehouse_name",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "execution_mode": {
+              "value": "all",
+              "type": "string"
+            },
+            "job_exec_instance": {
+              "value": "",
+              "type": "string"
+            },
+            "env_stage": {
+              "value": "test",
+              "type": "string"
+            },
+            "config_file_path": {
+              "value": "sc-adls-main/config/application.cfg",
+              "type": "string"
+            }
+          },
+          "sessionTag": {
+            "value": "@substring(pipeline().RunId, 1, 5)",
+            "type": "Expression"
+          }
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "nb-standardize",
+        "dependsOn": [
+          {
+            "activity": "nb-setup",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "{{ .transform_notebook_id }}",
+          "workspaceId": "{{ .workspace_id }}",
+          "parameters": {
+            "workspace_id": {
+              "value": {
+                "value": "@pipeline().parameters.workspace_id",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "local_mount": {
+              "value": {
+                "value": "@concat('abfss://', pipeline().parameters.workspace_id, '@onelake.dfs.fabric.microsoft.com/', pipeline().parameters.lakehouse_id, '/Files')",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "lakehouse_id": {
+              "value": {
+                "value": "@pipeline().parameters.lakehouse_id",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "lakehouse_name": {
+              "value": {
+                "value": "@pipeline().parameters.lakehouse_name",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "execution_mode": {
+              "value": "all",
+              "type": "string"
+            },
+            "job_exec_instance": {
+              "value": "",
+              "type": "string"
+            },
+            "env_stage": {
+              "value": "test",
+              "type": "string"
+            },
+            "config_file_path": {
+              "value": "sc-adls-main/config/application.cfg",
+              "type": "string"
+            }
+          },
+          "sessionTag": {
+            "value": "@substring(pipeline().RunId, 1, 5)",
+            "type": "Expression"
+          }
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "nb-transform",
+        "dependsOn": [
+          {
+            "activity": "nb-standardize",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      }
+    ],
+    "parameters": {
+      "workspace_id": {
+        "type": "string",
+        "defaultValue": "{{ .workspace_id }}"
+      },
+      "lakehouse_id": {
+        "type": "string",
+        "defaultValue": "{{ .lakehouse_id }}"
+      },
+      "workspace_name": {
+        "type": "string",
+        "defaultValue": "{{ .workspace_name }}"
+      },
+      "lakehouse_name": {
+        "type": "string",
+        "defaultValue": "{{ .lakehouse_name }}"
+      }
+    }
+  }
+}
