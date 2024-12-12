@@ -291,46 +291,24 @@ Set up the environment variables as specified, fork the GitHub repository, and l
    - To further customize the solution, set parameters in `arm.parameters` files located in the `infrastructure` folder.
       - To enable Observability and Monitoring components through code(Observability-as-code), please set enable_monitoring parameter to true in  `arm.parameters` files located in the `infrastructure` folder. This will deploy log analytics workspace to collect monitoring data from key resources, setup an Azure dashboards to monitor key metrics and configure alerts for ADF pipelines.
   
-  **Login**
+     **Login and Cluster Configuration**
+      
+      - Ensure that you have completed the configuration for the variables described in the previous section, titled **Configuration: Variables and Login**.
+      
+        - This configuration will be used during the environment deployment process to facilitate login.
+        - Create a `cluster.config.json` Spark configuration from the [`cluster.config.template.json`](./databricks/config/cluster.config.template.json) file. For the "node_type_id" field, select a SKU that is available from the following command in your subscription:
+      
+          ```bash
+            az vm list-usage --location "<YOUR_REGION>" -o table
+          ```
 
-- Ensure that:
-  - You have loaded your environment file. To do so run:
-
-        ```bash
-        source .devcontainer/.env
-        ```
-
-  - You are logged in to the Azure CLI. To login, run
-
-        ```bash
-        az config set core.login_experience_v2=off
-        az login --tenant $TENANT_ID
-        az config set core.login_experience_v2=on
-        ```
-
-  - Azure CLI is targeting the Azure Subscription you want to deploy the resources to. To set target Azure Subscription, run
-
-        ```bash
-        az account set -s $AZURE_SUBSCRIPTION_ID
-        ```
-
-  - (Skip this if you are using our Dev Container) Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to. To set target Azure DevOps project, run
-
-        ```bash
-        az devops configure --defaults organization=$AZDO_ORGANIZATION_URL project=$AZDO_PROJECT
-        ```
-
-  - Create a `cluster.config.json` Spark configuration from the [`cluster.config.template.json`](./databricks/config/cluster.config.template.json) file. For the "node_type_id" field, select a SKU that is available from the following command in your subscription:
-
-        ```bash
-        az vm list-usage --location "<YOUR_REGION>" -o table
-        ```
-
-      In the repository we provide an example, but you need to make sure that the SKU exists on your region and that is available for your subscription.
+    
+          In the repository we provide an example, but you need to make sure that the SKU exists on your region and that is available for your subscription.
 
 2. **Deploy Azure resources**
    - `cd` into the `e2e_samples/parking_sensors` folder of the repo.
    - Run `./deploy.sh`.
+     - The login process for deployment is interactive. When you run the script **deploy.sh**, a browser window will be open, prompting you to log in to Azure. If there is an open session from a previous deployment, it may log you out and request you to log in again.
       - This may take around **~30mins or more** to run end to end. So grab yourself a cup of coffee... ☕ But before you do so keep the following in mind:
         - You might encounter deployment issues if the script attempts to create a Key Vault that conflicts with a previously soft-deleted Key Vault. In such cases, the deployment script may prompt you to confirm the purge of the previously deleted Key Vault.
         - There are 3 points in time where you will need to authenticate to the databricks workspace, before the script continues to run. You will find the following message for the deployment of the dev, stage and production environments. Click the link highlighted in green, consent to authenticate to the databricks workspace and when the workspace opens successfully, return to the deployment windows and press Enter to continue:  ![image](docs/images/databricks_ws.png)
