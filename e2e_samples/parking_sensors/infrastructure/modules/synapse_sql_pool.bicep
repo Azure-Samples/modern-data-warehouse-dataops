@@ -21,6 +21,7 @@ resource sql_server 'Microsoft.Sql/servers@2023-08-01-preview' = {
   properties: {
     administratorLogin: sql_server_username
     administratorLoginPassword: sql_server_password
+    minimalTlsVersion: '1.2' 
 }
 
   resource synapse_dedicated_sql_pool 'databases@2023-05-01-preview' = {
