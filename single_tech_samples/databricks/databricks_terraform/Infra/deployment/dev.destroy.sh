@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Load environment variables from .env file
 load_env_variables() {
     if [[ -f .env ]]; then
         echo "Loading environment variables from .env file"
@@ -11,7 +10,7 @@ load_env_variables() {
     fi
 }
 
-# Check if the resource group name is set
+
 check_resource_group_name() {
     if [[ -z "${resource_group_name}" ]]; then
         echo "Resource group name is not defined in .env file!"
@@ -19,12 +18,12 @@ check_resource_group_name() {
     fi
 }
 
-# Function to check if the resource group exists
+
 check_resource_group() {
     az group exists --name "$1"
 }
 
-# Function to delete the Azure Resource Group
+
 delete_resource_group() {
     echo "Checking if Azure resource group exists: ${resource_group_name}"
 
@@ -34,7 +33,6 @@ delete_resource_group() {
         echo "Deleting Azure resource group: ${resource_group_name}"
         if ! az group delete --name "${resource_group_name}" --yes --no-wait; then
             echo "Failed to delete resource group: ${resource_group_name}"
-            # Log the error but do not exit to allow state cleanup
         fi
         wait_for_deletion
     else
@@ -42,7 +40,7 @@ delete_resource_group() {
     fi
 }
 
-# Function to wait for resource group deletion to complete
+
 wait_for_deletion() {
     echo "Waiting for resource group deletion to complete..."
     start_time=$(date +%s)
@@ -58,7 +56,6 @@ wait_for_deletion() {
     echo "Resource group ${resource_group_name} deleted successfully in ${total_time} seconds."
 }
 
-# Function to clean up Terraform state files in specified modules
 cleanup_terraform_states() {
     local modules=(
         "../modules/adb-workspace"
@@ -78,7 +75,7 @@ cleanup_terraform_states() {
     done
 }
 
-# Main function to orchestrate the script
+
 main() {
     load_env_variables
     check_resource_group_name
@@ -87,5 +84,5 @@ main() {
     echo "All tasks completed successfully."
 }
 
-# Execute the main function
+
 main
