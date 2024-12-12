@@ -1,3 +1,3 @@
 locals {
-  prefix = "databricks-${var.environment}"
+  prefix = "managed-databricks${var.environment}"
 }

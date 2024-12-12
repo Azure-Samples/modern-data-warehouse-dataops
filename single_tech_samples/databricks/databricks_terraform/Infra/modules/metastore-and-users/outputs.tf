@@ -16,6 +16,7 @@ output "databricks_sps" {
 
 output "azurerm_storage_account_unity_catalog" {
   value = azurerm_storage_account.unity_catalog
+  sensitive = true
 }
 
 output "azurerm_databricks_access_connector_id" {

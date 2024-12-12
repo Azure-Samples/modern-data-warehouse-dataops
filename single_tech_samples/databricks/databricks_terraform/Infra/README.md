@@ -1,126 +1,66 @@
-# Terraform Code for Multi-Environment Databricks Medallion Deployment
+# Terraform Code for Multi Environment Databricks Medallion Deployment
 
-![Architecture](./architecture.png)
+![Multi Environment Image](./mutli_environment.png)
 
 ## Overview
 
-The **`Infra/modules`** folder contains three modules:
+**`Infra/modules`** folder has three modules:
+- **`adb-workspace`** - Deploys Databricks workspace
+- **`metastore-and-users`** - Creates Databricks Connector, Creates Storage Account, Give storage access rights to connector, Creates Metastore / Assigns Workspace to Metastore, and Finally Retrieves alls users, groups, and service principals from Azure AD.
+- **`adb-unity-catalog`** - Gives databricks access rights to the connector, Creates containers in the storage account, and creates external locations for the containers. Creates unity catalog and grants permissions user groups. Finally, creates **`bronze` `silver` `gold`** schemas under the catalog and gives the required permissions to the user groups.
 
-- **`adb-workspace`**: Deploys the Databricks workspace.
-- **`metastore-and-users`**: Creates the Databricks connector, provisions a storage account, grants storage access rights to the connector, creates the metastore, assigns the workspace to the metastore, and retrieves all users, groups, and service principals from Azure AD.
-- **`adb-unity-catalog`**: Grants Databricks access rights to the connector, creates containers in the storage account, creates external locations for the containers, creates the Unity Catalog, grants permissions to user groups, and creates the **`bronze`**, **`silver`**, and **`gold`** schemas under the catalog with the required permissions.
+**NOTE** - *When **`adb-workspace`** module runs it creates databricks workspace, and by default it creates a metastore in the same region. Databricks allows only **ONE METASTORE** per region. **`metastore-and-users`** module deploys new metastore with our required configurations, but we have to delete existing metastore prior running the module*
 
-**Note**: When the **`adb-workspace`** module runs, it creates a Databricks workspace and, by default, a metastore in the same region. Databricks allows only **one metastore** per region. The **`metastore-and-users`** module deploys a new metastore with our required configurations. Therefore, you must delete the existing metastore before running this module.
-
-## Entry Point
-
-The **`Infra/envs`** directory contains configurations for three environments. In this example, we define only the **`development`** environment.
-
-The **`Infra/envs/development/main.tf`** file references the three modules and passes the required values from `variables.tf` to them.
+**NOTE** - *During script execution you will receive `Error: cannot create metastore: This account with id <Account_ID> has reached the limit for metastores in region <Region>` * error. This is because we have reached the limit of metastores in the region. To fix this, we need to delete existing metastore and re-run the script.*
 
 ## How to Run
 
-### Prerequisites
-
-- Clone the repository.
-- Create Azure Entra ID groups: `"account_unity_admin"`, `"data_engineer"`, `"data_analyst"`, and `"data_scientist"`.
-- Install the [Terraform CLI](https://learn.hashicorp.com/tutorials/terraform/install-cli) if not already installed.
-- Install the [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) if not already installed.
-- Update `Infra/envs/development/variables.tf` with values as per your requirements.
+### Pre-requisites
+- Clone the repository
+- Install Terraform CLI if not installed already [Terraform Installation](https://learn.hashicorp.com/tutorials/terraform/install-cli)
+- Install Azure CLI if not installed already [Azure CLI Installation](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+- `Infra/deployment/.env` - Update the values as per your requirement
+- Have databricks admin level access. Login to get databricks account id `[accounts.databricks.net](https://accounts.azuredatabricks.net/)`
 
 ### Steps
 
-**Note**: The modules depend on each other, so run them in the following order by commenting out the other modules in the `main.tf` file.
+1. Login to Azure
+```bash
+az login
+```
 
-1. Navigate to the environment directory:
+2. Set the subscription
+```bash
+az account set --subscription <subscription-id>
+```
 
-   ```bash
-   cd Infra/envs/development
-   ```
+3. Make the script executable
+```bash
+chmod +x dev.deploy.sh
+```
 
-2. Comment out the other modules in `main.tf`:
+4. Run the script to deploy the modules sequentially
+```bash
+./dev.deploy.sh
+```
 
-   ```hcl
-   module "azure_databricks_workspace" {
-     source      = "../../modules/adb-workspace"
-     region      = var.region
-     environment = var.environment
-   }
+## Destroy
 
-   /* module "metastore_and_users" {
-        ...
-   }
+### Steps
 
-   module "adb_unity_catalog" {
-        ...
-   } */
-   ```
+1. Change directory to `Infra/deployment`
+```bash
+cd Infra/deployment
+```
+2. Make the script executable
+```bash
+chmod +x dev.destroy.sh
+```
+3. Run the script to destroy the modules by passing 
+```bash
+./dev.destroy.sh --destroy
+```
 
-3. Deploy the workspace:
+## Error Handling
 
-   ```bash
-   terraform init
-   terraform plan
-   terraform apply
-   ```
-
-4. After the workspace is deployed, delete the existing metastore from the Databricks workspace:
-   - In the Databricks workspace, click on the top-right corner (`your_workspace_name`) and select **Account Management**.
-   - This opens the admin-level Databricks account. Navigate to **Catalog** on the left side.
-   - Select the metastore in the region and delete it.
-
-#### Deploy Metastore and Users
-
-1. Uncomment the next module in `main.tf`:
-
-   ```hcl
-   module "azure_databricks_workspace" {
-     ...
-   }
-
-   module "metastore_and_users" {
-     source      = "../../modules/metastore-and-users"
-     region      = var.region
-     environment = var.environment
-   }
-
-   /* module "adb_unity_catalog" {
-        ...
-   } */
-   ```
-
-2. Deploy the metastore and users:
-
-   ```bash
-   terraform init
-   terraform plan
-   terraform apply
-   ```
-
-#### Deploy Unity Catalog
-
-1. Uncomment the final module in `main.tf`:
-
-   ```hcl
-   module "azure_databricks_workspace" {
-     ...
-   }
-
-   module "metastore_and_users" {
-     ...
-   }
-
-   module "adb_unity_catalog" {
-     source      = "../../modules/adb-unity-catalog"
-     region      = var.region
-     environment = var.environment
-   }
-   ```
-
-2. Deploy the Unity Catalog:
-
-   ```bash
-   terraform init
-   terraform plan
-   terraform apply
-   ```
+In case of any script fails during resource creation, try rerun the script. It will reference the local state files, and will try again to create the resources.
