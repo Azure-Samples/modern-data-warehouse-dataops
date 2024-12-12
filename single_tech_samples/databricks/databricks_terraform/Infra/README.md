@@ -1,6 +1,6 @@
 # Terraform Code for Multi Environment Databricks Medallion Deployment
 
-![Multi Environment Image](./mutli_environment.png)
+![Multi Environment Image](../images/architecture.png)
 
 ## Overview
 
@@ -20,26 +20,31 @@
 - Install Terraform CLI if not installed already [Terraform Installation](https://learn.hashicorp.com/tutorials/terraform/install-cli)
 - Install Azure CLI if not installed already [Azure CLI Installation](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 - `Infra/deployment/.env` - Update the values as per your requirement
-- Have databricks admin level access. Login to get databricks account id `[accounts.databricks.net](https://accounts.azuredatabricks.net/)`
+- Have databricks admin level access. Login to get databricks account id [accounts.databricks.net](https://accounts.azuredatabricks.net/)
 
 ### Steps
 
-1. Login to Azure
+1. Change directory to `Infra/deployment`
+```bash
+cd Infra/deployment
+```
+
+2. Login to Azure
 ```bash
 az login
 ```
 
-2. Set the subscription
+3. Set the subscription
 ```bash
 az account set --subscription <subscription-id>
 ```
 
-3. Make the script executable
+4. Make the script executable
 ```bash
 chmod +x dev.deploy.sh
 ```
 
-4. Run the script to deploy the modules sequentially
+5. Run the script to deploy the modules sequentially
 ```bash
 ./dev.deploy.sh
 ```
