@@ -106,12 +106,26 @@ module "fabric_environment" {
   workspace_id            = module.fabric_workspace.workspace_id
 }
 
-# shortcut creation will be done through python/bash script
-# spark environment compute and libraries settings will also be done via scripts (not supported currently by TF provider)
 module "fabric_spark_custom_pool" {
   source           = "./modules/fabric/spark_custom_pool"
   workspace_id     = module.fabric_workspace.workspace_id
   custom_pool_name = local.fabric_custom_pool_name
+}
+
+module "fabric_spark_environment_settings" {
+  source          = "./modules/fabric/spark_environment_settings"
+  workspace_id    = module.fabric_workspace.workspace_id
+  environment_id  = module.fabric_environment.environment_id
+  runtime_version = local.fabric_runtime_version
+  spark_pool_name = module.fabric_spark_custom_pool.spark_custom_pool_name
+}
+
+module "fabric_spark_workspace_settings" {
+  source            = "./modules/fabric/spark_workspace_settings"
+  environment_name  = module.fabric_environment.environment_name
+  workspace_id      = module.fabric_workspace.workspace_id
+  runtime_version   = module.fabric_spark_environment_settings.spark_environment_settings_runtime_version
+  default_pool_name = module.fabric_spark_custom_pool.spark_custom_pool_name
 }
 
 module "fabric_setup_notebook" {
@@ -182,24 +196,6 @@ module "fabric_data_pipeline" {
     "standardize_notebook_id" = module.fabric_standardize_notebook.notebook_id
     "transform_notebook_id"   = module.fabric_transform_notebook.notebook_id
   }
-}
-
-module "fabric_spark_environment_settings" {
-  enable          = var.use_cli
-  source          = "./modules/fabric/spark_environment_settings"
-  workspace_id    = module.fabric_workspace.workspace_id
-  environment_id  = module.fabric_environment.environment_id
-  spark_pool_name = module.fabric_spark_custom_pool.spark_custom_pool_name
-}
-
-module "fabric_spark_workspace_settings" {
-  enable            = var.use_cli
-  source            = "./modules/fabric/spark_workspace_settings"
-  environment_name  = module.fabric_environment.environment_name
-  workspace_id      = module.fabric_workspace.workspace_id
-  default_pool_name = module.fabric_spark_custom_pool.spark_custom_pool_name
-
-  depends_on = [module.fabric_spark_environment_settings]
 }
 
 module "fabric_workspace_git_integration" {
