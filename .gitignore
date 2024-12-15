@@ -465,6 +465,7 @@ MigrationBackup/
 plan.tfplan
 terraform.tfstate
 terraform.tfstate.backup
+.terraform.tfstate.lock.info
 
 # metadata files
 */*.DS_Store

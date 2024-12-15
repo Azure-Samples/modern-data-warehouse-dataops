@@ -255,7 +255,23 @@ _**Note: Please note that the Fabric notebook and pipeline deployed are placehol
 
 ## Cleaning up
 
-Coming up soon...
+Cleanup involves cleaning up of below components:
+
+- Azure resources.
+- Fabric resources.
+- Fabric ADLS Gen2 connection and its value from .env file.
+- Azure Key Vault purge.
+- Intermediate terraform files created during deployment process.
+
+You will need to authenticate **with user context** and run the cleanup script.
+
+  ```bash
+  source .env
+  az config set core.login_experience_v2=off
+  az login --tenant $TENANT_ID
+  az config set core.login_experience_v2=on
+  ./cleanup.sh
+  ```
 
 ## Frequently asked questions
 

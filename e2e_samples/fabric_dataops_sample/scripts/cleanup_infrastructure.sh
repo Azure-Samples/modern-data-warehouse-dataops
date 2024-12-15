@@ -233,14 +233,13 @@ else
   delete_connection "$adls_gen2_connection_id"
 fi
 
+echo "[Info] ############ Remove ADLS_GEN2_CONNECTION_ID value from .env file############"
+remove_adls_gen2_connection_id_from_env_file ".env"
+
 echo "[Info] ############ Key Vault Purge ############"
-base_name="naganfabcleanup2"
 check_and_purge_keyvault "kv-$base_name"
 
 echo "[Info] ############ Cleanup Terraform Intermediate files (state, lock etc.,) ############"
 cleanup_terraform_files
-
-echo "[Info] ############ Remove ADLS_GEN2_CONNECTION_ID value from .env file############"
-remove_adls_gen2_connection_id_from_env_file ".env"
 
 echo "[Info] ############ FINISHED INFRA CLEANUP ############"
