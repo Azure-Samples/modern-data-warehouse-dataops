@@ -113,7 +113,7 @@ cleanup_terraform_resources() {
     -var "git_repository_name=$git_repository_name" \
     -var "git_branch_name=$git_branch_name" \
     -var "git_directory_name=$git_directory_name" \
-    -var "kv_appinsights_connection_string_name=$appinsights_connection_string_name" \
+    -var "kv_appinsights_connection_string_name=$appinsights_connection_string_name"
 
   tf_storage_account_id=$(terraform output --raw storage_account_id)
   tf_storage_container_name=$(terraform output --raw storage_container_name)
@@ -144,84 +144,75 @@ function set_bearer_token() {
     -o tsv)
 }
 
-function get_adls_gen2_connection_object() {
+function delete_connection() {
+  # Function to delete a connection if it exists
   connection_id=$1
-  location=$2
-  subpath=$3
-  cat <<EOF
-{
-  "adlsGen2": {
-    "connectionId": "$connection_id",
-    "location": "$location",
-    "subpath": "$subpath"
-  }
-}
-EOF
-}
+  get_connection_url="$fabric_api_endpoint/connections/$connection_id"
+  delete_connection_url="$fabric_api_endpoint/connections/$connection_id"
 
-function if_shortcut_exist() {
-  workspace_id=$1
-  item_id=$2
-  shortcut_name=$3
-  shortcut_path=$4
-  get_shortcut_url="$fabric_api_endpoint/workspaces/$workspace_id/items/$item_id/shortcuts/$shortcut_path/$shortcut_name"
-  sc_name=$(curl -s -X GET -H "Authorization: Bearer $fabric_bearer_token" "$get_shortcut_url" | jq -r '.name')
-  if [[ -n $sc_name ]] && [[ $sc_name != "null" ]]; then
-    return 0
+  # Check if the connection exists
+  response=$(curl -s -X GET -H "Authorization: Bearer $fabric_bearer_token" "$get_connection_url")
+  connection_name=$(echo "$response" | jq -r '.name')
+
+  if [[ -n $connection_name ]] && [[ $connection_name != "null" ]]; then
+    # Connection exists, proceed to delete
+    delete_response=$(curl -s -X DELETE -H "Authorization: Bearer $fabric_bearer_token" "$delete_connection_url")
+
+    if [[ -z $delete_response ]]; then
+      echo "[Info] Connection '$connection_id' deleted successfully."
+    else
+      echo "[Error] Failed to delete connection '$connection_id'."
+      echo "[Error] $delete_response"
+    fi
   else
-    return 1
+    echo "[Info] Connection '$connection_id' not found. It could have not been created or deleted earlier."
   fi
 }
 
-function create_shortcut() {
-  workspace_id=$1
-  item_id=$2
-  shortcut_name=$3
-  shortcut_path=$4
-  target=$5
-  create_shortcut_url="$fabric_api_endpoint/workspaces/$workspace_id/items/$item_id/shortcuts"
+cleanup_terraform_files() {
+  # Find and delete .terraform directories
+  find . -type d -name ".terraform" -exec rm -rf {} +
 
-  create_shortcut_body=$(
-    cat <<EOF
-{
-  "name": "$shortcut_name",
-  "path": "$shortcut_path",
-  "target": $target
+  # Find and delete specific Terraform files
+  find . -type f \( -name "*.tfstate" -o -name "*.tfstate.backup" -o -name ".terraform.lock.hcl" \) -exec rm -f {} +
+
+  echo "[Info] Terraform intermediate files deleted successfully."
 }
-EOF
-  )
-  response=$(curl -s -X POST -H "Authorization: Bearer $fabric_bearer_token" -H "Content-Type: application/json" -d "$create_shortcut_body" "$create_shortcut_url")
-  sc_name=$(echo "$response" | jq -r '.name')
-  if [[ -n $sc_name ]] && [[ $sc_name != "null" ]]; then
-    echo "[Info] Shortcut '$shortcut_name' created successfully."
+
+check_and_purge_keyvault() {
+  local vault_name=$1
+
+  echo "Checking purge list for Key Vault: $vault_name..."
+  if az keyvault list-deleted --query "[?name=='$vault_name'] | [0]" -o json | grep -q "$vault_name"; then
+    echo "Found. Purging Key Vault..."
+    az keyvault purge --name "$vault_name"
+    echo "Purge completed."
   else
-    echo "[Error] Shortcut '$shortcut_name' creation failed."
-    echo "[Error] $response"
+    echo "Key Vault not found in the purge list."
   fi
 }
 
-echo "[Info] ############ STARTING INFRA DEPLOYMENT ############"
-echo "[Info] ############ Deploying terraform resources ############"
+echo "[Info] ############ STARTING CLEANUP STEPS############"
+
+echo "[Info] ############ Destroy terraform resources ############"
 cleanup_terraform_resources "./infrastructure/terraform"
+echo "[Info] ############ Terraform resources destroyed############"
 
-echo "[Info] ############ Terraform resources destroyed, setting up fabric bearer token ############"
-# set_bearer_token
+echo "[Info] Setting up fabric bearer token ############"
+set_bearer_token
 
-# echo "[Info] ############ ADLS Gen2 Shortcut Creation ############"
-# if [[ -z $adls_gen2_connection_id ]]; then
-#   echo "[Warning] ADLS Gen2 connection ID not provided. Skipping ADLS Gen2 connection creation."
-# else
-#   if if_shortcut_exist "$tf_workspace_name" "$tf_lakehouse_id" "$adls_gen2_shortcut_name" "$adls_gen2_shortcut_path"; then
-#     echo "[Warning] Shortcut '$adls_gen2_shortcut_name' already exists, please review it manually."
-#   else
-#     adls_gen2_connection_object=$(get_adls_gen2_connection_object "$adls_gen2_connection_id" "$tf_storage_account_url" "$tf_storage_container_name")
-#     create_shortcut \
-#       "$tf_workspace_id" \
-#       "$tf_lakehouse_id" \
-#       "$adls_gen2_shortcut_name" \
-#       "$adls_gen2_shortcut_path" \
-#       "$adls_gen2_connection_object"
-#   fi
-# fi
+echo "[Info] ############ ADLS Gen2 connection ID Deletion ############"
+if [[ -z $adls_gen2_connection_id ]]; then
+  echo "[Warning] ADLS Gen2 connection ID not provided. Skipping ADLS Gen2 connection deletion."
+else
+  delete_connection "$adls_gen2_connection_id"
+fi
 
-echo "[Info] ############ FINISHED INFRA DEPLOYMENT ############"
+echo "[Info] ############ Key Vault Purge ############"
+base_name="naganfabcleanup2"
+check_and_purge_keyvault "kv-$base_name"
+
+echo "[Info] ############ Cleanup Terraform Intermediate files (state, lock etc.,) ############"
+# cleanup_terraform_files
+
+echo "[Info] ############ FINISHED INFRA CLEANUP ############"
