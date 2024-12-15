@@ -200,16 +200,22 @@ check_and_purge_keyvault() {
   fi
 }
 
-remove_adls_gen2_connection_id() {
+remove_adls_gen2_connection_id_from_env_file() {
   local env_file="$1"
 
   if [[ -f "$env_file" ]]; then
+    # Display the current content
+    echo "Current ADLS_GEN2_CONNECTION_ID in $env_file:"
+    grep '^export ADLS_GEN2_CONNECTION_ID=' "$env_file"
+
+    # Remove the content
     sed -i 's/^export ADLS_GEN2_CONNECTION_ID=.*/export ADLS_GEN2_CONNECTION_ID=""/' "$env_file"
     echo "ADLS_GEN2_CONNECTION_ID content has been cleared."
   else
     echo "Error: File '$env_file' not found."
   fi
 }
+
 
 echo "[Info] ############ STARTING CLEANUP STEPS############"
 
@@ -235,6 +241,6 @@ echo "[Info] ############ Cleanup Terraform Intermediate files (state, lock etc.
 cleanup_terraform_files
 
 echo "[Info] ############ Remove ADLS_GEN2_CONNECTION_ID value from .env file############"
-remove_adls_gen2_connection_id ".env"
+remove_adls_gen2_connection_id_from_env_file ".env"
 
 echo "[Info] ############ FINISHED INFRA CLEANUP ############"
