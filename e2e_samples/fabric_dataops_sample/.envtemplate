@@ -16,5 +16,5 @@ export FABRIC_WORKSPACE_ADMIN_SG_NAME="The name of the Entra security groups wit
 # Fabric Capacity variables
 export EXISTING_FABRIC_CAPACITY_NAME="" # The name of an existing Fabric capacity. If this is empty, then a new capacity will be created.
 export FABRIC_CAPACITY_ADMINS="yourusername@yourdomain,sp_mi_object_id" # Comma separated list. When creating a new Fabric capacity, these users/apps would be added as capacity admin. For users, mention "userPrincipalName". For principals (sp/mi), mention "Object ID". Don't add spaces after the comma.
-# ADLS Gen2 connection variable
-export ADLS_GEN2_CONNECTION_ID="" # The connection ID for the ADLS Gen2 Cloud Connection. If not provided, the ALDS Gen2 shortcut creation would be skipped.
+# ADLS Gen2 connection variable (The connection ID for the ADLS Gen2 Cloud Connection. If not provided, the ALDS Gen2 shortcut creation would be skipped.)
+export ADLS_GEN2_CONNECTION_ID=""

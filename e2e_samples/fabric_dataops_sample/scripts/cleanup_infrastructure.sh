@@ -65,6 +65,7 @@ adls_gen2_shortcut_name="sc-adls-main"
 adls_gen2_shortcut_path="Files"
 
 cleanup_terraform_resources() {
+  local original_directory=$(pwd)
   cd "$1" || exit
 
   user_principal_type=$(az account show --query user.type -o tsv)
@@ -134,6 +135,8 @@ cleanup_terraform_resources() {
   tf_transform_notebook_name=$(terraform output --raw transform_notebook_name)
   tf_transform_notebook_id=$(terraform output --raw transform_notebook_id)
   tf_appinsights_connection_string_value=$(terraform output --raw appinsights_connection_string)
+
+  cd "$original_directory"
 }
 
 function set_bearer_token() {
@@ -170,14 +173,19 @@ function delete_connection() {
 }
 
 cleanup_terraform_files() {
-  # Find and delete .terraform directories
-  find . -type d -name ".terraform" -exec rm -rf {} +
+  # List and delete .terraform directories
+  echo "[Info] Listing .terraform directories that will be deleted:"
+  find . -type d -name ".terraform"
+  find . -type d -name ".terraform" -exec rm -rf {} + 2>/dev/null
+  echo "[Info] .terraform directories deleted successfully."
 
-  # Find and delete specific Terraform files
-  find . -type f \( -name "*.tfstate" -o -name "*.tfstate.backup" -o -name ".terraform.lock.hcl" \) -exec rm -f {} +
-
+  # List and delete specific Terraform files
+  echo "[Info] Listing Terraform files that will be deleted:"
+  find . -type f \( -name "*.tfstate" -o -name "*.tfstate.backup" -o -name ".terraform.lock.hcl" \)
+  find . -type f \( -name "*.tfstate" -o -name "*.tfstate.backup" -o -name ".terraform.lock.hcl" \) -exec rm -f {} + 2>/dev/null
   echo "[Info] Terraform intermediate files deleted successfully."
 }
+
 
 check_and_purge_keyvault() {
   local vault_name=$1
@@ -189,6 +197,17 @@ check_and_purge_keyvault() {
     echo "Purge completed."
   else
     echo "Key Vault not found in the purge list."
+  fi
+}
+
+remove_adls_gen2_connection_id() {
+  local env_file="$1"
+
+  if [[ -f "$env_file" ]]; then
+    sed -i 's/^export ADLS_GEN2_CONNECTION_ID=.*/export ADLS_GEN2_CONNECTION_ID=""/' "$env_file"
+    echo "ADLS_GEN2_CONNECTION_ID content has been cleared."
+  else
+    echo "Error: File '$env_file' not found."
   fi
 }
 
@@ -213,6 +232,9 @@ base_name="naganfabcleanup2"
 check_and_purge_keyvault "kv-$base_name"
 
 echo "[Info] ############ Cleanup Terraform Intermediate files (state, lock etc.,) ############"
-# cleanup_terraform_files
+cleanup_terraform_files
+
+echo "[Info] ############ Remove ADLS_GEN2_CONNECTION_ID value from .env file############"
+remove_adls_gen2_connection_id ".env"
 
 echo "[Info] ############ FINISHED INFRA CLEANUP ############"
