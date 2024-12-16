@@ -139,7 +139,7 @@ cleanup_terraform_resources() {
   cd "$original_directory"
 }
 
-function set_bearer_token() {
+set_bearer_token() {
   fabric_bearer_token=$(az account get-access-token \
     --resource "https://login.microsoftonline.com/${tenant_id}" \
     --query accessToken \
@@ -147,7 +147,7 @@ function set_bearer_token() {
     -o tsv)
 }
 
-function delete_connection() {
+delete_connection() {
   # Function to delete a connection if it exists
   connection_id=$1
   get_connection_url="$fabric_api_endpoint/connections/$connection_id"
@@ -186,20 +186,6 @@ cleanup_terraform_files() {
   echo "[Info] Terraform intermediate files deleted successfully."
 }
 
-
-check_and_purge_keyvault() {
-  local vault_name=$1
-
-  echo "Checking purge list for Key Vault: $vault_name..."
-  if az keyvault list-deleted --query "[?name=='$vault_name'] | [0]" -o json | grep -q "$vault_name"; then
-    echo "Found. Purging Key Vault..."
-    az keyvault purge --name "$vault_name"
-    echo "Purge completed."
-  else
-    echo "Key Vault not found in the purge list."
-  fi
-}
-
 remove_adls_gen2_connection_id_from_env_file() {
   local env_file="$1"
 
@@ -209,7 +195,12 @@ remove_adls_gen2_connection_id_from_env_file() {
     grep '^export ADLS_GEN2_CONNECTION_ID=' "$env_file"
 
     # Remove the content
-    sed -i 's/^export ADLS_GEN2_CONNECTION_ID=.*/export ADLS_GEN2_CONNECTION_ID=""/' "$env_file"
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        sed -i '' 's/^export ADLS_GEN2_CONNECTION_ID=.*$/export ADLS_GEN2_CONNECTION_ID=""/' "$env_file"
+    else
+        sed -i 's/^export ADLS_GEN2_CONNECTION_ID=.*$/export ADLS_GEN2_CONNECTION_ID=""/' "$env_file"
+    fi
+
     echo "ADLS_GEN2_CONNECTION_ID content has been cleared."
   else
     echo "Error: File '$env_file' not found."
@@ -235,9 +226,6 @@ fi
 
 echo "[Info] ############ Remove ADLS_GEN2_CONNECTION_ID value from .env file############"
 remove_adls_gen2_connection_id_from_env_file ".env"
-
-echo "[Info] ############ Key Vault Purge ############"
-check_and_purge_keyvault "kv-$base_name"
 
 echo "[Info] ############ Cleanup Terraform Intermediate files (state, lock etc.,) ############"
 cleanup_terraform_files

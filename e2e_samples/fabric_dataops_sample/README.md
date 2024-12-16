@@ -255,13 +255,15 @@ _**Note: Please note that the Fabric notebook and pipeline deployed are placehol
 
 ## Cleaning up
 
-Cleanup involves cleaning up of below components:
+Once you have finished with the sample, you can delete the deployed resources by running the cleanup script.
 
-- Azure resources.
-- Fabric resources.
-- Fabric ADLS Gen2 connection and its value from .env file.
-- Azure Key Vault purge.
-- Intermediate terraform files created during deployment process.
+The [cleanup script](./cleanup.sh) performs the following actions:
+
+- Deletes all the deployed Azure and Fabric resources.
+- Deletes Fabric connection to ADLS Gen2 storage.
+- Resets corresponding `ADLS_GEN2_CONNECTION_ID` variable in the .env file.
+- Ensures that the Azure Key Vault is purged.
+- Removes intermediate Terraform files created during deployment process including state files.
 
 You will need to authenticate **with user context** and run the cleanup script.
 
