@@ -2,7 +2,6 @@
 // Parameters
 @description('The project name.')
 param project string
-
 @description('The environment for the deployment.')
 @allowed([
   'dev'
@@ -10,22 +9,16 @@ param project string
   'prod'
 ])
 param env string
-
 @description('The location of the resource.')
 param location string = resourceGroup().location
-
 @description('The unique identifier for this deployment.')
 param deployment_id string
-
 @description('The name of the Data Factory.')
 param datafactory_name string
-
 @description('The name of the SQL server.')
 param sql_server_name string
-
 @description('The name of the SQL database.')
 param sql_database_name string
-
 // Resource: Azure Portal Dashboard
 resource dashboard 'Microsoft.Portal/dashboards@2022-12-01-preview' = {
   name: '${project}-dashboard-${env}-${deployment_id}'

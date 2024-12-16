@@ -2,16 +2,12 @@
 // Parameters
 @description('The display name of the workbook.')
 param workbookDisplayName string = 'DQ Report'
-
 @description('The category/type of the workbook.')
 param workbookType string = 'workbook'
-
 @description('The name of the Application Insights resource.')
 param appinsights_name string
-
 @description('The location of the resource.')
 param location string = resourceGroup().location
-
 // Variables
 var workbookSourceId = subscriptionResourceId('microsoft.insights/components', '${appinsights_name}')
 var workbookId = guid(workbookSourceId)
@@ -25,7 +21,6 @@ var updatedWorkbookData = {
   ]
 }
 var reserializedData = string(updatedWorkbookData)
-
 // Resource: Data Quality Workbook
 resource data_quality_workbook_resource 'microsoft.insights/workbooks@2023-06-01' = {
   name: workbookId
@@ -49,7 +44,6 @@ resource data_quality_workbook_resource 'microsoft.insights/workbooks@2023-06-01
   }
   dependsOn: []
 }
-
 // Output: Workbook ID
 @description('The ID of the created workbook resource.')
 output workbookId string = data_quality_workbook_resource.id

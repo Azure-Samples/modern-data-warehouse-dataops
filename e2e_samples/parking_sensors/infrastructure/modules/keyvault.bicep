@@ -1,8 +1,5 @@
 //https://learn.microsoft.com/en-us/azure/templates/microsoft.keyvault/vaults
 // Parameters
-@description('The project name.')
-param project string
-
 @description('The environment for the deployment.')
 @allowed([
   'dev'
@@ -10,28 +7,21 @@ param project string
   'prod'
 ])
 param env string
-
 @description('The location of the resource.')
 param location string = resourceGroup().location
-
-@description('The unique identifier for this deployment.')
-param deployment_id string
-
+@description('The Key Vault name.')
+param keyvault_name string
 @description('The object ID of the Key Vault owner.')
 param keyvault_owner_object_id string
-
 @description('The principal ID of the Data Factory.')
 param datafactory_principal_id string
-
 @description('Enable soft delete for the Key Vault.')
 param enable_soft_delete bool = true
-
 @description('Enable purge protection for the Key Vault.')
 param enable_purge_protection bool = true
-
 // Key Vault Resource
 resource keyvault 'Microsoft.KeyVault/vaults@2024-04-01-preview' = {
-  name: '${project}-kv-${env}-${deployment_id}'
+  name: keyvault_name
   location: location
   tags: {
     DisplayName: 'Keyvault'
@@ -72,10 +62,8 @@ resource keyvault 'Microsoft.KeyVault/vaults@2024-04-01-preview' = {
     ]
   }
 }
-
 // Outputs
 @description('The name of the Key Vault.')
 output keyvault_name string = keyvault.name
-
 @description('The resource ID of the Key Vault.')
 output keyvault_resource_id string = keyvault.id
