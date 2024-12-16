@@ -18,14 +18,14 @@ resource "azurerm_container_group" "container" {
     memory = 1
 
     ports {
-      port     = 3000
+      port     = 80
       protocol = "TCP"
     }
     environment_variables = {
-      SENSORFILE="./collections/on-street-parking-bay-sensors.json"
+      SENSORFILE="./collections/sensors.json"
       DEFAULTDATACLASS="kerbsidesensor"
       WRITETEMPLATE="true"
-      PORT = "3000"
+      PORT = "80"
     }
   }
 }

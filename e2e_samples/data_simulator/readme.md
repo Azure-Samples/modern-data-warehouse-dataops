@@ -50,9 +50,8 @@ run `terraform apply`
 
 REST API should be accessible at the http address of the Terraform output.
 
-Sensor status will be found at `/sensors`
-Sensor locations will be found at `/locations`
-
+Sensor status will be found at `http://<ipaddress>/sensors`
+Sensor locations will be found at `http://<ipaddress>/locations`
 
 Cleanup:
 run `terraform destroy`
