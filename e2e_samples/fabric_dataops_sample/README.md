@@ -109,7 +109,7 @@ Here is a list of resources that are deployed:
 
 ### Familiarize yourself with known issues, limitations, and workarounds
 
-Refer to the [known issues, limitations, and workarounds](issues-limitations-and-workarounds.md) page for details. Reviewing this page is highly recommended to understand the limitations, issues, and challenges you may encounter while building CI/CD pipelines for Fabric. It also provides workarounds and alternative approaches to overcome these challenges. This information will also help you understand why certain approaches are used in the infrastructure deployment scripts and Azure DevOps pipelines.
+Refer to the [known issues, limitations, and workarounds](docs/issues_limitations_and_workarounds.md) page for details. Reviewing this page is highly recommended to understand the limitations, issues, and challenges you may encounter while building CI/CD pipelines for Fabric. It also provides workarounds and alternative approaches to overcome these challenges. This information will also help you understand why certain approaches are used in the infrastructure deployment scripts and Azure DevOps pipelines.
 
 ### Deploying infrastructure
 
