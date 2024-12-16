@@ -28,7 +28,7 @@ Key considerations:
 
 ## Proposal details
 
-Based on the key consideration, **option 1** and **option 2** were considered extensively. However, due to the very high technical complexity of option 2 specifically around item dependency management and need to track individual item IDs manually, Option 1 is the preferred **Option 1** for this milestone.
+Based on the key considerations, both **Option 1** and **Option 2** were extensively analyzed. However, due to the significant technical complexity of Option 2, particularly in managing item dependencies and manually tracking individual item IDs, Option 1 has been selected as the preferred approach for this milestone.
 
 The following are CI/CD flow diagrams built as part of this ADR:
 
