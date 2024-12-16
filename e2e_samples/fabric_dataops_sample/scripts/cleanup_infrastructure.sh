@@ -155,7 +155,6 @@ function delete_connection() {
 
   # Check if the connection exists
   response=$(curl -s -X GET -H "Authorization: Bearer $fabric_bearer_token" "$get_connection_url")
-  echo "response = ${response}"
   connection_name=$(echo "$response" | jq -r '.displayName')
 
   if [[ -n $connection_name ]] && [[ $connection_name != "null" ]]; then
