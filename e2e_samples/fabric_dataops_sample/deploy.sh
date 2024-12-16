@@ -12,7 +12,7 @@ set -o nounset
 source ./.env
 
 # Log all outputs and errors to a log file
-log_file="deploy_$(date +"%Y%m%d_%H%M%S").log"
+log_file="deploy_${BASE_NAME}_$(date +"%Y%m%d_%H%M%S").log"
 exec > >(tee -a "$log_file")
 exec 2>&1
 
