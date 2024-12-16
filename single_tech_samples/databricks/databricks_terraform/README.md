@@ -15,7 +15,7 @@ In this sample we will deploy resources from sandbox environment to development 
 
 ### Folder Structure
 
-working directory: `./single_tech_samples/databricks/databricks_terraform`
+The working directory : `./single_tech_samples/databricks/databricks_terraform` and is comprised of the following components:
 
 - `./Infra` - Terraform code to deploy Azure Resources. See [./Infra/README.md](./Infra/README.md) for instructions on deploying Azure Resources into multiple environments.
 - `tests` - Contains a simple Greeting Python script and a test script. These are used to create Databricks Workflows and run during the GitHub Actions CI/CD pipeline.
