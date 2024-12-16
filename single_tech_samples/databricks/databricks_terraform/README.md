@@ -36,7 +36,7 @@ The working directory : `./single_tech_samples/databricks/databricks_terraform` 
 #### Pre-requisites
 
 - Ensure Azure Login Credentials are setup in GitHub Secrets per environment.
-- Ensure Sandbox and Development Resources are deployed in Azure using Terraform code in `./Infra` folder.
+- Ensure Sandbox and Development Resources are deployed in Azure using Terraform code in ![Infrastructure instructions folder](./Infra).
 
 #### Steps
 
