@@ -45,7 +45,6 @@ The diagram below illustrates the complete end-to-end CI/CD process:
 
 ## How to use the sample
 
-
 ### High-level deployment sequence
 
 At a high level, the deployment sequence proceeds as follows:
