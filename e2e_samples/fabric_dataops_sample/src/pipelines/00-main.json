@@ -2,6 +2,160 @@
   "properties": {
     "activities": [
       {
+        "type": "SetVariable",
+        "typeProperties": {
+          "variableName": "infilefolder",
+          "value": {
+            "value": "@utcnow('yyyy_MM_dd_hh_mm_ss')",
+            "type": "Expression"
+          }
+        },
+        "policy": {
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "name": "set_infilefolder",
+        "dependsOn": []
+      },
+      {
+        "type": "Copy",
+        "typeProperties": {
+          "source": {
+            "type": "RestSource",
+            "httpRequestTimeout": "00:01:40",
+            "requestInterval": "00.00:00:00.010",
+            "requestMethod": "GET",
+            "paginationRules": {
+              "supportRFC5988": "true"
+            },
+            "datasetSettings": {
+              "annotations": [],
+              "type": "RestResource",
+              "typeProperties": {
+                "relativeUrl": "MelbParkingBayData.json"
+              },
+              "schema": [],
+              "externalReferences": {
+                "connection": "{{ .rest_data_source_connection_id }}"
+              }
+            }
+          },
+          "sink": {
+            "type": "JsonSink",
+            "storeSettings": {
+              "type": "AzureBlobFSWriteSettings"
+            },
+            "formatSettings": {
+              "type": "JsonWriteSettings"
+            },
+            "datasetSettings": {
+              "annotations": [],
+              "type": "Json",
+              "typeProperties": {
+                "location": {
+                  "fileName": "MelbParkingBayData.json",
+                  "folderPath": {
+                    "type": "Expression",
+                    "value": "@concat('main/data/lnd/',variables('infilefolder'))"
+                  },
+                  "type": "AzureBlobFSLocation"
+                }
+              },
+              "schema": {},
+              "externalReferences": {
+                "connection": "{{ .adls_gen2_connection_id }}"
+              }
+            }
+          },
+          "enableStaging": false
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "name": "download_bay_data",
+        "dependsOn": [
+          {
+            "activity": "set_infilefolder",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Copy",
+        "typeProperties": {
+          "source": {
+            "type": "RestSource",
+            "httpRequestTimeout": "00:01:40",
+            "requestInterval": "00.00:00:00.010",
+            "requestMethod": "GET",
+            "paginationRules": {
+              "supportRFC5988": "true"
+            },
+            "datasetSettings": {
+              "annotations": [],
+              "type": "RestResource",
+              "typeProperties": {
+                "relativeUrl": "MelbParkingSensorData.json"
+              },
+              "schema": [],
+              "externalReferences": {
+                "connection": "{{ .rest_data_source_connection_id }}"
+              }
+            }
+          },
+          "sink": {
+            "type": "JsonSink",
+            "storeSettings": {
+              "type": "AzureBlobFSWriteSettings"
+            },
+            "formatSettings": {
+              "type": "JsonWriteSettings"
+            },
+            "datasetSettings": {
+              "annotations": [],
+              "type": "Json",
+              "typeProperties": {
+                "location": {
+                  "fileName": "MelbParkingSensorData.json",
+                  "folderPath": {
+                    "type": "Expression",
+                    "value": "@concat('main/data/lnd/',variables('infilefolder'))"
+                  },
+                  "type": "AzureBlobFSLocation"
+                }
+              },
+              "schema": {},
+              "externalReferences": {
+                "connection": "{{ .adls_gen2_connection_id }}"
+              }
+            }
+          },
+          "enableStaging": false
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "name": "download_sensor_data",
+        "dependsOn": [
+          {
+            "activity": "set_infilefolder",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
         "type": "TridentNotebook",
         "typeProperties": {
           "notebookId": "{{ .setup_notebook_id }}",
@@ -65,7 +219,20 @@
           "secureOutput": false
         },
         "name": "nb-setup",
-        "dependsOn": []
+        "dependsOn": [
+          {
+            "activity": "download_sensor_data",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          },
+          {
+            "activity": "download_bay_data",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
       },
       {
         "type": "TridentNotebook",
@@ -115,6 +282,20 @@
             },
             "config_file_path": {
               "value": "sc-adls-main/config/application.cfg",
+              "type": "string"
+            },
+            "infilefolder": {
+              "value": {
+                "value": "@variables('infilefolder')",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "load_id": {
+              "value": {
+                "value": "@pipeline().RunId",
+                "type": "Expression"
+              },
               "type": "string"
             }
           },
@@ -189,6 +370,13 @@
             "config_file_path": {
               "value": "sc-adls-main/config/application.cfg",
               "type": "string"
+            },
+            "load_id": {
+              "value": {
+                "value": "@pipeline().RunId",
+                "type": "Expression"
+              },
+              "type": "string"
             }
           },
           "sessionTag": {
@@ -230,6 +418,11 @@
       "lakehouse_name": {
         "type": "string",
         "defaultValue": "{{ .lakehouse_name }}"
+      }
+    },
+    "variables": {
+      "infilefolder": {
+        "type": "String"
       }
     }
   }

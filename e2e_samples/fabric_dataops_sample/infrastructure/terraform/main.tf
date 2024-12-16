@@ -181,6 +181,8 @@ module "fabric_data_pipeline" {
     "setup_notebook_id"       = module.fabric_setup_notebook.notebook_id
     "standardize_notebook_id" = module.fabric_standardize_notebook.notebook_id
     "transform_notebook_id"   = module.fabric_transform_notebook.notebook_id
+    "adls_gen2_connection_id" = var.adls_gen2_connection_id
+    "rest_data_source_connection_id" = var.rest_data_source_connection_id
   }
 }
 

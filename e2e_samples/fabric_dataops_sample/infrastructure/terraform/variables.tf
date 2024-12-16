@@ -94,3 +94,13 @@ variable "kv_appinsights_connection_string_name" {
   type        = string
   description = "Key Vault secret name for Application Insights connection string"
 }
+
+variable "adls_gen2_connection_id" {
+  type        = string
+  description = "The connection id for ADLS Gen2"
+}
+
+variable "rest_data_source_connection_id" {
+  type        = string
+  description = "The connection id for rest data source"
+}

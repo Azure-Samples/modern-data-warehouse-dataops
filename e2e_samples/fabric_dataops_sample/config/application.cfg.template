@@ -40,6 +40,7 @@ ddl_file = ${setup:adls_shortcut_name}/config/lakehouse_ddls.yaml
 [standardize]
 # --------- Globals for nb-standardize notebook
 process_name = standardize
+landing_directory = ${setup:adls_shortcut_name}/data/lnd/
 
 [transform]
 # --------- Globals for nb-transform notebook

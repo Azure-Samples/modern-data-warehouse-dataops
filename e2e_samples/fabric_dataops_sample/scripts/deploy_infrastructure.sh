@@ -31,6 +31,8 @@ existing_fabric_capacity_name="$EXISTING_FABRIC_CAPACITY_NAME"
 fabric_capacity_admins="$FABRIC_CAPACITY_ADMINS"
 # ADLS Gen2 connection variable
 adls_gen2_connection_id="$ADLS_GEN2_CONNECTION_ID"
+# REST connection variable
+rest_data_source_connection_id="$REST_DATA_SOURCE_CONNECTION_ID"
 
 ## KeuVault secret variables
 appinsights_connection_string_name="appinsights-connection-string"
@@ -114,6 +116,8 @@ deploy_terraform_resources() {
     -var "git_branch_name=$git_branch_name" \
     -var "git_directory_name=$git_directory_name" \
     -var "kv_appinsights_connection_string_name=$appinsights_connection_string_name" \
+    -var "adls_gen2_connection_id=$adls_gen2_connection_id" \
+    -var "rest_data_source_connection_id=$rest_data_source_connection_id" \
 
   tf_storage_account_id=$(terraform output --raw storage_account_id)
   tf_storage_container_name=$(terraform output --raw storage_container_name)
