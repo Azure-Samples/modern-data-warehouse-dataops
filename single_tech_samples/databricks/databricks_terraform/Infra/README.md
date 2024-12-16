@@ -16,27 +16,24 @@
 ## How to Run
 
 ### Pre-requisites
-- Clone the repository
-- Install Terraform CLI if not installed already [Terraform Installation](https://learn.hashicorp.com/tutorials/terraform/install-cli)
-- Install Azure CLI if not installed already [Azure CLI Installation](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 - `Infra/deployment/.env` - Update the values as per your requirement
 - Have databricks admin level access. Login to get databricks account id [accounts.databricks.net](https://accounts.azuredatabricks.net/)
 
 ### Steps
 
-1. Change directory to `Infra/deployment`
-```bash
-cd Infra/deployment
-```
-
-2. Login to Azure
+1. Login to Azure
 ```bash
 az login
 ```
 
-3. Set the subscription
+2. Set the subscription
 ```bash
 az account set --subscription <subscription-id>
+```
+
+3. Change directory to `Infra/deployment`
+```bash
+cd Infra/deployment
 ```
 
 4. Make the script executable
