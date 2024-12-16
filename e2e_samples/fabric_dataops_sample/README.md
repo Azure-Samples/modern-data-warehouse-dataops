@@ -42,9 +42,9 @@ Please follow the [How to use the sample](#how-to-use-the-sample) section for de
 
 ### Continuous Integration and Continuous Delivery (CI/CD)
 
-Fabric has a number of options for CI/CD workflows as documented [here](https://learn.microsoft.com/fabric/cicd/manage-deployment). This utilizes Option 1 - Git-based deployments.
+Microsoft Fabric has a number of CI/CD workflow options as documented [here](https://learn.microsoft.com/fabric/cicd/manage-deployment). This sample utilizes [Option 1: Git-based deployment](https://learn.microsoft.com/fabric/cicd/manage-deployment#option-1---git--based-deployments).
 
-The following shows the overall CI/CD process end to end.
+The diagram below illustrates the complete end-to-end CI/CD process:
 
 ![Fabric CI/CD diagram](./images/fabric_cicd_option1.png)
 
