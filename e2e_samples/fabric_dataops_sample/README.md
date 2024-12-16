@@ -8,10 +8,12 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
 
 ## Contents <!-- omit in toc -->
 
-- [Architecture](#architecture)
+- [Solution Overview](#solution-overview)
+  - [Architecture](#architecture)
+  - [Continuous Integration and Continuous Delivery (CI/CD)](#continuous-integration-and-continuous-delivery-cicd)
+- [How to use the sample](#how-to-use-the-sample)
   - [High-level deployment sequence](#high-level-deployment-sequence)
   - [Deployed resources](#deployed-resources)
-- [How to use the sample](#how-to-use-the-sample)
   - [Pre-requisites](#pre-requisites)
   - [Deploying infrastructure](#deploying-infrastructure)
   - [Verifying the infrastructure deployment](#verifying-the-infrastructure-deployment)
@@ -24,9 +26,24 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
     - [What is the significance of `use_cli` and `use_msi` flags?](#what-is-the-significance-of-use_cli-and-use_msi-flags)
 - [References](#references)
 
-## Architecture
+## Solution Overview
+
+### Architecture
+
+This sample utilizes a [standard medallion architecture](https://learn.microsoft.com/en-us/fabric/onelake/onelake-medallion-lakehouse-architecture). The following shows at a high-level the overall data pipeline architecture built on Microsoft Fabric, along with associated Azure components.
 
 ![Microsoft Fabric Architecture](./images/fabric_archi.png)
+
+### Continuous Integration and Continuous Delivery (CI/CD)
+
+Microsoft Fabric has a number of CI/CD workflow options as documented [here](https://learn.microsoft.com/fabric/cicd/manage-deployment). This sample utilizes [Option 1: Git-based deployment](https://learn.microsoft.com/fabric/cicd/manage-deployment#option-1---git--based-deployments).
+
+The diagram below illustrates the complete end-to-end CI/CD process:
+
+![Fabric CI/CD diagram](./images/fabric_cicd_option1.png)
+
+## How to use the sample
+
 
 ### High-level deployment sequence
 
@@ -39,14 +56,6 @@ At a high level, the deployment sequence proceeds as follows:
 - Run the deployment script again, **this time using an Entra ID user** for authentication. This step will create the Lakehouse shortcut to the ADLS Gen2 storage account and deploy Fabric items that cannot be authenticated via service principal or managed identity.
 
 Please follow the [How to use the sample](#how-to-use-the-sample) section for detailed instructions.
-
-### Continuous Integration and Continuous Delivery (CI/CD)
-
-Microsoft Fabric has a number of CI/CD workflow options as documented [here](https://learn.microsoft.com/fabric/cicd/manage-deployment). This sample utilizes [Option 1: Git-based deployment](https://learn.microsoft.com/fabric/cicd/manage-deployment#option-1---git--based-deployments).
-
-The diagram below illustrates the complete end-to-end CI/CD process:
-
-![Fabric CI/CD diagram](./images/fabric_cicd_option1.png)
 
 ### Deployed resources
 
@@ -74,8 +83,6 @@ Here is a list of resources that are deployed:
 - Additional Resources
   - Fabric workspace GIT integration
   - Azure Role assignments to entra security group and workspace identity
-
-## How to use the sample
 
 ### Pre-requisites
 
