@@ -33,7 +33,7 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
 
 This sample utilizes a [standard medallion architecture](https://learn.microsoft.com/en-us/fabric/onelake/onelake-medallion-lakehouse-architecture). The following shows at a high-level the overall data pipeline architecture built on Microsoft Fabric, along with associated Azure components.
 
-![Microsoft Fabric Architecture](./images/fabric_archi.png)
+![Microsoft Fabric Architecture](./images/fabric-archi.png)
 
 ### Continuous Integration and Continuous Delivery (CI/CD)
 
@@ -41,7 +41,7 @@ Microsoft Fabric has a number of CI/CD workflow options as documented [here](htt
 
 The diagram below illustrates the complete end-to-end CI/CD process:
 
-![Fabric CI/CD diagram](./images/fabric_cicd_option1.png)
+![Fabric CI/CD diagram](./images/fabric-cicd-option1.png)
 
 ## How to use the sample
 

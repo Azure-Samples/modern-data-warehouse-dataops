@@ -34,11 +34,11 @@ The following are CI/CD flow diagrams built as part of this ADR:
 
 Option 1:
 
-![Option 1: Fabric CI/CD](../images/fabric_cicd_option1.png)
+![Option 1: Fabric CI/CD](../images/fabric-cicd-option1.png)
 
 Option 2:
 
-![Option 2: Fabric CI/CD](../images/fabric_cicd_option2.png)
+![Option 2: Fabric CI/CD](../images/fabric-cicd-option2.png)
 
 Propose option is "option #2 - Git-based deployments using Build environments".
 
