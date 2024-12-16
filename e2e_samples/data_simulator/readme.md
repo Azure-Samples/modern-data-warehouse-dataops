@@ -40,9 +40,10 @@ Sensor locations will be found at `/locations`
 
 ## Running in the Cloud
 
-Change to "terraform" folder
+Change to "terraform/rest" folder
 login to Azure with 'az login'
 verify subscription with 'az account show'
+update providers.tf with Azure subscription id.
 run `terraform plan`
 verify outputs
 run `terraform apply`
