@@ -48,5 +48,5 @@ module "aci-rest" {
 }
 
 output "container_ipv4_address" {
-  value = module.aci-rest.azurerm_container_group.container.container_ipv4_address
+  value = module.aci-rest.container_ipv4_address
 }
