@@ -5,3 +5,4 @@
 ## Samples
 
 - [IaC deployment of Azure Databricks](./databricks_ci_cd/README.md) - This sample demonstrates how to deploy an Azure Databricks environment using ARM templates.
+- [IaC Deployment of Azure Databricks using Terraform](./databricks_terraform/README.md) - This sample demonstrates how to deploy an Azure Databricks environment using Terraform and promote the source code using Databricks Asset Bundles to different environments.
