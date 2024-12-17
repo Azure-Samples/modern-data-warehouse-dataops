@@ -2,7 +2,7 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See LICENSE in the project root for license information.
 #-----------------------------------------------------------------------------------------
-FROM python:3
+FROM --platform=linux/amd64 python:3
 
 # Configure apt
 ENV DEBIAN_FRONTEND=noninteractive
@@ -36,9 +36,6 @@ RUN apt-get update \
     && apt-get -y install --no-install-recommends \
     temurin-21-jdk
 ENV JAVA_HOME=/usr/lib/jvm/temurin-21-jdk-amd64
-
-# Check if Databricks already exists and remove it
-RUN [ -f /usr/local/bin/databricks ] && rm /usr/local/bin/databricks || echo "File not found, skipping removal"
 
 RUN mkdir /workspace
 WORKDIR /workspace

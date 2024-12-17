@@ -7,6 +7,8 @@ param keyvault_owner_object_id string
 @secure()
 param sql_server_password string
 param enable_monitoring bool
+param enable_keyvault_soft_delete bool = true
+param enable_keyvault_purge_protection bool = true
 param entra_admin_login string
 
 
@@ -63,6 +65,8 @@ module keyvault './modules/keyvault.bicep' = {
     env: env
     location: location
     deployment_id: deployment_id
+    enable_soft_delete: enable_keyvault_soft_delete
+    enable_purge_protection: enable_keyvault_purge_protection
     keyvault_owner_object_id: keyvault_owner_object_id
     datafactory_principal_id: datafactory.outputs.datafactory_principal_id
   }
@@ -171,5 +175,6 @@ output databricks_id string = databricks.outputs.databricks_id
 output appinsights_name string = appinsights.outputs.appinsights_name
 output keyvault_name string = keyvault.outputs.keyvault_name
 output keyvault_resource_id string = keyvault.outputs.keyvault_resource_id
+output datafactory_id string = datafactory.outputs.datafactory_id
 output datafactory_name string = datafactory.outputs.datafactory_name
 output loganalytics_name string = loganalytics.outputs.loganalyticswsname

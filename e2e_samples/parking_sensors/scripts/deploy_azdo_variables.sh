@@ -44,12 +44,14 @@ set -o xtrace # For debugging
 # DATABRICKS_HOST
 # DATABRICKS_TOKEN
 # DATABRICKS_WORKSPACE_RESOURCE_ID
+# DATABRICKS_CLUSTER_ID
 # SQL_SERVER_NAME
 # SQL_SERVER_USERNAME
 # SQL_SERVER_PASSWORD
 # SQL_DW_DATABASE_NAME
 # AZURE_STORAGE_ACCOUNT
 # AZURE_STORAGE_KEY
+# DATAFACTORY_ID
 # DATAFACTORY_NAME
 # SP_ADF_ID
 # SP_ADF_PASS
@@ -69,6 +71,8 @@ else
     databricksNotebookPath='/releases/$(Build.BuildId)'
 fi
 
+databricksClusterId="$DATABRICKS_CLUSTER_ID"
+
 # Create vargroup
 vargroup_name="${PROJECT}-release-$ENV_NAME"
 if vargroup_id=$(az pipelines variable-group list -o tsv | grep "$vargroup_name" | awk '{print $3}'); then
@@ -85,6 +89,7 @@ az pipelines variable-group create \
         adfName="$DATAFACTORY_NAME" \
         databricksDbfsLibPath="$databricksDbfsLibPath" \
         databricksNotebookPath="$databricksNotebookPath" \
+        databricksClusterId="$databricksClusterId" \
         apiBaseUrl="$apiBaseUrl" \
     --output json
 
@@ -133,6 +138,8 @@ az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
     --secret "true" --name "spAdfPass" --value "$SP_ADF_PASS"
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
     --secret "true" --name "spAdfTenantId" --value "$SP_ADF_TENANT"
-
+az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
+    --secret "true" --name "adfResourceId" --value "$DATAFACTORY_ID"
+    
 # Delete dummy vars
 az pipelines variable-group variable delete --group-id "$vargroup_secrets_id" --name "foo" -y

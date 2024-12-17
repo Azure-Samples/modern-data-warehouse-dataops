@@ -1,0 +1,11 @@
+{
+    "environments": {
+        "default": {
+            "profile": "DEFAULT",
+            "properties": {
+                "workspace_directory": "/Shared/dbx/projects/dbx-sparkapp-template",
+                "artifact_location": "dbfs:/dbx/dbx-sparkapp-template"
+            }
+        }
+    }
+}

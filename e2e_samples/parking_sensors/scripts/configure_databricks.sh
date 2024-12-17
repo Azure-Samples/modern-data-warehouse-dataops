@@ -79,6 +79,12 @@ fi
 cluster_id=$(databricks clusters list --output JSON | jq -r '.[]|select(.default_tags.ClusterName == "ddo_cluster")|.cluster_id')
 echo "Cluster ID:" $cluster_id
 
+adfTempDir=.tmp/adf
+mkdir -p $adfTempDir && cp -a adf/ .tmp/
+tmpfile=.tmpfile
+adfLsDir=$adfTempDir/linkedService
+jq --arg databricksExistingClusterId "$cluster_id" '.properties.typeProperties.existingClusterId = $databricksExistingClusterId' $adfLsDir/Ls_AzureDatabricks_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AzureDatabricks_01.json
+
 echo "Uploading libs TO dbfs..."
 databricks fs cp --recursive --overwrite "./databricks/libs/ddo_transform-localdev-py2.py3-none-any.whl" "dbfs:/ddo_transform-localdev-py2.py3-none-any.whl"
 

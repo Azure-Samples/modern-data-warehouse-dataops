@@ -462,15 +462,16 @@ MigrationBackup/
 
 .terraform
 .terraform.lock.hcl
+plan.tfplan
 terraform.tfstate
 terraform.tfstate.backup
+.terraform.tfstate.lock.info
 
 # metadata files
 */*.DS_Store
 .DS_Store
 
 package-lock.json
-package.json
 __azurite_db_queue__.json
 __azurite_db_queue_extent__.json
 
