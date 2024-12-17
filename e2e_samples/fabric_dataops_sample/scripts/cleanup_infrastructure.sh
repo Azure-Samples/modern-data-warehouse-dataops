@@ -61,6 +61,7 @@ fabric_bearer_token=""
 fabric_api_endpoint="https://api.fabric.microsoft.com/v1"
 
 # Fabric related variables
+adls_gen2_connection_name="conn-adls-gen2-$base_name"
 adls_gen2_shortcut_name="sc-adls-main"
 adls_gen2_shortcut_path="Files"
 
@@ -186,27 +187,17 @@ cleanup_terraform_files() {
   echo "[Info] Terraform intermediate files deleted successfully."
 }
 
-remove_adls_gen2_connection_id_from_env_file() {
-  local env_file="$1"
-
-  if [[ -f "$env_file" ]]; then
-    # Display the current content
-    echo "Current ADLS_GEN2_CONNECTION_ID in $env_file:"
-    grep '^export ADLS_GEN2_CONNECTION_ID=' "$env_file"
-
-    # Remove the content
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        sed -i '' 's/^export ADLS_GEN2_CONNECTION_ID=.*$/export ADLS_GEN2_CONNECTION_ID=""/' "$env_file"
-    else
-        sed -i 's/^export ADLS_GEN2_CONNECTION_ID=.*$/export ADLS_GEN2_CONNECTION_ID=""/' "$env_file"
-    fi
-
-    echo "ADLS_GEN2_CONNECTION_ID content has been cleared."
+function get_adls_gen_2_connection_id_by_name(){
+  connection_name=$1
+  list_connection_url="$fabric_api_endpoint/connections"
+  response=$(curl -s -X GET -H "Authorization: Bearer $fabric_bearer_token" -H "Content-Type: application/json" "$list_connection_url" )
+  connection_id=$(echo "$response" | jq -r --arg name "$connection_name" '.value[] | select(.displayName == $name) | .id')
+  if [[ -n $connection_id ]] && [[ $connection_id != "null" ]]; then
+    echo "$connection_id"
   else
-    echo "Error: File '$env_file' not found."
+    echo "$connection_id"
   fi
 }
-
 
 echo "[Info] ############ STARTING CLEANUP STEPS############"
 
@@ -217,15 +208,14 @@ echo "[Info] ############ Terraform resources destroyed############"
 echo "[Info] Setting up fabric bearer token ############"
 set_bearer_token
 
+adls_gen2_connection_id=$(get_adls_gen_2_connection_id_by_name "$adls_gen2_connection_name")
+
 echo "[Info] ############ ADLS Gen2 connection ID Deletion ############"
 if [[ -z $adls_gen2_connection_id ]]; then
   echo "[Warning] ADLS Gen2 connection ID not provided. Skipping ADLS Gen2 connection deletion."
 else
   delete_connection "$adls_gen2_connection_id"
 fi
-
-echo "[Info] ############ Remove ADLS_GEN2_CONNECTION_ID value from .env file############"
-remove_adls_gen2_connection_id_from_env_file ".env"
 
 echo "[Info] ############ Cleanup Terraform Intermediate files (state, lock etc.,) ############"
 cleanup_terraform_files
