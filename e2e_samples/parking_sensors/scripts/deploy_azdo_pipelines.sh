@@ -40,6 +40,7 @@ set -o xtrace # For debugging
 # DEV_DATAFACTORY_NAME
 
 source ./scripts/common.sh
+
 # Retrieve Github Service Connection Id
 github_sc_name="${PROJECT}-github"
 github_sc_id=$(az devops service-endpoint list --output json |
@@ -50,18 +51,15 @@ github_sc_id=$(az devops service-endpoint list --output json |
 
 # Build Pipelines
 #Functions are to be called in separated as cd-release needs the ID to proceed with the next step
-deletePipelineIfExists "ci-qa-python" 
-createPipeline "ci-qa-python" "This pipeline runs python unit tests and linting."
 
-deletePipelineIfExists "ci-qa-sql" 
-createPipeline "ci-qa-sql" "This pipeline builds the sql dacpac"
+create_azdo_pipeline "ci-qa-python" "This pipeline runs python unit tests and linting."
 
-deletePipelineIfExists "ci-artifacts" 
-createPipeline "ci-artifacts" "This pipeline publishes build artifacts"
+create_azdo_pipeline "ci-qa-sql" "This pipeline builds the sql dacpac"
+
+create_azdo_pipeline "ci-artifacts" "This pipeline publishes build artifacts"
 
 # Release Pipelines
-deletePipelineIfExists "cd-release" 
-cd_release_pipeline_id=$(createPipeline "cd-release" "This pipeline releases across environments")
+cd_release_pipeline_id=$(create_azdo_pipeline "cd-release" "This pipeline releases across environments")
 
 
 az pipelines variable create \
