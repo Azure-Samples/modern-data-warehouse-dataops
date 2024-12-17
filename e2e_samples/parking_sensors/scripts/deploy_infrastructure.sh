@@ -71,7 +71,7 @@ if [[ $(echo "$kv_list" | jq -r '.[0]') != null ]]; then
     kv_purge_scheduled_date=$(echo "$kv_list" | jq -r '.[0].properties.scheduledPurgeDate')
     # If purge protection is enabled and scheduled date is in the future, then we can't create a new KeyVault with the same name
     if [[ $kv_purge_protection_enabled == true && $kv_purge_scheduled_date > $(date -u +"%Y-%m-%dT%H:%M:%SZ") ]]; then
-        log "Existing Soft-Deleted KeyVault has Purge Protection enabled. Scheduled Purge Date: $kv_purge_scheduled_date."$'\n'"As it is not possible to proceed, please change your deployment id."$'\n'"Exiting..." "error"
+        log "Existing Soft-Deleted KeyVault has Purge Protection enabled. Scheduled Purge Date: $kv_purge_scheduled_date."$'\n'"As it is not possible to proceed, please change your deployment id."$'\n'"Exiting..." "danger"
         exit 1
     else
         # if purge scheduled date is not in the future or purge protection was not enabled, then ask if user wants to purge the keyvault
@@ -82,7 +82,7 @@ if [[ $(echo "$kv_list" | jq -r '.[0]') != null ]]; then
             az keyvault purge --name "$kv_name" --no-wait
             ;;
             *)
-            log "You selected not to purge the existing KeyVault. Please change deployment id. Exiting..." "error"
+            log "You selected not to purge the existing KeyVault. Please change deployment id. Exiting..." "danger"
             exit 1
             ;;
         esac
@@ -114,7 +114,7 @@ arm_output=$(az deployment group create \
     --output json)
 
 if [[ -z $arm_output ]]; then
-    log "ARM deployment failed." "error"
+    log "ARM deployment failed." "danger"
     exit 1
 fi
 

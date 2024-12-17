@@ -11,8 +11,8 @@ source .devcontainer/.env
 #Check variables are set for login.
 
 if [ -z "${TENANT_ID:-}" ] || [ -z "${AZURE_SUBSCRIPTION_ID:-}" ] || [ -z "${AZDO_ORGANIZATION_URL:-}" ] || [ -z "${AZDO_PROJECT:-}" ]; then 
-    log "To run this script the following environment variables are required." "error"
-    log "Check if your .env file contains values for variables: \nTENANT_ID, AZURE_SUBSCRIPTION_ID, AZDO_ORGANIZATION_URL, AZDO_PROJECT" "error"
+    log "To run this script the following environment variables are required." "danger"
+    log "Check if your .env file contains values for variables: \nTENANT_ID, AZURE_SUBSCRIPTION_ID, AZDO_ORGANIZATION_URL, AZDO_PROJECT" "danger"
     exit 1
 fi
 
@@ -34,19 +34,19 @@ az devops configure --defaults organization=$AZDO_ORGANIZATION_URL project=$AZDO
 
 if [ -z "$GITHUB_REPO" ]
 then 
-    log "Please specify a github repo using the GITHUB_REPO environment variable in this form '<my_github_handle>/<repo>'. (ei. 'devlace/mdw-dataops-import')" "error"
+    log "Please specify a github repo using the GITHUB_REPO environment variable in this form '<my_github_handle>/<repo>'. (ei. 'devlace/mdw-dataops-import')" "danger"
     exit 1
 fi
 
 if [ -z "$GITHUB_PAT_TOKEN" ]
 then 
-    log "Please specify a github PAT token using the GITHUB_PAT_TOKEN environment variable." "error"
+    log "Please specify a github PAT token using the GITHUB_PAT_TOKEN environment variable." "danger"
     exit 1
 fi
 
 if [ -z "$AZURE_SUBSCRIPTION_ID" ]
 then
-    log "Please specify an Azure Subscription ID using the [AZURE_SUBSCRIPTION_ID] environment variable." "error"
+    log "Please specify an Azure Subscription ID using the [AZURE_SUBSCRIPTION_ID] environment variable." "danger"
     exit 1
 fi
 
