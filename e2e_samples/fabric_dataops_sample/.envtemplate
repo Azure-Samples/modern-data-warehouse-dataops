@@ -10,11 +10,15 @@ export GIT_ORGANIZATION_NAME="The Azure DevOps organization."
 export GIT_PROJECT_NAME="The Azure Devops project."
 export GIT_REPOSITORY_NAME="Your repository under the Azure DevOps project."
 export GIT_BRANCH_NAME="The branch where Fabric items will be committed to."
-export GIT_DIRECTORY_NAME="The folder where Fabric items will be committed" # Note: Other than the root folder "/", the directory must already exist. Must start with a forward-slash. Example: "/fabric"
+## Note: Other than the root folder "/", the directory must already exist. Must start with a forward-slash. Example: "/fabric"
+export GIT_DIRECTORY_NAME="The folder where Fabric items will be committed"
 # Workspace admin variables
 export FABRIC_WORKSPACE_ADMIN_SG_NAME="The name of the Entra security groups with admin members."
 # Fabric Capacity variables
-export EXISTING_FABRIC_CAPACITY_NAME="" # The name of an existing Fabric capacity. If this is empty, then a new capacity will be created.
-export FABRIC_CAPACITY_ADMINS="yourusername@yourdomain,sp_mi_object_id" # Comma separated list. When creating a new Fabric capacity, these users/apps would be added as capacity admin. For users, mention "userPrincipalName". For principals (sp/mi), mention "Object ID". Don't add spaces after the comma.
+## The name of an existing Fabric capacity. If this is empty, then a new capacity will be created.
+export EXISTING_FABRIC_CAPACITY_NAME=""
+## Comma separated list. When creating a new Fabric capacity, these users/apps would be added as capacity admin. For users, mention "userPrincipalName". For principals (sp/mi), mention "Object ID". Don't add spaces after the comma.
+export FABRIC_CAPACITY_ADMINS="yourusername@yourdomain,sp_mi_object_id"
 # ADLS Gen2 connection variable
-export ADLS_GEN2_CONNECTION_ID="" # The connection ID for the ADLS Gen2 Cloud Connection. If not provided, the ALDS Gen2 shortcut creation would be skipped.
+## The connection ID for the ADLS Gen2 Cloud Connection. If not provided, the ALDS Gen2 shortcut creation would be skipped.
+export ADLS_GEN2_CONNECTION_ID=""
