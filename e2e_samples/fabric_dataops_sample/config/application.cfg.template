@@ -25,6 +25,7 @@ workspace_name = <workspace-name>
 workspace_id = <workspace-id>
 lakehouse_name = <lakehouse-name>
 lakehouse_id = <lakehouse-id>
+landing_directory = ${setup:adls_shortcut_name}/data/lnd/
 
 [keyvault]
 name = <keyvault-name>
@@ -40,7 +41,6 @@ ddl_file = ${setup:adls_shortcut_name}/config/lakehouse_ddls.yaml
 [standardize]
 # --------- Globals for nb-standardize notebook
 process_name = standardize
-landing_directory = ${setup:adls_shortcut_name}/data/lnd/
 
 [transform]
 # --------- Globals for nb-transform notebook

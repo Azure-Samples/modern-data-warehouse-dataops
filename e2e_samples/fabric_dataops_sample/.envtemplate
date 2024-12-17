@@ -22,5 +22,3 @@ export FABRIC_CAPACITY_ADMINS="yourusername@yourdomain,sp_mi_object_id"
 # ADLS Gen2 connection variable
 ## The connection ID for the ADLS Gen2 Cloud Connection. If not provided, the ALDS Gen2 shortcut creation would be skipped.
 export ADLS_GEN2_CONNECTION_ID=""
-# REST connection variable
-export REST_DATA_SOURCE_CONNECTION_ID="" # The connection ID for the REST Data source Connection. 
