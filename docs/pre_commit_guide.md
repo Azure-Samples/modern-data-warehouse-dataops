@@ -117,7 +117,6 @@ pre-commit run terraform_tflint --all-files
 Below is a list of the currently configured hooks with brief descriptions. Note that this list may change or evolve as the repository and workflows are updated.
 
 1. **General Checks:**
-   - `no-commit-to-branch`: Prevents committing directly to the `main` branch.
    - `check-merge-conflict`: Checks for unresolved merge conflicts.
    - `trailing-whitespace`, `end-of-file-fixer`, `mixed-line-ending`: Enforces consistent whitespace formatting.
    - `check-ast`, `check-json`, `check-toml`, `check-yaml`: Validates syntax for various file types.
