@@ -2,6 +2,8 @@
 
 ![Multi Environment Image](../images/architecture.png)
 
+[Visio Drawing](https://microsoft.sharepoint.com/:u:/t/ExternalEcolabKitchenOS/EWM3kB69NGBBiy2s563pjJ0BeKWy1qgtgEznRvvufiseFg?e=RieWOu)
+
 ## Overview
 
 **`Infra/modules`** folder has three modules:
