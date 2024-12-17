@@ -105,6 +105,7 @@ deploy_terraform_resources() {
   tf_lakehouse_name=$(terraform output --raw lakehouse_name)
   tf_lakehouse_id=$(terraform output --raw lakehouse_id)
   tf_environment_name=$(terraform output --raw environment_name)
+  tf_fabric_workspace_admin_sg_principal_id=$(terraform output --raw fabric_workspace_admin_sg_principal_id)
 }
 
 function set_bearer_token() {
@@ -113,6 +114,130 @@ function set_bearer_token() {
     --query accessToken \
     --scope "https://analysis.windows.net/powerbi/api/.default" \
     -o tsv)
+}
+
+function create_adls_gen2_connection() {
+  workspace_id=$1
+  display_name=$2
+  connectivity_type=$3
+  privacy_level=$4
+  adls_gen2_server=$5
+  adls_gen2_path=$6
+  create_connection_url="$fabric_api_endpoint/connections"
+  server_parameter=$(
+    cat <<EOF
+{
+  "dataType": "text",
+  "name": "server",
+  "value": "$adls_gen2_server"
+}
+EOF
+  )
+  path_parameter=$(
+    cat <<EOF
+{
+  "dataType": "text",
+  "name": "path",
+  "value": "$adls_gen2_path"
+}
+EOF
+  )
+  connection_details_body=$(
+    cat <<EOF
+{
+  "type": "AzureDataLakeStorage",
+  "creationMethod": "AzureDataLakeStorage",
+  "parameters": [$server_parameter, $path_parameter]
+}
+EOF
+  )
+  credential_details_body=$(
+    cat <<EOF
+{
+  "credentialType": "WorkspaceIdentity"
+}
+EOF
+  )
+  credential_details_body=$(
+    cat <<EOF
+{
+  "credentials": $credential_details_body,
+  "singleSignOnType": "None",
+  "connectionEncryption": "NotEncrypted",
+  "skipTestConnection": false,
+}
+EOF
+  )
+  create_connection_body=$(
+    cat <<EOF
+{
+  "connectionDetails": $connection_details_body,
+  "connectivityType": "$connectivity_type",
+  "credentialDetails": $credential_details_body,
+  "displayName": "$display_name",
+  "privacyLevel": "$privacy_level",
+}
+EOF
+  )
+  response=$(curl -s -X POST -H "Authorization: Bearer $fabric_bearer_token" -H "Content-Type: application/json" -d "$create_connection_body" "$create_connection_url")
+  connection_id=$(echo "$response" | jq -r '.id')
+  if [[ -n $connection_id ]] && [[ $connection_id != "null" ]]; then
+    echo "$connection_id"
+  else
+    echo "[Error] Connection '$adls_gen2_connection_name' creation failed."
+    echo "[Error] Request Body: $create_connection_body"
+    echo "[Error] Response: $response"
+  fi
+}
+
+function get_adls_gen_2_connection_id_by_name(){
+  connection_name=$1
+  list_connection_url="$fabric_api_endpoint/connections"
+  response=$(curl -s -X GET -H "Authorization: Bearer $fabric_bearer_token" -H "Content-Type: application/json" "$list_connection_url" )
+  connection_id=$(echo "$response" | jq -r --arg name "$connection_name" '.value[] | select(.displayName == $name) | .id')
+  if [[ -n $connection_id ]] && [[ $connection_id != "null" ]]; then
+    echo "$connection_id"
+  else
+    echo "$connection_id"
+  fi
+}
+
+function bool_adls_gen2_connection_exists() {
+  connection_name=$1
+  list_connection_url="$fabric_api_endpoint/connections"
+  response=$(curl -s -X GET -H "Authorization: Bearer $fabric_bearer_token" -H "Content-Type: application/json" "$list_connection_url" )
+  connection_id=$(echo "$response" | jq -r --arg name "$connection_name" '.value[] | select(.displayName == $name) | .id')
+ if [[ -n $connection_id ]] && [[ $connection_id != "null" ]]; then
+    return 0
+  else
+    return 1
+  fi
+
+}
+
+function add_connection_role_assignment() {
+  connection_id=$1
+  security_group_id=$2
+  add_connection_role_assignment_url="$fabric_api_endpoint/connections/$connection_id/roleAssignments"
+  role_assignment_principal=$(
+    cat <<EOF
+{
+  "id": "$security_group_id",
+  "type": "Group"
+}
+EOF
+  )
+  add_connection_role_assignment_body=$(
+    cat <<EOF
+{
+  "principal": $role_assignment_principal,
+  "role": "Owner"
+}
+EOF
+  )
+  response=$(curl -s -X POST -H "Authorization: Bearer $fabric_bearer_token" -H "Content-Type: application/json" -d "$add_connection_role_assignment_body" "$add_connection_role_assignment_url")
+  echo "$add_connection_role_assignment_body"
+  echo "$response"
 }
 
 function get_adls_gen2_connection_object() {
@@ -178,21 +303,34 @@ deploy_terraform_resources "./infrastructure/terraform"
 echo "[Info] ############ Terraform resources deployed, setting up fabric bearer token ############"
 set_bearer_token
 
-echo "[Info] ############ ALDS Gen2 Shortcut Creation ############"
-if [[ -z $adls_gen2_connection_id ]]; then
-  echo "[Warning] ADLS Gen2 connection ID not provided. Skipping ALDS Gen2 connection creation."
+echo "[Info] ############ ALDS Gen2 Cloud Connection Creation ############"
+
+adls_gen2_connection_name="conn-adls-gen2-$base_name-9"
+
+if bool_adls_gen2_connection_exists "$adls_gen2_connection_name"; then
+  adls_gen2_connection_id=$(get_adls_gen_2_connection_id_by_name "$adls_gen2_connection_name")
+
+  echo "[Warning] Connection '$adls_gen2_connection_name' already exists, please review it manually."
 else
-  if if_shortcut_exist "$tf_workspace_name" "$tf_lakehouse_id" "$alds_gen2_shortcut_name" "$alds_gen2_shortcut_path"; then
-    echo "[Warning] Shortcut '$alds_gen2_shortcut_name' already exists, please review it manually."
-  else
-    adls_gen2_connection_object=$(get_adls_gen2_connection_object "$adls_gen2_connection_id" "$tf_storage_account_url" "$tf_storage_container_name")
-    create_shortcut \
-      "$tf_workspace_id" \
-      "$tf_lakehouse_id" \
-      "$alds_gen2_shortcut_name" \
-      "$alds_gen2_shortcut_path" \
-      "$adls_gen2_connection_object"
-  fi
+  adls_gen2_connection_id=$(create_adls_gen2_connection "$tf_workspace_id" "$adls_gen2_connection_name" "ShareableCloud" "Organizational" "$tf_storage_account_url" "$tf_storage_container_name")
+
+  echo "[Info] ############ ALDS Gen2 Cloud Connection Created ############"
+fi
+
+add_connection_role_assignment "$adls_gen2_connection_id" "$tf_fabric_workspace_admin_sg_principal_id"
+
+echo "[Info] ############ ALDS Gen2 Shortcut Creation ############"
+
+if if_shortcut_exist "$tf_workspace_name" "$tf_lakehouse_id" "$alds_gen2_shortcut_name" "$alds_gen2_shortcut_path"; then
+  echo "[Warning] Shortcut '$alds_gen2_shortcut_name' already exists, please review it manually."
+else
+  adls_gen2_connection_object=$(get_adls_gen2_connection_object "$adls_gen2_connection_id" "$tf_storage_account_url" "$tf_storage_container_name")
+  create_shortcut \
+    "$tf_workspace_id" \
+    "$tf_lakehouse_id" \
+    "$alds_gen2_shortcut_name" \
+    "$alds_gen2_shortcut_path" \
+    "$adls_gen2_connection_object"
 fi
 
 echo "[Info] ############ FINISHED INFRA DEPLOYMENT ############"

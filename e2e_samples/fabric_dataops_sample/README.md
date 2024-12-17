@@ -146,7 +146,6 @@ Here is a list of resources that are deployed:
   - `APP_CLIENT_ID` and `APP_CLIENT_SECRET` are required only if you are using service principal authentication. If you are using Managed Identity authentication, you can leave these blank.
   - `EXISTING_FABRIC_CAPACITY_NAME` is the name of an existing Fabric capacity. If you want to create a new capacity, leave this blank.
   - `FABRIC_CAPACITY_ADMINS` is a comma-separated list of users and service principals that will be added as capacity admins to the newly created Fabric capacity. If you are using an existing capacity, you can leave this blank. But in that case, make sure that your account and the principal (service principal or managed identity) are [added as Capacity Administrators](https://learn.microsoft.com/fabric/admin/capacity-settings?tabs=fabric-capacity#add-and-remove-admins) to that capacity, as mentioned in the [pre-requisites](#pre-requisites).
-  - Leave `ADLS_GEN2_CONNECTION_ID` blank for the first run. The creation of the Fabric connection to ADLS Gen2 is a manual step which is done after the deployment of the resources. Once the connection is manually created, the connection ID is then updated in the `.env` file and the script is run again. This time, the script will create the Lakehouse shortcut to your ADLS Gen2 storage account.
 
 - For the following step you have 2 authentication options:
 
@@ -183,16 +182,6 @@ Here is a list of resources that are deployed:
   The script is designed to be idempotent. Running the script multiple times will not result in duplicate resources. Instead, it will either skip or update existing resources. However, it is recommended to review the script, the output logs, and the created resources to ensure everything is as expected.
 
   Also, note that the bash script calls a python script [setup_fabric_environment.py](./scripts/setup_fabric_environment.py) to upload custom libraries to the Fabric environment.
-
-- Once the deployment is complete, login to Fabric Portal and create a cloud connection to ADLS Gen2 based on the [documentation](https://learn.microsoft.com/en-us/fabric/data-factory/connector-azure-data-lake-storage-gen2#set-up-your-connection-in-a-data-pipeline).
-
-  ![Creating Cloud Connection to ADLS Gen2](./images/cloud-connection-adls-gen2.png)
-
-  Once the connection has been created successfully, note down the 'Connection ID'.
-
-  ![ADLS Gen2 Connection ID](./images/fetching-connection-id.png)
-
-- Update the `ADLS_GEN2_CONNECTION_ID` variable in the `.env` file with the 'Connection ID' fetched above.
 
 - From this step onward, you will need to authenticate using your user context. Authenticate **with user context** (required for the second run) and run the setup script again:
 

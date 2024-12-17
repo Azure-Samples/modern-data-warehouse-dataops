@@ -53,3 +53,7 @@ output "notebook_name" {
 output "notebook_id" {
   value = module.fabric_notebook.notebook_id
 }
+
+output "fabric_workspace_admin_sg_principal_id" {
+  value = data.azuread_group.fabric_workspace_admin.object_id
+}
