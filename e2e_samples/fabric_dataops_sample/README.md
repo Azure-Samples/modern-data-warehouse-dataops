@@ -8,11 +8,14 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
 
 ## Contents <!-- omit in toc -->
 
-- [Architecture](#architecture)
+- [Solution Overview](#solution-overview)
+  - [Architecture](#architecture)
+  - [Continuous Integration and Continuous Delivery (CI/CD)](#continuous-integration-and-continuous-delivery-cicd)
+- [How to use the sample](#how-to-use-the-sample)
   - [High-level deployment sequence](#high-level-deployment-sequence)
   - [Deployed resources](#deployed-resources)
-- [How to use the sample](#how-to-use-the-sample)
   - [Pre-requisites](#pre-requisites)
+  - [Familiarize yourself with known issues, limitations, and workarounds](#familiarize-yourself-with-known-issues-limitations-and-workarounds)
   - [Deploying infrastructure](#deploying-infrastructure)
   - [Verifying the infrastructure deployment](#verifying-the-infrastructure-deployment)
 - [Cleaning up](#cleaning-up)
@@ -24,9 +27,23 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
     - [What is the significance of `use_cli` and `use_msi` flags?](#what-is-the-significance-of-use_cli-and-use_msi-flags)
 - [References](#references)
 
-## Architecture
+## Solution Overview
 
-![Microsoft Fabric Architecture](./images/fabric_archi.png)
+### Architecture
+
+This sample utilizes a [standard medallion architecture](https://learn.microsoft.com/en-us/fabric/onelake/onelake-medallion-lakehouse-architecture). The following shows at a high-level the overall data pipeline architecture built on Microsoft Fabric, along with associated Azure components.
+
+![Microsoft Fabric Architecture](./images/fabric-archi.png)
+
+### Continuous Integration and Continuous Delivery (CI/CD)
+
+Microsoft Fabric has a number of CI/CD workflow options as documented [here](https://learn.microsoft.com/fabric/cicd/manage-deployment). This sample utilizes [Option 1: Git-based deployment](https://learn.microsoft.com/fabric/cicd/manage-deployment#option-1---git--based-deployments).
+
+The diagram below illustrates the complete end-to-end CI/CD process:
+
+![Fabric CI/CD diagram](./images/fabric-cicd-option1.png)
+
+## How to use the sample
 
 ### High-level deployment sequence
 
@@ -67,8 +84,6 @@ Here is a list of resources that are deployed:
   - Fabric workspace GIT integration
   - Azure Role assignments to entra security group and workspace identity
 
-## How to use the sample
-
 ### Pre-requisites
 
 - An Entra user that can access Microsoft Fabric (Free license is enough).
@@ -105,6 +120,10 @@ Here is a list of resources that are deployed:
 - Access to an Azure DevOps organization and project:
   - Contributor permissions to an Azure Repo in such Azure DevOps environment.
   - A branch and a folder in the repository where the Fabric items will be committed. The folder must already exist.
+
+### Familiarize yourself with known issues, limitations, and workarounds
+
+Refer to the [known issues, limitations, and workarounds](docs/issues_limitations_and_workarounds.md) page for details. Reviewing this page is highly recommended to understand the limitations, issues, and challenges you may encounter while building CI/CD pipelines for Fabric. It also provides workarounds and alternative approaches to overcome these challenges. This information will also help you understand why certain approaches are used in the infrastructure deployment scripts and Azure DevOps pipelines.
 
 ### Deploying infrastructure
 
@@ -255,7 +274,25 @@ _**Note: Please note that the Fabric notebook and pipeline deployed are placehol
 
 ## Cleaning up
 
-Coming up soon...
+Once you have finished with the sample, you can delete the deployed resources by running the cleanup script.
+
+The [cleanup script](./cleanup.sh) performs the following actions:
+
+- Deletes all the deployed Azure and Fabric resources.
+- Deletes Fabric connection to ADLS Gen2 storage.
+- Resets corresponding `ADLS_GEN2_CONNECTION_ID` variable in the .env file.
+- Ensures that the Azure Key Vault is purged.
+- Removes intermediate Terraform files created during deployment process including state files.
+
+You will need to authenticate **with user context** and run the cleanup script.
+
+  ```bash
+  source .env
+  az config set core.login_experience_v2=off
+  az login --tenant $TENANT_ID
+  az config set core.login_experience_v2=on
+  ./cleanup.sh
+  ```
 
 ## Frequently asked questions
 
