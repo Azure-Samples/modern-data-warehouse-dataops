@@ -13,6 +13,7 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
   - [Deployed resources](#deployed-resources)
 - [How to use the sample](#how-to-use-the-sample)
   - [Pre-requisites](#pre-requisites)
+  - [Familiarize yourself with known issues, limitations, and workarounds](#familiarize-yourself-with-known-issues-limitations-and-workarounds)
   - [Deploying infrastructure](#deploying-infrastructure)
   - [Verifying the infrastructure deployment](#verifying-the-infrastructure-deployment)
 - [Cleaning up](#cleaning-up)
@@ -105,6 +106,10 @@ Here is a list of resources that are deployed:
 - Access to an Azure DevOps organization and project:
   - Contributor permissions to an Azure Repo in such Azure DevOps environment.
   - A branch and a folder in the repository where the Fabric items will be committed. The folder must already exist.
+
+### Familiarize yourself with known issues, limitations, and workarounds
+
+Refer to the [known issues, limitations, and workarounds](docs/issues_limitations_and_workarounds.md) page for details. Reviewing this page is highly recommended to understand the limitations, issues, and challenges you may encounter while building CI/CD pipelines for Fabric. It also provides workarounds and alternative approaches to overcome these challenges. This information will also help you understand why certain approaches are used in the infrastructure deployment scripts and Azure DevOps pipelines.
 
 ### Deploying infrastructure
 
