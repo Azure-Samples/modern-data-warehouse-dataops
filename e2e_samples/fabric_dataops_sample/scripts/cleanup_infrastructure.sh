@@ -187,16 +187,12 @@ cleanup_terraform_files() {
   echo "[Info] Terraform intermediate files deleted successfully."
 }
 
-function get_adls_gen_2_connection_id_by_name(){
+get_connection_id_by_name() {
   connection_name=$1
   list_connection_url="$fabric_api_endpoint/connections"
   response=$(curl -s -X GET -H "Authorization: Bearer $fabric_bearer_token" -H "Content-Type: application/json" "$list_connection_url" )
   connection_id=$(echo "$response" | jq -r --arg name "$connection_name" '.value[] | select(.displayName == $name) | .id')
-  if [[ -n $connection_id ]] && [[ $connection_id != "null" ]]; then
-    echo "$connection_id"
-  else
-    echo "$connection_id"
-  fi
+  echo "$connection_id"
 }
 
 echo "[Info] ############ STARTING CLEANUP STEPS############"
@@ -208,11 +204,11 @@ echo "[Info] ############ Terraform resources destroyed############"
 echo "[Info] Setting up fabric bearer token ############"
 set_bearer_token
 
-adls_gen2_connection_id=$(get_adls_gen_2_connection_id_by_name "$adls_gen2_connection_name")
+adls_gen2_connection_id=$(get_connection_id_by_name "$adls_gen2_connection_name")
 
 echo "[Info] ############ ADLS Gen2 connection ID Deletion ############"
 if [[ -z $adls_gen2_connection_id ]]; then
-  echo "[Warning] ADLS Gen2 connection ID not provided. Skipping ADLS Gen2 connection deletion."
+  echo "[Warning] No Fabric connection with name '$adls_gen2_connection_name' found, skipping deletion."
 else
   delete_connection "$adls_gen2_connection_id"
 fi

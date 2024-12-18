@@ -153,6 +153,7 @@ function create_adls_gen2_connection() {
   adls_gen2_server=$5
   adls_gen2_path=$6
   create_connection_url="$fabric_api_endpoint/connections"
+
   server_parameter=$(
     cat <<EOF
 {
@@ -162,6 +163,7 @@ function create_adls_gen2_connection() {
 }
 EOF
   )
+
   path_parameter=$(
     cat <<EOF
 {
@@ -171,6 +173,7 @@ EOF
 }
 EOF
   )
+
   connection_details_body=$(
     cat <<EOF
 {
@@ -180,6 +183,7 @@ EOF
 }
 EOF
   )
+
   credential_details_body=$(
     cat <<EOF
 {
@@ -187,6 +191,7 @@ EOF
 }
 EOF
   )
+
   credential_details_body=$(
     cat <<EOF
 {
@@ -197,6 +202,7 @@ EOF
 }
 EOF
   )
+
   create_connection_body=$(
     cat <<EOF
 {
@@ -208,8 +214,10 @@ EOF
 }
 EOF
   )
+
   response=$(curl -s -X POST -H "Authorization: Bearer $fabric_bearer_token" -H "Content-Type: application/json" -d "$create_connection_body" "$create_connection_url")
   connection_id=$(echo "$response" | jq -r '.id')
+
   if [[ -n $connection_id ]] && [[ $connection_id != "null" ]]; then
     echo "$connection_id"
   else
@@ -219,35 +227,20 @@ EOF
   fi
 }
 
-function get_adls_gen_2_connection_id_by_name(){
+get_connection_id_by_name() {
   connection_name=$1
   list_connection_url="$fabric_api_endpoint/connections"
+
   response=$(curl -s -X GET -H "Authorization: Bearer $fabric_bearer_token" -H "Content-Type: application/json" "$list_connection_url" )
   connection_id=$(echo "$response" | jq -r --arg name "$connection_name" '.value[] | select(.displayName == $name) | .id')
-  if [[ -n $connection_id ]] && [[ $connection_id != "null" ]]; then
-    echo "$connection_id"
-  else
-    echo "$connection_id"
-  fi
-}
-
-function bool_adls_gen2_connection_exists() {
-  connection_name=$1
-  list_connection_url="$fabric_api_endpoint/connections"
-  response=$(curl -s -X GET -H "Authorization: Bearer $fabric_bearer_token" -H "Content-Type: application/json" "$list_connection_url" )
-  connection_id=$(echo "$response" | jq -r --arg name "$connection_name" '.value[] | select(.displayName == $name) | .id')
- if [[ -n $connection_id ]] && [[ $connection_id != "null" ]]; then
-    return 0
-  else
-    return 1
-  fi
-
+  echo "$connection_id"
 }
 
 function add_connection_role_assignment() {
   connection_id=$1
   security_group_id=$2
   add_connection_role_assignment_url="$fabric_api_endpoint/connections/$connection_id/roleAssignments"
+
   role_assignment_principal=$(
     cat <<EOF
 {
@@ -256,6 +249,7 @@ function add_connection_role_assignment() {
 }
 EOF
   )
+
   add_connection_role_assignment_body=$(
     cat <<EOF
 {
@@ -264,6 +258,7 @@ EOF
 }
 EOF
   )
+
   response=$(curl -s -X POST -H "Authorization: Bearer $fabric_bearer_token" -H "Content-Type: application/json" -d "$add_connection_role_assignment_body" "$add_connection_role_assignment_url")
 }
 
@@ -330,16 +325,14 @@ deploy_terraform_resources "./infrastructure/terraform"
 echo "[Info] ############ Terraform resources deployed, setting up fabric bearer token ############"
 set_bearer_token
 
-echo "[Info] ############ ALDS Gen2 Cloud Connection Creation ############"
+echo "[Info] ############ ADLS Gen2 Cloud Connection Creation ############"
 
-if bool_adls_gen2_connection_exists "$adls_gen2_connection_name"; then
-  adls_gen2_connection_id=$(get_adls_gen_2_connection_id_by_name "$adls_gen2_connection_name")
-
-  echo "[Warning] Connection '$adls_gen2_connection_name' already exists, please review it manually."
+if [[ -n "$adls_gen2_connection_id" ]]; then
+  echo "[Info] Fabric Connection with name '$adls_gen2_connection_name' ($adls_gen2_connection_id) already exists. Using it."
 else
-  adls_gen2_connection_id=$(create_adls_gen2_connection "$tf_workspace_id" "$adls_gen2_connection_name" "ShareableCloud" "Organizational" "$tf_storage_account_url" "$tf_storage_container_name")
-
-  echo "[Info] ############ ALDS Gen2 Cloud Connection Created ############"
+  adls_gen2_connection_id=$(create_adls_gen2_connection "$adls_gen2_connection_name" "${tf_storage_account_url%/}" "$tf_storage_container_name")
+  echo "[Info] Fabric Connection details: '$adls_gen2_connection_name' ($adls_gen2_connection_id)"
+  echo "[Info] ############ ADLS Gen2 Cloud Connection Created ############"
 fi
 
 add_connection_role_assignment "$adls_gen2_connection_id" "$tf_fabric_workspace_admin_sg_principal_id"
