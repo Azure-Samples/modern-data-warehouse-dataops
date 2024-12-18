@@ -327,6 +327,8 @@ set_bearer_token
 
 echo "[Info] ############ ADLS Gen2 Cloud Connection Creation ############"
 
+adls_gen2_connection_id=$(get_connection_id_by_name "$adls_gen2_connection_name")
+
 if [[ -n "$adls_gen2_connection_id" ]]; then
   echo "[Info] Fabric Connection with name '$adls_gen2_connection_name' ($adls_gen2_connection_id) already exists. Using it."
 else
