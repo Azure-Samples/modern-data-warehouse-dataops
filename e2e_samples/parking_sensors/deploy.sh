@@ -19,7 +19,6 @@
 set -o errexit
 set -o pipefail
 set -o nounset
-# set -o xtrace # For debugging
 
 . ./scripts/init_environment.sh
 . ./scripts/verify_prerequisites.sh
