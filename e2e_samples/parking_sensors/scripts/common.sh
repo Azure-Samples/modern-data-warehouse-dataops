@@ -14,51 +14,73 @@ random_str() {
 }
 
 print_style () {
+    case "$2" in
+        "info")
+            COLOR="96m"
+            ;;
+        "success")
+            COLOR="92m"
+            ;;
+        "warning")
+            COLOR="93m"
+            ;;
+        "danger")
+            COLOR="91m"
+            ;;
+        "action")
+            COLOR="32m"
+            ;;
+        *)
+            COLOR="0m"
+            ;;
+    esac
 
-    if [ "$2" == "info" ] ; then
-        COLOR="96m";
-    elif [ "$2" == "success" ] ; then
-        COLOR="92m";
-    elif [ "$2" == "warning" ] ; then
-        COLOR="93m";
-    elif [ "$2" == "danger" ] ; then
-        COLOR="91m";
-    else #default color
-        COLOR="0m";
-    fi
-
-    STARTCOLOR="\e[$COLOR";
-    ENDCOLOR="\e[0m";
+    STARTCOLOR="\e[$COLOR"
+    ENDCOLOR="\e[0m"
 
     printf "$STARTCOLOR%b$ENDCOLOR" "$1";
 }
 
-deletePipelineIfExists() {
-    declare pipeline_name=$1
-    full_pipeline_name=$PROJECT-$pipeline_name
-       
+log() {
+    # This function takes a string as an argument and prints it to the console to stderr
+    # if a second argument is provided, it will be used as the style of the message
+    # Usage: log "message" "style"
+    # Example: log "Hello, World!" "info"
+    local message=$1
+    local style=${2:-}
+
+    if [[ -z "$style" ]]; then
+        echo -e "$(print_style "$message" "default")" >&2
+    else
+        echo -e "$(print_style "$message" "$style")" >&2
+    fi
+}
+
+delete_azdo_pipeline_if_exists() {
+    declare full_pipeline_name=$1
+    
     ## when returning a pipeline that does exist, delete.
     
     pipeline_output=$(az pipelines list --query "[?name=='$full_pipeline_name']" --output json)
     pipeline_id=$(echo "$pipeline_output" | jq -r '.[0].id')
     
     if [[ -z "$pipeline_id" || "$pipeline_id" == "null" ]]; then
-        echo "Pipeline $full_pipeline_name does not exist.Creating..."
+        log "No Deployment pipeline with name $full_pipeline_name found."
     else
         az pipelines delete --id "$pipeline_id" --yes 1>/dev/null
-        echo "Deleted existing pipeline: $full_pipeline_name (Pipeline ID: $pipeline_id)"
-        
+        log "Deleted existing pipeline: $full_pipeline_name (Pipeline ID: $pipeline_id)"
     fi
 }
 
-createPipeline ()
+create_azdo_pipeline ()
 {
     declare pipeline_name=$1
     declare pipeline_description=$2
     full_pipeline_name=$PROJECT-$pipeline_name
 
+    delete_azdo_pipeline_if_exists "$full_pipeline_name"
+    log "Creating deployment pipeline: $full_pipeline_name"
 
-    
     pipeline_id=$(az pipelines create \
         --name "$full_pipeline_name" \
         --description "$pipeline_description" \
@@ -69,5 +91,40 @@ createPipeline ()
         --skip-first-run true \
         --output json | jq -r '.id')
     echo "$pipeline_id"
+}
 
+databricks_cluster_exists () {
+    declare cluster_name="$1"
+    declare cluster=$(databricks clusters list | tr -s " " | cut -d" " -f2 | grep ^${cluster_name}$)
+    if [[ -n $cluster ]]; then
+        return 0; # cluster exists
+    else
+        return 1; # cluster does not exists
+    fi
+}
+
+
+create_adf_linked_service () {
+    declare name=$1
+    log "Creating ADF LinkedService: $name"
+    adfLsUrl="${adfFactoryBaseUrl}/linkedservices/${name}?api-version=${apiVersion}"
+    az rest --method put --uri "$adfLsUrl" --body @"${ADF_DIR}"/linkedService/"${name}".json
+}
+create_adf_dataset () {
+    declare name=$1
+    log "Creating ADF Dataset: $name"
+    adfDsUrl="${adfFactoryBaseUrl}/datasets/${name}?api-version=${apiVersion}"
+    az rest --method put --uri "$adfDsUrl" --body @"${ADF_DIR}"/dataset/"${name}".json
+}
+create_adf_pipeline () {
+    declare name=$1
+    log "Creating ADF Pipeline: $name"
+    adfPUrl="${adfFactoryBaseUrl}/pipelines/${name}?api-version=${apiVersion}"
+    az rest --method put --uri "$adfPUrl" --body @"${ADF_DIR}"/pipeline/"${name}".json
+}
+create_adf_trigger () {
+    declare name=$1
+    log "Creating ADF Trigger: $name"
+    adfTUrl="${adfFactoryBaseUrl}/triggers/${name}?api-version=${apiVersion}"
+    az rest --method put --uri "$adfTUrl" --body @"${ADF_DIR}"/trigger/"${name}".json
 }

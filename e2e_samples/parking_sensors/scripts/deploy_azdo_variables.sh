@@ -30,7 +30,6 @@
 set -o errexit
 set -o pipefail
 set -o nounset
-set -o xtrace # For debugging
 
 ###################
 # REQUIRED ENV VARIABLES:
@@ -57,6 +56,7 @@ set -o xtrace # For debugging
 # SP_ADF_PASS
 # SP_ADF_TENANT
 
+. ./scripts/common.sh
 
 # Const
 apiBaseUrl="https://data.melbourne.vic.gov.au/resource/"
@@ -76,10 +76,10 @@ databricksClusterId="$DATABRICKS_CLUSTER_ID"
 # Create vargroup
 vargroup_name="${PROJECT}-release-$ENV_NAME"
 if vargroup_id=$(az pipelines variable-group list -o tsv | grep "$vargroup_name" | awk '{print $3}'); then
-    echo "Variable group: $vargroup_name already exists. Deleting..."
+    log "Variable group: $vargroup_name already exists. Deleting..." "info"
     az pipelines variable-group delete --id "$vargroup_id" -y
 fi
-echo "Creating variable group: $vargroup_name"
+log "Creating variable group: $vargroup_name"
 az pipelines variable-group create \
     --name "$vargroup_name" \
     --authorize "true" \
@@ -96,10 +96,10 @@ az pipelines variable-group create \
 # Create vargroup - for secrets
 vargroup_secrets_name="${PROJECT}-secrets-$ENV_NAME"
 if vargroup_secrets_id=$(az pipelines variable-group list -o tsv | grep "$vargroup_secrets_name" | awk '{print $3}'); then
-    echo "Variable group: $vargroup_secrets_name already exists. Deleting..."
+    log "Variable group: $vargroup_secrets_name already exists. Deleting..." "info"
     az pipelines variable-group delete --id "$vargroup_secrets_id" -y
 fi
-echo "Creating variable group: $vargroup_secrets_name"
+log "Creating variable group: $vargroup_secrets_name"
 vargroup_secrets_id=$(az pipelines variable-group create \
     --name "$vargroup_secrets_name" \
     --authorize "true" \
