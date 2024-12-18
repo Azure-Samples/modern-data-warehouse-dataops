@@ -60,7 +60,7 @@ fabric_bearer_token=""
 fabric_api_endpoint="https://api.fabric.microsoft.com/v1"
 
 # Fabric related variables
-adls_gen2_connection_name="conn-adls-gen2-st$base_name"
+adls_gen2_connection_name="conn-adls-st$base_name"
 adls_gen2_shortcut_name="sc-adls-main"
 adls_gen2_shortcut_path="Files"
 

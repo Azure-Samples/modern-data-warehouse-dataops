@@ -74,6 +74,7 @@ Here is a list of resources that are deployed:
 - Fabric Resources
   - Microsoft Fabric Workspace
   - Microsoft Fabric Lakehouse
+  - Fabric Cloud Connection
   - ADLS Gen2 shortcut
   - Microsoft Fabric Environment
   - Microsoft Fabric Notebooks
@@ -230,6 +231,7 @@ Once the deployment is complete, you can verify the resources created in the Azu
 | Azure - Fabric Capacity | 'cap`BASE_NAME`' | Terraform |
 | Microsoft Fabric - Workspace | 'ws-`BASE_NAME`' | Terraform |
 | Microsoft Fabric - Lakehouse | 'lh_`BASE_NAME`' | Terraform |
+| Microsoft Fabric - Cloud Connection | 'conn-adls-st`BASE_NAME`' | Fabric REST API |
 | Microsoft Fabric - ADLS Shortcut | 'sc-adls-main' | Fabric REST API |
 | Microsoft Fabric - Environment | 'env-`BASE_NAME`' | Terraform |
 | Microsoft Fabric - Setup Notebook | 'nb-setup' | Terraform |
@@ -265,7 +267,6 @@ The [cleanup script](./cleanup.sh) performs the following actions:
 
 - Deletes all the deployed Azure and Fabric resources.
 - Deletes Fabric connection to ADLS Gen2 storage.
-- Resets corresponding `ADLS_GEN2_CONNECTION_ID` variable in the .env file.
 - Ensures that the Azure Key Vault is purged.
 - Removes intermediate Terraform files created during deployment process including state files.
 
