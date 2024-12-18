@@ -91,25 +91,37 @@ if [[ -z "$REQUIRED_ENV_VARS" ]]; then
   exit 1
 fi
 
-# Function to check if a variable is defined
+# List of compulsory variables that must have non-empty values
+COMPULSORY_VARS=("TENANT_ID" "SUBSCRIPTION_ID" "RESOURCE_GROUP_NAME" "BASE_NAME" "FABRIC_WORKSPACE_ADMIN_SG_NAME" "FABRIC_CAPACITY_ADMINS")
+
+# Function to check environment variables
 check_env_vars() {
-  local missing_vars=()
-  for var in $REQUIRED_ENV_VARS; do
-    if ! printenv "$var" &>/dev/null; then
-      missing_vars+=("$var")
+  local missing_compulsory_vars=() # Array to store missing or empty compulsory variables
+
+  # Check compulsory variables
+  for var in "${COMPULSORY_VARS[@]}"; do
+    if [ -z "${!var-}" ]; then
+      missing_compulsory_vars+=("$var")
     fi
   done
 
-  # If there are missing variables, print them and exit
-  if [ ${#missing_vars[@]} -gt 0 ]; then
-    echo "[Error] The following required environment variables are not defined:"
-    for var in "${missing_vars[@]}"; do
+  # Handle missing compulsory variables
+  if [ ${#missing_compulsory_vars[@]} -gt 0 ]; then
+    echo "[Error] The following compulsory environment variables are missing or empty:"
+    for var in "${missing_compulsory_vars[@]}"; do
       echo "  - $var"
     done
-    echo "[Info] Source your .env file with: source $ENV_FILE"
+    echo "[Info] Please set the above variables in your environment or source the .env file:"
+    echo "  source $ENV_FILE"
     exit 1
   fi
+
+  echo "[Info] All compulsory environment variables are set and non-empty."
 }
+
+# Example usage
+export ENV_FILE="./.env"
+check_env_vars
 
 # -------------------------------
 # Run checks
