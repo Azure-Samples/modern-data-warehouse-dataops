@@ -210,6 +210,7 @@ echo "[Info] ############ ADLS Gen2 connection ID Deletion ############"
 if [[ -z $adls_gen2_connection_id ]]; then
   echo "[Warning] No Fabric connection with name '$adls_gen2_connection_name' found, skipping deletion."
 else
+  echo "[Info] Fabric Connection details: '$adls_gen2_connection_name' ($adls_gen2_connection_id)"
   delete_connection "$adls_gen2_connection_id"
 fi
 
