@@ -151,25 +151,15 @@ set_bearer_token() {
 delete_connection() {
   # Function to delete a connection if it exists
   connection_id=$1
-  get_connection_url="$fabric_api_endpoint/connections/$connection_id"
   delete_connection_url="$fabric_api_endpoint/connections/$connection_id"
 
-  # Check if the connection exists
-  response=$(curl -s -X GET -H "Authorization: Bearer $fabric_bearer_token" "$get_connection_url")
-  connection_name=$(echo "$response" | jq -r '.displayName')
+  response=$(curl -s -X DELETE -H "Authorization: Bearer $fabric_bearer_token" "$delete_connection_url")
 
-  if [[ -n $connection_name ]] && [[ $connection_name != "null" ]]; then
-    # Connection exists, proceed to delete
-    delete_response=$(curl -s -X DELETE -H "Authorization: Bearer $fabric_bearer_token" "$delete_connection_url")
-
-    if [[ -z $delete_response ]]; then
-      echo "[Info] Connection '$connection_id' deleted successfully."
-    else
-      echo "[Error] Failed to delete connection '$connection_id'."
-      echo "[Error] $delete_response"
-    fi
+  if [[ -z $response ]]; then
+    echo "[Info] Connection '$connection_id' deleted successfully."
   else
-    echo "[Info] Connection '$connection_id' not found. It could have not been created or deleted earlier."
+    echo "[Error] Failed to delete connection '$connection_id'."
+    echo "[Error] $response"
   fi
 }
 
