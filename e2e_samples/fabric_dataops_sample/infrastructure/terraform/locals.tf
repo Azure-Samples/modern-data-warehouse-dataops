@@ -24,4 +24,5 @@ locals {
   fabric_lakehouse_name                = "lh_${local.base_name_underscored}"
   fabric_environment_name              = "env-${local.base_name}"
   fabric_custom_pool_name              = "sprk-${local.base_name}"
+  fabric_runtime_version               = "1.3"
 }

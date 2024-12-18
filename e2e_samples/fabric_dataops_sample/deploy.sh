@@ -11,14 +11,10 @@ set -o nounset
 #######################
 source ./.env
 
-use_cli () {
-  user_principal_type=$(az account show --query user.type -o tsv)
-  if [[ $user_principal_type == "user" ]]; then
-    return 1
-  else
-    return 0
-  fi
-}
+# Log all outputs and errors to a log file
+log_file="deploy_${BASE_NAME}_$(date +"%Y%m%d_%H%M%S").log"
+exec > >(tee -a "$log_file")
+exec 2>&1
 
 for env_name in dev; do
   ENVIRONMENT_NAME=$env_name \
@@ -36,11 +32,3 @@ for env_name in dev; do
   FABRIC_CAPACITY_ADMINS=$FABRIC_CAPACITY_ADMINS \
   bash -c "./scripts/deploy_infrastructure.sh"
 done
-
-echo "[Info] ############ Uploading packages to Environment ############"
-if [[ use_cli ]]; then
-  echo "[Info] Skipped for now as the APIs are not working."
-  # python3 ./../scripts/setup_fabric_environment.py --workspace_name "$tf_workspace_name" --environment_name "$tf_environment_name" --bearer_token "$fabric_bearer_token"
-else
-  echo "[Info] Service Principal login does not support loading environments, skipping."
-fi

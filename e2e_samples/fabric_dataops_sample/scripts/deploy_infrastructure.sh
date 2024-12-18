@@ -341,7 +341,7 @@ echo "[Info] ############ ADLS Gen2 Shortcut Creation ############"
 if [[ -z $adls_gen2_connection_id ]]; then
   echo "[Warning] ADLS Gen2 connection ID not provided. Skipping ADLS Gen2 connection creation."
 else
-  if if_shortcut_exist "$tf_workspace_name" "$tf_lakehouse_id" "$adls_gen2_shortcut_name" "$adls_gen2_shortcut_path"; then
+  if if_shortcut_exist "$tf_workspace_id" "$tf_lakehouse_id" "$adls_gen2_shortcut_name" "$adls_gen2_shortcut_path"; then
     echo "[Warning] Shortcut '$adls_gen2_shortcut_name' already exists, please review it manually."
   else
     adls_gen2_connection_object=$(get_adls_gen2_connection_object "$adls_gen2_connection_id" "$tf_storage_account_url" "$tf_storage_container_name")
@@ -353,5 +353,9 @@ else
       "$adls_gen2_connection_object"
   fi
 fi
+
+echo "[Info] ############ Uploading packages to Environment ############"
+cd "./../../scripts"
+python3 setup_fabric_environment.py --workspace_name "$tf_workspace_name" --environment_name "$tf_environment_name" --bearer_token "$fabric_bearer_token"
 
 echo "[Info] ############ FINISHED INFRA DEPLOYMENT ############"
