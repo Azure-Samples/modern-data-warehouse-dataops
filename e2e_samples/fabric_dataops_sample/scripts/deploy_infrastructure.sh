@@ -146,12 +146,12 @@ function set_bearer_token() {
 }
 
 function create_adls_gen2_connection() {
-  workspace_id=$1
-  display_name=$2
-  connectivity_type=$3
-  privacy_level=$4
-  adls_gen2_server=$5
-  adls_gen2_path=$6
+  display_name=$1
+  adls_gen2_server=$2
+  adls_gen2_path=$3
+
+  connectivity_type="ShareableCloud"
+  privacy_level="Organizational"
   create_connection_url="$fabric_api_endpoint/connections"
 
   server_parameter=$(
