@@ -35,7 +35,7 @@ check_python_version() {
 # -------------------------------
 # Function to check if Python libraries are installed
 check_python_libraries() {
-  local libraries=("requests" "pandas" "numpy")
+  local libraries=("requests")
   for library in "${libraries[@]}"; do
     if ! python3 -m pip show "$library" &>/dev/null; then
       echo "[Error] '$library' library is not installed."
