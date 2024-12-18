@@ -5,7 +5,7 @@ set -o nounset
 # set -o xtrace # For debugging
 
 #. ./scripts/common.sh
-#. ./scripts/verify_prerequisites.sh
+. ./scripts/verify_prerequisites.sh "./.env"
 #. ./scripts/init_environment.sh
 
 #######################
