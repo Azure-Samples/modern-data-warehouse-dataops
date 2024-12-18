@@ -1,8 +1,7 @@
 #!/bin/bash
 
-
-# Azlogin using enviroment variables
-
+. ./scripts/common.sh
+# Source enviroment variables
 source .devcontainer/.env
 
 #Prompt login.
