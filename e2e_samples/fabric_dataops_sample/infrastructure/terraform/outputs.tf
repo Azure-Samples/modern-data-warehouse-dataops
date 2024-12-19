@@ -107,3 +107,7 @@ output "main_pipeline_name" {
 output "main_pipeline_id" {
   value = module.fabric_data_pipeline.data_pipeline_id
 }
+
+output "fabric_workspace_admin_sg_principal_id" {
+  value = data.azuread_group.fabric_workspace_admin.object_id
+}
