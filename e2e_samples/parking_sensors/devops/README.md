@@ -17,7 +17,7 @@ These variables typically changes across environments and are best stored in env
 - **databricksNotebookPath** - Databricks workspace path where notebooks will be uploaded. (ei. /myworkspace/notebooks)
 - **databricksDbfsLibPath** - Databricks DBFS path where Python whl files will be uploaded. (ei. dbfs:/mnt/datalake/sys/databricks/libs)
 - **adfName** - Target Azure Data Factory of the deployment
-- **apiBaseUrl** - Base API url (ei. [https://data.melbourne.vic.gov.au/resource/](https://data.melbourne.vic.gov.au/resource/))
+- **apiBaseUrl** - Base API URL (URL of the app service deployed during the sample installation)
 
 #### Secure Variables
 

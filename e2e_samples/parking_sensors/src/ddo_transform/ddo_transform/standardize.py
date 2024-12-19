@@ -10,7 +10,7 @@ from pyspark.sql.types import (
 
 
 def get_schema(schema_name):
-    if schema_name == 'in_parkingbay_schema':
+    if schema_name == 'in_parkinglocation_schema':
         schema = StructType([
             StructField('the_geom', StructType([
                 StructField('coordinates', ArrayType(
@@ -96,8 +96,8 @@ if __name__ == "__main__":
 
     THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
-    schema = get_schema("in_parkingbay_schema")
-    parkingbay_sdf = spark.read.json(os.path.join(THIS_DIR, "../data/MelbParkingBayData.json"),
+    schema = get_schema("in_parkinglocation_schema")
+    parkingbay_sdf = spark.read.json(os.path.join(THIS_DIR, "../data/ParkingLocationData.json"),
                                      multiLine=True,
                                      schema=schema)
     load_id = 1

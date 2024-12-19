@@ -4,8 +4,8 @@ import datetime
 
 # For testing
 base_path = 'dbfs:/mnt/datalake/data/lnd/2019_10_06_05_54_25'
-parkingbay_filepath = os.path.join(base_path, "MelbParkingBayData.json")
-sensors_filepath = os.path.join(base_path, "MelbParkingSensorData.json")
+parkingbay_filepath = os.path.join(base_path, "ParkingLocationData.json")
+sensors_filepath = os.path.join(base_path, "ParkingSensorData.json")
 
 # COMMAND ----------
 
