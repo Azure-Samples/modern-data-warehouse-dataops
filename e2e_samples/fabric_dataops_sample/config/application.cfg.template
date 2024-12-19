@@ -25,6 +25,7 @@ workspace_name = <workspace-name>
 workspace_id = <workspace-id>
 lakehouse_name = <lakehouse-name>
 lakehouse_id = <lakehouse-id>
+landing_directory = ${setup:adls_shortcut_name}/data/lnd/
 
 [keyvault]
 name = <keyvault-name>

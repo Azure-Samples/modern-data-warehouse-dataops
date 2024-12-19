@@ -101,7 +101,7 @@ table_types:
             marker_id STRING,
             meter_id STRING,
             rd_seg_dsc STRING,
-            rd_seg_id STRING,
+            rd_seg_id INT,
             the_geom STRUCT<coordinates: ARRAY<ARRAY<ARRAY<ARRAY<DOUBLE>>>>, type: STRING>,
             load_id STRING,
             loaded_on TIMESTAMP
@@ -134,7 +134,7 @@ table_types:
             marker_id STRING,
             meter_id STRING,
             rd_seg_dsc STRING,
-            rd_seg_id STRING,
+            rd_seg_id INT,
             the_geom STRUCT<coordinates: ARRAY<ARRAY<ARRAY<ARRAY<DOUBLE>>>>, type: STRING>,
             load_id STRING,
             loaded_on TIMESTAMP

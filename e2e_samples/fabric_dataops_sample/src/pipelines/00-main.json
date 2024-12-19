@@ -2,6 +2,22 @@
   "properties": {
     "activities": [
       {
+        "type": "SetVariable",
+        "typeProperties": {
+          "variableName": "infilefolder",
+          "value": {
+            "value": "@utcnow('yyyy_MM_dd_hh_mm_ss')",
+            "type": "Expression"
+          }
+        },
+        "policy": {
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "name": "set_infilefolder",
+        "dependsOn": []
+      },
+      {
         "type": "TridentNotebook",
         "typeProperties": {
           "notebookId": "{{ .setup_notebook_id }}",
@@ -50,6 +66,13 @@
             "config_file_path": {
               "value": "sc-adls-main/config/application.cfg",
               "type": "string"
+            },
+            "infilefolder": {
+              "value": {
+                "value": "@variables('infilefolder')",
+                "type": "Expression"
+              },
+              "type": "string"
             }
           },
           "sessionTag": {
@@ -65,7 +88,14 @@
           "secureOutput": false
         },
         "name": "nb-setup",
-        "dependsOn": []
+        "dependsOn": [
+          {
+            "activity": "set_infilefolder",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
       },
       {
         "type": "TridentNotebook",
@@ -115,6 +145,20 @@
             },
             "config_file_path": {
               "value": "sc-adls-main/config/application.cfg",
+              "type": "string"
+            },
+            "infilefolder": {
+              "value": {
+                "value": "@variables('infilefolder')",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "load_id": {
+              "value": {
+                "value": "@pipeline().RunId",
+                "type": "Expression"
+              },
               "type": "string"
             }
           },
@@ -189,6 +233,13 @@
             "config_file_path": {
               "value": "sc-adls-main/config/application.cfg",
               "type": "string"
+            },
+            "load_id": {
+              "value": {
+                "value": "@pipeline().RunId",
+                "type": "Expression"
+              },
+              "type": "string"
             }
           },
           "sessionTag": {
@@ -230,6 +281,11 @@
       "lakehouse_name": {
         "type": "string",
         "defaultValue": "{{ .lakehouse_name }}"
+      }
+    },
+    "variables": {
+      "infilefolder": {
+        "type": "String"
       }
     }
   }
