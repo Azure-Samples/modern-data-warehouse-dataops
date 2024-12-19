@@ -37,8 +37,7 @@ print_style () {
 
     STARTCOLOR="\e[$COLOR"
     ENDCOLOR="\e[0m"
-
-    printf "$STARTCOLOR%b$ENDCOLOR" "$1";
+    printf "$STARTCOLOR%b$ENDCOLOR" "$1"
 }
 
 log() {
