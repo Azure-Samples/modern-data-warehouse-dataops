@@ -19,9 +19,8 @@
 set -o errexit
 set -o pipefail
 set -o nounset
-# set -o xtrace # For debugging
 
-. ./scripts/common.sh
+. ./scripts/init_environment.sh
 . ./scripts/verify_prerequisites.sh
 
 ###################
@@ -35,19 +34,19 @@ delete_all(){
     local prefix=$1
     local DEPLOYMENT_ID=${2:-}
 
-    echo "!! WARNING: !!"
-    echo "THIS SCRIPT WILL DELETE RESOURCES PREFIXED WITH $prefix AND HAVING DEPLOYMENT_ID $DEPLOYMENT_ID!!"
+    log "!! WARNING: !!" "danger"
+    log "THIS SCRIPT WILL DELETE RESOURCES PREFIXED WITH $prefix AND HAVING DEPLOYMENT_ID $DEPLOYMENT_ID!!" "danger"
 
-    printf "\nDEVOPS PIPELINES:\n"
+    log "\nDEVOPS PIPELINES:\n"
     az pipelines list -o tsv --only-show-errors --query "[?contains(name,'$prefix')].name"
     
-    printf "\nDEVOPS VARIABLE GROUPS:\n"
+    log "\nDEVOPS VARIABLE GROUPS:\n"
     az pipelines variable-group list -o tsv --only-show-errors --query "[?contains(name, '$prefix')].name"
     
-    printf "\nDEVOPS SERVICE CONNECTIONS:\n"
+    log "\nDEVOPS SERVICE CONNECTIONS:\n"
     az devops service-endpoint list -o tsv --only-show-errors --query "[?contains(name, '$prefix')].name"
     
-    printf "\nENTRA SERVICE PRINCIPALS:\n"
+    log "\nENTRA SERVICE PRINCIPALS:\n"
     if [[ -z $DEPLOYMENT_ID ]] 
     then
         az ad sp list -o tsv --show-mine --query "[?contains(appDisplayName,'$prefix')].displayName"
@@ -55,7 +54,7 @@ delete_all(){
         az ad sp list -o tsv --show-mine --query "[?contains(appDisplayName,'$prefix') && contains(appDisplayName,'$DEPLOYMENT_ID')].displayName"
     fi
 
-    printf "\nRESOURCE GROUPS:\n"
+    log "\nRESOURCE GROUPS:\n"
     if [[ -z $DEPLOYMENT_ID ]] 
     then
         az group list -o tsv --query "[?contains(name,'$prefix') && ! contains(name,'dbw')].name"
@@ -63,36 +62,36 @@ delete_all(){
         az group list -o tsv --query "[?contains(name,'$prefix-$DEPLOYMENT_ID') && ! contains(name,'dbw')].name"
     fi
 
-    printf "\nEND OF SUMMARY\n"
+    log "\nEND OF SUMMARY\n"
 
     read -r -p "Do you wish to DELETE above? [y/N] " response
     case "$response" in
         [yY][eE][sS]|[yY]) 
-            echo "Delete pipelines that start with '$prefix' in name..."
+            log "Deleting pipelines that start with '$prefix' in name..."
             [[ -n $prefix ]] &&
                 az pipelines list -o tsv |
                 { grep "$prefix" || true; } |
                 awk '{print $4}' |
                 xargs -r -I % az pipelines delete --id % --yes
 
-            echo "Delete variable groups that start with '$prefix' in name..."
+            log "Deleting variable groups that start with '$prefix' in name..."
             [[ -n $prefix ]] &&
                 az pipelines variable-group list -o tsv --query "[?contains(name, '$prefix')].id" |
                 xargs -r -I % az pipelines variable-group delete --id % --yes
 
-            echo "Delete service connections that start with '$prefix' in name..."
+            log "Deleting service connections that start with '$prefix' in name..."
             [[ -n $prefix ]] &&
                 az devops service-endpoint list -o tsv --query "[?contains(name, '$prefix')].id" |
                 xargs -r -I % az devops service-endpoint delete --id % --yes
 
             if [[ -z $DEPLOYMENT_ID ]]
             then
-                echo "Delete service principal that contain '$prefix' in name, created by yourself..."
+                log "Deleting service principal that contain '$prefix' in name, created by yourself..."
                 [[ -n $prefix ]] &&
                     az ad sp list --query "[?contains(appDisplayName,'$prefix')].appId" -o tsv --show-mine | 
                     xargs -r -I % az ad sp delete --id %
             else
-                echo "Delete service principal that contain '$prefix' and $DEPLOYMENT_ID in name, created by yourself..."
+                log "Deleting service principal that contain '$prefix' and $DEPLOYMENT_ID in name, created by yourself..."
                 [[ -n $prefix ]] &&
                     az ad sp list --query "[?contains(appDisplayName,'$prefix') && contains(appDisplayName,'$DEPLOYMENT_ID')].appId" -o tsv --show-mine | 
                     xargs -r -I % az ad sp delete --id %
@@ -100,12 +99,12 @@ delete_all(){
 
             if [[ -z $DEPLOYMENT_ID ]]
             then
-                echo "Delete resource group that comtain '$prefix' in name..."
+                log "Deleting resource groups that comtain '$prefix' in name..."
                 [[ -n $prefix ]] &&
                     az group list --query "[?contains(name,'$prefix') && ! contains(name,'dbw')].name" -o tsv |
                     xargs -I % az group delete --verbose --name % -y
             else
-                echo "Delete resource group that contain '$prefix-$DEPLOYMENT_ID' in name..."
+                log "Deleting resource groups that contain '$prefix-$DEPLOYMENT_ID' in name..."
                 [[ -n $prefix ]] &&
                     az group list --query "[?contains(name,'$prefix-$DEPLOYMENT_ID') && ! contains(name,'dbw')].name" -o tsv |
                     xargs -I % az group delete --verbose --name % -y
@@ -120,7 +119,7 @@ delete_all(){
 
 if [[ -z "$DEPLOYMENT_ID" ]]
 then 
-    echo "No deployment id [DEPLOYMENT_ID] specified. You will only be able to delete by prefix $prefix..."
+    log "No deployment id [DEPLOYMENT_ID] specified. You will only be able to delete by prefix $prefix..."
     response=3
 else
     read -r -p "Do you wish to DELETE by"$'\n'"  1) ONLY BY PREFIX ($prefix)?"$'\n'"  2) PREFIX ($prefix) AND DEPLOYMENT_ID ($DEPLOYMENT_ID)?"$'\n'" Choose 1 or 2: " response
@@ -128,11 +127,11 @@ fi
 
 case "$response" in
     1) 
-        echo "Delete by prefix..."
+        log "Deleting by prefix..."
         delete_all $prefix
         ;;
     2)
-        echo "Delete by deployment id..."
+        log "Deleting by deployment id..."
         delete_all $prefix $DEPLOYMENT_ID
         ;;
     3)
@@ -147,7 +146,7 @@ case "$response" in
         esac
         ;;
     *)
-        echo "Invalid choice. Exiting..."
+        log "Invalid choice. Exiting..." "warning"
         exit
         ;;
 esac

@@ -1,0 +1,157 @@
+######################################################################################
+# About this file: Config file to hold all DDLs for lakehouse
+# NOTE:
+# - Use {workspace_name} and {lakehouse_name}to indicate workspace and lakehouse names.
+#       These values will be replaced during runtime.
+# - Ideally a full qualified name to query across workspaces would be composed of:
+#    {workspace_name}.{lakehouse_name}.{schema_name}.{table_name}
+#    However, as there is a known issue (as of Nov 2024), with workspace names having special characters
+#      in them, we are using {lakehouse_name}.{schema_name}.{table_name} for now. This way we can
+#      still have support for schemas as long we are querying in the same (currently working) workspace.
+#
+# Field Descriptions
+# ------------------
+# type: grouping indicator for tables
+# table_name: table name with schema
+# data_file: Path relative to Files/ in {workspace_name}.{lakehouse_name}.
+#    If specified this data is loaded into the table name mentioned in table_name
+#    in overwrite mode. Ex: if path is "Files/data/dim_time.csv" then this should be
+#    set as "data/dim_time.csv"
+# create_sql: sql statement to create the table. Only one statement is allowed.
+#    runs when data_file is not specified.
+# When both data_file and create_sql are specified then data_file takes precedence.
+# ##############################################################################
+version: 0.1
+description: "DDLs for Parking sensor Fabric e2e sample"
+table_types:
+  - type: fact
+    tables:
+      - table_name: dw.fact_parking
+        description: "Fact table for parking data"
+        data_file:
+        create_sql: |
+          CREATE TABLE {lakehouse_name}.dw.fact_parking (
+            dim_date_id STRING,
+            dim_time_id STRING,
+            dim_parking_bay_id STRING,
+            dim_location_id STRING,
+            dim_st_marker_id STRING,
+            status STRING,
+            load_id STRING,
+            loaded_on TIMESTAMP
+          )
+          USING DELTA
+  - type: dimension
+    tables:
+      - table_name: dw.dim_st_marker
+        description: "Dimension table for {workspace_name}.{lakehouse_name}.dw.dim_st_marker"
+        data_file:
+        create_sql: |
+          CREATE TABLE {lakehouse_name}.dw.dim_st_marker (
+            dim_st_marker_id STRING,
+            st_marker_id STRING,
+            load_id STRING,
+            loaded_on TIMESTAMP
+          )
+          USING DELTA
+      - table_name: dw.dim_location
+        description: "Dimension table for {workspace_name}.{lakehouse_name}.dw.dim_location"
+        data_file:
+        create_sql: |
+          CREATE TABLE {lakehouse_name}.dw.dim_location (
+            dim_location_id STRING,
+            lat FLOAT,
+            lon FLOAT,
+            load_id STRING,
+            loaded_on TIMESTAMP
+          )
+          USING DELTA
+      - table_name: dw.dim_parking_bay
+        description: "Dimension table for {workspace_name}.{lakehouse_name}.dw.dim_parking_bay"
+        data_file:
+        create_sql: |
+          CREATE TABLE {lakehouse_name}.dw.dim_parking_bay (
+            dim_parking_bay_id STRING,
+            bay_id INT,
+            marker_id STRING,
+            meter_id STRING,
+            rd_seg_dsc STRING,
+            rd_seg_id STRING,
+            load_id STRING,
+            loaded_on TIMESTAMP
+          )
+          USING DELTA
+  - type: reference
+    tables:
+      - table_name: dw.dim_date
+        description: "Dimension table for {workspace_name}.{lakehouse_name}.dw.dim_date"
+        data_file: sc-adls-main/reference/dim_date.csv
+      - table_name: dw.dim_time
+        description: "Dimension table for {workspace_name}.{lakehouse_name}.dw.dim_time"
+        data_file: sc-adls-main/reference/dim_time.csv
+  - type: interim
+    tables:
+      - table_name: interim.parking_bay
+        description: "Dimension table for {workspace_name}.{lakehouse_name}.interim.parking_bay"
+        data_file:
+        create_sql: |
+          CREATE TABLE {lakehouse_name}.interim.parking_bay (
+            bay_id INT,
+            last_edit TIMESTAMP,
+            marker_id STRING,
+            meter_id STRING,
+            rd_seg_dsc STRING,
+            rd_seg_id STRING,
+            the_geom STRUCT<coordinates: ARRAY<ARRAY<ARRAY<ARRAY<DOUBLE>>>>, type: STRING>,
+            load_id STRING,
+            loaded_on TIMESTAMP
+          )
+          USING DELTA
+      - table_name: interim.sensor
+        description: "Dimension table for {workspace_name}.{lakehouse_name}.interim.sensor"
+        data_file:
+        create_sql: |
+          CREATE TABLE {lakehouse_name}.interim.sensor (
+            bay_id INT,
+            st_marker_id STRING,
+            lat FLOAT,
+            lon FLOAT,
+            location STRUCT<coordinates: ARRAY<DOUBLE>, type: STRING>,
+            status STRING,
+            load_id STRING,
+            loaded_on TIMESTAMP
+          )
+          USING DELTA
+  - type: error
+    tables:
+      - table_name: malformed.parking_bay
+        description: "Dimension table for {workspace_name}.{lakehouse_name}.malformed.parking_bay"
+        data_file:
+        create_sql: |
+          CREATE TABLE {lakehouse_name}.malformed.parking_bay (
+            bay_id INT,
+            last_edit TIMESTAMP,
+            marker_id STRING,
+            meter_id STRING,
+            rd_seg_dsc STRING,
+            rd_seg_id STRING,
+            the_geom STRUCT<coordinates: ARRAY<ARRAY<ARRAY<ARRAY<DOUBLE>>>>, type: STRING>,
+            load_id STRING,
+            loaded_on TIMESTAMP
+          )
+          USING DELTA
+      - table_name: malformed.sensor
+        description: "Dimension table for {workspace_name}.{lakehouse_name}.malformed.sensor"
+        data_file:
+        create_sql: |
+          CREATE TABLE {lakehouse_name}.malformed.sensor (
+            bay_id INT,
+            st_marker_id STRING,
+            lat FLOAT,
+            lon FLOAT,
+            location STRUCT<coordinates: ARRAY<DOUBLE>, type: STRING>,
+            status STRING,
+            load_id STRING,
+            loaded_on TIMESTAMP
+          )
+          USING DELTA

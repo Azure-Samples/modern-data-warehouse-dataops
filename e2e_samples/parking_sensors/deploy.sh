@@ -19,9 +19,7 @@
 set -o errexit
 set -o pipefail
 set -o nounset
-# set -o xtrace # For debugging
 
-. ./scripts/common.sh
 . ./scripts/init_environment.sh
 . ./scripts/verify_prerequisites.sh
 
@@ -69,11 +67,11 @@ DEV_DATAFACTORY_NAME=$DEV_DATAFACTORY_NAME \
 
 ####
 
-print_style "DEPLOYMENT SUCCESSFUL
+log "DEPLOYMENT SUCCESSFUL
 Details of the deployment can be found in local .env.* files.\n\n" "success"
 
-print_style "IMPORTANT:
+log "IMPORTANT:
 This script has updated your local Azure Pipeline YAML definitions to point to your Github repo.
 ACTION REQUIRED: Commit and push up these changes to your Github repo before proceeding.\n\n" "warning"
 
-echo "See README > Setup and Deployment for more details and next steps." 
+log "See README > Setup and Deployment for more details and next steps." 

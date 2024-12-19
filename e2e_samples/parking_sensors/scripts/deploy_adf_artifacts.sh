@@ -28,7 +28,6 @@
 set -o errexit
 set -o pipefail
 set -o nounset
-# set -o xtrace # For debugging
 
 ###################
 # REQUIRED ENV VARIABLES:
@@ -38,39 +37,14 @@ set -o nounset
 # DATAFACTORY_NAME
 # ADF_DIR
 
+. ./scripts/common.sh
 
 # Consts
 apiVersion="2018-06-01"
 baseUrl="https://management.azure.com/subscriptions/${AZURE_SUBSCRIPTION_ID}"
 adfFactoryBaseUrl="$baseUrl/resourceGroups/${RESOURCE_GROUP_NAME}/providers/Microsoft.DataFactory/factories/${DATAFACTORY_NAME}"
 
-
-createLinkedService () {
-    declare name=$1
-    echo "Creating ADF LinkedService: $name"
-    adfLsUrl="${adfFactoryBaseUrl}/linkedservices/${name}?api-version=${apiVersion}"
-    az rest --method put --uri "$adfLsUrl" --body @"${ADF_DIR}"/linkedService/"${name}".json
-}
-createDataset () {
-    declare name=$1
-    echo "Creating ADF Dataset: $name"
-    adfDsUrl="${adfFactoryBaseUrl}/datasets/${name}?api-version=${apiVersion}"
-    az rest --method put --uri "$adfDsUrl" --body @"${ADF_DIR}"/dataset/"${name}".json
-}
-createPipeline () {
-    declare name=$1
-    echo "Creating ADF Pipeline: $name"
-    adfPUrl="${adfFactoryBaseUrl}/pipelines/${name}?api-version=${apiVersion}"
-    az rest --method put --uri "$adfPUrl" --body @"${ADF_DIR}"/pipeline/"${name}".json
-}
-createTrigger () {
-    declare name=$1
-    echo "Creating ADF Trigger: $name"
-    adfTUrl="${adfFactoryBaseUrl}/triggers/${name}?api-version=${apiVersion}"
-    az rest --method put --uri "$adfTUrl" --body @"${ADF_DIR}"/trigger/"${name}".json
-}
-
-echo "Deploying Data Factory artifacts."
+log "Deploying Data Factory artifacts."
 
 # Deploy all Linked Services
 createLinkedService "Ls_KeyVault_01"
@@ -85,6 +59,6 @@ createDataset "Ds_Http_Parking_Sensors"
 # Deploy all Pipelines
 createPipeline "P_Ingest_ParkingData"
 # Deploy triggers
-createTrigger "T_Sched"
+create_adf_trigger "T_Sched"
 
-echo "Completed deploying Data Factory artifacts."
+log "Completed deploying Data Factory artifacts."
