@@ -61,6 +61,7 @@ fabric_bearer_token=""
 fabric_api_endpoint="https://api.fabric.microsoft.com/v1"
 
 # Fabric related variables
+adls_gen2_connection_name="conn-adls-st$base_name"
 adls_gen2_shortcut_name="sc-adls-main"
 adls_gen2_shortcut_path="Files"
 
@@ -150,25 +151,15 @@ set_bearer_token() {
 delete_connection() {
   # Function to delete a connection if it exists
   connection_id=$1
-  get_connection_url="$fabric_api_endpoint/connections/$connection_id"
   delete_connection_url="$fabric_api_endpoint/connections/$connection_id"
 
-  # Check if the connection exists
-  response=$(curl -s -X GET -H "Authorization: Bearer $fabric_bearer_token" "$get_connection_url")
-  connection_name=$(echo "$response" | jq -r '.displayName')
+  response=$(curl -s -X DELETE -H "Authorization: Bearer $fabric_bearer_token" "$delete_connection_url")
 
-  if [[ -n $connection_name ]] && [[ $connection_name != "null" ]]; then
-    # Connection exists, proceed to delete
-    delete_response=$(curl -s -X DELETE -H "Authorization: Bearer $fabric_bearer_token" "$delete_connection_url")
-
-    if [[ -z $delete_response ]]; then
-      echo "[Info] Connection '$connection_id' deleted successfully."
-    else
-      echo "[Error] Failed to delete connection '$connection_id'."
-      echo "[Error] $delete_response"
-    fi
+  if [[ -z $response ]]; then
+    echo "[Info] Connection '$connection_id' deleted successfully."
   else
-    echo "[Info] Connection '$connection_id' not found. It could have not been created or deleted earlier."
+    echo "[Error] Failed to delete connection '$connection_id'."
+    echo "[Error] $response"
   fi
 }
 
@@ -186,27 +177,13 @@ cleanup_terraform_files() {
   echo "[Info] Terraform intermediate files deleted successfully."
 }
 
-remove_adls_gen2_connection_id_from_env_file() {
-  local env_file="$1"
-
-  if [[ -f "$env_file" ]]; then
-    # Display the current content
-    echo "Current ADLS_GEN2_CONNECTION_ID in $env_file:"
-    grep '^export ADLS_GEN2_CONNECTION_ID=' "$env_file"
-
-    # Remove the content
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        sed -i '' 's/^export ADLS_GEN2_CONNECTION_ID=.*$/export ADLS_GEN2_CONNECTION_ID=""/' "$env_file"
-    else
-        sed -i 's/^export ADLS_GEN2_CONNECTION_ID=.*$/export ADLS_GEN2_CONNECTION_ID=""/' "$env_file"
-    fi
-
-    echo "ADLS_GEN2_CONNECTION_ID content has been cleared."
-  else
-    echo "Error: File '$env_file' not found."
-  fi
+get_connection_id_by_name() {
+  connection_name=$1
+  list_connection_url="$fabric_api_endpoint/connections"
+  response=$(curl -s -X GET -H "Authorization: Bearer $fabric_bearer_token" -H "Content-Type: application/json" "$list_connection_url" )
+  connection_id=$(echo "$response" | jq -r --arg name "$connection_name" '.value[] | select(.displayName == $name) | .id')
+  echo "$connection_id"
 }
-
 
 echo "[Info] ############ STARTING CLEANUP STEPS############"
 
@@ -217,15 +194,15 @@ echo "[Info] ############ Terraform resources destroyed############"
 echo "[Info] Setting up fabric bearer token ############"
 set_bearer_token
 
+adls_gen2_connection_id=$(get_connection_id_by_name "$adls_gen2_connection_name")
+
 echo "[Info] ############ ADLS Gen2 connection ID Deletion ############"
 if [[ -z $adls_gen2_connection_id ]]; then
-  echo "[Warning] ADLS Gen2 connection ID not provided. Skipping ADLS Gen2 connection deletion."
+  echo "[Warning] No Fabric connection with name '$adls_gen2_connection_name' found, skipping deletion."
 else
+  echo "[Info] Fabric Connection details: '$adls_gen2_connection_name' ($adls_gen2_connection_id)"
   delete_connection "$adls_gen2_connection_id"
 fi
-
-echo "[Info] ############ Remove ADLS_GEN2_CONNECTION_ID value from .env file############"
-remove_adls_gen2_connection_id_from_env_file ".env"
 
 echo "[Info] ############ Cleanup Terraform Intermediate files (state, lock etc.,) ############"
 cleanup_terraform_files

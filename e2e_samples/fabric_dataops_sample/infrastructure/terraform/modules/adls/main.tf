@@ -10,10 +10,14 @@ resource "azurerm_storage_account" "storage" {
   shared_access_key_enabled       = false
   min_tls_version                 = var.min_tls_version
   tags                            = var.tags
+
+  lifecycle {
+    ignore_changes = [static_website]
+  }
 }
 
 resource "azurerm_storage_container" "container" {
   name                  = var.container_name
-  storage_account_name  = azurerm_storage_account.storage.name
+  storage_account_id    = azurerm_storage_account.storage.id
   container_access_type = "private"
 }
