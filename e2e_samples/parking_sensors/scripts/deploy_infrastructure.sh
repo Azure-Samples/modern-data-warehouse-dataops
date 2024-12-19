@@ -50,9 +50,12 @@ echo "Deploying to Subscription: $AZURE_SUBSCRIPTION_ID"
 az account set --subscription "$AZURE_SUBSCRIPTION_ID"
 
 # Create resource group
-resource_group_name="$PROJECT-$DEPLOYMENT_ID-$ENV_NAME-rg"
+export resource_group_name="$PROJECT-$DEPLOYMENT_ID-$ENV_NAME-rg"
 echo "Creating resource group: $resource_group_name"
 az group create --name "$resource_group_name" --location "$AZURE_LOCATION" --tags Environment="$ENV_NAME"
+
+# Deploy App Service here...
+bash -c "./scripts/deploy_appservice.sh"
 
 # By default, set all KeyVault permission to deployer
 # Retrieve KeyVault User Id
@@ -299,8 +302,8 @@ jq --arg kvurl "$kv_dns_name" '.properties.typeProperties.baseUrl = $kvurl' $adf
 jq --arg databricksWorkspaceUrl "$databricks_host" '.properties.typeProperties.domain = $databricksWorkspaceUrl' $adfLsDir/Ls_AzureDatabricks_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AzureDatabricks_01.json
 jq --arg databricksWorkspaceResourceId "$databricks_workspace_resource_id" '.properties.typeProperties.workspaceResourceId = $databricksWorkspaceResourceId' $adfLsDir/Ls_AzureDatabricks_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AzureDatabricks_01.json
 jq --arg datalakeUrl "https://$azure_storage_account.dfs.core.windows.net" '.properties.typeProperties.url = $datalakeUrl' $adfLsDir/Ls_AdlsGen2_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AdlsGen2_01.json
-jq --arg databricks_folder_name_standardize "$databricks_folder_name_standardize" '.properties.activities[0].typeProperties.notebookPath = $databricks_folder_name_standardize' $adfPlDir/P_Ingest_MelbParkingData.json > "$tmpfile" && mv "$tmpfile" $adfPlDir/P_Ingest_MelbParkingData.json
-jq --arg databricks_folder_name_transform  "$databricks_folder_name_transform" '.properties.activities[4].typeProperties.notebookPath = $databricks_folder_name_transform' $adfPlDir/P_Ingest_MelbParkingData.json > "$tmpfile" && mv "$tmpfile" $adfPlDir/P_Ingest_MelbParkingData.json
+jq --arg databricks_folder_name_standardize "$databricks_folder_name_standardize" '.properties.activities[0].typeProperties.notebookPath = $databricks_folder_name_standardize' $adfPlDir/P_Ingest_ParkingData.json > "$tmpfile" && mv "$tmpfile" $adfPlDir/P_Ingest_ParkingData.json
+jq --arg databricks_folder_name_transform  "$databricks_folder_name_transform" '.properties.activities[4].typeProperties.notebookPath = $databricks_folder_name_transform' $adfPlDir/P_Ingest_ParkingData.json > "$tmpfile" && mv "$tmpfile" $adfPlDir/P_Ingest_ParkingData.json
 
 datafactory_id=$(echo "$arm_output" | jq -r '.properties.outputs.datafactory_id.value')
 datafactory_name=$(echo "$arm_output" | jq -r '.properties.outputs.datafactory_name.value')

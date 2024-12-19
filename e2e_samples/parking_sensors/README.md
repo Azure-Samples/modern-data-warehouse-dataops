@@ -339,7 +339,7 @@ Set up the environment variables as specified, fork the GitHub repository, and l
 
 4. **Trigger an initial Release**
 
-   - In the **DEV** Data Factory portal, navigate to Pipelines and open the "P_Ingest_MelbParkingData" pipeline.
+   - In the **DEV** Data Factory portal, navigate to Pipelines and open the "P_Ingest_ParkingData" pipeline.
    - In the top left corner, open the git drop down and create a Dev branch by clicking in "New Branch".
    - Once the Dev branch is created, select the branch from the drop-down list and make a change in the Description fields from one of the pipeline tasks.
    - Save the pipeline.
@@ -352,7 +352,7 @@ Set up the environment variables as specified, fork the GitHub repository, and l
       - You may need to authorize the Pipelines initially to use the Service Connection and deploy the target environments for the first time.
       ![Release Pipeline](docs/images/ReleasePipeline.png "Release Pipelines")
    - **Optional**. Trigger the Data Factory Pipelines per environment.
-      - In the Data Factory portal of each environment, navigate to "Author", then select the `P_Ingest_MelbParkingData`.
+      - In the Data Factory portal of each environment, navigate to "Author", then select the `P_Ingest_ParkingData`.
       - Select "Trigger > Trigger Now".
       - To monitor the run, go to "Monitor > Pipeline runs".
       ![Data Factory Run](docs/images/ADFRun.png "Data Factory Run]")

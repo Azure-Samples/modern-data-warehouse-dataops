@@ -77,13 +77,13 @@ createLinkedService "Ls_KeyVault_01"
 createLinkedService "Ls_AdlsGen2_01"
 createLinkedService "Ls_AzureSQLDW_01"
 createLinkedService "Ls_AzureDatabricks_01"
-createLinkedService "Ls_Http_Parking_Bay_01"
+createLinkedService "Ls_Http_DataSimulator"
 # Deploy all Datasets
-createDataset "Ds_AdlsGen2_MelbParkingData"
-createDataset "Ds_Http_Parking_Bay"
-createDataset "Ds_Http_Parking_Bay_Sensors"
+createDataset "Ds_AdlsGen2_ParkingData"
+createDataset "Ds_Http_Parking_Locations"
+createDataset "Ds_Http_Parking_Sensors"
 # Deploy all Pipelines
-createPipeline "P_Ingest_MelbParkingData"
+createPipeline "P_Ingest_ParkingData"
 # Deploy triggers
 createTrigger "T_Sched"
 

@@ -41,6 +41,7 @@ set -o xtrace # For debugging
 # AZURE_LOCATION
 # RESOURCE_GROUP_NAME
 # KV_URL
+# API_BASE_URL
 # DATABRICKS_HOST
 # DATABRICKS_TOKEN
 # DATABRICKS_WORKSPACE_RESOURCE_ID
@@ -59,7 +60,6 @@ set -o xtrace # For debugging
 
 
 # Const
-apiBaseUrl="https://data.melbourne.vic.gov.au/resource/"
 if [ "$ENV_NAME" == "dev" ]
 then 
     # In DEV, we fix the path to "dev" folder  to simplify as this is manual publish DEV ADF.
@@ -90,7 +90,7 @@ az pipelines variable-group create \
         databricksDbfsLibPath="$databricksDbfsLibPath" \
         databricksNotebookPath="$databricksNotebookPath" \
         databricksClusterId="$databricksClusterId" \
-        apiBaseUrl="$apiBaseUrl" \
+        apiBaseUrl="$API_BASE_URL" \
     --output json
 
 # Create vargroup - for secrets
