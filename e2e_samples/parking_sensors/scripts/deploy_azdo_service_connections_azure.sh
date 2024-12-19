@@ -65,7 +65,7 @@ export AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY=$azure_devops_ext_azure_r
 
 if sc_id=$(az devops service-endpoint list -o json | jq -r -e --arg sc_name "$az_service_connection_name" '.[] | select(.name==$sc_name) | .id'); then
     log "Service connection: $az_service_connection_name already exists. Deleting service connection id $sc_id ..." "info"
-    az devops service-endpoint delete --id "$sc_id" -y
+    az devops service-endpoint delete --id "$sc_id" -y  -o none
 fi
 
 log "Creating Azure service connection Azure DevOps"
@@ -78,4 +78,5 @@ sc_id=$(az devops service-endpoint azurerm create \
 
 az devops service-endpoint update \
     --id "$sc_id" \
-    --enable-for-all "true"
+    --enable-for-all "true" \
+     -o none

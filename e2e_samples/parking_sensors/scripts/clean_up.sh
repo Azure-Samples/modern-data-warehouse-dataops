@@ -69,9 +69,7 @@ delete_all(){
         [yY][eE][sS]|[yY]) 
             log "Deleting pipelines that start with '$prefix' in name..."
             [[ -n $prefix ]] &&
-                az pipelines list -o tsv |
-                { grep "$prefix" || true; } |
-                awk '{print $4}' |
+                az pipelines list -o tsv --query "[?contains(name, '$prefix')].id" |
                 xargs -r -I % az pipelines delete --id % --yes
 
             log "Deleting variable groups that start with '$prefix' in name..."
