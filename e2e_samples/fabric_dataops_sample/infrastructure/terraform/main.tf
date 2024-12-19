@@ -59,7 +59,7 @@ module "fabric_capacity" {
   source                 = "./modules/fabric/capacity"
   create_fabric_capacity = var.create_fabric_capacity
   capacity_name          = local.fabric_capacity_name
-  resource_group_id      = data.azurerm_resource_group.rg.id
+  resource_group_name    = data.azurerm_resource_group.rg.name
   location               = data.azurerm_resource_group.rg.location
   admin_members          = local.fabric_capacity_admins
   sku                    = "F2"
