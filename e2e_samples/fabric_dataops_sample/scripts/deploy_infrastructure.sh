@@ -341,26 +341,22 @@ fi
 
 add_connection_role_assignment "$adls_gen2_connection_id" "$tf_fabric_workspace_admin_sg_principal_id"
 
-if ["$user_principal_type" = "user"]; then
+if [[ $user_principal_type == "user" ]]; then
   echo "[Info] ############ ADLS Gen2 Shortcut Creation ############"
-  if [[ -z $adls_gen2_connection_id ]]; then
-    echo "[Warning] ADLS Gen2 connection ID not provided. Skipping ADLS Gen2 connection creation."
+  if if_shortcut_exist "$tf_workspace_id" "$tf_lakehouse_id" "$adls_gen2_shortcut_name" "$adls_gen2_shortcut_path"; then
+    echo "[Warning] Shortcut '$adls_gen2_shortcut_name' already exists, please review it manually."
   else
-    if if_shortcut_exist "$tf_workspace_id" "$tf_lakehouse_id" "$adls_gen2_shortcut_name" "$adls_gen2_shortcut_path"; then
-      echo "[Warning] Shortcut '$adls_gen2_shortcut_name' already exists, please review it manually."
-    else
-      adls_gen2_connection_object=$(get_adls_gen2_connection_object "$adls_gen2_connection_id" "$tf_storage_account_url" "$tf_storage_container_name")
-      create_shortcut \
-        "$tf_workspace_id" \
-        "$tf_lakehouse_id" \
-        "$adls_gen2_shortcut_name" \
-        "$adls_gen2_shortcut_path" \
-        "$adls_gen2_connection_object"
-    fi
+    adls_gen2_connection_object=$(get_adls_gen2_connection_object "$adls_gen2_connection_id" "$tf_storage_account_url" "$tf_storage_container_name")
+    create_shortcut \
+      "$tf_workspace_id" \
+      "$tf_lakehouse_id" \
+      "$adls_gen2_shortcut_name" \
+      "$adls_gen2_shortcut_path" \
+      "$adls_gen2_connection_object"
   fi
-  else
-    echo "[Warning] ############ Skipping ADLS Gen2 Shortcut Creation ############"
-    echo "[Warning] Need to authenticate using the user context for shortcut creation. See README.md for more details."
+else
+  echo "[Warning] ############ Skipping ADLS Gen2 Shortcut Creation ############"
+  echo "[Warning] Need to authenticate using the user context for shortcut creation. See README.md for more details."
 fi
 
 

@@ -74,8 +74,8 @@ Here is a list of resources that are deployed:
 - Fabric Resources
   - Microsoft Fabric Workspace
   - Microsoft Fabric Lakehouse
-  - Fabric Cloud Connection
-  - ADLS Gen2 shortcut
+  - Microsoft Fabric Cloud Connection to ADLS Gen2 Storage
+  - ADLS Shortcut
   - Microsoft Fabric Environment
   - Microsoft Fabric Notebooks
   - Microsoft Fabric Data pipelines
