@@ -66,8 +66,8 @@ adls_gen2_shortcut_path="Files"
 
 deploy_terraform_resources() {
   cd "$1" || exit
+  user_principal_type="$2"
 
-  user_principal_type=$(az account show --query user.type -o tsv)
   if [[ $user_principal_type == "user" ]]; then
     use_cli="true"
     use_msi="false"
@@ -320,7 +320,9 @@ EOF
 
 echo "[Info] ############ STARTING INFRA DEPLOYMENT ############"
 echo "[Info] ############ Deploying terraform resources ############"
-deploy_terraform_resources "./infrastructure/terraform"
+user_principal_type=$(az account show --query user.type -o tsv)
+
+deploy_terraform_resources "./infrastructure/terraform" "$user_principal_type"
 
 echo "[Info] ############ Terraform resources deployed, setting up fabric bearer token ############"
 set_bearer_token
@@ -339,7 +341,7 @@ fi
 
 add_connection_role_assignment "$adls_gen2_connection_id" "$tf_fabric_workspace_admin_sg_principal_id"
 
-if ["$use_cli" = "false"]; then
+if ["$user_principal_type" = "user"]; then
   echo "[Info] ############ ADLS Gen2 Shortcut Creation ############"
   if [[ -z $adls_gen2_connection_id ]]; then
     echo "[Warning] ADLS Gen2 connection ID not provided. Skipping ADLS Gen2 connection creation."
