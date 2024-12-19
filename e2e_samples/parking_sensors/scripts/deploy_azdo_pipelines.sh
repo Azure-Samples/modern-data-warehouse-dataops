@@ -64,4 +64,5 @@ cd_release_pipeline_id=$(create_azdo_pipeline "cd-release" "This pipeline releas
 az pipelines variable create \
     --name devAdfName \
     --pipeline-id "$cd_release_pipeline_id" \
-    --value "$DEV_DATAFACTORY_NAME"
+    --value "$DEV_DATAFACTORY_NAME" \
+    -o none

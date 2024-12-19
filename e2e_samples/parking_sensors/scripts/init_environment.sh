@@ -25,9 +25,9 @@ fi
 az config set core.login_experience_v2=off
 az login --tenant $TENANT_ID
 az config set core.login_experience_v2=on
-az account set -s $AZURE_SUBSCRIPTION_ID
+az account set -s $AZURE_SUBSCRIPTION_ID  -o none
 
-az devops configure --defaults organization=$AZDO_ORGANIZATION_URL project=$AZDO_PROJECT
+az devops configure --defaults organization=$AZDO_ORGANIZATION_URL project=$AZDO_PROJECT  -o none
 
 # check required variables are specified.
 
