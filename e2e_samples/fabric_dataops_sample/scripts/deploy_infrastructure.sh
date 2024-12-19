@@ -356,6 +356,9 @@ if ["$use_cli" = "false"]; then
         "$adls_gen2_connection_object"
     fi
   fi
+  else
+    echo "[Warning] ############ Skipping ADLS Gen2 Shortcut Creation ############"
+    echo "[Warning] Need to authenticate using the user context for shortcut creation. See README.md for more details."
 fi
 
 
