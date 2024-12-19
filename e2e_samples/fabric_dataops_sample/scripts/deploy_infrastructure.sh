@@ -66,9 +66,9 @@ adls_gen2_shortcut_path="Files"
 
 deploy_terraform_resources() {
   cd "$1" || exit
-  user_principal_type="$2"
+  principal_type="$2"
 
-  if [[ $user_principal_type == "user" ]]; then
+  if [[ $principal_type == "user" ]]; then
     use_cli="true"
     use_msi="false"
   else
