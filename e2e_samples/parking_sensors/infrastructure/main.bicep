@@ -7,6 +7,7 @@ param keyvault_owner_object_id string
 @secure()
 param sql_server_password string
 param enable_monitoring bool
+param keyvault_name string
 param enable_keyvault_soft_delete bool = true
 param enable_keyvault_purge_protection bool = true
 param entra_admin_login string
@@ -61,10 +62,9 @@ module synapse_sql_pool './modules/synapse_sql_pool.bicep' = {
 module keyvault './modules/keyvault.bicep' = {
   name: 'keyvault_deploy_${deployment_id}'
   params: {
-    project: project
+    keyvault_name: keyvault_name
     env: env
     location: location
-    deployment_id: deployment_id
     enable_soft_delete: enable_keyvault_soft_delete
     enable_purge_protection: enable_keyvault_purge_protection
     keyvault_owner_object_id: keyvault_owner_object_id

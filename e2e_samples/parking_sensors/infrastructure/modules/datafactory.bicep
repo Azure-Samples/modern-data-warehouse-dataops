@@ -1,18 +1,19 @@
+//https://learn.microsoft.com/en-us/azure/templates/microsoft.datafactory/factories
+// Parameters
+@description('The project name.')
 param project string
+@description('The environment for the deployment.')
 @allowed([
   'dev'
   'stg'
   'prod'
 ])
 param env string
+@description('The location of the resource.')
 param location string = resourceGroup().location
+@description('The unique identifier for this deployment.')
 param deployment_id string
-
-// param account_name string = ''
-// param repository_name string = ''
-// param collaboration_branch string = 'main'
-// param root_folder string = '/e2e_samples/parking_sensors/adf'
-
+// Data Factory Resource
 resource datafactory 'Microsoft.DataFactory/factories@2018-06-01' = {
   name: '${project}-adf-${env}-${deployment_id}'
   location: location
@@ -24,29 +25,9 @@ resource datafactory 'Microsoft.DataFactory/factories@2018-06-01' = {
     type: 'SystemAssigned'
   }
 }
-
-// resource datafactory 'Microsoft.DataFactory/factories@2018-06-01' = if (env == 'dev') {
-//   name: adf_name
-//   location: location
-//   tags: {
-//     DisplayName: 'Data Factory'
-//     Environment: env
-//   }
-//   identity: {
-//     type: 'SystemAssigned'
-//   }
-//   properties: {
-//     repoConfiguration: {
-//       accountName: account_name
-//       repositoryName: repository_name
-//       collaborationBranch: collaboration_branch
-//       rootFolder: root_folder
-//       type: 'FactoryGitHubConfiguration'
-//     }
-//   }
-// }
-
-
+// Outputs
+@description('The principal ID of the Data Factory identity.')
 output datafactory_principal_id string = datafactory.identity.principalId
 output datafactory_id string = datafactory.id
+@description('The name of the Data Factory.')
 output datafactory_name string = datafactory.name

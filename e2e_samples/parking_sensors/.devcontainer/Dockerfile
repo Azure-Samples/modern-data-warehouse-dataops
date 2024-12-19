@@ -22,6 +22,7 @@ RUN az config set extension.use_dynamic_install=yes_without_prompt
 RUN az config set extension.dynamic_install_allow_preview=true
 RUN az extension add --name application-insights
 RUN az extension add --name azure-devops
+RUN az bicep upgrade
 
 # Install jq & makepasswd for some frequently used utility
 RUN apt-get update \

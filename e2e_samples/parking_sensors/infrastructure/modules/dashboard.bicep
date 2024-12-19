@@ -1,22 +1,33 @@
+//https://learn.microsoft.com/en-us/azure/templates/microsoft.portal/dashboards
+// Parameters
+@description('The project name.')
 param project string
+@description('The environment for the deployment.')
 @allowed([
   'dev'
   'stg'
   'prod'
 ])
 param env string
+@description('The location of the resource.')
 param location string = resourceGroup().location
+@description('The unique identifier for this deployment.')
 param deployment_id string
+@description('The name of the Data Factory.')
 param datafactory_name string
+@description('The name of the SQL server.')
 param sql_server_name string
+@description('The name of the SQL database.')
 param sql_database_name string
-
-resource dashboard 'Microsoft.Portal/dashboards@2020-09-01-preview' = {
+// Resource: Azure Portal Dashboard
+resource dashboard 'Microsoft.Portal/dashboards@2022-12-01-preview' = {
   name: '${project}-dashboard-${env}-${deployment_id}'
   location: location
   tags: {
     DisplayName: 'Azure Dashboard'
     Environment: env
+    Project: project
+    DeploymentId: deployment_id
   }
   properties: {
     lenses: [
