@@ -45,14 +45,12 @@ set -o nounset
 ### DEPLOY ARM TEMPLATE
 #####################
 
-# Set account to where ARM template will be deployed to
 log "Deploying to Subscription: $AZURE_SUBSCRIPTION_ID" "info"
-az account set --subscription "$AZURE_SUBSCRIPTION_ID"
 
 # Create resource group
 export resource_group_name="$PROJECT-$DEPLOYMENT_ID-$ENV_NAME-rg"
 echo "Creating resource group: $resource_group_name"
-az group create --name "$resource_group_name" --location "$AZURE_LOCATION" --tags Environment="$ENV_NAME"
+az group create --name "$resource_group_name" --location "$AZURE_LOCATION" --tags Environment="$ENV_NAME" -o none
 
 # Deploy App Service here...
 bash -c "./scripts/deploy_appservice.sh"
@@ -129,8 +127,8 @@ log "Retrieving KeyVault information from the deployment."
 kv_dns_name=https://${kv_name}.vault.azure.net/
 
 # Store in KeyVault
-az keyvault secret set --vault-name "$kv_name" --name "kvUrl" --value "$kv_dns_name"
-az keyvault secret set --vault-name "$kv_name" --name "subscriptionId" --value "$AZURE_SUBSCRIPTION_ID"
+az keyvault secret set --vault-name "$kv_name" --name "kvUrl" --value "$kv_dns_name" -o none
+az keyvault secret set --vault-name "$kv_name" --name "subscriptionId" --value "$AZURE_SUBSCRIPTION_ID" -o none
 
 
 #########################
@@ -147,27 +145,27 @@ azure_storage_key=$(az storage account keys list \
 # Add file system storage account
 storage_file_system=datalake
 log "Creating ADLS Gen2 File system: $storage_file_system"
-az storage container create --name $storage_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key"
+az storage container create --name $storage_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key" -o none
 
 log "Creating folders within the file system."
 # Create folders for databricks libs
-az storage fs directory create -n '/sys/databricks/libs' -f $storage_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key"
+az storage fs directory create -n '/sys/databricks/libs' -f $storage_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key" -o none
 # Create folders for SQL external tables
-az storage fs directory create -n '/data/dw/fact_parking' -f $storage_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key"
-az storage fs directory create -n '/data/dw/dim_st_marker' -f $storage_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key"
-az storage fs directory create -n '/data/dw/dim_parking_bay' -f $storage_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key"
-az storage fs directory create -n '/data/dw/dim_location' -f $storage_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key"
+az storage fs directory create -n '/data/dw/fact_parking' -f $storage_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key" -o none
+az storage fs directory create -n '/data/dw/dim_st_marker' -f $storage_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key" -o none
+az storage fs directory create -n '/data/dw/dim_parking_bay' -f $storage_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key" -o none
+az storage fs directory create -n '/data/dw/dim_location' -f $storage_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key" -o none
 
 log "Uploading seed data to data/seed"
 az storage blob upload --container-name $storage_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key" \
-    --file data/seed/dim_date.csv --name "data/seed/dim_date/dim_date.csv" --overwrite
+    --file data/seed/dim_date.csv --name "data/seed/dim_date/dim_date.csv" --overwrite -o none
 az storage blob upload --container-name $storage_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key" \
-    --file data/seed/dim_time.csv --name "data/seed/dim_time/dim_time.csv" --overwrite
+    --file data/seed/dim_time.csv --name "data/seed/dim_time/dim_time.csv" --overwrite -o none
 
 # Set Keyvault secrets
-az keyvault secret set --vault-name "$kv_name" --name "datalakeAccountName" --value "$azure_storage_account"
-az keyvault secret set --vault-name "$kv_name" --name "datalakeKey" --value "$azure_storage_key"
-az keyvault secret set --vault-name "$kv_name" --name "datalakeurl" --value "https://$azure_storage_account.dfs.core.windows.net"
+az keyvault secret set --vault-name "$kv_name" --name "datalakeAccountName" --value "$azure_storage_account" -o none
+az keyvault secret set --vault-name "$kv_name" --name "datalakeKey" --value "$azure_storage_key" -o none
+az keyvault secret set --vault-name "$kv_name" --name "datalakeurl" --value "https://$azure_storage_account.dfs.core.windows.net" -o none
 
 ###################
 # SQL
@@ -186,11 +184,11 @@ sql_dw_connstr_uname=${sql_dw_connstr_nocred/<username>/$sql_server_username}
 sql_dw_connstr_uname_pass=${sql_dw_connstr_uname/<password>/$AZURESQL_SERVER_PASSWORD}
 
 # Store in Keyvault
-az keyvault secret set --vault-name "$kv_name" --name "sqlsrvrName" --value "$sql_server_name"
-az keyvault secret set --vault-name "$kv_name" --name "sqlsrvUsername" --value "$sql_server_username"
-az keyvault secret set --vault-name "$kv_name" --name "sqlsrvrPassword" --value "$AZURESQL_SERVER_PASSWORD"
-az keyvault secret set --vault-name "$kv_name" --name "sqldwDatabaseName" --value "$sql_dw_database_name"
-az keyvault secret set --vault-name "$kv_name" --name "sqldwConnectionString" --value "$sql_dw_connstr_uname_pass"
+az keyvault secret set --vault-name "$kv_name" --name "sqlsrvrName" --value "$sql_server_name" -o none
+az keyvault secret set --vault-name "$kv_name" --name "sqlsrvUsername" --value "$sql_server_username" -o none
+az keyvault secret set --vault-name "$kv_name" --name "sqlsrvrPassword" --value "$AZURESQL_SERVER_PASSWORD" -o none
+az keyvault secret set --vault-name "$kv_name" --name "sqldwDatabaseName" --value "$sql_dw_database_name" -o none
+az keyvault secret set --vault-name "$kv_name" --name "sqldwConnectionString" --value "$sql_dw_connstr_uname_pass" -o none
 
 
 ####################
@@ -210,8 +208,8 @@ appinsights_connstr=$(az monitor app-insights component show \
     jq -r '.connectionString')
 
 # Store in Keyvault
-az keyvault secret set --vault-name "$kv_name" --name "applicationInsightsKey" --value "$appinsights_key"
-az keyvault secret set --vault-name "$kv_name" --name "applicationInsightsConnectionString" --value "$appinsights_connstr"
+az keyvault secret set --vault-name "$kv_name" --name "applicationInsightsKey" --value "$appinsights_key" -o none
+az keyvault secret set --vault-name "$kv_name" --name "applicationInsightsConnectionString" --value "$appinsights_connstr" -o none
 
 
 
@@ -239,10 +237,10 @@ sp_stor_id=$(echo "$sp_stor_out" | jq -r '.appId')
 sp_stor_pass=$(echo "$sp_stor_out" | jq -r '.password')
 sp_stor_tenant=$(echo "$sp_stor_out" | jq -r '.tenant')
 
-az keyvault secret set --vault-name "$kv_name" --name "spStorName" --value "$sp_stor_name"
-az keyvault secret set --vault-name "$kv_name" --name "spStorId" --value "$sp_stor_id"
-az keyvault secret set --vault-name "$kv_name" --name "spStorPass" --value="$sp_stor_pass" 
-az keyvault secret set --vault-name "$kv_name" --name "spStorTenantId" --value "$sp_stor_tenant"
+az keyvault secret set --vault-name "$kv_name" --name "spStorName" --value "$sp_stor_name" -o none
+az keyvault secret set --vault-name "$kv_name" --name "spStorId" --value "$sp_stor_id" -o none
+az keyvault secret set --vault-name "$kv_name" --name "spStorPass" --value="$sp_stor_pass" -o none ##=handles hyphen passwords
+az keyvault secret set --vault-name "$kv_name" --name "spStorTenantId" --value "$sp_stor_tenant" -o none
 
 log "Generate Databricks token"
 databricks_host=https://$(echo "$arm_output" | jq -r '.properties.outputs.databricks_output.value.properties.workspaceUrl')
@@ -265,9 +263,9 @@ databricks_token=$(DATABRICKS_TOKEN=$databricks_aad_token \
     bash -c "databricks tokens create --comment 'deployment'" | jq -r .token_value)
 
 # Save in KeyVault
-az keyvault secret set --vault-name "$kv_name" --name "databricksDomain" --value "$databricks_host"
-az keyvault secret set --vault-name "$kv_name" --name "databricksToken" --value "$databricks_token"
-az keyvault secret set --vault-name "$kv_name" --name "databricksWorkspaceResourceId" --value "$databricks_workspace_resource_id"
+az keyvault secret set --vault-name "$kv_name" --name "databricksDomain" --value "$databricks_host" -o none
+az keyvault secret set --vault-name "$kv_name" --name "databricksToken" --value "$databricks_token" -o none
+az keyvault secret set --vault-name "$kv_name" --name "databricksWorkspaceResourceId" --value "$databricks_workspace_resource_id" -o none
 
 # Configure databricks (KeyVault-backed Secret scope, mount to storage via SP, databricks tables, cluster)
 # NOTE: must use Microsoft Entra access token, not PAT token
@@ -303,7 +301,7 @@ jq --arg databricks_folder_name_transform  "$databricks_folder_name_transform" '
 
 datafactory_id=$(echo "$arm_output" | jq -r '.properties.outputs.datafactory_id.value')
 datafactory_name=$(echo "$arm_output" | jq -r '.properties.outputs.datafactory_name.value')
-az keyvault secret set --vault-name "$kv_name" --name "adfName" --value "$datafactory_name"
+az keyvault secret set --vault-name "$kv_name" --name "adfName" --value "$datafactory_name" -o none
 
 log "Modified sample files saved to directory: $adfTempDir"
 # Deploy ADF artifacts
@@ -326,10 +324,10 @@ sp_adf_pass=$(echo "$sp_adf_out" | jq -r '.password')
 sp_adf_tenant=$(echo "$sp_adf_out" | jq -r '.tenant')
 
 # Save ADF SP credentials in Keyvault
-az keyvault secret set --vault-name "$kv_name" --name "spAdfName" --value "$sp_adf_name"
-az keyvault secret set --vault-name "$kv_name" --name "spAdfId" --value "$sp_adf_id"
-az keyvault secret set --vault-name "$kv_name" --name "spAdfPass" --value="$sp_adf_pass"
-az keyvault secret set --vault-name "$kv_name" --name "spAdfTenantId" --value "$sp_adf_tenant"
+az keyvault secret set --vault-name "$kv_name" --name "spAdfName" --value "$sp_adf_name" -o none
+az keyvault secret set --vault-name "$kv_name" --name "spAdfId" --value "$sp_adf_id" -o none
+az keyvault secret set --vault-name "$kv_name" --name "spAdfPass" --value="$sp_adf_pass" -o none ##=handles hyphen passwords
+az keyvault secret set --vault-name "$kv_name" --name "spAdfTenantId" --value "$sp_adf_tenant" -o none
 
 ####################
 # AZDO Azure Service Connection and Variables Groups
