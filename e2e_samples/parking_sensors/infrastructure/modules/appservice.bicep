@@ -11,7 +11,7 @@ param skuName string = 'B1'
 @description('Region to deploy resources')
 param location string = resourceGroup().location
 
-resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
+resource appServicePlan 'Microsoft.Web/serverfarms@2024-04-01' = {
   name: '${appName}-plan'
   location: location
   sku: {
@@ -23,7 +23,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
   }
 }
 
-resource appService 'Microsoft.Web/sites@2022-03-01' = {
+resource appService 'Microsoft.Web/sites@2024-04-01' = {
   name: appName
   location: location
   properties: {
