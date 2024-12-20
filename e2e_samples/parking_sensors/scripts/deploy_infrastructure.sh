@@ -49,7 +49,7 @@ log "Deploying to Subscription: $AZURE_SUBSCRIPTION_ID" "info"
 
 # Create resource group
 export resource_group_name="$PROJECT-$DEPLOYMENT_ID-$ENV_NAME-rg"
-echo "Creating resource group: $resource_group_name"
+log "Creating resource group: $resource_group_name
 az group create --name "$resource_group_name" --location "$AZURE_LOCATION" --tags Environment="$ENV_NAME" -o none
 
 # Deploy App Service here...
