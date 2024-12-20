@@ -1,0 +1,53 @@
+# Name of the bundle
+bundle:
+  name: modern-data-warehouse-databricks-asset-bundles
+
+# Including the workflows to be used in the bundle. 
+# This will deploy the workflows to the Databricks workspace and can be used to run the workflows as part of CI/CD pipeline.
+# In this case we are creating test workflows and running test in databricks workspace as part of CI/CD pipeline.
+include:
+  - single_tech_samples/databricks/databricks_terraform/workflows/*.yml
+
+# Target Environment Configuration
+# Each environment has its own resources in Azure.
+targets:
+  # Sandbox
+  sandbox:
+    presets:
+      name_prefix: "sandbox_"
+    workspace:
+      host: <DATABRICKS_WORKSPACE_URL>
+      root_path: /Workspace/sandbox/${workspace.current_user.userName}/${bundle.name}/${bundle.target}
+    run_as:
+      service_principal_name: ${workspace.current_user.userName}
+
+  dev:
+    presets:
+      name_prefix: "dev_"
+    default: true
+    workspace:
+      host: <DATABRICKS_WORKSPACE_URL>
+      root_path: /Workspace/dev/${workspace.current_user.userName}/${bundle.name}/${bundle.target}
+    run_as:
+      service_principal_name: ${workspace.current_user.userName}
+  
+  stg:
+    presets:
+      name_prefix: "stg_"
+    default: true
+    workspace:
+      host: <DATABRICKS_WORKSPACE_URL>
+      root_path: /Workspace/stg/${workspace.current_user.userName}/${bundle.name}/${bundle.target}
+    run_as:
+      service_principal_name: ${workspace.current_user.userName}
+  
+  prod:
+    presets:
+      name_prefix: "prod_"
+    default: true
+    workspace:
+      host: <DATABRICKS_WORKSPACE_URL>
+      root_path: /Workspace/prod/${workspace.current_user.userName}/${bundle.name}/${bundle.target}
+    run_as:
+      service_principal_name: ${workspace.current_user.userName}
+
