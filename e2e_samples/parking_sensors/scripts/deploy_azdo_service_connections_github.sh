@@ -47,7 +47,7 @@ export AZURE_DEVOPS_EXT_GITHUB_PAT=$GITHUB_PAT_TOKEN
 
 if sc_id=$(az devops service-endpoint list -o json | jq -r -e --arg sc_name "$github_sc_name" '.[] | select(.name==$sc_name) | .id'); then
     log "Service connection: $github_sc_name already exists. Deleting service connection id $sc_id ..." "info"
-    az devops service-endpoint delete --id "$sc_id" -y
+    az devops service-endpoint delete --id "$sc_id" -y  -o none
 fi
 
 log "Creating Github service connection: $github_sc_name in Azure DevOps"
@@ -59,4 +59,5 @@ github_sc_id=$(az devops service-endpoint github create \
 
 az devops service-endpoint update \
     --id "$github_sc_id" \
-    --enable-for-all "true"
+    --enable-for-all "true" \
+     -o none
