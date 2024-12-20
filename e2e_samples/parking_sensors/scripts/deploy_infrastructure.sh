@@ -53,7 +53,7 @@ log "Creating resource group: $resource_group_name"
 az group create --name "$resource_group_name" --location "$AZURE_LOCATION" --tags Environment="$ENV_NAME" --output none
 
 # Deploy App Service for REST API
-appName=data-simulator-$DEPLOYMENT_ID
+appName=data-simulator-$DEPLOYMENT_ID-$ENV_NAME
 log "Creating resource group: $appName"
 
 arm_output=$(
