@@ -58,19 +58,19 @@ log "Creating resource group: $appName"
 
 arm_output=$(
     az deployment group create \
-  --resource-group $resource_group_name \
+  --resource-group "$resource_group_name" \
   --template-file "./infrastructure/modules/appservice.bicep" \
-  --parameters appName=$appName \
+  --parameters appName="$appName" \
   --output json
 )
 
 if [[ -z $arm_output ]]; then
-    echo >&2 "AppService deployment failed."
+    log >&2 "AppService deployment failed."
     exit 1
 fi
 
 arm_output=$(
-    az webapp deploy --resource-group $resource_group_name --name $appName --type zip --src-path ./data/data-simulator.zip
+    az webapp deploy --resource-group "$resource_group_name" --name "$appName" --type zip --src-path ./data/data-simulator.zip
 )
 API_BASE_URL="https://$appName.azurewebsites.net"
 
