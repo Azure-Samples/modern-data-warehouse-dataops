@@ -18,6 +18,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2024-04-01' = {
     name: skuName
     capacity: 1
   }
+  kind: 'Linux'
   properties: {
     reserved: false
   }
@@ -28,6 +29,14 @@ resource appService 'Microsoft.Web/sites@2024-04-01' = {
   location: location
   properties: {
     serverFarmId: appServicePlan.id
+    siteConfig: {
+      appSettings: [
+        {
+          name: 'WEBSITE_NODE_DEFAULT_VERSION'
+          value: '~18' // Specify the runtime stack here
+        }
+      ]
+    }
   }
 }
 

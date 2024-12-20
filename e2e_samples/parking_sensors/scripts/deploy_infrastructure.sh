@@ -48,12 +48,31 @@ set -o nounset
 log "Deploying to Subscription: $AZURE_SUBSCRIPTION_ID" "info"
 
 # Create resource group
-export resource_group_name="$PROJECT-$DEPLOYMENT_ID-$ENV_NAME-rg"
-log "Creating resource group: $resource_group_name
-az group create --name "$resource_group_name" --location "$AZURE_LOCATION" --tags Environment="$ENV_NAME" -o none
+resource_group_name="$PROJECT-$DEPLOYMENT_ID-$ENV_NAME-rg"
+log "Creating resource group: $resource_group_name"
+az group create --name "$resource_group_name" --location "$AZURE_LOCATION" --tags Environment="$ENV_NAME" --output none
 
-# Deploy App Service here...
-bash -c "./scripts/deploy_appservice.sh"
+# Deploy App Service for REST API
+appName=data-simulator-$DEPLOYMENT_ID
+log "Creating resource group: $appName"
+
+arm_output=$(
+    az deployment group create \
+  --resource-group $resource_group_name \
+  --template-file "./infrastructure/modules/appservice.bicep" \
+  --parameters appName=$appName \
+  --output json
+)
+
+if [[ -z $arm_output ]]; then
+    echo >&2 "AppService deployment failed."
+    exit 1
+fi
+
+arm_output=$(
+    az webapp deploy --resource-group $resource_group_name --name $appName --type zip --src-path ./data/data-simulator.zip
+)
+API_BASE_URL="https://$appName.azurewebsites.net"
 
 # By default, set all KeyVault permission to deployer
 # Retrieve KeyVault User Id
@@ -298,6 +317,8 @@ jq --arg databricksWorkspaceResourceId "$databricks_workspace_resource_id" '.pro
 jq --arg datalakeUrl "https://$azure_storage_account.dfs.core.windows.net" '.properties.typeProperties.url = $datalakeUrl' $adfLsDir/Ls_AdlsGen2_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AdlsGen2_01.json
 jq --arg databricks_folder_name_standardize "$databricks_folder_name_standardize" '.properties.activities[0].typeProperties.notebookPath = $databricks_folder_name_standardize' $adfPlDir/P_Ingest_ParkingData.json > "$tmpfile" && mv "$tmpfile" $adfPlDir/P_Ingest_ParkingData.json
 jq --arg databricks_folder_name_transform  "$databricks_folder_name_transform" '.properties.activities[4].typeProperties.notebookPath = $databricks_folder_name_transform' $adfPlDir/P_Ingest_ParkingData.json > "$tmpfile" && mv "$tmpfile" $adfPlDir/P_Ingest_ParkingData.json
+jq --arg new_url "$API_BASE_URL" '.properties.typeProperties.url = $new_url' "$adfLsDir/Ls_Http_DataSimulator.json" > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_Http_DataSimulator.json
+jq --arg new_url "$API_BASE_URL" '.properties.typeProperties.url = $new_url' $adfLsDir/Ls_Rest_ParkSensors_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_Rest_ParkSensors_01.json
 
 datafactory_id=$(echo "$arm_output" | jq -r '.properties.outputs.datafactory_id.value')
 datafactory_name=$(echo "$arm_output" | jq -r '.properties.outputs.datafactory_name.value')
@@ -361,6 +382,7 @@ DATAFACTORY_NAME=$datafactory_name \
 SP_ADF_ID=$sp_adf_id \
 SP_ADF_PASS=$sp_adf_pass \
 SP_ADF_TENANT=$sp_adf_tenant \
+API_BASE_URL=$API_BASE_URL \
     bash -c "./scripts/deploy_azdo_variables.sh"
 
 
