@@ -29,7 +29,6 @@
 set -o errexit
 set -o pipefail
 set -o nounset
-# set -o xtrace # For debugging
 
 ###################
 # REQUIRED ENV VARIABLES:
@@ -38,6 +37,8 @@ set -o nounset
 # ENV_NAME
 # RESOURCE_GROUP_NAME
 # DEPLOYMENT_ID
+
+. ./scripts/common.sh
 
 ###############
 # Setup Azure service connection
@@ -49,7 +50,7 @@ az_sub_name=$(echo "$az_sub" | jq -r '.name')
 
 # Create Service Account
 az_sp_name=${PROJECT}-${ENV_NAME}-${DEPLOYMENT_ID}-sp
-echo "Creating service principal: $az_sp_name for azure service connection"
+log "Creating service principal: $az_sp_name for azure service connection"
 az_sp=$(az ad sp create-for-rbac \
     --role contributor \
     --scopes "/subscriptions/${az_sub_id}/resourceGroups/${RESOURCE_GROUP_NAME}" \
@@ -63,11 +64,11 @@ azure_devops_ext_azure_rm_service_principal_key=$(echo "$az_sp" | jq -r '.passwo
 export AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY=$azure_devops_ext_azure_rm_service_principal_key
 
 if sc_id=$(az devops service-endpoint list -o json | jq -r -e --arg sc_name "$az_service_connection_name" '.[] | select(.name==$sc_name) | .id'); then
-    echo "Service connection: $az_service_connection_name already exists. Deleting service connection id $sc_id ..."
-    az devops service-endpoint delete --id "$sc_id" -y
+    log "Service connection: $az_service_connection_name already exists. Deleting service connection id $sc_id ..." "info"
+    az devops service-endpoint delete --id "$sc_id" -y  -o none
 fi
 
-echo "Creating Azure service connection Azure DevOps"
+log "Creating Azure service connection Azure DevOps"
 sc_id=$(az devops service-endpoint azurerm create \
     --name "$az_service_connection_name" \
     --azure-rm-service-principal-id "$service_principal_id" \
@@ -77,4 +78,5 @@ sc_id=$(az devops service-endpoint azurerm create \
 
 az devops service-endpoint update \
     --id "$sc_id" \
-    --enable-for-all "true"
+    --enable-for-all "true" \
+     -o none
