@@ -27,6 +27,7 @@ set -o nounset
 # KEYVAULT_RESOURCE_ID
 # KEYVAULT_DNS_NAME
 # USER_NAME
+# AZURE_LOCATION
 
 . ./scripts/common.sh
 
@@ -53,6 +54,42 @@ databricks workspace import "$databricks_folder_name/00_setup.py" --file "./data
 databricks workspace import "$databricks_folder_name/01_explore.py" --file "./databricks/notebooks/01_explore.py" --format SOURCE --language PYTHON --overwrite
 databricks workspace import "$databricks_folder_name/02_standardize.py" --file "./databricks/notebooks/02_standardize.py" --format SOURCE --language PYTHON --overwrite
 databricks workspace import "$databricks_folder_name/03_transform.py" --file "./databricks/notebooks/03_transform.py" --format SOURCE --language PYTHON --overwrite
+
+# Define suitable VM for DB cluster
+file_path="./databricks/config/cluster.config.json"
+
+# Get available VM sizes in the specified region
+vm_sizes=$(az vm list-sizes --location "$AZURE_LOCATION" --output json)
+
+# Get available Databricks node types using the list-node-types API
+node_types=$(databricks clusters list-node-types --output json)
+
+# Extract VM names and node type IDs into temporary files
+echo "$vm_sizes" | jq -r '.[] | .name' > vm_names.txt
+echo "$node_types" | jq -r '.node_types[].node_type_id' > node_type_ids.txt
+
+# Find common VM sizes
+common_vms=$(grep -Ff node_type_ids.txt vm_names.txt)
+
+# Find the VM with the least resources
+least_resource_vm=$(echo "$vm_sizes" | jq --arg common_vms "$common_vms" '
+  map(select(.name == ($common_vms | split("\n")[]))) |
+  sort_by(.numberOfCores, .memoryInMb) |
+  .[0]
+')
+log "VM with the least resources:$least_resource_vm" "info"
+
+# Update the JSON file with the least resource VM
+if [ -n "$least_resource_vm" ]; then
+    node_type_id=$(echo "$least_resource_vm" | jq -r '.name')
+    jq --arg node_type_id "$node_type_id" '.node_type_id = $node_type_id' "$file_path" > tmp.$$.json && mv tmp.$$.json "$file_path"
+    log "The JSON file at '$file_path' has been updated with the node_type_id: $node_type_id"
+else
+    log "No common VM options found between Azure and Databricks." "error"
+fi
+
+# Clean up temporary files
+rm vm_names.txt node_type_ids.txt
 
 # Create initial cluster, if not yet exists
 # cluster.config.json file needs to refer to one of the available SKUs on yout Region
