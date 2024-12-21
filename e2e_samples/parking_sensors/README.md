@@ -294,16 +294,6 @@ Set up the environment variables as specified, fork the GitHub repository, and l
      **Login and Cluster Configuration**
       
       - Ensure that you have completed the configuration for the variables described in the previous section, titled **Configuration: Variables and Login**.
-      
-        - This configuration will be used during the environment deployment process to facilitate login.
-        - Create a `cluster.config.json` Spark configuration from the [`cluster.config.template.json`](./databricks/config/cluster.config.template.json) file. For the "node_type_id" field, select a SKU that is available from the following command in your subscription:
-      
-          ```bash
-            az vm list-usage --location "<YOUR_REGION>" -o table
-          ```
-
-    
-          In the repository we provide an example, but you need to make sure that the SKU exists on your region and that is available for your subscription.
 
 2. **Deploy Azure resources**
    - `cd` into the `e2e_samples/parking_sensors` folder of the repo.
