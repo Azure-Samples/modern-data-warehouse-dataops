@@ -48,7 +48,7 @@ check_terraform() {
     exit 1
   fi
 
-  TERRAFORM_VERSION=$(terraform version | grep -oP '^Terraform\s+v\K[0-9]+\.[0-9]+\.[0-9]+')
+  TERRAFORM_VERSION=$(terraform version | awk '{if ($1 == "Terraform") print $2}')
 
   if [[ $? -ne 0 || -z "$TERRAFORM_VERSION" ]]; then
     echo "[Error] Failed to retrieve Terraform version."
@@ -64,7 +64,7 @@ check_azure_cli() {
     echo "[Error] Azure CLI is not installed or not available in PATH."
     exit 1
   fi
-  AZURE_CLI_VERSION=$(az --version | head -n1 | grep -oP '\K[0-9]+\.[0-9]+\.[0-9]+')
+  AZURE_CLI_VERSION=$(az --version | head -n1 | awk '{if ($1 == "azure-cli") print $2}')
   echo "[Info] Azure CLI version $AZURE_CLI_VERSION is installed."
 }
 
