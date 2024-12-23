@@ -27,12 +27,3 @@ provider "azurerm" {
     }
   }
 }
-
-provider "azapi" {
-  tenant_id       = var.tenant_id
-  subscription_id = var.subscription_id
-  client_id       = var.use_msi || var.use_cli ? null : var.client_id
-  client_secret   = var.use_msi || var.use_cli ? null : var.client_secret
-  use_msi         = var.use_msi
-  use_cli         = var.use_cli
-}
