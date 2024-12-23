@@ -84,7 +84,6 @@ check_env_vars() {
     exit 1
   fi
 
-  REQUIRED_ENV_VARS=$(grep -oP '^\s*export\s+\K[A-Z_][A-Z0-9_]*' "$ENV_FILE")
   COMPULSORY_VARS=("TENANT_ID" "SUBSCRIPTION_ID" "RESOURCE_GROUP_NAME" "BASE_NAME" "FABRIC_WORKSPACE_ADMIN_SG_NAME" "FABRIC_CAPACITY_ADMINS")
   local missing_compulsory_vars=()
 
