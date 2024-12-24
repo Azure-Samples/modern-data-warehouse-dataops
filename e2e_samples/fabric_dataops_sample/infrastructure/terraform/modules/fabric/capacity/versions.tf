@@ -2,13 +2,13 @@ terraform {
   required_version = ">= 1.9.8, < 2.0"
 
   required_providers {
-    azapi = {
-      source  = "azure/azapi"
-      version = "2.0.1"
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "4.14.0"
     }
     fabric = {
       source  = "microsoft/fabric"
-      version = "0.1.0-beta.4"
+      version = "0.1.0-beta.6"
     }
   }
 }

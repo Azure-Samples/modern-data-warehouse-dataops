@@ -5,7 +5,7 @@ set -o nounset
 # set -o xtrace # For debugging
 
 #. ./scripts/common.sh
-#. ./scripts/verify_prerequisites.sh
+. ./scripts/verify_prerequisites.sh "./.env"
 #. ./scripts/init_environment.sh
 
 #######################
@@ -30,6 +30,5 @@ for env_name in dev; do
   FABRIC_WORKSPACE_ADMIN_SG_NAME=$FABRIC_WORKSPACE_ADMIN_SG_NAME \
   EXISTING_FABRIC_CAPACITY_NAME=$EXISTING_FABRIC_CAPACITY_NAME \
   FABRIC_CAPACITY_ADMINS=$FABRIC_CAPACITY_ADMINS \
-  ADLS_GEN2_CONNECTION_ID=$ADLS_GEN2_CONNECTION_ID \
   bash -c "./scripts/deploy_infrastructure.sh"
 done

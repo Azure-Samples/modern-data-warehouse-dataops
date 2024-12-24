@@ -34,7 +34,7 @@ uri = https://${keyvault:name}.vault.azure.net/
 # --------- Globals for nb-setup notebook
 process_name = setup
 # ddl file path is relative to the attached lakehouse's Files/ location
-adls_shortcut_name = <adls-shortcut-name>
+adls_shortcut_name = sc-adls-main
 ddl_file = ${setup:adls_shortcut_name}/config/lakehouse_ddls.yaml
 
 [standardize]
