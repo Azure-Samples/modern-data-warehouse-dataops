@@ -19,7 +19,7 @@ terraform {
       version = "2.0.1"
     }
     azuredevops = {
-      source = "microsoft/azuredevops"
+      source  = "microsoft/azuredevops"
       version = "1.5.0"
     }
     random = {

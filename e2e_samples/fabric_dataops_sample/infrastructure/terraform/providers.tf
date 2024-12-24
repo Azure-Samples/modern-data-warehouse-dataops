@@ -38,7 +38,7 @@ provider "azapi" {
 }
 
 provider "azuredevops" {
-  org_service_url       = "https://dev.azure.com/${var.git_organization_name}"
+  org_service_url = "https://dev.azure.com/${var.git_organization_name}"
   tenant_id       = var.use_msi ? null : var.tenant_id
   client_id       = var.use_msi ? null : var.client_id
   client_secret   = var.use_msi ? null : var.client_secret
