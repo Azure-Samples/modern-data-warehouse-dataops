@@ -213,3 +213,12 @@ module "fabric_workspace_git_integration" {
 
   depends_on = [module.fabric_data_pipeline]
 }
+
+module "azure_devops_variable_group" {
+  source                = "./modules/azure_devops/variable_group"
+  azure_devops_project_id = data.azuredevops_project.git_project.id
+  azure_devops_variable_group_name = local.git_variable_group_name
+  azure_devops_variable_group_variables = {
+    "key_vault_name" = module.keyvault.keyvault_name  # Needs at least one variable
+  }
+}

@@ -118,7 +118,7 @@ Here is a list of resources that are deployed:
   - terraform
   - python version 3.9+ with `requests` package installed
 - Access to an Azure DevOps organization and project:
-  - Contributor permissions to an Azure Repo in such Azure DevOps environment.
+  - Contributor permissions to an Azure Repo in such Azure DevOps environment. The service principal or managed identity requires Contributor permissions as well.
   - A branch and a folder in the repository where the Fabric items will be committed. The folder must already exist.
 
 ### Familiarize yourself with known issues, limitations, and workarounds

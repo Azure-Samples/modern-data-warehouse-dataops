@@ -14,3 +14,7 @@ data "azuread_group" "fabric_workspace_admin" {
   display_name     = var.fabric_workspace_admin_sg_name
   security_enabled = true
 }
+
+data "azuredevops_project" "git_project" {
+  name = var.git_project_name
+}
