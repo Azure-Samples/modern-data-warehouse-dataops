@@ -58,7 +58,7 @@ function create_storage_container() {
 
     # get the storage account name from the storage account id
     storage_account_name=$(az storage account show --ids $storage_account_id --query name -o tsv)
-    
+
     # create the folder /config in the storage container
     az storage fs directory create \
         -n "/config" \
@@ -66,7 +66,7 @@ function create_storage_container() {
         --account-name "$storage_account_name" \
         --auth-mode login \
         --output none
-    
+
     # create the folder /reference in the storage container
     az storage fs directory create \
         -n "/reference" \
@@ -99,7 +99,7 @@ function upload_file() {
         --overwrite true \
         --output none
 
-    echo "Uploaded file $target_filename to storage account $storage_account_name."   
+    echo "Uploaded file $target_filename to storage account $storage_account_name."
 }
 
 create_config_file \
@@ -115,7 +115,7 @@ assign_role_to_sp \
     "$storage_account_id" \
     "$resource_group_name" \
     "$storage_container_name" \
-    "$APP_CLIENT_ID" 
+    "$APP_CLIENT_ID"
 
 create_storage_container \
     "$storage_account_id" \
