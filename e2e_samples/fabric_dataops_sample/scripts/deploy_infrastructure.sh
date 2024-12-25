@@ -362,16 +362,16 @@ fi
 
 echo "[Info] ############ Uploading config file and seed data ############"
 
-tf_workspace_name=$tf_workspace_name \
-tf_workspace_id=$tf_workspace_id \
-tf_lakehouse_name=$tf_lakehouse_name \
-tf_lakehouse_id=$tf_lakehouse_id \
-tf_keyvault_name=$tf_keyvault_name \
+workspace_name=$tf_workspace_name \
+workspace_id=$tf_workspace_id \
+lakehouse_name=$tf_lakehouse_name \
+lakehouse_id=$tf_lakehouse_id \
+keyvault_name=$tf_keyvault_name \
 adls_gen2_shortcut_name=$adls_gen2_shortcut_name \
-tf_storage_account_id=$tf_storage_account_id \
+storage_account_id=$tf_storage_account_id \
 storage_account_name=$storage_account_name \
 resource_group_name=$resource_group_name \
-tf_storage_container_name=$tf_storage_container_name \
+storage_container_name=$tf_storage_container_name \
 bash -c "./../../scripts/upload_config_files.sh"
 
 

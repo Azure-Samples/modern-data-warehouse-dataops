@@ -103,49 +103,49 @@ function upload_file() {
 }
 
 create_config_file \
-    "$tf_workspace_name" \
-    "$tf_workspace_id" \
-    "$tf_lakehouse_name" \
-    "$tf_lakehouse_id" \
-    "$tf_keyvault_name" \
+    "$workspace_name" \
+    "$workspace_id" \
+    "$lakehouse_name" \
+    "$lakehouse_id" \
+    "$keyvault_name" \
     "$adls_gen2_shortcut_name" \
     "$config_file"
 
 assign_role_to_sp \
-    "$tf_storage_account_id" \
+    "$storage_account_id" \
     "$resource_group_name" \
-    "$tf_storage_container_name" \
+    "$storage_container_name" \
     "$APP_CLIENT_ID" 
 
 create_storage_container \
-    "$tf_storage_account_id" \
+    "$storage_account_id" \
     "$resource_group_name" \
-    "$tf_storage_container_name"
+    "$storage_container_name"
 
 upload_file \
-    "$tf_storage_account_id" \
+    "$storage_account_id" \
     "$resource_group_name" \
-    "$tf_storage_container_name" \
+    "$storage_container_name" \
     "$config_file" \
     "/config/application.cfg"
 
 upload_file \
-    "$tf_storage_account_id" \
+    "$storage_account_id" \
     "$resource_group_name" \
-    "$tf_storage_container_name" \
+    "$storage_container_name" \
     "$lakehouse_ddls_yaml_file" \
     "/config/lakehouse_ddls.yaml"
 
 upload_file \
-    "$tf_storage_account_id" \
+    "$storage_account_id" \
     "$resource_group_name" \
-    "$tf_storage_container_name" \
+    "$storage_container_name" \
     "$seed_dim_date_file" \
     "/reference/dim_date.csv"
 
 upload_file \
-    "$tf_storage_account_id" \
+    "$storage_account_id" \
     "$resource_group_name" \
-    "$tf_storage_container_name" \
+    "$storage_container_name" \
     "$seed_dim_time_file" \
     "/reference/dim_time.csv"
