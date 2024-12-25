@@ -7,6 +7,8 @@ import os
 import sys
 import pytest
 import datetime
+
+from pyspark.sql import SparkSession
 from pyspark.sql.functions import isnull
 from pyspark.sql.types import StructType, StructField, TimestampType, IntegerType, StringType, ArrayType, DoubleType, FloatType
 
@@ -20,11 +22,9 @@ loaded_on = datetime.datetime.now()
 
 
 @pytest.fixture
-def spark():
+def spark() -> SparkSession:
     """Spark Session fixture
     """
-    from pyspark.sql import SparkSession
-
     spark = SparkSession.builder\
         .master("local[2]")\
         .appName("Unit Testing")\
@@ -32,7 +32,7 @@ def spark():
     spark.sparkContext.setLogLevel("ERROR")
     return spark
 
-def expected_parkingbay_schema(bay_id_nullable: bool = False):
+def expected_parkingbay_schema(bay_id_nullable: bool = False) -> StructType:
     """Create the expected schema for the parking bay data"""
     expected_schema_parkingbay = StructType([  
             StructField("bay_id", IntegerType(), bay_id_nullable),  
@@ -52,7 +52,7 @@ def expected_parkingbay_schema(bay_id_nullable: bool = False):
     ])
     return expected_schema_parkingbay
 
-def expected_sensordata_schema(bay_id_nullable: bool = False):
+def expected_sensordata_schema(bay_id_nullable: bool = False) -> StructType:
     """Create the expected schema for the sensor data"""
     expected_schema_sensordata = StructType(
         [
@@ -73,8 +73,8 @@ def expected_sensordata_schema(bay_id_nullable: bool = False):
     )
     return expected_schema_sensordata
 
-def test_standardize_parking_bay(spark):
-    """Test data transform"""
+def test_standardize_parking_bay(spark) -> None:
+    """Test data standardization"""
     # Arrange
     schema = standardize.get_schema("in_parkingbay_schema")
     parkingbay_sdf = spark.read.json("./data/MelbParkingBayData.json", multiLine=True, schema=schema)
@@ -95,8 +95,8 @@ def test_standardize_parking_bay(spark):
     assert t_parkingbay_malformed_sdf.schema.simpleString() == expected_parkingbay_schema(True).simpleString()
 
 
-def test_standardize_sensordata(spark):
-    """Test data transform"""
+def test_standardize_sensordata(spark) -> None:
+    """Test data standardization"""
     # Arrange
     schema = standardize.get_schema("in_sensordata_schema")
     sensordata_sdf = spark.read.json("./data/MelbParkingSensorData.json", multiLine=True, schema=schema)

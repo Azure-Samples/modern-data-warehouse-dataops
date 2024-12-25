@@ -7,6 +7,8 @@ import os
 import sys
 import pytest
 import datetime
+
+from pyspark.sql import SparkSession
 from pyspark.sql.functions import isnull
 from pyspark.sql.types import StructType, StructField, TimestampType, IntegerType, StringType, ArrayType, DoubleType, FloatType
 
@@ -20,11 +22,9 @@ loaded_on = datetime.datetime.now()
 
 
 @pytest.fixture
-def spark():
+def spark() -> SparkSession:
     """Spark Session fixture
     """
-    from pyspark.sql import SparkSession
-
     spark = SparkSession.builder\
         .master("local[2]")\
         .appName("Unit Testing")\
@@ -32,8 +32,8 @@ def spark():
     spark.sparkContext.setLogLevel("ERROR")
     return spark
 
-def expected_process_dim_parking_bay_schema():
-    """Create the expected schema for the parking bay data"""
+def expected_process_dim_parking_bay_schema() -> StructType:
+    """Create the expected schema for the dim parking bay data"""
     expected_schema_process_dim_parking_bay = StructType([
             StructField("dim_parking_bay_id", StringType(), False),
             StructField("bay_id", IntegerType(), False),  
@@ -46,8 +46,8 @@ def expected_process_dim_parking_bay_schema():
     ])
     return expected_schema_process_dim_parking_bay
 
-def expected_process_fact_parking_schema():
-    """Create the expected schema for the parking bay data"""
+def expected_process_fact_parking_schema() -> StructType:
+    """Create the expected schema for the fact parking data"""
     expected_process_fact_parking = StructType([
             StructField("dim_date_id", StringType()),  
             StructField("dim_time_id", IntegerType()),
@@ -60,7 +60,7 @@ def expected_process_fact_parking_schema():
     ])
     return expected_process_fact_parking
 
-def test_process_dim_parking_bay(spark):
+def test_process_dim_parking_bay(spark) -> None:
     """Test data transform"""
     parkingbay_sdf = spark.read\
         .schema(transform.get_schema("interim_parkingbay_schema"))\
@@ -88,7 +88,7 @@ def test_process_dim_parking_bay(spark):
     assert results_df.schema.simpleString() == expected_process_dim_parking_bay_schema().simpleString()
 
 
-def test_process_fact_parking(spark):
+def test_process_fact_parking(spark) -> None:
     """Test data transform"""
     sensor_sdf = spark.read.schema(schema=transform.get_schema("interim_sensor")).json(
         os.path.join(THIS_DIR, "./data/interim_sensor.json")
