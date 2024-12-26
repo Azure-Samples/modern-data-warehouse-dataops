@@ -3,17 +3,26 @@
 
 """Tests for `ddo_transform` package."""
 
+import datetime
 import os
 import sys
-import pytest
-import datetime
 
+import ddo_transform_standardize as standardize
+import pytest
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import isnull
-from pyspark.sql.types import StructType, StructField, TimestampType, IntegerType, StringType, ArrayType, DoubleType, FloatType
+from pyspark.sql.types import (
+    ArrayType,
+    DoubleType,
+    FloatType,
+    IntegerType,
+    StringType,
+    StructField,
+    StructType,
+    TimestampType,
+)
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../config/fabric_environment/'))
-import ddo_transform_standardize as standardize
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../../config/fabric_environment/"))
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -23,34 +32,37 @@ loaded_on = datetime.datetime.now()
 
 @pytest.fixture
 def spark() -> SparkSession:
-    """Spark Session fixture
-    """
-    spark = SparkSession.builder\
-        .master("local[2]")\
-        .appName("Unit Testing")\
-        .getOrCreate()
+    """Spark Session fixture"""
+    spark = SparkSession.builder.master("local[2]").appName("Unit Testing").getOrCreate()
     spark.sparkContext.setLogLevel("ERROR")
     return spark
 
+
 def expected_parkingbay_schema(bay_id_nullable: bool = False) -> StructType:
     """Create the expected schema for the parking bay data"""
-    expected_schema_parkingbay = StructType([  
-            StructField("bay_id", IntegerType(), bay_id_nullable),  
-            StructField("last_edit", TimestampType()),  
-            StructField("marker_id", StringType()),  
-            StructField("meter_id", StringType()),  
-            StructField("rd_seg_dsc", StringType()),  
-            StructField("rd_seg_id", IntegerType()),  
-            StructField("the_geom", StructType(
-                        [
-                            StructField("coordinates", ArrayType(ArrayType(ArrayType(ArrayType(DoubleType()))))),
-                            StructField("type", StringType()),
-                        ]
-                    )),  
-            StructField("load_id", StringType(), False),  
-            StructField("loaded_on", TimestampType())
-    ])
+    expected_schema_parkingbay = StructType(
+        [
+            StructField("bay_id", IntegerType(), bay_id_nullable),
+            StructField("last_edit", TimestampType()),
+            StructField("marker_id", StringType()),
+            StructField("meter_id", StringType()),
+            StructField("rd_seg_dsc", StringType()),
+            StructField("rd_seg_id", IntegerType()),
+            StructField(
+                "the_geom",
+                StructType(
+                    [
+                        StructField("coordinates", ArrayType(ArrayType(ArrayType(ArrayType(DoubleType()))))),
+                        StructField("type", StringType()),
+                    ]
+                ),
+            ),
+            StructField("load_id", StringType(), False),
+            StructField("loaded_on", TimestampType()),
+        ]
+    )
     return expected_schema_parkingbay
+
 
 def expected_sensordata_schema(bay_id_nullable: bool = False) -> StructType:
     """Create the expected schema for the sensor data"""
@@ -62,25 +74,26 @@ def expected_sensordata_schema(bay_id_nullable: bool = False) -> StructType:
             StructField("lon", FloatType()),
             StructField(
                 "location",
-                StructType(
-                    [StructField("coordinates", ArrayType(DoubleType())), StructField("type", StringType())]
-                ),
+                StructType([StructField("coordinates", ArrayType(DoubleType())), StructField("type", StringType())]),
             ),
             StructField("status", StringType()),
-            StructField("load_id", StringType(), False),  
-            StructField("loaded_on", TimestampType())
+            StructField("load_id", StringType(), False),
+            StructField("loaded_on", TimestampType()),
         ]
     )
     return expected_schema_sensordata
 
-def test_standardize_parking_bay(spark) -> None:
+
+def test_standardize_parking_bay(spark: SparkSession) -> None:
     """Test data standardization"""
     # Arrange
     schema = standardize.get_schema("in_parkingbay_schema")
     parkingbay_sdf = spark.read.json("./data/MelbParkingBayData.json", multiLine=True, schema=schema)
 
     # Act
-    t_parkingbay_sdf, t_parkingbay_malformed_sdf = standardize.standardize_parking_bay(parkingbay_sdf, load_id, loaded_on)  # noqa: E501
+    t_parkingbay_sdf, t_parkingbay_malformed_sdf = standardize.standardize_parking_bay(
+        parkingbay_sdf, load_id, loaded_on
+    )  # noqa: E501
 
     # Assert
     assert t_parkingbay_sdf.count() != 0
@@ -95,14 +108,16 @@ def test_standardize_parking_bay(spark) -> None:
     assert t_parkingbay_malformed_sdf.schema.simpleString() == expected_parkingbay_schema(True).simpleString()
 
 
-def test_standardize_sensordata(spark) -> None:
+def test_standardize_sensordata(spark: SparkSession) -> None:
     """Test data standardization"""
     # Arrange
     schema = standardize.get_schema("in_sensordata_schema")
     sensordata_sdf = spark.read.json("./data/MelbParkingSensorData.json", multiLine=True, schema=schema)
 
     # Act
-    t_sensordata_sdf, t_sensordata_malformed_sdf = standardize.standardize_sensordata(sensordata_sdf, load_id, loaded_on)  # noqa: E501
+    t_sensordata_sdf, t_sensordata_malformed_sdf = standardize.standardize_sensordata(
+        sensordata_sdf, load_id, loaded_on
+    )  # noqa: E501
 
     # Assert
     assert t_sensordata_sdf.count() != 0

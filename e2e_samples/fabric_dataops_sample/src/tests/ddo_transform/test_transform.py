@@ -3,17 +3,17 @@
 
 """Tests for `ddo_transform` package."""
 
+import datetime
 import os
 import sys
-import pytest
-import datetime
 
+import ddo_transform_transform as transform
+import pytest
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import isnull
-from pyspark.sql.types import StructType, StructField, TimestampType, IntegerType, StringType, ArrayType, DoubleType, FloatType
+from pyspark.sql.types import IntegerType, StringType, StructField, StructType, TimestampType
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../config/fabric_environment/'))
-import ddo_transform_transform as transform
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../../config/fabric_environment/"))
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -23,57 +23,59 @@ loaded_on = datetime.datetime.now()
 
 @pytest.fixture
 def spark() -> SparkSession:
-    """Spark Session fixture
-    """
-    spark = SparkSession.builder\
-        .master("local[2]")\
-        .appName("Unit Testing")\
-        .getOrCreate()
+    """Spark Session fixture"""
+    spark = SparkSession.builder.master("local[2]").appName("Unit Testing").getOrCreate()
     spark.sparkContext.setLogLevel("ERROR")
     return spark
 
+
 def expected_process_dim_parking_bay_schema() -> StructType:
     """Create the expected schema for the dim parking bay data"""
-    expected_schema_process_dim_parking_bay = StructType([
+    expected_schema_process_dim_parking_bay = StructType(
+        [
             StructField("dim_parking_bay_id", StringType(), False),
-            StructField("bay_id", IntegerType(), False),  
-            StructField("marker_id", StringType()),  
-            StructField("meter_id", StringType()),  
-            StructField("rd_seg_dsc", StringType()),  
-            StructField("rd_seg_id", IntegerType()), 
-            StructField("load_id", StringType(), False),  
-            StructField("loaded_on", TimestampType())
-    ])
+            StructField("bay_id", IntegerType(), False),
+            StructField("marker_id", StringType()),
+            StructField("meter_id", StringType()),
+            StructField("rd_seg_dsc", StringType()),
+            StructField("rd_seg_id", IntegerType()),
+            StructField("load_id", StringType(), False),
+            StructField("loaded_on", TimestampType()),
+        ]
+    )
     return expected_schema_process_dim_parking_bay
+
 
 def expected_process_fact_parking_schema() -> StructType:
     """Create the expected schema for the fact parking data"""
-    expected_process_fact_parking = StructType([
-            StructField("dim_date_id", StringType()),  
+    expected_process_fact_parking = StructType(
+        [
+            StructField("dim_date_id", StringType()),
             StructField("dim_time_id", IntegerType()),
             StructField("dim_parking_bay_id", StringType(), False),
             StructField("dim_location_id", StringType(), False),
             StructField("dim_st_marker_id", StringType(), False),
             StructField("status", StringType()),
-            StructField("load_id", StringType(), False),  
-            StructField("loaded_on", TimestampType())
-    ])
+            StructField("load_id", StringType(), False),
+            StructField("loaded_on", TimestampType()),
+        ]
+    )
     return expected_process_fact_parking
 
-def test_process_dim_parking_bay(spark) -> None:
-    """Test data transform"""
-    parkingbay_sdf = spark.read\
-        .schema(transform.get_schema("interim_parkingbay_schema"))\
-        .json(os.path.join(THIS_DIR, "./data/interim_parking_bay.json"))
-    dim_parkingbay_sdf = spark.read\
-        .schema(schema=transform.get_schema("dw_dim_parking_bay"))\
-        .json(os.path.join(THIS_DIR, "./data/dim_parking_bay.json"))
 
+def test_process_dim_parking_bay(spark: SparkSession) -> None:
+    """Test data transform"""
+    parkingbay_sdf = spark.read.schema(transform.get_schema("interim_parkingbay_schema")).json(
+        os.path.join(THIS_DIR, "./data/interim_parking_bay.json")
+    )
+    dim_parkingbay_sdf = spark.read.schema(schema=transform.get_schema("dw_dim_parking_bay")).json(
+        os.path.join(THIS_DIR, "./data/dim_parking_bay.json")
+    )
 
     # Filter out the data from each DataFrame to ensure that the act function is working as expected
     parkingbay_sdf = parkingbay_sdf.filter((parkingbay_sdf.bay_id != 3787) & (parkingbay_sdf.bay_id != 4318))
     dim_parkingbay_sdf = dim_parkingbay_sdf.filter(dim_parkingbay_sdf.bay_id != 21016)
-    
+
     # Act
     results_df = transform.process_dim_parking_bay(parkingbay_sdf, dim_parkingbay_sdf, load_id, loaded_on)
 
@@ -88,7 +90,7 @@ def test_process_dim_parking_bay(spark) -> None:
     assert results_df.schema.simpleString() == expected_process_dim_parking_bay_schema().simpleString()
 
 
-def test_process_fact_parking(spark) -> None:
+def test_process_fact_parking(spark: SparkSession) -> None:
     """Test data transform"""
     sensor_sdf = spark.read.schema(schema=transform.get_schema("interim_sensor")).json(
         os.path.join(THIS_DIR, "./data/interim_sensor.json")
@@ -114,7 +116,3 @@ def test_process_fact_parking(spark) -> None:
 
     # Ensure that the schema is as expected
     assert results_df.schema.simpleString() == expected_process_fact_parking_schema().simpleString()
-
-
-
-
