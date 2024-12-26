@@ -2,12 +2,10 @@
 # -*- coding: utf-8 -*-
 
 """Tests for `ddo_transform` package."""
-
 import datetime
 import os
 import sys
 
-import ddo_transform_standardize as standardize
 import pytest
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import isnull
@@ -23,8 +21,7 @@ from pyspark.sql.types import (
 )
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../config/fabric_environment/"))
-
-THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+import ddo_transform_standardize as standardize  # isort: skip
 
 load_id = "00000000-0000-0000-0000-000000000000"
 loaded_on = datetime.datetime.now()
