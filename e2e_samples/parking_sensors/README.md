@@ -225,7 +225,13 @@ Follow the setup prerequisites, permissions, and deployment environment options.
    - *Permissions needed*: ability to create and deploy to an azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
 3. [Azure DevOps Project](https://azure.microsoft.com/en-us/products/devops/) : Follow the documentation to create a new project, or use an existing project you wish to deploy these resources to.
    - *Permissions needed*: ability to create [service connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml), [pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops&tabs=yaml) and [variable groups](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml).
-
+4. [Databricks Unity Catalog](https://learn.microsoft.com/en-us/azure/databricks/data-governance/unity-catalog/get-started): Follow the documentation to create a new Unity Catalog for this sample with the name *sensordata*.
+5. - *Permissions needed*: A Databricks user that has *workspace admin* privileges must create the catalog.
+   - *Permissions needed*: If a regional metastore does not exist then an account admin must create one. [Metastore Creation](https://learn.microsoft.com/en-us/azure/databricks/data-governance/unity-catalog/create-metastore)
+   - *Permissions needed*: Once the catalog is created, the following permissions must be granted to *All account users* in order to run the notebooks *02_standardize.py* and *03_tranfsorm.py*.
+     - USE CATALOG, USE SCHEMA, CREATE TABLE, MODIFY, SELECT
+   - Alternatively these permissions can be given to the MSI generated for the Databricks Linked Service in ADF. This is the recommended approach and a better security practice. However since a separate catalog is created for this demo environment, granting privelages to *All account users* is a potential work around as many of the APIs for managing Unity Catalog are still being developed as of the writing of these instructions.
+  
 #### Deployment Options
 
 As previously mentioned, there are two approaches to setting up the deployment environment, and the prerequisites for each will be detailed below. We recommend opting for the Dev Container, as it streamlines the setup process, ensures consistency, and minimizes configuration effort. Using the Dev Container requires installation and configuration; refer to the documentation linked below for further details.
