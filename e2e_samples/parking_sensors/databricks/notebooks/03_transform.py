@@ -9,6 +9,15 @@ loadid = dbutils.widgets.get("loadid")
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC ## Use the Sensor Catalog Created in the Prerequisites 
+
+# COMMAND ----------
+# MAGIC %sql
+# MAGIC USE Catalog sensordata
+
+# COMMAND ----------
+
 import datetime
 import os
 from pyspark.sql.functions import col, lit
