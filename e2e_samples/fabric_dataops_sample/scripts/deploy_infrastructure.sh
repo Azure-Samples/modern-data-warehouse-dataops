@@ -34,10 +34,9 @@ fabric_capacity_admins="$FABRIC_CAPACITY_ADMINS"
 appinsights_connection_string_name="appinsights-connection-string"
 
 # Variable set based on Terraform output
-tf_storage_account_id=""
+tf_storage_account_name=""
 tf_storage_container_name=""
 tf_storage_account_url=""
-tf_keyvault_id=""
 tf_keyvault_name=""
 tf_keyvault_uri=""
 tf_workspace_name=""
@@ -115,10 +114,9 @@ deploy_terraform_resources() {
     -var "git_directory_name=$git_directory_name" \
     -var "kv_appinsights_connection_string_name=$appinsights_connection_string_name" \
 
-  tf_storage_account_id=$(terraform output --raw storage_account_id)
+  tf_storage_account_name=$(terraform output --raw storage_account_name)
   tf_storage_container_name=$(terraform output --raw storage_container_name)
   tf_storage_account_url=$(terraform output --raw storage_account_primary_dfs_endpoint)
-  tf_keyvault_id=$(terraform output --raw keyvault_id)
   tf_keyvault_name=$(terraform output --raw keyvault_name)
   tf_keyvault_uri=$(terraform output --raw keyvault_uri)
   tf_workspace_name=$(terraform output --raw workspace_name)
@@ -359,22 +357,23 @@ else
   echo "[Warning] Need to authenticate using the user context for shortcut creation. See README.md for more details."
 fi
 
+if [[ $user_principal_type == "user" ]]; then
+  echo "[Info] ############ Uploading config file and seed data ############"
 
-echo "[Info] ############ Uploading config file and seed data ############"
-
-workspace_name=$tf_workspace_name \
-workspace_id=$tf_workspace_id \
-lakehouse_name=$tf_lakehouse_name \
-lakehouse_id=$tf_lakehouse_id \
-keyvault_name=$tf_keyvault_name \
-adls_gen2_shortcut_name=$adls_gen2_shortcut_name \
-storage_account_id=$tf_storage_account_id \
-storage_account_name=$storage_account_name \
-resource_group_name=$resource_group_name \
-storage_container_name=$tf_storage_container_name \
-bash -c "./../../scripts/upload_config_files.sh"
-
-
+  WORKSPACE_NAME=$tf_workspace_name \
+  WORKSPACE_ID=$tf_workspace_id \
+  LAKEHOUSE_NAME=$tf_lakehouse_name \
+  LAKEHOUSE_ID=$tf_lakehouse_id \
+  ADLS_GEN2_SHORTCUT_NAME=$adls_gen2_shortcut_name \
+  RESOURCE_GROUP_NAME=$resource_group_name \
+  KEYVAULT_NAME=$tf_keyvault_name \
+  STORAGE_ACCOUNT_NAME=$tf_storage_account_name \
+  STORAGE_CONTAINER_NAME=$tf_storage_container_name \
+    bash -c "./../../scripts/upload_config_files.sh"
+else
+  echo "[Warning] ############ Skipping config file and seed data upload ############"
+  echo "[Warning] Need to authenticate using the user context for config file and seed data upload. See README.md for more details."
+fi
 
 echo "[Info] ############ Uploading packages to Environment ############"
 cd "./../../scripts"
