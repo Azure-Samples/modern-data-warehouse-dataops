@@ -79,6 +79,8 @@ Here is a list of resources that are deployed:
   - Microsoft Fabric Environment
   - Microsoft Fabric Notebooks
   - Microsoft Fabric Data pipelines
+- Azure DevOps Resources
+  - Variable Group
 - Additional Resources
   - Fabric workspace GIT integration
   - Azure Role assignments to entra security group and workspace identity
@@ -230,6 +232,7 @@ Once the deployment is complete, you can verify the resources created in the Azu
 | Azure - Log Analytics workspace | 'la-`BASE_NAME`' | Terraform |
 | Azure - Application Insights | 'appi-`BASE_NAME`' | Terraform |
 | Azure - Fabric Capacity | 'cap`BASE_NAME`' | Terraform |
+| Azure DevOps - Variable Group | 'vg-`BASE_NAME`-`ENVIRONMENT_NAME`' | Terraform |
 | Microsoft Fabric - Workspace | 'ws-`BASE_NAME`' | Terraform |
 | Microsoft Fabric - Lakehouse | 'lh_`BASE_NAME`' | Terraform |
 | Microsoft Fabric - Cloud Connection | 'conn-adls-st`BASE_NAME`' | Fabric REST API |
