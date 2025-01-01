@@ -87,6 +87,7 @@ Here is a list of resources that are deployed:
 
 - An Entra user that can access Microsoft Fabric (Free license is enough).
 - An existing Entra [security group](https://learn.microsoft.com/entra/fundamentals/concept-learn-about-groups) for Fabric Workspace admins. This group is added as an admin to the deployed Fabric workspace.
+  - Add the above user to this security group to enable it to upload configuration files and reference data to ADLS Gen2, as the group is assigned the 'Storage Blob Data Contributor' role during the deployment.
 - An Azure subscription with the following:
   - The `Microsoft.Fabric` [resource provider](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#register-resource-provider) has been registered on the Azure subscription.
   - A resource group to which your user should be granted [Contributor](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/privileged#contributor) and [User Access Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/privileged#user-access-administrator) privileged roles.
