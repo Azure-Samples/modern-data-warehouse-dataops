@@ -10,7 +10,7 @@ set -o errexit
 #######################################################
 
 ## Environment variables
-environment="$ENVIRONMENT_NAME"
+environment_name="$ENVIRONMENT_NAME"
 tenant_id="$TENANT_ID"
 subscription_id="$SUBSCRIPTION_ID"
 resource_group_name="$RESOURCE_GROUP_NAME"
@@ -96,7 +96,7 @@ deploy_terraform_resources() {
     -auto-approve \
     -var "use_cli=$use_cli" \
     -var "use_msi=$use_msi" \
-    -var "environment_name=$environment" \
+    -var "environment_name=$environment_name" \
     -var "tenant_id=$tenant_id" \
     -var "subscription_id=$subscription_id" \
     -var "resource_group_name=$resource_group_name" \
