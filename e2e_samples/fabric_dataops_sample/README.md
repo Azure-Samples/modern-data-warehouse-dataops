@@ -79,6 +79,8 @@ Here is a list of resources that are deployed:
   - Microsoft Fabric Environment
   - Microsoft Fabric Notebooks
   - Microsoft Fabric Data pipelines
+- Azure DevOps Resources
+  - Variable Group
 - Additional Resources
   - Fabric workspace GIT integration
   - Azure Role assignments to entra security group and workspace identity
@@ -87,6 +89,7 @@ Here is a list of resources that are deployed:
 
 - An Entra user that can access Microsoft Fabric (Free license is enough).
 - An existing Entra [security group](https://learn.microsoft.com/entra/fundamentals/concept-learn-about-groups) for Fabric Workspace admins. This group is added as an admin to the deployed Fabric workspace.
+  - Add the above user to this security group to enable it to upload configuration files and reference data to ADLS Gen2, as the group is assigned the 'Storage Blob Data Contributor' role during the deployment.
 - An Azure subscription with the following:
   - The `Microsoft.Fabric` [resource provider](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#register-resource-provider) has been registered on the Azure subscription.
   - A resource group to which your user should be granted [Contributor](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/privileged#contributor) and [User Access Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/privileged#user-access-administrator) privileged roles.
@@ -117,7 +120,7 @@ Here is a list of resources that are deployed:
   - terraform
   - python version 3.9+ with `requests` package installed
 - Access to an Azure DevOps organization and project:
-  - Contributor permissions to an Azure Repo in such Azure DevOps environment.
+  - Contributor permissions to an Azure Repo in such Azure DevOps environment. The service principal or managed identity requires Contributor permissions as well. Refer to the [documentation](https://learn.microsoft.com/azure/devops/organizations/security/add-users-team-project#add-users-or-groups-to-a-project) for more details.
   - A branch and a folder in the repository where the Fabric items will be committed. The folder must already exist.
 
 ### Familiarize yourself with known issues, limitations, and workarounds
@@ -229,6 +232,7 @@ Once the deployment is complete, you can verify the resources created in the Azu
 | Azure - Log Analytics workspace | 'la-`BASE_NAME`' | Terraform |
 | Azure - Application Insights | 'appi-`BASE_NAME`' | Terraform |
 | Azure - Fabric Capacity | 'cap`BASE_NAME`' | Terraform |
+| Azure DevOps - Variable Group | 'vg-`BASE_NAME`-`ENVIRONMENT_NAME`' | Terraform |
 | Microsoft Fabric - Workspace | 'ws-`BASE_NAME`' | Terraform |
 | Microsoft Fabric - Lakehouse | 'lh_`BASE_NAME`' | Terraform |
 | Microsoft Fabric - Cloud Connection | 'conn-adls-st`BASE_NAME`' | Fabric REST API |

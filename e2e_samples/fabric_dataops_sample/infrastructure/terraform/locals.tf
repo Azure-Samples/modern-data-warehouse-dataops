@@ -25,4 +25,5 @@ locals {
   fabric_environment_name              = "env-${local.base_name}"
   fabric_custom_pool_name              = "sprk-${local.base_name}"
   fabric_runtime_version               = "1.3"
+  git_variable_group_name              = "vg-${local.base_name}-${var.environment_name}"
 }
