@@ -111,7 +111,7 @@ deploy_terraform_resources() {
     -var "git_project_name=$git_project_name" \
     -var "git_repository_name=$git_repository_name" \
     -var "git_branch_name=$git_branch_name" \
-    -var "git_directory_name=$git_directory_name" \
+    -var "git_directory_name=$git_directory_name/fabric/workspace" \
     -var "kv_appinsights_connection_string_name=$appinsights_connection_string_name" \
 
   tf_storage_account_name=$(terraform output --raw storage_account_name)

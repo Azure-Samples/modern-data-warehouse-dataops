@@ -11,8 +11,9 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import isnull
 from pyspark.sql.types import IntegerType, StringType, StructField, StructType, TimestampType
 
+import src.ddo_transform_transform as transform  # isort: skip
+
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../config/fabric_environment/"))
-import ddo_transform_transform as transform  # isort: skip
 
 load_id = "00000000-0000-0000-0000-000000000000"
 loaded_on = datetime.datetime.now()
@@ -69,7 +70,7 @@ def test_process_dim_parking_bay(spark: SparkSession) -> None:
     dim_parkingbay_sdf = spark.read.json(
         "./data/dim_parking_bay.json", multiLine=True, schema=transform.get_schema("dw_dim_parking_bay")
     )
-    ## Filter out the data from each DataFrame to ensure that the act function is working as expected
+    # Filter out the data from each DataFrame to ensure that the act function is working as expected
     parkingbay_sdf = parkingbay_sdf.filter((parkingbay_sdf.bay_id != 3787) & (parkingbay_sdf.bay_id != 4318))
     dim_parkingbay_sdf = dim_parkingbay_sdf.filter(dim_parkingbay_sdf.bay_id != 21016)
 

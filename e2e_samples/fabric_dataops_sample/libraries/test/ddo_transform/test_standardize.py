@@ -20,8 +20,9 @@ from pyspark.sql.types import (
     TimestampType,
 )
 
+import src.ddo_transform_standardize as standardize  # isort: skip
+
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../config/fabric_environment/"))
-import ddo_transform_standardize as standardize  # isort: skip
 
 load_id = "00000000-0000-0000-0000-000000000000"
 loaded_on = datetime.datetime.now()
