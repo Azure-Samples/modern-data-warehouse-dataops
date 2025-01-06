@@ -3,17 +3,12 @@
 
 """Tests for `ddo_transform` package."""
 import datetime
-import os
-import sys
 
 import pytest
+import src.ddo_transform_transform as transform
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import isnull
 from pyspark.sql.types import IntegerType, StringType, StructField, StructType, TimestampType
-
-import src.ddo_transform_transform as transform  # isort: skip
-
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../../config/fabric_environment/"))
 
 load_id = "00000000-0000-0000-0000-000000000000"
 loaded_on = datetime.datetime.now()
