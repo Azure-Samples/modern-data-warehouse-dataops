@@ -39,7 +39,7 @@ appinsights_connection_string_name="appinsights-connection-string"
 terraform_state_file="terraform-${environment_name}.tfstate"
 
 # Variable set based on Terraform output
-tf_storage_account_id=""
+tf_storage_account_name=""
 tf_storage_container_name=""
 tf_storage_account_url=""
 tf_keyvault_id=""
@@ -120,7 +120,7 @@ cleanup_terraform_resources() {
     -var "kv_appinsights_connection_string_name=$appinsights_connection_string_name" \
     -state="${terraform_state_file}"
 
-  tf_storage_account_id=$(terraform output --state="${terraform_state_file}" --raw storage_account_id)
+  tf_storage_account_name=$(terraform output --state="${terraform_state_file}" --raw storage_account_name)
   tf_storage_container_name=$(terraform output --state="${terraform_state_file}" --raw storage_container_name)
   tf_storage_account_url=$(terraform output --state="${terraform_state_file}" --raw storage_account_primary_dfs_endpoint)
   tf_keyvault_id=$(terraform output --state="${terraform_state_file}" --raw keyvault_id)
