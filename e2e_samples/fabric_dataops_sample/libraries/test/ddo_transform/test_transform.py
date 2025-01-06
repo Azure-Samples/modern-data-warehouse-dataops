@@ -4,19 +4,16 @@
 """Tests for `ddo_transform` package."""
 import datetime
 import os
-import sys
 
+import libraries.src.ddo_transform_transform as transform
 import pytest
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import isnull
 from pyspark.sql.types import IntegerType, StringType, StructField, StructType, TimestampType
 
-import src.ddo_transform_transform as transform  # isort: skip
-
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../../config/fabric_environment/"))
-
 load_id = "00000000-0000-0000-0000-000000000000"
 loaded_on = datetime.datetime.now()
+data_path = os.path.join(os.path.dirname(__file__), "data/")
 
 
 @pytest.fixture
@@ -65,10 +62,14 @@ def test_process_dim_parking_bay(spark: SparkSession) -> None:
     """Test data transform"""
     # Arrange
     parkingbay_sdf = spark.read.json(
-        "./data/interim_parking_bay.json", multiLine=True, schema=transform.get_schema("interim_parkingbay_schema")
+        os.path.join(data_path, "interim_parking_bay.json"),
+        multiLine=True,
+        schema=transform.get_schema("interim_parkingbay_schema"),
     )
     dim_parkingbay_sdf = spark.read.json(
-        "./data/dim_parking_bay.json", multiLine=True, schema=transform.get_schema("dw_dim_parking_bay")
+        os.path.join(data_path, "dim_parking_bay.json"),
+        multiLine=True,
+        schema=transform.get_schema("dw_dim_parking_bay"),
     )
     # Filter out the data from each DataFrame to ensure that the act function is working as expected
     parkingbay_sdf = parkingbay_sdf.filter((parkingbay_sdf.bay_id != 3787) & (parkingbay_sdf.bay_id != 4318))
@@ -92,16 +93,18 @@ def test_process_fact_parking(spark: SparkSession) -> None:
     """Test data transform"""
     # Arrange
     sensor_sdf = spark.read.json(
-        "./data/interim_sensor.json", multiLine=True, schema=transform.get_schema("interim_sensor")
+        os.path.join(data_path, "interim_sensor.json"), multiLine=True, schema=transform.get_schema("interim_sensor")
     )
     dim_parking_bay_sdf = spark.read.json(
-        "./data/dim_parking_bay.json", multiLine=True, schema=transform.get_schema("dw_dim_parking_bay")
+        os.path.join(data_path, "dim_parking_bay.json"),
+        multiLine=True,
+        schema=transform.get_schema("dw_dim_parking_bay"),
     )
     dim_location_sdf = spark.read.json(
-        "./data/dim_location.json", multiLine=True, schema=transform.get_schema("dw_dim_location")
+        os.path.join(data_path, "dim_location.json"), multiLine=True, schema=transform.get_schema("dw_dim_location")
     )
     dim_st_marker_sdf = spark.read.json(
-        "./data/dim_st_marker.json", multiLine=True, schema=transform.get_schema("dw_dim_st_marker")
+        os.path.join(data_path, "dim_st_marker.json"), multiLine=True, schema=transform.get_schema("dw_dim_st_marker")
     )
 
     # Act
