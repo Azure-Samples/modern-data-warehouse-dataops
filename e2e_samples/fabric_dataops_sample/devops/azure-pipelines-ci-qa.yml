@@ -52,9 +52,9 @@ stages:
 
           - script: |
               echo "Running tests in $(WORKING_DIR)/libraries/test..."
-              # pytest test
+              pytest libraries
             displayName: 'Run Tests'
-            workingDirectory: $(WORKING_DIR)/libraries
+            workingDirectory: $(WORKING_DIR)/
 
   - stage: BuildFabric
     jobs:
