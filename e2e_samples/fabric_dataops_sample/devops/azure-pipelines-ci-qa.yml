@@ -13,7 +13,7 @@ pr:
 variables:
   - group: <VARIABLE_GROUP_NAME>
   - name: FEATURE_BRANCH
-    value: "$(System.PullRequest.SourceBranch)"
+    value: $[replace(variables['System.PullRequest.SourceBranch'], 'refs/heads/', '')]
   - name: PR_ID
     value: "$(System.PullRequest.PullRequestId)"
   - name: COMMIT_HASH
