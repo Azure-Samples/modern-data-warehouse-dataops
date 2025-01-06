@@ -1,6 +1,8 @@
 export TENANT_ID="The Entra ID (Azure AD Tenant Id) of your Fabric tenant"
 export SUBSCRIPTION_ID="The Azure subscription ID that will be used to deploy azure resources."
-export RESOURCE_GROUP_NAME="The Azure resource group where all azure resources will be deployed."
+# Space-separated list of deployment stages (development, testing, production) for your application.
+export ENVIRONMENTS=("dev" "test" "prod")
+export RESOURCE_GROUPS="Space-separated list of Azure resource groups corresponding to each environment."
 export BASE_NAME="The base name of the Fabric project. This name is used for naming the Azure and Fabric resources."
 # Service principal authentication: For managed identity or Entra ID user authentication, you can leave the following two variables blank.
 export APP_CLIENT_ID="The service principal client ID."

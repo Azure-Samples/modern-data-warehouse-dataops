@@ -33,6 +33,9 @@ fabric_capacity_admins="$FABRIC_CAPACITY_ADMINS"
 ## KeuVault secret variables
 appinsights_connection_string_name="appinsights-connection-string"
 
+# Terraform state file
+terraform_state_file="terraform-${environment_name}.tfstate"
+
 # Variable set based on Terraform output
 tf_storage_account_name=""
 tf_storage_container_name=""
@@ -59,7 +62,6 @@ fabric_bearer_token=""
 fabric_api_endpoint="https://api.fabric.microsoft.com/v1"
 
 # Fabric related variables
-adls_gen2_connection_name="conn-adls-st$base_name"
 adls_gen2_shortcut_name="sc-adls-main"
 adls_gen2_shortcut_path="Files"
 
@@ -113,26 +115,27 @@ deploy_terraform_resources() {
     -var "git_branch_name=$git_branch_name" \
     -var "git_directory_name=$git_directory_name" \
     -var "kv_appinsights_connection_string_name=$appinsights_connection_string_name" \
+    -state="${terraform_state_file}"
 
-  tf_storage_account_name=$(terraform output --raw storage_account_name)
-  tf_storage_container_name=$(terraform output --raw storage_container_name)
-  tf_storage_account_url=$(terraform output --raw storage_account_primary_dfs_endpoint)
-  tf_keyvault_name=$(terraform output --raw keyvault_name)
-  tf_keyvault_uri=$(terraform output --raw keyvault_uri)
-  tf_workspace_name=$(terraform output --raw workspace_name)
-  tf_workspace_id=$(terraform output --raw workspace_id)
-  tf_lakehouse_name=$(terraform output --raw lakehouse_name)
-  tf_lakehouse_id=$(terraform output --raw lakehouse_id)
-  tf_environment_id=$(terraform output --raw environment_id)
-  tf_environment_name=$(terraform output --raw environment_name)
-  tf_setup_notebook_name=$(terraform output --raw setup_notebook_name)
-  tf_setup_notebook_id=$(terraform output --raw setup_notebook_id)
-  tf_standardize_notebook_name=$(terraform output --raw standardize_notebook_name)
-  tf_standardize_notebook_id=$(terraform output --raw standardize_notebook_id)
-  tf_transform_notebook_name=$(terraform output --raw transform_notebook_name)
-  tf_transform_notebook_id=$(terraform output --raw transform_notebook_id)
-  tf_appinsights_connection_string_value=$(terraform output --raw appinsights_connection_string)
-  tf_fabric_workspace_admin_sg_principal_id=$(terraform output --raw fabric_workspace_admin_sg_principal_id)
+  tf_storage_account_name=$(terraform output --state="${terraform_state_file}" --raw storage_account_name)
+  tf_storage_container_name=$(terraform output --state="${terraform_state_file}" --raw storage_container_name)
+  tf_storage_account_url=$(terraform output --state="${terraform_state_file}" --raw storage_account_primary_dfs_endpoint)
+  tf_keyvault_name=$(terraform output --state="${terraform_state_file}" --raw keyvault_name)
+  tf_keyvault_uri=$(terraform output --state="${terraform_state_file}" --raw keyvault_uri)
+  tf_workspace_name=$(terraform output --state="${terraform_state_file}" --raw workspace_name)
+  tf_workspace_id=$(terraform output --state="${terraform_state_file}" --raw workspace_id)
+  tf_lakehouse_name=$(terraform output --state="${terraform_state_file}" --raw lakehouse_name)
+  tf_lakehouse_id=$(terraform output --state="${terraform_state_file}" --raw lakehouse_id)
+  tf_environment_id=$(terraform output --state="${terraform_state_file}" --raw environment_id)
+  tf_environment_name=$(terraform output --state="${terraform_state_file}" --raw environment_name)
+  tf_setup_notebook_name=$(terraform output --state="${terraform_state_file}" --raw setup_notebook_name)
+  tf_setup_notebook_id=$(terraform output --state="${terraform_state_file}" --raw setup_notebook_id)
+  tf_standardize_notebook_name=$(terraform output --state="${terraform_state_file}" --raw standardize_notebook_name)
+  tf_standardize_notebook_id=$(terraform output --state="${terraform_state_file}" --raw standardize_notebook_id)
+  tf_transform_notebook_name=$(terraform output --state="${terraform_state_file}" --raw transform_notebook_name)
+  tf_transform_notebook_id=$(terraform output --state="${terraform_state_file}" --raw transform_notebook_id)
+  tf_appinsights_connection_string_value=$(terraform output --state="${terraform_state_file}" --raw appinsights_connection_string)
+  tf_fabric_workspace_admin_sg_principal_id=$(terraform output --state="${terraform_state_file}" --raw fabric_workspace_admin_sg_principal_id)
 }
 
 function set_bearer_token() {
@@ -306,6 +309,7 @@ function create_shortcut() {
 }
 EOF
   )
+  echo "Request Body: $create_shortcut_body"
   response=$(curl -s -X POST -H "Authorization: Bearer $fabric_bearer_token" -H "Content-Type: application/json" -d "$create_shortcut_body" "$create_shortcut_url")
   sc_name=$(echo "$response" | jq -r '.name')
   if [[ -n $sc_name ]] && [[ $sc_name != "null" ]]; then
@@ -326,6 +330,7 @@ echo "[Info] ############ Terraform resources deployed, setting up fabric bearer
 set_bearer_token
 
 echo "[Info] ############ ADLS Gen2 Cloud Connection Creation ############"
+adls_gen2_connection_name="conn-adls-${tf_storage_account_name}"
 
 adls_gen2_connection_id=$(get_connection_id_by_name "$adls_gen2_connection_name")
 

@@ -10,7 +10,7 @@ set -o errexit
 #######################################################
 
 ## Environment variables
-environment="$ENVIRONMENT_NAME"
+environment_name="$ENVIRONMENT_NAME"
 tenant_id="$TENANT_ID"
 subscription_id="$SUBSCRIPTION_ID"
 resource_group_name="$RESOURCE_GROUP_NAME"
@@ -34,6 +34,9 @@ adls_gen2_connection_id="$ADLS_GEN2_CONNECTION_ID"
 
 ## KeuVault secret variables
 appinsights_connection_string_name="appinsights-connection-string"
+
+# Terraform state file
+terraform_state_file="terraform-${environment_name}.tfstate"
 
 # Variable set based on Terraform output
 tf_storage_account_id=""
@@ -61,7 +64,6 @@ fabric_bearer_token=""
 fabric_api_endpoint="https://api.fabric.microsoft.com/v1"
 
 # Fabric related variables
-adls_gen2_connection_name="conn-adls-st$base_name"
 adls_gen2_shortcut_name="sc-adls-main"
 adls_gen2_shortcut_path="Files"
 
@@ -99,7 +101,7 @@ cleanup_terraform_resources() {
     -auto-approve \
     -var "use_cli=$use_cli" \
     -var "use_msi=$use_msi" \
-    -var "environment_name=$environment" \
+    -var "environment_name=$environment_name" \
     -var "tenant_id=$tenant_id" \
     -var "subscription_id=$subscription_id" \
     -var "resource_group_name=$resource_group_name" \
@@ -115,27 +117,28 @@ cleanup_terraform_resources() {
     -var "git_repository_name=$git_repository_name" \
     -var "git_branch_name=$git_branch_name" \
     -var "git_directory_name=$git_directory_name" \
-    -var "kv_appinsights_connection_string_name=$appinsights_connection_string_name"
+    -var "kv_appinsights_connection_string_name=$appinsights_connection_string_name" \
+    -state="${terraform_state_file}"
 
-  tf_storage_account_id=$(terraform output --raw storage_account_id)
-  tf_storage_container_name=$(terraform output --raw storage_container_name)
-  tf_storage_account_url=$(terraform output --raw storage_account_primary_dfs_endpoint)
-  tf_keyvault_id=$(terraform output --raw keyvault_id)
-  tf_keyvault_name=$(terraform output --raw keyvault_name)
-  tf_keyvault_uri=$(terraform output --raw keyvault_uri)
-  tf_workspace_name=$(terraform output --raw workspace_name)
-  tf_workspace_id=$(terraform output --raw workspace_id)
-  tf_lakehouse_name=$(terraform output --raw lakehouse_name)
-  tf_lakehouse_id=$(terraform output --raw lakehouse_id)
-  tf_environment_id=$(terraform output --raw environment_id)
-  tf_environment_name=$(terraform output --raw environment_name)
-  tf_setup_notebook_name=$(terraform output --raw setup_notebook_name)
-  tf_setup_notebook_id=$(terraform output --raw setup_notebook_id)
-  tf_standardize_notebook_name=$(terraform output --raw standardize_notebook_name)
-  tf_standardize_notebook_id=$(terraform output --raw standardize_notebook_id)
-  tf_transform_notebook_name=$(terraform output --raw transform_notebook_name)
-  tf_transform_notebook_id=$(terraform output --raw transform_notebook_id)
-  tf_appinsights_connection_string_value=$(terraform output --raw appinsights_connection_string)
+  tf_storage_account_id=$(terraform output --state="${terraform_state_file}" --raw storage_account_id)
+  tf_storage_container_name=$(terraform output --state="${terraform_state_file}" --raw storage_container_name)
+  tf_storage_account_url=$(terraform output --state="${terraform_state_file}" --raw storage_account_primary_dfs_endpoint)
+  tf_keyvault_id=$(terraform output --state="${terraform_state_file}" --raw keyvault_id)
+  tf_keyvault_name=$(terraform output --state="${terraform_state_file}" --raw keyvault_name)
+  tf_keyvault_uri=$(terraform output --state="${terraform_state_file}" --raw keyvault_uri)
+  tf_workspace_name=$(terraform output --state="${terraform_state_file}" --raw workspace_name)
+  tf_workspace_id=$(terraform output --state="${terraform_state_file}" --raw workspace_id)
+  tf_lakehouse_name=$(terraform output --state="${terraform_state_file}" --raw lakehouse_name)
+  tf_lakehouse_id=$(terraform output --state="${terraform_state_file}" --raw lakehouse_id)
+  tf_environment_id=$(terraform output --state="${terraform_state_file}" --raw environment_id)
+  tf_environment_name=$(terraform output --state="${terraform_state_file}" --raw environment_name)
+  tf_setup_notebook_name=$(terraform output --state="${terraform_state_file}" --raw setup_notebook_name)
+  tf_setup_notebook_id=$(terraform output --state="${terraform_state_file}" --raw setup_notebook_id)
+  tf_standardize_notebook_name=$(terraform output --state="${terraform_state_file}" --raw standardize_notebook_name)
+  tf_standardize_notebook_id=$(terraform output --state="${terraform_state_file}" --raw standardize_notebook_id)
+  tf_transform_notebook_name=$(terraform output --state="${terraform_state_file}" --raw transform_notebook_name)
+  tf_transform_notebook_id=$(terraform output --state="${terraform_state_file}" --raw transform_notebook_id)
+  tf_appinsights_connection_string_value=$(terraform output --state="${terraform_state_file}" --raw appinsights_connection_string)
 
   cd "$original_directory"
 }
@@ -172,8 +175,8 @@ cleanup_terraform_files() {
 
   # List and delete specific Terraform files
   echo "[Info] Listing Terraform files that will be deleted:"
-  find . -type f \( -name "*.tfstate" -o -name "*.tfstate.backup" -o -name ".terraform.lock.hcl" \)
-  find . -type f \( -name "*.tfstate" -o -name "*.tfstate.backup" -o -name ".terraform.lock.hcl" \) -exec rm -f {} + 2>/dev/null
+  find . -type f \( -name "${terraform_state_file}" -o -name "${terraform_state_file}.backup" -o -name ".terraform.lock.hcl" \)
+  find . -type f \( -name "${terraform_state_file}" -o -name "${terraform_state_file}.backup" -o -name ".terraform.lock.hcl" \) -exec rm -f {} + 2>/dev/null
   echo "[Info] Terraform intermediate files deleted successfully."
 }
 
@@ -194,6 +197,7 @@ echo "[Info] ############ Terraform resources destroyed############"
 echo "[Info] Setting up fabric bearer token ############"
 set_bearer_token
 
+adls_gen2_connection_name="conn-adls-${tf_storage_account_name}"
 adls_gen2_connection_id=$(get_connection_id_by_name "$adls_gen2_connection_name")
 
 echo "[Info] ############ ADLS Gen2 connection ID Deletion ############"

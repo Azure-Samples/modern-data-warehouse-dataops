@@ -4,22 +4,21 @@ set -o pipefail
 set -o nounset
 # set -o xtrace # For debugging
 
+source ./.env
+
 #. ./scripts/common.sh
 . ./scripts/verify_prerequisites.sh "./.env"
 #. ./scripts/init_environment.sh
-
-#######################
-source ./.env
 
 # Log all outputs and errors to a log file
 log_file="deploy_${BASE_NAME}_$(date +"%Y%m%d_%H%M%S").log"
 exec > >(tee -a "$log_file")
 exec 2>&1
 
-for env_name in dev; do
-  ENVIRONMENT_NAME=$env_name \
+for i in "${!ENVIRONMENTS[@]}"; do
+  ENVIRONMENT_NAME=${ENVIRONMENTS[$i]} \
+  RESOURCE_GROUP_NAME=${RESOURCE_GROUPS[$i]} \
   TENANT_ID=$TENANT_ID \
-  RESOURCE_GROUP_NAME=$RESOURCE_GROUP_NAME \
   BASE_NAME=$BASE_NAME \
   APP_CLIENT_ID=$APP_CLIENT_ID \
   APP_CLIENT_SECRET=$APP_CLIENT_SECRET \
