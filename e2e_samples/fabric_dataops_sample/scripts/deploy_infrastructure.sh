@@ -30,7 +30,7 @@ fabric_workspace_admin_sg_name="$FABRIC_WORKSPACE_ADMIN_SG_NAME"
 existing_fabric_capacity_name="$EXISTING_FABRIC_CAPACITY_NAME"
 fabric_capacity_admins="$FABRIC_CAPACITY_ADMINS"
 
-## KeuVault secret variables
+## KeyVault secret variables
 appinsights_connection_string_name="appinsights-connection-string"
 
 # Terraform state file
@@ -381,7 +381,7 @@ else
 fi
 
 echo "[Info] ############ Uploading packages to Environment ############"
-cd "./../../scripts"
-python3 setup_fabric_environment.py --workspace_name "$tf_workspace_name" --environment_name "$tf_environment_name" --bearer_token "$fabric_bearer_token"
+#cd "./../../scripts"
+#python3 setup_fabric_environment.py --workspace_name "$tf_workspace_name" --environment_name "$tf_environment_name" --bearer_token "$fabric_bearer_token"
 
 echo "[Info] ############ FINISHED INFRA DEPLOYMENT ############"

@@ -4,11 +4,6 @@ set -o pipefail
 set -o nounset
 # set -o xtrace # For debugging
 
-#. ./scripts/common.sh
-#. ./scripts/verify_prerequisites.sh
-#. ./scripts/init_environment.sh
-
-#######################
 source ./.env
 
 # Log all outputs and errors to a log file

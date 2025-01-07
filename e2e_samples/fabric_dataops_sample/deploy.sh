@@ -6,9 +6,7 @@ set -o nounset
 
 source ./.env
 
-#. ./scripts/common.sh
 . ./scripts/verify_prerequisites.sh "./.env"
-#. ./scripts/init_environment.sh
 
 # Log all outputs and errors to a log file
 log_file="deploy_${BASE_NAME}_$(date +"%Y%m%d_%H%M%S").log"

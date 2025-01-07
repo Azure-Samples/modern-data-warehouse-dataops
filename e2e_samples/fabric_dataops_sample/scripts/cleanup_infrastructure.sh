@@ -29,10 +29,8 @@ fabric_workspace_admin_sg_name="$FABRIC_WORKSPACE_ADMIN_SG_NAME"
 # Fabric Capacity variables
 existing_fabric_capacity_name="$EXISTING_FABRIC_CAPACITY_NAME"
 fabric_capacity_admins="$FABRIC_CAPACITY_ADMINS"
-# ADLS Gen2 connection variable
-adls_gen2_connection_id="$ADLS_GEN2_CONNECTION_ID"
 
-## KeuVault secret variables
+## KeyVault secret variables
 appinsights_connection_string_name="appinsights-connection-string"
 
 # Terraform state file
