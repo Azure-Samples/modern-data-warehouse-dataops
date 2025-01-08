@@ -6,7 +6,7 @@ on:
   pull_request:
     branches:
       - '**'
-
+# https://chromium.googlesource.com/chromium/src/+/main/docs/linux/suid_sandbox_development.md
 jobs:
   check-links:
     name: linkspector
@@ -16,6 +16,16 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget gnupg
+          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo dpkg -i google-chrome-stable_current_amd64.deb || sudo apt-get -f install -y
+      - name: Set up SUID sandbox
+        run: |
+          sudo chown root:root /opt/google/chrome/chrome-sandbox
+          sudo chmod 4755 /opt/google/chrome/chrome-sandbox
       - name: Run linkspector
         uses: umbrelladocs/action-linkspector@v1
         with:
