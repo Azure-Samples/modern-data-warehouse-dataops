@@ -66,12 +66,11 @@ node_types=$(databricks clusters list-node-types --output json)
 
 # Extract VM names and node type IDs into temporary files
 echo "$vm_sizes" | jq -r '.[] | .name' > vm_names.txt
-echo "$node_types" | jq -r '.node_types[].node_type_id' > node_type_ids.txt
-# Filter node types to only include those that support Photon
-photon_node_types=$(echo "$node_types" | jq -r '.node_types[] | select(.is_photon_enabled == true) | .node_type_id')
+# Get available Databricks node types using the list-node-types API and filter node types to only include those that support Photon
+photon_node_types=$(echo "$node_types" | jq -r '.node_types[] | select(.photon_driver_capable == true) | .node_type_id')
 
 # Find common VM sizes
-common_vms=$(grep -Ff <(echo "$photon_node_types") vm_names.txt)
+common_vms=$(grep -Fwf <(echo "$photon_node_types") vm_names.txt)
 
 # Find the VM with the least resources
 least_resource_vm=$(echo "$vm_sizes" | jq --arg common_vms "$common_vms" '
