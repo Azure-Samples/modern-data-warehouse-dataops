@@ -16,19 +16,18 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
       - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y wget gnupg
-          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-          sudo dpkg -i google-chrome-stable_current_amd64.deb || sudo apt-get -f install -y
-      - name: Set up SUID sandbox
-        run: |
-          sudo chown root:root /opt/google/chrome/chrome-sandbox
-          sudo chmod 4755 /opt/google/chrome/chrome-sandbox
+        run: npm install
       - name: Run linkspector
         uses: umbrelladocs/action-linkspector@v1
         with:
           reporter: github-pr-review
           fail_on_error: true
           config_file: '.linkspector.yml'
+      - name: Run reviewdog
+        run: |
+          reviewdog -reporter=github-pr-review -fail-level=error
