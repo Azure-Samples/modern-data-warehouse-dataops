@@ -25,6 +25,9 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
     - [How to use a managed identity for authentication?](#how-to-use-a-managed-identity-for-authentication)
     - [Why is the variable FABRIC\_CAPACITY\_ADMINS required?](#why-is-the-variable-fabric_capacity_admins-required)
     - [What is the significance of `use_cli` and `use_msi` flags?](#what-is-the-significance-of-use_cli-and-use_msi-flags)
+  - [Code/Pipeline execution related](#codepipeline-execution-related)
+    - [Why do we need mount points during notebook execution](#why-do-we-need-mount-points-during-notebook-execution)
+    - [How do we run notebooks in high concurrency mode via fabric Data pipelines](#how-do-we-run-notebooks-in-high-concurrency-mode-via-fabric-data-pipelines)
 - [References](#references)
 
 ## Solution Overview
@@ -347,6 +350,17 @@ These flags are used to determine the authentication method to be used during th
 Terraform also uses these flags to determine the authentication method for the Fabric provider. If both `use_cli` and `use_msi` are set to `false`, the `client_id` and `client_secret` attributes are set for the provider to use service principal authentication.
 
 Additionally, in [main.tf](./infrastructure/terraform/main.tf), some modules are deployed only when `use_cli` is set to `true`. This is necessary for Fabric items that do not support service principal or managed identity authentication. These items are deployed using user-context authentication.
+
+### Code/Pipeline execution related
+
+#### Why do we need mount points during notebook execution
+
+If you need to read non-data files (e.g. config files, yaml files), referring them via ABFS path does not work.
+In such scenarios, you can mount lakehouse path as mount point and then access required files.
+
+#### How do we run notebooks in high concurrency mode via fabric Data pipelines
+
+Enable high concurrency mode for pipelines in workspace's spark settings. Refer to [documentation](https://learn.microsoft.com/en-us/fabric/data-engineering/configure-high-concurrency-session-notebooks-in-pipelines#configure-high-concurrency-mode)
 
 ## References
 
