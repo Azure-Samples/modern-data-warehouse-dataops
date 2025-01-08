@@ -1,5 +1,8 @@
 @description('Name of the App Service')
-param appName string
+param project string
+param env string
+param location string
+param deployment_id string
 
 @description('SKU for the App Service Plan')
 @allowed([
@@ -8,24 +11,20 @@ param appName string
 ])
 param skuName string = 'B1'
 
-@description('Region to deploy resources')
-param location string = resourceGroup().location
-
 resource appServicePlan 'Microsoft.Web/serverfarms@2024-04-01' = {
-  name: '${appName}-plan'
+  name: '${project}-plan-${env}-${deployment_id}'
   location: location
   sku: {
     name: skuName
     capacity: 1
   }
-  kind: 'Linux'
   properties: {
     reserved: false
   }
 }
 
 resource appService 'Microsoft.Web/sites@2024-04-01' = {
-  name: appName
+  name: '${project}-api-${env}-${deployment_id}'
   location: location
   properties: {
     serverFarmId: appServicePlan.id

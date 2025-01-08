@@ -47,17 +47,17 @@ adfFactoryBaseUrl="$baseUrl/resourceGroups/${RESOURCE_GROUP_NAME}/providers/Micr
 log "Deploying Data Factory artifacts."
 
 # Deploy all Linked Services
-createLinkedService "Ls_KeyVault_01"
-createLinkedService "Ls_AdlsGen2_01"
-createLinkedService "Ls_AzureSQLDW_01"
-createLinkedService "Ls_AzureDatabricks_01"
-createLinkedService "Ls_Http_DataSimulator"
+create_adf_linked_service "Ls_KeyVault_01"
+create_adf_linked_service "Ls_AdlsGen2_01"
+create_adf_linked_service "Ls_AzureSQLDW_01"
+create_adf_linked_service "Ls_AzureDatabricks_01"
+create_adf_linked_service "Ls_Http_DataSimulator"
 # Deploy all Datasets
-createDataset "Ds_AdlsGen2_ParkingData"
-createDataset "Ds_Http_Parking_Locations"
-createDataset "Ds_Http_Parking_Sensors"
+create_adf_dataset "Ds_AdlsGen2_ParkingData"
+create_adf_dataset "Ds_Http_Parking_Locations"
+create_adf_dataset "Ds_Http_Parking_Sensors"
 # Deploy all Pipelines
-createPipeline "P_Ingest_ParkingData"
+create_adf_pipeline "P_Ingest_ParkingData"
 # Deploy triggers
 create_adf_trigger "T_Sched"
 

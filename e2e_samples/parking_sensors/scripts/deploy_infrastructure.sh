@@ -52,28 +52,6 @@ resource_group_name="$PROJECT-$DEPLOYMENT_ID-$ENV_NAME-rg"
 log "Creating resource group: $resource_group_name"
 az group create --name "$resource_group_name" --location "$AZURE_LOCATION" --tags Environment="$ENV_NAME" --output none
 
-# Deploy App Service for REST API
-appName=data-simulator-$DEPLOYMENT_ID-$ENV_NAME
-log "Creating resource group: $appName"
-
-arm_output=$(
-    az deployment group create \
-  --resource-group "$resource_group_name" \
-  --template-file "./infrastructure/modules/appservice.bicep" \
-  --parameters appName="$appName" \
-  --output json
-)
-
-if [[ -z $arm_output ]]; then
-    log >&2 "AppService deployment failed."
-    exit 1
-fi
-
-arm_output=$(
-    az webapp deploy --resource-group "$resource_group_name" --name "$appName" --type zip --src-path ./data/data-simulator.zip
-)
-API_BASE_URL="https://$appName.azurewebsites.net"
-
 # By default, set all KeyVault permission to deployer
 # Retrieve KeyVault User Id
 kv_owner_object_id=$(az ad signed-in-user show --output json | jq -r '.id')
@@ -148,6 +126,16 @@ kv_dns_name=https://${kv_name}.vault.azure.net/
 # Store in KeyVault
 az keyvault secret set --vault-name "$kv_name" --name "kvUrl" --value "$kv_dns_name" -o none
 az keyvault secret set --vault-name "$kv_name" --name "subscriptionId" --value "$AZURE_SUBSCRIPTION_ID" -o none
+
+########################
+# DEPLOY REST API WEBAPP TO APPSERVICE
+appName="${PROJECT}-api-${ENV_NAME}-${DEPLOYMENT_ID}"
+log "Deploying REST API to AppService: $appName"
+
+APP_NAME=$appName \
+RESOURCE_GROUP_NAME=$resource_group_name \
+    bash -c "./scripts/deploy_webapp.sh"
+API_BASE_URL="https://$appName.azurewebsites.net"
 
 
 #########################

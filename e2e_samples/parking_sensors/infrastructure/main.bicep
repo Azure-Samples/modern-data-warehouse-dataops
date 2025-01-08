@@ -12,6 +12,15 @@ param enable_keyvault_soft_delete bool = true
 param enable_keyvault_purge_protection bool = true
 param entra_admin_login string
 
+module appservice './modules/appservice.bicep' = {
+  name: 'appservices_deploy_${deployment_id}'
+  params: {
+    project: project
+    env: env
+    location: location
+    deployment_id: deployment_id
+  }
+}
 
 module datafactory './modules/datafactory.bicep' = {
   name: 'datafactory_deploy_${deployment_id}'
@@ -70,10 +79,6 @@ module keyvault './modules/keyvault.bicep' = {
     keyvault_owner_object_id: keyvault_owner_object_id
     datafactory_principal_id: datafactory.outputs.datafactory_principal_id
   }
-
-  dependsOn: [
-    datafactory
-  ]
 }
 
 
@@ -107,10 +112,6 @@ module diagnostic './modules/diagnostic_settings.bicep' = if (enable_monitoring)
     loganalytics_workspace_name: loganalytics.outputs.loganalyticswsname
     datafactory_name: datafactory.outputs.datafactory_name    
   }
-  dependsOn: [
-    loganalytics
-    datafactory
-  ]
 }
 
 
@@ -149,8 +150,6 @@ module alerts './modules/alerts.bicep' = if (enable_monitoring) {
   }
   dependsOn: [
     loganalytics
-    datafactory
-    actiongroup    
   ]
 }
 
@@ -162,7 +161,6 @@ module data_quality_workbook './modules/data_quality_workbook.bicep' = if (enabl
   }
   dependsOn: [
     loganalytics
-    appinsights    
   ]
 }
 
