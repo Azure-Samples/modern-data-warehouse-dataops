@@ -6,28 +6,19 @@ on:
   pull_request:
     branches:
       - '**'
-# https://chromium.googlesource.com/chromium/src/+/main/docs/linux/suid_sandbox_development.md
+
 jobs:
   check-links:
     name: linkspector
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04 # https://github.com/w3c/webref/pull/1431/commits/1be8e31fe7777287bd5fd48217c9dcea269196b9
     permissions:
       contents: read
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-      - name: Install dependencies
-        run: npm install
       - name: Run linkspector
         uses: umbrelladocs/action-linkspector@v1
         with:
           reporter: github-pr-review
           fail_on_error: true
           config_file: '.linkspector.yml'
-      - name: Run reviewdog
-        run: |
-          reviewdog -reporter=github-pr-review -fail-level=error
