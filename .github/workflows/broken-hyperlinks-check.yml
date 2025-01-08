@@ -10,7 +10,7 @@ on:
 jobs:
   check-links:
     name: linkspector
-    runs-on: ubuntu-22.04 # https://github.com/w3c/webref/pull/1431/commits/1be8e31fe7777287bd5fd48217c9dcea269196b9
+    runs-on: ubuntu-22.04
     permissions:
       contents: read
       pull-requests: write
