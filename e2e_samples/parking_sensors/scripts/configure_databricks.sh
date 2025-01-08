@@ -90,7 +90,7 @@ else
 fi
 
 # Clean up temporary files
-rm vm_names.txt node_type_ids.txt
+rm vm_names.txt
 
 # Create initial cluster, if not yet exists
 # cluster.config.json file needs to refer to one of the available SKUs on yout Region
