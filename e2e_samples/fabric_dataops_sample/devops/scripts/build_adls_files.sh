@@ -47,7 +47,7 @@ function get_lakehouse_id() {
     return 0
 }
 
-# create a configuration file from the template file
+# Create a configuration file from the template file
 function create_config_file() {
     workspace_name=$1
     workspace_id=$2

@@ -41,9 +41,9 @@ stages:
 
           - script: |
               echo "Running tests in $(WORKING_DIR)/libraries/test..."
-              pytest libraries
+              pytest .
             displayName: 'Run Tests'
-            workingDirectory: $(WORKING_DIR)/
+            workingDirectory: $(WORKING_DIR)/libraries
 
           - script: |
               mkdir fabric_env/
