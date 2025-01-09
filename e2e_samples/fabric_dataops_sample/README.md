@@ -26,6 +26,7 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
     - [Why is the variable FABRIC\_CAPACITY\_ADMINS required?](#why-is-the-variable-fabric_capacity_admins-required)
     - [What is the significance of `use_cli` and `use_msi` flags?](#what-is-the-significance-of-use_cli-and-use_msi-flags)
   - [Code/Pipeline execution related](#codepipeline-execution-related)
+    - [How to execute the code in this sample](#how-to-execute-the-code-in-this-sample)
     - [Why do we need mount points during notebook execution](#why-do-we-need-mount-points-during-notebook-execution)
     - [How do we run notebooks in high concurrency mode via fabric Data pipelines](#how-do-we-run-notebooks-in-high-concurrency-mode-via-fabric-data-pipelines)
 - [References](#references)
@@ -352,6 +353,10 @@ Terraform also uses these flags to determine the authentication method for the F
 Additionally, in [main.tf](./infrastructure/terraform/main.tf), some modules are deployed only when `use_cli` is set to `true`. This is necessary for Fabric items that do not support service principal or managed identity authentication. These items are deployed using user-context authentication.
 
 ### Code/Pipeline execution related
+
+#### How to execute the code in this sample
+
+This sample deploys few notebooks and a data pipeline. Please open the pipeline and run it. The pipeline is pre-populated with values for required parameters - workspace and lakehouse.
 
 #### Why do we need mount points during notebook execution
 
