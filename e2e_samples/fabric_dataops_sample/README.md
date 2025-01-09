@@ -18,6 +18,7 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
   - [Familiarize yourself with known issues, limitations, and workarounds](#familiarize-yourself-with-known-issues-limitations-and-workarounds)
   - [Deploying infrastructure](#deploying-infrastructure)
   - [Verifying the infrastructure deployment](#verifying-the-infrastructure-deployment)
+  - [How to execute the code/datapipeline in this sample](#how-to-execute-the-codedatapipeline-in-this-sample)
 - [Cleaning up](#cleaning-up)
 - [Frequently asked questions](#frequently-asked-questions)
   - [Infrastructure deployment related](#infrastructure-deployment-related)
@@ -26,9 +27,7 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
     - [Why is the variable FABRIC\_CAPACITY\_ADMINS required?](#why-is-the-variable-fabric_capacity_admins-required)
     - [What is the significance of `use_cli` and `use_msi` flags?](#what-is-the-significance-of-use_cli-and-use_msi-flags)
   - [Code/Pipeline execution related](#codepipeline-execution-related)
-    - [How to execute the code in this sample](#how-to-execute-the-code-in-this-sample)
     - [Why do we need mount points during notebook execution](#why-do-we-need-mount-points-during-notebook-execution)
-    - [How do we run notebooks in high concurrency mode via fabric Data pipelines](#how-do-we-run-notebooks-in-high-concurrency-mode-via-fabric-data-pipelines)
 - [References](#references)
 
 ## Solution Overview
@@ -267,6 +266,15 @@ Additionally, note that the Fabric workspace Git integration has been configured
 
 _**Note: Please note that the Fabric notebook and pipeline deployed are placeholder items and are not functional. These are included to demonstrate the [tokenization](https://registry.terraform.io/providers/microsoft/fabric/latest/docs/guides/gotemplates) functionality during the Terraform deployment of these resources. These items will be replaced with functional versions in the next release._
 
+### How to execute the code/datapipeline in this sample
+
+This sample deploys few notebooks and a data pipeline. In order to execute these, please follow below steps:
+
+1. Enable high concurrency mode for pipelines in workspace's spark settings. Refer to [documentation](https://learn.microsoft.com/en-us/fabric/data-engineering/configure-high-concurrency-session-notebooks-in-pipelines#configure-high-concurrency-mode).
+
+2. Please open the data pipeline(pl_main) and run it.
+   (note: The pipeline is pre-populated with values for required parameters related to workspace and lakehouse).
+
 ## Cleaning up
 
 Once you have finished with the sample, you can delete the deployed resources by running the cleanup script.
@@ -354,18 +362,10 @@ Additionally, in [main.tf](./infrastructure/terraform/main.tf), some modules are
 
 ### Code/Pipeline execution related
 
-#### How to execute the code in this sample
-
-This sample deploys few notebooks and a data pipeline. Please open the pipeline and run it. The pipeline is pre-populated with values for required parameters - workspace and lakehouse.
-
 #### Why do we need mount points during notebook execution
 
 If you need to read non-data files (e.g. config files, yaml files), referring them via ABFS path does not work.
 In such scenarios, you can mount lakehouse path as mount point and then access required files.
-
-#### How do we run notebooks in high concurrency mode via fabric Data pipelines
-
-Enable high concurrency mode for pipelines in workspace's spark settings. Refer to [documentation](https://learn.microsoft.com/en-us/fabric/data-engineering/configure-high-concurrency-session-notebooks-in-pipelines#configure-high-concurrency-mode)
 
 ## References
 
