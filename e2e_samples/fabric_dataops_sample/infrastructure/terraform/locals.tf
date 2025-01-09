@@ -1,6 +1,6 @@
 locals {
   base_name             = var.base_name != "" ? lower(var.base_name) : random_string.base_name[0].result
-  base_name_trimmed     = replace(local.base_name, "-", "")
+  base_name_trimmed     = replace(replace(local.base_name, "-", ""), "_", "")
   base_name_underscored = replace(local.base_name, "-", "_")
   tags = {
     basename    = local.base_name

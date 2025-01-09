@@ -102,9 +102,9 @@ check_env_vars() {
     exit 1
   fi
 
-  # Ensure 'ENVIRONMENTS' and 'RESOURCE_GROUPS' arrays have the same length
-  if [ ${#ENVIRONMENTS[@]} -ne ${#RESOURCE_GROUPS[@]} ]; then
-    echo "[Error] ENVIRONMENTS and RESOURCE_GROUPS arrays must have the same length."
+  # Ensure 'ENVIRONMENT_NAMES' and 'RESOURCE_GROUP_NAMES' arrays have the same length
+  if [ ${#ENVIRONMENT_NAMES[@]} -ne ${#RESOURCE_GROUP_NAMES[@]} ]; then
+    echo "[Error] ENVIRONMENT_NAMES and RESOURCE_GROUP_NAMES arrays must have the same length."
     exit 1
   fi
 

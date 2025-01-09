@@ -10,10 +10,6 @@ resource "azurerm_storage_account" "storage" {
   shared_access_key_enabled       = false
   min_tls_version                 = var.min_tls_version
   tags                            = var.tags
-
-  lifecycle {
-    ignore_changes = [static_website]
-  }
 }
 
 resource "azurerm_storage_container" "container" {

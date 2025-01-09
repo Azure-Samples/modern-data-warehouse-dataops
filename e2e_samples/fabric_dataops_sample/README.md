@@ -148,7 +148,8 @@ Refer to the [known issues, limitations, and workarounds](docs/issues_limitation
   ```bash
   export TENANT_ID="The Entra ID (Azure AD Tenant Id) of your Fabric tenant"
   export SUBSCRIPTION_ID="The Azure subscription ID that will be used to deploy azure resources."
-  export RESOURCE_GROUP_NAME="The Azure resource group where all azure resources will be deployed."
+  export ENVIRONMENT_NAMES="Space-separated array of deployment stages, development (dev), staging (stg), production (prod) etc., for your application." # Example: ("dev" "stg" "prod")
+  export RESOURCE_GROUP_NAMES="Space-separated array of 'pre-existing' Azure resource groups corresponding to each environment." # Example: ("rg-dev" "rg-stg" "rg-prod")
   export BASE_NAME="The base name of the Fabric project. This name is used for naming the Azure and Fabric resources."
   # Service principal authentication: For managed identity or Entra ID user authentication, you can leave the following two variables blank.
   export APP_CLIENT_ID="The service principal client ID."
@@ -157,7 +158,7 @@ Refer to the [known issues, limitations, and workarounds](docs/issues_limitation
   export GIT_ORGANIZATION_NAME="The Azure DevOps organization."
   export GIT_PROJECT_NAME="The Azure Devops project."
   export GIT_REPOSITORY_NAME="Your repository under the Azure DevOps project."
-  export GIT_BRANCH_NAME="The branch where Fabric items will be committed to."
+  export GIT_BRANCH_NAME="The branch where Fabric items will be committed to." # Example: ("dev" "stg" "prod")
   export GIT_DIRECTORY_NAME="The folder where Fabric items will be committed" # Note: Other than the root folder "/", the directory must already exist. Must start with a forward-slash. Example: "/fabric"
   # Workspace admin variables
   export FABRIC_WORKSPACE_ADMIN_SG_NAME="The name of the Entra security groups with admin members."

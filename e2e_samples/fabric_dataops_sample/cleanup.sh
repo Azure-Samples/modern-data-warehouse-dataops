@@ -11,9 +11,9 @@ log_file="cleanup_${BASE_NAME}_$(date +"%Y%m%d_%H%M%S").log"
 exec > >(tee -a "$log_file")
 exec 2>&1
 
-for i in "${!ENVIRONMENTS[@]}"; do
-  ENVIRONMENT_NAME=${ENVIRONMENTS[$i]} \
-  RESOURCE_GROUP_NAME=${RESOURCE_GROUPS[$i]} \
+for i in "${!ENVIRONMENT_NAMES[@]}"; do
+  ENVIRONMENT_NAME=${ENVIRONMENT_NAMES[$i]} \
+  RESOURCE_GROUP_NAME=${RESOURCE_GROUP_NAMES[$i]} \
   TENANT_ID=$TENANT_ID \
   BASE_NAME=$BASE_NAME \
   APP_CLIENT_ID=$APP_CLIENT_ID \

@@ -14,8 +14,8 @@ location=$1
 security_group_name=$2
 
 # Ensure the arrays have the same length
-if [ ${#ENVIRONMENTS[@]} -ne ${#RESOURCE_GROUPS[@]} ]; then
-  echo "[Error] 'ENVIRONMENTS' and 'RESOURCE_GROUPS' arrays must have the same length."
+if [ ${#ENVIRONMENT_NAMES[@]} -ne ${#RESOURCE_GROUP_NAMES[@]} ]; then
+  echo "[Error] 'ENVIRONMENT_NAMES' and 'RESOURCE_GROUP_NAMES' arrays must have the same length."
   exit 1
 fi
 
@@ -56,9 +56,9 @@ assign_roles() {
 }
 
 # Loop through the environments and create the resource groups
-for i in "${!ENVIRONMENTS[@]}"; do
-  environment_name=${ENVIRONMENTS[$i]}
-  resource_group_name=${RESOURCE_GROUPS[$i]}
+for i in "${!ENVIRONMENT_NAMES[@]}"; do
+  environment_name=${ENVIRONMENT_NAMES[$i]}
+  resource_group_name=${RESOURCE_GROUP_NAMES[$i]}
 
   echo "############# Processing environment '$environment_name' and resource group '$resource_group_name' #############"
 
