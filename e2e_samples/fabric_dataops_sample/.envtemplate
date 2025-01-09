@@ -12,7 +12,7 @@ export APP_CLIENT_SECRET="The service principal client secret."
 export GIT_ORGANIZATION_NAME="The Azure DevOps organization."
 export GIT_PROJECT_NAME="The Azure Devops project."
 export GIT_REPOSITORY_NAME="Your repository under the Azure DevOps project."
-## Space-separated array of the branches corresponding to each environment where Fabric items will be committed to.
+## Space-separated array of the GIT branches corresponding to each environment where Fabric items will be committed to.
 export GIT_BRANCH_NAMES=("dev" "stg" "prod")
 ## Note: Other than the root folder "/", the directory must already exist. Must start with a forward-slash. Example: "/fabric"
 export GIT_DIRECTORY_NAME="The folder where Fabric items will be committed"

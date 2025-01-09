@@ -115,7 +115,7 @@ deploy_terraform_resources() {
     -var "git_repository_name=$git_repository_name" \
     -var "git_branch_name=$git_branch_name" \
     -var "git_directory_name=$git_directory_name" \
-    -var "kv_appinsights_connection_string_name=$appinsights_connection_string_name"
+    -var "kv_appinsights_connection_string_name=$appinsights_connection_string_name" \
 
   tf_storage_account_name=$(terraform output --raw storage_account_name)
   tf_storage_container_name=$(terraform output --raw storage_container_name)
@@ -309,7 +309,6 @@ function create_shortcut() {
 }
 EOF
   )
-  echo "Request Body: $create_shortcut_body"
   response=$(curl -s -X POST -H "Authorization: Bearer $fabric_bearer_token" -H "Content-Type: application/json" -d "$create_shortcut_body" "$create_shortcut_url")
   sc_name=$(echo "$response" | jq -r '.name')
   if [[ -n $sc_name ]] && [[ $sc_name != "null" ]]; then
