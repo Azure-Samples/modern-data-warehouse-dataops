@@ -4,7 +4,6 @@ This repository contains Databricks deployment using Terraform and Databricks as
 
 ## Prerequisites
 
-- Azure Subscription
 - VS Code with Devcontainer extension installed (Optional)
 - Azure Resources Deployed. See how to deploy resources [here](./Infra/README.md)
 
