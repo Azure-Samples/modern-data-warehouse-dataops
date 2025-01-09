@@ -273,7 +273,8 @@ This sample deploys few notebooks and a data pipeline. In order to execute these
 1. Enable high concurrency mode for pipelines in workspace's spark settings. Refer to [documentation](https://learn.microsoft.com/en-us/fabric/data-engineering/configure-high-concurrency-session-notebooks-in-pipelines#configure-high-concurrency-mode).
 
 2. Please open the data pipeline(pl_main) and run it.
-   (note: The pipeline is pre-populated with values for required parameters related to workspace and lakehouse).
+
+   (Note: The pipeline is pre-populated with values for required parameters related to workspace and lakehouse).
 
 ## Cleaning up
 
