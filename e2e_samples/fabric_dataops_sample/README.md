@@ -18,6 +18,7 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
   - [Familiarize yourself with known issues, limitations, and workarounds](#familiarize-yourself-with-known-issues-limitations-and-workarounds)
   - [Deploying infrastructure](#deploying-infrastructure)
   - [Verifying the infrastructure deployment](#verifying-the-infrastructure-deployment)
+  - [Running the sample](#running-the-sample)
 - [Cleaning up](#cleaning-up)
 - [Frequently asked questions](#frequently-asked-questions)
   - [Infrastructure deployment related](#infrastructure-deployment-related)
@@ -25,6 +26,8 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
     - [How to use a managed identity for authentication?](#how-to-use-a-managed-identity-for-authentication)
     - [Why is the variable FABRIC\_CAPACITY\_ADMINS required?](#why-is-the-variable-fabric_capacity_admins-required)
     - [What is the significance of `use_cli` and `use_msi` flags?](#what-is-the-significance-of-use_cli-and-use_msi-flags)
+  - [Application code and execution related](#application-code-and-execution-related)
+    - [Why are lakehouse mount points created in notebooks?](#why-are-lakehouse-mount-points-created-in-notebooks)
 - [References](#references)
 
 ## Solution Overview
@@ -269,6 +272,26 @@ Additionally, note that the Fabric workspace Git integration has been configured
 
 _**Note: Please note that the Fabric notebooks and pipeline deployed are under development and subjected to future changes._
 
+### Running the sample
+
+This sample deploys the following three Fabric notebooks:
+
+1. [nb-setup](./src/notebooks/00_setup.ipynb): Creates the required database schemas and tables for the parking sensors application and ingests data in `Bronze` layer.
+2. [nb-standardize](./src/notebooks/02_standardize.ipynb): Cleans and validates the raw parking sensors data and stores it in `Silver` layer.
+3. [nb-transform](./src/notebooks/03_transform.ipynb): Transforms the data in silver layer into dimensions and facts and stores it in `Gold` layer.
+
+The execution of these notebooks is orchestrated via a Fabric data pipeline [pl-main](./src/pipelines/00-main.json).
+
+Here are the instructions to run the application:
+
+1. The sample deploys multiple Fabric workspaces corresponding to each environment. Login to [Microsoft Fabric](https://app.fabric.microsoft.com/) and select the workspace corresponding to your development environment.
+
+2. Enable [high concurrency mode](https://learn.microsoft.com/fabric/data-engineering/configure-high-concurrency-session-notebooks-in-pipelines#configure-high-concurrency-mode) for Fabric pipelines in the spark settings of the workspace.
+
+3. Open the Fabric data pipeline `pl-main` and run it. The pipeline is pre-populated with values for required parameters related to workspace and lakehouse. Successful execution of pipeline will look as shown below:
+
+![Data Pipeline Execution](./images/data-pipeline-execution.png)
+
 ## Cleaning up
 
 Once you have finished with the sample, you can delete the deployed resources by running the cleanup script.
@@ -355,6 +378,12 @@ These flags are used to determine the authentication method to be used during th
 Terraform also uses these flags to determine the authentication method for the Fabric provider. If both `use_cli` and `use_msi` are set to `false`, the `client_id` and `client_secret` attributes are set for the provider to use service principal authentication.
 
 Additionally, in [main.tf](./infrastructure/terraform/main.tf), some modules are deployed only when `use_cli` is set to `true`. This is necessary for Fabric items that do not support service principal or managed identity authentication. These items are deployed using user-context authentication.
+
+### Application code and execution related
+
+#### Why are lakehouse mount points created in notebooks?
+
+If you need to read non-data files (e.g., config/yaml), referring them via ABFS path does not work. In such scenarios, you can mount lakehouse path as mount point and then access the required files.
 
 ## References
 

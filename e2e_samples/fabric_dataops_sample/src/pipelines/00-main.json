@@ -30,6 +30,13 @@
               },
               "type": "string"
             },
+            "workspace_name": {
+              "value": {
+                "value": "@pipeline().parameters.workspace_name",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
             "local_mount": {
               "value": {
                 "value": "@concat('abfss://', pipeline().parameters.workspace_id, '@onelake.dfs.fabric.microsoft.com/', pipeline().parameters.lakehouse_id, '/Files')",
@@ -106,6 +113,13 @@
             "workspace_id": {
               "value": {
                 "value": "@pipeline().parameters.workspace_id",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "workspace_name": {
+              "value": {
+                "value": "@pipeline().parameters.workspace_name",
                 "type": "Expression"
               },
               "type": "string"
@@ -193,6 +207,13 @@
             "workspace_id": {
               "value": {
                 "value": "@pipeline().parameters.workspace_id",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "workspace_name": {
+              "value": {
+                "value": "@pipeline().parameters.workspace_name",
                 "type": "Expression"
               },
               "type": "string"
