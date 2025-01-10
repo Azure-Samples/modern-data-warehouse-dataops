@@ -1,0 +1,49 @@
+trigger: none
+
+variables:
+  - group: <VARIABLE_GROUP_NAME>
+  - name: STORAGE_CONTAINER_NAME
+    value: "feature-$(PR_ID)"
+
+jobs:
+  - job: CleanupWorkspace
+    displayName: 'Cleanup Resources after PR Merge or Abandon'
+    pool:
+      vmImage: 'ubuntu-latest'
+    condition: always()
+    steps:
+
+      - script: |
+          echo "Triggering interactive Azure CLI login..."
+          az login --use-device-code
+        displayName: 'Azure CLI - Interactive Login'
+
+      - script: |
+          FABRIC_BEARER_TOKEN=$(az account get-access-token --resource https://api.fabric.microsoft.com --query accessToken -o tsv)
+          AZURE_MANAGEMENT_BEARER_TOKEN=$(az account get-access-token --resource https://management.azure.com --query accessToken -o tsv)
+          AZURE_STORAGE_BEARER_TOKEN=$(az account get-access-token --resource https://storage.azure.com/ --query accessToken -o tsv)
+
+          # Set the tokens as pipeline variables
+          echo "##vso[task.setvariable variable=FABRIC_BEARER_TOKEN]$FABRIC_BEARER_TOKEN"
+          echo "##vso[task.setvariable variable=AZURE_MANAGEMENT_BEARER_TOKEN]$AZURE_MANAGEMENT_BEARER_TOKEN"
+          echo "##vso[task.setvariable variable=AZURE_STORAGE_BEARER_TOKEN]$AZURE_STORAGE_BEARER_TOKEN"
+
+        displayName: 'Get Access Tokens'
+        name: GetAccessTokens
+
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '3.8'
+          addToPath: true
+
+      - script: |
+          pip install -r $(WORKING_DIR)/devops/scripts/requirements.txt
+        displayName: 'Install Requirements'
+
+      - script: |
+          echo "Running Cleanup Script"
+          export FABRIC_WORKSPACE_NAME="$FABRIC_WORKSPACE_NAME-$PR_ID"
+          export FABRIC_CONNECTION_NAME="$FABRIC_CONNECTION_NAME-$PR_ID"
+
+          python -u $(WORKING_DIR)/devops/scripts/cleanup_workspace.py --verbose
+        displayName: 'Cleanup Resources'

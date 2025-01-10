@@ -4,8 +4,8 @@
 """Tests for `ddo_transform` package."""
 import datetime
 import os
-import sys
 
+import libraries.src.ddo_transform_standardize as standardize
 import pytest
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import isnull
@@ -20,11 +20,9 @@ from pyspark.sql.types import (
     TimestampType,
 )
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../../config/fabric_environment/"))
-import ddo_transform_standardize as standardize  # isort: skip
-
 load_id = "00000000-0000-0000-0000-000000000000"
 loaded_on = datetime.datetime.now()
+data_path = os.path.join(os.path.dirname(__file__), "data/")
 
 
 @pytest.fixture
@@ -85,7 +83,7 @@ def test_standardize_parking_bay(spark: SparkSession) -> None:
     """Test data standardization"""
     # Arrange
     schema = standardize.get_schema("in_parkingbay_schema")
-    parkingbay_sdf = spark.read.json("./data/MelbParkingBayData.json", multiLine=True, schema=schema)
+    parkingbay_sdf = spark.read.json(os.path.join(data_path, "MelbParkingBayData.json"), multiLine=True, schema=schema)
 
     # Act
     t_parkingbay_sdf, t_parkingbay_malformed_sdf = standardize.standardize_parking_bay(
@@ -109,7 +107,9 @@ def test_standardize_sensordata(spark: SparkSession) -> None:
     """Test data standardization"""
     # Arrange
     schema = standardize.get_schema("in_sensordata_schema")
-    sensordata_sdf = spark.read.json("./data/MelbParkingSensorData.json", multiLine=True, schema=schema)
+    sensordata_sdf = spark.read.json(
+        os.path.join(data_path, "MelbParkingSensorData.json"), multiLine=True, schema=schema
+    )
 
     # Act
     t_sensordata_sdf, t_sensordata_malformed_sdf = standardize.standardize_sensordata(

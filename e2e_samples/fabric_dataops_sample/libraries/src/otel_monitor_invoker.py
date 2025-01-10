@@ -1,5 +1,6 @@
 # This examples uses advanced config using monitor exporters using:
-# ref: https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/monitor/azure-monitor-opentelemetry-exporter#microsoft-opentelemetry-exporter-for-azure-monitor
+# ref: https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/monitor/azure-monitor-opentelemetry-exporter
+#      #microsoft-opentelemetry-exporter-for-azure-monitor
 
 # Simple configuration could also be done using as below in which case, tracer, logger and meter are
 #    pre-configured to send data to azure-monitor.
@@ -18,8 +19,10 @@
 #     credential=ManagedIdentityCredential(),
 # )
 # ```
-# - https://learn.microsoft.com/en-us/python/api/overview/azure/monitor-opentelemetry-exporter-readme?view=azure-python-preview
-# - https://learn.microsoft.com/en-us/python/api/overview/azure/monitor-opentelemetry-exporter-readme?view=azure-python-preview#examples
+# - https://learn.microsoft.com/en-us/python/api/overview/azure/monitor-opentelemetry-exporter-readme
+#   ?view=azure-python-preview
+# - https://learn.microsoft.com/en-us/python/api/overview/azure/monitor-opentelemetry-exporter-readme
+#   ?view=azure-python-preview#examples
 
 import logging
 

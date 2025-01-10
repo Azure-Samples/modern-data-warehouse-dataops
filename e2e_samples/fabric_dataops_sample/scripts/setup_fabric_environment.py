@@ -225,7 +225,7 @@ if __name__ == "__main__":
     upload_staging_libraries(
         workspace_id,
         environment_id,
-        "./../config/fabric_environment",
+        "./../fabric/fabric_environment",
         "environment.yml",
         "multipart/form-data",
     )
@@ -234,7 +234,7 @@ if __name__ == "__main__":
     upload_staging_libraries(
         workspace_id,
         environment_id,
-        "./../config/fabric_environment",
+        "./../libraries/src",
         "otel_monitor_invoker.py",
         "application/x-python-wheel",
     )
@@ -243,7 +243,7 @@ if __name__ == "__main__":
     upload_staging_libraries(
         workspace_id,
         environment_id,
-        "./../config/fabric_environment",
+        "./../libraries/src",
         "ddo_transform_standardize.py",
         "application/x-python-wheel",
     )
@@ -252,7 +252,7 @@ if __name__ == "__main__":
     upload_staging_libraries(
         workspace_id,
         environment_id,
-        "./../config/fabric_environment",
+        "./../libraries/src",
         "ddo_transform_transform.py",
         "application/x-python-wheel",
     )

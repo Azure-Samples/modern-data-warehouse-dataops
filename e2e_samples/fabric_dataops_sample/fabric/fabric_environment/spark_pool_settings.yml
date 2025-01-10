@@ -1,0 +1,10 @@
+nodeFamily: MemoryOptimized
+nodeSize: Small
+autoScale:
+  enabled: true
+  minNodeCount: 1
+  maxNodeCount: 3
+dynamicExecutorAllocation:
+  enabled: true
+  minExecutors: 1
+  maxExecutors: 2
