@@ -18,7 +18,7 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
   - [Familiarize yourself with known issues, limitations, and workarounds](#familiarize-yourself-with-known-issues-limitations-and-workarounds)
   - [Deploying infrastructure](#deploying-infrastructure)
   - [Verifying the infrastructure deployment](#verifying-the-infrastructure-deployment)
-  - [How to execute the code/datapipeline in this sample](#how-to-execute-the-codedatapipeline-in-this-sample)
+  - [Running the sample](#running-the-sample)
 - [Cleaning up](#cleaning-up)
 - [Frequently asked questions](#frequently-asked-questions)
   - [Infrastructure deployment related](#infrastructure-deployment-related)
@@ -26,8 +26,8 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
     - [How to use a managed identity for authentication?](#how-to-use-a-managed-identity-for-authentication)
     - [Why is the variable FABRIC\_CAPACITY\_ADMINS required?](#why-is-the-variable-fabric_capacity_admins-required)
     - [What is the significance of `use_cli` and `use_msi` flags?](#what-is-the-significance-of-use_cli-and-use_msi-flags)
-  - [Code/Pipeline execution related](#codepipeline-execution-related)
-    - [Why do we need mount points during notebook execution](#why-do-we-need-mount-points-during-notebook-execution)
+  - [Application code and execution related](#application-code-and-execution-related)
+    - [Why are lakehouse mount points created in notebooks?](#why-are-lakehouse-mount-points-created-in-notebooks)
 - [References](#references)
 
 ## Solution Overview
@@ -282,7 +282,9 @@ Here are the instructions to run the application:
 
 2. Enable high concurrency mode for Fabric pipelines in the spark settings of the workspace. Refer to [documentation](https://learn.microsoft.com/fabric/data-engineering/configure-high-concurrency-session-notebooks-in-pipelines#configure-high-concurrency-mode) for the details.
 
-3. Open the Fabric data pipeline `pl-main` and run it. The pipeline is pre-populated with values for required parameters related to workspace and lakehouse.
+3. Open the Fabric data pipeline `pl-main` and run it. The pipeline is pre-populated with values for required parameters related to workspace and lakehouse. Successful execution of pipeline will look as shown below
+
+![Data Pipeline Execution](./images/data-pipeline-execution.png)
 
 ## Cleaning up
 

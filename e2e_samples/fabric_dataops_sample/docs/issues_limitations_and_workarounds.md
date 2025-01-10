@@ -6,13 +6,15 @@ This document lists the known issues and limitations specific to the sample, as 
 
 - [Infrastructure deployment related](#infrastructure-deployment-related)
 - [Code/Pipeline execution related](#codepipeline-execution-related)
-  - [Issue: For high concurrency (Pipeline) executions, regardless of user's selection the first notebook's execution snapshot is shown and other snapshots can't be accessed](#issue-for-high-concurrency-pipeline-executions-regardless-of-users-selection-the-first-notebooks-execution-snapshot-is-shown-and-other-snapshots-cant-be-accessed)
+  - [Issue: Incorrect details in Pipeline's snapshot for high concurrency executions](#issue-incorrect-details-in-pipelines-snapshot-for-high-concurrency-executions)
 
 ### Infrastructure deployment related
 
 ### Code/Pipeline execution related
 
-#### Issue: For high concurrency (Pipeline) executions, regardless of user's selection the first notebook's execution snapshot is shown and other snapshots can't be accessed
+#### Issue: Incorrect details in Pipeline's snapshot for high concurrency executions
+
+For high-concurrency pipeline executions, regardless of the user's selection, the first notebook's execution snapshot is shown, and other snapshots are inaccessible. This is a known issue, and here is a workaround:
 
     - Get the end point, workspace id, and artefact id for the notebook under consideration. These are constant for a given notebook and will not change for each execution.
     - From Pipeline execution, go to the execution for the above notebook, click on "output" and from the output copy the run id. Note that each notebook activity might have a different run id - even if all these notebooks are part of the same pipeline execution.
