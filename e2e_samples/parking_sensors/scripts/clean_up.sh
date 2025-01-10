@@ -81,9 +81,31 @@ delete_all(){
 
             log "Deleting service connections that start with '$prefix' in name..."
             [[ -n $prefix ]] &&
+                 
+                    sc_ids=($(az devops service-endpoint list --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" --query "[?contains(name, '$prefix')].id" -o tsv))
+                    for sc_id in "${sc_ids[@]}"; do
+                        log "Processing Service Connection ID: $sc_id"
+                        spnAppObjId=$(az devops service-endpoint show --id "$sc_id" --org "$AZDO_ORGANIZATION_URL" -p "$AZDO_PROJECT" --query "data.appObjectId" -o tsv)
+                        log "Service Principal App Object ID: $spnAppObjId"
+
+                        spnCredlist=$(az ad app federated-credential list --id "$spnAppObjId" --query "[].id" -o json)
+                        log "Federated credentials to be removed: $spnCredlist"
+                    
+                        credArray=($(echo "$spnCredlist" | jq -r '.[]'))
+                        #(&& and ||) to log success or failure of each delete operatio
+                        for cred in "${credArray[@]}"; do
+                            az ad app federated-credential delete --federated-credential-id "$cred" --id "$spnAppObjId" &&
+                            log "Deleted federated credential: $cred" || 
+                            log "Failed to delete federated credential: $cred"
+                        done
+                        log "Completed federated credential cleanup for Service Principal: $spnAppObjId"
+                    done
+                #Important:Giving time to the portal process the cleanup
+                log "Giving time to the portal process the cleanup..."
+                sleep 15
                 az devops service-endpoint list -o tsv --query "[?contains(name, '$prefix')].id" |
                 xargs -r -I % az devops service-endpoint delete --id % --yes
-
+                log "Finishing...the clean up of the Service Connections"
             if [[ -z $DEPLOYMENT_ID ]]
             then
                 log "Deleting service principal that contain '$prefix' in name, created by yourself..."
