@@ -30,7 +30,6 @@
 set -o errexit
 set -o pipefail
 set -o nounset
-set -o xtrace # For debugging
 
 ###################
 # REQUIRED ENV VARIABLES:
@@ -57,6 +56,7 @@ set -o xtrace # For debugging
 # SP_ADF_PASS
 # SP_ADF_TENANT
 
+. ./scripts/common.sh
 
 # Const
 apiBaseUrl="https://data.melbourne.vic.gov.au/resource/"
@@ -75,11 +75,11 @@ databricksClusterId="$DATABRICKS_CLUSTER_ID"
 
 # Create vargroup
 vargroup_name="${PROJECT}-release-$ENV_NAME"
-if vargroup_id=$(az pipelines variable-group list -o tsv | grep "$vargroup_name" | awk '{print $3}'); then
-    echo "Variable group: $vargroup_name already exists. Deleting..."
-    az pipelines variable-group delete --id "$vargroup_id" -y
+if vargroup_id=$(az pipelines variable-group list -o json | jq -r -e --arg vg_name "$vargroup_name" '.[] | select(.name==$vg_name) | .id'); then
+    log "Variable group: $vargroup_name already exists. Deleting..." "info"
+    az pipelines variable-group delete --id "$vargroup_id" -y  -o none
 fi
-echo "Creating variable group: $vargroup_name"
+log "Creating variable group: $vargroup_name"
 az pipelines variable-group create \
     --name "$vargroup_name" \
     --authorize "true" \
@@ -91,55 +91,57 @@ az pipelines variable-group create \
         databricksNotebookPath="$databricksNotebookPath" \
         databricksClusterId="$databricksClusterId" \
         apiBaseUrl="$apiBaseUrl" \
-    --output json
+     -o none
 
 # Create vargroup - for secrets
 vargroup_secrets_name="${PROJECT}-secrets-$ENV_NAME"
-if vargroup_secrets_id=$(az pipelines variable-group list -o tsv | grep "$vargroup_secrets_name" | awk '{print $3}'); then
-    echo "Variable group: $vargroup_secrets_name already exists. Deleting..."
-    az pipelines variable-group delete --id "$vargroup_secrets_id" -y
+if vargroup_secrets_id=$(az pipelines variable-group list -o json | jq -r -e --arg vg_name "$vargroup_secrets_name" '.[] | select(.name==$vg_name) | .id'); then
+    log "Variable group: $vargroup_secrets_name already exists. Deleting..." "info"
+    az pipelines variable-group delete --id "$vargroup_secrets_id" -y -o none
 fi
-echo "Creating variable group: $vargroup_secrets_name"
+log "Creating variable group: $vargroup_secrets_name"
 vargroup_secrets_id=$(az pipelines variable-group create \
     --name "$vargroup_secrets_name" \
     --authorize "true" \
-    --output json \
-    --variables foo="bar" | jq -r .id)  # Needs at least one secret
+    --output tsv \
+    --variables foo="bar" \
+    --query "id")  # Needs at least one secret
 
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "subscriptionId" --value "$AZURE_SUBSCRIPTION_ID"
+    --secret "true" --name "subscriptionId" --value "$AZURE_SUBSCRIPTION_ID"  -o none
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "kvUrl" --value "$KV_URL"
+    --secret "true" --name "kvUrl" --value "$KV_URL"  -o none
 # sql server
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "sqlsrvrName" --value "$SQL_SERVER_NAME"
+    --secret "true" --name "sqlsrvrName" --value "$SQL_SERVER_NAME"  -o none
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "sqlsrvrUsername" --value "$SQL_SERVER_USERNAME"
+    --secret "true" --name "sqlsrvrUsername" --value "$SQL_SERVER_USERNAME"  -o none
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "sqlsrvrPassword" --value "$SQL_SERVER_PASSWORD"
+    --secret "true" --name "sqlsrvrPassword" --value "$SQL_SERVER_PASSWORD"  -o none
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "sqlDwDatabaseName" --value "$SQL_DW_DATABASE_NAME"
+    --secret "true" --name "sqlDwDatabaseName" --value "$SQL_DW_DATABASE_NAME"  -o none
 # Databricks
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "databricksDomain" --value "$DATABRICKS_HOST"
+    --secret "true" --name "databricksDomain" --value "$DATABRICKS_HOST"  -o none
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "databricksToken" --value "$DATABRICKS_TOKEN"
+    --secret "true" --name "databricksToken" --value "$DATABRICKS_TOKEN"  -o none
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "databricksWorkspaceResourceId" --value "$DATABRICKS_WORKSPACE_RESOURCE_ID"
+    --secret "true" --name "databricksWorkspaceResourceId" \
+    --value "$DATABRICKS_WORKSPACE_RESOURCE_ID"  -o none
 # Datalake
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "datalakeAccountName" --value "$AZURE_STORAGE_ACCOUNT"
+    --secret "true" --name "datalakeAccountName" --value "$AZURE_STORAGE_ACCOUNT"  -o none
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "datalakeKey" --value "$AZURE_STORAGE_KEY"
+    --secret "true" --name "datalakeKey" --value "$AZURE_STORAGE_KEY"  -o none
 # Adf
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "spAdfId" --value "$SP_ADF_ID"
+    --secret "true" --name "spAdfId" --value "$SP_ADF_ID"  -o none
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "spAdfPass" --value "$SP_ADF_PASS"
+    --secret "true" --name "spAdfPass" --value "$SP_ADF_PASS"  -o none
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "spAdfTenantId" --value "$SP_ADF_TENANT"
+    --secret "true" --name "spAdfTenantId" --value "$SP_ADF_TENANT"  -o none
 az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "adfResourceId" --value "$DATAFACTORY_ID"
+    --secret "true" --name "adfResourceId" --value "$DATAFACTORY_ID"  -o none
     
 # Delete dummy vars
-az pipelines variable-group variable delete --group-id "$vargroup_secrets_id" --name "foo" -y
+az pipelines variable-group variable delete --group-id "$vargroup_secrets_id" --name "foo" -y  -o none
