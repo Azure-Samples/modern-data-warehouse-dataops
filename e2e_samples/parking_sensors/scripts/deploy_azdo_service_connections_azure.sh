@@ -30,6 +30,7 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
+
 ###################
 # REQUIRED ENV VARIABLES:
 #
@@ -37,45 +38,113 @@ set -o nounset
 # ENV_NAME
 # RESOURCE_GROUP_NAME
 # DEPLOYMENT_ID
+###############
 
 . ./scripts/common.sh
 
-###############
-# Setup Azure service connection
+###########################################
+# Setup Azure service connection variables
+###########################################
 az_service_connection_name="${PROJECT}-serviceconnection-$ENV_NAME"
-
 az_sub=$(az account show --output json)
 az_sub_id=$(echo "$az_sub" | jq -r '.id')
 az_sub_name=$(echo "$az_sub" | jq -r '.name')
+role="Contributor"
 
-# Create Service Account
-az_sp_name=${PROJECT}-${ENV_NAME}-${DEPLOYMENT_ID}-sp
-log "Creating service principal: $az_sp_name for azure service connection"
-az_sp=$(az ad sp create-for-rbac \
-    --role contributor \
-    --scopes "/subscriptions/${az_sub_id}/resourceGroups/${RESOURCE_GROUP_NAME}" \
-    --name "$az_sp_name" \
-    --output json)
-service_principal_id=$(echo "$az_sp" | jq -r '.appId')
-az_sp_tenant_id=$(echo "$az_sp" | jq -r '.tenant')
 
-# Create Azure Service connection in Azure DevOps
-azure_devops_ext_azure_rm_service_principal_key=$(echo "$az_sp" | jq -r '.password')
-export AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY=$azure_devops_ext_azure_rm_service_principal_key
+#Project ID
+project_id=$(az devops project show --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" --query id -o tsv)
+log "Project ID: $project_id"
 
-if sc_id=$(az devops service-endpoint list -o json | jq -r -e --arg sc_name "$az_service_connection_name" '.[] | select(.name==$sc_name) | .id'); then
+# Check if the service connection already exists and delete it if found
+sc_id=$(az devops service-endpoint list --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" --query "[?name=='$az_service_connection_name'].id" -o tsv)
+if [ -n "$sc_id" ]; then
     log "Service connection: $az_service_connection_name already exists. Deleting service connection id $sc_id ..." "info"
-    az devops service-endpoint delete --id "$sc_id" -y
+    # Get Obj ID 
+    spnAppObjId=$(az devops service-endpoint show --id "$sc_id" --org "$AZDO_ORGANIZATION_URL" -p "$AZDO_PROJECT" --query "data.appObjectId" -o tsv)
+    log "Service Principal App Object ID: $spnAppObjId"
+
+    # Get list of federated credentials
+    spnCredlist=$(az ad app federated-credential list --id "$spnAppObjId" --query "[].id" -o json)
+    log "Federated credentials: $spnCredlist"
+ 
+    credArray=($(echo "$spnCredlist" | jq -r '.[]'))
+    #(&& and ||) to log success or failure of each delete operatio
+    for cred in "${credArray[@]}"; do
+        az ad app federated-credential delete --federated-credential-id "$cred" --id "$spnAppObjId" &&
+        log "Deleted federated credential: $cred" || 
+        log "Failed to delete federated credential: $cred"
+    done
+
+  # Refresh the list of federated credentials
+  spnCredlist=$(az ad app federated-credential list --id "$spnAppObjId" --query "[].id" -o json)
+  log "Federated credentials after deletion attempt: $spnCredlist"
+  if [ "$(echo "$spnCredlist" | jq -e '. | length > 0')" = "true" ]; then
+      log "Failed to delete federated credentials: $spnCredlist"
+      exit 1
+  fi
+  # Proceed to delete the service connection if no federated credentials remain
+  log "Hence, no federated credentials found for service principal: $spnAppObjId"
+
+  #Important:Giving time to the portal process the cleanup
+  log "Giving time to the portal process the cleanup..."
+  sleep 15
+
+  #Delete azdo service connection
+  delete_response=$(az devops service-endpoint delete --id "$sc_id" --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" -y )
+  if echo "$delete_response" | grep -q "TF400813"; then
+      log "Failed to delete service connection: $delete_response"
+      exit 1
+  fi
+  log "Successfully deleted service connection: $delete_response"
+
 fi
 
-log "Creating Azure service connection Azure DevOps"
-sc_id=$(az devops service-endpoint azurerm create \
-    --name "$az_service_connection_name" \
-    --azure-rm-service-principal-id "$service_principal_id" \
-    --azure-rm-subscription-id "$az_sub_id" \
-    --azure-rm-subscription-name "$az_sub_name" \
-    --azure-rm-tenant-id "$az_sp_tenant_id" --output json | jq -r '.id')
+# JSON config file
+cat <<EOF > ./devops.json
+{
+    "data": {
+      "subscriptionId": "$az_sub_id",
+      "subscriptionName": "$az_sub_name",
+      "creationMode": "Automatic",
+      "environment": "AzureCloud",
+      "scopeLevel": "Subscription"
+    },
+    "name": "$az_service_connection_name",
+    "type": "azurerm",
+    "url": "https://management.azure.com/",
+    "authorization": {
+      "scheme": "WorkloadIdentityFederation",
+      "parameters": {
+        "tenantid": "$TENANT_ID",
+        "scope": "/subscriptions/$az_sub_id/resourcegroups/$RESOURCE_GROUP_NAME"
+      }
+    },
+    "isShared": false,
+    "isReady": true,
+    "serviceEndpointProjectReferences": [
+        {
+          "description": "",
+          "name": "$az_service_connection_name",
+          "projectReference": {
+            "id": "$project_id",
+            "name": "$AZDO_PROJECT"
+          }
+        }
+    ]
+}
+EOF
 
-az devops service-endpoint update \
-    --id "$sc_id" \
-    --enable-for-all "true"
+log "Create a new service connection"
+
+# Create the service connection using the Azure DevOps CLI
+response=$(az devops service-endpoint create --service-endpoint-configuration ./devops.json --org "$AZDO_ORGANIZATION_URL" -p "$AZDO_PROJECT")
+sc_id=$(echo "$response" | jq -r '.id')
+log "Created Connection: $response"
+
+if [ -z "$sc_id" ]; then
+    log "Failed to create service connection"
+    exit 1
+fi
+
+az devops service-endpoint update --id "$sc_id" --enable-for-all "true" --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL"
