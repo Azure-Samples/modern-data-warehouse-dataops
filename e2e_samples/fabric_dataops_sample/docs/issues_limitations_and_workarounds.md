@@ -5,14 +5,14 @@ This document lists the known issues and limitations specific to the sample, as 
 ## Contents <!-- omit in toc -->
 
 - [Infrastructure deployment related](#infrastructure-deployment-related)
-- [Code/Pipeline execution related](#codepipeline-execution-related)
-  - [Issue: Incorrect details in Pipeline's snapshot for high concurrency executions](#issue-incorrect-details-in-pipelines-snapshot-for-high-concurrency-executions)
+- [Application code and execution related](#application-code-and-execution-related)
+  - [Issue: Incorrect details in Pipeline's snapshot for executions](#issue-incorrect-details-in-pipelines-snapshot-for-executions)
 
 ### Infrastructure deployment related
 
-### Code/Pipeline execution related
+### Application code and execution related
 
-#### Issue: Incorrect details in Pipeline's snapshot for high concurrency executions
+#### Issue: Incorrect details in Pipeline's snapshot for executions
 
 For high-concurrency pipeline executions, regardless of the user's selection, the first notebook's execution snapshot is shown, and other snapshots are inaccessible. This is a known issue, and here is a workaround:
 
