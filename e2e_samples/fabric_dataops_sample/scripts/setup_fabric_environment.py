@@ -239,6 +239,24 @@ if __name__ == "__main__":
         "application/x-python-wheel",
     )
 
+    # Uploading python library file to staging
+    upload_staging_libraries(
+        workspace_id,
+        environment_id,
+        "./../config/fabric_environment",
+        "ddo_transform_standardize.py",
+        "application/x-python-wheel",
+    )
+
+    # Uploading python library file to staging
+    upload_staging_libraries(
+        workspace_id,
+        environment_id,
+        "./../config/fabric_environment",
+        "ddo_transform_transform.py",
+        "application/x-python-wheel",
+    )
+
     # Publishing environment (publishing the staged changes)
     publish_environment(workspace_id, environment_id)
 
