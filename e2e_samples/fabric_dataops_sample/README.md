@@ -371,7 +371,7 @@ Additionally, in [main.tf](./infrastructure/terraform/main.tf), some modules are
 
 ### Application code and execution related
 
-#### Why do we need mount points during notebook execution
+#### Why are lakehouse mount points created in notebooks?
 
 If you need to read non-data files (e.g. config files, yaml files), referring them via ABFS path does not work.
 In such scenarios, you can mount lakehouse path as mount point and then access required files.
