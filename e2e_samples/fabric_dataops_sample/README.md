@@ -278,11 +278,11 @@ The execution of these notebooks is orchestrated via a Fabric data pipeline [pl-
 
 Here are the instructions to run the application:
 
-1. The sample deploys multiple Fabric workspaces corresponding to each environment. Login to [Microsoft Fabric](https://app.fabric.microsoft.com/) and select the 'DEV' workspace.
+1. The sample deploys multiple Fabric workspaces corresponding to each environment. Login to [Microsoft Fabric](https://app.fabric.microsoft.com/) and select the workspace corresponding to your development environment.
 
-2. Enable high concurrency mode for Fabric pipelines in the spark settings of the workspace. Refer to [documentation](https://learn.microsoft.com/fabric/data-engineering/configure-high-concurrency-session-notebooks-in-pipelines#configure-high-concurrency-mode) for the details.
+2. Enable [high concurrency mode](https://learn.microsoft.com/fabric/data-engineering/configure-high-concurrency-session-notebooks-in-pipelines#configure-high-concurrency-mode) for Fabric pipelines in the spark settings of the workspace.
 
-3. Open the Fabric data pipeline `pl-main` and run it. The pipeline is pre-populated with values for required parameters related to workspace and lakehouse. Successful execution of pipeline will look as shown below
+3. Open the Fabric data pipeline `pl-main` and run it. The pipeline is pre-populated with values for required parameters related to workspace and lakehouse. Successful execution of pipeline will look as shown below:
 
 ![Data Pipeline Execution](./images/data-pipeline-execution.png)
 
