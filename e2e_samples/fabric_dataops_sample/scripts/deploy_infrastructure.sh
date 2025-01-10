@@ -30,7 +30,7 @@ fabric_workspace_admin_sg_name="$FABRIC_WORKSPACE_ADMIN_SG_NAME"
 existing_fabric_capacity_name="$EXISTING_FABRIC_CAPACITY_NAME"
 fabric_capacity_admins="$FABRIC_CAPACITY_ADMINS"
 
-## KeuVault secret variables
+## KeyVault secret variables
 appinsights_connection_string_name="appinsights-connection-string"
 
 # Variable set based on Terraform output
@@ -59,7 +59,6 @@ fabric_bearer_token=""
 fabric_api_endpoint="https://api.fabric.microsoft.com/v1"
 
 # Fabric related variables
-adls_gen2_connection_name="conn-adls-st$base_name"
 adls_gen2_shortcut_name="sc-adls-main"
 adls_gen2_shortcut_path="Files"
 
@@ -90,6 +89,10 @@ deploy_terraform_resources() {
     create_fabric_capacity=false
     echo "[Info] Variable 'EXISTING_FABRIC_CAPACITY_NAME' is NOT empty, the provided Fabric capacity will be used."
   fi
+
+  # Select or create the terraform workspace
+  echo "[Info] Switching to terraform '$environment_name' workspace."
+  terraform workspace select -or-create=true "$environment_name"
 
   terraform init
   terraform apply \
@@ -326,6 +329,7 @@ echo "[Info] ############ Terraform resources deployed, setting up fabric bearer
 set_bearer_token
 
 echo "[Info] ############ ADLS Gen2 Cloud Connection Creation ############"
+adls_gen2_connection_name="conn-adls-${tf_storage_account_name}"
 
 adls_gen2_connection_id=$(get_connection_id_by_name "$adls_gen2_connection_name")
 
