@@ -12,6 +12,7 @@ repos:
     hooks:
       - id: check-merge-conflict
       - id: trailing-whitespace
+        exclude: '\.md$'
       - id: check-ast
       - id: check-json
       - id: detect-private-key
