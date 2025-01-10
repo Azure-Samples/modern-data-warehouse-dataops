@@ -40,7 +40,7 @@ variable "base_name" {
 }
 
 variable "fabric_capacity_admins" {
-  description = "The list of the users (principal name) and/or service pricipals (object ID) to be added as Fabric capacity admins"
+  description = "The list of the users (principal name) and/or service principals (object ID) to be added as Fabric capacity admins"
   type        = string
 }
 

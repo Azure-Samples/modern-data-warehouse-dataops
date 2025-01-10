@@ -1,9 +1,3 @@
-variable "enable" {
-  type        = bool
-  description = "whether this module should do anything at all"
-  default     = false
-}
-
 variable "workspace_id" {
   type        = string
   description = "Fabric workspace id"
@@ -35,5 +29,5 @@ variable "spark_pool_type" {
 variable "runtime_version" {
   type        = string
   description = "Fabric environment runtime version"
-  default     = "1.2"
+  default     = "1.3"
 }

@@ -8,18 +8,18 @@ variable "capacity_name" {
   description = "Name of the Fabric capacity."
 }
 
-variable "resource_group_id" {
+variable "resource_group_name" {
   type        = string
-  description = "Resource group id"
+  description = "Resource group name where the Fabric capacity will be created"
 }
 
 variable "location" {
-  description = "The Azure region where the resources will be created"
+  description = "The Azure region where the Fabric capacity will be created"
   type        = string
 }
 
 variable "admin_members" {
-  type        = list(string)
+  type        = set(string)
   description = "Fabric capacity admin members, can be email (for user) or id (for service principal)"
 }
 
@@ -27,6 +27,11 @@ variable "sku" {
   type        = string
   description = "Fabric capacity SKU name"
   default     = "F2"
+
+  validation {
+    condition     = contains(["F2", "F4", "F8", "F16", "F32", "F64", "F128", "F256", "F512", "F1024", "F2048"], var.sku)
+    error_message = "Please specify a valid Fabric Capacity SKU. Valid values are: [ 'F2', 'F4', 'F8', 'F16', 'F32', 'F64', 'F128', 'F256', 'F512', 'F1024', 'F2048' ]."
+  }
 }
 
 variable "tags" {
