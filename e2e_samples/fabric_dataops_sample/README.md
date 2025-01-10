@@ -267,7 +267,7 @@ Additionally, note that the Fabric workspace Git integration has been configured
 
 ![Azure DevOps Repository](./images/azure-devops-repo.png)
 
-_**Note: Please note that the Fabric notebook and pipeline deployed are placeholder items and are not functional. These are included to demonstrate the [tokenization](https://registry.terraform.io/providers/microsoft/fabric/latest/docs/guides/gotemplates) functionality during the Terraform deployment of these resources. These items will be replaced with functional versions in the next release._
+_**Note: Please note that the Fabric notebooks and pipeline deployed are under development and subjected to future changes._
 
 ## Cleaning up
 
