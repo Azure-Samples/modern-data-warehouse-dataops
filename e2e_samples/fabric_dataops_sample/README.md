@@ -369,7 +369,7 @@ Terraform also uses these flags to determine the authentication method for the F
 
 Additionally, in [main.tf](./infrastructure/terraform/main.tf), some modules are deployed only when `use_cli` is set to `true`. This is necessary for Fabric items that do not support service principal or managed identity authentication. These items are deployed using user-context authentication.
 
-### Code/Pipeline execution related
+### Application code and execution related
 
 #### Why do we need mount points during notebook execution
 
