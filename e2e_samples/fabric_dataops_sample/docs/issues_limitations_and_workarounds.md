@@ -4,9 +4,9 @@ This document lists the known issues and limitations specific to the sample, as 
 
 ## Contents <!-- omit in toc -->
 
-- [Issue: Incorrect details in Pipeline's snapshot for executions](#issue-incorrect-details-in-pipelines-snapshot-for-executions)
+- [Incorrect details in Pipeline's snapshot for executions](#incorrect-details-in-pipelines-snapshot-for-executions)
 
-## Issue: Incorrect details in Pipeline's snapshot for executions
+## Incorrect details in Pipeline's snapshot for executions
 
 For high-concurrency pipeline executions, regardless of the user's selection, the first notebook's execution snapshot is shown, and other snapshots are inaccessible. This is a known issue, and here is a workaround:
 
