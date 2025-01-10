@@ -266,14 +266,23 @@ Additionally, note that the Fabric workspace Git integration has been configured
 
 _**Note: Please note that the Fabric notebook and pipeline deployed are placeholder items and are not functional. These are included to demonstrate the [tokenization](https://registry.terraform.io/providers/microsoft/fabric/latest/docs/guides/gotemplates) functionality during the Terraform deployment of these resources. These items will be replaced with functional versions in the next release._
 
-### How to execute the code/datapipeline in this sample
+### Running the sample
 
-This sample deploys few notebooks and a data pipeline. In order to execute these, please follow below steps:
+This sample deploys the following three Fabric notebooks:
 
-1. Enable high concurrency mode for pipelines in workspace's spark settings. Refer to [documentation](https://learn.microsoft.com/en-us/fabric/data-engineering/configure-high-concurrency-session-notebooks-in-pipelines#configure-high-concurrency-mode).
+1. [nb-setup](./src/notebooks/00_setup.ipynb): Creates the required database schemas and tables for the parking sensors application and ingests data in `Bronze` layer.
+2. [nb-standardize](./src/notebooks/02_standardize.ipynb): Cleans and validates the raw parking sensors data and stores it in `Silver` layer.
+3. [nb-transform](./src/notebooks/03_transform.ipynb): Transforms the data in silver layer into dimensions and facts and stores it in `Gold` layer.
 
-2. Please open the data pipeline(pl-main) and run it.  
-   (Note: The pipeline is pre-populated with values for required parameters related to workspace and lakehouse).
+The execution of these notebooks is orchestrated via a Fabric data pipeline [pl-main](./src/pipelines/00-main.json).
+
+Here are the instructions to run the application:
+
+1. The sample deploys multiple Fabric workspaces corresponding to each environment. Login to [Microsoft Fabric](https://app.fabric.microsoft.com/) and select the 'DEV' workspace.
+
+2. Enable high concurrency mode for Fabric pipelines in the spark settings of the workspace. Refer to [documentation](https://learn.microsoft.com/fabric/data-engineering/configure-high-concurrency-session-notebooks-in-pipelines#configure-high-concurrency-mode) for the details.
+
+3. Open the Fabric data pipeline `pl-main` and run it. The pipeline is pre-populated with values for required parameters related to workspace and lakehouse.
 
 ## Cleaning up
 
