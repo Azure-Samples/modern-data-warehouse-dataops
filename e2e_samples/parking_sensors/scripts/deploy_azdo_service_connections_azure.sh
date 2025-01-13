@@ -69,7 +69,7 @@ if [ -n "$sc_id" ]; then
     log "Federated credentials: $spnCredlist"
  
     credArray=($(echo "$spnCredlist" | jq -r '.[]'))
-    #(&& and ||) to log success or failure of each delete operatio
+    #(&& and ||) to log success or failure of each delete operation
     for cred in "${credArray[@]}"; do
         az ad app federated-credential delete --federated-credential-id "$cred" --id "$spnAppObjId" &&
         log "Deleted federated credential: $cred" || 
