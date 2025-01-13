@@ -442,6 +442,11 @@ The following lists some limitations of the solution and associated deployment s
 
 - Azure DevOps Variable Groups linked to KeyVault can only be created via the UI, cannot be created programmatically and was not incorporated in the automated deployment of the solution.
   - **Workaround**: Deployment add sensitive configuration as "secrets" in Variable Groups with the downside of duplicated information. If you wish, you may manually link a second Variable Group to KeyVault to pull out the secrets. KeyVault secret names should line up with required variables in the Azure DevOps pipelines. See [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml#link-secrets-from-an-azure-key-vault) for more information.
+  - To delete a Service Connection in the Azure DevOps (AzDo) portal, you must first remove the federated credentials in the Azure portal. If you attempt to delete the Service Connection without doing this, you will encounter the following error: *"Cannot delete this service connection while federated credentials for app xx exist in Entra tenant xx. Please make sure federated credentials have been removed prior to deleting the service connection."*
+  - **Workaround - Manually Deleting Federated Credentials:**
+    Navigate to the Azure portal and locate your app registration under App Registrations. In the left navigation pane, select Certificates & Secrets and then the Federated Credentials 
+    tab. Delete the federated credential from this section. Once the credential is deleted, you can proceed to delete the app registration in the Azure Portal and the Azure Service 
+    Connection in the AzDo portal.
 - Azure DevOps Environment and Approval Gates can only be managed via the UI, cannot be managed programmatically and was not incorporated in the automated deployment of the solution.
   - **Workaround**: Approval Gates can be easily configured manually. See [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/environments?view=azure-devops#approvals) for more information.
 - ADF publishing through the CI/CD pipeline using the npm task still throws and error in the logs due to the missing publish_config.json file but the pipeline completes successfully.
