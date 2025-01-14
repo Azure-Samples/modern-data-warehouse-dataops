@@ -167,6 +167,6 @@ cleanup_federated_credentials() {
         log "Failed to delete federated credentials"
         exit 1
     fi
-  log "Completed federated credential cleanup for Service Principal: $spnAppObjId"
+  log "Completed federated credential cleanup for the Service Principal: $spnAppObjId"
 }
 
