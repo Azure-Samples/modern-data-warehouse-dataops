@@ -108,7 +108,7 @@ delete_all(){
 
             if [[ -z $DEPLOYMENT_ID ]]
             then
-                log "Deleting resource groups that comtain '$prefix' in name..."
+                log "Deleting resource groups that contain '$prefix' in name..."
                 [[ -n $prefix ]] &&
                     az group list --query "[?contains(name,'$prefix') && ! contains(name,'dbw')].name" -o tsv |
                     xargs -I % az group delete --verbose --name % -y
