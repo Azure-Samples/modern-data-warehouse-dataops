@@ -141,7 +141,7 @@ cleanup_federated_credentials() {
     local sc_id=$1
     local spnAppObjId=$(az devops service-endpoint show --id "$sc_id" --org "$AZDO_ORGANIZATION_URL" -p "$AZDO_PROJECT" --query "data.appObjectId" -o tsv)
     local spnCredlist=$(az ad app federated-credential list --id "$spnAppObjId" --query "[].id" -o json)
-    log "Federated credentials will be removed"
+    log "Found existing federated credentials. Deleting..."
 
     # Sometimes the Azure Portal needs a little bit more time to process the information.
     if [ -z "$spnCredlist" ]; then
