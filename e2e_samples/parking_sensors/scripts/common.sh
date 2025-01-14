@@ -131,7 +131,6 @@ create_adf_trigger () {
 
 # Function to give time for the portal to process the cleanup
 wait_for_process() {
-    ##Function used in the Clean_up.sh and deploy_azdo_service_connections_azure.sh scripts
     local seconds=${1:-15}
     log "Giving the portal $seconds seconds to process the information..."
     sleep "$seconds"
@@ -141,8 +140,6 @@ cleanup_federated_credentials() {
     ##Function used in the Clean_up.sh and deploy_azdo_service_connections_azure.sh scripts
     local sc_id=$1
     local spnAppObjId=$(az devops service-endpoint show --id "$sc_id" --org "$AZDO_ORGANIZATION_URL" -p "$AZDO_PROJECT" --query "data.appObjectId" -o tsv)
-    log "Service Principal App Object ID: $spnAppObjId"
-
     local spnCredlist=$(az ad app federated-credential list --id "$spnAppObjId" --query "[].id" -o json)
     log "Federated credentials will be removed"
 
