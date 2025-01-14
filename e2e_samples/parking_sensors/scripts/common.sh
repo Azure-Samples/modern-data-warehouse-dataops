@@ -147,7 +147,7 @@ cleanup_federated_credentials() {
     if [ -z "$spnCredlist" ]; then
         log "It was not possible to list Federated credentials for Service Principal. Retrying once more.."
         wait_for_process
-        local spnCredlist=$(az ad app federated-credential list --id "$spnAppObjId" --query "[].id" -o json)
+        spnCredlist=$(az ad app federated-credential list --id "$spnAppObjId" --query "[].id" -o json)
         if [ -z "$spnAppObjId" ]; then
             log "It was not possible to list Federated credentials for specified Service Principal."
             return
