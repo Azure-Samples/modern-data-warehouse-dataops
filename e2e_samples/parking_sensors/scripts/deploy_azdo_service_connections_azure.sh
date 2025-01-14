@@ -53,9 +53,9 @@ az_sub_name=$(echo "$az_sub" | jq -r '.name')
 role="Owner"
 
 
+
 #Project ID
 project_id=$(az devops project show --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" --query id -o tsv)
-log "Project ID: $project_id"
 
 # Check if the service connection already exists and delete it if found
 sc_id=$(az devops service-endpoint list --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" --query "[?name=='$az_service_connection_name'].id" -o tsv)
@@ -67,10 +67,10 @@ if [ -n "$sc_id" ]; then
   #Delete azdo service connection
   delete_response=$(az devops service-endpoint delete --id "$sc_id" --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" -y )
   if echo "$delete_response" | grep -q "TF400813"; then
-      log "Failed to delete service connection: $delete_response"
+      log "Failed to delete service connection: $sc_id"
       exit 1
   fi
-  log "Successfully deleted service connection: $delete_response"
+  log "Successfully deleted service connection: $sc_id"
 
 fi
 
@@ -114,14 +114,14 @@ log "Create a new service connection"
 # Create the service connection using the Azure DevOps CLI
 response=$(az devops service-endpoint create --service-endpoint-configuration ./devops.json --org "$AZDO_ORGANIZATION_URL" -p "$AZDO_PROJECT")
 sc_id=$(echo "$response" | jq -r '.id')
-log "Created Connection: $response"
+log "Created Connection: $sc_id"
 
 if [ -z "$sc_id" ]; then
     log "Failed to create service connection"
     exit 1
 fi
 
-az devops service-endpoint update --id "$sc_id" --enable-for-all "true" --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL"
+az devops service-endpoint update --id "$sc_id" --enable-for-all "true" --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" -o none
 
 # Remove the JSON config file
 rm ./devops.json
