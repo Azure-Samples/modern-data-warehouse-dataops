@@ -1,0 +1,29 @@
+## requirements-dev.txt: dependencies for local development.
+##
+## For defining dependencies used by jobs in Databricks Workflows, see
+## https://docs.databricks.com/dev-tools/bundles/library-dependencies.html
+
+## Add code completion support for DLT
+databricks-dlt
+
+## pytest is the default package used for testing
+pytest
+
+## Dependencies for building wheel files
+setuptools
+wheel
+
+## databricks-connect can be used to run parts of this project locally.
+## See https://docs.databricks.com/dev-tools/databricks-connect.html.
+##
+## databricks-connect is automatically installed if you're using Databricks
+## extension for Visual Studio Code
+## (https://docs.databricks.com/dev-tools/vscode-ext/dev-tasks/databricks-connect.html).
+##
+## To manually install databricks-connect, either follow the instructions
+## at https://docs.databricks.com/dev-tools/databricks-connect.html
+## to install the package system-wide. Or uncomment the line below to install a
+## version of db-connect that corresponds to the Databricks Runtime version used
+## for this project.
+#
+# databricks-connect>=15.4,<15.5
