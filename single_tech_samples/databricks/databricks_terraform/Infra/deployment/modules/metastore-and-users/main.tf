@@ -46,12 +46,10 @@ resource "azurerm_role_assignment" "mi_data_contributor" {
   principal_id         = azurerm_databricks_access_connector.unity.identity[0].principal_id
 }
 
-// Create the first unity catalog metastore
-// This throws an error because there will be metasotre created in that region during workspace creation
-// Only one metastore can be created in a region
-// I deleted the existing one at https://accounts.azuredatabricks.net/ workspaces
-// I had to delete the existing one rerun this script
+// Use existing metastore or create one if does not exist
 resource "databricks_metastore" "this" {
+  count = length(data.databricks_metastore.existing.id) == 0 ? 1 : 0
+
   name = var.metastore_name
   storage_root = format("abfss://%s@%s.dfs.core.windows.net/",
     azurerm_storage_container.unity_catalog.name,
@@ -62,14 +60,17 @@ resource "databricks_metastore" "this" {
 
 # Introduce a delay after metastore creation
 resource "time_sleep" "wait_30_seconds" {
-  depends_on = [databricks_metastore.this]
-
+  count           = length(data.databricks_metastore.existing.id) == 0 ? 1 : 0
   create_duration = "30s"
+
+  depends_on = [databricks_metastore.this]
 }
 
-// Assign managed identity to metastore, 
+// Assign managed identity to metastore skip if already assigned
 resource "databricks_metastore_data_access" "first" {
-  metastore_id = databricks_metastore.this.id
+  count        = length(data.databricks_metastore.existing.id) == 0 ? 1 : 0
+
+  metastore_id = local.metastore_id
   name         = "the-metastore-key"
   azure_managed_identity {
     access_connector_id = azurerm_databricks_access_connector.unity.id
@@ -82,7 +83,7 @@ resource "databricks_metastore_data_access" "first" {
 // Attach the databricks workspace to the metastore
 resource "databricks_metastore_assignment" "this" {
   workspace_id         = var.databricks_workspace_id
-  metastore_id         = databricks_metastore.this.id
+  metastore_id         = local.metastore_id
   default_catalog_name = "hive_metastore"
 }
 

@@ -1,6 +1,13 @@
+# Generate a random string to append to the managed identity name
+resource "random_string" "mi_suffix" {
+  length  = 4
+  upper   = false
+  special = false
+}
+
 # Storage credentials for external locations
 resource "databricks_storage_credential" "external_mi" {
-  name = "${local.environment}-location-mi-credential"
+  name = "${local.environment}-mi-credential-${random_string.mi_suffix.result}"
 
   azure_managed_identity {
     access_connector_id = var.azurerm_databricks_access_connector_id

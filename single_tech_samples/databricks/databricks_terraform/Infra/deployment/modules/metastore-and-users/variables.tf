@@ -73,3 +73,9 @@ data "azuread_users" "account_admin_users" {
   ignore_missing = true
   object_ids     = local.account_admin_members
 }
+
+# Get Databricks Metastore
+data "databricks_metastore" "existing" {
+  provider = databricks.azure_account
+  name = var.metastore_name
+}

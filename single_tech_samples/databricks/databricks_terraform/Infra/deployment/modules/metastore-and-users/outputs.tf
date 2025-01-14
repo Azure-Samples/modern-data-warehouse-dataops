@@ -24,5 +24,5 @@ output "azurerm_databricks_access_connector_id" {
 }
 
 output "metastore_id"{
-  value = databricks_metastore.this.id
+  value = local.metastore_id
 }

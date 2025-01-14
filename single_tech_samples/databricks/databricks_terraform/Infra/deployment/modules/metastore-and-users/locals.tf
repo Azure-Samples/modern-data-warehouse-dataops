@@ -16,4 +16,6 @@ locals {
   all_account_admin_users = {
     for user in data.azuread_users.account_admin_users.users : user.object_id => user
   }
+
+  metastore_id = length(data.databricks_metastore.existing.id) > 0 ? data.databricks_metastore.existing.id : databricks_metastore.this[0].id
 }
