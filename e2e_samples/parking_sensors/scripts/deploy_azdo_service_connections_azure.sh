@@ -49,7 +49,8 @@ az_service_connection_name="${PROJECT}-serviceconnection-$ENV_NAME"
 az_sub=$(az account show --output json)
 az_sub_id=$(echo "$az_sub" | jq -r '.id')
 az_sub_name=$(echo "$az_sub" | jq -r '.name')
-role="Contributor"
+##Otherwise the listing azdo service will fail
+role="Owner"
 
 
 #Project ID
@@ -60,35 +61,8 @@ log "Project ID: $project_id"
 sc_id=$(az devops service-endpoint list --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" --query "[?name=='$az_service_connection_name'].id" -o tsv)
 if [ -n "$sc_id" ]; then
     log "Service connection: $az_service_connection_name already exists. Deleting service connection id $sc_id ..." "info"
-    # Get Obj ID 
-    spnAppObjId=$(az devops service-endpoint show --id "$sc_id" --org "$AZDO_ORGANIZATION_URL" -p "$AZDO_PROJECT" --query "data.appObjectId" -o tsv)
-    log "Service Principal App Object ID: $spnAppObjId"
-
-    # Get list of federated credentials
-    spnCredlist=$(az ad app federated-credential list --id "$spnAppObjId" --query "[].id" -o json)
-    log "Federated credentials: $spnCredlist"
- 
-    credArray=($(echo "$spnCredlist" | jq -r '.[]'))
-    #(&& and ||) to log success or failure of each delete operation
-    for cred in "${credArray[@]}"; do
-        az ad app federated-credential delete --federated-credential-id "$cred" --id "$spnAppObjId" &&
-        log "Deleted federated credential: $cred" || 
-        log "Failed to delete federated credential: $cred"
-    done
-
-  # Refresh the list of federated credentials
-  spnCredlist=$(az ad app federated-credential list --id "$spnAppObjId" --query "[].id" -o json)
-  log "Federated credentials after deletion attempt: $spnCredlist"
-  if [ "$(echo "$spnCredlist" | jq -e '. | length > 0')" = "true" ]; then
-      log "Failed to delete federated credentials: $spnCredlist"
-      exit 1
-  fi
-  # Proceed to delete the service connection if no federated credentials remain
-  log "Hence, no federated credentials found for service principal: $spnAppObjId"
-
-  #Important:Giving time to the portal process the cleanup
-  log "Giving time to the portal process the cleanup..."
-  sleep 15
+    cleanup_federated_credentials "$sc_id"
+    wait_for_cleanup
 
   #Delete azdo service connection
   delete_response=$(az devops service-endpoint delete --id "$sc_id" --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" -y )
@@ -148,3 +122,7 @@ if [ -z "$sc_id" ]; then
 fi
 
 az devops service-endpoint update --id "$sc_id" --enable-for-all "true" --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL"
+
+# Remove the JSON config file
+rm ./devops.json
+log "Removed the JSON config file: ./devops.json"
