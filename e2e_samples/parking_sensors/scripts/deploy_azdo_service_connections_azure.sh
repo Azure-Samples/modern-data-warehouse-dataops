@@ -117,7 +117,7 @@ sc_id=$(echo "$response" | jq -r '.id')
 log "Created Connection: $sc_id"
 
 if [ -z "$sc_id" ]; then
-    log "Failed to create service connection"
+    log "Failed to create service connection" "danger"
     exit 1
 fi
 
