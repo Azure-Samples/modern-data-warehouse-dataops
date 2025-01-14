@@ -149,7 +149,7 @@ cleanup_federated_credentials() {
         wait_for_process
         local spnCredlist=$(az ad app federated-credential list --id "$spnAppObjId" --query "[].id" -o json)
         if [ -z "$spnAppObjId" ]; then
-            log "It was not possible to cross Federated credentials and Service Principal."
+            log "It was not possible to list Federated credentials for specified Service Principal."
             return
         fi
     fi
