@@ -145,7 +145,7 @@ cleanup_federated_credentials() {
 
     # Sometimes the Azure Portal needs a little bit more time to process the information.
     if [ -z "$spnCredlist" ]; then
-        log "It was not possible to cross Federated credentials and Service Principal.Retrying once more.."
+        log "It was not possible to list Federated credentials for Service Principal. Retrying once more.."
         wait_for_process
         local spnCredlist=$(az ad app federated-credential list --id "$spnAppObjId" --query "[].id" -o json)
         if [ -z "$spnAppObjId" ]; then
