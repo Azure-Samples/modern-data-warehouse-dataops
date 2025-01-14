@@ -22,7 +22,6 @@ set -o nounset
 
 . ./scripts/init_environment.sh
 . ./scripts/verify_prerequisites.sh
-. ./scripts/common.sh
 
 ###################
 # PARAMETERS
