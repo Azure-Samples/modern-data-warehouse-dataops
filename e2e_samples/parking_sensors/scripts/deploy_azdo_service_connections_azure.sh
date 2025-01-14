@@ -62,7 +62,7 @@ sc_id=$(az devops service-endpoint list --project "$AZDO_PROJECT" --organization
 if [ -n "$sc_id" ]; then
     log "Service connection: $az_service_connection_name already exists. Deleting service connection id $sc_id ..." "info"
     cleanup_federated_credentials "$sc_id"
-    wait_for_cleanup
+    wait_for_process
 
   #Delete azdo service connection
   delete_response=$(az devops service-endpoint delete --id "$sc_id" --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" -y )
