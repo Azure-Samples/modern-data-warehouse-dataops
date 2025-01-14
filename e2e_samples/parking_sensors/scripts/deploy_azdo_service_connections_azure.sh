@@ -123,6 +123,10 @@ fi
 
 az devops service-endpoint update --id "$sc_id" --enable-for-all "true" --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" -o none
 
-# Remove the JSON config file
-rm ./devops.json
-log "Removed the JSON config file: ./devops.json"
+# Remove the JSON config file if exists
+if [ -f ./devops.json ]; then
+    rm ./devops.json
+    log "Removed the JSON config file: ./devops.json"
+else
+    log "JSON config file does not exist: ./devops.json"
+fi
