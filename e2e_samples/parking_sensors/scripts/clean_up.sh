@@ -89,7 +89,7 @@ delete_all(){
                     cleanup_federated_credentials "$sc_id"
                 done
                 #Important:Giving time to the portal process the cleanup
-                wait_for_cleanup
+                wait_for_process
                 az devops service-endpoint list -o tsv --query "[?contains(name, '$prefix')].id" |
                 xargs -r -I % az devops service-endpoint delete --id % --yes
                 log "Finishing...the clean up of the Service Connections"
