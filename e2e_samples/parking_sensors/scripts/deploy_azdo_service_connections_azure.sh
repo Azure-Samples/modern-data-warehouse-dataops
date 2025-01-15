@@ -49,8 +49,7 @@ az_service_connection_name="${PROJECT}-serviceconnection-$ENV_NAME"
 az_sub=$(az account show --output json)
 az_sub_id=$(echo "$az_sub" | jq -r '.id')
 az_sub_name=$(echo "$az_sub" | jq -r '.name')
-##Otherwise the listing azdo service will fail
-role="Owner"
+
 
 
 
