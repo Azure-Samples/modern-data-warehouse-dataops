@@ -37,7 +37,6 @@ print_style () {
 
     STARTCOLOR="\e[$COLOR"
     ENDCOLOR="\e[0m"
-
     printf "$STARTCOLOR%b$ENDCOLOR" "$1"
 }
 
@@ -108,25 +107,25 @@ create_adf_linked_service () {
     declare name=$1
     log "Creating ADF LinkedService: $name"
     adfLsUrl="${adfFactoryBaseUrl}/linkedservices/${name}?api-version=${apiVersion}"
-    az rest --method put --uri "$adfLsUrl" --body @"${ADF_DIR}"/linkedService/"${name}".json
+    az rest --method put --uri "$adfLsUrl" --body @"${ADF_DIR}"/linkedService/"${name}".json -o none
 }
 create_adf_dataset () {
     declare name=$1
     log "Creating ADF Dataset: $name"
     adfDsUrl="${adfFactoryBaseUrl}/datasets/${name}?api-version=${apiVersion}"
-    az rest --method put --uri "$adfDsUrl" --body @"${ADF_DIR}"/dataset/"${name}".json
+    az rest --method put --uri "$adfDsUrl" --body @"${ADF_DIR}"/dataset/"${name}".json -o none
 }
 create_adf_pipeline () {
     declare name=$1
     log "Creating ADF Pipeline: $name"
     adfPUrl="${adfFactoryBaseUrl}/pipelines/${name}?api-version=${apiVersion}"
-    az rest --method put --uri "$adfPUrl" --body @"${ADF_DIR}"/pipeline/"${name}".json
+    az rest --method put --uri "$adfPUrl" --body @"${ADF_DIR}"/pipeline/"${name}".json -o none
 }
 create_adf_trigger () {
     declare name=$1
     log "Creating ADF Trigger: $name"
     adfTUrl="${adfFactoryBaseUrl}/triggers/${name}?api-version=${apiVersion}"
-    az rest --method put --uri "$adfTUrl" --body @"${ADF_DIR}"/trigger/"${name}".json
+    az rest --method put --uri "$adfTUrl" --body @"${ADF_DIR}"/trigger/"${name}".json -o none
 }
 
 # Function to give time for the portal to process the cleanup

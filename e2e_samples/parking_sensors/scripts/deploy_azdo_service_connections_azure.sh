@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 # Access granted under MIT Open Source License: https://en.wikipedia.org/wiki/MIT_License
@@ -31,6 +30,7 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
+
 ###################
 # REQUIRED ENV VARIABLES:
 #
@@ -38,6 +38,7 @@ set -o nounset
 # ENV_NAME
 # RESOURCE_GROUP_NAME
 # DEPLOYMENT_ID
+###############
 
 . ./scripts/common.sh
 
@@ -48,6 +49,7 @@ az_service_connection_name="${PROJECT}-serviceconnection-$ENV_NAME"
 az_sub=$(az account show --output json)
 az_sub_id=$(echo "$az_sub" | jq -r '.id')
 az_sub_name=$(echo "$az_sub" | jq -r '.name')
+
 
 #Project ID
 project_id=$(az devops project show --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" --query id -o tsv)
@@ -60,7 +62,7 @@ if [ -n "$sc_id" ]; then
     wait_for_process
 
   #Delete azdo service connection
-  delete_response=$(az devops service-endpoint delete --id "$sc_id" --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" -y -o none)
+  delete_response=$(az devops service-endpoint delete --id "$sc_id" --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" -y )
   if echo "$delete_response" | grep -q "TF400813"; then
       log "Failed to delete service connection: $sc_id" "danger"
       exit 1
@@ -116,11 +118,8 @@ if [ -z "$sc_id" ]; then
     exit 1
 fi
 
-az devops service-endpoint update \
-    --id "$sc_id" \
-    --enable-for-all "true" \
-     -o none
-     
+az devops service-endpoint update --id "$sc_id" --enable-for-all "true" --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" -o none
+
 # Remove the JSON config file if exists
 if [ -f ./devops.json ]; then
     rm ./devops.json

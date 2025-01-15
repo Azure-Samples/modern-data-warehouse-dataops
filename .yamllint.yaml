@@ -1,0 +1,11 @@
+extends: default
+
+rules:
+  line-length:
+    disable  # Disable line length check
+  document-start:
+    disable  # Disable document start check
+  comments-indentation:
+    disable
+  truthy:
+    disable
