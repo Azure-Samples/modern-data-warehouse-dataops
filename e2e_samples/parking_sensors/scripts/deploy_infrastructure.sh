@@ -153,6 +153,8 @@ az storage fs directory create -n '/data/dw/dim_st_marker' -f $storage_file_syst
 az storage fs directory create -n '/data/dw/dim_parking_bay' -f $storage_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key" -o none
 az storage fs directory create -n '/data/dw/dim_location' -f $storage_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key" -o none
 
+## Uploads not needed for databricks as date/time Dimensions are generated in the setup.py notebook
+## However the SQL Dedicated pool still needs the raw CSVs to be used as external tables using the ADLS path
 log "Uploading seed data to data/seed"
 az storage blob upload --container-name $storage_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key" \
     --file data/seed/dim_date.csv --name "data/seed/dim_date/dim_date.csv" --overwrite -o none
@@ -248,6 +250,8 @@ databricks_workspace_url=$(echo "$arm_output" | jq -r '.properties.outputs.datab
 databricks_workspace_name="${PROJECT}-dbw-${ENV_NAME}-${DEPLOYMENT_ID}"
 databricks_complete_url="https://$databricks_workspace_url/aad/auth?has=&Workspace=/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$resource_group_name/providers/Microsoft.Databricks/workspaces/$databricks_workspace_name&WorkspaceResourceGroupUri=/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$$resource_group_name&l=en"
 
+# Display necessity of Unity Catalog being enabled
+log "Make sure Unity Catalog is enabled and the sensordata catalog is created. Refer to the Prerequisites section of the README for more information."
 # Display the URL
 log "Please visit the following URL and authenticate: $databricks_complete_url" "action"
 
