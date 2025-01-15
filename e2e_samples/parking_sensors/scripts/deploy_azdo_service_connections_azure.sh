@@ -60,7 +60,7 @@ if [ -n "$sc_id" ]; then
     wait_for_process
 
   #Delete azdo service connection
-  delete_response=$(az devops service-endpoint delete --id "$sc_id" --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" -y )
+  delete_response=$(az devops service-endpoint delete --id "$sc_id" --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" -y -o none)
   if echo "$delete_response" | grep -q "TF400813"; then
       log "Failed to delete service connection: $sc_id" "danger"
       exit 1
