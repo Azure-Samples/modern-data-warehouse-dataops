@@ -1,3 +1,4 @@
+
 #!/bin/bash
 
 # Access granted under MIT Open Source License: https://en.wikipedia.org/wiki/MIT_License
@@ -30,7 +31,6 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-
 ###################
 # REQUIRED ENV VARIABLES:
 #
@@ -38,7 +38,6 @@ set -o nounset
 # ENV_NAME
 # RESOURCE_GROUP_NAME
 # DEPLOYMENT_ID
-###############
 
 . ./scripts/common.sh
 
@@ -67,6 +66,7 @@ if [ -n "$sc_id" ]; then
       exit 1
   fi
   log "Successfully deleted service connection: $sc_id"
+
 fi
 
 # JSON config file
