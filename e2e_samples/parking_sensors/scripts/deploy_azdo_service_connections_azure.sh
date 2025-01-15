@@ -120,8 +120,11 @@ if [ -z "$sc_id" ]; then
     exit 1
 fi
 
-az devops service-endpoint update --id "$sc_id" --enable-for-all "true" --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" -o none
-
+az devops service-endpoint update \
+    --id "$sc_id" \
+    --enable-for-all "true" \
+     -o none
+     
 # Remove the JSON config file if exists
 if [ -f ./devops.json ]; then
     rm ./devops.json
