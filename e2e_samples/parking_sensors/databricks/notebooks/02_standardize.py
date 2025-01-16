@@ -25,6 +25,14 @@ base_path = os.path.join('dbfs:/mnt/datalake/data/lnd/', infilefolder)
 parkingbay_filepath = os.path.join(base_path, "MelbParkingBayData.json")
 sensors_filepath = os.path.join(base_path, "MelbParkingSensorData.json")
 
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## Use the Sensor Catalog Created in the Prerequisites 
+
+# COMMAND ----------
+# MAGIC %sql
+# MAGIC USE Catalog sensordata
 
 # COMMAND ----------
 
