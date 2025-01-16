@@ -40,6 +40,7 @@ set -o nounset
 # AZURE_LOCATION
 # RESOURCE_GROUP_NAME
 # KV_URL
+# API_BASE_URL
 # DATABRICKS_HOST
 # DATABRICKS_TOKEN
 # DATABRICKS_WORKSPACE_RESOURCE_ID
@@ -59,7 +60,6 @@ set -o nounset
 . ./scripts/common.sh
 
 # Const
-apiBaseUrl="https://data.melbourne.vic.gov.au/resource/"
 if [ "$ENV_NAME" == "dev" ]
 then 
     # In DEV, we fix the path to "dev" folder  to simplify as this is manual publish DEV ADF.
@@ -90,8 +90,8 @@ az pipelines variable-group create \
         databricksDbfsLibPath="$databricksDbfsLibPath" \
         databricksNotebookPath="$databricksNotebookPath" \
         databricksClusterId="$databricksClusterId" \
-        apiBaseUrl="$apiBaseUrl" \
-     -o none
+        apiBaseUrl="$API_BASE_URL" \
+    -o none
 
 # Create vargroup - for secrets
 vargroup_secrets_name="${PROJECT}-secrets-$ENV_NAME"
