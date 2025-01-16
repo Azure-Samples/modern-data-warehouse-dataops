@@ -61,7 +61,7 @@ The sample demonstrate how DevOps principles can be applied end to end Data Pipe
 
 ## Solution Overview
 
-The solution pulls near realtime [Melbourne Parking Sensor data](https://www.melbourne.vic.gov.au/about-council/governance-transparency/open-data/Pages/on-street-parking-data.aspx) from a publicly available REST api endpoint and saves this to [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction). It then validates, cleanses, and transforms the data to a known schema using [Azure Databricks](https://azure.microsoft.com/en-us/products/databricks/). A second Azure Databricks job then transforms these into a [Star Schema](https://en.wikipedia.org/wiki/Star_schema) which are then loaded into [Azure Synapse Analytics (formerly SQLDW)](https://azure.microsoft.com/en-us/products/synapse-analytics/) using [Polybase](https://docs.microsoft.com/en-us/sql/relational-databases/polybase/polybase-guide?view=sql-server-ver15). The entire pipeline is orchestrated with [Azure Data Factory](https://azure.microsoft.com/en-us/products/data-factory/).
+The solution pulls fictional near realtime parking sensor data from a data generator that was installed during the deploy and saves this to [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction). It then validates, cleanses, and transforms the data to a known schema using [Azure Databricks](https://azure.microsoft.com/en-us/products/databricks/). A second Azure Databricks job then transforms these into a [Star Schema](https://en.wikipedia.org/wiki/Star_schema) which are then loaded into [Azure Synapse Analytics (formerly SQLDW)](https://azure.microsoft.com/en-us/products/synapse-analytics/) using [Polybase](https://docs.microsoft.com/en-us/sql/relational-databases/polybase/polybase-guide?view=sql-server-ver15). The entire pipeline is orchestrated with [Azure Data Factory](https://azure.microsoft.com/en-us/products/data-factory/).
 
 ### Architecture
 
@@ -224,7 +224,7 @@ Follow the setup prerequisites, permissions, and deployment environment options.
 2. [Azure Account](https://azure.microsoft.com/en-us/free/) If you do not have one already, create an Azure Account.
    - *Permissions needed*: ability to create and deploy to an azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
 3. [Azure DevOps Project](https://azure.microsoft.com/en-us/products/devops/) : Follow the documentation to create a new project, or use an existing project you wish to deploy these resources to.
-   - *Permissions needed*: It is required to be able to create [Service Connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml),  [pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops&tabs=yaml) , [variable groups](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml) and  allow *Manage Project Properties* as [Endpoint Administrator](https://learn.microsoft.com/en-us/azure/devops/pipelines/policies/permissions?view=azure-devops#set-service-connection-security-in-azure-pipelines).
+   - *Permissions needed*: ability to create [service connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml), [pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops&tabs=yaml) and [variable groups](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml).
 
 #### Deployment Options
 
@@ -329,7 +329,7 @@ Set up the environment variables as specified, fork the GitHub repository, and l
 
 4. **Trigger an initial Release**
 
-   - In the **DEV** Data Factory portal, navigate to Pipelines and open the "P_Ingest_MelbParkingData" pipeline.
+   - In the **DEV** Data Factory portal, navigate to Pipelines and open the "P_Ingest_ParkingData" pipeline.
    - In the top left corner, open the git drop down and create a Dev branch by clicking in "New Branch".
    - Once the Dev branch is created, select the branch from the drop-down list and make a change in the Description fields from one of the pipeline tasks.
    - Save the pipeline.
@@ -342,7 +342,7 @@ Set up the environment variables as specified, fork the GitHub repository, and l
       - You may need to authorize the Pipelines initially to use the Service Connection and deploy the target environments for the first time.
       ![Release Pipeline](docs/images/ReleasePipeline.png "Release Pipelines")
    - **Optional**. Trigger the Data Factory Pipelines per environment.
-      - In the Data Factory portal of each environment, navigate to "Author", then select the `P_Ingest_MelbParkingData`.
+      - In the Data Factory portal of each environment, navigate to "Author", then select the `P_Ingest_ParkingData`.
       - Select "Trigger > Trigger Now".
       - To monitor the run, go to "Monitor > Pipeline runs".
       ![Data Factory Run](docs/images/ADFRun.png "Data Factory Run]")
@@ -432,11 +432,6 @@ The following lists some limitations of the solution and associated deployment s
 
 - Azure DevOps Variable Groups linked to KeyVault can only be created via the UI, cannot be created programmatically and was not incorporated in the automated deployment of the solution.
   - **Workaround**: Deployment add sensitive configuration as "secrets" in Variable Groups with the downside of duplicated information. If you wish, you may manually link a second Variable Group to KeyVault to pull out the secrets. KeyVault secret names should line up with required variables in the Azure DevOps pipelines. See [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml#link-secrets-from-an-azure-key-vault) for more information.
-- Azure DevOps Service Connection Removal: If you encounter an error like: *"Cannot delete this service connection while federated credentials for app <app-id> exist in Entra tenant <tenant-id>. Please make sure federated credentials have been removed prior to deleting the service connection."* This issue occurs when you try to delete a Service Connection in the Azure DevOps (AzDo) portal, but the Service Connection has federated credentials that need to be manually removed from the Azure Portal.
-  - **Workaround - Manually Deleting Federated Credentials:**
-    Navigate to the Azure portal and locate your app registration under App Registrations. In the left navigation pane, select Certificates & Secrets and then the Federated Credentials 
-    tab. Delete the federated credential from this section. Once the credential is deleted, you can proceed to delete the app registration in the Azure Portal and the Azure Service 
-    Connection in the AzDo portal.
 - Azure DevOps Environment and Approval Gates can only be managed via the UI, cannot be managed programmatically and was not incorporated in the automated deployment of the solution.
   - **Workaround**: Approval Gates can be easily configured manually. See [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/environments?view=azure-devops#approvals) for more information.
 - ADF publishing through the CI/CD pipeline using the npm task still throws and error in the logs due to the missing publish_config.json file but the pipeline completes successfully.

@@ -1,0 +1,279 @@
+{
+    "name": "P_Ingest_ParkingData",
+    "properties": {
+        "description": "Pipeline to Ingest Simulated Parking Data",
+        "activities": [
+            {
+                "name": "StandardizeData",
+                "description": "",
+                "type": "DatabricksNotebook",
+                "dependsOn": [
+                    {
+                        "activity": "DownloadSensorData",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "DownloadLocationData",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "7.00:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "notebookPath": "/Users/brian.sherwin@mngenvmcap841869.onmicrosoft.com/02_standardize.py",
+                    "baseParameters": {
+                        "infilefolder": {
+                            "value": "@variables('infilefolder')",
+                            "type": "Expression"
+                        },
+                        "loadid": {
+                            "value": "@pipeline().RunId",
+                            "type": "Expression"
+                        }
+                    },
+                    "libraries": [
+                        {
+                            "whl": "dbfs:/ddo_transform-localdev-py2.py3-none-any.whl"
+                        },
+                        {
+                            "pypi": {
+                                "package": "applicationinsights"
+                            }
+                        }
+                    ]
+                },
+                "linkedServiceName": {
+                    "referenceName": "Ls_AzureDatabricks_01",
+                    "type": "LinkedServiceReference"
+                }
+            },
+            {
+                "name": "Set infilefolder",
+                "type": "SetVariable",
+                "dependsOn": [],
+                "policy": {
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "variableName": "infilefolder",
+                    "value": {
+                        "value": "@utcnow('yyyy_MM_dd_hh_mm_ss')",
+                        "type": "Expression"
+                    }
+                }
+            },
+            {
+                "name": "DownloadSensorData",
+                "type": "Copy",
+                "dependsOn": [
+                    {
+                        "activity": "Set infilefolder",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "7.00:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "JsonSource",
+                        "storeSettings": {
+                            "type": "HttpReadSettings",
+                            "requestMethod": "GET"
+                        },
+                        "formatSettings": {
+                            "type": "JsonReadSettings"
+                        }
+                    },
+                    "sink": {
+                        "type": "AzureBlobFSSink"
+                    },
+                    "enableStaging": false
+                },
+                "inputs": [
+                    {
+                        "referenceName": "Ds_Http_Parking_Locations",
+                        "type": "DatasetReference"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "referenceName": "Ds_AdlsGen2_ParkingData",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "infilefolder": {
+                                "value": "@variables('infilefolder')",
+                                "type": "Expression"
+                            },
+                            "infilename": "ParkingSensorData.json",
+                            "container": "datalake/data/lnd"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "DownloadLocationData",
+                "type": "Copy",
+                "dependsOn": [
+                    {
+                        "activity": "Set infilefolder",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "7.00:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "JsonSource",
+                        "storeSettings": {
+                            "type": "HttpReadSettings",
+                            "requestMethod": "GET"
+                        },
+                        "formatSettings": {
+                            "type": "JsonReadSettings"
+                        }
+                    },
+                    "sink": {
+                        "type": "AzureBlobFSSink"
+                    },
+                    "enableStaging": false
+                },
+                "inputs": [
+                    {
+                        "referenceName": "Ds_Http_Parking_Sensors",
+                        "type": "DatasetReference"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "referenceName": "Ds_AdlsGen2_ParkingData",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "infilefolder": {
+                                "value": "@variables('infilefolder')",
+                                "type": "Expression"
+                            },
+                            "infilename": "ParkingLocationData.json",
+                            "container": "datalake/data/lnd"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "TransformData",
+                "type": "DatabricksNotebook",
+                "dependsOn": [
+                    {
+                        "activity": "StandardizeData",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "7.00:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "notebookPath": "/Users/brian.sherwin@mngenvmcap841869.onmicrosoft.com/03_transform.py",
+                    "baseParameters": {
+                        "loadid": {
+                            "value": "@pipeline().RunId",
+                            "type": "Expression"
+                        }
+                    },
+                    "libraries": [
+                        {
+                            "whl": "dbfs:/ddo_transform-localdev-py2.py3-none-any.whl"
+                        },
+                        {
+                            "pypi": {
+                                "package": "applicationinsights"
+                            }
+                        }
+                    ]
+                },
+                "linkedServiceName": {
+                    "referenceName": "Ls_AzureDatabricks_01",
+                    "type": "LinkedServiceReference"
+                }
+            },
+            {
+                "name": "Load SQLDW",
+                "type": "SqlServerStoredProcedure",
+                "dependsOn": [
+                    {
+                        "activity": "TransformData",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "7.00:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "storedProcedureName": "[dbo].[load_dw]",
+                    "storedProcedureParameters": {
+                        "load_id": {
+                            "value": {
+                                "value": "@pipeline().RunId",
+                                "type": "Expression"
+                            },
+                            "type": "String"
+                        }
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "Ls_AzureSQLDW_01",
+                    "type": "LinkedServiceReference"
+                }
+            }
+        ],
+        "variables": {
+            "infilefolder": {
+                "type": "String",
+                "defaultValue": "lnd"
+            }
+        },
+        "annotations": [],
+        "lastPublishTime": "2025-01-15T22:39:11Z"
+    },
+    "type": "Microsoft.DataFactory/factories/pipelines"
+}

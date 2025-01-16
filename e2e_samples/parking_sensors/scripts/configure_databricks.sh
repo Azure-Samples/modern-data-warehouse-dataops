@@ -55,8 +55,7 @@ databricks workspace import "$databricks_folder_name/01_explore.py" --file "./da
 databricks workspace import "$databricks_folder_name/02_standardize.py" --file "./databricks/notebooks/02_standardize.py" --format SOURCE --language PYTHON --overwrite
 databricks workspace import "$databricks_folder_name/03_transform.py" --file "./databricks/notebooks/03_transform.py" --format SOURCE --language PYTHON --overwrite
 
-# Define suitable VM for DB cluster
-file_path="./databricks/config/cluster.config.json"
+### Define suitable VM for DB cluster
 
 # Get available VM sizes in the specified region
 vm_sizes=$(az vm list-sizes --location "$AZURE_LOCATION" --output json)
@@ -80,7 +79,9 @@ least_resource_vm=$(echo "$vm_sizes" | jq --arg common_vms "$common_vms" '
 ')
 log "VM with the least resources:$least_resource_vm" "info"
 
-# Update the JSON file with the least resource VM
+# Update the cluster configuration JSON file with the least resource VM
+file_path="./databricks/config/cluster.config.json"
+
 if [ -n "$least_resource_vm" ]; then
     node_type_id=$(echo "$least_resource_vm" | jq -r '.name')
     jq --arg node_type_id "$node_type_id" '.node_type_id = $node_type_id' "$file_path" > tmp.$$.json && mv tmp.$$.json "$file_path"
@@ -106,7 +107,16 @@ else
 fi
 
 cluster_id=$(databricks clusters list --output JSON | jq -r '.[]|select(.default_tags.ClusterName == "ddo_cluster")|.cluster_id')
-log "Cluster ID:" $cluster_id
+log "Cluster ID: ${cluster_id}"
+
+file_path="./adf/linkedService/Ls_AzureDatabricks_01.json"
+if [ -n "$cluster_id" ]; then
+    jq --arg cluster_id "$cluster_id" '.properties.typeProperties.existingClusterId = $cluster_id' "$file_path" > tmp.$$.json && mv tmp.$$.json "$file_path"
+    log "The JSON file at '$file_path' has been updated with the existingClusterId: $cluster_id"
+else
+    log "No cluster_id was returned." "error"
+fi
+
 
 adfTempDir=.tmp/adf
 mkdir -p $adfTempDir && cp -a adf/ .tmp/
@@ -156,7 +166,7 @@ cat <<EOF > $json_file_config
 EOF
 
 job_id=$(databricks jobs create --json @$json_file_config | jq -r ".job_id")
-log "Job ID:" $job_id
+log "Job ID: ${job_id}"
 
 databricks jobs run-now --json "{\"job_id\":$job_id, \"notebook_params\": {\"PYSPARK_PYTHON\": \"/databricks/python3/bin/python3\", \"MOUNT_DATA_PATH\": \"/mnt/datalake\", \"MOUNT_DATA_CONTAINER\": \"datalake\", \"DATABASE\": \"datalake\"}}"
 # Upload libs -- for initial dev package

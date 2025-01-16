@@ -51,13 +51,13 @@ create_adf_linked_service "Ls_KeyVault_01"
 create_adf_linked_service "Ls_AdlsGen2_01"
 create_adf_linked_service "Ls_AzureSQLDW_01"
 create_adf_linked_service "Ls_AzureDatabricks_01"
-create_adf_linked_service "Ls_Http_Parking_Bay_01"
+create_adf_linked_service "Ls_Http_DataSimulator"
 # Deploy all Datasets
-create_adf_dataset "Ds_AdlsGen2_MelbParkingData"
-create_adf_dataset "Ds_Http_Parking_Bay"
-create_adf_dataset "Ds_Http_Parking_Bay_Sensors"
+create_adf_dataset "Ds_AdlsGen2_ParkingData"
+create_adf_dataset "Ds_Http_Parking_Locations"
+create_adf_dataset "Ds_Http_Parking_Sensors"
 # Deploy all Pipelines
-create_adf_pipeline "P_Ingest_MelbParkingData"
+create_adf_pipeline "P_Ingest_ParkingData"
 # Deploy triggers
 create_adf_trigger "T_Sched"
 

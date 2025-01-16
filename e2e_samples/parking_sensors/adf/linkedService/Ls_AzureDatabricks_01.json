@@ -1,21 +1,19 @@
 {
-    "name": "Ls_AzureDatabricks_01",
-    "properties": {
-        "annotations": [],
-        "type": "AzureDatabricks",
-        "typeProperties": {
-            "domain": "https://adb-1380542669290933.13.azuredatabricks.net",
-            "authentication": "MSI",
-            "workspaceResourceId": "/subscriptions/334f902c-99ae-4637-9967-767272b6922c/resourceGroups/mdwdops-ys08-dev-rg/providers/Microsoft.Databricks/workspaces/mdwdops-dbw-dev-ys08",
-            "newClusterNodeType": "Standard_DC4as_v5",
-            "newClusterNumOfWorker": "1",
-            "newClusterSparkEnvVars": {
-                "PYSPARK_PYTHON": "/databricks/python3/bin/python3"
-            },
-            "newClusterVersion": "13.3.x-scala2.12",
-            "clusterOption": "Fixed",
-            "newClusterInitScripts": []
-        }
-    },
-    "type": "Microsoft.DataFactory/factories/linkedservices"
+  "name": "Ls_AzureDatabricks_01",
+  "properties": {
+    "annotations": [],
+    "type": "AzureDatabricks",
+    "typeProperties": {
+      "domain": "",
+      "accessToken": {
+        "type": "AzureKeyVaultSecret",
+        "store": {
+          "referenceName": "Ls_KeyVault_01",
+          "type": "LinkedServiceReference"
+        },
+        "secretName": "databricksToken"
+      },
+      "existingClusterId": ""
+    }
+  }
 }
