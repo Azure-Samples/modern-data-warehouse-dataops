@@ -43,9 +43,6 @@
                     },
                     "libraries": [
                         {
-                            "whl": "dbfs:/ddo_transform-localdev-py2.py3-none-any.whl"
-                        },
-                        {
                             "pypi": {
                                 "package": "applicationinsights"
                             }
@@ -215,9 +212,6 @@
                     },
                     "libraries": [
                         {
-                            "whl": "dbfs:/ddo_transform-localdev-py2.py3-none-any.whl"
-                        },
-                        {
                             "pypi": {
                                 "package": "applicationinsights"
                             }
@@ -273,7 +267,7 @@
             }
         },
         "annotations": [],
-        "lastPublishTime": "2025-01-15T22:39:11Z"
+        "lastPublishTime": "2025-01-16T18:20:44Z"
     },
     "type": "Microsoft.DataFactory/factories/pipelines"
 }
