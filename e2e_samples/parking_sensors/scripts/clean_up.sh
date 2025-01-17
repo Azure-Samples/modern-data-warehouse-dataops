@@ -54,6 +54,14 @@ delete_all(){
         az ad sp list -o tsv --show-mine --query "[?contains(appDisplayName,'$prefix') && contains(appDisplayName,'$DEPLOYMENT_ID')].displayName"
     fi
 
+    log "\nENTRA APP REGISTRATIONS:\n"
+    if [[ -z $DEPLOYMENT_ID ]] 
+    then
+        az ad app list -o tsv --show-mine --query "[?contains(displayName,'$prefix')].displayName"
+    else
+        az ad app list -o tsv --show-mine --query "[?contains(displayName,'$prefix') && contains(displayName,'$DEPLOYMENT_ID')].displayName"
+    fi
+
     log "\nRESOURCE GROUPS:\n"
     if [[ -z $DEPLOYMENT_ID ]] 
     then
@@ -92,15 +100,28 @@ delete_all(){
                 log "Finishing...the clean up of the Service Connections"
             if [[ -z $DEPLOYMENT_ID ]]
             then
-                log "Deleting service principal that contain '$prefix' in name, created by yourself..."
+                log "Deleting service principals that contain '$prefix' in name, created by yourself..."
                 [[ -n $prefix ]] &&
                     az ad sp list --query "[?contains(appDisplayName,'$prefix')].appId" -o tsv --show-mine | 
                     xargs -r -I % az ad sp delete --id %
             else
-                log "Deleting service principal that contain '$prefix' and $DEPLOYMENT_ID in name, created by yourself..."
+                log "Deleting service principals that contain '$prefix' and $DEPLOYMENT_ID in name, created by yourself..."
                 [[ -n $prefix ]] &&
                     az ad sp list --query "[?contains(appDisplayName,'$prefix') && contains(appDisplayName,'$DEPLOYMENT_ID')].appId" -o tsv --show-mine | 
                     xargs -r -I % az ad sp delete --id %
+            fi
+
+            if [[ -z $DEPLOYMENT_ID ]]
+            then
+                log "Deleting app registrations that contain '$prefix' in name, created by yourself..."
+                [[ -n $prefix ]] &&
+                    az ad app list --query "[?contains(displayName,'$prefix')].appId" -o tsv --show-mine | 
+                    xargs -r -I % az ad app delete --id %
+            else
+                log "Deleting app registrations that contain '$prefix' and $DEPLOYMENT_ID in name, created by yourself..."
+                [[ -n $prefix ]] &&
+                    az ad app list --query "[?contains(displayName,'$prefix') && contains(displayName,'$DEPLOYMENT_ID')].appId" -o tsv --show-mine | 
+                    xargs -r -I % az ad app delete --id %
             fi
 
             if [[ -z $DEPLOYMENT_ID ]]

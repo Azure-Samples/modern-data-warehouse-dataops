@@ -55,7 +55,8 @@ databricks workspace import "$databricks_folder_name/01_explore.py" --file "./da
 databricks workspace import "$databricks_folder_name/02_standardize.py" --file "./databricks/notebooks/02_standardize.py" --format SOURCE --language PYTHON --overwrite
 databricks workspace import "$databricks_folder_name/03_transform.py" --file "./databricks/notebooks/03_transform.py" --format SOURCE --language PYTHON --overwrite
 
-### Define suitable VM for DB cluster
+# Define suitable VM for DB cluster
+file_path="./databricks/config/cluster.config.json"
 
 # Get available VM sizes in the specified region
 vm_sizes=$(az vm list-sizes --location "$AZURE_LOCATION" --output json)
@@ -79,9 +80,7 @@ least_resource_vm=$(echo "$vm_sizes" | jq --arg common_vms "$common_vms" '
 ')
 log "VM with the least resources:$least_resource_vm" "info"
 
-# Update the cluster configuration JSON file with the least resource VM
-file_path="./databricks/config/cluster.config.json"
-
+# Update the JSON file with the least resource VM
 if [ -n "$least_resource_vm" ]; then
     node_type_id=$(echo "$least_resource_vm" | jq -r '.name')
     jq --arg node_type_id "$node_type_id" '.node_type_id = $node_type_id' "$file_path" > tmp.$$.json && mv tmp.$$.json "$file_path"
