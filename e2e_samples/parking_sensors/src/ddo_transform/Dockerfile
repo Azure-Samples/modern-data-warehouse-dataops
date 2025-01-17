@@ -1,4 +1,4 @@
-FROM python:3.11
+FROM --platform=linux/amd64 python:3.11
 
 # Install OpenJDK 8 and Python
 RUN wget -qO - https://packages.adoptium.net/artifactory/api/gpg/key/public | apt-key add -
