@@ -387,6 +387,8 @@ ADLS Gen2 is structured as the following:
 
 The following lists some limitations of the solution and associated deployment script:
 
+- Azure Subscription will need to have regional App Service quota available to deploy the data simulator application.
+  - **Workaround**: To resolve this, consult the steps in the documentation [here](https://aka.ms/antquotahelp).
 - Azure DevOps Variable Groups linked to KeyVault can only be created via the UI, cannot be created programmatically and was not incorporated in the automated deployment of the solution.
   - **Workaround**: Deployment add sensitive configuration as "secrets" in Variable Groups with the downside of duplicated information. If you wish, you may manually link a second Variable Group to KeyVault to pull out the secrets. KeyVault secret names should line up with required variables in the Azure DevOps pipelines. See [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml#link-secrets-from-an-azure-key-vault) for more information.
 - Azure DevOps Environment and Approval Gates can only be managed via the UI, cannot be managed programmatically and was not incorporated in the automated deployment of the solution.
