@@ -28,7 +28,7 @@ The sample demonstrate how DevOps principles can be applied end to end Data Pipe
   - [Setup](#setup)
     - [Prerequisites](#prerequisites)
     - [Deployment Options](#deployment-options)
-      - [Software Prerequisites if you use Dev Container](#software-prerequisites-if-you-use-dev-container)
+      - [Software Prerequisites if you use Dev Container **(Recommended)**](#software-prerequisites-if-you-use-dev-container-recommended)
       - [Software Prerequisites if you do not use Dev Container](#software-prerequisites-if-you-do-not-use-dev-container)
   - [Deployment](#deployment)
   - [Deployed Resources](#deployed-resources)
@@ -230,9 +230,7 @@ Follow the setup prerequisites, permissions, and deployment environment options.
 
 As previously mentioned, there are two approaches to setting up the deployment environment, and the prerequisites for each will be detailed below. We recommend opting for the Dev Container, as it streamlines the setup process, ensures consistency, and minimizes configuration effort. Using the Dev Container requires installation and configuration; refer to the documentation linked below for further details.
 
-##### Software Prerequisites if you use Dev Container
-
-**(Recommended)**
+##### Software Prerequisites if you use Dev Container **(Recommended)**
 
 - [Docker](https://www.docker.com/)
 
@@ -292,13 +290,12 @@ Set up the environment variables as specified, fork the GitHub repository, and l
       - To enable Observability and Monitoring components through code(Observability-as-code), please set enable_monitoring parameter to true in  `arm.parameters` files located in the `infrastructure` folder. This will deploy log analytics workspace to collect monitoring data from key resources, setup an Azure dashboards to monitor key metrics and configure alerts for ADF pipelines.
   
      **Login and Cluster Configuration**
-      
       - Ensure that you have completed the configuration for the variables described in the previous section, titled **Configuration: Variables and Login**.
 
 2. **Deploy Azure resources**
    - `cd` into the `e2e_samples/parking_sensors` folder of the repo.
    - Run `./deploy.sh`.
-     - The login process for deployment is interactive. When you run the script **deploy.sh**, a browser window will be open, prompting you to log in to Azure. If there is an open session from a previous deployment, it may log you out and request you to log in again.
+      - The login process for deployment is interactive. When you run the script **deploy.sh**, a browser window will be open, prompting you to log in to Azure. If there is an open session from a previous deployment, it may log you out and request you to log in again.
       - This may take around **~30mins or more** to run end to end. So grab yourself a cup of coffee... ☕ But before you do so keep the following in mind:
         - You might encounter deployment issues if the script attempts to create a Key Vault that conflicts with a previously soft-deleted Key Vault. In such cases, the deployment script may prompt you to confirm the purge of the previously deleted Key Vault.
         - There are 3 points in time where you will need to authenticate to the databricks workspace, before the script continues to run. You will find the following message for the deployment of the dev, stage and production environments. Click the link highlighted in green, consent to authenticate to the databricks workspace and when the workspace opens successfully, return to the deployment windows and press Enter to continue:  ![image](docs/images/databricks_ws.png)
@@ -434,11 +431,9 @@ The following lists some limitations of the solution and associated deployment s
   - **Workaround**: To resolve this, consult the steps in the documentation [here](https://aka.ms/antquotahelp).
 - Azure DevOps Variable Groups linked to KeyVault can only be created via the UI, cannot be created programmatically and was not incorporated in the automated deployment of the solution.
   - **Workaround**: Deployment add sensitive configuration as "secrets" in Variable Groups with the downside of duplicated information. If you wish, you may manually link a second Variable Group to KeyVault to pull out the secrets. KeyVault secret names should line up with required variables in the Azure DevOps pipelines. See [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml#link-secrets-from-an-azure-key-vault) for more information.
-- Azure DevOps Service Connection Removal: If you encounter an error like: *"Cannot delete this service connection while federated credentials for app <app-id> exist in Entra tenant <tenant-id>. Please make sure federated credentials have been removed prior to deleting the service connection."* This issue occurs when you try to delete a Service Connection in the Azure DevOps (AzDo) portal, but the Service Connection has federated credentials that need to be manually removed from the Azure Portal.
+- Azure DevOps Service Connection Removal: If you encounter an error like: *"Cannot delete this service connection while federated credentials for app `<app-id>` exist in Entra tenant `<tenant-id>`. Please make sure federated credentials have been removed prior to deleting the service connection."* This issue occurs when you try to delete a Service Connection in the Azure DevOps (AzDo) portal, but the Service Connection has federated credentials that need to be manually removed from the Azure Portal.
   - **Workaround - Manually Deleting Federated Credentials:**
-    Navigate to the Azure portal and locate your app registration under App Registrations. In the left navigation pane, select Certificates & Secrets and then the Federated Credentials 
-    tab. Delete the federated credential from this section. Once the credential is deleted, you can proceed to delete the app registration in the Azure Portal and the Azure Service 
-    Connection in the AzDo portal.
+    Navigate to the Azure portal and locate your app registration under App Registrations. In the left navigation pane, select Certificates & Secrets and then the Federated Credentials tab. Delete the federated credential from this section. Once the credential is deleted, you can proceed to delete the app registration in the Azure Portal and the Azure Service Connection in the AzDo portal.
 - Azure DevOps Environment and Approval Gates can only be managed via the UI, cannot be managed programmatically and was not incorporated in the automated deployment of the solution.
   - **Workaround**: Approval Gates can be easily configured manually. See [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/environments?view=azure-devops#approvals) for more information.
 - ADF publishing through the CI/CD pipeline using the npm task still throws and error in the logs due to the missing publish_config.json file but the pipeline completes successfully.
