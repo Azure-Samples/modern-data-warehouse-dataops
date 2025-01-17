@@ -30,7 +30,7 @@
                 },
                 "userProperties": [],
                 "typeProperties": {
-                    "notebookPath": "/Users/brian.sherwin@mngenvmcap841869.onmicrosoft.com/02_standardize.py",
+                    "notebookPath": "",
                     "baseParameters": {
                         "infilefolder": {
                             "value": "@variables('infilefolder')",
@@ -203,7 +203,7 @@
                 },
                 "userProperties": [],
                 "typeProperties": {
-                    "notebookPath": "/Users/brian.sherwin@mngenvmcap841869.onmicrosoft.com/03_transform.py",
+                    "notebookPath": "",
                     "baseParameters": {
                         "loadid": {
                             "value": "@pipeline().RunId",

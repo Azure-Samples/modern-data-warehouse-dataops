@@ -4,7 +4,7 @@
 #-----------------------------------------------------------------------------------------
 
 # We are freezing at 3.11 because the build processing is using setup.py and setuptools which is deprecated in 3.13
-FROM python:3.11
+FROM --platform=linux/amd64 python:3.11
 
 # Configure apt
 ENV DEBIAN_FRONTEND=noninteractive
@@ -43,7 +43,7 @@ RUN apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 ENV DEBIAN_FRONTEND=dialog
 
-# Set PACKAGE_VERSION to a PEP 440 compatible version (https://pep440.readthedocs.io/en/latest/)
+# Set PACKAGE_VERSION to localdev
 ENV PACKAGE_VERSION=localdev
 
 # Set the default shell to bash rather than sh
