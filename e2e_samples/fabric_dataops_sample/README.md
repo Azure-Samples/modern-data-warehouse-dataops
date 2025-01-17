@@ -18,13 +18,16 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
   - [Familiarize yourself with known issues, limitations, and workarounds](#familiarize-yourself-with-known-issues-limitations-and-workarounds)
   - [Deploying infrastructure](#deploying-infrastructure)
   - [Verifying the infrastructure deployment](#verifying-the-infrastructure-deployment)
+  - [Running the sample](#running-the-sample)
 - [Cleaning up](#cleaning-up)
 - [Frequently asked questions](#frequently-asked-questions)
   - [Infrastructure deployment related](#infrastructure-deployment-related)
-    - [Why an existing resource group is required?](#why-an-existing-resource-group-is-required)
+    - [Why existing resource groups are required?](#why-existing-resource-groups-are-required)
     - [How to use a managed identity for authentication?](#how-to-use-a-managed-identity-for-authentication)
     - [Why is the variable FABRIC\_CAPACITY\_ADMINS required?](#why-is-the-variable-fabric_capacity_admins-required)
     - [What is the significance of `use_cli` and `use_msi` flags?](#what-is-the-significance-of-use_cli-and-use_msi-flags)
+  - [Application code and execution related](#application-code-and-execution-related)
+    - [Why are lakehouse mount points created in notebooks?](#why-are-lakehouse-mount-points-created-in-notebooks)
 - [References](#references)
 
 ## Solution Overview
@@ -132,6 +135,8 @@ Here is a list of resources that are deployed:
   - Fabric workspace GIT integration
   - Azure Role assignments to entra security group and workspace identity
 
+Note that the script deploys the aforementioned resources across multiple environments (e.g., dev, staging, production). The environment details are specified as an array variable, `ENVIRONMENT_NAMES`, in the `.env` file.
+
 ### Pre-requisites
 
 - An Entra user that can access Microsoft Fabric (Free license is enough).
@@ -139,7 +144,7 @@ Here is a list of resources that are deployed:
   - Add the above user to this security group to enable it to upload configuration files and reference data to ADLS Gen2, as the group is assigned the 'Storage Blob Data Contributor' role during the deployment.
 - An Azure subscription with the following:
   - The `Microsoft.Fabric` [resource provider](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#register-resource-provider) has been registered on the Azure subscription.
-  - A resource group to which your user should be granted [Contributor](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/privileged#contributor) and [User Access Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/privileged#user-access-administrator) privileged roles.
+  - Multiple resource groups to which your user should be granted [Contributor](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/privileged#contributor) and [User Access Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/privileged#user-access-administrator) privileged roles. These resource groups are used to deploy Azure resources for each environment. So, if you are planning to have three environments (dev, staging, production), you need three resource groups. The names of these resource groups are specified as an array variable, `RESOURCE_GROUP_NAMES`, in the `.env` file. You can use the [configure_resource_groups.sh](./scripts/configure_resource_groups.sh) script to create these resource groups and assign the necessary roles.
   - A [managed identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview) OR a [service principal](https://learn.microsoft.com/entra/identity-platform/app-objects-and-service-principals)
   - Request that a Fabric administrator grant the above service principal or managed identity permission to [use Fabric APIs](https://learn.microsoft.com/rest/api/fabric/articles/identity-support#service-principals-and-managed-identities-support). To allow an app to use a service principal as an authentication method, the service principal must be added to an allowed security group. Note that this is a different security group than the one used for workspace admins. This group is then mentioned in the tenant settings as shown below:
 
@@ -192,33 +197,37 @@ Refer to the [known issues, limitations, and workarounds](docs/issues_limitation
 
 - Rename the [.envtemplate](./.envtemplate) file to `.env` and fill in the required environment variables. Here is a list of all the variables:
 
-  ```bash
-  export TENANT_ID="The Entra ID (Azure AD Tenant Id) of your Fabric tenant"
-  export SUBSCRIPTION_ID="The Azure subscription ID that will be used to deploy azure resources."
-  export RESOURCE_GROUP_NAME="The Azure resource group where all azure resources will be deployed."
-  export BASE_NAME="The base name of the Fabric project. This name is used for naming the Azure and Fabric resources."
+  ```text
+  TENANT_ID: The Entra ID (Azure AD Tenant Id) of your Fabric tenant.
+  SUBSCRIPTION_ID: The Azure subscription ID that will be used to deploy azure resources.
+  ENVIRONMENT_NAMES: Space-separated array of deployment stages, development (dev), staging (stg), production (prod) etc., for your application. Example: ("dev" "stg" "prod")
+  RESOURCE_GROUP_NAMES: Space-separated array of 'pre-existing' Azure resource groups corresponding to each environment. Example: ("rg-dev" "rg-stg" "rg-prod")
+  BASE_NAME: The base name of the Fabric project. This name is used for naming the Azure and Fabric resources.
   # Service principal authentication: For managed identity or Entra ID user authentication, you can leave the following two variables blank.
-  export APP_CLIENT_ID="The service principal client ID."
-  export APP_CLIENT_SECRET="The service principal client secret."
+  APP_CLIENT_ID: The service principal client ID.
+  APP_CLIENT_SECRET: The service principal client secret.
   # Azure DevOps variables (The project, repository, branch, and folder must be created in advance)
-  export GIT_ORGANIZATION_NAME="The Azure DevOps organization."
-  export GIT_PROJECT_NAME="The Azure Devops project."
-  export GIT_REPOSITORY_NAME="Your repository under the Azure DevOps project."
-  export GIT_BRANCH_NAME="The branch where Fabric items will be committed to."
-  export GIT_DIRECTORY_NAME="The folder where Fabric items will be committed" # Note: Other than the root folder "/", the directory must already exist. Must start with a forward-slash. Example: "/fabric"
+  GIT_ORGANIZATION_NAME: The Azure DevOps organization.
+  GIT_PROJECT_NAME: The Azure Devops project.
+  GIT_REPOSITORY_NAME: Your repository under the Azure DevOps project.
+  GIT_BRANCH_NAMES: Space-separated array of the GIT branches corresponding to each environment where Fabric items will be committed to. Example: ("dev" "stg" "prod")
+  GIT_DIRECTORY_NAME: The folder where Fabric items will be committed" # Note: Other than the root folder "/", the directory must already exist. Must start with a forward-slash. Example: "/fabric"
   # Workspace admin variables
-  export FABRIC_WORKSPACE_ADMIN_SG_NAME="The name of the Entra security groups with admin members."
+  FABRIC_WORKSPACE_ADMIN_SG_NAME: The name of the Entra security groups with admin members.
   # Fabric Capacity variables
-  export EXISTING_FABRIC_CAPACITY_NAME="" # The name of an existing Fabric capacity. If this is empty, then a new capacity will be created.
-  export FABRIC_CAPACITY_ADMINS="yourusername@yourdomain,sp_mi_object_id" # Comma separated list. When creating a new Fabric capacity, these users/apps would be added as capacity admin. For users, mention "userPrincipalName". For principals (sp/mi), mention "Object ID". Don't add spaces after the comma.
+  EXISTING_FABRIC_CAPACITY_NAME: The name of an existing Fabric capacity. If this is empty, then a new capacity will be created.
+  FABRIC_CAPACITY_ADMINS: Comma-separated list. When creating a new Fabric capacity, these users/apps would be added as capacity admin. For users, mention "userPrincipalName". For principals (sp/mi), mention "Object ID". Don't add spaces after the comma. Example "yourusername@yourdomain,sp_mi_object_id"
   ```
 
   Most of these variables are self-explanatory. Here are a few additional notes:
 
-  - `BASE_NAME` is used as a suffix to name all the Azure and Fabric resources. If skipped, the terraform script will generated a random six character string and use it as the base name.
-  - `APP_CLIENT_ID` and `APP_CLIENT_SECRET` are required only if you are using service principal authentication. If you are using Managed Identity authentication, you can leave these blank.
-  - `EXISTING_FABRIC_CAPACITY_NAME` is the name of an existing Fabric capacity. If you want to create a new capacity, leave this blank.
-  - `FABRIC_CAPACITY_ADMINS` is a comma-separated list of users and service principals that will be added as capacity admins to the newly created Fabric capacity. If you are using an existing capacity, you can leave this blank. But in that case, make sure that your account and the principal (service principal or managed identity) are [added as Capacity Administrators](https://learn.microsoft.com/fabric/admin/capacity-settings?tabs=fabric-capacity#add-and-remove-admins) to that capacity, as mentioned in the [pre-requisites](#pre-requisites).
+  - The `BASE_NAME` variable is used as a suffix to name all the Azure and Fabric resources. If skipped, the terraform script will generated a random six character string and use it as the base name. It is recommended to use a random alphanumeric string of up to six characters.
+  - The `APP_CLIENT_ID` and `APP_CLIENT_SECRET` variables are required only if you are using service principal authentication. If you are using Managed Identity authentication, you can leave these blank.
+  - The `ENVIRONMENT_NAMES` array variable defined the deployment stages/environments. The script will deploy set of resources for each environment specified in this variable. For example, you can define three stages development, staging, and production as ("dev" "stg" "prod").
+  - The `RESOURCE_GROUP_NAMES` array variable defines the Azure resource groups corresponding to each environment. The script will deploy resources for each environment in the corresponding resource group. For example, you can define three resource groups for the three stages as ("rg-dev" "rg-stg" "rg-prod"). The length of `ENVIRONMENT_NAMES` and `RESOURCE_GROUP_NAMES` array variables must be the same. Note that the deployment script does not create these resource groups (see [here](#why-existing-resource-groups-are-required) for details) and you need to create them in advance as outlined in the [pre-requisites](#pre-requisites).
+  - The `EXISTING_FABRIC_CAPACITY_NAME` variable is the name of an existing Fabric capacity. If you want to create a new capacity, leave this blank.
+  - The `GITHUB_BRANCH_NAMES` array variable defines the Git branches for each environment where the Fabric items will be committed. The workspace in each environment is integrated with the corresponding Git branch. For example, you can define three branches for the three stages/environments as ("dev" "stg" "prod"). The length of the `ENVIRONMENT_NAMES` and `GIT_BRANCH_NAMES` array variables must be the same.
+  - The `FABRIC_CAPACITY_ADMINS` variable is a comma-separated list of users and service principals that will be added as capacity admins to the newly created Fabric capacity. If you are using an existing capacity, you can leave this blank. But in that case, make sure that your account and the principal (service principal or managed identity) are [added as Capacity Administrators](https://learn.microsoft.com/fabric/admin/capacity-settings?tabs=fabric-capacity#add-and-remove-admins) to that capacity, as mentioned in the [pre-requisites](#pre-requisites).
 
 - For the following step you have 2 authentication options:
 
@@ -308,7 +317,27 @@ Additionally, note that the Fabric workspace Git integration has been configured
 
 ![Azure DevOps Repository](./images/azure-devops-repo.png)
 
-_**Note: Please note that the Fabric notebook and pipeline deployed are placeholder items and are not functional. These are included to demonstrate the [tokenization](https://registry.terraform.io/providers/microsoft/fabric/latest/docs/guides/gotemplates) functionality during the Terraform deployment of these resources. These items will be replaced with functional versions in the next release._
+_**Note: Please note that the Fabric notebooks and pipeline deployed are under development and subjected to future changes._
+
+### Running the sample
+
+This sample deploys the following three Fabric notebooks:
+
+1. [nb-setup](./src/notebooks/00_setup.ipynb): Creates the required database schemas and tables for the parking sensors application and ingests data in `Bronze` layer.
+2. [nb-standardize](./src/notebooks/02_standardize.ipynb): Cleans and validates the raw parking sensors data and stores it in `Silver` layer.
+3. [nb-transform](./src/notebooks/03_transform.ipynb): Transforms the data in silver layer into dimensions and facts and stores it in `Gold` layer.
+
+The execution of these notebooks is orchestrated via a Fabric data pipeline [pl-main](./src/pipelines/00-main.json).
+
+Here are the instructions to run the application:
+
+1. The sample deploys multiple Fabric workspaces corresponding to each environment. Login to [Microsoft Fabric](https://app.fabric.microsoft.com/) and select the workspace corresponding to your development environment.
+
+2. Enable [high concurrency mode](https://learn.microsoft.com/fabric/data-engineering/configure-high-concurrency-session-notebooks-in-pipelines#configure-high-concurrency-mode) for Fabric pipelines in the spark settings of the workspace.
+
+3. Open the Fabric data pipeline `pl-main` and run it. The pipeline is pre-populated with values for required parameters related to workspace and lakehouse. Successful execution of pipeline will look as shown below:
+
+![Data Pipeline Execution](./images/data-pipeline-execution.png)
 
 ## Cleaning up
 
@@ -335,11 +364,13 @@ You will need to authenticate **with user context** and run the cleanup script.
 
 ### Infrastructure deployment related
 
-#### Why an existing resource group is required?
+#### Why existing resource groups are required?
 
-This sample adheres to the principle of least privilege and aligns with enterprise practices, where the IT infrastructure or platform team creates the resource group and grants only the required permissions on that specific group. If a new resource group is to be created as part of the deployment, it would require subscription-level permissions, which is not recommended.
+This sample follows the principle of least privilege and aligns with enterprise best practices, where the IT infrastructure or platform team is responsible for creating resource groups and granting only the necessary permissions to those specific groups. Allowing resource groups to be created as part of the deployment would require subscription-level permissions, which is not recommended.
 
-For the same reason, the script requires an existing security group for Fabric workspace admins instead of creating a new one.
+For the same reason, the script requires existing security groups for Fabric workspace admins instead of creating new ones.
+
+Having said that, a privileged user with `Contributor` and `User Access Administrator` roles at the subscription level can use the [configure_resource_groups.sh](./scripts/configure_resource_groups.sh) script can be used to create the required resource groups and assigning the necessary roles. This script creates the required resource groups for each stage/environment and assigns the `Contributor` and `User Access Administrator` roles to the specified Entra security group. The `User Access Administrator` role is assigned with a delegate condition to provide more fine-grained access control.
 
 #### How to use a managed identity for authentication?
 
@@ -394,6 +425,12 @@ These flags are used to determine the authentication method to be used during th
 Terraform also uses these flags to determine the authentication method for the Fabric provider. If both `use_cli` and `use_msi` are set to `false`, the `client_id` and `client_secret` attributes are set for the provider to use service principal authentication.
 
 Additionally, in [main.tf](./infrastructure/terraform/main.tf), some modules are deployed only when `use_cli` is set to `true`. This is necessary for Fabric items that do not support service principal or managed identity authentication. These items are deployed using user-context authentication.
+
+### Application code and execution related
+
+#### Why are lakehouse mount points created in notebooks?
+
+If you need to read non-data files (e.g., config/yaml), referring them via ABFS path does not work. In such scenarios, you can mount lakehouse path as mount point and then access the required files.
 
 ## References
 

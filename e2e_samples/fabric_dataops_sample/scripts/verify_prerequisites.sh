@@ -84,7 +84,7 @@ check_env_vars() {
     exit 1
   fi
 
-  COMPULSORY_VARS=("TENANT_ID" "SUBSCRIPTION_ID" "RESOURCE_GROUP_NAME" "BASE_NAME" "FABRIC_WORKSPACE_ADMIN_SG_NAME" "FABRIC_CAPACITY_ADMINS")
+  COMPULSORY_VARS=("TENANT_ID" "SUBSCRIPTION_ID" "BASE_NAME" "FABRIC_WORKSPACE_ADMIN_SG_NAME" "FABRIC_CAPACITY_ADMINS")
   local missing_compulsory_vars=()
 
   for var in "${COMPULSORY_VARS[@]}"; do
@@ -99,6 +99,12 @@ check_env_vars() {
       echo "  - $var"
     done
     echo "Please set the above variables or source the .env file."
+    exit 1
+  fi
+
+  # Ensure 'ENVIRONMENT_NAMES' and 'RESOURCE_GROUP_NAMES' arrays have the same length
+  if [ ${#ENVIRONMENT_NAMES[@]} -ne ${#RESOURCE_GROUP_NAMES[@]} ]; then
+    echo "[Error] ENVIRONMENT_NAMES and RESOURCE_GROUP_NAMES arrays must have the same length."
     exit 1
   fi
 
