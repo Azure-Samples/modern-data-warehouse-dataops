@@ -4,7 +4,7 @@
 #-----------------------------------------------------------------------------------------
 
 # We are freezing at 3.11 because the build processing is using setup.py and setuptools which is deprecated in 3.13
-FROM python:3.11
+FROM --platform=linux/amd64 python:3.11
 
 # Configure apt
 ENV DEBIAN_FRONTEND=noninteractive
