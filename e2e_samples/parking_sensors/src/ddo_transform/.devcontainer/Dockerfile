@@ -43,7 +43,7 @@ RUN apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 ENV DEBIAN_FRONTEND=dialog
 
-# Set PACKAGE_VERSION to a PEP 440 compatible version (https://pep440.readthedocs.io/en/latest/)
+# Set PACKAGE_VERSION to localdev
 ENV PACKAGE_VERSION=localdev
 
 # Set the default shell to bash rather than sh
