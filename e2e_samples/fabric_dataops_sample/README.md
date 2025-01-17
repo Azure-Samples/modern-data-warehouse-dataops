@@ -43,6 +43,53 @@ The diagram below illustrates the complete end-to-end CI/CD process:
 
 ![Fabric CI/CD diagram](./images/fabric-cicd-option1.png)
 
+1. Developers develop in fabric workspaces as their own Sandbox environments and commit changes into their own short-lived git branches. (i.e. <developer_name>/<branch_name>)
+2. When changes are complete, developers raise a PR to main for review. This automatically kicks-off the [PR validation pipeline](./devops/azure-pipelines-ci-qa.yml) which:
+    - Runs the unit tests and lint checks for [python custom libraries](./libraries/).
+    - Sets up and tests an ephemeral build workspace in Fabric, requiring **interactive Azure CLI login**. It creates necessary resources like a feature workspace, custom work pool, ADLS Gen2 storage container, ADLS Gen2 Cloud connections and ADLS Shortcut. The workspace are synced to the feature git branch. These resources are created per PR and reused if they already exist. The pipeline publishes compute settings and libraries as needed, re-publishing the environment if there are changes for the environment config files or custom libraries in the PR. It also creates config files for the solution and uploads them to the ADLS Gen2 container, finally running a notebook to verify the setup.
+3. On PR completion, the commit to main will trigger a [Build pipeline](./devops/azure-pipelines-ci-artifacts.yml), which:
+    - Runs the same unit tests and lint of [python custom libraries](./libraries/) as PR validation. If the tests are successful, it will publish the files as `fabric_env` artifacts along with the Fabric environment configuration YAML file.
+    - Create configuration files for the solution. Alongside these config files, the pipeline also includes seed data files for reference and publishes them as `ADLS` artifacts.
+    - The artifacts of the pipeline are organized as follows:
+
+      ```plaintext
+
+      adls
+      ├── config
+      │   ├── application.cfg
+      │   └── lakehouse_ddls.yaml
+      ├── reference
+      │   ├── dim_date.csv
+      │   └── dim_time.csv
+      fabric_env
+      ├── environment.yaml
+      └── custom_libraries
+          ├── ddo_transform_standardize.py
+          ├── ddo_transform_transform.py
+          └── otel_monitor_invoker.py
+
+      ```
+
+### Testing
+
+- **Data Transformation package** - These test small pieces of functionality within your code. Data transformation code should have unit tests and can be accomplished by abstracting Data Transformation logic into packages. Unit tests along with linting are automatically executed when a PR to `main` is created or a commit to `main`.
+
+  - See here for [unit tests](./libraries/test/ddo_transform/) of Data Transformation package within the solution. The corresponding [QA Pipeline](./devops/azure-pipelines-ci-qa.yml) executes the unit tests on every PR, and [Artifacts Pipeline](./devops/azure-pipelines-ci-artifacts.yml) that executes them on every commit to `main`.
+
+- **Ephemeral Fabric Environment** - This is a simple "Run a notebook" test. After setting up the fabric ephemeral workspace, the QA pipeline attempts to run a notebook to confirm that the setup is completed as expected. Unit tests along with linting are automatically executed when a PR to `main`.
+
+  - See here for [unit tests](./fabric/test/) within the solution. The corresponding [QA Pipeline](./devops/azure-pipelines-ci-qa.yml) executes the unit tests on every PR.
+
+More resources:
+
+- [pytest](https://www.bing.com/search?pglt=675&q=pytest&cvid=0511e23bc6d54e6fb70285e5935f76dd&gs_lcrp=EgRlZGdlKgYIABBFGDsyBggAEEUYOzIGCAEQABhAMgYIAhAAGEAyBggDEAAYQDIGCAQQABhAMgYIBRAAGEAyBggGEAAYQDIGCAcQRRg7MgYICBBFGDwyCAgJEOkHGPxV0gEIMTY4N2owajGoAgCwAgA&FORM=ANNAB1&PC=U531) - Test module for python
+
+### Clean-up
+
+- **CleanupWorkspace** - Ephemeral artifacts should be cleaned up when PR against the main branch is completed/abandoned. [QA Cleanup Pipeline](./devops/azure-pipelines-ci-qa-cleanup.yaml) would remove resources created during the [QA Pipeline](./devops/azure-pipelines-ci-qa.yml).
+
+_**Note: Kindly configure the trigger to initiate the pipeline upon the completion or abandonment of the PR._
+
 ## How to use the sample
 
 ### High-level deployment sequence
