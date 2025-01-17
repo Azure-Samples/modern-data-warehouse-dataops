@@ -1,3 +1,5 @@
+#!/bin/bash
+
 pushd ./data/data-simulator
 
 zip -q data-simulator.zip app.js 
