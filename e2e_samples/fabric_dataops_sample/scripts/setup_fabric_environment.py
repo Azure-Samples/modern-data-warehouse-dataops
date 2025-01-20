@@ -92,14 +92,12 @@ def poll_long_running_operation(response_headers: dict) -> None:
                 print("[Info] Long running operation completed successfully.")
                 break
             elif operation_status == "Failed":
-                print("[Error] Long running operation failed.")
-                break
+                raise Exception("[Error] Long running operation failed.")
             else:
                 print("[Info] Long running operation in progress.")
                 time.sleep(int(retry_after))
         else:
-            print(f"[Error] Failed to retrieve operation status: {response.status_code} - {response.text}")
-            break
+            raise Exception(f"[Error] Failed to retrieve operation status: {response.status_code} - {response.text}")
 
 
 def get_workspace_id(workspace_name: str) -> Optional[str]:
@@ -107,8 +105,7 @@ def get_workspace_id(workspace_name: str) -> Optional[str]:
     response = requests.get(get_workspaces_url, headers=headers)
 
     if response.status_code != 200:
-        print(f"[Info] Failed to retrieve workspaces: {response.status_code} - {response.text}")
-        return None
+        raise Exception(f"[Error] Failed to retrieve workspaces: {response.status_code} - {response.text}")
 
     workspaces = response.json().get("value", [])
 
@@ -123,8 +120,7 @@ def get_environment_id(workspace_id: str, environment_name: str) -> Optional[str
     response = requests.get(get_environments_url, headers=headers)
 
     if response.status_code != 200:
-        print(f"[Info] Failed to retrieve environments: {response.status_code} - {response.text}")
-        return None
+        raise Exception(f"[Error] Failed to retrieve environments: {response.status_code} - {response.text}")
 
     environments = response.json().get("value", [])
 
@@ -149,10 +145,9 @@ def upload_staging_libraries(
     if response.status_code == 200:
         print(f"[Info] Staging libraries uploaded from file '{file_name}' successfully.")
     else:
-        print(
+        raise Exception(
             f"[Error] Staging libraries upload from file '{file_name}' failed: {response.status_code} - {response.text}"
         )
-        print(response.text)
 
 
 def publish_environment(workspace_id: str, environment_id: str) -> None:
@@ -167,7 +162,7 @@ def publish_environment(workspace_id: str, environment_id: str) -> None:
         print("[Info] Environment publishing is in progress.")
         poll_long_running_operation(response.headers)
     else:
-        print(f"[Error] Failed to publish environment: {response.status_code} - {response.text}")
+        raise Exception(f"[Error] Failed to publish environment: {response.status_code} - {response.text}")
 
 
 def get_libraries(workspace_id: str, environment_id: str, status: str) -> None:
@@ -178,8 +173,7 @@ def get_libraries(workspace_id: str, environment_id: str, status: str) -> None:
             f"{fabric_api_endpoint}/workspaces/{workspace_id}/environments/{environment_id}/{status}/libraries"
         )
     else:
-        print(f"[Error] Invalid status: {status}")
-        return
+        raise Exception(f"[Error] Invalid status: {status}")
     print(f"[Info] Retrieving information about '{status}' libraries.")
 
     response = requests.get(libraries_url, headers=headers)
@@ -210,16 +204,14 @@ if __name__ == "__main__":
     if workspace_id:
         print(f"[Info] Workspace details: '{workspace_name}' ({workspace_id})")
     else:
-        print(f"[Error] Failed to retrieve workspace id for '{workspace_name}'")
-        exit(1)
+        raise Exception(f"[Error] Failed to retrieve workspace id for '{workspace_name}'")
 
     # Getting environment id
     environment_id = get_environment_id(workspace_id, environment_name)
     if environment_id:
         print(f"[Info] Environment details: '{environment_name}' ({environment_id})")
     else:
-        print(f"[Error] Failed to retrieve environment id for '{environment_name}'")
-        exit(1)
+        raise Exception(f"[Error] Failed to retrieve environment id for '{environment_name}'")
 
     # Uploading "environment.yml" to staging
     upload_staging_libraries(
