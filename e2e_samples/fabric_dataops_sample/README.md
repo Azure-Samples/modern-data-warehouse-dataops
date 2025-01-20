@@ -19,6 +19,7 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
   - [Deploying infrastructure](#deploying-infrastructure)
   - [Verifying the infrastructure deployment](#verifying-the-infrastructure-deployment)
   - [Running the sample](#running-the-sample)
+  - [Understanding CI/CD pipeline](#understanding-cicd-pipeline)
 - [Cleaning up](#cleaning-up)
 - [Frequently asked questions](#frequently-asked-questions)
   - [Infrastructure deployment related](#infrastructure-deployment-related)
@@ -47,51 +48,21 @@ The diagram below illustrates the complete end-to-end CI/CD process:
 ![Fabric CI/CD diagram](./images/fabric-cicd-option1.png)
 
 1. Developers develop in fabric workspaces as their own Sandbox environments and commit changes into their own short-lived git branches. (i.e. <developer_name>/<branch_name>)
-2. When changes are complete, developers raise a PR to main for review. This automatically kicks-off the [PR validation pipeline](./devops/azure-pipelines-ci-qa.yml) which:
-    - Runs the unit tests and lint checks for [python custom libraries](./libraries/).
-    - Sets up and tests an ephemeral build workspace in Fabric, requiring **interactive Azure CLI login**. It creates necessary resources like a feature workspace, custom work pool, ADLS Gen2 storage container, ADLS Gen2 Cloud connections and ADLS Shortcut. The workspace are synced to the feature git branch. These resources are created per PR and reused if they already exist. The pipeline publishes compute settings and libraries as needed, re-publishing the environment if there are changes for the environment config files or custom libraries in the PR. It also creates config files for the solution and uploads them to the ADLS Gen2 container, finally running a notebook to verify the setup.
-3. On PR completion, the commit to main will trigger a [Build pipeline](./devops/azure-pipelines-ci-artifacts.yml), which:
-    - Runs the same unit tests and lint of [python custom libraries](./libraries/) as PR validation. If the tests are successful, it will publish the files as `fabric_env` artifacts along with the Fabric environment configuration YAML file.
-    - Create configuration files for the solution. Alongside these config files, the pipeline also includes seed data files for reference and publishes them as `ADLS` artifacts.
-    - The artifacts of the pipeline are organized as follows:
+2. When changes are complete, developers raise a pull request (PR) to your main branch for review. This automatically kicks-off the PR validation pipeline which runs unit tests for python package with linting and creates ephemeral workspace. After the workspace is created, the pipeline attempts to run another additional unit tests for the workspace to ensure the setup is completed as expected.
+3. On PR completion, the commit to main will trigger a Build pipeline -- publishing all necessary Build Artifacts.
+4. The completion of a successful Build pipeline will trigger the first stage of the Release pipeline. This deploys the publish build artifacts into the DEV environment.
+5. On the successful completion of the first stage, this triggers an Manual Approval Gate. On Approval, the release pipeline continues with the second stage -- deploying changes to the Staging environment.
+6. Integration tests are run to test changes in the Staging environment.
+7. On the successful completion of the second stage, this triggers a second Manual Approval Gate. On Approval, the release pipeline continues with the third stage -- deploying changes to the Production environment.
 
-      ```plaintext
+#### Testing
 
-      adls
-      ├── config
-      │   ├── application.cfg
-      │   └── lakehouse_ddls.yaml
-      ├── reference
-      │   ├── dim_date.csv
-      │   └── dim_time.csv
-      fabric_env
-      ├── environment.yaml
-      └── custom_libraries
-          ├── ddo_transform_standardize.py
-          ├── ddo_transform_transform.py
-          └── otel_monitor_invoker.py
+- **Unit Testing** - These test small pieces of functionality within your code. In this solution, there are 2 types of unit tests. Each tests are executed during specific stages.
 
-      ```
+  - See [unit tests for python package](./libraries/test/ddo_transform/). The corresponding [QA Pipeline](./devops/azure-pipelines-ci-qa.yml) executes the unit tests on every PR, and [Artifacts Pipeline](./devops/azure-pipelines-ci-artifacts.yml) that executes them on every commit to main.
+  - See [unit tests for Ephemeral Fabric Environment](./fabric/test/).  The corresponding [QA Pipeline](./devops/azure-pipelines-ci-qa.yml) executes the unit tests on every PR to main.
 
-### Testing
-
-- **Data Transformation package** - These test small pieces of functionality within your code. Data transformation code should have unit tests and can be accomplished by abstracting Data Transformation logic into packages. Unit tests along with linting are automatically executed when a PR to `main` is created or a commit to `main`.
-
-  - See here for [unit tests](./libraries/test/ddo_transform/) of Data Transformation package within the solution. The corresponding [QA Pipeline](./devops/azure-pipelines-ci-qa.yml) executes the unit tests on every PR, and [Artifacts Pipeline](./devops/azure-pipelines-ci-artifacts.yml) that executes them on every commit to `main`.
-
-- **Ephemeral Fabric Environment** - This is a simple "Run a notebook" test. After setting up the fabric ephemeral workspace, the QA pipeline attempts to run a notebook to confirm that the setup is completed as expected. Unit tests along with linting are automatically executed when a PR to `main`.
-
-  - See here for [unit tests](./fabric/test/) within the solution. The corresponding [QA Pipeline](./devops/azure-pipelines-ci-qa.yml) executes the unit tests on every PR.
-
-More resources:
-
-- [pytest](https://www.bing.com/search?pglt=675&q=pytest&cvid=0511e23bc6d54e6fb70285e5935f76dd&gs_lcrp=EgRlZGdlKgYIABBFGDsyBggAEEUYOzIGCAEQABhAMgYIAhAAGEAyBggDEAAYQDIGCAQQABhAMgYIBRAAGEAyBggGEAAYQDIGCAcQRRg7MgYICBBFGDwyCAgJEOkHGPxV0gEIMTY4N2owajGoAgCwAgA&FORM=ANNAB1&PC=U531) - Test module for python
-
-### Clean-up
-
-- **CleanupWorkspace** - Ephemeral artifacts should be cleaned up when PR against the main branch is completed/abandoned. [QA Cleanup Pipeline](./devops/azure-pipelines-ci-qa-cleanup.yaml) would remove resources created during the [QA Pipeline](./devops/azure-pipelines-ci-qa.yml).
-
-_**Note: Kindly configure the trigger to initiate the pipeline upon the completion or abandonment of the PR._
+- **Integration Testing** - These are run to ensure integration points of the solution function as expected. In this demo solution, an actual Data Pipeline run is automatically triggered and its output verified as part of the Release to the Staging Environment.
 
 ## How to use the sample
 
@@ -338,6 +309,29 @@ Here are the instructions to run the application:
 3. Open the Fabric data pipeline `pl-main` and run it. The pipeline is pre-populated with values for required parameters related to workspace and lakehouse. Successful execution of pipeline will look as shown below:
 
 ![Data Pipeline Execution](./images/data-pipeline-execution.png)
+
+### Understanding CI/CD pipeline
+
+#### CI (PR Validation)
+
+It is triggered by Every PR to your main branch. To test functionality and conflicts before merging the feature into main branch. This pipeline consists of the following steps:
+
+- Test libraries contains specific logic of the solution
+- Create an ephemeral build workspace in fabric to use to test the changes what you do
+
+#### CI (PR Validation Clean up)
+
+PR Validation pipeline creates several temporary resources when the PR created. Therefore when the PR close or abandoned, the resources should be deleted.
+[QA Cleanup Pipeline](./devops/azure-pipelines-ci-qa-cleanup.yaml) would remove resources created during the PR validation pipeline.
+
+#### CI (Build Artifacts)
+
+It is triggered by Every commit to your main branch. [Build Artifacts pipeline](./devops/azure-pipelines-ci-artifacts.yml) publish config files and custom libraries as artifacts for the release and deploy pipeline.
+
+#### CD (Release Deploy)
+
+It is triggered when CI build artifacts pipeline completes.
+Release Deploy pipeline updates workspace and deploys artifacts to each stages(DEV, STG, PROD).  To proceed to each stage, manual approval is required.
 
 ## Cleaning up
 
