@@ -94,15 +94,16 @@ Release Deploy pipeline updates workspace and deploys artifacts to each stages(D
 
 #### Build and Release Sequence
 
-![Fabric CI/CD diagram](./images/fabric-cicd-option1.png)
+![Fabric CI/CD diagram](./images/fabric-cicd-option1-sequence.png)
 
 1. Developers develop in fabric workspaces as their own Sandbox environments and commit changes into their own short-lived git branches. (i.e. <developer_name>/<branch_name>)
 2. When changes are complete, developers raise a PR to your main branch for review. This automatically kicks-off the PR validation pipeline which runs unit tests for python package with linting and creates ephemeral workspace. After the workspace is created, the pipeline attempts to run another additional unit tests for the workspace to ensure the setup is completed as expected.
 3. On PR completion, the commit to main will trigger a Build pipeline -- publishing all necessary Build Artifacts.
-4. The completion of a successful Build pipeline will trigger the first stage of the Release pipeline. This deploys the publish build artifacts into the DEV environment.
-5. On the successful completion of the first stage, this triggers an Manual Approval Gate. On Approval, the release pipeline continues with the second stage -- deploying changes to the Staging environment.
-6. Integration tests are run to test changes in the Staging environment.
-7. On the successful completion of the second stage, this triggers a second Manual Approval Gate. On Approval, the release pipeline continues with the third stage -- deploying changes to the Production environment.
+4. When the PR close or abandoned, PR Validation Clean up pipeline delete the temporary resources.
+5. The completion of a successful Build pipeline will trigger the first stage of the Release pipeline. This deploys the publish build artifacts into the DEV environment.
+6. On the successful completion of the first stage, this triggers an Manual Approval Gate. On Approval, the release pipeline continues with the second stage -- deploying changes to the Staging environment.
+7. Integration tests are run to test changes in the Staging environment.
+8. On the successful completion of the second stage, this triggers a second Manual Approval Gate. On Approval, the release pipeline continues with the third stage -- deploying changes to the Production environment.
 
 ##### Testing
 
