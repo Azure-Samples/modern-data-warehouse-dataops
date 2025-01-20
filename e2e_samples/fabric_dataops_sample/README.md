@@ -11,15 +11,25 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
 - [Solution Overview](#solution-overview)
   - [Architecture](#architecture)
   - [Continuous Integration and Continuous Delivery (CI/CD)](#continuous-integration-and-continuous-delivery-cicd)
-- [How to use the sample](#how-to-use-the-sample)
+- [Key Concepts](#key-concepts)
+  - [Development Process / Branching out to new workspace](#development-process--branching-out-to-new-workspace)
+  - [Ephemeral workspace](#ephemeral-workspace)
+  - [Build and release pipelines](#build-and-release-pipelines)
+    - [CI Pipelines](#ci-pipelines)
+    - [CD Pipelines](#cd-pipelines)
+    - [Build and Release Sequence](#build-and-release-sequence)
+- [Understanding the sample / Before you begin](#understanding-the-sample--before-you-begin)
   - [High-level deployment sequence](#high-level-deployment-sequence)
   - [Deployed resources](#deployed-resources)
   - [Pre-requisites](#pre-requisites)
   - [Familiarize yourself with known issues, limitations, and workarounds](#familiarize-yourself-with-known-issues-limitations-and-workarounds)
-  - [Deploying infrastructure](#deploying-infrastructure)
-  - [Verifying the infrastructure deployment](#verifying-the-infrastructure-deployment)
-  - [Running the sample](#running-the-sample)
-  - [Understanding CI/CD pipeline](#understanding-cicd-pipeline)
+- [How to use the sample](#how-to-use-the-sample)
+  - [Initial infrastructure deployment](#initial-infrastructure-deployment)
+    - [Deploying infrastructure using Terraform and Fabric APIs](#deploying-infrastructure-using-terraform-and-fabric-apis)
+    - [Verifying the infrastructure deployment](#verifying-the-infrastructure-deployment)
+  - [Running the application code](#running-the-application-code)
+  - [Triggering the CI/CD pipelines](#triggering-the-cicd-pipelines)
+    - [Define environment/VG variables](#define-environmentvg-variables)
 - [Cleaning up](#cleaning-up)
 - [Frequently asked questions](#frequently-asked-questions)
   - [Infrastructure deployment related](#infrastructure-deployment-related)
@@ -47,15 +57,54 @@ The diagram below illustrates the complete end-to-end CI/CD process:
 
 ![Fabric CI/CD diagram](./images/fabric-cicd-option1.png)
 
+See [here](#build-and-release-pipelines) for details.
+
+## Key Concepts
+
+### Development Process / Branching out to new workspace
+
+### Ephemeral workspace
+
+### Build and release pipelines
+
+#### CI pipelines
+
+##### PR Validation pipeline
+
+It is triggered by Every pull request (PR) to your main branch. To test functionality and conflicts before merging the feature into main branch. This pipeline consists of the following steps:
+
+- Test libraries contains specific logic of the solution
+- Create an ephemeral build workspace in fabric to use to test the changes what you do
+
+##### PR Validation Clean up pipeline
+
+PR Validation pipeline creates several temporary resources when the PR created. Therefore when the PR close or abandoned, the resources should be deleted.
+[QA Cleanup Pipeline](./devops/azure-pipelines-ci-qa-cleanup.yaml) would remove resources created during the PR validation pipeline.
+
+##### Build Artifacts pipeline
+
+It is triggered by Every commit to your main branch. [Build Artifacts pipeline](./devops/azure-pipelines-ci-artifacts.yml) publish config files and custom libraries as artifacts for the release and deploy pipeline.
+
+#### CD pipelines
+
+#### Release Deploy pipeline
+
+It is triggered when CI build artifacts pipeline completes.
+Release Deploy pipeline updates workspace and deploys artifacts to each stages(DEV, STG, PROD).  To proceed to each stage, manual approval is required.
+
+#### Build and Release Sequence
+
+![Fabric CI/CD diagram](./images/fabric-cicd-option1.png)
+
 1. Developers develop in fabric workspaces as their own Sandbox environments and commit changes into their own short-lived git branches. (i.e. <developer_name>/<branch_name>)
-2. When changes are complete, developers raise a pull request (PR) to your main branch for review. This automatically kicks-off the PR validation pipeline which runs unit tests for python package with linting and creates ephemeral workspace. After the workspace is created, the pipeline attempts to run another additional unit tests for the workspace to ensure the setup is completed as expected.
+2. When changes are complete, developers raise a PR to your main branch for review. This automatically kicks-off the PR validation pipeline which runs unit tests for python package with linting and creates ephemeral workspace. After the workspace is created, the pipeline attempts to run another additional unit tests for the workspace to ensure the setup is completed as expected.
 3. On PR completion, the commit to main will trigger a Build pipeline -- publishing all necessary Build Artifacts.
 4. The completion of a successful Build pipeline will trigger the first stage of the Release pipeline. This deploys the publish build artifacts into the DEV environment.
 5. On the successful completion of the first stage, this triggers an Manual Approval Gate. On Approval, the release pipeline continues with the second stage -- deploying changes to the Staging environment.
 6. Integration tests are run to test changes in the Staging environment.
 7. On the successful completion of the second stage, this triggers a second Manual Approval Gate. On Approval, the release pipeline continues with the third stage -- deploying changes to the Production environment.
 
-#### Testing
+##### Testing
 
 - **Unit Testing** - These test small pieces of functionality within your code. In this solution, there are 2 types of unit tests. Each tests are executed during specific stages.
 
@@ -64,7 +113,7 @@ The diagram below illustrates the complete end-to-end CI/CD process:
 
 - **Integration Testing** - These are run to ensure integration points of the solution function as expected. In this demo solution, an actual Data Pipeline run is automatically triggered and its output verified as part of the Release to the Staging Environment.
 
-## How to use the sample
+## Understanding the sample / Before you begin
 
 ### High-level deployment sequence
 
@@ -150,7 +199,11 @@ Note that the script deploys the aforementioned resources across multiple enviro
 
 Refer to the [known issues, limitations, and workarounds](docs/issues_limitations_and_workarounds.md) page for details. Reviewing this page is highly recommended to understand the limitations, issues, and challenges you may encounter while building CI/CD pipelines for Fabric. It also provides workarounds and alternative approaches to overcome these challenges. This information will also help you understand why certain approaches are used in the infrastructure deployment scripts and Azure DevOps pipelines.
 
-### Deploying infrastructure
+## How to use the sample
+
+### Initial infrastructure deployment
+
+#### Deploying infrastructure using Terraform and Fabric APIs
 
 - Clone the repository:
 
@@ -248,7 +301,7 @@ Refer to the [known issues, limitations, and workarounds](docs/issues_limitation
 
   This time, the script will create the Lakehouse shortcut to your ADLS Gen2 storage account. All previously deployed resources will remain unchanged. Fabric items whose REST APIs and terraform provider don't support service principal / managed identity authentication (i.e. data pipelines and others) will be deployed with user context authentication.
 
-### Verifying the infrastructure deployment
+#### Verifying the infrastructure deployment
 
 Once the deployment is complete, you can verify the resources created in the Azure portal and the Fabric portal. Below is a list of the created resources along with their default names:
 
@@ -290,7 +343,7 @@ Additionally, note that the Fabric workspace Git integration has been configured
 
 _**Note: Please note that the Fabric notebooks and pipeline deployed are under development and subjected to future changes._
 
-### Running the sample
+### Running the application code
 
 This sample deploys the following three Fabric notebooks:
 
@@ -310,28 +363,9 @@ Here are the instructions to run the application:
 
 ![Data Pipeline Execution](./images/data-pipeline-execution.png)
 
-### Understanding CI/CD pipeline
+### Triggering the CI/CD pipelines
 
-#### CI (PR Validation)
-
-It is triggered by Every PR to your main branch. To test functionality and conflicts before merging the feature into main branch. This pipeline consists of the following steps:
-
-- Test libraries contains specific logic of the solution
-- Create an ephemeral build workspace in fabric to use to test the changes what you do
-
-#### CI (PR Validation Clean up)
-
-PR Validation pipeline creates several temporary resources when the PR created. Therefore when the PR close or abandoned, the resources should be deleted.
-[QA Cleanup Pipeline](./devops/azure-pipelines-ci-qa-cleanup.yaml) would remove resources created during the PR validation pipeline.
-
-#### CI (Build Artifacts)
-
-It is triggered by Every commit to your main branch. [Build Artifacts pipeline](./devops/azure-pipelines-ci-artifacts.yml) publish config files and custom libraries as artifacts for the release and deploy pipeline.
-
-#### CD (Release Deploy)
-
-It is triggered when CI build artifacts pipeline completes.
-Release Deploy pipeline updates workspace and deploys artifacts to each stages(DEV, STG, PROD).  To proceed to each stage, manual approval is required.
+#### Define environment/VG variables
 
 ## Cleaning up
 
