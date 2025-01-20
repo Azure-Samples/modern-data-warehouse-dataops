@@ -87,7 +87,7 @@ It is triggered by Every commit to your main branch. [Build Artifacts pipeline](
 
 #### CD pipelines
 
-#### Release Deploy pipeline
+##### Release Deploy pipeline
 
 It is triggered when CI build artifacts pipeline completes.
 Release Deploy pipeline updates workspace and deploys artifacts to each stages(DEV, STG, PROD).  To proceed to each stage, manual approval is required.
