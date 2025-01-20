@@ -94,6 +94,7 @@ cleanup_terraform_resources() {
     -var "git_repository_name=$git_repository_name" \
     -var "git_branch_name=$git_branch_name" \
     -var "git_directory_name=$git_directory_name" \
+    -var "fabric_adls_shortcut_name=$adls_gen2_shortcut_name" \
     -var "kv_appinsights_connection_string_name=$appinsights_connection_string_name"
 
   cd "$original_directory"
