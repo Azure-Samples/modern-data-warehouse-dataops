@@ -97,7 +97,7 @@ delete_all(){
                 wait_for_process
                 az devops service-endpoint list -o tsv --query "[?contains(name, '$prefix')].id" |
                 xargs -r -I % az devops service-endpoint delete --id % --yes
-                log "Finishing...the clean up of the Service Connections"
+                log "Finished cleaning up Service Connections"
             if [[ -z $DEPLOYMENT_ID ]]
             then
                 log "Deleting service principals that contain '$prefix' in name, created by yourself..."
