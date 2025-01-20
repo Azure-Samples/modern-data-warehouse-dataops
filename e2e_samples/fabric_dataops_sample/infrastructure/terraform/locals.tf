@@ -26,4 +26,6 @@ locals {
   fabric_custom_pool_name              = "sprk-${local.base_name}"
   fabric_runtime_version               = "1.3"
   git_variable_group_name              = "vg-${local.base_name}-${var.environment_name}"
+  fabric_adls_connection_name          = "conn-adls-${module.adls.storage_account_name}"
+  storage_account_role_definition_id   = split("/", data.azurerm_role_definition.storage_blob_contributor_role.id)[4]
 }

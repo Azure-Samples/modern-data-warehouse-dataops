@@ -87,10 +87,16 @@ variable "git_branch_name" {
 
 variable "git_directory_name" {
   type        = string
-  description = "The directory name for Fabric artifacts"
+  description = "The Git directory name for syncing the Fabric workspace items. This can also be a path such as '/fabric/workspace'."
+  default     = "/"
 }
 
 variable "kv_appinsights_connection_string_name" {
   type        = string
   description = "Key Vault secret name for Application Insights connection string"
+}
+
+variable "fabric_adls_shortcut_name" {
+  type        = string
+  description = "The name of the shortcut to the ADLS Gen2 storage account"
 }

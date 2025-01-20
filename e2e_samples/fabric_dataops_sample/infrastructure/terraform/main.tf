@@ -219,6 +219,25 @@ module "azure_devops_variable_group" {
   azure_devops_project_id          = data.azuredevops_project.git_project.id
   azure_devops_variable_group_name = local.git_variable_group_name
   azure_devops_variable_group_variables = {
-    "key_vault_name" = module.keyvault.keyvault_name # Needs at least one variable
+    "subscription_id"                      = data.azurerm_subscription.current.subscription_id
+    "resource_group_name"                  = data.azurerm_resource_group.rg.name
+    "storage_account_name"                 = module.adls.storage_account_name
+    "storage_container_name"               = module.adls.storage_container_name
+    "storage_account_role_definition_name" = data.azurerm_role_definition.storage_blob_contributor_role.name
+    "storage_account_role_definition_id"   = local.storage_account_role_definition_id
+    "key_vault_name"                       = module.keyvault.keyvault_name
+    "fabric_capacity_name"                 = module.fabric_capacity.capacity_name
+    "fabric_workspace_name"                = module.fabric_workspace.workspace_name
+    "fabric_workspace_admin_sg_name"       = data.azuread_group.fabric_workspace_admin.display_name
+    "fabric_workspace_admin_sg_id"         = data.azuread_group.fabric_workspace_admin.object_id
+    "fabric_lakehouse_name"                = module.fabric_lakehouse.lakehouse_name
+    "fabric_adls_connection_name"          = local.fabric_adls_connection_name
+    "fabric_adls_shortcut_name"            = var.fabric_adls_shortcut_name
+    "fabric_custom_pool_name"              = module.fabric_spark_custom_pool.spark_custom_pool_name
+    "fabric_environment_name"              = module.fabric_environment.environment_name
+    "git_organization_name"                = var.git_organization_name
+    "git_project_name"                     = var.git_project_name
+    "git_repo_name"                        = var.git_repository_name
+    "git_directory_name"                   = var.git_directory_name
   }
 }
