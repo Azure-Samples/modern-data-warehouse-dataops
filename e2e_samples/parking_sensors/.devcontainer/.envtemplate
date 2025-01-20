@@ -26,6 +26,9 @@ AZDO_ORGANIZATION_URL=
 # OPTIONAL. Environment variables for deployment script.
 # Uncomment to set values.
 
+# Define if Dev, Stage, and Prod will be deployed. Default is 3; this can be overwritten during the deploy.
+# ENV_DEPLOY
+
 # Azure location to deploy resources. Default: westus
 # AZURE_LOCATION=
 

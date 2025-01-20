@@ -134,13 +134,19 @@ wait_for_process() {
     log "Giving the portal $seconds seconds to process the information..."
     sleep "$seconds"
 }
-
 cleanup_federated_credentials() {
     ##Function used in the Clean_up.sh and deploy_azdo_service_connections_azure.sh scripts
     local sc_id=$1
     local spnAppObjId=$(az devops service-endpoint show --id "$sc_id" --org "$AZDO_ORGANIZATION_URL" -p "$AZDO_PROJECT" --query "data.appObjectId" -o tsv)
+    # if the Service connection does not have an associated Service Principal, 
+    # then it means it won't have associated federated credentials
+    if [ -z "$spnAppObjId" ]; then
+        log "Service Principal Object ID not found for Service Connection ID: $sc_id. Skipping federated credential cleanup."
+        return
+    fi
+
     local spnCredlist=$(az ad app federated-credential list --id "$spnAppObjId" --query "[].id" -o json)
-    log "Found existing federated credentials. Deleting..."
+    log "Attempting to delete federated credentials."
 
     # Sometimes the Azure Portal needs a little bit more time to process the information.
     if [ -z "$spnCredlist" ]; then
@@ -169,3 +175,48 @@ cleanup_federated_credentials() {
   log "Completed federated credential cleanup for the Service Principal: $spnAppObjId"
 }
 
+deploy_infrastructure_environment() {
+  ##function to allow user deploy enviromnents
+    ## 1) Only Dev
+    ## 2) Dev and Stage
+    ## 3)  Dev, Stage and Prod
+  ##Default  is option 3.
+  ENV_DEPLOY=${1:-3}
+  project=${2:-mdwdops}
+    case $ENV_DEPLOY in
+    1)
+        log "Deploying Dev Environment only..."
+        env_names="dev"
+        ;;
+    2)    
+        log "Deploying Dev and Stage Environments..."    
+        env_names="dev stg"
+        ;;
+    3) 
+        log "Full Deploy: Dev, Stage and Prod Environments..."
+        env_names="dev stg prod"
+        ;;
+    *)
+        log "Invalid choice. Exiting..." "warning"
+        exit
+        ;;
+    esac
+
+    # Loop through the environments and deploy
+    for env_name in $env_names; do
+        echo "Currently deploying to the environment: $env_name"
+        export PROJECT=$project
+        export DEPLOYMENT_ID=$DEPLOYMENT_ID
+        export ENV_NAME=$env_name
+        export AZURE_LOCATION=$AZURE_LOCATION
+        export AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID
+        export AZURESQL_SERVER_PASSWORD=$AZURESQL_SERVER_PASSWORD
+        bash -c "./scripts/deploy_infrastructure.sh" || {
+            echo "Deployment failed for $env_name"
+            exit 1
+        }
+         export ENV_DEPLOY=$ENV_DEPLOY
+
+    done
+
+}
