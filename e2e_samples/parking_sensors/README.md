@@ -307,7 +307,6 @@ Set up the environment variables as specified, fork the GitHub repository, and l
    - `cd` into the `e2e_samples/parking_sensors` folder of the repo.
    - Run `./deploy.sh`.
      - During deployment, you will be presented with three options. Note that deployments are standalone and cannot be used as incremental deployments:
-     - During deployment, you will be presented with three options. Note that deployments are standalone and cannot be used as incremental deployments:
        - **Option 1**: Deploy only to the development environment (Dev). Note that this option does not deploy release pipelines, as a minimum of two environments is required for pipeline releases.
        - **Option 2**: Deploy to both development (Dev) and staging (Stage) environments.
        - **Option 3** (default): Deploy to development (Dev), staging (Stage), and production (Prod) environments.
