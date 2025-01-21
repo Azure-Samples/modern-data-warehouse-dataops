@@ -54,6 +54,14 @@ delete_all(){
         az ad sp list -o tsv --show-mine --query "[?contains(appDisplayName,'$prefix') && contains(appDisplayName,'$DEPLOYMENT_ID')].displayName"
     fi
 
+    log "\nENTRA APP REGISTRATIONS:\n"
+    if [[ -z $DEPLOYMENT_ID ]] 
+    then
+        az ad app list -o tsv --show-mine --query "[?contains(displayName,'$prefix')].displayName"
+    else
+        az ad app list -o tsv --show-mine --query "[?contains(displayName,'$prefix') && contains(displayName,'$DEPLOYMENT_ID')].displayName"
+    fi
+
     log "\nRESOURCE GROUPS:\n"
     if [[ -z $DEPLOYMENT_ID ]] 
     then
@@ -79,17 +87,25 @@ delete_all(){
 
             log "Deleting service connections that start with '$prefix' in name..."
             [[ -n $prefix ]] &&
+                 
+                sc_ids=($(az devops service-endpoint list --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" --query "[?contains(name, '$prefix')].id" -o tsv))
+                for sc_id in "${sc_ids[@]}"; do
+                    log "Processing Service Connection ID: $sc_id"
+                    cleanup_federated_credentials "$sc_id"
+                done
+                #Important:Giving time to the portal process the cleanup
+                wait_for_process
                 az devops service-endpoint list -o tsv --query "[?contains(name, '$prefix')].id" |
                 xargs -r -I % az devops service-endpoint delete --id % --yes
-
+                log "Finished cleaning up Service Connections"
             if [[ -z $DEPLOYMENT_ID ]]
             then
-                log "Deleting service principal that contain '$prefix' in name, created by yourself..."
+                log "Deleting service principals that contain '$prefix' in name, created by yourself..."
                 [[ -n $prefix ]] &&
                     az ad sp list --query "[?contains(appDisplayName,'$prefix')].appId" -o tsv --show-mine | 
                     xargs -r -I % az ad sp delete --id %
             else
-                log "Deleting service principal that contain '$prefix' and $DEPLOYMENT_ID in name, created by yourself..."
+                log "Deleting service principals that contain '$prefix' and $DEPLOYMENT_ID in name, created by yourself..."
                 [[ -n $prefix ]] &&
                     az ad sp list --query "[?contains(appDisplayName,'$prefix') && contains(appDisplayName,'$DEPLOYMENT_ID')].appId" -o tsv --show-mine | 
                     xargs -r -I % az ad sp delete --id %
@@ -97,7 +113,20 @@ delete_all(){
 
             if [[ -z $DEPLOYMENT_ID ]]
             then
-                log "Deleting resource groups that comtain '$prefix' in name..."
+                log "Deleting app registrations that contain '$prefix' in name, created by yourself..."
+                [[ -n $prefix ]] &&
+                    az ad app list --query "[?contains(displayName,'$prefix')].appId" -o tsv --show-mine | 
+                    xargs -r -I % az ad app delete --id %
+            else
+                log "Deleting app registrations that contain '$prefix' and $DEPLOYMENT_ID in name, created by yourself..."
+                [[ -n $prefix ]] &&
+                    az ad app list --query "[?contains(displayName,'$prefix') && contains(displayName,'$DEPLOYMENT_ID')].appId" -o tsv --show-mine | 
+                    xargs -r -I % az ad app delete --id %
+            fi
+
+            if [[ -z $DEPLOYMENT_ID ]]
+            then
+                log "Deleting resource groups that contain '$prefix' in name..."
                 [[ -n $prefix ]] &&
                     az group list --query "[?contains(name,'$prefix') && ! contains(name,'dbw')].name" -o tsv |
                     xargs -I % az group delete --verbose --name % -y
