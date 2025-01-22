@@ -1,45 +1,41 @@
-#-----------------------------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation. All rights reserved.
-# Licensed under the MIT License. See LICENSE in the project root for license information.
-#-----------------------------------------------------------------------------------------
-FROM mcr.microsoft.com/devcontainers/javascript-node
+FROM --platform=linux/amd64 ubuntu:22.04
 
-# Configure apt
-ENV DEBIAN_FRONTEND=noninteractive
+# Create vscode user
 
-RUN sudo apt-get update && sudo apt-get install -y gnupg software-properties-common
-RUN wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null
-RUN gpg --no-default-keyring --keyring /usr/share/keyrings/hashicorp-archive-keyring.gpg --fingerprint
-RUN echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] \
-        https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
-        sudo tee /etc/apt/sources.list.d/hashicorp.list
-RUN sudo apt update
-RUN sudo apt-get install terraform
-
-
-# Install git, process tools, lsb-release (common in install instructions for CLIs)
-RUN apt-get -y install git procps lsb-release zip
-
-# Install any missing dependencies for enhanced language service
-RUN apt-get install -y libicu[0-9][0-9]
-
-# Install Azure CLI and application insights and azure devops extension
-RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
-RUN az config set extension.use_dynamic_install=yes_without_prompt
-RUN az config set extension.dynamic_install_allow_preview=true
-RUN az bicep upgrade
-
+ARG USERNAME=vscode
+RUN useradd -m $USERNAME
+# Set the working directory
 RUN mkdir /workspace
 WORKDIR /workspace
 
-# Clean up
-RUN apt-get autoremove -y \
-    && apt-get clean -y \
-    && rm -rf /var/lib/apt/lists/*
-ENV DEBIAN_FRONTEND=dialog
+# Install Python, pip, git, curl, wget, gnupg, lsb-release, and other required packages
+RUN apt-get update && apt-get install -y \
+    python3 python3-pip git curl zsh lsb-release unzip gnupg wget software-properties-common shfmt jq gh nodejs npm
 
-# Set PACKAGE_VERSION to localdev
-ENV PACKAGE_VERSION=localdev
+# Upgrade pip, setuptools, and wheel
+RUN pip install --upgrade pip setuptools wheel
 
-# Set the default shell to bash rather than sh
-ENV SHELL /bin/bash
+# Install Azure CLI and application insights and azure devops extension
+RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+
+# Add the HashiCorp GPG key and repository
+RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/hashicorp.list
+
+# Update and install Terraform
+RUN apt-get update && apt-get install -y terraform
+
+# Install TFLint
+RUN curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+
+# Install TFSec
+# RUN curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
+
+# Install Trivy
+RUN wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | tee /usr/share/keyrings/trivy.gpg > /dev/null \
+    && echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | tee -a /etc/apt/sources.list.d/trivy.list \
+    && apt-get update \
+    && apt-get install -y trivy
+
+# Set the user to USERNAME
+USER $USERNAME

@@ -1,17 +1,17 @@
 variable "resource_group" {
-    type = string
+  type = string
 }
 
 variable "registry" {
-    type = string
+  type = string
 }
 
 variable "image" {
-    type = string
+  type = string
 }
 
 variable "image_tag" {
-    type = string
+  type = string
 }
 
 data "azurerm_resource_group" "rg" {

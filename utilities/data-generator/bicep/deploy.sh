@@ -28,7 +28,7 @@ pushd ../application/
 
 echo "Deploying data-simulator to AppService: "
 
-zip -q data-simulator.zip app.js 
+zip -q data-simulator.zip app.js
 zip -q data-simulator.zip .env
 zip -q data-simulator.zip package.json
 zip -q data-simulator.zip web.config

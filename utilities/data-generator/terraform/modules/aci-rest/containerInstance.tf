@@ -22,9 +22,9 @@ resource "azurerm_container_group" "container" {
       protocol = "TCP"
     }
     environment_variables = {
-      SENSORFILE="./collections/sensorLocations.json"
-      DEFAULTDATACLASS="kerbsidesensor"
-      PORT = "80"
+      SENSORFILE       = "./collections/sensorLocations.json"
+      DEFAULTDATACLASS = "kerbsidesensor"
+      PORT             = "80"
     }
   }
 }

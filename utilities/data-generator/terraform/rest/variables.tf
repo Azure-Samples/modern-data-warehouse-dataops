@@ -11,8 +11,8 @@ variable "resource_group_name_prefix" {
 }
 
 variable "resource_name" {
-  type        = string
-  default     = "simulator"
+  type    = string
+  default = "simulator"
 }
 
 variable "image" {
