@@ -20,8 +20,10 @@ fabric_environment_name = os.environ.get("FABRIC_ENVIRONMENT_NAME")
 fabric_custom_pool_name = os.environ.get("FABRIC_CUSTOM_POOL_NAME")
 
 # Process Flags
-update_public_libraries = os.environ.get("UPDATE_PUBLIC_LIBRARIES", "False").lower() == "true"
-update_custom_libraries = os.environ.get("UPDATE_CUSTOM_LIBRARIES", "False").lower() == "true"
+# update_public_libraries = os.environ.get("UPDATE_PUBLIC_LIBRARIES", "False").lower() == "true"
+# update_custom_libraries = os.environ.get("UPDATE_CUSTOM_LIBRARIES", "False").lower() == "true"
+update_public_libraries = True
+update_custom_libraries = True
 
 # -----------------------------------------------------------------------------
 # Global Variables

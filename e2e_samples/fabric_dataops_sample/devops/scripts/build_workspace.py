@@ -1,4 +1,5 @@
 import os
+import time
 
 import utils
 import yaml
@@ -18,16 +19,16 @@ fabric_bearer_token = os.environ.get("FABRIC_BEARER_TOKEN")
 # Azure Resources
 subscription_id = os.environ.get("SUBSCRIPTION_ID")
 resource_group_name = os.environ.get("RESOURCE_GROUP_NAME")
-fabric_workspace_group_admin = os.environ.get("FABRIC_WORKSPACE_GROUP_ADMIN")
+fabric_workspace_group_admin = os.environ.get("FABRIC_WORKSPACE_ADMIN_SG_ID")
 storage_account_name = os.environ.get("STORAGE_ACCOUNT_NAME")
 storage_account_role_definition_id = os.environ.get("STORAGE_ACCOUNT_ROLE_DEFINITION_ID")
 storage_container_name = os.environ.get("STORAGE_CONTAINER_NAME")
 
 # Azure Devops
-organization_name = os.environ.get("ORGANIZATIONAL_NAME")
-project_name = os.environ.get("PROJECT_NAME")
-repo_name = os.environ.get("REPO_NAME")
-fabric_workspace_directory = os.environ.get("FABRIC_WORKSPACE_DIRECTORY")
+organization_name = os.environ.get("GIT_ORGANIZATION_NAME")
+project_name = os.environ.get("GIT_PROJECT_NAME")
+repo_name = os.environ.get("GIT_REPO_NAME")
+fabric_workspace_directory = os.environ.get("GIT_DIRECTORY_NAME")
 feature_branch = os.environ.get("FEATURE_BRANCH")
 commit_hash = os.environ.get("COMMIT_HASH")
 
@@ -38,7 +39,7 @@ fabric_environment_name = os.environ.get("FABRIC_ENVIRONMENT_NAME")
 fabric_custom_pool_name = os.environ.get("FABRIC_CUSTOM_POOL_NAME")
 fabric_connection_name = os.environ.get("FABRIC_CONNECTION_NAME")
 fabric_lakehouse_name = os.environ.get("FABRIC_LAKEHOUSE_NAME")
-fabric_shortcut_name = os.environ.get("FABRIC_SHORTCUT_NAME")
+fabric_shortcut_name = os.environ.get("FABRIC_ADLS_SHORTCUT_NAME")
 
 # -----------------------------------------------------------------------------
 # Global Variables
@@ -263,6 +264,8 @@ if __name__ == "__main__":
                     "subpath": storage_container_name,
                 }
             }
+            # Wait for the storage container to be available
+            time.sleep(120)
             utils.create_shortcut(fabric_headers, workspace_id, lakehouse_id, "Files", fabric_shortcut_name, target)
     else:
         print(f"[Error] Failed to retrieve lakehouse id for '{fabric_lakehouse_name}'")
