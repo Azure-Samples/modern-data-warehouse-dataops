@@ -283,7 +283,7 @@ Set up the environment variables as specified, fork the GitHub repository, and l
       - **Option 2**: Deploy to both development (Dev) and staging (Stage) environments.
       - **Option 3** (default): Deploy to development (Dev), staging (Stage), and production (Prod) environments.
 
-      If no value is configured for `ENV_DEPLOY`, it defaults to option 3. These options will also be prompted at the beginning of the deployment process, and the chosen option will override the configuration.
+      If ENV_DEPLOY is not set, it defaults to option 3 when you press Enter at the prompt. If no configuration is provided, these options will be presented at the start of the deployment process. However, if a configuration is set, no options will be displayed, and the deployment will proceed using the option specified in the environment variable.
 
      - **AZURE_LOCATION** - Azure location to deploy resources. *Default*: `westus`.
      - **DEPLOYMENT_ID** - string appended to all resource names. This is to ensure uniqueness of azure resource names. *Default*: random five character string.
@@ -306,7 +306,8 @@ Set up the environment variables as specified, fork the GitHub repository, and l
 2. **Deploy Azure resources**
    - `cd` into the `e2e_samples/parking_sensors` folder of the repo.
    - Run `./deploy.sh`.
-     - During deployment, you will be presented with three options. Note that deployments are standalone and cannot be used as incremental deployments:
+     - The login process for deployment is interactive. When you run the script **deploy.sh**, a browser window will be open, prompting you to log in to Azure. If there is an open session from a previous deployment, it may log you out and request you to log in again- .
+     - During deployment, you will be presented with three options if the environment variable for deployment is not configured. Keep in mind that deployments are standalone and cannot be performed incrementally:
        - **Option 1**: Deploy only to the development environment (Dev). Note that this option does not deploy release pipelines, as a minimum of two environments is required for pipeline releases.
        - **Option 2**: Deploy to both development (Dev) and staging (Stage) environments.
        - **Option 3** (default): Deploy to development (Dev), staging (Stage), and production (Prod) environments.
