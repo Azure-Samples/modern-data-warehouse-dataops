@@ -168,14 +168,14 @@ module "fabric_transform_notebook" {
 }
 
 module "azure_devops_serviceconnection_azurerm" {
-  source                                         = "./modules/azure_devops/serviceendpoint_azurerm"
-  azure_devops_project_id                        = data.azuredevops_project.git_project.id
-  azure_devops_serviceconnection_azurerm_name    = local.git_serviceconnection_name
-  azure_devops_serviceconnection_sp_app_id       = var.client_id
-  azure_devops_serviceconnection_sp_secret       = var.client_secret
-  azure_devops_serviceconnection_sp_tenant_id    = var.tenant_id
-  azure_devops_serviceconnection_subscription_id = var.subscription_id
-  azure_devops_serviceconnection_subscription_name = data.azurerm_subscription.current.display_name
+  source                                            = "./modules/azure_devops/serviceendpoint_azurerm"
+  azure_devops_project_id                           = data.azuredevops_project.git_project.id
+  azure_devops_serviceconnection_azurerm_name       = local.git_serviceconnection_name
+  azure_devops_serviceconnection_sp_app_id          = var.client_id
+  azure_devops_serviceconnection_sp_secret          = var.client_secret
+  azure_devops_serviceconnection_sp_tenant_id       = var.tenant_id
+  azure_devops_serviceconnection_subscription_id    = var.subscription_id
+  azure_devops_serviceconnection_subscription_name  = data.azurerm_subscription.current.display_name
   azure_devops_serviceconnection_resourcegroup_name = var.resource_group_name
 }
 

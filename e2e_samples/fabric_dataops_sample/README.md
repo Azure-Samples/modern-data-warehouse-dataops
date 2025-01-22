@@ -83,7 +83,8 @@ Here is a list of resources that are deployed:
   - Microsoft Fabric Notebooks
   - Microsoft Fabric Data pipelines
 - Azure DevOps Resources
-  - Variable Group
+  - Variable Group (two per environment with one with KeyVault integration for secrets)
+  - Service Connection
 - Additional Resources
   - Fabric workspace GIT integration
   - Azure Role assignments to entra security group and workspace identity
