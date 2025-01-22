@@ -94,6 +94,13 @@ deploy_terraform_resources() {
   echo "[Info] Switching to terraform '$environment_name' workspace."
   terraform workspace select -or-create=true "$environment_name"
 
+  # Deriving the 'fabric_directory_name' by appending '/workspace' to the 'git_directory_name'
+  if [ "$git_directory_name" = "/" ]; then
+    fabric_directory_name="/workspace"
+  else
+    fabric_directory_name="${git_directory_name%/}/workspace"
+  fi
+
   terraform init
   terraform apply \
     -auto-approve \
@@ -114,7 +121,7 @@ deploy_terraform_resources() {
     -var "git_project_name=$git_project_name" \
     -var "git_repository_name=$git_repository_name" \
     -var "git_branch_name=$git_branch_name" \
-    -var "git_directory_name=$git_directory_name" \
+    -var "git_directory_name=$fabric_directory_name" \
     -var "fabric_adls_shortcut_name=$adls_gen2_shortcut_name" \
     -var "kv_appinsights_connection_string_name=$appinsights_connection_string_name" \
 
