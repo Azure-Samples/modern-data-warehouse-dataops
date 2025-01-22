@@ -264,6 +264,8 @@ def main() -> None:
             create_branch(branch_name, base_branch_name)
         else:
             print("[Info] Variable 'delete_branch_if_exists' set to `False`, skipping branch deletion.")
+    else:
+        create_branch(branch_name, base_branch_name)
 
     if not base_branch_name:
         # config
