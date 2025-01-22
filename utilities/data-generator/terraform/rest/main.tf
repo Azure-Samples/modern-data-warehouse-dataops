@@ -1,13 +1,3 @@
-data "azurerm_subscription" "primary" {
-}
-
-data "azurerm_client_config" "current" {
-}
-
-data "http" "my_ip" {
-  url = "https://api.ipify.org"
-}
-
 resource "random_string" "random_name" {
   length  = 5
   lower   = true
