@@ -28,3 +28,13 @@ variable "azure_devops_serviceconnection_subscription_id" {
   description = "Azure DevOps service connection Azure subscription id"
   type        = string
 }
+
+variable "azure_devops_serviceconnection_subscription_name" {
+  description = "Azure DevOps service connection Azure subscription name"
+  type        = string
+}
+
+variable "azure_devops_serviceconnection_resourcegroup_name" {
+  description = "Azure DevOps service connection Azure resource group name"
+  type        = string
+}

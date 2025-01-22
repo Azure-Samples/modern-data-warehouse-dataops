@@ -8,5 +8,6 @@ resource "azuredevops_serviceendpoint_azurerm" "serviceendpoint_azurerm" {
   }
   azurerm_spn_tenantid      = var.azure_devops_serviceconnection_sp_tenant_id
   azurerm_subscription_id   = var.azure_devops_serviceconnection_subscription_id
-  azurerm_subscription_name = "test"
+  azurerm_subscription_name = var.azure_devops_serviceconnection_subscription_name
+  resource_group = var.azure_devops_serviceconnection_resourcegroup_name
 }

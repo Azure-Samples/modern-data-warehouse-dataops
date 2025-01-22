@@ -175,6 +175,8 @@ module "azure_devops_serviceconnection_azurerm" {
   azure_devops_serviceconnection_sp_secret       = var.client_secret
   azure_devops_serviceconnection_sp_tenant_id    = var.tenant_id
   azure_devops_serviceconnection_subscription_id = var.subscription_id
+  azure_devops_serviceconnection_subscription_name = data.azurerm_subscription.current.display_name
+  azure_devops_serviceconnection_resourcegroup_name = var.resource_group_name
 }
 
 module "azure_devops_variable_group" {
