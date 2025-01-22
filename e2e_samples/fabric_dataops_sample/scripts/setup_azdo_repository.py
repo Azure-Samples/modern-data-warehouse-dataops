@@ -5,6 +5,7 @@ import argparse
 # --project_name "" \
 # --repository_name "" \
 # --branch_name "" \
+# --base_branch_name "" \
 # --directory_name "" \
 # --username "" \
 # --token ""
@@ -65,6 +66,7 @@ def display_usage() -> None:
         "--project_name <project_name> "
         "--repository_name <repository_name> "
         "--branch_name <branch_name> "
+        "--base_branch_name <base_branch_name> "
         "--directory_name <directory_name> "
         "--username <username> "
         "--token <token>"
@@ -85,17 +87,19 @@ def parse_arguments() -> tuple:
     parser.add_argument("--project_name", help="Azure DevOps project name")
     parser.add_argument("--repository_name", help="Azure DevOps repository name")
     parser.add_argument("--branch_name", help="Git branch name")
+    parser.add_argument("--base_branch_name", help="Git base/parent branch name")
     parser.add_argument("--directory_name", help="Fabric directory name")
     parser.add_argument("--username", help="Azure DevOps username")
     parser.add_argument("--token", help="Azure DevOps personal access token")
 
     args = parser.parse_args()
 
-    branch_name = args.branch_name
-    directory_name = args.directory_name
     organization_name = args.organization_name
     project_name = args.project_name
     repository_name = args.repository_name
+    branch_name = args.branch_name
+    base_branch_name = args.base_branch_name
+    directory_name = args.directory_name
     username = args.username
     token = args.token
 
@@ -105,7 +109,7 @@ def parse_arguments() -> tuple:
 
     set_base_url_and_auth(organization_name, project_name, repository_name, username, token)
 
-    return branch_name, directory_name
+    return branch_name, base_branch_name, directory_name
 
 
 def branch_exists(branch_name: str) -> bool:
@@ -150,8 +154,12 @@ def get_latest_commit(branch_name: str) -> str:
         )
 
 
-def create_branch(branch_name: str) -> None:
-    default_branch = get_default_branch()
+def create_branch(branch_name: str, base_branch_name: str) -> None:
+
+    if not base_branch_name:
+        default_branch = get_default_branch()
+    else:
+        default_branch = base_branch_name
     print(f"[Info] Default branch: '{default_branch}'")
 
     latest_commit_sha = get_latest_commit(default_branch)
@@ -228,57 +236,80 @@ def copy_directory(local_file_path: str, target_path: str) -> list:
     return changes
 
 
+def add_setup_cfg() -> dict:
+    content = """
+[flake8]
+exclude = docs
+max-line-length = 120
+    """.strip()
+
+    return {
+        "changeType": "Add",
+        "item": {"path": "setup.cfg"},
+        "newContent": {"content": content, "contentType": "rawtext"},
+    }
+
+
 # Main function to orchestrate the process
 def main() -> None:
-    git_branch_name, fabric_directory_name = parse_arguments()
+    branch_name, base_branch_name, fabric_directory_name = parse_arguments()
 
     # Creating a new branch if it doesn't exist
-    if branch_exists(git_branch_name):
-        print(f"[Info] Branch '{git_branch_name}' already exists.")
+    if branch_exists(branch_name):
+        print(f"[Info] Branch '{branch_name}' already exists.")
         if delete_branch_if_exists:
-            print("[Warning] Variable 'delete_branch_if_exists' set to `True`, deleting the branch.")
-            delete_branch(git_branch_name)
-            print(f"[Info] Creating new branch '{git_branch_name}'.")
-            create_branch(git_branch_name)
+            print("[Warning] Variable 'delete_branch_if_exists' set to 'True', deleting the branch.")
+            delete_branch(branch_name)
+            print(f"[Info] Creating new branch '{branch_name}'.")
+            create_branch(branch_name, base_branch_name)
         else:
             print("[Info] Variable 'delete_branch_if_exists' set to `False`, skipping branch deletion.")
 
-    # config
-    print("[Info] Copying config files to Azure repo.")
-    changes = copy_directory("config", "config")
-    response = commit_push(git_branch_name, commit_message="Add config files", changes=changes)
-    print_debug(f"[Info] Commit response: {response}")
+    if not base_branch_name:
+        # config
+        print("[Info] Copying config files to Azure repo.")
+        changes = copy_directory("config", "config")
+        response = commit_push(branch_name, commit_message="Add config files", changes=changes)
+        print_debug(f"[Info] Commit response: {response}")
 
-    # data
-    print("[Info] Copying data files to Azure repo.")
-    changes = copy_directory("data", "data")
-    response = commit_push(git_branch_name, commit_message="Add seed data files", changes=changes)
-    print_debug(f"[Info] Commit response: {response}")
+        # data
+        print("[Info] Copying data files to Azure repo.")
+        changes = copy_directory("data", "data")
+        response = commit_push(branch_name, commit_message="Add seed data files", changes=changes)
+        print_debug(f"[Info] Commit response: {response}")
 
-    # devops
-    print("[Info] Copying devops files to Azure repo.")
-    changes = copy_directory("devops", "devops")
-    response = commit_push(git_branch_name, commit_message="Add ci/cd files", changes=changes)
-    print_debug(f"[Info] Commit response: {response}")
+        # devops
+        print("[Info] Copying devops files to Azure repo.")
+        changes = copy_directory("devops", "devops")
+        response = commit_push(branch_name, commit_message="Add ci/cd files", changes=changes)
+        print_debug(f"[Info] Commit response: {response}")
 
-    # fabric
-    print("[Info] Copying fabric files to Azure repo.")
-    changes = copy_directory("fabric", fabric_directory_name)
-    changes.append(
-        {
-            "changeType": "Add",
-            "item": {"path": f"{fabric_directory_name}/workspace/README.md"},
-            "newContent": {"content": "", "contentType": "rawtext"},
-        }
-    )  # Adding an empty file to create the fabric workspace folder
-    response = commit_push(git_branch_name, commit_message="Add fabric files", changes=changes)
-    print_debug(f"[Info] Commit response: {response}")
+        # fabric
+        print("[Info] Copying fabric files to Azure repo.")
+        changes = copy_directory("fabric", fabric_directory_name)
+        changes.append(
+            {
+                "changeType": "Add",
+                "item": {"path": f"{fabric_directory_name}/workspace/README.md"},
+                "newContent": {"content": "", "contentType": "rawtext"},
+            }
+        )  # Adding an empty file to create the fabric workspace folder
+        response = commit_push(branch_name, commit_message="Add fabric files", changes=changes)
+        print_debug(f"[Info] Commit response: {response}")
 
-    # libraries
-    print("[Info] Copying library files to Azure repo.")
-    changes = copy_directory("libraries", "libraries")
-    response = commit_push(git_branch_name, commit_message="Add library files", changes=changes)
-    print_debug(f"[Info] Commit response: {response}")
+        # libraries
+        print("[Info] Copying library files to Azure repo.")
+        changes = copy_directory("libraries", "libraries")
+        response = commit_push(branch_name, commit_message="Add library files", changes=changes)
+        print_debug(f"[Info] Commit response: {response}")
+
+        # setup.cfg
+        print("[Info] Adding setup.cfg file to Azure repo.")
+        changes = [add_setup_cfg()]
+        response = commit_push(branch_name, commit_message="Add setup.cfg file", changes=changes)
+        print_debug(f"[Info] Commit response: {response}")
+    else:
+        print(f"[Info] As branch '{branch_name}' is based on newly created branch '{base_branch_name}', skipping copy.")
 
 
 if __name__ == "__main__":

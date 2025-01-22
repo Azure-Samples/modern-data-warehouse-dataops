@@ -191,11 +191,11 @@ Refer to the [known issues, limitations, and workarounds](docs/issues_limitation
   ./prepare_azure_repo.sh
   ```
 
-  This script iterates through the branches specified in `GITHUB_BRANCH_NAMES` and (re)creates them. For each branch, it copies the requires files from the local directory to Azure repo, and commits the changes. The following image shows the sample directory structure in the Azure repo after running the script:
+  This script iterates through the branches specified in `GITHUB_BRANCH_NAMES` and (re)creates them. The first branch is created based on the default branch of the Azure repo. For this branch, the requires files are copied from the local directory to Azure repository, and the changes are committed. The remaining branches are created based on the commit of the first branch. The following image shows the sample directory structure in the Azure repo after running the script:
 
   ![Azure Repo Directory Structure](./images/azure-repo-directory-structure.png)
 
-  Note that the directory `/folder` in the above image is based on the `GIT_DIRECTORY_NAME` variable in the `.env` file.
+  Note that the directory `/fabric` in the above image is based on the `GIT_DIRECTORY_NAME` variable in the `.env` file.
 
 - For the following step you have 2 authentication options:
 
