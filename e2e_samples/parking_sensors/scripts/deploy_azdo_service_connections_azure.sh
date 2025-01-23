@@ -114,7 +114,7 @@ log "Create a new service connection"
 # Create the service connection using the Azure DevOps CLI
 response=$(az devops service-endpoint create --service-endpoint-configuration ./devops.json --org "$AZDO_ORGANIZATION_URL" -p "$AZDO_PROJECT")
 
-# Check if the service connection was created successfully by checking if the operationStatus state is "ready"
+# Check if the service connection was created successfully by checking if the operationStatus state is "Ready"
 # Else display error message
 sc_id=$(echo "$response" | jq -r '.id')
 if [ -n "$sc_id" ]; then    
