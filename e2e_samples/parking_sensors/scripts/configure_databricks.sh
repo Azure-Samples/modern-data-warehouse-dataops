@@ -22,8 +22,13 @@ set -o nounset
 
 # REQUIRED VARIABLES:
 #
+# AZURE_SUBSCRIPTION_ID
+# RESOURCE_GROUP_NAME
+# STORAGE_ACCOUNT_NAME
+# ENVIRONMENT_NAME
 # DATABRICKS_HOST
 # DATABRICKS_TOKEN - this needs to be a Microsoft Entra ID user token (not PAT token or Microsoft Entra ID application token that belongs to a service principal)
+# DATABRICKS_KV_TOKEN
 # KEYVAULT_RESOURCE_ID
 # KEYVAULT_DNS_NAME
 # USER_NAME
@@ -54,6 +59,16 @@ databricks workspace import "$databricks_folder_name/00_setup.py" --file "./data
 databricks workspace import "$databricks_folder_name/01_explore.py" --file "./databricks/notebooks/01_explore.py" --format SOURCE --language PYTHON --overwrite
 databricks workspace import "$databricks_folder_name/02_standardize.py" --file "./databricks/notebooks/02_standardize.py" --format SOURCE --language PYTHON --overwrite
 databricks workspace import "$databricks_folder_name/03_transform.py" --file "./databricks/notebooks/03_transform.py" --format SOURCE --language PYTHON --overwrite
+
+if [ "$ENV_NAME" == "dev" ]; then
+    databricks workspace mkdirs "/releases/dev"
+    databricks_release_folder="/releases/dev"
+    log "Dev releases folder: $databricks_release_folder"
+    databricks workspace import "$databricks_release_folder/00_setup.py" --file "./databricks/notebooks/00_setup.py" --format SOURCE --language PYTHON --overwrite
+    databricks workspace import "$databricks_release_folder/01_explore.py" --file "./databricks/notebooks/01_explore.py" --format SOURCE --language PYTHON --overwrite
+    databricks workspace import "$databricks_release_folder/02_standardize.py" --file "./databricks/notebooks/02_standardize.py" --format SOURCE --language PYTHON --overwrite
+    databricks workspace import "$databricks_release_folder/03_transform.py" --file "./databricks/notebooks/03_transform.py" --format SOURCE --language PYTHON --overwrite
+fi
 
 # Define suitable VM for DB cluster
 file_path="./databricks/config/cluster.config.json"
@@ -133,6 +148,34 @@ EOF
 # Install library on the cluster using the JSON file
 databricks libraries install --json @$json_file
 
+################################################
+# Configure Unity Catalog
+cat_stg_account_name="${PROJECT}catalog${ENV_NAME}${DEPLOYMENT_ID}"
+data_stg_account_name="${PROJECT}st${ENV_NAME}${DEPLOYMENT_ID}"
+resource_group_name="${PROJECT}-${DEPLOYMENT_ID}-${ENV_NAME}-rg"
+mng_resource_group_name="${PROJECT}-${DEPLOYMENT_ID}-dbw-${ENV_NAME}-rg"
+stg_credential_name="${PROJECT}-${DEPLOYMENT_ID}-stg-credential-${ENV_NAME}"
+catalog_ext_location_name="${PROJECT}-catalog-${DEPLOYMENT_ID}-ext-location-${ENV_NAME}"
+data_ext_location_name="${PROJECT}-data-${DEPLOYMENT_ID}-ext-location-${ENV_NAME}"
+catalog_name="${PROJECT}-${DEPLOYMENT_ID}-catalog-${ENV_NAME}"
+
+SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID \
+DATABRICKS_TOKEN=$DATABRICKS_TOKEN \
+DATABRICKS_KV_TOKEN=$DATABRICKS_KV_TOKEN \
+DATABRICKS_HOST=$DATABRICKS_HOST \
+ENVIRONMENT_NAME=$ENV_NAME \
+AZURE_LOCATION=$AZURE_LOCATION \
+CATALOG_STG_ACCOUNT_NAME=$cat_stg_account_name \
+DATA_STG_ACCOUNT_NAME=$data_stg_account_name \
+RESOURCE_GROUP_NAME=$resource_group_name \
+MNG_RESOURCE_GROUP_NAME=$mng_resource_group_name \
+STG_CREDENTIAL_NAME=$stg_credential_name \
+CATALOG_EXT_LOCATION_NAME=$catalog_ext_location_name \
+DATA_EXT_LOCATION_NAME=$data_ext_location_name \
+CATALOG_NAME=$catalog_name \
+    bash -c "./scripts/configure_unity_catalog.sh"
+################################################
+
 # Creates a Job to setup workspace
 log "Creating a job to setup the workspace..."
 notebook_path="${databricks_folder_name}/00_setup.py"
@@ -148,8 +191,12 @@ cat <<EOF > $json_file_config
       "run_if": "ALL_SUCCESS",
       "notebook_task": {
         "notebook_path": "$notebook_path",
-        "source": "WORKSPACE"
-    },
+        "source": "WORKSPACE",
+        "base_parameters": {
+          "catalogname": "$catalog_name",
+          "stgaccountname": "$data_stg_account_name"
+        }
+      },
     "existing_cluster_id": "$cluster_id"
     }]  
 }

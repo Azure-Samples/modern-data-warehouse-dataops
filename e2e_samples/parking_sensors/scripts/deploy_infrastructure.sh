@@ -258,6 +258,7 @@ read -p "Press Enter after you authenticate to the Azure Databricks workspace...
 databricks_token=$(DATABRICKS_TOKEN=$databricks_aad_token \
     DATABRICKS_HOST=$databricks_host \
     bash -c "databricks tokens create --comment 'deployment'" | jq -r .token_value)
+log "databricks_kv_token: $databricks_token"
 
 # Save in KeyVault
 az keyvault secret set --vault-name "$kv_name" --name "databricksDomain" --value "$databricks_host" -o none
@@ -266,7 +267,16 @@ az keyvault secret set --vault-name "$kv_name" --name "databricksWorkspaceResour
 
 # Configure databricks (KeyVault-backed Secret scope, mount to storage via SP, databricks tables, cluster)
 # NOTE: must use Microsoft Entra access token, not PAT token
+# PROJECT
+# DEPLOYMENT_ID
+# ENV_NAME
+# AZURE_LOCATION
+AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID \
+RESOURCE_GROUP_NAME=$resource_group_name \
+STORAGE_ACCOUNT_NAME=$azure_storage_account \
+ENVIRONMENT_NAME=$ENV_NAME \
 DATABRICKS_TOKEN=$databricks_aad_token \
+DATABRICKS_KV_TOKEN=$databricks_token \
 DATABRICKS_HOST=$databricks_host \
 KEYVAULT_DNS_NAME=$kv_dns_name \
 USER_NAME=$kv_owner_name \

@@ -1,6 +1,16 @@
 # Databricks notebook source
+# MAGIC %md
+# MAGIC ## Libraries
+
+# COMMAND ----------
+
 # MAGIC %pip install great-expectations==0.14.12
-# MAGIC %pip install opencensus-ext-azure==1.1.7
+# MAGIC %pip install opencensus-ext-azure==1.1.14
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## Parameters
 
 # COMMAND ----------
 
@@ -10,21 +20,50 @@ infilefolder = dbutils.widgets.get("infilefolder")
 dbutils.widgets.text("loadid", "", "Load Id")
 loadid = dbutils.widgets.get("loadid")
 
+dbutils.widgets.text("catalogname", "", "Catalog Name")
+catalogname = dbutils.widgets.get("catalogname")
+
+dbutils.widgets.text("stgaccountname", "", "Storage Account Name")
+stgaccountname = dbutils.widgets.get("stgaccountname")
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## Setup File Paths
+
 # COMMAND ----------
 
 import os
 import datetime
 
 # For testing
-# infilefolder = '2022_03_23_10_28_02/'
-# loadid = 1
+#infilefolder = '2022_03_23_10_28_02/'
+#loadid = 1
+#catalogname = "mdwdops-tsl16-data-catalog-dev"
+#stgaccountname = "mdwdopsstdevtsl16"
 
 load_id = loadid
 loaded_on = datetime.datetime.now()
-base_path = os.path.join('dbfs:/mnt/datalake/data/lnd/', infilefolder)
+abfss_path= f"""abfss://datalake@{stgaccountname}.dfs.core.windows.net/data/lnd/"""
+base_path = os.path.join(abfss_path,infilefolder)
 parkingbay_filepath = os.path.join(base_path, "MelbParkingBayData.json")
 sensors_filepath = os.path.join(base_path, "MelbParkingSensorData.json")
 
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## Setup Catalog
+
+# COMMAND ----------
+
+# Use the catalog
+spark.sql(f"USE CATALOG `{catalogname}`")
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## Standardize Code
 
 # COMMAND ----------
 
@@ -65,7 +104,7 @@ t_sensordata_malformed_sdf.write.mode("append").insertInto("malformed.sensor")
 # MAGIC %md
 # MAGIC ### Data Quality
 # MAGIC The following uses the [Great Expectations](https://greatexpectations.io/) library. See [Great Expectation Docs](https://docs.greatexpectations.io/docs/) for more info.
-# MAGIC 
+# MAGIC
 # MAGIC **Note**: for simplication purposes, the [Expectation Suite](https://docs.greatexpectations.io/docs/terms/expectation_suite) is created inline. Generally this should be created prior to data pipeline execution, and only loaded during runtime and executed against a data [Batch](https://docs.greatexpectations.io/docs/terms/batch/) via [Checkpoint](https://docs.greatexpectations.io/docs/terms/checkpoint/).
 
 # COMMAND ----------
@@ -171,7 +210,7 @@ checkpoint_result = context.run_checkpoint(
 
 # MAGIC %md
 # MAGIC ### Data Quality Metric Reporting
-# MAGIC 
+# MAGIC
 # MAGIC This parses the results of the checkpoint and sends it to AppInsights / Azure Monitor for reporting.
 
 # COMMAND ----------

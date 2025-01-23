@@ -7,8 +7,12 @@
       "run_if": "ALL_SUCCESS",
       "notebook_task": {
         "notebook_path": "",
-        "source": "WORKSPACE"
-    },
+        "source": "WORKSPACE",
+        "base_parameters": {
+          "catalogname": "",
+          "stgaccountname": ""
+        }
+      },
     "existing_cluster_id": ""
     }]  
 }

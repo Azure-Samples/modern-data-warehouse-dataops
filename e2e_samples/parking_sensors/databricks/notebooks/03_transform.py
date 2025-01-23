@@ -1,11 +1,27 @@
 # Databricks notebook source
 # MAGIC %pip install great-expectations==0.14.12
-# MAGIC %pip install opencensus-ext-azure==1.1.7
+# MAGIC %pip install opencensus-ext-azure==1.1.14
 
 # COMMAND ----------
 
 dbutils.widgets.text("loadid", "", "Load Id")
 loadid = dbutils.widgets.get("loadid")
+
+dbutils.widgets.text("catalogname", "", "Catalog Name")
+catalogname = dbutils.widgets.get("catalogname")
+
+dbutils.widgets.text("stgaccountname", "", "Storage Account Name")
+stgaccountname = dbutils.widgets.get("stgaccountname")
+
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## Setup Catalog
+
+# COMMAND ----------
+
+spark.sql(f"USE CATALOG `{catalogname}`")
 
 # COMMAND ----------
 
@@ -17,7 +33,8 @@ import ddo_transform.util as util
 
 load_id = loadid
 loaded_on = datetime.datetime.now()
-base_path = 'dbfs:/mnt/datalake/data/dw/'
+loaded_on = datetime.datetime.now()
+base_path = f"abfss://datalake@{stgaccountname}.dfs.core.windows.net/data/dw/"
 
 # Read interim cleansed data
 parkingbay_sdf = spark.read.table("interim.parking_bay").filter(col('load_id') == lit(load_id))
