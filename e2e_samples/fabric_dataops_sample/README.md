@@ -116,13 +116,13 @@ Build and release pipelines automate the validation, building, and deployment of
     - Setting up configurations not covered by Git syncing.
     - Running tests in the ephemeral workspace created.
 
-  For more details, see the [QA Pipeline](./devops/azure-pipelines-ci-qa.yaml).
+  For more details, see the [QA Pipeline](./devops/azure-pipelines-ci-qa.yml).
 
 - **QA Cleanup pipeline**
 
   When the QA pipeline runs, temporary resources such as the ephemeral workspace that were created to validate the changes. Once the PR is closed or abandoned, the QA Cleanup pipeline ensures that these temporary resources are deleted, freeing up system resources.
 
-  For more details, see the [QA Cleanup Pipeline](./devops/azure-pipelines-ci-qa-cleanup.yaml).
+  For more details, see the [QA Cleanup Pipeline](./devops/azure-pipelines-ci-qa-cleanup.yml).
 
 - **Build Artifacts pipeline**
 
