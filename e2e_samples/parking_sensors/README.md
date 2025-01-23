@@ -77,7 +77,7 @@ Sample PowerBI report
 
 The following shows the overall CI/CD process end to end.
 
-![CI/CD](docs/images/CI_CD_process.png "CI/CD")
+![CI/CD](docs/images/CI_CD_process.drawio.png "CI/CD")
 
 See [here](#build-and-release-pipeline) for details.
 
@@ -159,7 +159,7 @@ The Build and Release Pipelines definitions can be found [here](devops/README.md
 
 There are eight numbered orange boxes describing the sequence from sandbox development to target environments:
 
-![CI/CD](docs/images/CI_CD_process_sequence.png "CI/CD")
+![CI/CD](docs/images/CI_CD_process_sequence.drawio.png "CI/CD")
 
 1. Developers develop in their own Sandbox environments within the DEV resource group and commit changes into their own short-lived git branches. (i.e. <developer_name>/<branch_name>)
 2. When changes are complete, developers raise a PR to `main` for review. This automatically kicks-off the PR validation pipeline which runs the unit tests, linting and DACPAC builds.
