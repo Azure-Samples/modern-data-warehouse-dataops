@@ -136,6 +136,7 @@ wait_for_process() {
 }
 
 delete_azdo_service_connection_principal(){
+    # This function deletes the Service Principal associated with the provided AzDO Service Connection
     local sc_id=$1
     local spnAppObjId=$(az devops service-endpoint show --id "$sc_id" --org "$AZDO_ORGANIZATION_URL" -p "$AZDO_PROJECT" --query "data.appObjectId" -o tsv)
     if [ -z "$spnAppObjId" ]; then
