@@ -166,6 +166,8 @@ Refer to the [known issues, limitations, and workarounds](docs/issues_limitation
   GIT_REPOSITORY_NAME: Your repository under the Azure DevOps project.
   GIT_BRANCH_NAMES: Space-separated array of the GIT branches corresponding to each environment where Fabric items will be committed to. Example: ("dev" "stg" "prod")
   GIT_DIRECTORY_NAME: The folder where Fabric items will be committed" # Note: Other than the root folder "/", the directory must already exist. Must start with a forward-slash. Example: "/fabric"
+  GIT_USERNAME="The username for committing the changes to Azure repo."
+  GIT_PERSONAL_ACCESS_TOKEN="The personal access token of the above user."
   # Workspace admin variables
   FABRIC_WORKSPACE_ADMIN_SG_NAME: The name of the Entra security groups with admin members.
   # Fabric Capacity variables
@@ -181,7 +183,20 @@ Refer to the [known issues, limitations, and workarounds](docs/issues_limitation
   - The `RESOURCE_GROUP_NAMES` array variable defines the Azure resource groups corresponding to each environment. The script will deploy resources for each environment in the corresponding resource group. For example, you can define three resource groups for the three stages as ("rg-dev" "rg-stg" "rg-prod"). The length of `ENVIRONMENT_NAMES` and `RESOURCE_GROUP_NAMES` array variables must be the same. Note that the deployment script does not create these resource groups (see [here](#why-existing-resource-groups-are-required) for details) and you need to create them in advance as outlined in the [pre-requisites](#pre-requisites).
   - The `EXISTING_FABRIC_CAPACITY_NAME` variable is the name of an existing Fabric capacity. If you want to create a new capacity, leave this blank.
   - The `GITHUB_BRANCH_NAMES` array variable defines the Git branches for each environment where the Fabric items will be committed. The workspace in each environment is integrated with the corresponding Git branch. For example, you can define three branches for the three stages/environments as ("dev" "stg" "prod"). The length of the `ENVIRONMENT_NAMES` and `GIT_BRANCH_NAMES` array variables must be the same.
+  - The `GIT_USERNAME` and `GIT_PERSONAL_ACCESS_TOKEN` variables are used to setup the initial branch structure where a set of files are copied and committed to Azure repo before running the main deployment. The token should have a minimum of `Code -> Read & write` [scope](https://learn.microsoft.com/azure/devops/integrate/get-started/authentication/oauth?view=azure-devops#scopes). Refer to the [documentation](https://learn.microsoft.com/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate) for more details.
   - The `FABRIC_CAPACITY_ADMINS` variable is a comma-separated list of users and service principals that will be added as capacity admins to the newly created Fabric capacity. If you are using an existing capacity, you can leave this blank. But in that case, make sure that your account and the principal (service principal or managed identity) are [added as Capacity Administrators](https://learn.microsoft.com/fabric/admin/capacity-settings?tabs=fabric-capacity#add-and-remove-admins) to that capacity, as mentioned in the [pre-requisites](#pre-requisites).
+
+- Before running the actual deployment, the branching structure in the Azure repo needs to be created. This is done by running the [prepare_azure_repo.sh](./prepare_azure_repo.sh) bash script. As the script uses PAT token, there is no need to login to Azure CLI. The script relies on the `GIT_USERNAME` and `GIT_PERSONAL_ACCESS_TOKEN` environment variables for permissions, which are sourced from the `.env` file, to be set.
+
+  ```bash
+  ./prepare_azure_repo.sh
+  ```
+
+  This script iterates through the branches specified in `GITHUB_BRANCH_NAMES` and (re)creates them. The first branch is created based on the default branch of the Azure repo. For this branch, the requires files are copied from the local directory to Azure repository, and the changes are committed. The remaining branches are created based on the commit of the first branch. The following image shows the sample directory structure in the Azure repo after running the script:
+
+  ![Azure Repo Directory Structure](./images/azure-repo-directory-structure.png)
+
+  Note that the directory `/fabric` in the above image is based on the `GIT_DIRECTORY_NAME` variable in the `.env` file.
 
 - For the following step you have 2 authentication options:
 
