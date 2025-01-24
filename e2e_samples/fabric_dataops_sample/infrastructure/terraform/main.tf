@@ -80,8 +80,6 @@ module "storage_blob_contributor_assignment_002" {
   principal_id         = module.fabric_workspace.workspace_identity_service_principal_id
   role_definition_name = data.azurerm_role_definition.storage_blob_contributor_role.name
   scope                = module.adls.storage_account_id
-
-  depends_on = [module.fabric_workspace]
 }
 
 module "fabric_workspace_role_assignment" {
@@ -93,6 +91,7 @@ module "fabric_workspace_role_assignment" {
 }
 
 module "fabric_lakehouse" {
+  enable                = var.deploy_fabric_items
   source                = "./modules/fabric/lakehouse"
   workspace_id          = module.fabric_workspace.workspace_id
   lakehouse_name        = local.fabric_lakehouse_name
@@ -100,6 +99,7 @@ module "fabric_lakehouse" {
 }
 
 module "fabric_environment" {
+  enable                  = var.deploy_fabric_items
   source                  = "./modules/fabric/environment"
   environment_name        = local.fabric_environment_name
   environment_description = "Default environment for ${local.base_name} project"
@@ -113,6 +113,7 @@ module "fabric_spark_custom_pool" {
 }
 
 module "fabric_spark_environment_settings" {
+  enable          = var.deploy_fabric_items
   source          = "./modules/fabric/spark_environment_settings"
   workspace_id    = module.fabric_workspace.workspace_id
   environment_id  = module.fabric_environment.environment_id
@@ -122,13 +123,14 @@ module "fabric_spark_environment_settings" {
 
 module "fabric_spark_workspace_settings" {
   source            = "./modules/fabric/spark_workspace_settings"
-  environment_name  = module.fabric_environment.environment_name
+  environment_name  = var.deploy_fabric_items ? module.fabric_environment.environment_name : ""
   workspace_id      = module.fabric_workspace.workspace_id
   runtime_version   = module.fabric_spark_environment_settings.spark_environment_settings_runtime_version
   default_pool_name = module.fabric_spark_custom_pool.spark_custom_pool_name
 }
 
 module "fabric_setup_notebook" {
+  enable                   = var.deploy_fabric_items
   source                   = "./modules/fabric/notebook"
   workspace_id             = module.fabric_workspace.workspace_id
   notebook_name            = local.fabric_setup_notebook_name
@@ -142,6 +144,7 @@ module "fabric_setup_notebook" {
 }
 
 module "fabric_standardize_notebook" {
+  enable                   = var.deploy_fabric_items
   source                   = "./modules/fabric/notebook"
   workspace_id             = module.fabric_workspace.workspace_id
   notebook_name            = local.fabric_standardize_notebook_name
@@ -155,6 +158,7 @@ module "fabric_standardize_notebook" {
 }
 
 module "fabric_transform_notebook" {
+  enable                   = var.deploy_fabric_items
   source                   = "./modules/fabric/notebook"
   workspace_id             = module.fabric_workspace.workspace_id
   notebook_name            = local.fabric_transform_notebook_name
@@ -195,11 +199,11 @@ module "azure_devops_variable_group" {
     "FABRIC_WORKSPACE_NAME"                = module.fabric_workspace.workspace_name
     "FABRIC_WORKSPACE_ADMIN_SG_NAME"       = data.azuread_group.fabric_workspace_admin.display_name
     "FABRIC_WORKSPACE_ADMIN_SG_ID"         = data.azuread_group.fabric_workspace_admin.object_id
-    "FABRIC_LAKEHOUSE_NAME"                = module.fabric_lakehouse.lakehouse_name
+    "FABRIC_LAKEHOUSE_NAME"                = local.fabric_lakehouse_name
     "FABRIC_ADLS_CONNECTION_NAME"          = local.fabric_adls_connection_name
     "FABRIC_ADLS_SHORTCUT_NAME"            = var.fabric_adls_shortcut_name
     "FABRIC_CUSTOM_POOL_NAME"              = module.fabric_spark_custom_pool.spark_custom_pool_name
-    "FABRIC_ENVIRONMENT_NAME"              = module.fabric_environment.environment_name
+    "FABRIC_ENVIRONMENT_NAME"              = local.fabric_environment_name
     "FABRIC_WORKSPACE_DIRECTORY"           = var.git_directory_name
     "GIT_ORGANIZATION_NAME"                = var.git_organization_name
     "GIT_PROJECT_NAME"                     = var.git_project_name
@@ -232,7 +236,7 @@ module "azure_devops_variable_group_w_keyvault" {
 # Below modules currently do not support service principal/managed identity execution context.
 # Therefore they are enabled only when using user context (var_use_cli==true).
 module "fabric_data_pipeline" {
-  enable                        = var.use_cli
+  enable                        = var.use_cli && var.deploy_fabric_items
   source                        = "./modules/fabric/data_pipeline"
   data_pipeline_name            = local.fabric_main_pipeline_name
   data_pipeline_definition_path = local.main_pipeline_definition_path
@@ -260,5 +264,5 @@ module "fabric_workspace_git_integration" {
   repository_name         = var.git_repository_name
   git_provider_type       = "AzureDevOps"
 
-  depends_on = [module.fabric_data_pipeline]
+  depends_on = [local.git_integration_dependency]
 }
