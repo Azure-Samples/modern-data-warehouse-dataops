@@ -275,6 +275,25 @@ Register-AzAutomationScheduledRunbook `
 
 ---
 
+## References
+
+- [Pause and resume compute in dedicated SQL pool (formerly SQL DW) with Azure PowerShell](https://learn.microsoft.com/azure/synapse-analytics/sql-data-warehouse/pause-and-resume-compute-powershell)
+- [Pause and Resume Compute in Synapse Workspace with PowerShell](https://learn.microsoft.com/azure/synapse-analytics/sql-data-warehouse/pause-and-resume-compute-workspace-powershell)
+- [Azure Automation Overview](https://learn.microsoft.com/azure/automation/automation-intro)
+- [Azure Automation Runbooks](https://learn.microsoft.com/azure/automation/automation-runbook-types)
+- [Manage schedules in Azure Automation](https://learn.microsoft.com/azure/automation/shared-resources/schedules)
+- [Using a system-assigned managed identity for an Azure Automation account](https://learn.microsoft.com/azure/automation/enable-managed-identity-for-automation)
+- [Azure PowerShell Documentation](https://learn.microsoft.com/powershell/azure/new-azureps-module-az)
+- [Azure CLI Documentation](https://learn.microsoft.com/cli/azure/)
+- [Azure CLI Automation Commands](https://learn.microsoft.com/cli/azure/automation?view=azure-cli-latest)
+- [Resume-AzSynapseSqlPool PowerShell Command](https://github.com/Azure/azure-powershell/blob/main/src/Synapse/Synapse/help/Resume-AzSynapseSqlPool.md)
+- [Suspend-AzSynapseSqlPool PowerShell Command](https://github.com/Azure/azure-powershell/blob/main/src/Synapse/Synapse/help/Suspend-AzSynapseSqlPool.md)
+- [Azure PowerShell GitHub Repository](https://github.com/Azure/azure-powershell/tree/main)
+- [AZ.Automation PowerShell Commands](https://learn.microsoft.com/powershell/module/az.automation)
+- [Azure Automation Pricing](https://azure.microsoft.com/pricing/details/automation/)
+
+---
+
 ## License
 
 This script is provided "as-is" without warranty of any kind. Use at your own risk.
@@ -282,3 +301,4 @@ This script is provided "as-is" without warranty of any kind. Use at your own ri
 ---
 
 This Readme file provides a complete overview of how to use the script, deploy it to Azure Automation, set up permissions, and troubleshoot common issues.
+
