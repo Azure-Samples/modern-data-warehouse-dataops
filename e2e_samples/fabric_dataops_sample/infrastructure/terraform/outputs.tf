@@ -111,3 +111,15 @@ output "main_pipeline_id" {
 output "fabric_workspace_admin_sg_principal_id" {
   value = data.azuread_group.fabric_workspace_admin.object_id
 }
+
+output "azdo_variable_group_name" {
+  value = module.azure_devops_variable_group.variable_group_name
+}
+
+output "azdo_variable_group_kv_name" {
+  value = module.azure_devops_variable_group_w_keyvault.variable_group_name
+}
+
+output "azdo_service_connection_name" {
+  value = module.azure_devops_service_connection_azurerm.service_endpoint_name
+}

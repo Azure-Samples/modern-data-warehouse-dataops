@@ -30,7 +30,6 @@ for i in "${!GIT_BRANCH_NAMES[@]}"; do
     --repository_name "$GIT_REPOSITORY_NAME" \
     --branch_name "${branch_name}" \
     --base_branch_name "${base_branch_name}" \
-    --directory_name "$GIT_DIRECTORY_NAME" \
     --username "$GIT_USERNAME" \
     --token "$GIT_PERSONAL_ACCESS_TOKEN"
 done

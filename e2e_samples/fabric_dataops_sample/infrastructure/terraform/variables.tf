@@ -88,7 +88,7 @@ variable "git_branch_name" {
 variable "git_directory_name" {
   type        = string
   description = "The Git directory name for syncing the Fabric workspace items. This can also be a path such as '/fabric/workspace'."
-  default     = "/"
+  default     = "/fabric/workspace"
 }
 
 variable "kv_appinsights_connection_string_name" {

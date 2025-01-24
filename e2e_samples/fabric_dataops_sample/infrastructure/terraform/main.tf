@@ -167,16 +167,16 @@ module "fabric_transform_notebook" {
   }
 }
 
-module "azure_devops_serviceconnection_azurerm" {
-  source                                            = "./modules/azure_devops/serviceendpoint_azurerm"
-  azure_devops_project_id                           = data.azuredevops_project.git_project.id
-  azure_devops_serviceconnection_azurerm_name       = local.git_serviceconnection_name
-  azure_devops_serviceconnection_sp_app_id          = var.client_id
-  azure_devops_serviceconnection_sp_secret          = var.client_secret
-  azure_devops_serviceconnection_sp_tenant_id       = var.tenant_id
-  azure_devops_serviceconnection_subscription_id    = var.subscription_id
-  azure_devops_serviceconnection_subscription_name  = data.azurerm_subscription.current.display_name
-  azure_devops_serviceconnection_resourcegroup_name = var.resource_group_name
+module "azure_devops_service_connection_azurerm" {
+  source                                 = "./modules/azure_devops/service_endpoint_azurerm"
+  project_id                             = data.azuredevops_project.git_project.id
+  service_endpoint_name                  = local.git_service_connection_name
+  service_endpoint_authentication_scheme = local.service_endpoint_authentication_scheme
+  service_principal_id                   = var.client_id
+  service_principal_key                  = var.client_secret
+  tenant_id                              = var.tenant_id
+  subscription_id                        = data.azurerm_subscription.current.subscription_id
+  subscription_name                      = data.azurerm_subscription.current.display_name
 }
 
 module "azure_devops_variable_group" {
@@ -200,17 +200,14 @@ module "azure_devops_variable_group" {
     "FABRIC_ADLS_SHORTCUT_NAME"            = var.fabric_adls_shortcut_name
     "FABRIC_CUSTOM_POOL_NAME"              = module.fabric_spark_custom_pool.spark_custom_pool_name
     "FABRIC_ENVIRONMENT_NAME"              = module.fabric_environment.environment_name
+    "FABRIC_WORKSPACE_DIRECTORY"           = var.git_directory_name
     "GIT_ORGANIZATION_NAME"                = var.git_organization_name
     "GIT_PROJECT_NAME"                     = var.git_project_name
     "GIT_REPO_NAME"                        = var.git_repository_name
-    "GIT_DIRECTORY_NAME"                   = var.git_directory_name
   }
 }
 
-# The service principal/managed identity is not grated RBAC permissions to access secrets.
-# Therefore, the secrets are stored in the AKV only when using user context (var_use_cli==true).
 module "key_vault_secret_001" {
-  enable       = var.use_cli
   source       = "./modules/keyvault_secret"
   name         = var.kv_appinsights_connection_string_name
   value        = module.appinsights.connection_string
@@ -221,12 +218,11 @@ module "key_vault_secret_001" {
 }
 
 module "azure_devops_variable_group_w_keyvault" {
-  enable                                     = var.use_cli
-  source                                     = "./modules/azure_devops/variable_group_keyvault"
-  azure_devops_project_id                    = data.azuredevops_project.git_project.id
-  azure_devops_variable_group_name           = local.git_variable_group_w_keyvault_name
-  azure_devops_keyvault_serviceconnection_id = module.azure_devops_serviceconnection_azurerm.serviceendpoint_id
-  azure_devops_keyvault_name                 = module.keyvault.keyvault_name
+  source                                      = "./modules/azure_devops/variable_group_keyvault"
+  azure_devops_project_id                     = data.azuredevops_project.git_project.id
+  azure_devops_variable_group_name            = local.git_variable_group_w_keyvault_name
+  azure_devops_keyvault_service_connection_id = module.azure_devops_service_connection_azurerm.service_endpoint_id
+  azure_devops_keyvault_name                  = module.keyvault.keyvault_name
   azure_devops_variable_group_variables = [
     var.kv_appinsights_connection_string_name
   ]

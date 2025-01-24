@@ -1,9 +1,3 @@
-variable "enable" {
-  type        = bool
-  description = "whether this module should do anything at all"
-  default     = false
-}
-
 variable "azure_devops_project_id" {
   description = "Azure DevOps project id"
   type        = string
@@ -19,7 +13,7 @@ variable "azure_devops_variable_group_variables" {
   type        = list(string)
 }
 
-variable "azure_devops_keyvault_serviceconnection_id" {
+variable "azure_devops_keyvault_service_connection_id" {
   description = "Azure DevOps Azure RM service connection id"
   type        = string
 }

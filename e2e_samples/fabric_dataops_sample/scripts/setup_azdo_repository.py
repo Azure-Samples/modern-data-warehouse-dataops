@@ -6,7 +6,6 @@ import argparse
 # --repository_name "" \
 # --branch_name "" \
 # --base_branch_name "" \
-# --directory_name "" \
 # --username "" \
 # --token ""
 import base64
@@ -67,7 +66,6 @@ def display_usage() -> None:
         "--repository_name <repository_name> "
         "--branch_name <branch_name> "
         "--base_branch_name <base_branch_name> "
-        "--directory_name <directory_name> "
         "--username <username> "
         "--token <token>"
     )
@@ -88,7 +86,6 @@ def parse_arguments() -> tuple:
     parser.add_argument("--repository_name", help="Azure DevOps repository name")
     parser.add_argument("--branch_name", help="Git branch name")
     parser.add_argument("--base_branch_name", help="Git base/parent branch name")
-    parser.add_argument("--directory_name", help="Fabric directory name")
     parser.add_argument("--username", help="Azure DevOps username")
     parser.add_argument("--token", help="Azure DevOps personal access token")
 
@@ -99,17 +96,16 @@ def parse_arguments() -> tuple:
     repository_name = args.repository_name
     branch_name = args.branch_name
     base_branch_name = args.base_branch_name
-    directory_name = args.directory_name
     username = args.username
     token = args.token
 
-    if not all([branch_name, directory_name, organization_name, project_name, repository_name, username, token]):
+    if not all([branch_name, organization_name, project_name, repository_name, username, token]):
         display_usage()
         exit(1)
 
     set_base_url_and_auth(organization_name, project_name, repository_name, username, token)
 
-    return branch_name, base_branch_name, directory_name
+    return branch_name, base_branch_name
 
 
 def branch_exists(branch_name: str) -> bool:
@@ -252,7 +248,7 @@ max-line-length = 120
 
 # Main function to orchestrate the process
 def main() -> None:
-    branch_name, base_branch_name, fabric_directory_name = parse_arguments()
+    branch_name, base_branch_name = parse_arguments()
 
     # Creating a new branch if it doesn't exist
     if branch_exists(branch_name):
@@ -288,11 +284,11 @@ def main() -> None:
 
         # fabric
         print("[Info] Copying fabric files to Azure repo.")
-        changes = copy_directory("fabric", fabric_directory_name)
+        changes = copy_directory("fabric", "fabric")
         changes.append(
             {
                 "changeType": "Add",
-                "item": {"path": f"{fabric_directory_name}/workspace/README.md"},
+                "item": {"path": "/fabric/workspace/README.md"},
                 "newContent": {"content": "", "contentType": "rawtext"},
             }
         )  # Adding an empty file to create the fabric workspace folder

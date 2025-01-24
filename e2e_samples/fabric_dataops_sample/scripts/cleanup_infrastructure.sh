@@ -23,7 +23,6 @@ git_organization_name="$GIT_ORGANIZATION_NAME"
 git_project_name="$GIT_PROJECT_NAME"
 git_repository_name="$GIT_REPOSITORY_NAME"
 git_branch_name="$GIT_BRANCH_NAME"
-git_directory_name="$GIT_DIRECTORY_NAME"
 # Workspace admin variables
 fabric_workspace_admin_sg_name="$FABRIC_WORKSPACE_ADMIN_SG_NAME"
 # Fabric Capacity variables
@@ -32,6 +31,9 @@ fabric_capacity_admins="$FABRIC_CAPACITY_ADMINS"
 
 ## KeyVault secret variables
 appinsights_connection_string_name="appinsights-connection-string"
+
+# Git directory name for syncing Fabric workspace items
+fabric_workspace_directory="/fabric/workspace"
 
 # Fabric bearer token variables, set globally
 fabric_bearer_token=""
@@ -73,13 +75,6 @@ cleanup_terraform_resources() {
   echo "[Info] Switching to terraform '$environment_name' workspace."
   terraform workspace select -or-create=true "$environment_name"
 
-  # Deriving the 'fabric_directory_name' by appending '/workspace' to the 'git_directory_name'
-  if [ "$git_directory_name" = "/" ]; then
-    fabric_directory_name="/workspace"
-  else
-    fabric_directory_name="${git_directory_name%/}/workspace"
-  fi
-
   terraform init
   terraform destroy \
     -auto-approve \
@@ -100,7 +95,7 @@ cleanup_terraform_resources() {
     -var "git_project_name=$git_project_name" \
     -var "git_repository_name=$git_repository_name" \
     -var "git_branch_name=$git_branch_name" \
-    -var "git_directory_name=$fabric_directory_name" \
+    -var "git_directory_name=$fabric_workspace_directory" \
     -var "fabric_adls_shortcut_name=$adls_gen2_shortcut_name" \
     -var "kv_appinsights_connection_string_name=$appinsights_connection_string_name"
 

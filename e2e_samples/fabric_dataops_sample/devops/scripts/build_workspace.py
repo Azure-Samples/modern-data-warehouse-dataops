@@ -28,7 +28,7 @@ storage_container_name = os.environ.get("STORAGE_CONTAINER_NAME")
 organization_name = os.environ.get("GIT_ORGANIZATION_NAME")
 project_name = os.environ.get("GIT_PROJECT_NAME")
 repo_name = os.environ.get("GIT_REPO_NAME")
-fabric_workspace_directory = os.environ.get("GIT_DIRECTORY_NAME")
+fabric_workspace_directory = os.environ.get("FABRIC_WORKSPACE_DIRECTORY")
 feature_branch = os.environ.get("FEATURE_BRANCH")
 commit_hash = os.environ.get("COMMIT_HASH")
 
@@ -96,8 +96,6 @@ def validate_env() -> None:
         error_list.append("PROJECT_NAME")
     if not repo_name:
         error_list.append("REPO_NAME")
-    if not fabric_workspace_directory:
-        error_list.append("FABRIC_WORKSPACE_DIRECTORY")
     if not feature_branch:
         error_list.append("FEATURE_BRANCH")
     if not commit_hash:
