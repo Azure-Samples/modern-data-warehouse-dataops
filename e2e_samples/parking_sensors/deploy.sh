@@ -36,7 +36,7 @@ github_repo_url="https://github.com/$GITHUB_REPO"
 ####
 
 if [ -z "$ENV_DEPLOY" ]; then
-    read -r -p "Do you wish to deploy:"$'\n'"  1) Dev Environment Only?"$'\n'"  2) Dev and Stage Environments?"$'\n'"  3) Dev, Stage and Prod (Default - Pres Enter)?"$'\n'"   Choose 1, 2 or 3: " ENV_DEPLOY
+    read -r -p "Do you wish to deploy:"$'\n'"  1) Dev Environment Only?"$'\n'"  2) Dev and Stage Environments?"$'\n'"  3) Dev, Stage and Prod (Or Press Enter)?"$'\n'"   Choose 1, 2 or 3: " ENV_DEPLOY
     log "Option Selected: $ENV_DEPLOY" "info"
 fi
 
