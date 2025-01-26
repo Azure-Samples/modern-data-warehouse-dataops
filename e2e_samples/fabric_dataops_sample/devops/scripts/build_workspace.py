@@ -37,7 +37,7 @@ fabric_capacity_name = os.environ.get("FABRIC_CAPACITY_NAME")
 fabric_workspace_name = os.environ.get("FABRIC_WORKSPACE_NAME")
 fabric_environment_name = os.environ.get("FABRIC_ENVIRONMENT_NAME")
 fabric_custom_pool_name = os.environ.get("FABRIC_CUSTOM_POOL_NAME")
-fabric_connection_name = os.environ.get("FABRIC_CONNECTION_NAME")
+fabric_connection_name = os.environ.get("FABRIC_ADLS_CONNECTION_NAME")
 fabric_lakehouse_name = os.environ.get("FABRIC_LAKEHOUSE_NAME")
 fabric_shortcut_name = os.environ.get("FABRIC_ADLS_SHORTCUT_NAME")
 
