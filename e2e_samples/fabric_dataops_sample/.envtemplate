@@ -23,8 +23,6 @@ export GIT_PROJECT_NAME=""
 export GIT_REPOSITORY_NAME=""
 ## Space-separated array of the GIT branches corresponding to each environment where Fabric items will be committed to.
 export GIT_BRANCH_NAMES=("dev" "stg" "prod")
-## Note: Other than the root folder "/", the directory must already exist. Must start with a forward-slash. Example: "/fabric"
-export GIT_DIRECTORY_NAME="/fabric"
 ## The username for the Azure DevOps project.
 export GIT_USERNAME=""
 ## The personal access token of the above user.

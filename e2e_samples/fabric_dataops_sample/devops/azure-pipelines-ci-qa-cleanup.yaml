@@ -1,12 +1,7 @@
-trigger:
-  branches:
-    include:
-      - <DEV_BRANCH_NAME>
+trigger: none
 
 variables:
   - group: <VARIABLE_GROUP_NAME>
-  - name: PR_ID
-    value: "$(System.PullRequest.PullRequestId)"
   - name: STORAGE_CONTAINER_NAME
     value: "feature-$(PR_ID)"
 
@@ -20,8 +15,7 @@ jobs:
       - script: |
           echo "Build Reason: $(Build.Reason)"
           echo "Source Branch: $(Build.SourceBranch)"
-          echo "Target Branch: <DEV_BRANCH_NAME>"
-          echo "Triggered by PR ID: $PR_ID"
+          echo "Pull request ID: $PR_ID"
         displayName: "Print debug info"
 
       - script: |
