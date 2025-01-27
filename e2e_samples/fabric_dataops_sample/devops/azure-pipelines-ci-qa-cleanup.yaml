@@ -1,7 +1,12 @@
-trigger: none
+trigger:
+  branches:
+    include:
+      - <DEV_BRANCH_NAME>
 
 variables:
   - group: <VARIABLE_GROUP_NAME>
+  - name: PR_ID
+    value: "$(System.PullRequest.PullRequestId)"
   - name: STORAGE_CONTAINER_NAME
     value: "feature-$(PR_ID)"
 
@@ -10,8 +15,15 @@ jobs:
     displayName: 'Cleanup Resources after PR Merge or Abandon'
     pool:
       vmImage: 'ubuntu-latest'
-    condition: always()
+    condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
     steps:
+
+      - script: |
+          echo "Build Reason: $(Build.Reason)"
+          echo "Source Branch: $(Build.SourceBranch)"
+          echo "Target Branch: <DEV_BRANCH_NAME>"
+          echo "Triggered by PR ID: $PR_ID"
+        displayName: "Print debug info"
 
       - script: |
           echo "Triggering interactive Azure CLI login..."
@@ -37,7 +49,7 @@ jobs:
           addToPath: true
 
       - script: |
-          pip install -r $(Build.SourceVersion)/devops/scripts/requirements.txt
+          pip install -r $(Build.SourcesDirectory)/devops/scripts/requirements.txt
         displayName: 'Install Requirements'
 
       - script: |
@@ -45,5 +57,5 @@ jobs:
           export FABRIC_WORKSPACE_NAME="$FABRIC_WORKSPACE_NAME-$PR_ID"
           export FABRIC_CONNECTION_NAME="$FABRIC_CONNECTION_NAME-$PR_ID"
 
-          python -u $(Build.SourceVersion)/devops/scripts/cleanup_workspace.py --verbose
+          python -u $(Build.SourcesDirectory)/devops/scripts/cleanup_workspace.py --verbose
         displayName: 'Cleanup Resources'
