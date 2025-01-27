@@ -15,7 +15,6 @@ jobs:
     displayName: 'Cleanup Resources after PR Merge or Abandon'
     pool:
       vmImage: 'ubuntu-latest'
-    condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
     steps:
 
       - script: |
@@ -55,7 +54,7 @@ jobs:
       - script: |
           echo "Running Cleanup Script"
           export FABRIC_WORKSPACE_NAME="$FABRIC_WORKSPACE_NAME-$PR_ID"
-          export FABRIC_CONNECTION_NAME="$FABRIC_CONNECTION_NAME-$PR_ID"
+          export FABRIC_ADLS_CONNECTION_NAME="$FABRIC_ADLS_CONNECTION_NAME-$PR_ID"
 
           python -u $(Build.SourcesDirectory)/devops/scripts/cleanup_workspace.py --verbose
         displayName: 'Cleanup Resources'
