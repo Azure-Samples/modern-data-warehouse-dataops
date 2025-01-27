@@ -335,6 +335,9 @@ PROJECT=$PROJECT \
 ENV_NAME=$ENV_NAME \
 RESOURCE_GROUP_NAME=$resource_group_name \
 DEPLOYMENT_ID=$DEPLOYMENT_ID \
+TENANT_ID=$TENANT_ID \
+AZDO_PROJECT=$AZDO_PROJECT \
+AZDO_ORGANIZATION_URL=$AZDO_ORGANIZATION_URL \
     bash -c "./scripts/deploy_azdo_service_connections_azure.sh"
 
 # AzDO Variable Groups
