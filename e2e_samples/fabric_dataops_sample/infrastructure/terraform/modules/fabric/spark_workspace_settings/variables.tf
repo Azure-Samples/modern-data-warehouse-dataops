@@ -22,7 +22,7 @@ variable "default_pool_name" {
 variable "runtime_version" {
   type        = string
   description = "Fabric environment runtime version"
-  default     = "1.2"
+  default     = "1.3"
 }
 
 variable "default_pool_type" {

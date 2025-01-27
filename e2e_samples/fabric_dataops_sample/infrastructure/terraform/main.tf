@@ -59,7 +59,7 @@ module "fabric_capacity" {
   source                 = "./modules/fabric/capacity"
   create_fabric_capacity = var.create_fabric_capacity
   capacity_name          = local.fabric_capacity_name
-  resource_group_id      = data.azurerm_resource_group.rg.id
+  resource_group_name    = data.azurerm_resource_group.rg.name
   location               = data.azurerm_resource_group.rg.location
   admin_members          = local.fabric_capacity_admins
   sku                    = "F2"
@@ -106,12 +106,26 @@ module "fabric_environment" {
   workspace_id            = module.fabric_workspace.workspace_id
 }
 
-# shortcut creation will be done through python/bash script
-# spark environment compute and libraries settings will also be done via scripts (not supported currently by TF provider)
 module "fabric_spark_custom_pool" {
   source           = "./modules/fabric/spark_custom_pool"
   workspace_id     = module.fabric_workspace.workspace_id
   custom_pool_name = local.fabric_custom_pool_name
+}
+
+module "fabric_spark_environment_settings" {
+  source          = "./modules/fabric/spark_environment_settings"
+  workspace_id    = module.fabric_workspace.workspace_id
+  environment_id  = module.fabric_environment.environment_id
+  runtime_version = local.fabric_runtime_version
+  spark_pool_name = module.fabric_spark_custom_pool.spark_custom_pool_name
+}
+
+module "fabric_spark_workspace_settings" {
+  source            = "./modules/fabric/spark_workspace_settings"
+  environment_name  = module.fabric_environment.environment_name
+  workspace_id      = module.fabric_workspace.workspace_id
+  runtime_version   = module.fabric_spark_environment_settings.spark_environment_settings_runtime_version
+  default_pool_name = module.fabric_spark_custom_pool.spark_custom_pool_name
 }
 
 module "fabric_setup_notebook" {
@@ -185,24 +199,6 @@ module "fabric_data_pipeline" {
   }
 }
 
-module "fabric_spark_environment_settings" {
-  enable          = var.use_cli
-  source          = "./modules/fabric/spark_environment_settings"
-  workspace_id    = module.fabric_workspace.workspace_id
-  environment_id  = module.fabric_environment.environment_id
-  spark_pool_name = module.fabric_spark_custom_pool.spark_custom_pool_name
-}
-
-module "fabric_spark_workspace_settings" {
-  enable            = var.use_cli
-  source            = "./modules/fabric/spark_workspace_settings"
-  environment_name  = module.fabric_environment.environment_name
-  workspace_id      = module.fabric_workspace.workspace_id
-  default_pool_name = module.fabric_spark_custom_pool.spark_custom_pool_name
-
-  depends_on = [module.fabric_spark_environment_settings]
-}
-
 module "fabric_workspace_git_integration" {
   enable                  = var.use_cli
   source                  = "./modules/fabric/git_integration"
@@ -216,4 +212,13 @@ module "fabric_workspace_git_integration" {
   git_provider_type       = "AzureDevOps"
 
   depends_on = [module.fabric_data_pipeline]
+}
+
+module "azure_devops_variable_group" {
+  source                           = "./modules/azure_devops/variable_group"
+  azure_devops_project_id          = data.azuredevops_project.git_project.id
+  azure_devops_variable_group_name = local.git_variable_group_name
+  azure_devops_variable_group_variables = {
+    "key_vault_name" = module.keyvault.keyvault_name # Needs at least one variable
+  }
 }

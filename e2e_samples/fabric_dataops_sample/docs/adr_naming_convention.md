@@ -9,7 +9,7 @@ This document describes the naming conventions for the Fabric E2E sample. It inc
 
 ## Status
 
-Proposed
+Accepted
 
 ## Context
 

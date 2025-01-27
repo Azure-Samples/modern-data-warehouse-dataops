@@ -10,7 +10,7 @@ set -o errexit
 #######################################################
 
 ## Environment variables
-environment="$ENVIRONMENT_NAME"
+environment_name="$ENVIRONMENT_NAME"
 tenant_id="$TENANT_ID"
 subscription_id="$SUBSCRIPTION_ID"
 resource_group_name="$RESOURCE_GROUP_NAME"
@@ -29,32 +29,9 @@ fabric_workspace_admin_sg_name="$FABRIC_WORKSPACE_ADMIN_SG_NAME"
 # Fabric Capacity variables
 existing_fabric_capacity_name="$EXISTING_FABRIC_CAPACITY_NAME"
 fabric_capacity_admins="$FABRIC_CAPACITY_ADMINS"
-# ADLS Gen2 connection variable
-adls_gen2_connection_id="$ADLS_GEN2_CONNECTION_ID"
 
-## KeuVault secret variables
+## KeyVault secret variables
 appinsights_connection_string_name="appinsights-connection-string"
-
-# Variable set based on Terraform output
-tf_storage_account_id=""
-tf_storage_container_name=""
-tf_storage_account_url=""
-tf_keyvault_id=""
-tf_keyvault_name=""
-tf_keyvault_uri=""
-tf_workspace_name=""
-tf_workspace_id=""
-tf_lakehouse_name=""
-tf_lakehouse_id=""
-tf_environment_name=""
-tf_environment_id=""
-tf_setup_notebook_name=""
-tf_setup_notebook_id=""
-tf_standardize_notebook_name=""
-tf_standardize_notebook_id=""
-tf_transform_notebook_name=""
-tf_transform_notebook_id=""
-tf_appinsights_connection_string_value=""
 
 # Fabric bearer token variables, set globally
 fabric_bearer_token=""
@@ -93,12 +70,15 @@ cleanup_terraform_resources() {
     echo "[Info] Variable 'EXISTING_FABRIC_CAPACITY_NAME' is NOT empty, the provided Fabric capacity will be used."
   fi
 
+  echo "[Info] Switching to terraform '$environment_name' workspace."
+  terraform workspace select -or-create=true "$environment_name"
+
   terraform init
   terraform destroy \
     -auto-approve \
     -var "use_cli=$use_cli" \
     -var "use_msi=$use_msi" \
-    -var "environment_name=$environment" \
+    -var "environment_name=$environment_name" \
     -var "tenant_id=$tenant_id" \
     -var "subscription_id=$subscription_id" \
     -var "resource_group_name=$resource_group_name" \
@@ -116,26 +96,6 @@ cleanup_terraform_resources() {
     -var "git_directory_name=$git_directory_name" \
     -var "kv_appinsights_connection_string_name=$appinsights_connection_string_name"
 
-  tf_storage_account_id=$(terraform output --raw storage_account_id)
-  tf_storage_container_name=$(terraform output --raw storage_container_name)
-  tf_storage_account_url=$(terraform output --raw storage_account_primary_dfs_endpoint)
-  tf_keyvault_id=$(terraform output --raw keyvault_id)
-  tf_keyvault_name=$(terraform output --raw keyvault_name)
-  tf_keyvault_uri=$(terraform output --raw keyvault_uri)
-  tf_workspace_name=$(terraform output --raw workspace_name)
-  tf_workspace_id=$(terraform output --raw workspace_id)
-  tf_lakehouse_name=$(terraform output --raw lakehouse_name)
-  tf_lakehouse_id=$(terraform output --raw lakehouse_id)
-  tf_environment_id=$(terraform output --raw environment_id)
-  tf_environment_name=$(terraform output --raw environment_name)
-  tf_setup_notebook_name=$(terraform output --raw setup_notebook_name)
-  tf_setup_notebook_id=$(terraform output --raw setup_notebook_id)
-  tf_standardize_notebook_name=$(terraform output --raw standardize_notebook_name)
-  tf_standardize_notebook_id=$(terraform output --raw standardize_notebook_id)
-  tf_transform_notebook_name=$(terraform output --raw transform_notebook_name)
-  tf_transform_notebook_id=$(terraform output --raw transform_notebook_id)
-  tf_appinsights_connection_string_value=$(terraform output --raw appinsights_connection_string)
-
   cd "$original_directory"
 }
 
@@ -150,63 +110,42 @@ set_bearer_token() {
 delete_connection() {
   # Function to delete a connection if it exists
   connection_id=$1
-  get_connection_url="$fabric_api_endpoint/connections/$connection_id"
   delete_connection_url="$fabric_api_endpoint/connections/$connection_id"
 
-  # Check if the connection exists
-  response=$(curl -s -X GET -H "Authorization: Bearer $fabric_bearer_token" "$get_connection_url")
-  connection_name=$(echo "$response" | jq -r '.displayName')
+  response=$(curl -s -X DELETE -H "Authorization: Bearer $fabric_bearer_token" "$delete_connection_url")
 
-  if [[ -n $connection_name ]] && [[ $connection_name != "null" ]]; then
-    # Connection exists, proceed to delete
-    delete_response=$(curl -s -X DELETE -H "Authorization: Bearer $fabric_bearer_token" "$delete_connection_url")
-
-    if [[ -z $delete_response ]]; then
-      echo "[Info] Connection '$connection_id' deleted successfully."
-    else
-      echo "[Error] Failed to delete connection '$connection_id'."
-      echo "[Error] $delete_response"
-    fi
+  if [[ -z $response ]]; then
+    echo "[Info] Connection '$connection_id' deleted successfully."
   else
-    echo "[Info] Connection '$connection_id' not found. It could have not been created or deleted earlier."
+    echo "[Error] Failed to delete connection '$connection_id'."
+    echo "[Error] $response"
   fi
 }
 
 cleanup_terraform_files() {
   # List and delete .terraform directories
-  echo "[Info] Listing .terraform directories that will be deleted:"
+  echo "[Info] Listing Terraform state directory that will be deleted:"
+  find . -type d -name "${environment_name}" -path "*/terraform.tfstate.d/*"
+  find . -type d -name "${environment_name}" -path "*/terraform.tfstate.d/*" -exec rm -rf {} + 2>/dev/null
+  echo "[Info] Listing '.terraform' directory that will be deleted:"
   find . -type d -name ".terraform"
   find . -type d -name ".terraform" -exec rm -rf {} + 2>/dev/null
-  echo "[Info] .terraform directories deleted successfully."
+  echo "[Info] Terraform directories deleted successfully."
 
   # List and delete specific Terraform files
-  echo "[Info] Listing Terraform files that will be deleted:"
-  find . -type f \( -name "*.tfstate" -o -name "*.tfstate.backup" -o -name ".terraform.lock.hcl" \)
-  find . -type f \( -name "*.tfstate" -o -name "*.tfstate.backup" -o -name ".terraform.lock.hcl" \) -exec rm -f {} + 2>/dev/null
-  echo "[Info] Terraform intermediate files deleted successfully."
+  echo "[Info] Listing Terraform lock file that will be deleted:"
+  find . -type f -name ".terraform.lock.hcl"
+  find . -type f -name ".terraform.lock.hcl" -exec rm -f {} + 2>/dev/null
+  echo "[Info] Terraform lock file deleted successfully."
 }
 
-remove_adls_gen2_connection_id_from_env_file() {
-  local env_file="$1"
-
-  if [[ -f "$env_file" ]]; then
-    # Display the current content
-    echo "Current ADLS_GEN2_CONNECTION_ID in $env_file:"
-    grep '^export ADLS_GEN2_CONNECTION_ID=' "$env_file"
-
-    # Remove the content
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        sed -i '' 's/^export ADLS_GEN2_CONNECTION_ID=.*$/export ADLS_GEN2_CONNECTION_ID=""/' "$env_file"
-    else
-        sed -i 's/^export ADLS_GEN2_CONNECTION_ID=.*$/export ADLS_GEN2_CONNECTION_ID=""/' "$env_file"
-    fi
-
-    echo "ADLS_GEN2_CONNECTION_ID content has been cleared."
-  else
-    echo "Error: File '$env_file' not found."
-  fi
+get_connection_id_by_name() {
+  connection_name=$1
+  list_connection_url="$fabric_api_endpoint/connections"
+  response=$(curl -s -X GET -H "Authorization: Bearer $fabric_bearer_token" -H "Content-Type: application/json" "$list_connection_url" )
+  connection_id=$(echo "$response" | jq -r --arg name "$connection_name" '.value[] | select(.displayName == $name) | .id')
+  echo "$connection_id"
 }
-
 
 echo "[Info] ############ STARTING CLEANUP STEPS############"
 
@@ -217,15 +156,18 @@ echo "[Info] ############ Terraform resources destroyed############"
 echo "[Info] Setting up fabric bearer token ############"
 set_bearer_token
 
-echo "[Info] ############ ADLS Gen2 connection ID Deletion ############"
+echo "[Info] ############ ADLS Gen2 connection deletion ############"
+# Deriving ADLS Gen2 connection name instead of relying on Terraform output for idempotency
+adls_gen2_connection_name="conn-adls-st${base_name//[-_]/}${environment_name}"
+
+adls_gen2_connection_id=$(get_connection_id_by_name "$adls_gen2_connection_name")
+
 if [[ -z $adls_gen2_connection_id ]]; then
-  echo "[Warning] ADLS Gen2 connection ID not provided. Skipping ADLS Gen2 connection deletion."
+  echo "[Warning] No Fabric connection with name '$adls_gen2_connection_name' found, skipping deletion."
 else
+  echo "[Info] Fabric Connection details: '$adls_gen2_connection_name' ($adls_gen2_connection_id)"
   delete_connection "$adls_gen2_connection_id"
 fi
-
-echo "[Info] ############ Remove ADLS_GEN2_CONNECTION_ID value from .env file############"
-remove_adls_gen2_connection_id_from_env_file ".env"
 
 echo "[Info] ############ Cleanup Terraform Intermediate files (state, lock etc.,) ############"
 cleanup_terraform_files
