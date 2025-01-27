@@ -89,7 +89,7 @@ stages:
 
           - script: |
               export FABRIC_WORKSPACE_NAME="$FABRIC_WORKSPACE_NAME-$PR_ID"
-              export FABRIC_CONNECTION_NAME="$FABRIC_CONNECTION_NAME-$PR_ID"
+              export FABRIC_ADLS_CONNECTION_NAME="$FABRIC_ADLS_CONNECTION_NAME-$PR_ID"
 
               python -u $(Build.SourcesDirectory)/devops/scripts/build_workspace.py --verbose
             displayName: 'Build Workspace'
