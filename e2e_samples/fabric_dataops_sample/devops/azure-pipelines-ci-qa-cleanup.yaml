@@ -37,7 +37,7 @@ jobs:
           addToPath: true
 
       - script: |
-          pip install -r $(WORKING_DIR)/devops/scripts/requirements.txt
+          pip install -r $(Build.SourceVersion)/devops/scripts/requirements.txt
         displayName: 'Install Requirements'
 
       - script: |
@@ -45,5 +45,5 @@ jobs:
           export FABRIC_WORKSPACE_NAME="$FABRIC_WORKSPACE_NAME-$PR_ID"
           export FABRIC_CONNECTION_NAME="$FABRIC_CONNECTION_NAME-$PR_ID"
 
-          python -u $(WORKING_DIR)/devops/scripts/cleanup_workspace.py --verbose
+          python -u $(Build.SourceVersion)/devops/scripts/cleanup_workspace.py --verbose
         displayName: 'Cleanup Resources'
