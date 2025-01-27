@@ -277,6 +277,17 @@ Set up the environment variables as specified, fork the GitHub repository, and l
 
      Optionally, set the following environment variables:
 
+     - **ENV_DEPLOY**- Specifies the number of environments to deploy.
+
+        - If the variable is set as shown in the optional configuration below, the prompt will be skipped.
+        - If not configured, a prompt will display the following options.         
+
+      - The options are:
+
+        - **Option 1**: Deploy only to the development environment (Dev). Optional configuration for environment variable set #ENV_DEPLOY=1.
+        - **Option 2**: Deploy to both development (Dev) and staging (Stage) environments. Optional configuration for environment variable  #ENV_DEPLOY=2.
+        - **Option 3** : Deploy to development (Dev), staging (Stage), and production (Prod) environments. Optional configuration for environment variable #ENV_DEPLOY=3
+      
      - **AZURE_LOCATION** - Azure location to deploy resources. *Default*: `westus`.
      - **DEPLOYMENT_ID** - string appended to all resource names. This is to ensure uniqueness of azure resource names. *Default*: random five character string.
      - **AZDO_PIPELINES_BRANCH_NAME** - git branch where Azure DevOps pipelines definitions are retrieved from. *Default*: main.
@@ -298,7 +309,11 @@ Set up the environment variables as specified, fork the GitHub repository, and l
 2. **Deploy Azure resources**
    - `cd` into the `e2e_samples/parking_sensors` folder of the repo.
    - Run `./deploy.sh`.
-     - The login process for deployment is interactive. When you run the script **deploy.sh**, a browser window will be open, prompting you to log in to Azure. If there is an open session from a previous deployment, it may log you out and request you to log in again.
+     - The login process for deployment is interactive. When you run the script **deploy.sh**, a browser window will be open, prompting you to log in to Azure. If there is an open session from a previous deployment, it may log you out and request you to log in again- .
+     - During deployment, you will be presented with three options if the optional environment variable #ENV_DEPLOY for deployment is not set. Answer the prompt by typing 1,2 or 3 from the keyboard according to the options shown. Keep in mind that deployments are standalone and cannot be performed incrementally:
+       - **Option 1**: Deploy only to the development environment (Dev). Note that this option does not deploy release pipelines, as a minimum of two environments is required for pipeline releases.
+       - **Option 2**: Deploy to both development (Dev) and staging (Stage) environments.
+       - **Option 3** (Or Press Enter): Deploy to development (Dev), staging (Stage), and production (Prod) environments.
       - This may take around **~30mins or more** to run end to end. So grab yourself a cup of coffee... ☕ But before you do so keep the following in mind:
         - You might encounter deployment issues if the script attempts to create a Key Vault that conflicts with a previously soft-deleted Key Vault. In such cases, the deployment script may prompt you to confirm the purge of the previously deleted Key Vault.
         - There are 3 points in time where you will need to authenticate to the databricks workspace, before the script continues to run. You will find the following message for the deployment of the dev, stage and production environments. Click the link highlighted in green, consent to authenticate to the databricks workspace and when the workspace opens successfully, return to the deployment windows and press Enter to continue:  ![image](docs/images/databricks_ws.png)
