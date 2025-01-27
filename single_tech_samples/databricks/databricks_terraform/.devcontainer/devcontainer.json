@@ -1,0 +1,25 @@
+{
+    "name": "Python DevContainer",
+    "dockerFile": "Dockerfile",
+    "context": "..",
+    "features": {
+      "ghcr.io/devcontainers/features/terraform:1": {
+          "installTerrafromDocs": true
+      },
+      "ghcr.io/devcontainers/features/azure-cli:1": {
+          "extensions": ""
+      },
+      "ghcr.io/devcontainers/features/github-cli:1": {},
+      "ghcr.io/audacioustux/devcontainers/taskfile:1": {}
+    },
+    "customizations" :{
+      "vscode": {
+          "extensions": [
+              "yzhang.markdown-all-in-one",
+              "DavidAnson.vscode-markdownlint",
+              "-dbaeumer.vscode-eslint"
+          ]
+      }
+    }
+  }
+  
