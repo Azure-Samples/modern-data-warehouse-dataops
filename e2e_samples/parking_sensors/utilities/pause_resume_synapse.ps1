@@ -46,8 +46,8 @@ function Show-Usage {
     Write-Host "Usage: .\pause_resume_synapse.ps1 -SubscriptionId <SUBSCRIPTION_ID> [-DeploymentIds <IDs>] -Project <PROJECT> -Environments <ENVIRONMENTS>`n[-ResourceGroups <GROUPS>] -Action <Pause|Resume> [-DryRun] [-InstallModules]" -ForegroundColor Yellow
     Write-Host "  -SubscriptionId            Azure Subscription ID (required for manual run)."
     Write-Host "  -ResourceGroups            Resource groups (comma-separated, use '*' to target all resource groups)."
-    Write-Host "  -DeploymentIds             Deployment IDs for resource group generation (comma-separated, required if ResourceGroups is not specified)."
-    Write-Host "  -Project                   Project name for resource group generation (required if ResourceGroups is not specified)."
+    Write-Host "  -DeploymentIds             Deployment IDs for resource group generation. Specific to Databricks E2E use case. (comma-separated, required if ResourceGroups is not specified)."
+    Write-Host "  -Project                   Project name for resource group generation. Specific to Databricks E2E use case. (required if ResourceGroups is not specified)."
     Write-Host "  -Environments              Environments for resource group generation (comma-separated, required if ResourceGroups is not specified) (default: dev,stg)"
     Write-Host "  -Action                    Action to perform: Pause or Resume (default: Pause)."
     Write-Host "  -DryRun                    Simulate actions without making any changes (default: false)."
@@ -180,10 +180,11 @@ function Process-SynapseSqlPool {
             $poolName = $sqlPool.Name
             $poolStatus = $sqlPool.Status
 
-            if ($poolStatus -eq "Paused") {
-                Log-Message "INFO: SQL Pool: $poolName is already paused. Skipping." "INFO"
-            } elseif ($poolStatus -eq "Online") {
-                Log-Message "INFO: SQL Pool: $poolName is online. Initiating $Action..." "INFO"
+            Log-Message "INFO: Current state of SQL Pool: $poolName is $poolStatus" "INFO"
+            if (($Action -eq "Pause" -and $poolStatus -eq "Paused") -or ($Action -eq "Resume" -and $poolStatus -eq "Online")) {
+                Log-Message "INFO: SQL Pool: $poolName is already in the desired state: $poolStatus. Skipping." "INFO"
+            } else {
+                Log-Message "INFO: SQL Pool: $poolName is in state: $poolStatus. Initiating $Action..." "INFO"
 
                 try {
                     if (-not $DryRun) {
@@ -192,13 +193,18 @@ function Process-SynapseSqlPool {
                         } elseif ($Action -eq "Resume") {
                             Resume-AzSynapseSqlPool -Name $poolName -WorkspaceName $workspace -ResourceGroupName $ResourceGroup
                         }
+                        # Verify the new state
+                        $newStatus = (Get-AzSynapseSqlPool -ResourceGroupName $ResourceGroup -WorkspaceName $workspace -Name $poolName).Status
+                        Log-Message "INFO: New state of SQL Pool: $poolName is $newStatus" "INFO"
+                        if (($Action -eq "Pause" -and $newStatus -eq "Paused") -or ($Action -eq "Resume" -and $newStatus -eq "Online")) {
+                            Log-Message "Successfully $Action-ed SQL Pool: $poolName." "INFO"
+                        } else {
+                            Log-Message "ERROR: SQL Pool: $poolName did not transition to the expected state. Current state: $newStatus" "ERROR"
+                        }
                     }
-                    Log-Message "Successfully $Action-ed SQL Pool: $poolName." "INFO"
                 } catch {
                     Log-Message "ERROR: Failed to $Action SQL Pool: $poolName. $_" "ERROR"
                 }
-            } else {
-                Log-Message "WARNING: SQL Pool: $poolName is in an unsupported state: $poolStatus" "WARNING"
             }
         }
     }
@@ -240,10 +246,11 @@ function Process-SqlDatabase {
             $dwName = $sqlDw.DatabaseName
             $dwStatus = $sqlDw.Status
 
-            if ($dwStatus -eq "Paused") {
-                Log-Message "INFO: Dedicated SQL Pool: $dwName is already paused." "INFO"
-            } elseif ($dwStatus -eq "Online") {
-                Log-Message "INFO: Dedicated SQL Pool: $dwName is online. Initiating $Action..." "INFO"
+            Log-Message "INFO: Current state of Dedicated SQL Pool: $dwName is $dwStatus" "INFO"
+            if (($Action -eq "Pause" -and $dwStatus -eq "Paused") -or ($Action -eq "Resume" -and $dwStatus -eq "Online")) {
+                Log-Message "INFO: Dedicated SQL Pool: $dwName is already in the desired state: $dwStatus. Skipping." "INFO"
+            } else {
+                Log-Message "INFO: Dedicated SQL Pool: $dwName is in state: $dwStatus. Initiating $Action..." "INFO"
 
                 try {
                     if (-not $DryRun) {
@@ -252,13 +259,18 @@ function Process-SqlDatabase {
                         } elseif ($Action -eq "Resume") {
                             Resume-AzSqlDatabase -ResourceGroupName $ResourceGroup -ServerName $server -DatabaseName $dwName
                         }
+                        # Verify the new state
+                        $newStatus = (Get-AzSqlDatabase -ResourceGroupName $ResourceGroup -ServerName $server -DatabaseName $dwName).Status
+                        Log-Message "INFO: New state of Dedicated SQL Pool: $dwName is $newStatus" "INFO"
+                        if (($Action -eq "Pause" -and $newStatus -eq "Paused") -or ($Action -eq "Resume" -and $newStatus -eq "Online")) {
+                            Log-Message "Successfully $Action-ed Dedicated SQL Pool: $dwName." "INFO"
+                        } else {
+                            Log-Message "ERROR: Dedicated SQL Pool: $dwName did not transition to the expected state. Current state: $newStatus" "ERROR"
+                        }
                     }
-                    Log-Message "Successfully $Action-ed Dedicated SQL Pool: $dwName." "INFO"
                 } catch {
                     Log-Message "ERROR: Failed to $Action Dedicated SQL Pool: $dwName. $_" "ERROR"
                 }
-            } else {
-                Log-Message "WARNING: Dedicated SQL Pool: $dwName is in an unsupported state: $dwStatus" "WARNING"
             }
         }
     }

@@ -28,8 +28,8 @@ It supports both manual execution and deployment as an Azure Automation Runbook 
 | Parameter        | Description                                                                                             | Default   |
 |------------------|---------------------------------------------------------------------------------------------------------|-----------|
 | `SubscriptionId` | Azure Subscription ID. Required for local execution.                                                   |           |
-| `DeploymentIds`  | Comma-separated deployment IDs. Required if `ResourceGroups` is not provided.                          |           |
-| `Project`        | Project name. Required if `ResourceGroups` is not provided.                                            |           |
+| `DeploymentIds`  | Comma-separated deployment IDs. Required if `ResourceGroups` is not provided. Specific to Databricks E2E use case. |           |
+| `Project`        | Project name. Required if `ResourceGroups` is not provided. Specific to Databricks E2E use case.        |           |
 | `Environments`   | Environments (e.g., dev, stg, prod).                                                                   | `dev,stg` |
 | `ResourceGroups` | Comma-separated list of resource groups. Use `*` to target all resource groups in the subscription.    |           |
 | `Action`         | Specify `Pause` or `Resume`.                                                                           | `Pause`   |
@@ -38,15 +38,33 @@ It supports both manual execution and deployment as an Azure Automation Runbook 
 
 ---
 
+## Example Scenarios
+
+### 1. Pause All SQL Pools in a Subscription
+```powershell
+.\pause_resume_synapse.ps1 -SubscriptionId "SubscriptionId" -ResourceGroups "*" -Action "Pause"
+```
+
+### 2. Resume SQL Pools for a Specific Project in Dev, Stg and Prod Environments
+```powershell
+.\pause_resume_synapse.ps1 -SubscriptionId "SubscriptionId" -Project "Project1" -DeploymentIds "Deployment1,Deployment2" -Environments "dev,stg,prod" -Action "Resume"
+```
+
+### 3. Test Without Making Changes
+```powershell
+.\pause_resume_synapse.ps1 -SubscriptionId "SubscriptionId" -ResourceGroups "*" -Action "Pause" -DryRun
+```
+
+---
+
 ## Prerequisites
 
 1. **Azure Subscription**: Ensure you have access to an Azure subscription.
 2. **Azure PowerShell Module**: Ensure `Az.Accounts`, `Az.Sql`, `Az.Synapse`, `Az.Automation`, and `Az.Resources` modules are installed. Alternatively, use the `-InstallModules` parameter to install missing modules automatically.
-3. **Azure Automation Account**: Create an Azure Automation Account with a system-assigned managed identity. (Steps are provided in this instructions).
-4. **Required Azure Roles**:
-   - Assign the `Contributor` role to the Automation Account's managed identity for the scope `/subscriptions/<subscription-id>`.
+3. **Required Azure Roles**:
+   - Assign the `Contributor` role to the Automation Account's managed identity for the scope `/subscriptions/<subscriptionid>`.
    - Optionally, assign more restrictive permissions as needed (e.g., for specific Resource Groups).
-5. **PowerShell Environment**: If running locally, ensure the account has appropriate permissions.
+4. **PowerShell Environment**: If running locally, ensure the account has appropriate permissions.
 
 ---
 
@@ -59,7 +77,7 @@ To execute the script manually:
 3. Run the script with the desired parameters. Example:
 
     ```powershell
-    .\pause_resume_synapse.ps1 -SubscriptionId "<your-subscription-id>" -ResourceGroups "<resource-group-1,resource-group-2>" -Action "Pause"
+    .\pause_resume_synapse.ps1 -SubscriptionId "<SubscriptionId>" -ResourceGroups "<ResourceGroup1,ResourceGroup2>" -Action "Pause"
     ```
 4. Review the output for warnings, errors, or success messages.
 
@@ -239,25 +257,6 @@ Register-AzAutomationScheduledRunbook `
    - The final log will show the total number of errors and warnings encountered.
 3. **Dry Run**:
    - Use the -DryRun flag to simulate actions without making any changes.
-
----
-
-## Example Scenarios
-
-### 1. Pause All SQL Pools in a Subscription
-```powershell
-.\pause_resume_synapse.ps1 -SubscriptionId "your-subscription-id" -ResourceGroups "*" -Action "Pause"
-```
-
-### 2. Resume SQL Pools for a Specific Project
-```powershell
-.\pause_resume_synapse.ps1 -SubscriptionId "your-subscription-id" -Project "YourProject" -DeploymentIds "Deployment1,Deployment2" -Action "Resume"
-```
-
-### 3. Test Without Making Changes
-```powershell
-.\pause_resume_synapse.ps1 -SubscriptionId "your-subscription-id" -ResourceGroups "*" -Action "Pause" -DryRun
-```
 
 ---
 
