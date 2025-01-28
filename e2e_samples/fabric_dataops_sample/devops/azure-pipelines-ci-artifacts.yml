@@ -4,7 +4,7 @@ trigger:
       - <DEV_BRANCH_NAME>
   paths:
     include:
-      - $(WORKING_DIR)/*
+      - /*
 
 pr: none
 
@@ -31,19 +31,19 @@ stages:
           - script: |
               pip install -r requirements.txt
             displayName: 'Install Requirements'
-            workingDirectory: $(WORKING_DIR)/libraries
+            workingDirectory: $(Build.SourcesDirectory)/libraries
 
           - script: |
-              echo "Linting files in $(WORKING_DIR)..."
+              echo "Linting files in $(Build.SourcesDirectory)..."
               flake8 .
             displayName: 'Linting Files'
-            workingDirectory: $(WORKING_DIR)/libraries
+            workingDirectory: $(Build.SourcesDirectory)/libraries
 
           - script: |
-              echo "Running tests in $(WORKING_DIR)/libraries/test..."
+              echo "Running tests in $(Build.SourcesDirectory)/libraries/test..."
               pytest .
             displayName: 'Run Tests'
-            workingDirectory: $(WORKING_DIR)/libraries
+            workingDirectory: $(Build.SourcesDirectory)/libraries
 
           - script: |
               mkdir fabric_env/
@@ -55,11 +55,11 @@ stages:
               cp libraries/src/otel_monitor_invoker.py fabric_env/custom_libraries/
 
             displayName: 'Build Fabric Environment Config Artifacts'
-            workingDirectory: $(WORKING_DIR)
+            workingDirectory: $(Build.SourcesDirectory)
 
           - task: PublishBuildArtifacts@1
             inputs:
-              PathtoPublish: $(WORKING_DIR)/fabric_env/
+              PathtoPublish: $(Build.SourcesDirectory)/fabric_env/
               ArtifactName: 'fabric_env'
             displayName: 'Publish Fabric Environment Config Files'
 
@@ -84,10 +84,10 @@ stages:
               chmod +x devops/scripts/build_adls_files.sh
               ./devops/scripts/build_adls_files.sh
             displayName: 'Create artifacts for ADLS'
-            workingDirectory: $(WORKING_DIR)
+            workingDirectory: $(Build.SourcesDirectory)
 
           - task: PublishBuildArtifacts@1
             inputs:
-              PathtoPublish: '$(WORKING_DIR)/adls/'
+              PathtoPublish: '$(Build.SourcesDirectory)/adls/'
               ArtifactName: 'adls'
             displayName: 'Publish ADLS Artifacts'

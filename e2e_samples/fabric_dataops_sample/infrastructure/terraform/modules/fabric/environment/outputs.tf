@@ -1,9 +1,9 @@
 output "environment_id" {
-  value       = fabric_environment.environment.id
+  value       = var.enable ? fabric_environment.environment[0].id : ""
   description = "Fabric environment id"
 }
 
 output "environment_name" {
-  value       = fabric_environment.environment.display_name
+  value       = var.enable ? fabric_environment.environment[0].display_name : ""
   description = "Fabric environment display name"
 }

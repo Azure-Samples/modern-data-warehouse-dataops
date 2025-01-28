@@ -6,9 +6,9 @@ pr:
       - <DEV_BRANCH_NAME>
   paths:
     include:
-      - $(WORKING_DIR)/fabric/*
-      - $(WORKING_DIR)/libraries/*
-      - $(WORKING_DIR)/config/*
+      - $(Build.SourcesDirectory)/fabric/*
+      - $(Build.SourcesDirectory)/libraries/*
+      - $(Build.SourcesDirectory)/config/*
 
 variables:
   - group: <VARIABLE_GROUP_NAME>
@@ -18,8 +18,6 @@ variables:
     value: "$(System.PullRequest.PullRequestId)"
   - name: COMMIT_HASH
     value: "$(Build.SourceVersion)"
-  - name: FABRIC_WORKSPACE_DIRECTORY
-    value: "$(WORKING_DIR)/fabric/workspace"
   - name: STORAGE_CONTAINER_NAME
     value: "feature-$(PR_ID)"
 
@@ -42,19 +40,19 @@ stages:
           - script: |
               pip install -r requirements.txt
             displayName: 'Install Requirements'
-            workingDirectory: $(WORKING_DIR)/libraries
+            workingDirectory: $(Build.SourcesDirectory)/libraries
 
           - script: |
               echo "Linting files in $(WORKING_DIR)..."
               flake8 .
             displayName: 'Linting Files'
-            workingDirectory: $(WORKING_DIR)/libraries
+            workingDirectory: $(Build.SourcesDirectory)/libraries
 
           - script: |
-              echo "Running tests in $(WORKING_DIR)/libraries/test..."
+              echo "Running tests in $(Build.SourcesDirectory)/libraries/test..."
               pytest .
             displayName: 'Run Tests'
-            workingDirectory: $(WORKING_DIR)/libraries
+            workingDirectory: $(Build.SourcesDirectory)/libraries
 
   - stage: BuildFabric
     jobs:
@@ -86,14 +84,14 @@ stages:
               addToPath: true
 
           - script: |
-              pip install -r $(WORKING_DIR)/devops/scripts/requirements.txt
+              pip install -r $(Build.SourcesDirectory)/devops/scripts/requirements.txt
             displayName: 'Install Requirements'
 
           - script: |
               export FABRIC_WORKSPACE_NAME="$FABRIC_WORKSPACE_NAME-$PR_ID"
-              export FABRIC_CONNECTION_NAME="$FABRIC_CONNECTION_NAME-$PR_ID"
+              export FABRIC_ADLS_CONNECTION_NAME="$FABRIC_ADLS_CONNECTION_NAME-$PR_ID"
 
-              python -u $(WORKING_DIR)/devops/scripts/build_workspace.py --verbose
+              python -u $(Build.SourcesDirectory)/devops/scripts/build_workspace.py --verbose
             displayName: 'Build Workspace'
 
           - script: |
@@ -103,7 +101,7 @@ stages:
               CHANGED_FILES=$(git diff --name-only $(System.PullRequest.SourceCommitId) $(System.PullRequest.TargetCommitId))
 
               # If any of the changed files are in the fabric_environment directory, set the variable UPDATE_PUBLIC_LIBRARIES to true
-              if echo "$CHANGED_FILES" | grep -q "$(WORKING_DIR)/fabric/fabric_environment/"; then
+              if echo "$CHANGED_FILES" | grep -q "$(Build.SourcesDirectory)/fabric/fabric_environment/"; then
                 echo "Changes detected in fabric_environment. Setting variable UPDATE_PUBLIC_LIBRARIES to true."
                 echo "##vso[task.setvariable variable=UPDATE_PUBLIC_LIBRARIES]true"
               else
@@ -111,14 +109,14 @@ stages:
               fi
 
               # If any of the changed files are in the libraries directory, set the variable UPDATE_CUSTOM_LIBRARIES to true
-              if echo "$CHANGED_FILES" | grep -q "$(WORKING_DIR)/libraries/"; then
+              if echo "$CHANGED_FILES" | grep -q "$(Build.SourcesDirectory)/libraries/"; then
                 echo "Changes detected in the libraries. Setting variable UPDATE_CUSTOM_LIBRARIES to true."
                 echo "##vso[task.setvariable variable=UPDATE_CUSTOM_LIBRARIES]true"
               else
                 echo "No changes detected in the libraries."
               fi
 
-              python -u $(WORKING_DIR)/devops/scripts/update_environment.py --verbose
+              python -u $(Build.SourcesDirectory)/devops/scripts/update_environment.py --verbose
             displayName: 'Update Environment'
 
           - script: |
@@ -136,7 +134,7 @@ stages:
                 --output none
 
             displayName: 'Upload ADLS Config Artifacts'
-            workingDirectory: $(WORKING_DIR)
+            workingDirectory: $(Build.SourcesDirectory)
 
       - job: FabricTests
         displayName: 'Test Feature Fabric Workspace'
@@ -152,12 +150,12 @@ stages:
           - script: |
               pip install -r requirements.txt
             displayName: 'Install Requirements'
-            workingDirectory: $(WORKING_DIR)/fabric/
+            workingDirectory: $(Build.SourcesDirectory)/fabric/
 
           - script: |
               export FABRIC_WORKSPACE_NAME="$FABRIC_WORKSPACE_NAME-$PR_ID"
 
-              echo "Running tests in $(WORKING_DIR)/fabric/test..."
+              echo "Running tests in $(Build.SourcesDirectory)/fabric/test..."
               pytest -o log_cli=true --capture=no test/
             displayName: 'Run Tests'
-            workingDirectory: $(WORKING_DIR)/fabric/
+            workingDirectory: $(Build.SourcesDirectory)/fabric/
