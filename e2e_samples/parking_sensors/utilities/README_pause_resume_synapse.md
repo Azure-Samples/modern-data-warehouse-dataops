@@ -34,13 +34,14 @@ It supports both manual execution and deployment as an Azure Automation Runbook 
 | `ResourceGroups` | Comma-separated list of resource groups. Use `*` to target all resource groups in the subscription.    |           |
 | `Action`         | Specify `Pause` or `Resume`.                                                                           | `Pause`   |
 | `DryRun`         | Simulate actions without making changes.                                                               | `false`   |
+| `InstallModules` | Install missing modules if not present.                                                                | `false`   |
 
 ---
 
 ## Prerequisites
 
 1. **Azure Subscription**: Ensure you have access to an Azure subscription.
-2. **Azure PowerShell Module**: Ensure `Az.Accounts`, `Az.Sql`, `Az.Synapse`, `Az.Automation`,and `Az.Resources` modules are installed.
+2. **Azure PowerShell Module**: Ensure `Az.Accounts`, `Az.Sql`, `Az.Synapse`, `Az.Automation`, and `Az.Resources` modules are installed. Alternatively, use the `-InstallModules` parameter to install missing modules automatically.
 3. **Azure Automation Account**: Create an Azure Automation Account with a system-assigned managed identity. (Steps are provided in this instructions).
 4. **Required Azure Roles**:
    - Assign the `Contributor` role to the Automation Account's managed identity for the scope `/subscriptions/<subscription-id>`.

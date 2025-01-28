@@ -9,7 +9,8 @@ param(
     [string]$ResourceGroups,
     [ValidateSet("Pause", "Resume")]
     [string]$Action = "Pause",
-    [switch]$DryRun
+    [switch]$DryRun,
+    [switch]$InstallModules
 )
 
 # Initialize error and warning tracking
@@ -42,7 +43,7 @@ function Log-Message {
 
 # Function to display usage
 function Show-Usage {
-    Write-Host "Usage: .\pause_resume_synapse.ps1 -SubscriptionId <SUBSCRIPTION_ID> [-DeploymentIds <IDs>] -Project <PROJECT> -Environments <ENVIRONMENTS>`n[-ResourceGroups <GROUPS>] -Action <Pause|Resume> [-DryRun]" -ForegroundColor Yellow
+    Write-Host "Usage: .\pause_resume_synapse.ps1 -SubscriptionId <SUBSCRIPTION_ID> [-DeploymentIds <IDs>] -Project <PROJECT> -Environments <ENVIRONMENTS>`n[-ResourceGroups <GROUPS>] -Action <Pause|Resume> [-DryRun] [-InstallModules]" -ForegroundColor Yellow
     Write-Host "  -SubscriptionId            Azure Subscription ID (required for manual run)."
     Write-Host "  -ResourceGroups            Resource groups (comma-separated, use '*' to target all resource groups)."
     Write-Host "  -DeploymentIds             Deployment IDs for resource group generation (comma-separated, required if ResourceGroups is not specified)."
@@ -50,6 +51,7 @@ function Show-Usage {
     Write-Host "  -Environments              Environments for resource group generation (comma-separated, required if ResourceGroups is not specified) (default: dev,stg)"
     Write-Host "  -Action                    Action to perform: Pause or Resume (default: Pause)."
     Write-Host "  -DryRun                    Simulate actions without making any changes (default: false)."
+    Write-Host "  -InstallModules            Install missing modules if not present (default: false)."
     exit 1
 }
 
@@ -71,8 +73,13 @@ if ($Action -notin @("Pause", "Resume")) {
 $modules = @("Az.Accounts", "Az.Sql", "Az.Synapse", "Az.Resources")
 foreach ($module in $modules) {
     if (-not (Get-Module -ListAvailable -Name $module)) {
-        Log-Message "Installing module $module..." "INFO"
-        Install-Module -Name $module -Force -Scope CurrentUser -AllowClobber
+        if ($InstallModules) {
+            Log-Message "Installing module $module..." "INFO"
+            Install-Module -Name $module -Force -Scope CurrentUser -AllowClobber
+        } else {
+            Log-Message "Module $module is missing. Use -InstallModules to install missing modules." "ERROR"
+            exit 1
+        }
     }
     Import-Module $module -ErrorAction Stop
 }
