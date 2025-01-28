@@ -31,4 +31,5 @@ locals {
   service_endpoint_authentication_scheme = var.use_msi ? "ManagedServiceIdentity" : "ServicePrincipal"
   fabric_adls_connection_name            = "conn-adls-${module.adls.storage_account_name}"
   storage_account_role_definition_id     = split("/", data.azurerm_role_definition.storage_blob_contributor_role.id)[4]
+  git_integration_dependency             = var.deploy_fabric_items ? module.fabric_data_pipeline : module.fabric_workspace
 }

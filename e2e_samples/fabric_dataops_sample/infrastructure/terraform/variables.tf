@@ -100,3 +100,8 @@ variable "fabric_adls_shortcut_name" {
   type        = string
   description = "The name of the shortcut to the ADLS Gen2 storage account"
 }
+
+variable "deploy_fabric_items" {
+  description = "A flag to indicate whether Fabric items (excluding workspace) should be deployed or not"
+  type        = bool
+}
