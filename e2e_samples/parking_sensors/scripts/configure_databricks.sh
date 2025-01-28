@@ -24,7 +24,6 @@ set -o nounset
 #
 # DATABRICKS_HOST
 # DATABRICKS_TOKEN - this needs to be a Microsoft Entra ID user token (not PAT token or Microsoft Entra ID application token that belongs to a service principal)
-# DATABRICKS_KV_TOKEN
 # KEYVAULT_RESOURCE_ID
 # KEYVAULT_DNS_NAME
 # KEYVAULT_NAME
@@ -34,15 +33,6 @@ set -o nounset
 . ./scripts/common.sh
 
 log "Configuring Databricks workspace."
-
-# Create the databrickscnf file
-cat <<EOL > ~/.databrickscnf
-[DEFAULT]
-host=$DATABRICKS_HOST
-token=$DATABRICKS_KV_TOKEN
-EOL
-
-cat ~/.databrickscnf
 
 # Create secret scope, if not exists
 scope_name="storage_scope"

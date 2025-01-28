@@ -267,7 +267,6 @@ az keyvault secret set --vault-name "$kv_name" --name "databricksWorkspaceResour
 # Configure databricks (KeyVault-backed Secret scope, mount to storage via SP, databricks tables, cluster)
 # NOTE: must use Microsoft Entra access token, not PAT token
 DATABRICKS_TOKEN=$databricks_aad_token \
-DATABRICKS_KV_TOKEN=$databricks_token \
 DATABRICKS_HOST=$databricks_host \
 KEYVAULT_DNS_NAME=$kv_dns_name \
 KEYVAULT_NAME=$kv_name \
