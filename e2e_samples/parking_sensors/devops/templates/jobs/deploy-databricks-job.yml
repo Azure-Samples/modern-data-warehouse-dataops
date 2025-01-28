@@ -75,6 +75,14 @@ jobs:
           displayName: 'Set packageWheelName variable'
 
         - script: |
+            # Check if release directory exists.
+            databricks_release_path="/Workspace$DATABRICKS_NOTEBOOK_PATH"
+            if databricks workspace list $databricks_release_path > /dev/null 2>&1; then
+                echo "Folder '$databricks_release_path' already exists."
+            else
+                databricks workspace mkdirs $databricks_release_path
+                echo "Folder '$databricks_release_path' created."
+            fi
             echo "Uploading app libraries to DBFS..."
             echo "Uploading SOURCE whl file: ${WHEEL_FILE_PATH}/${WHEEL_FILE_NAME} to dbfs DESTINATION: ${DBFS_LIBS_PATH}/${WHEEL_FILE_NAME}"
             databricks fs cp --recursive --overwrite "${WHEEL_FILE_PATH}/${WHEEL_FILE_NAME}" "${DBFS_LIBS_PATH}/${WHEEL_FILE_NAME}"

@@ -24,14 +24,25 @@ set -o nounset
 #
 # DATABRICKS_HOST
 # DATABRICKS_TOKEN - this needs to be a Microsoft Entra ID user token (not PAT token or Microsoft Entra ID application token that belongs to a service principal)
+# DATABRICKS_KV_TOKEN
 # KEYVAULT_RESOURCE_ID
 # KEYVAULT_DNS_NAME
+# KEYVAULT_NAME
 # USER_NAME
 # AZURE_LOCATION
 
 . ./scripts/common.sh
 
 log "Configuring Databricks workspace."
+
+# Create the databrickscnf file
+cat <<EOL > ~/.databrickscnf
+[DEFAULT]
+host=$DATABRICKS_HOST
+token=$DATABRICKS_KV_TOKEN
+EOL
+
+cat ~/.databrickscnf
 
 # Create secret scope, if not exists
 scope_name="storage_scope"
@@ -47,13 +58,24 @@ databricks secrets create-scope --json "{\"scope\": \"$scope_name\", \"scope_bac
 
 # Upload notebooks
 log "Uploading notebooks..."
-databricks_folder_name="/Workspace/Users/${USER_NAME,,}"
-log "databricks_folder_name: ${databricks_folder_name}"
+if [ "$ENV_NAME" == "dev" ]; then
+    databricks_release_folder="/releases/${ENV_NAME}"
+    databricks workspace mkdirs "$databricks_release_folder"
+    log "$ENV_NAME releases folder: $databricks_release_folder"
+    databricks workspace import "$databricks_release_folder/00_setup.py" --file "./databricks/notebooks/00_setup.py" --format SOURCE --language PYTHON --overwrite
+    databricks workspace import "$databricks_release_folder/01_explore.py" --file "./databricks/notebooks/01_explore.py" --format SOURCE --language PYTHON --overwrite
+    databricks workspace import "$databricks_release_folder/02_standardize.py" --file "./databricks/notebooks/02_standardize.py" --format SOURCE --language PYTHON --overwrite
+    databricks workspace import "$databricks_release_folder/03_transform.py" --file "./databricks/notebooks/03_transform.py" --format SOURCE --language PYTHON --overwrite
+else  
+    databricks_release_folder="/releases/setup_release"
+    databricks workspace mkdirs "$databricks_release_folder"
+    log "$ENV_NAME releases folder: $databricks_release_folder"
+    databricks workspace import "$databricks_release_folder/00_setup.py" --file "./databricks/notebooks/00_setup.py" --format SOURCE --language PYTHON --overwrite
+    databricks workspace import "$databricks_release_folder/01_explore.py" --file "./databricks/notebooks/01_explore.py" --format SOURCE --language PYTHON --overwrite
+    databricks workspace import "$databricks_release_folder/02_standardize.py" --file "./databricks/notebooks/02_standardize.py" --format SOURCE --language PYTHON --overwrite
+    databricks workspace import "$databricks_release_folder/03_transform.py" --file "./databricks/notebooks/03_transform.py" --format SOURCE --language PYTHON --overwrite
 
-databricks workspace import "$databricks_folder_name/00_setup.py" --file "./databricks/notebooks/00_setup.py" --format SOURCE --language PYTHON --overwrite
-databricks workspace import "$databricks_folder_name/01_explore.py" --file "./databricks/notebooks/01_explore.py" --format SOURCE --language PYTHON --overwrite
-databricks workspace import "$databricks_folder_name/02_standardize.py" --file "./databricks/notebooks/02_standardize.py" --format SOURCE --language PYTHON --overwrite
-databricks workspace import "$databricks_folder_name/03_transform.py" --file "./databricks/notebooks/03_transform.py" --format SOURCE --language PYTHON --overwrite
+fi
 
 # Define suitable VM for DB cluster
 file_path="./databricks/config/cluster.config.json"
@@ -101,12 +123,20 @@ cluster_name=$(cat "$cluster_config" | jq -r ".cluster_name")
 if databricks_cluster_exists "$cluster_name"; then 
     log "Cluster ${cluster_name} already exists! Skipping creation..." "info"
 else
-    log "Creating cluster ${cluster_name}..."
+    log "Creating cluster ${cluster_name}..." "info"
     databricks clusters create --json "@$cluster_config"
 fi
 
-cluster_id=$(databricks clusters list --output JSON | jq -r '.[]|select(.default_tags.ClusterName == "ddo_cluster")|.cluster_id')
-log "Cluster ID:" $cluster_id
+databricks clusters list --output JSON
+cluster_id=$(databricks clusters list --output JSON | jq -r '.[]|select(.cluster_name == "ddo_cluster")|.cluster_id')
+if [ -z "$cluster_id" ]; then
+    log "Failed to retrieve cluster ID or cluster does not exist." "error"
+    exit
+else
+    log "Cluster ID: $cluster_id" "info"
+fi
+
+az keyvault secret set --vault-name "$KEYVAULT_NAME" --name "databricksClusterId" --value "$cluster_id" -o none
 
 adfTempDir=.tmp/adf
 mkdir -p $adfTempDir && cp -a adf/ .tmp/
@@ -135,7 +165,7 @@ databricks libraries install --json @$json_file
 
 # Creates a Job to setup workspace
 log "Creating a job to setup the workspace..."
-notebook_path="${databricks_folder_name}/00_setup.py"
+notebook_path="${databricks_release_folder}/00_setup.py"
 log "notebook_path: ${notebook_path}"
 json_file_config="./databricks/config/job.setup.config.json"
 cat <<EOF > $json_file_config
