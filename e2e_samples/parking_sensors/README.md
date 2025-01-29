@@ -165,15 +165,13 @@ There are eight numbered orange boxes describing the sequence from sandbox devel
 2. When changes are complete, developers raise a PR to `main` for review. This automatically kicks-off the PR validation pipeline which runs the unit tests, linting and DACPAC builds.
 3. On PR completion, the commit to `main` will trigger a Build pipeline -- publishing all necessary Build Artifacts.
 4. The completion of a successful Build pipeline will trigger the first stage of the Release pipeline. This deploys the publish build artifacts into the DEV environment, with the exception of Azure Data Factory*.
-5. Developers perform a Manual Publish to the DEV ADF from the collaboration branch (`main`). This updates the ARM templates in in the `adf_publish` branch.
-6. On the successful completion of the first stage, this triggers an Manual Approval Gate**. On Approval, the release pipeline continues with the second stage -- deploying changes to the Staging environment.
-7. Integration tests are run to test changes in the Staging environment.
-8. ***On the successful completion of the second stage, this triggers a second Manual Approval Gate. On Approval, the release pipeline continues with the third stage -- deploying changes to the Production environment.
+5. On the successful completion of the first stage, this triggers an Manual Approval Gate**. On Approval, the release pipeline continues with the second stage -- deploying changes to the Staging environment.
+6. Integration tests are run to test changes in the Staging environment.
+7. ***On the successful completion of the second stage, this triggers a second Manual Approval Gate. On Approval, the release pipeline continues with the third stage -- deploying changes to the Production environment.
 
 Notes:
 
 - This is a simplified Build and Release process for demo purposes based on [Trunk-based development practices](https://trunkbaseddevelopment.com/).
-- *A manual publish is required -- currently, this cannot be automated.
 - **The solution deployment script does not configure Approval Gates at the moment. See [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
 - ***Many organization use dedicated Release Branches (including Microsoft) instead of deploying from `main`. See [Release Flow](https://devblogs.microsoft.com/devops/release-flow-how-we-do-branching-on-the-vsts-team/).
 
@@ -292,7 +290,7 @@ Set up the environment variables as specified, fork the GitHub repository, and l
       - To enable Observability and Monitoring components through code(Observability-as-code), please set enable_monitoring parameter to true in  `arm.parameters` files located in the `infrastructure` folder. This will deploy log analytics workspace to collect monitoring data from key resources, setup an Azure dashboards to monitor key metrics and configure alerts for ADF pipelines.
   
      **Login and Cluster Configuration**
-      
+
       - Ensure that you have completed the configuration for the variables described in the previous section, titled **Configuration: Variables and Login**.
 
 2. **Deploy Azure resources**
@@ -302,11 +300,9 @@ Set up the environment variables as specified, fork the GitHub repository, and l
       - This may take around **~30mins or more** to run end to end. So grab yourself a cup of coffee... ☕ But before you do so keep the following in mind:
         - You might encounter deployment issues if the script attempts to create a Key Vault that conflicts with a previously soft-deleted Key Vault. In such cases, the deployment script may prompt you to confirm the purge of the previously deleted Key Vault.
         - There are 3 points in time where you will need to authenticate to the databricks workspace, before the script continues to run. You will find the following message for the deployment of the dev, stage and production environments. Click the link highlighted in green, consent to authenticate to the databricks workspace and when the workspace opens successfully, return to the deployment windows and press Enter to continue:  ![image](docs/images/databricks_ws.png)
-      - If you encounter an error with `cannot execute: required file not found` verify the line ending settings of your git configuration. This error is likely that the lines in the file are ending with CRLF. Using VSCode, verify that `./deploy.sh` is set to LF only. This can be done using the control pallet and typing `>Change End of Line Sequence`. Also, verify the files in the `scripts` folder are also set to LF only.
+       - If you encounter an error with `cannot execute: required file not found` verify the line ending settings of your git configuration. This error is likely that the lines in the file are ending with CRLF. Using VSCode, verify that `./deploy.sh` is set to LF only. This can be done using the control pallet and typing `>Change End of Line Sequence`. Also, verify the files in the `scripts` folder are also set to LF only.
       - After a successful deployment, you will find `.env.{environment_name}` files containing essential configuration information per environment. See [here](#deployed-resources) for list of deployed resources.
       - Note that if you are using **Dev Container**, you would run the same script but inside the Dev Container terminal.
-   - As part of the deployment script, the Azure DevOps Release Pipeline YAML definition has been updated to point to your Github repository. **Commit and push these changes.**
-      - This will trigger a Build and Release which will fail due to a lacking `adf_publish` branch -- this is expected. This branch will be created once you've setup git integration with your DEV Data Factory and publish a change.
 
 3. **Setup ADF git integration in DEV Data Factory**
 

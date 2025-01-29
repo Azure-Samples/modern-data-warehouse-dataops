@@ -28,6 +28,7 @@ set -o nounset
 # KEYVAULT_DNS_NAME
 # KEYVAULT_NAME
 # USER_NAME
+# DATABRICKS_RELEASE_FOLDER
 # AZURE_LOCATION
 
 . ./scripts/common.sh
@@ -48,24 +49,12 @@ databricks secrets create-scope --json "{\"scope\": \"$scope_name\", \"scope_bac
 
 # Upload notebooks
 log "Uploading notebooks..."
-if [ "$ENV_NAME" == "dev" ]; then
-    databricks_release_folder="/releases/${ENV_NAME}"
-    databricks workspace mkdirs "$databricks_release_folder"
-    log "$ENV_NAME releases folder: $databricks_release_folder"
-    databricks workspace import "$databricks_release_folder/00_setup.py" --file "./databricks/notebooks/00_setup.py" --format SOURCE --language PYTHON --overwrite
-    databricks workspace import "$databricks_release_folder/01_explore.py" --file "./databricks/notebooks/01_explore.py" --format SOURCE --language PYTHON --overwrite
-    databricks workspace import "$databricks_release_folder/02_standardize.py" --file "./databricks/notebooks/02_standardize.py" --format SOURCE --language PYTHON --overwrite
-    databricks workspace import "$databricks_release_folder/03_transform.py" --file "./databricks/notebooks/03_transform.py" --format SOURCE --language PYTHON --overwrite
-else  
-    databricks_release_folder="/releases/setup_release"
-    databricks workspace mkdirs "$databricks_release_folder"
-    log "$ENV_NAME releases folder: $databricks_release_folder"
-    databricks workspace import "$databricks_release_folder/00_setup.py" --file "./databricks/notebooks/00_setup.py" --format SOURCE --language PYTHON --overwrite
-    databricks workspace import "$databricks_release_folder/01_explore.py" --file "./databricks/notebooks/01_explore.py" --format SOURCE --language PYTHON --overwrite
-    databricks workspace import "$databricks_release_folder/02_standardize.py" --file "./databricks/notebooks/02_standardize.py" --format SOURCE --language PYTHON --overwrite
-    databricks workspace import "$databricks_release_folder/03_transform.py" --file "./databricks/notebooks/03_transform.py" --format SOURCE --language PYTHON --overwrite
-
-fi
+databricks workspace mkdirs "$DATABRICKS_RELEASE_FOLDER"
+log "$ENV_NAME releases folder: $DATABRICKS_RELEASE_FOLDER"
+databricks workspace import "$DATABRICKS_RELEASE_FOLDER/00_setup.py" --file "./databricks/notebooks/00_setup.py" --format SOURCE --language PYTHON --overwrite
+databricks workspace import "$DATABRICKS_RELEASE_FOLDER/01_explore.py" --file "./databricks/notebooks/01_explore.py" --format SOURCE --language PYTHON --overwrite
+databricks workspace import "$DATABRICKS_RELEASE_FOLDER/02_standardize.py" --file "./databricks/notebooks/02_standardize.py" --format SOURCE --language PYTHON --overwrite
+databricks workspace import "$DATABRICKS_RELEASE_FOLDER/03_transform.py" --file "./databricks/notebooks/03_transform.py" --format SOURCE --language PYTHON --overwrite
 
 # Define suitable VM for DB cluster
 file_path="./databricks/config/cluster.config.json"
@@ -117,7 +106,6 @@ else
     databricks clusters create --json "@$cluster_config"
 fi
 
-databricks clusters list --output JSON
 cluster_id=$(databricks clusters list --output JSON | jq -r '.[]|select(.cluster_name == "ddo_cluster")|.cluster_id')
 if [ -z "$cluster_id" ]; then
     log "Failed to retrieve cluster ID or cluster does not exist." "error"
@@ -155,7 +143,7 @@ databricks libraries install --json @$json_file
 
 # Creates a Job to setup workspace
 log "Creating a job to setup the workspace..."
-notebook_path="${databricks_release_folder}/00_setup.py"
+notebook_path="${DATABRICKS_RELEASE_FOLDER}/00_setup.py"
 log "notebook_path: ${notebook_path}"
 json_file_config="./databricks/config/job.setup.config.json"
 cat <<EOF > $json_file_config
