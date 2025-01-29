@@ -1,0 +1,13 @@
+{
+  "name": "parking-lot-data-simulator",
+  "version": "1.0.0",
+  "description": "Data simulator for REST",
+  "main": "app.js",
+  "author": "Brian Sherwin",
+  "license": "MIT",
+  "dependencies": {
+    "date-and-time": "^3.6.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1"
+  }
+}
