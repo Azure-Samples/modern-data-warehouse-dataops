@@ -10,8 +10,13 @@ jobs:
     displayName: 'Cleanup Resources after PR Merge or Abandon'
     pool:
       vmImage: 'ubuntu-latest'
-    condition: always()
     steps:
+
+      - script: |
+          echo "Build Reason: $(Build.Reason)"
+          echo "Source Branch: $(Build.SourceBranch)"
+          echo "Pull request ID: $PR_ID"
+        displayName: "Print debug info"
 
       - script: |
           echo "Triggering interactive Azure CLI login..."
@@ -37,13 +42,13 @@ jobs:
           addToPath: true
 
       - script: |
-          pip install -r $(WORKING_DIR)/devops/scripts/requirements.txt
+          pip install -r $(Build.SourcesDirectory)/devops/scripts/requirements.txt
         displayName: 'Install Requirements'
 
       - script: |
           echo "Running Cleanup Script"
           export FABRIC_WORKSPACE_NAME="$FABRIC_WORKSPACE_NAME-$PR_ID"
-          export FABRIC_CONNECTION_NAME="$FABRIC_CONNECTION_NAME-$PR_ID"
+          export FABRIC_ADLS_CONNECTION_NAME="$FABRIC_ADLS_CONNECTION_NAME-$PR_ID"
 
-          python -u $(WORKING_DIR)/devops/scripts/cleanup_workspace.py --verbose
+          python -u $(Build.SourcesDirectory)/devops/scripts/cleanup_workspace.py --verbose
         displayName: 'Cleanup Resources'

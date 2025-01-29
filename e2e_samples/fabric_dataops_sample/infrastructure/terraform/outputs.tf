@@ -61,53 +61,65 @@ output "workspace_id" {
 }
 
 output "lakehouse_name" {
-  value = module.fabric_lakehouse.lakehouse_name
+  value = local.fabric_lakehouse_name
 }
 
 output "lakehouse_id" {
-  value = module.fabric_lakehouse.lakehouse_id
+  value = var.deploy_fabric_items ? module.fabric_lakehouse.lakehouse_id : ""
 }
 
 output "environment_name" {
-  value = module.fabric_environment.environment_name
+  value = local.fabric_environment_name
 }
 
 output "environment_id" {
-  value = module.fabric_environment.environment_id
+  value = var.deploy_fabric_items ? module.fabric_environment.environment_id : ""
 }
 
 output "setup_notebook_name" {
-  value = module.fabric_setup_notebook.notebook_name
+  value = local.fabric_setup_notebook_name
 }
 
 output "setup_notebook_id" {
-  value = module.fabric_setup_notebook.notebook_id
+  value = var.deploy_fabric_items ? module.fabric_setup_notebook.notebook_id : ""
 }
 
 output "standardize_notebook_name" {
-  value = module.fabric_standardize_notebook.notebook_name
+  value = local.fabric_standardize_notebook_name
 }
 
 output "standardize_notebook_id" {
-  value = module.fabric_standardize_notebook.notebook_id
+  value = var.deploy_fabric_items ? module.fabric_standardize_notebook.notebook_id : ""
 }
 
 output "transform_notebook_name" {
-  value = module.fabric_transform_notebook.notebook_name
+  value = local.fabric_transform_notebook_name
 }
 
 output "transform_notebook_id" {
-  value = module.fabric_transform_notebook.notebook_id
+  value = var.deploy_fabric_items ? module.fabric_transform_notebook.notebook_id : ""
 }
 
 output "main_pipeline_name" {
-  value = module.fabric_data_pipeline.data_pipeline_name
+  value = local.fabric_main_pipeline_name
 }
 
 output "main_pipeline_id" {
-  value = module.fabric_data_pipeline.data_pipeline_id
+  value = var.deploy_fabric_items ? module.fabric_data_pipeline.data_pipeline_id : ""
 }
 
 output "fabric_workspace_admin_sg_principal_id" {
   value = data.azuread_group.fabric_workspace_admin.object_id
+}
+
+output "azdo_variable_group_name" {
+  value = module.azure_devops_variable_group.variable_group_name
+}
+
+output "azdo_variable_group_kv_name" {
+  value = module.azure_devops_variable_group_w_keyvault.variable_group_name
+}
+
+output "azdo_service_connection_name" {
+  value = module.azure_devops_service_connection_azurerm.service_endpoint_name
 }

@@ -1,3 +1,9 @@
+variable "enable" {
+  type        = bool
+  description = "whether this module should do anything at all"
+  default     = false
+}
+
 variable "workspace_id" {
   description = "Microsoft Fabric workspace id"
   type        = string

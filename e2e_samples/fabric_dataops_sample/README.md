@@ -173,7 +173,8 @@ Here is a list of resources that are deployed:
   - Microsoft Fabric Notebooks
   - Microsoft Fabric Data pipelines
 - Azure DevOps Resources
-  - Variable Group
+  - Variable Group (two per environment with one with KeyVault integration for secrets)
+  - Service Connection
 - Additional Resources
   - Fabric workspace GIT integration
   - Azure Role assignments to entra security group and workspace identity
@@ -183,19 +184,21 @@ Note that the script deploys the aforementioned resources across multiple enviro
 ### Pre-requisites
 
 - An Entra user that can access Microsoft Fabric (Free license is enough).
-- An existing Entra [security group](https://learn.microsoft.com/entra/fundamentals/concept-learn-about-groups) for Fabric Workspace admins. This group is added as an admin to the deployed Fabric workspace.
-  - Add the above user to this security group to enable it to upload configuration files and reference data to ADLS Gen2, as the group is assigned the 'Storage Blob Data Contributor' role during the deployment.
+- An existing Entra [security group](https://learn.microsoft.com/entra/fundamentals/concept-learn-about-groups) (referred to as sg-fabric-admins) for Fabric Workspace admins. This group is added as an admin to the deployed Fabric workspace.
+  - Add the above user to this security group (sg-fabric-admins) to enable it to upload configuration files and reference data to ADLS Gen2, as the group is assigned the 'Storage Blob Data Contributor' (and 'Key Vault Secrets Officer') role during the deployment.
 - An Azure subscription with the following:
   - The `Microsoft.Fabric` [resource provider](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#register-resource-provider) has been registered on the Azure subscription.
   - Multiple resource groups to which your user should be granted [Contributor](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/privileged#contributor) and [User Access Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/privileged#user-access-administrator) privileged roles. These resource groups are used to deploy Azure resources for each environment. So, if you are planning to have three environments (dev, staging, production), you need three resource groups. The names of these resource groups are specified as an array variable, `RESOURCE_GROUP_NAMES`, in the `.env` file. You can use the [configure_resource_groups.sh](./scripts/configure_resource_groups.sh) script to create these resource groups and assign the necessary roles.
   - A [managed identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview) OR a [service principal](https://learn.microsoft.com/entra/identity-platform/app-objects-and-service-principals)
-  - Request that a Fabric administrator grant the above service principal or managed identity permission to [use Fabric APIs](https://learn.microsoft.com/rest/api/fabric/articles/identity-support#service-principals-and-managed-identities-support). To allow an app to use a service principal as an authentication method, the service principal must be added to an allowed security group. Note that this is a different security group than the one used for workspace admins. This group is then mentioned in the tenant settings as shown below:
+  - Request that a Fabric administrator grant the above service principal or managed identity permission to [use Fabric APIs](https://learn.microsoft.com/rest/api/fabric/articles/identity-support#service-principals-and-managed-identities-support). To allow an app to use a service principal as an authentication method, the service principal must be added to an allowed security group (referred to as sp-deployment-admins). Note that this is a different security group than the one used for workspace admins (sg-fabric-admins). This group is then mentioned in the tenant settings as shown below:
 
     ![Fabric API Permissions](./images/admin-portal-allow-apis.png)
 
   - Grant the service principal or managed identity the `Contributor` and `User Access Administrator` privileged roles on the Azure resource group. For `User Access Administrator` role, you would need to add delegate condition during role assignment. A condition is an additional check to provide more fine-grained access control. Check the [documentation](https://learn.microsoft.com/azure/role-based-access-control/delegate-role-assignments-portal?tabs=template) for more details. During the deployment, the `Storage Blob Data Contributor` and the `Key Vault Secrets Officer` roles are granted to a newly created service principal (Fabric workspace identity) and an existing Entra security group (Fabric workspace admins). Here is a valid sample condition for the `User Access Administrator` role assignment:
 
     ![Role Assignment Condition](./images/role-assignment-condition.png)
+
+  - The sample reuses the above service principal or managed identity in the Azure DevOps service connection. This service connection performs data plane operations, such as uploading files to ADLS Gen2 and accessing Key Vault secrets. Therefore, add these principals to the Fabric Admins Entra security group (sg-fabric-admins) mentioned earlier.
 
 - Microsoft Graph API permissions:
   - For service principal, grant the Graph API application permission `Group.Read.All` to read the security group properties.
@@ -258,7 +261,8 @@ Refer to the [known issues, limitations, and workarounds](docs/issues_limitation
   GIT_PROJECT_NAME: The Azure Devops project.
   GIT_REPOSITORY_NAME: Your repository under the Azure DevOps project.
   GIT_BRANCH_NAMES: Space-separated array of the GIT branches corresponding to each environment where Fabric items will be committed to. Example: ("dev" "stg" "prod")
-  GIT_DIRECTORY_NAME: The folder where Fabric items will be committed" # Note: Other than the root folder "/", the directory must already exist. Must start with a forward-slash. Example: "/fabric"
+  GIT_USERNAME="The username for committing the changes to Azure repo."
+  GIT_PERSONAL_ACCESS_TOKEN="The personal access token of the above user."
   # Workspace admin variables
   FABRIC_WORKSPACE_ADMIN_SG_NAME: The name of the Entra security groups with admin members.
   # Fabric Capacity variables
@@ -274,7 +278,19 @@ Refer to the [known issues, limitations, and workarounds](docs/issues_limitation
   - The `RESOURCE_GROUP_NAMES` array variable defines the Azure resource groups corresponding to each environment. The script will deploy resources for each environment in the corresponding resource group. For example, you can define three resource groups for the three stages as ("rg-dev" "rg-stg" "rg-prod"). The length of `ENVIRONMENT_NAMES` and `RESOURCE_GROUP_NAMES` array variables must be the same. Note that the deployment script does not create these resource groups (see [here](#why-existing-resource-groups-are-required) for details) and you need to create them in advance as outlined in the [pre-requisites](#pre-requisites).
   - The `EXISTING_FABRIC_CAPACITY_NAME` variable is the name of an existing Fabric capacity. If you want to create a new capacity, leave this blank.
   - The `GITHUB_BRANCH_NAMES` array variable defines the Git branches for each environment where the Fabric items will be committed. The workspace in each environment is integrated with the corresponding Git branch. For example, you can define three branches for the three stages/environments as ("dev" "stg" "prod"). The length of the `ENVIRONMENT_NAMES` and `GIT_BRANCH_NAMES` array variables must be the same.
+  - The `GIT_USERNAME` and `GIT_PERSONAL_ACCESS_TOKEN` variables are used to setup the initial branch structure where a set of files are copied and committed to Azure repo before running the main deployment. The token should have a minimum of `Code -> Read & write` [scope](https://learn.microsoft.com/azure/devops/integrate/get-started/authentication/oauth?view=azure-devops#scopes). Refer to the [documentation](https://learn.microsoft.com/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate) for more details.
   - The `FABRIC_CAPACITY_ADMINS` variable is a comma-separated list of users and service principals that will be added as capacity admins to the newly created Fabric capacity. If you are using an existing capacity, you can leave this blank. But in that case, make sure that your account and the principal (service principal or managed identity) are [added as Capacity Administrators](https://learn.microsoft.com/fabric/admin/capacity-settings?tabs=fabric-capacity#add-and-remove-admins) to that capacity, as mentioned in the [pre-requisites](#pre-requisites).
+
+- Before running the actual deployment, the branching structure in the Azure repo needs to be created. This is done by running the [prepare_azure_repo.sh](./prepare_azure_repo.sh) bash script. As the script uses PAT token, there is no need to login to Azure CLI. The script relies on the `GIT_USERNAME` and `GIT_PERSONAL_ACCESS_TOKEN` environment variables for permissions, which are sourced from the `.env` file, to be set.
+
+  ```bash
+  ./prepare_azure_repo.sh
+  ```
+
+  This script iterates through the branches specified in `GITHUB_BRANCH_NAMES` and (re)creates them. The first branch is created based on the default branch of the Azure repo. For this branch, the requires files are copied from the local directory to Azure repository, and the changes are committed. The remaining branches are created based on the commit of the first branch. The following image shows the sample directory structure in the Azure repo after running the script:
+
+  <!-- markdownlint-disable-next-line MD033 -->
+  <img src="./images/azure-repo-directory-structure.png" alt="Alt Text" width="400" height="500">
 
 - For the following step you have 2 authentication options:
 
@@ -330,8 +346,8 @@ Once the deployment is complete, you can verify the resources created in the Azu
 
 | Resource type | Default name | Deployed via |
 | --- | --- | --- |
-| Azure - Storage account (ADLS Gen2) | 'st`BASE_NAME`' | Terraform |
-| Azure - Key vault | 'kv-`BASE_NAME`' | Terraform |
+| Azure - Storage Account (ADLS Gen2) | 'st`BASE_NAME`' | Terraform |
+| Azure - Key Vault | 'kv-`BASE_NAME`' | Terraform |
 | Azure - Log Analytics workspace | 'la-`BASE_NAME`' | Terraform |
 | Azure - Application Insights | 'appi-`BASE_NAME`' | Terraform |
 | Azure - Fabric Capacity | 'cap`BASE_NAME`' | Terraform |

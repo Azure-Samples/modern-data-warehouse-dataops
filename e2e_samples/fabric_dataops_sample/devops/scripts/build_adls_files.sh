@@ -85,8 +85,8 @@ create_config_file \
     "$FABRIC_WORKSPACE_ID" \
     "$FABRIC_LAKEHOUSE_NAME" \
     "$FABRIC_LAKEHOUSE_ID" \
-    "$KEYVAULT_NAME" \
-    "$FABRIC_SHORTCUT_NAME" \
+    "$KEY_VAULT_NAME" \
+    "$FABRIC_ADLS_SHORTCUT_NAME" \
     "$config_file"
 
 mkdir -p adls/config/

@@ -22,7 +22,7 @@ storage_container_name = os.environ.get("STORAGE_CONTAINER_NAME")
 
 # Fabric
 fabric_workspace_name = os.environ.get("FABRIC_WORKSPACE_NAME")
-fabric_connection_name = os.environ.get("FABRIC_CONNECTION_NAME")
+fabric_connection_name = os.environ.get("FABRIC_ADLS_CONNECTION_NAME")
 
 # -----------------------------------------------------------------------------
 # Global Variables
