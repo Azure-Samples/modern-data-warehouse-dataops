@@ -23,15 +23,18 @@ git_organization_name="$GIT_ORGANIZATION_NAME"
 git_project_name="$GIT_PROJECT_NAME"
 git_repository_name="$GIT_REPOSITORY_NAME"
 git_branch_name="$GIT_BRANCH_NAME"
-git_directory_name="$GIT_DIRECTORY_NAME"
 # Workspace admin variables
 fabric_workspace_admin_sg_name="$FABRIC_WORKSPACE_ADMIN_SG_NAME"
 # Fabric Capacity variables
 existing_fabric_capacity_name="$EXISTING_FABRIC_CAPACITY_NAME"
 fabric_capacity_admins="$FABRIC_CAPACITY_ADMINS"
+deploy_fabric_items="$DEPLOY_FABRIC_ITEMS"
 
 ## KeyVault secret variables
 appinsights_connection_string_name="appinsights-connection-string"
+
+# Git directory name for syncing Fabric workspace items
+fabric_workspace_directory="/fabric/workspace"
 
 # Variable set based on Terraform output
 tf_storage_account_name=""
@@ -53,6 +56,9 @@ tf_transform_notebook_name=""
 tf_transform_notebook_id=""
 tf_appinsights_connection_string_value=""
 tf_fabric_workspace_admin_sg_principal_id=""
+tf_azdo_variable_group_name=""
+tf_azdo_variable_group_kv_name=""
+tf_azdo_service_connection_name=""
 
 # Fabric bearer token variables, set globally
 fabric_bearer_token=""
@@ -78,9 +84,10 @@ deploy_terraform_resources() {
       use_msi=true
     fi
   fi
-  echo "[Info] use_cli is '${use_cli}'"
-  echo "[Info] use_msi is '${use_msi}'"
-  echo "[Info] client_id is '${client_id}'"
+  echo "[Info] 'use_cli' is '${use_cli}'"
+  echo "[Info] 'use_msi' is '${use_msi}'"
+  echo "[Info] 'client_id' is '${client_id}'"
+  echo "[Info] 'deploy_fabric_items' is '${deploy_fabric_items}'"
 
   if [[ -z ${existing_fabric_capacity_name} ]]; then
     create_fabric_capacity=true
@@ -114,8 +121,10 @@ deploy_terraform_resources() {
     -var "git_project_name=$git_project_name" \
     -var "git_repository_name=$git_repository_name" \
     -var "git_branch_name=$git_branch_name" \
-    -var "git_directory_name=$git_directory_name" \
+    -var "git_directory_name=$fabric_workspace_directory" \
+    -var "fabric_adls_shortcut_name=$adls_gen2_shortcut_name" \
     -var "kv_appinsights_connection_string_name=$appinsights_connection_string_name" \
+    -var "deploy_fabric_items=$deploy_fabric_items"
 
   tf_storage_account_name=$(terraform output --raw storage_account_name)
   tf_storage_container_name=$(terraform output --raw storage_container_name)
@@ -136,6 +145,9 @@ deploy_terraform_resources() {
   tf_transform_notebook_id=$(terraform output --raw transform_notebook_id)
   tf_appinsights_connection_string_value=$(terraform output --raw appinsights_connection_string)
   tf_fabric_workspace_admin_sg_principal_id=$(terraform output --raw fabric_workspace_admin_sg_principal_id)
+  tf_azdo_variable_group_name=$(terraform output --raw azdo_variable_group_name)
+  tf_azdo_variable_group_kv_name=$(terraform output --raw azdo_variable_group_kv_name)
+  tf_azdo_service_connection_name=$(terraform output --raw azdo_service_connection_name)
 }
 
 function set_bearer_token() {
@@ -343,7 +355,7 @@ fi
 
 add_connection_role_assignment "$adls_gen2_connection_id" "$tf_fabric_workspace_admin_sg_principal_id"
 
-if [[ $user_principal_type == "user" ]]; then
+if [[ $user_principal_type == "user" ]] && [[ $deploy_fabric_items == "true" ]]; then
   echo "[Info] ############ ADLS Gen2 Shortcut Creation ############"
   if if_shortcut_exist "$tf_workspace_id" "$tf_lakehouse_id" "$adls_gen2_shortcut_name" "$adls_gen2_shortcut_path"; then
     echo "[Warning] Shortcut '$adls_gen2_shortcut_name' already exists, please review it manually."
@@ -358,7 +370,6 @@ if [[ $user_principal_type == "user" ]]; then
   fi
 else
   echo "[Warning] ############ Skipping ADLS Gen2 Shortcut Creation ############"
-  echo "[Warning] Need to authenticate using the user context for shortcut creation. See README.md for more details."
 fi
 
 if [[ $user_principal_type == "user" ]]; then
@@ -380,7 +391,11 @@ else
 fi
 
 echo "[Info] ############ Uploading packages to Environment ############"
-cd "./../../scripts"
-python3 setup_fabric_environment.py --workspace_name "$tf_workspace_name" --environment_name "$tf_environment_name" --bearer_token "$fabric_bearer_token"
+if [[ $deploy_fabric_items == "true" ]]; then
+  cd "./../../scripts"
+  python3 setup_fabric_environment.py --workspace_name "$tf_workspace_name" --environment_name "$tf_environment_name" --bearer_token "$fabric_bearer_token"
+else
+  echo "[Info] The Fabric environment is not created in higher environments, thus skipping package upload."
+fi
 
 echo "[Info] ############ FINISHED INFRA DEPLOYMENT ############"
