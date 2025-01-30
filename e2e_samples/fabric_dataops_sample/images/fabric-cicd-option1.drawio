@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="TnmCJ-DolMreLl1-WJTO" name="Page-1">
-        <mxGraphModel dx="2175" dy="1781" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="2148" dy="1516" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -87,8 +87,8 @@
                 <mxCell id="21" value="&lt;b&gt;EPHEMERAL BUILD WORKSPACE&lt;br&gt;&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="19" vertex="1">
                     <mxGeometry x="8.421052631578949" y="8.333333333333334" width="151.57894736842104" height="91.66666666666667" as="geometry"/>
                 </mxCell>
-                <mxCell id="22" value="API Calls" style="edgeStyle=none;html=1;entryX=0;entryY=0.545;entryDx=0;entryDy=0;startArrow=none;startFill=0;entryPerimeter=0;exitX=0.356;exitY=1.01;exitDx=0;exitDy=0;exitPerimeter=0;labelBackgroundColor=#FFFFFF;labelBorderColor=none;" parent="19" source="49" edge="1">
-                    <mxGeometry x="0.4748" relative="1" as="geometry">
+                <mxCell id="22" value="Git sync&lt;br&gt;+ API calls" style="edgeStyle=none;html=1;entryX=0;entryY=0.545;entryDx=0;entryDy=0;startArrow=none;startFill=0;entryPerimeter=0;exitX=0.356;exitY=1.01;exitDx=0;exitDy=0;exitPerimeter=0;labelBackgroundColor=#FFFFFF;labelBorderColor=none;" parent="19" source="49" edge="1">
+                    <mxGeometry x="0.2975" relative="1" as="geometry">
                         <mxPoint x="-32" y="-400.0000000000002" as="sourcePoint"/>
                         <mxPoint x="8.420000000000073" y="59.05000000000018" as="targetPoint"/>
                         <Array as="points">
