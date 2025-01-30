@@ -11,13 +11,15 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
 - [Solution Overview](#solution-overview)
   - [Architecture](#architecture)
   - [Continuous Integration and Continuous Delivery (CI/CD)](#continuous-integration-and-continuous-delivery-cicd)
-- [Key Concepts](#key-concepts)
-  - [DevOps Process with Fabric Workspaces](#devops-process-with-fabric-workspaces)
-  - [Automated Testing](#automated-testing)
+- [Key concepts](#key-concepts)
+  - [DevOps process with Fabric workspaces](#devops-process-with-fabric-workspaces)
+  - [Automated testing](#automated-testing)
+    - [Unit testing](#unit-testing)
+    - [Integration testing](#integration-testing)
   - [Build and release pipelines](#build-and-release-pipelines)
     - [CI pipelines](#ci-pipelines)
     - [CD pipelines](#cd-pipelines)
-- [Understanding the sample / Before you begin](#understanding-the-sample--before-you-begin)
+- [Understanding the sample](#understanding-the-sample)
   - [High-level deployment sequence](#high-level-deployment-sequence)
   - [Deployed resources](#deployed-resources)
   - [Pre-requisites](#pre-requisites)
@@ -58,85 +60,67 @@ The diagram below illustrates the complete end-to-end CI/CD process:
 
 See [here](#build-and-release-pipelines) for details.
 
-## Key Concepts
+## Key concepts
 
-### DevOps Process with Fabric Workspaces
+### DevOps process with Fabric workspaces
 
-The DevOps process occurs across five distinct environments, each corresponding to its own fabric workspace. These workspaces serve different purposes throughout the development and deployment lifecycle:
+In this sample, the DevOps process occurs across five distinct environments, each corresponding to its own fabric workspace. These workspaces serve different purposes throughout the development and deployment lifecycle. Here are the details of each workspace:
 
-1. **Dev Workspace**:
-   The **dev workspace** serves as the **integration workspace** where developers combine their individual feature workspaces. Developers create **feature workspaces** from the **dev workspace** when they want to develop a new feature. Once the feature is ready, it is merged back into the **dev workspace** for further testing and integration.
+- **Dev Workspace**: The **Dev Workspace** serves as the central integration point where developers merge their individual **Feature Workspaces**. This workspace and its associated Git branch should not be modified directly; changes must be made through a pull request (PR) merge followed by a Git sync.
 
-2. **Feature Workspace**:
-   This is where individual developers work on new features, isolated from other changes. Once development and testing are complete, the feature is merged back into **dev workspace** for integration with other features.
+- **Feature Workspace**: The **Feature Workspaces** are created from the **Dev Workspace** to enable isolated development of new features without impacting the main codebase. Once development and unit testing are complete, the feature is merged back into the **Dev Workspace** for integration with other changes.
 
-3. **Ephemeral Workspace**:
-   An **ephemeral workspace** is a temporary workspace created during the **QA Pipeline** to test the changes in isolation before merging into the **dev workspace**. This allows developers to validate their changes independently and ensure everything works as expected before merging.
+- **Ephemeral Workspace**: The **Ephemeral Workspace** is a temporary Fabric workspace created during the **QA Pipeline** to test changes in isolation before merging into the **Dev Workspace**. It allows developers to independently validate their changes and confirm expected behavior before integration. The **Ephemeral Workspace** is automatically created when a pull request (PR) is opened and is deleted upon PR completion.
 
-4. **Staging Workspace**:
-   The **staging workspace** mimics the production environment and is used for final integration testing and user acceptance testing (UAT). Once code has been validated in **dev workspace**, it is deployed to **staging workspace** for further testing before going to production.
+- **Staging Workspace**: The **Staging Workspace** replicates the production environment and is used for final integration testing and user acceptance testing (UAT). Once the code is validated in the **Dev Workspace**, it is deployed to the **Staging Workspace** for further testing before being released to production. A pull request (PR) is opened to merge changes from the **Dev Workspace** to the **Staging Workspace**.
 
-5. **Prod Workspace**:
-   The **prod workspace** is the live, production-ready system. Only thoroughly tested and approved code is deployed to **prod workspace**.
+- **Prod Workspace**: The **Prod Workspace** is the live, production environment where only thoroughly tested and approved code is deployed. A pull request (PR) is opened to merge changes from the **Staging Workspace** to the **Prod Workspace**.
 
-### Automated Testing
+### Automated testing
 
-Automated testing is an integral part of the CI/CD process to ensure the correctness of changes across different workspaces. There are two primary types of testing used throughout the process: **Unit Testing** and **Integration Testing**.
+Automated testing is an integral part of the CI/CD process to ensure the correctness of changes across different workspaces.  The process primarily involves two types of testing: [Unit Testing](#unit-testing) and [Integration Testing](#integration-testing).
 
-- **Unit Testing**
+#### Unit testing
 
-  Unit tests validate individual components or units of functionality within the code. There are two types of unit tests used in this solution:
+Unit tests validate individual components or units of functionality within the code. There are two types of unit tests used in this solution:
 
-  - **Python Unit Tests**:
-    These are standalone tests that validate the functionality of Python packages and modules used in the solution. They do not require the Fabric environment to execute and are independent of any workspace.
+- **Python unit tests**: These are standalone tests that validate the functionality of Python packages and modules used in the solution. They do not require the Fabric environment to execute and are independent of any workspace.
 
-  - **Fabric Unit Tests**:
-    These tests validate the setup and configuration of the **fabric environment**. These tests require a functioning fabric environment to run and would verify that the environment works as expected. Fabric Environment Unit Tests are executed in the context of a specific workspace as part of various pipeline stages.
+- **Fabric unit tests**: These tests validate the setup and configuration of the [Fabric environment](https://learn.microsoft.com/fabric/data-engineering/create-and-use-environment). They require a functioning Fabric workspace to execute and ensure that the environment works as expected.
 
-- **Integration Testing**
+#### Integration testing
 
-  Integration tests ensure that different components work together as expected. An example of an integration test would be to run the data pipeline, then verifying the output to confirm that the integrated solution works as expected.
+Integration tests ensure that different components work together as expected. An example of an integration test would be running a data pipeline and verifying the output to confirm that the integrated solution works as expected.
 
 ### Build and release pipelines
 
-Build and release pipelines automate the validation, building, and deployment of changes across different environments (DEV, STG, PROD). The pipelines are divided into Continuous Integration (CI) and Continuous Deployment (CD) stages.
+Build and release pipelines automate the validation, building, and deployment of changes across different environments (dev, stg, prod etc.). The pipelines are divided into Continuous Integration (CI) and Continuous Deployment (CD) stages:
 
 #### CI pipelines
 
-- **QA pipeline**
-
-  The QA pipeline is triggered whenever a pull request (PR) is submitted to the dev branch. This pipeline tests the functionality and checks for conflicts before merging the feature into the main branch. It includes the following steps:
-
+- **QA pipeline**: The QA pipeline is triggered whenever a pull request (PR) is submitted to the `dev` branch. This pipeline tests the functionality and checks for conflicts before merging the feature into the main branch. It includes the following steps:
   - Runs Python unit tests to validate the functionality of libraries used in the solution.
-  - Runs Fabric unit tests to ensure the stability of the Fabric workspace. This involves automating the creation of an ephemeral workspace. The general steps include:
+  - Runs Fabric unit tests to ensure the stability of the Fabric workspace. This involves automating the creation of an ephemeral workspace. The steps include:
     - Creating a new ephemeral workspace.
-    - Syncing the workspace with the latest changes being merged and checking for conflicts. This involves:
-      - Syncing from the `dev` branch in the repository to the ephemeral workspace.
-      - Syncing the feature branch in the repository to the ephemeral workspace.
+    - Syncing the `feature` branch to the ephemeral workspace to create the Fabric items.
     - Setting up configurations not covered by Git syncing.
     - Running tests in the ephemeral workspace created.
 
-  For more details, see the [QA Pipeline](./devops/azure-pipelines-ci-qa.yml).
+  Refer to [devops/azure-pipelines-ci-qa.yml](./devops/azure-pipelines-ci-qa.yml) for the actual pipeline definition.
 
-- **QA Cleanup pipeline**
+- **QA cleanup pipeline**: As mentioned above, the **QA pipeline** creates a new ephemeral Fabric workspace for each PR. Once this PR is closed or abandoned, the **QA cleanup pipeline** ensures that these temporary resources are deleted, freeing up system resources.
 
-  When the QA pipeline runs, temporary resources such as the ephemeral workspace that were created to validate the changes. Once the PR is closed or abandoned, the QA Cleanup pipeline ensures that these temporary resources are deleted, freeing up system resources.
+  Refer to [devops/azure-pipelines-ci-qa-cleanup.yml](./devops/azure-pipelines-ci-qa-cleanup.yml) for the actual pipeline definition.
 
-  For more details, see the [QA Cleanup Pipeline](./devops/azure-pipelines-ci-qa-cleanup.yml).
+- **Build artifacts pipeline**: The **Build artifacts pipeline** is triggered once the feature PR is merged to the `dev` branch. This pipeline publishes configuration files and custom libraries as artifacts, which are then used by the release and deployment pipeline.
 
-- **Build Artifacts pipeline**
-
-  The Build Artifacts Pipeline is triggered by every commit to the main branch. This pipeline publishes configuration files and custom libraries as artifacts, which are then used by the release and deployment pipeline.
-
-  For more details, see the [Build Artifacts pipeline](./devops/azure-pipelines-ci-artifacts.yml).
+  Refer to [/devops/azure-pipelines-ci-artifacts.yml](./devops/azure-pipelines-ci-artifacts.yml) for the actual pipeline definition.
 
 #### CD pipelines
 
-- **Release Deploy pipeline**
+- **Release deploy pipeline**: The **Release deploy pipeline** is triggered when the CI **Build artifacts pipeline** completes successfully. This pipeline deploys the published artifacts to different environments (dev, stg, prod etc.). Manual approval is required before proceeding to the next stage, ensuring controlled deployment.
 
-  The Release Deploy Pipeline is triggered when the CI Build Artifacts Pipeline completes successfully. This pipeline deploys the published artifacts to different environments (DEV, STG, PROD). Manual approval is required before proceeding to the next stage, ensuring controlled deployment.
-
-## Understanding the sample / Before you begin
+## Understanding the sample
 
 ### High-level deployment sequence
 
