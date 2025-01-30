@@ -1,5 +1,7 @@
 # Architecture Decision Record
 
+[Proposal|Accepted]
+
 This is a template for an [ADR](https://adr.github.io/).
 
 ## Context

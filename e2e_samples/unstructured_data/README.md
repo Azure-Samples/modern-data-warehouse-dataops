@@ -21,7 +21,18 @@ As a reference implementation, this should serve as an experiment to deploy in a
 
 ## How to use the sample
 
-TODO: Deployment steps
+```bash
+cd e2e_samples/unstructured_data 
+
+cp .envtemplate .env
+
+# stop
+# fill in .env with your required variables
+# then
+chmod +x ./deploy.sh
+
+./deploy.sh
+```
 
 ## Cleaning up
 

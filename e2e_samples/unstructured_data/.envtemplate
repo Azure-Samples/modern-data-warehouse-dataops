@@ -1,0 +1,27 @@
+###
+# REQUIRED. Environment variables for deployment script
+
+# an Entra ID. Used to login to a specific tenant with Azure CLI
+TENANT_ID=
+
+# Azure subscription id to use to deploy resources. Default: default azure subscription.
+AZURE_SUBSCRIPTION_ID=
+
+###
+# OPTIONAL. Environment variables for deployment script.
+# Uncomment to set values.
+
+# Azure location to deploy resources. Default: westus
+# AZURE_LOCATION=
+
+# Azure subscription id to use to deploy resources. Default: default azure subscription.
+# AZURE_SUBSCRIPTION_ID=
+
+# String appended to all resource names to ensure uniqueness of azure resource names. Default: random five character string
+# DEPLOYMENT_ID=
+
+# Whether to enable or not Keyvault Soft Delete. Default if unset: true
+# ENABLE_KEYVAULT_SOFT_DELETE=
+
+# Whether to enable or not Keyvault Purge Protection. Default if unset: true
+# ENABLE_KEYVAULT_PURGE_PROTECTION=
