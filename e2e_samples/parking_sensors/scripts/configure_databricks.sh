@@ -51,10 +51,10 @@ databricks secrets create-scope --json "{\"scope\": \"$scope_name\", \"scope_bac
 log "Uploading notebooks..."
 databricks workspace mkdirs "$DATABRICKS_RELEASE_FOLDER"
 log "$ENV_NAME releases folder: $DATABRICKS_RELEASE_FOLDER"
-databricks workspace import "$DATABRICKS_RELEASE_FOLDER/00_setup.py" --file "./databricks/notebooks/00_setup.py" --format SOURCE --language PYTHON --overwrite
-databricks workspace import "$DATABRICKS_RELEASE_FOLDER/01_explore.py" --file "./databricks/notebooks/01_explore.py" --format SOURCE --language PYTHON --overwrite
-databricks workspace import "$DATABRICKS_RELEASE_FOLDER/02_standardize.py" --file "./databricks/notebooks/02_standardize.py" --format SOURCE --language PYTHON --overwrite
-databricks workspace import "$DATABRICKS_RELEASE_FOLDER/03_transform.py" --file "./databricks/notebooks/03_transform.py" --format SOURCE --language PYTHON --overwrite
+databricks workspace import "$DATABRICKS_RELEASE_FOLDER/00_setup" --file "./databricks/notebooks/00_setup.py" --format SOURCE --language PYTHON --overwrite
+databricks workspace import "$DATABRICKS_RELEASE_FOLDER/01_explore" --file "./databricks/notebooks/01_explore.py" --format SOURCE --language PYTHON --overwrite
+databricks workspace import "$DATABRICKS_RELEASE_FOLDER/02_standardize" --file "./databricks/notebooks/02_standardize.py" --format SOURCE --language PYTHON --overwrite
+databricks workspace import "$DATABRICKS_RELEASE_FOLDER/03_transform" --file "./databricks/notebooks/03_transform.py" --format SOURCE --language PYTHON --overwrite
 
 # Define suitable VM for DB cluster
 file_path="./databricks/config/cluster.config.json"
