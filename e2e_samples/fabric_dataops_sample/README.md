@@ -17,8 +17,6 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
     - [Unit testing](#unit-testing)
     - [Integration testing](#integration-testing)
   - [Build and release pipelines](#build-and-release-pipelines)
-    - [CI pipelines](#ci-pipelines)
-    - [CD pipelines](#cd-pipelines)
 - [Understanding the sample](#understanding-the-sample)
   - [High-level deployment sequence](#high-level-deployment-sequence)
   - [Deployed resources](#deployed-resources)
@@ -30,7 +28,6 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
     - [Verifying the infrastructure deployment](#verifying-the-infrastructure-deployment)
   - [Running the application code](#running-the-application-code)
   - [Triggering the CI/CD pipelines](#triggering-the-cicd-pipelines)
-    - [Define environment and variable groups](#define-environment-and-variable-groups)
 - [Cleaning up](#cleaning-up)
 - [Frequently asked questions](#frequently-asked-questions)
   - [Infrastructure deployment related](#infrastructure-deployment-related)
@@ -58,7 +55,15 @@ The diagram below illustrates the complete end-to-end CI/CD process:
 
 ![Fabric CI/CD diagram](./images/fabric-cicd-option1.png)
 
-See [here](#build-and-release-pipelines) for details.
+Here is a high-level summary of the steps involved:
+
+- Deploy the sample infrastructure which creates three environments (dev, staging, prod) by default with Azure and Fabric resources.
+- Create a new feature workspace using the [branch out to a new workspace](https://learn.microsoft.com/fabric/cicd/git-integration/manage-branches?tabs=azure-devops#scenario-2---develop-using-another-workspace) functionality. Develop and test the feature in the feature workspace.
+- Open a pull request (PR) to merge the feature branch into the `dev` branch.
+- The QA pipeline it triggered automatically when a PR is opened. The pipeline runs Python unit tests and Fabric unit tests to validate the changes.
+- Once the PR is approved and merged, the build artifacts pipeline is triggered. This pipeline publishes configuration files and custom libraries as artifacts.
+- The release pipeline is triggered once the build artifacts pipeline completes successfully. This pipeline uploads the config changes to the ADLS Gen2 storage account and deploys the Fabric items to the dev environment using Fabric Git sync and REST APIs.
+- The same process is followed for the staging and production environments: a new PR is opened to merge changes from the `dev` branch to the `stg` branch, triggering the release pipeline to deploy to staging. This process is then repeated for the production environment.
 
 ## Key concepts
 
@@ -94,31 +99,7 @@ Integration tests ensure that different components work together as expected. An
 
 ### Build and release pipelines
 
-Build and release pipelines automate the validation, building, and deployment of changes across different environments (dev, stg, prod etc.). The pipelines are divided into Continuous Integration (CI) and Continuous Deployment (CD) stages:
-
-#### CI pipelines
-
-- **QA pipeline**: The QA pipeline is triggered whenever a pull request (PR) is submitted to the `dev` branch. This pipeline tests the functionality and checks for conflicts before merging the feature into the main branch. It includes the following steps:
-  - Runs Python unit tests to validate the functionality of libraries used in the solution.
-  - Runs Fabric unit tests to ensure the stability of the Fabric workspace. This involves automating the creation of an ephemeral workspace. The steps include:
-    - Creating a new ephemeral workspace.
-    - Syncing the `feature` branch to the ephemeral workspace to create the Fabric items.
-    - Setting up configurations not covered by Git syncing.
-    - Running tests in the ephemeral workspace created.
-
-  Refer to [devops/azure-pipelines-ci-qa.yml](./devops/azure-pipelines-ci-qa.yml) for the actual pipeline definition.
-
-- **QA cleanup pipeline**: As mentioned above, the **QA pipeline** creates a new ephemeral Fabric workspace for each PR. Once this PR is closed or abandoned, the **QA cleanup pipeline** ensures that these temporary resources are deleted, freeing up system resources.
-
-  Refer to [devops/azure-pipelines-ci-qa-cleanup.yml](./devops/azure-pipelines-ci-qa-cleanup.yml) for the actual pipeline definition.
-
-- **Build artifacts pipeline**: The **Build artifacts pipeline** is triggered once the feature PR is merged to the `dev` branch. This pipeline publishes configuration files and custom libraries as artifacts, which are then used by the release and deployment pipeline.
-
-  Refer to [/devops/azure-pipelines-ci-artifacts.yml](./devops/azure-pipelines-ci-artifacts.yml) for the actual pipeline definition.
-
-#### CD pipelines
-
-- **Release deploy pipeline**: The **Release deploy pipeline** is triggered when the CI **Build artifacts pipeline** completes successfully. This pipeline deploys the published artifacts to different environments (dev, stg, prod etc.). Manual approval is required before proceeding to the next stage, ensuring controlled deployment.
+Build and release pipelines automate the validation, building, and deployment of changes across different environments (dev, stg, prod etc.). The pipelines are divided into Continuous Integration (CI) and Continuous Deployment (CD) stages. Please check [build and release pipelines](./docs/build_and_release_pipelines.md) for detailed information.
 
 ## Understanding the sample
 
@@ -387,10 +368,8 @@ Here are the instructions to run the application:
 ![Data Pipeline Execution](./images/data-pipeline-execution.png)
 
 ### Triggering the CI/CD pipelines
-<!-- To be updated -->
 
-#### Define environment and variable groups
-<!-- To be updated -->
+Coming soon...
 
 ## Cleaning up
 
