@@ -25,16 +25,16 @@ It supports both manual execution and deployment as an Azure Automation Runbook 
 
 ## Parameters
 
-| Parameter        | Description                                                                                             | Default   |
-|------------------|---------------------------------------------------------------------------------------------------------|-----------|
-| `SubscriptionId` | Azure Subscription ID. Required for local execution.                                                   |           |
-| `DeploymentIds`  | Comma-separated deployment IDs. Required if `ResourceGroups` is not provided. Specific to Databricks E2E use case. |           |
-| `Project`        | Project name. Required if `ResourceGroups` is not provided. Specific to Databricks E2E use case.        |           |
-| `Environments`   | Environments (e.g., dev, stg, prod).                                                                   | `dev,stg` |
-| `ResourceGroups` | Comma-separated list of resource groups. Use `*` to target all resource groups in the subscription.    |           |
-| `Action`         | Specify `Pause` or `Resume`.                                                                           | `Pause`   |
-| `DryRun`         | Simulate actions without making changes.                                                               | `false`   |
-| `InstallModules` | Install missing modules if not present.                                                                | `false`   |
+| Parameter        | Description                                                                                             | Default   | Example                                      |
+|------------------|---------------------------------------------------------------------------------------------------------|-----------|----------------------------------------------|
+| `SubscriptionId` | Azure Subscription ID. Required for local execution.                                                   |           | `12345678-1234-1234-1234-123456789abc`       |
+| `DeploymentIds`  | Comma-separated deployment IDs. Required if `ResourceGroups` is not provided. Specific to Databricks E2E use case. |           | `tst01, tst02`                    |
+| `Project`        | Project name. Required if `ResourceGroups` is not provided. Specific to Databricks E2E use case.        |           | `mdwdops`                                   |
+| `Environments`   | Environments (e.g., dev, stg, prod).                                                                   | `dev,stg` | `dev,stg,prod`                               |
+| `ResourceGroups` | Comma-separated list of resource groups. Use `*` to target all resource groups in the subscription.    |           | `RG1,RG2`              |
+| `Action`         | Specify `Pause` or `Resume`.                                                                           | `Pause`   | `Pause`                                      |
+| `DryRun`         | Simulate actions without making changes.                                                               | `false`   | `false`                                       |
+| `InstallModules` | Install missing modules if not present.                                                                | `false`   | `true`                                       |
 
 ---
 
