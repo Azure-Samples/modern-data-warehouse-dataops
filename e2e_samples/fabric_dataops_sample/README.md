@@ -11,14 +11,23 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
 - [Solution Overview](#solution-overview)
   - [Architecture](#architecture)
   - [Continuous Integration and Continuous Delivery (CI/CD)](#continuous-integration-and-continuous-delivery-cicd)
-- [How to use the sample](#how-to-use-the-sample)
+- [Key concepts](#key-concepts)
+  - [DevOps process with Fabric workspaces](#devops-process-with-fabric-workspaces)
+  - [Automated testing](#automated-testing)
+    - [Unit testing](#unit-testing)
+    - [Integration testing](#integration-testing)
+  - [Build and release pipelines](#build-and-release-pipelines)
+- [Understanding the sample](#understanding-the-sample)
   - [High-level deployment sequence](#high-level-deployment-sequence)
   - [Deployed resources](#deployed-resources)
   - [Pre-requisites](#pre-requisites)
   - [Familiarize yourself with known issues, limitations, and workarounds](#familiarize-yourself-with-known-issues-limitations-and-workarounds)
-  - [Deploying infrastructure](#deploying-infrastructure)
-  - [Verifying the infrastructure deployment](#verifying-the-infrastructure-deployment)
-  - [Running the sample](#running-the-sample)
+- [How to use the sample](#how-to-use-the-sample)
+  - [Initial infrastructure deployment](#initial-infrastructure-deployment)
+    - [Deploying infrastructure using Terraform and Fabric APIs](#deploying-infrastructure-using-terraform-and-fabric-apis)
+    - [Verifying the infrastructure deployment](#verifying-the-infrastructure-deployment)
+  - [Running the application code](#running-the-application-code)
+  - [Triggering the CI/CD pipelines](#triggering-the-cicd-pipelines)
 - [Cleaning up](#cleaning-up)
 - [Frequently asked questions](#frequently-asked-questions)
   - [Infrastructure deployment related](#infrastructure-deployment-related)
@@ -46,7 +55,53 @@ The diagram below illustrates the complete end-to-end CI/CD process:
 
 ![Fabric CI/CD diagram](./images/fabric-cicd-option1.png)
 
-## How to use the sample
+Here is a high-level summary of the steps involved:
+
+- Deploy the sample infrastructure which creates three environments (dev, staging, prod) by default with Azure and Fabric resources.
+- Create a new feature workspace using the [branch out to a new workspace](https://learn.microsoft.com/fabric/cicd/git-integration/manage-branches?tabs=azure-devops#scenario-2---develop-using-another-workspace) functionality. Develop and test the feature in the feature workspace.
+- Open a pull request (PR) to merge the feature branch into the `dev` branch.
+- The QA pipeline it triggered automatically when a PR is opened. The pipeline runs Python unit tests and Fabric unit tests to validate the changes.
+- Once the PR is approved and merged, the build artifacts pipeline is triggered. This pipeline publishes configuration files and custom libraries as artifacts.
+- The release pipeline is triggered once the build artifacts pipeline completes successfully. This pipeline uploads the config changes to the ADLS Gen2 storage account and deploys the Fabric items to the dev environment using Fabric Git sync and REST APIs.
+- The same process is followed for the staging and production environments: a new PR is opened to merge changes from the `dev` branch to the `stg` branch, triggering the release pipeline to deploy to staging. This process is then repeated for the production environment.
+
+## Key concepts
+
+### DevOps process with Fabric workspaces
+
+In this sample, the DevOps process occurs across five distinct environments, each corresponding to its own fabric workspace. These workspaces serve different purposes throughout the development and deployment lifecycle. Here are the details of each workspace:
+
+- **Dev Workspace**: The **Dev Workspace** serves as the central integration point where developers merge their individual **Feature Workspaces**. This workspace and its associated Git branch should not be modified directly; changes must be made through a pull request (PR) merge followed by a Git sync.
+
+- **Feature Workspace**: The **Feature Workspaces** are created from the **Dev Workspace** to enable isolated development of new features without impacting the main codebase. Once development and unit testing are complete, the feature is merged back into the **Dev Workspace** for integration with other changes.
+
+- **Ephemeral Workspace**: The **Ephemeral Workspace** is a temporary Fabric workspace created during the **QA Pipeline** to test changes in isolation before merging into the **Dev Workspace**. It allows developers to independently validate their changes and confirm expected behavior before integration. The **Ephemeral Workspace** is automatically created when a pull request (PR) is opened and is deleted upon PR completion.
+
+- **Staging Workspace**: The **Staging Workspace** replicates the production environment and is used for final integration testing and user acceptance testing (UAT). Once the code is validated in the **Dev Workspace**, it is deployed to the **Staging Workspace** for further testing before being released to production. A pull request (PR) is opened to merge changes from the **Dev Workspace** to the **Staging Workspace**.
+
+- **Prod Workspace**: The **Prod Workspace** is the live, production environment where only thoroughly tested and approved code is deployed. A pull request (PR) is opened to merge changes from the **Staging Workspace** to the **Prod Workspace**.
+
+### Automated testing
+
+Automated testing is an integral part of the CI/CD process to ensure the correctness of changes across different workspaces.  The process primarily involves two types of testing: [Unit Testing](#unit-testing) and [Integration Testing](#integration-testing).
+
+#### Unit testing
+
+Unit tests validate individual components or units of functionality within the code. There are two types of unit tests used in this solution:
+
+- **Python unit tests**: These are standalone tests that validate the functionality of Python packages and modules used in the solution. They do not require the Fabric environment to execute and are independent of any workspace.
+
+- **Fabric unit tests**: These tests validate the setup and configuration of the [Fabric environment](https://learn.microsoft.com/fabric/data-engineering/create-and-use-environment). They require a functioning Fabric workspace to execute and ensure that the environment works as expected.
+
+#### Integration testing
+
+Integration tests ensure that different components work together as expected. An example of an integration test would be running a data pipeline and verifying the output to confirm that the integrated solution works as expected.
+
+### Build and release pipelines
+
+Build and release pipelines automate the validation, building, and deployment of changes across different environments (dev, stg, prod etc.). The pipelines are divided into Continuous Integration (CI) and Continuous Deployment (CD) stages. Please check [build and release pipelines](./docs/build_and_release_pipelines.md) for detailed information.
+
+## Understanding the sample
 
 ### High-level deployment sequence
 
@@ -135,7 +190,11 @@ Note that the script deploys the aforementioned resources across multiple enviro
 
 Refer to the [known issues, limitations, and workarounds](docs/issues_limitations_and_workarounds.md) page for details. Reviewing this page is highly recommended to understand the limitations, issues, and challenges you may encounter while building CI/CD pipelines for Fabric. It also provides workarounds and alternative approaches to overcome these challenges. This information will also help you understand why certain approaches are used in the infrastructure deployment scripts and Azure DevOps pipelines.
 
-### Deploying infrastructure
+## How to use the sample
+
+### Initial infrastructure deployment
+
+#### Deploying infrastructure using Terraform and Fabric APIs
 
 - Clone the repository:
 
@@ -246,7 +305,7 @@ Refer to the [known issues, limitations, and workarounds](docs/issues_limitation
 
   This time, the script will create the Lakehouse shortcut to your ADLS Gen2 storage account. All previously deployed resources will remain unchanged. Fabric items whose REST APIs and terraform provider don't support service principal / managed identity authentication (i.e. data pipelines and others) will be deployed with user context authentication.
 
-### Verifying the infrastructure deployment
+#### Verifying the infrastructure deployment
 
 Once the deployment is complete, you can verify the resources created in the Azure portal and the Fabric portal. Below is a list of the created resources along with their default names:
 
@@ -288,7 +347,7 @@ Additionally, note that the Fabric workspace Git integration has been configured
 
 _**Note: Please note that the Fabric notebooks and pipeline deployed are under development and subjected to future changes._
 
-### Running the sample
+### Running the application code
 
 This sample deploys the following three Fabric notebooks:
 
@@ -307,6 +366,10 @@ Here are the instructions to run the application:
 3. Open the Fabric data pipeline `pl-main` and run it. The pipeline is pre-populated with values for required parameters related to workspace and lakehouse. Successful execution of pipeline will look as shown below:
 
 ![Data Pipeline Execution](./images/data-pipeline-execution.png)
+
+### Triggering the CI/CD pipelines
+
+Coming soon...
 
 ## Cleaning up
 
