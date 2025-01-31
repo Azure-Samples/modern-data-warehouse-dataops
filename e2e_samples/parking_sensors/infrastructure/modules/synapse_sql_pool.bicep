@@ -41,8 +41,9 @@ resource sql_server 'Microsoft.Sql/servers@2024-05-01-preview' = {
       Environment: env
     }
     sku: {
-      name: 'DW100c'
+      name: 'DataWarehouse'
       tier: 'DataWarehouse'
+      capacity: 900
     }
     properties: {
       collation: 'SQL_Latin1_General_CP1_CI_AS'

@@ -11,8 +11,8 @@ jobs:
     vmImage: 'ubuntu-latest'
   variables:
     pythonVersion: 3.8
-    databricksFile: databricks_cli_0.233.0_linux_amd64
-    databricksCLIVersion: 0.233.0
+    databricksFile: databricks_cli_0.240.0_linux_amd64
+    databricksCLIVersion: 0.240.0
   environment: ${{ parameters.environmentName }}
   strategy:
     runOnce:
@@ -26,17 +26,17 @@ jobs:
           displayName: 'Use Python Version: $(pythonVersion)'
 
         - script: |
-            # Change into temporary directory.
+            # Change into temporary directory
             tmpdir="$(mktemp -d)"
             cd "$tmpdir"
             echo "tempdir: $tmpdir"
             
             # Download release archive.
-            wget -q https://github.com/databricks/cli/releases/download/v$(databricksCLIVersion)/$(databricksFile).zip -O /$tmpdir/$(databricksFile).zip
+            wget -q https://github.com/databricks/cli/releases/download/v$(databricksCLIVersion)/$(databricksFile).zip -O $tmpdir/$(databricksFile).zip
             
             # Verify the checksum
-            cd /$tmpdir && sha256sum $(databricksFile).zip > /$tmpdir/$(databricksFile).zip.sha256
-            cd /$tmpdir 
+            cd $tmpdir && sha256sum $(databricksFile).zip > $tmpdir/$(databricksFile).zip.sha256
+            cd $tmpdir 
             # Run the sha256sum check
             sha256sum -c $(databricksFile).zip.sha256
             
@@ -49,7 +49,7 @@ jobs:
             fi
             
             # Unzip the downloaded file
-            unzip -q /$tmpdir/$(databricksFile).zip
+            unzip -q $tmpdir/$(databricksFile).zip
             
             # Add databricks to path.
             chmod +x ./databricks
@@ -58,7 +58,7 @@ jobs:
             echo "Installed $("databricks" -v) at /usr/local/bin/databricks."
             
             # Clean up the zip file and checksum
-            rm /$tmpdir/$(databricksFile).zip /$tmpdir/$(databricksFile).zip.sha256
+            rm $tmpdir/$(databricksFile).zip $tmpdir/$(databricksFile).zip.sha256
             
             # Clean up temporary directory.
             cd "$OLDPWD"
@@ -75,14 +75,35 @@ jobs:
           displayName: 'Set packageWheelName variable'
 
         - script: |
+            set -o errexit
+            set -o pipefail
+            set -o nounset
+
+            # Check if release directory exists.
+            databricks_release_path="/Workspace$DATABRICKS_NOTEBOOK_PATH"
+            if databricks workspace list $databricks_release_path > /dev/null 2>&1; then
+                echo "Folder '$databricks_release_path' already exists."
+            else
+                databricks workspace mkdirs $databricks_release_path
+                echo "Folder '$databricks_release_path' created."
+            fi
+
+            echo "Creating folder in ADLS..."
+            relative_path=${DBFS_LIBS_PATH#dbfs:/mnt/}
+            fs_name="$(cut -d '/' -f 1 <<< $relative_path)"
+            fs_folder_path="/$(cut -d '/' -f 2- <<< $relative_path)"
+            stg_account_name=$(databricks secrets get-secret storage_scope datalakeAccountName | jq -r .value | base64 -d)
+            stg_account_key=$(databricks secrets get-secret storage_scope datalakeKey | jq -r .value | base64 -d)
+            az storage fs directory create -n "$fs_folder_path" -f $fs_name --account-name $stg_account_name --account-key $stg_account_key -o none
+
             echo "Uploading app libraries to DBFS..."
             echo "Uploading SOURCE whl file: ${WHEEL_FILE_PATH}/${WHEEL_FILE_NAME} to dbfs DESTINATION: ${DBFS_LIBS_PATH}/${WHEEL_FILE_NAME}"
             databricks fs cp --recursive --overwrite "${WHEEL_FILE_PATH}/${WHEEL_FILE_NAME}" "${DBFS_LIBS_PATH}/${WHEEL_FILE_NAME}"
-            echo "Uploading notebooks at ${NOTEBOOKS_PATH} to workspace (${DATABRICKS_NOTEBOOK_PATH})..."
-            databricks workspace import "${DATABRICKS_NOTEBOOK_PATH}/00_setup.py" --file "${NOTEBOOKS_PATH}/00_setup.py" --format SOURCE --language PYTHON --overwrite
-            databricks workspace import "${DATABRICKS_NOTEBOOK_PATH}/01_explore.py" --file "${NOTEBOOKS_PATH}/01_explore.py" --format SOURCE --language PYTHON --overwrite
-            databricks workspace import "${DATABRICKS_NOTEBOOK_PATH}/02_standardize.py" --file "${NOTEBOOKS_PATH}/02_standardize.py" --format SOURCE --language PYTHON --overwrite
-            databricks workspace import "${DATABRICKS_NOTEBOOK_PATH}/03_transform.py" --file "${NOTEBOOKS_PATH}/03_transform.py" --format SOURCE --language PYTHON --overwrite
+            echo "Uploading notebooks at ${NOTEBOOKS_PATH} to workspace (${databricks_release_path})..."
+            databricks workspace import "${databricks_release_path}/00_setup" --file "${NOTEBOOKS_PATH}/00_setup.py" --format SOURCE --language PYTHON --overwrite
+            databricks workspace import "${databricks_release_path}/01_explore" --file "${NOTEBOOKS_PATH}/01_explore.py" --format SOURCE --language PYTHON --overwrite
+            databricks workspace import "${databricks_release_path}/02_standardize" --file "${NOTEBOOKS_PATH}/02_standardize.py" --format SOURCE --language PYTHON --overwrite
+            databricks workspace import "${databricks_release_path}/03_transform" --file "${NOTEBOOKS_PATH}/03_transform.py" --format SOURCE --language PYTHON --overwrite
 
             # Create JSON file for library installation
             temp_dir=$(mktemp -d)
@@ -110,3 +131,4 @@ jobs:
             NOTEBOOKS_PATH: $(Pipeline.Workspace)/ciartifacts/databricks/notebooks
             DATABRICKS_NOTEBOOK_PATH: $(databricksNotebookPath)
           displayName: 'Deploy notebooks and packages'
+ 

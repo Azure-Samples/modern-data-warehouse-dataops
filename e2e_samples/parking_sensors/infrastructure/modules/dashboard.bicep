@@ -46,17 +46,7 @@ resource dashboard 'Microsoft.Portal/dashboards@2022-12-01-preview' = {
                 {
                   name: 'options'
                   isOptional: true
-                }
-                {
-                  name: 'sharedTimeRange'
-                  isOptional: true
-                }
-              ]
-              #disable-next-line BCP036
-              type: 'Extension/HubsExtension/PartType/MonitorChartPart'
-              settings: {
-                content: {
-                  options: {
+                  value: {
                     chart: {
                       metrics: [
                         {
@@ -96,8 +86,14 @@ resource dashboard 'Microsoft.Portal/dashboards@2022-12-01-preview' = {
                     }
                   }
                 }
-              }
-            }
+                {
+                  name: 'sharedTimeRange'
+                  isOptional: true
+                }
+              ]
+              #disable-next-line BCP036
+              type: 'Extension/HubsExtension/PartType/MonitorChartPart'
+            }            
           }
           {
             position: {
@@ -111,17 +107,7 @@ resource dashboard 'Microsoft.Portal/dashboards@2022-12-01-preview' = {
                 {
                   name: 'options'
                   isOptional: true
-                }
-                {
-                  name: 'sharedTimeRange'
-                  isOptional: true
-                }
-              ]
-              #disable-next-line BCP036
-              type: 'Extension/HubsExtension/PartType/MonitorChartPart'
-              settings: {
-                content: {
-                  options: {
+                  value: {
                     chart: {
                       metrics: [
                         {
@@ -161,8 +147,14 @@ resource dashboard 'Microsoft.Portal/dashboards@2022-12-01-preview' = {
                     }
                   }
                 }
-              }
-            }
+                {
+                  name: 'sharedTimeRange'
+                  isOptional: true
+                }
+              ]
+              #disable-next-line BCP036
+              type: 'Extension/HubsExtension/PartType/MonitorChartPart'
+            }            
           }
           {
             position: {
@@ -176,17 +168,7 @@ resource dashboard 'Microsoft.Portal/dashboards@2022-12-01-preview' = {
                 {
                   name: 'options'
                   isOptional: true
-                }
-                {
-                  name: 'sharedTimeRange'
-                  isOptional: true
-                }
-              ]
-              #disable-next-line BCP036
-              type: 'Extension/HubsExtension/PartType/MonitorChartPart'
-              settings: {
-                content: {
-                  options: {
+                  value: {
                     chart: {
                       metrics: [
                         {
@@ -236,8 +218,14 @@ resource dashboard 'Microsoft.Portal/dashboards@2022-12-01-preview' = {
                     }
                   }
                 }
-              }
-            }
+                {
+                  name: 'sharedTimeRange'
+                  isOptional: true
+                }
+              ]
+              #disable-next-line BCP036
+              type: 'Extension/HubsExtension/PartType/MonitorChartPart'
+            }            
           }
         ]
       }

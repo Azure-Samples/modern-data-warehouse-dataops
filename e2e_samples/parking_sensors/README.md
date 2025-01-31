@@ -77,7 +77,7 @@ Sample PowerBI report
 
 The following shows the overall CI/CD process end to end.
 
-![CI/CD](docs/images/CI_CD_process.png "CI/CD")
+![CI/CD](docs/images/CI_CD_process.drawio.png "CI/CD")
 
 See [here](#build-and-release-pipeline) for details.
 
@@ -159,21 +159,19 @@ The Build and Release Pipelines definitions can be found [here](devops/README.md
 
 There are eight numbered orange boxes describing the sequence from sandbox development to target environments:
 
-![CI/CD](docs/images/CI_CD_process_sequence.png "CI/CD")
+![CI/CD](docs/images/CI_CD_process_sequence.drawio.png "CI/CD")
 
 1. Developers develop in their own Sandbox environments within the DEV resource group and commit changes into their own short-lived git branches. (i.e. <developer_name>/<branch_name>)
 2. When changes are complete, developers raise a PR to `main` for review. This automatically kicks-off the PR validation pipeline which runs the unit tests, linting and DACPAC builds.
 3. On PR completion, the commit to `main` will trigger a Build pipeline -- publishing all necessary Build Artifacts.
 4. The completion of a successful Build pipeline will trigger the first stage of the Release pipeline. This deploys the publish build artifacts into the DEV environment, with the exception of Azure Data Factory*.
-5. Developers perform a Manual Publish to the DEV ADF from the collaboration branch (`main`). This updates the ARM templates in in the `adf_publish` branch.
-6. On the successful completion of the first stage, this triggers an Manual Approval Gate**. On Approval, the release pipeline continues with the second stage -- deploying changes to the Staging environment.
-7. Integration tests are run to test changes in the Staging environment.
-8. ***On the successful completion of the second stage, this triggers a second Manual Approval Gate. On Approval, the release pipeline continues with the third stage -- deploying changes to the Production environment.
+5. On the successful completion of the first stage, this triggers an Manual Approval Gate**. On Approval, the release pipeline continues with the second stage -- deploying changes to the Staging environment.
+6. Integration tests are run to test changes in the Staging environment.
+7. ***On the successful completion of the second stage, this triggers a second Manual Approval Gate. On Approval, the release pipeline continues with the third stage -- deploying changes to the Production environment.
 
 Notes:
 
 - This is a simplified Build and Release process for demo purposes based on [Trunk-based development practices](https://trunkbaseddevelopment.com/).
-- *A manual publish is required -- currently, this cannot be automated.
 - **The solution deployment script does not configure Approval Gates at the moment. See [Known Issues, Limitations and Workarounds](#known-issues-limitations-and-workarounds)
 - ***Many organization use dedicated Release Branches (including Microsoft) instead of deploying from `main`. See [Release Flow](https://devblogs.microsoft.com/devops/release-flow-how-we-do-branching-on-the-vsts-team/).
 
@@ -224,7 +222,7 @@ Follow the setup prerequisites, permissions, and deployment environment options.
 2. [Azure Account](https://azure.microsoft.com/en-us/free/) If you do not have one already, create an Azure Account.
    - *Permissions needed*: ability to create and deploy to an azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
 3. [Azure DevOps Project](https://azure.microsoft.com/en-us/products/devops/) : Follow the documentation to create a new project, or use an existing project you wish to deploy these resources to.
-   - *Permissions needed*: ability to create [service connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml), [pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops&tabs=yaml) and [variable groups](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml).
+   - *Permissions needed*: In order to be able to create [Service Connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml), [pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops&tabs=yaml), [variable groups](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml), your user will need to be a member of the **Contributors** group in your project.
 
 #### Deployment Options
 
@@ -277,6 +275,17 @@ Set up the environment variables as specified, fork the GitHub repository, and l
 
      Optionally, set the following environment variables:
 
+     - **ENV_DEPLOY**- Specifies the number of environments to deploy.
+
+        - If the variable is set as shown in the optional configuration below, the prompt will be skipped.
+        - If not configured, a prompt will display the following options.         
+
+      - The options are:
+
+        - **Option 1**: Deploy only to the development environment (Dev). Optional configuration for environment variable set #ENV_DEPLOY=1.
+        - **Option 2**: Deploy to both development (Dev) and staging (Stage) environments. Optional configuration for environment variable  #ENV_DEPLOY=2.
+        - **Option 3** : Deploy to development (Dev), staging (Stage), and production (Prod) environments. Optional configuration for environment variable #ENV_DEPLOY=3
+      
      - **AZURE_LOCATION** - Azure location to deploy resources. *Default*: `westus`.
      - **DEPLOYMENT_ID** - string appended to all resource names. This is to ensure uniqueness of azure resource names. *Default*: random five character string.
      - **AZDO_PIPELINES_BRANCH_NAME** - git branch where Azure DevOps pipelines definitions are retrieved from. *Default*: main.
@@ -292,21 +301,23 @@ Set up the environment variables as specified, fork the GitHub repository, and l
       - To enable Observability and Monitoring components through code(Observability-as-code), please set enable_monitoring parameter to true in  `arm.parameters` files located in the `infrastructure` folder. This will deploy log analytics workspace to collect monitoring data from key resources, setup an Azure dashboards to monitor key metrics and configure alerts for ADF pipelines.
   
      **Login and Cluster Configuration**
-      
+
       - Ensure that you have completed the configuration for the variables described in the previous section, titled **Configuration: Variables and Login**.
 
 2. **Deploy Azure resources**
    - `cd` into the `e2e_samples/parking_sensors` folder of the repo.
    - Run `./deploy.sh`.
-     - The login process for deployment is interactive. When you run the script **deploy.sh**, a browser window will be open, prompting you to log in to Azure. If there is an open session from a previous deployment, it may log you out and request you to log in again.
+     - The login process for deployment is interactive. When you run the script **deploy.sh**, a browser window will be open, prompting you to log in to Azure. If there is an open session from a previous deployment, it may log you out and request you to log in again- .
+     - During deployment, you will be presented with three options if the optional environment variable #ENV_DEPLOY for deployment is not set. Answer the prompt by typing 1,2 or 3 from the keyboard according to the options shown. Keep in mind that deployments are standalone and cannot be performed incrementally:
+       - **Option 1**: Deploy only to the development environment (Dev). Note that this option does not deploy release pipelines, as a minimum of two environments is required for pipeline releases.
+       - **Option 2**: Deploy to both development (Dev) and staging (Stage) environments.
+       - **Option 3** (Or Press Enter): Deploy to development (Dev), staging (Stage), and production (Prod) environments.
       - This may take around **~30mins or more** to run end to end. So grab yourself a cup of coffee... ☕ But before you do so keep the following in mind:
         - You might encounter deployment issues if the script attempts to create a Key Vault that conflicts with a previously soft-deleted Key Vault. In such cases, the deployment script may prompt you to confirm the purge of the previously deleted Key Vault.
         - There are 3 points in time where you will need to authenticate to the databricks workspace, before the script continues to run. You will find the following message for the deployment of the dev, stage and production environments. Click the link highlighted in green, consent to authenticate to the databricks workspace and when the workspace opens successfully, return to the deployment windows and press Enter to continue:  ![image](docs/images/databricks_ws.png)
-      - If you encounter an error with `cannot execute: required file not found` verify the line ending settings of your git configuration. This error is likely that the lines in the file are ending with CRLF. Using VSCode, verify that `./deploy.sh` is set to LF only. This can be done using the control pallet and typing `>Change End of Line Sequence`. Also, verify the files in the `scripts` folder are also set to LF only.
+       - If you encounter an error with `cannot execute: required file not found` verify the line ending settings of your git configuration. This error is likely that the lines in the file are ending with CRLF. Using VSCode, verify that `./deploy.sh` is set to LF only. This can be done using the control pallet and typing `>Change End of Line Sequence`. Also, verify the files in the `scripts` folder are also set to LF only.
       - After a successful deployment, you will find `.env.{environment_name}` files containing essential configuration information per environment. See [here](#deployed-resources) for list of deployed resources.
       - Note that if you are using **Dev Container**, you would run the same script but inside the Dev Container terminal.
-   - As part of the deployment script, the Azure DevOps Release Pipeline YAML definition has been updated to point to your Github repository. **Commit and push these changes.**
-      - This will trigger a Build and Release which will fail due to a lacking `adf_publish` branch -- this is expected. This branch will be created once you've setup git integration with your DEV Data Factory and publish a change.
 
 3. **Setup ADF git integration in DEV Data Factory**
 
@@ -432,6 +443,9 @@ The following lists some limitations of the solution and associated deployment s
 
 - Azure DevOps Variable Groups linked to KeyVault can only be created via the UI, cannot be created programmatically and was not incorporated in the automated deployment of the solution.
   - **Workaround**: Deployment add sensitive configuration as "secrets" in Variable Groups with the downside of duplicated information. If you wish, you may manually link a second Variable Group to KeyVault to pull out the secrets. KeyVault secret names should line up with required variables in the Azure DevOps pipelines. See [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml#link-secrets-from-an-azure-key-vault) for more information.
+- Azure DevOps Service Connection Removal: If you encounter an error like: *"Cannot delete this service connection while federated credentials for app <app-id> exist in Entra tenant <tenant-id>. Please make sure federated credentials have been removed prior to deleting the service connection."* This issue occurs when you try to delete a Service Connection in the Azure DevOps (AzDo) portal, but the Service Connection has federated credentials that need to be manually removed from the Azure Portal.
+  - **Workaround - Manually Deleting App Registration (Service Principal) associated with AzDO Service Connection:**
+    Navigate to the Azure DevOps Project, and under **Project settings > Service connections** locate your Service Connection and click on it. In the Service Connection page click on the link "Manage App Registration". In the Entra page that is displayed after clicking the link, click on the Delete button.
 - Azure DevOps Environment and Approval Gates can only be managed via the UI, cannot be managed programmatically and was not incorporated in the automated deployment of the solution.
   - **Workaround**: Approval Gates can be easily configured manually. See [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/environments?view=azure-devops#approvals) for more information.
 - ADF publishing through the CI/CD pipeline using the npm task still throws and error in the logs due to the missing publish_config.json file but the pipeline completes successfully.
