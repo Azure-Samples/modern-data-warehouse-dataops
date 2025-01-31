@@ -143,7 +143,7 @@ databricks libraries install --json @$json_file
 
 # Creates a Job to setup workspace
 log "Creating a job to setup the workspace..."
-notebook_path="${DATABRICKS_RELEASE_FOLDER}/00_setup.py"
+notebook_path="${DATABRICKS_RELEASE_FOLDER}/00_setup"
 log "notebook_path: ${notebook_path}"
 json_file_config="./databricks/config/job.setup.config.json"
 cat <<EOF > $json_file_config

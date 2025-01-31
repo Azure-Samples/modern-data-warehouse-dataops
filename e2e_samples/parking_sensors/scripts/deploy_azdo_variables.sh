@@ -65,8 +65,8 @@ if [ "$ENV_NAME" == "dev" ]
 then 
     # In DEV, we fix the path to "dev" folder  to simplify as this is manual publish DEV ADF.
     # In other environments, the ADF release pipeline overwrites these automatically.
-    databricksDbfsLibPath="dbfs:/mnt/datalake/sys/databricks/libs/dev/"
-    databricksNotebookPath='/releases/dev/'
+    databricksDbfsLibPath="dbfs:/mnt/datalake/sys/databricks/libs/dev"
+    databricksNotebookPath='/releases/dev'
 else
     databricksDbfsLibPath='dbfs:/mnt/datalake/sys/databricks/libs/$(Build.BuildId)'
     databricksNotebookPath='/releases/$(Build.BuildId)'
