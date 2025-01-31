@@ -264,23 +264,31 @@ az keyvault secret set --vault-name "$kv_name" --name "databricksDomain" --value
 az keyvault secret set --vault-name "$kv_name" --name "databricksToken" --value "$databricks_token" -o none
 az keyvault secret set --vault-name "$kv_name" --name "databricksWorkspaceResourceId" --value "$databricks_workspace_resource_id" -o none
 
+# Setup the release folder
+if [ "$ENV_NAME" == "dev" ]; then
+    databricks_release_folder="/releases/${ENV_NAME}"
+else  
+    databricks_release_folder="/releases/setup_release"
+fi
+databricks_folder_name_standardize="$databricks_release_folder/02_standardize.py"
+databricks_folder_name_transform="$databricks_release_folder/03_transform.py"
+log "databricks_folder_name_standardize: ${databricks_folder_name_standardize}" "info"
+log "databricks_folder_name_transform: ${databricks_folder_name_transform}" "info"
+
 # Configure databricks (KeyVault-backed Secret scope, mount to storage via SP, databricks tables, cluster)
 # NOTE: must use Microsoft Entra access token, not PAT token
 DATABRICKS_TOKEN=$databricks_aad_token \
 DATABRICKS_HOST=$databricks_host \
 KEYVAULT_DNS_NAME=$kv_dns_name \
+KEYVAULT_NAME=$kv_name \
 USER_NAME=$kv_owner_name \
 AZURE_LOCATION=$AZURE_LOCATION \
+DATABRICKS_RELEASE_FOLDER=$databricks_release_folder \
 KEYVAULT_RESOURCE_ID=$(echo "$arm_output" | jq -r '.properties.outputs.keyvault_resource_id.value') \
     bash -c "./scripts/configure_databricks.sh"
 
 ####################
 # DATA FACTORY
-databricks_folder_name="/Users/${kv_owner_name,,}"
-databricks_folder_name_standardize="${databricks_folder_name}/02_standardize.py"
-databricks_folder_name_transform="${databricks_folder_name}/03_transform.py"
-log "databricks_folder_name_standardize: ${databricks_folder_name_standardize}"
-log "databricks_folder_name_transform: ${databricks_folder_name_transform}"
 
 log "Updating Data Factory LinkedService to point to newly deployed resources (KeyVault and DataLake)."
 # Create a copy of the ADF dir into a .tmp/ folder.
@@ -347,6 +355,7 @@ AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID \
 RESOURCE_GROUP_NAME=$resource_group_name \
 AZURE_LOCATION=$AZURE_LOCATION \
 KV_URL=$kv_dns_name \
+KV_NAME=$kv_name \
 DATABRICKS_TOKEN=$databricks_token \
 DATABRICKS_HOST=$databricks_host \
 DATABRICKS_WORKSPACE_RESOURCE_ID=$databricks_workspace_resource_id \
