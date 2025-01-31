@@ -280,8 +280,8 @@ if [ "$ENV_NAME" == "dev" ]; then
 else  
     databricks_release_folder="/releases/setup_release"
 fi
-databricks_folder_name_standardize="$databricks_release_folder/02_standardize.py"
-databricks_folder_name_transform="$databricks_release_folder/03_transform.py"
+databricks_folder_name_standardize="$databricks_release_folder/02_standardize"
+databricks_folder_name_transform="$databricks_release_folder/03_transform"
 log "databricks_folder_name_standardize: ${databricks_folder_name_standardize}" "info"
 log "databricks_folder_name_transform: ${databricks_folder_name_transform}" "info"
 
