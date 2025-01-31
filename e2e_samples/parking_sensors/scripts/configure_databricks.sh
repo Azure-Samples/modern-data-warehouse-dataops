@@ -164,7 +164,7 @@ cat <<EOF > $json_file_config
 EOF
 
 job_id=$(databricks jobs create --json @$json_file_config | jq -r ".job_id")
-log "Job ID:" $job_id
+log "Job ID: ${job_id}"
 
 databricks jobs run-now --json "{\"job_id\":$job_id, \"notebook_params\": {\"PYSPARK_PYTHON\": \"/databricks/python3/bin/python3\", \"MOUNT_DATA_PATH\": \"/mnt/datalake\", \"MOUNT_DATA_CONTAINER\": \"datalake\", \"DATABASE\": \"datalake\"}}"
 # Upload libs -- for initial dev package

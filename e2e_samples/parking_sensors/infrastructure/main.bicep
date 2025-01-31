@@ -12,6 +12,15 @@ param enable_keyvault_soft_delete bool = true
 param enable_keyvault_purge_protection bool = true
 param entra_admin_login string
 
+module appservice './modules/appservice.bicep' = {
+  name: 'appservices_deploy_${deployment_id}'
+  params: {
+    project: project
+    env: env
+    location: location
+    deployment_id: deployment_id
+  }
+}
 
 module datafactory './modules/datafactory.bicep' = {
   name: 'datafactory_deploy_${deployment_id}'
