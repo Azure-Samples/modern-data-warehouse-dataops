@@ -107,9 +107,7 @@ def test_standardize_sensordata(spark: SparkSession) -> None:
     """Test data standardization"""
     # Arrange
     schema = standardize.get_schema("in_sensordata_schema")
-    sensordata_sdf = spark.read.json(
-        os.path.join(data_path, "parking_sensor_data.json"), multiLine=True, schema=schema
-    )
+    sensordata_sdf = spark.read.json(os.path.join(data_path, "parking_sensor_data.json"), multiLine=True, schema=schema)
 
     # Act
     t_sensordata_sdf, t_sensordata_malformed_sdf = standardize.standardize_sensordata(
