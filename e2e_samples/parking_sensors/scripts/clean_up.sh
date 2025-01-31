@@ -91,10 +91,11 @@ delete_all(){
                 sc_ids=($(az devops service-endpoint list --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" --query "[?contains(name, '$prefix')].id" -o tsv))
                 for sc_id in "${sc_ids[@]}"; do
                     log "Processing Service Connection ID: $sc_id"
-                    cleanup_federated_credentials "$sc_id"
+                    delete_azdo_service_connection_principal $sc_id
                 done
-                #Important:Giving time to the portal process the cleanup
-                wait_for_process
+                # Important: Giving time to process the cleanup
+                wait_for_process 20
+
                 az devops service-endpoint list -o tsv --query "[?contains(name, '$prefix')].id" |
                 xargs -r -I % az devops service-endpoint delete --id % --yes
                 log "Finished cleaning up Service Connections"

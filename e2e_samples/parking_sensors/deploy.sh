@@ -24,27 +24,29 @@ set -o nounset
 . ./scripts/verify_prerequisites.sh
 
 
-
-project=mdwdops # CONSTANT - this is prefixes to all resources of the Parking Sensor sample
+# CONSTANT - this is prefixes to all resources of the Parking Sensor sample
+project=mdwdops 
 github_repo_url="https://github.com/$GITHUB_REPO"
 
+#Ask the user the following options:
+####
+## 1) Only Dev
+## 2) Dev and Stage
+## 3) All
+####
 
-###################
-# DEPLOY ALL FOR EACH ENVIRONMENT
+if [ -z "$ENV_DEPLOY" ]; then
+    read -r -p "Do you wish to deploy:"$'\n'"  1) Dev Environment Only?"$'\n'"  2) Dev and Stage Environments?"$'\n'"  3) Dev, Stage and Prod (Or Press Enter)?"$'\n'"   Choose 1, 2 or 3: " ENV_DEPLOY
+    log "Option Selected: $ENV_DEPLOY" "info"
+fi
 
-for env_name in dev stg prod; do  # dev stg prod
-    PROJECT=$project \
-    DEPLOYMENT_ID=$DEPLOYMENT_ID \
-    ENV_NAME=$env_name \
-    AZURE_LOCATION=$AZURE_LOCATION \
-    AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID \
-    AZURESQL_SERVER_PASSWORD=$AZURESQL_SERVER_PASSWORD \
-    bash -c "./scripts/deploy_infrastructure.sh"  # includes AzDevOps Azure Service Connections and Variable Groups
-done
+# Call the deploy function
+deploy_infrastructure_environment "$ENV_DEPLOY" "$project"
 
 
 ###################
 # Deploy AzDevOps Pipelines
+###################
 
 # Create AzDo Github Service Connection -- required only once for the entire deployment
 PROJECT=$project \
