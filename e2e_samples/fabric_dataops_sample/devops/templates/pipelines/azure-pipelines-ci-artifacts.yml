@@ -1,0 +1,49 @@
+trigger:
+  branches:
+    include:
+      - <DEV_BRANCH_NAME>
+      - <STG_BRANCH_NAME>
+      - <PROD_BRANCH_NAME>
+  paths:
+    exclude:
+      - fabric/workspace
+      - devops
+
+pr: none
+
+stages:
+  - stage: publish_dev_artifacts
+    displayName: 'Publish artifacts for development environment'
+    condition: |
+      eq(variables['Build.SourceBranchName'], 'dev')
+    variables:
+      - group: <DEV_VARIABLE_GROUP_NAME>
+    jobs:
+      - template: templates/jobs/publish-adls-artifacts.yml
+        parameters:
+          serviceConnection: <DEV_SERVICE_CONNECTION_NAME>
+      - template: templates/jobs/publish-fabric-env-artifacts.yml
+
+  - stage: publish_stg_artifacts
+    displayName: 'Publish artifacts for staging environment'
+    condition: |
+      eq(variables['Build.SourceBranchName'], 'stg')
+    variables:
+      - group: <STG_VARIABLE_GROUP_NAME>
+    jobs:
+      - template: templates/jobs/publish-adls-artifacts.yml
+        parameters:
+          serviceConnection: <STG_SERVICE_CONNECTION_NAME>
+      - template: templates/jobs/publish-fabric-env-artifacts.yml
+
+  - stage: publish_prod_artifacts
+    displayName: 'Publish artifacts for production environment'
+    condition: |
+      eq(variables['Build.SourceBranchName'], 'prod')
+    variables:
+      - group: <PROD_VARIABLE_GROUP_NAME>
+    jobs:
+      - template: templates/jobs/publish-adls-artifacts.yml
+        parameters:
+          serviceConnection: <PROD_SERVICE_CONNECTION_NAME>
+      - template: templates/jobs/publish-fabric-env-artifacts.yml

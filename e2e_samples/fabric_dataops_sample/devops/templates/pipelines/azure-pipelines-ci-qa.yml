@@ -11,7 +11,7 @@ pr:
       - $(Build.SourcesDirectory)/config/*
 
 variables:
-  - group: <VARIABLE_GROUP_NAME>
+  - group: <DEV_VARIABLE_GROUP_NAME>
   - name: FEATURE_BRANCH
     value: $[replace(variables['System.PullRequest.SourceBranch'], 'refs/heads/', '')]
   - name: PR_ID
