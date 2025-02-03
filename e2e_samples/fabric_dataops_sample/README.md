@@ -140,6 +140,7 @@ Here is a list of resources that are deployed:
 - Azure DevOps Resources
   - Variable Group (two per environment with one with KeyVault integration for secrets)
   - Service Connection
+  - Azure DevOps Pipelines
 - Additional Resources
   - Fabric workspace GIT integration
   - Azure Role assignments to entra security group and workspace identity
@@ -179,6 +180,8 @@ Note that the script deploys the aforementioned resources across multiple enviro
   - If you are creating a **new** Fabric capacity, you need to provide a list of users and principals (service principal or managed identity) that will be added as capacity admins in the `FABRIC_CAPACITY_ADMINS` environment variable. For users, mention 'userPrincipalName'. For principals (sp/mi), mention 'Object ID'. Don't add spaces after the comma.
 - A bash shell with the following installed:
   - [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli?view=azure-cli-latest)
+  - [Azure DevOps CLI](https://marketplace.visualstudio.com/items?itemName=ms-vsts.cli) extension
+    - To install, run `az extension add --name azure-devops`
   - [jq](https://jqlang.github.io/jq/download/)
   - terraform
   - python version 3.9+ with `requests` package installed
