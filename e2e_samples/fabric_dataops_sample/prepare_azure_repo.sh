@@ -11,25 +11,31 @@ log_file="setup_azdo_repo_${BASE_NAME}_$(date +"%Y%m%d_%H%M%S").log"
 exec > >(tee -a "$log_file")
 exec 2>&1
 
-# Azure DeOps (AzDo) pipeline files
+replace() {
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    sed -i '' "s/$1/$2/g" "$3"
+  else
+    sed -i "s/$1/$2/g" "$3"
+  fi
+}
+
+echo "[Info] ############  STARTING AZDO REPOSITORY SETUP  ############"
+echo "[Info] ############   CREATING AZDO PIPELINE FILES   ############"
+
+# Azure DeOps (AzDo) pipeline template files
 ci_artifacts_pipeline_template="devops/templates/pipelines/azure-pipelines-ci-artifacts.yml"
 ci_qa_cleanup_pipeline_template="devops/templates/pipelines/azure-pipelines-ci-qa-cleanup.yml"
 ci_qa_pipeline_template="devops/templates/pipelines/azure-pipelines-ci-qa.yml"
 
+# Azure DevOps (AzDo) pipeline actual files (to be created)
 ci_artifacts_pipeline="devops/azure-pipelines-ci-artifacts.yml"
 ci_qa_cleanup_pipeline="devops/azure-pipelines-ci-qa-cleanup.yml"
 ci_qa_pipeline="devops/azure-pipelines-ci-qa.yml"
 
-echo "[Info] ############ STARTING AZDO REPOSITORY SETUP ############"
-
-replace() {
-  echo "[Info] Replacing '$1' with '$2' in file '$3' and saving as '$4'."
-  if [[ "$OSTYPE" == "darwin"* ]]; then
-    sed -i '' "s/$1/$2/g" "$3" > "$4"
-  else
-    sed -i "s/$1/$2/g" "$3" > "$4"
-  fi
-}
+# Copy the pipeline template files to the actual pipeline files
+cp "$ci_artifacts_pipeline_template" "$ci_artifacts_pipeline"
+cp "$ci_qa_cleanup_pipeline_template" "$ci_qa_cleanup_pipeline"
+cp "$ci_qa_pipeline_template" "$ci_qa_pipeline"
 
 for i in "${!ENVIRONMENT_NAMES[@]}"; do
   environment_name="${ENVIRONMENT_NAMES[$i]}"
@@ -47,33 +53,24 @@ for i in "${!ENVIRONMENT_NAMES[@]}"; do
   placeholder_variable_group_name="<${upper_environment_name}_VARIABLE_GROUP_NAME>"
   placeholder_service_connection_name="<${upper_environment_name}_SERVICE_CONNECTION_NAME>"
 
-  echo "[Info] Replacing placeholders in the pipeline template file."
-  echo "placeholder_branch_name: ${placeholder_branch_name}"
-  echo "placeholder_variable_group_name: ${placeholder_variable_group_name}"
-  echo "placeholder_service_connection_name: ${placeholder_service_connection_name}"
-
-  echo "azdo_git_branch_name: ${azdo_git_branch_name}"
-  echo "azdo_variable_group_name: ${azdo_variable_group_name}"
-  echo "azdo_service_connection_name: ${azdo_service_connection_name}"
-
-  echo "s/${placeholder_variable_group_name}/${azdo_variable_group_name}/g"
-
   # Replace placeholders in the pipeline files
   if [[ "$OSTYPE" == "darwin"* ]]; then
-    replace "$placeholder_branch_name" "$azdo_git_branch_name" "$ci_artifacts_pipeline_template" "$ci_artifacts_pipeline"
-    replace "$placeholder_variable_group_name" "$azdo_variable_group_name" "$ci_artifacts_pipeline_template" "$ci_artifacts_pipeline"
-    replace "$placeholder_service_connection_name" "$azdo_service_connection_name" "$ci_artifacts_pipeline_template" "$ci_artifacts_pipeline"
+    replace "$placeholder_branch_name" "$azdo_git_branch_name" "$ci_artifacts_pipeline"
+    replace "$placeholder_variable_group_name" "$azdo_variable_group_name" "$ci_artifacts_pipeline"
+    replace "$placeholder_service_connection_name" "$azdo_service_connection_name" "$ci_artifacts_pipeline"
 
-    replace "$placeholder_branch_name" "$azdo_git_branch_name" "$ci_qa_cleanup_pipeline_template" "$ci_qa_cleanup_pipeline"
-    replace "$placeholder_variable_group_name" "$azdo_variable_group_name" "$ci_qa_cleanup_pipeline_template" "$ci_qa_cleanup_pipeline"
-    replace "$placeholder_service_connection_name" "$azdo_service_connection_name" "$ci_qa_cleanup_pipeline_template" "$ci_qa_cleanup_pipeline"
+    replace "$placeholder_branch_name" "$azdo_git_branch_name" "$ci_qa_cleanup_pipeline"
+    replace "$placeholder_variable_group_name" "$azdo_variable_group_name" "$ci_qa_cleanup_pipeline"
+    replace "$placeholder_service_connection_name" "$azdo_service_connection_name" "$ci_qa_cleanup_pipeline"
 
-    replace "$placeholder_branch_name" "$azdo_git_branch_name" "$ci_qa_pipeline_template" "$ci_qa_pipeline"
-    replace "$placeholder_variable_group_name" "$azdo_variable_group_name" "$ci_qa_pipeline_template" "$ci_qa_pipeline"
-    replace "$placeholder_service_connection_name" "$azdo_service_connection_name" "$ci_qa_pipeline_template" "$ci_qa_pipeline"
+    replace "$placeholder_branch_name" "$azdo_git_branch_name" "$ci_qa_pipeline"
+    replace "$placeholder_variable_group_name" "$azdo_variable_group_name" "$ci_qa_pipeline"
+    replace "$placeholder_service_connection_name" "$azdo_service_connection_name" "$ci_qa_pipeline"
   fi
 done
 
+echo "[Info] ############    AZDO PIPELINE FILES CREATED   ############"
+echo "[Info] ############ COPYING LOCAL FILES TO AZDO REPO ############"
 for i in "${!ENVIRONMENT_NAMES[@]}"; do
   branch_name="${GIT_BRANCH_NAMES[$i]}"
 
@@ -95,4 +92,5 @@ for i in "${!ENVIRONMENT_NAMES[@]}"; do
     --token "$GIT_PERSONAL_ACCESS_TOKEN"
 done
 
-echo "[Info] ############ AZDO REPOSITORY SETUP COMPLETED ############"
+echo "[Info] ############    FILES COPIED AND COMMITTED    ############"
+echo "[Info] ############  AZDO REPOSITORY SETUP COMPLETED ############"
