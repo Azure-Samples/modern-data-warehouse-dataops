@@ -145,6 +145,14 @@ cleanup_terraform_files() {
   echo "[Info] Terraform lock file deleted successfully."
 }
 
+cleanup_azdo_pipeline_files() {
+  # List and delete Azure DevOps pipeline files
+  echo "[Info] Listing Azure DevOps pipeline files that will be deleted:"
+  find ./devops -maxdepth 1 -type f -name "*.yml"
+  find ./devops -maxdepth 1 -type f -name "*.yml" -exec rm -f {} + 2>/dev/null
+  echo "[Info] Azure DevOps pipeline files deleted successfully."
+}
+
 get_connection_id_by_name() {
   connection_name=$1
   list_connection_url="$fabric_api_endpoint/connections"
@@ -177,5 +185,8 @@ fi
 
 echo "[Info] ############ Cleanup Terraform Intermediate files (state, lock etc.,) ############"
 cleanup_terraform_files
+
+echo "[Info] ############ Cleanup AzDo Pipeline files ('/devops/*.yml) ############"
+cleanup_azdo_pipeline_files
 
 echo "[Info] ############ FINISHED INFRA CLEANUP ############"
