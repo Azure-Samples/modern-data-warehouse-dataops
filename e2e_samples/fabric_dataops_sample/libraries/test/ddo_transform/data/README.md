@@ -1,6 +1,7 @@
 # Data Generation
 
 The data in the files below is generated using Python and the Faker library.
+
 - parking_bay_data.json
 - parking_sensor_data.json
 
