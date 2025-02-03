@@ -81,10 +81,10 @@ def test_process_dim_parking_bay(spark: SparkSession) -> None:
     results_df = transform.process_dim_parking_bay(parkingbay_sdf, dim_parkingbay_sdf, load_id, loaded_on)
 
     # Assert
-    assert results_df.count() == 1439
-    assert results_df.filter(results_df.bay_id == 1572).count() == 1
-    assert results_df.filter(results_df.bay_id == 1436).count() == 1
-    assert results_df.filter(results_df.bay_id == 1159).count() == 1
+    assert results_df.count() == 926
+    assert results_df.filter(results_df.bay_id == 2263).count() == 1
+    assert results_df.filter(results_df.bay_id == 7542).count() == 1
+    assert results_df.filter(results_df.bay_id == 8523).count() == 1
     assert results_df.filter(isnull("dim_parking_bay_id")).count() == 0
 
     # Ensure that the schema is as expected
