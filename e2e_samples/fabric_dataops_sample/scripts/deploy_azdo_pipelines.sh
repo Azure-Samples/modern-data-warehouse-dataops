@@ -13,6 +13,12 @@ set -o nounset
 # AZDO_BRANCH_NAME
 ###################
 
+# AzDo Pipeline name variables
+AZDO_PIPELINE_CI_QA="pl-ci-qa"
+AZDO_PIPELINE_CI_QA_CLEANUP="pl-ci-qa-cleanup"
+AZDO_PIPELINE_CI_PUBLISH_ARTIFACTS="pl-ci-publish-artifacts"
+AZDO_PIPELINE_VARIABLE_PR_ID="PR_ID"
+
 # Function to validate required environment variables
 validate_env_vars() {
   local missing_vars=()
@@ -74,24 +80,44 @@ create_azdo_pipeline() {
   echo "[Info] Pipeline '$pipeline_name' (Pipeline ID: '$pipeline_id') created successfully."
 }
 
+create_azdo_pipeline_variable() {
+  pipeline_name=$1
+  variable_name=$2
+
+  # Create the Azure DevOps (AzDo) pipeline variable
+  az pipelines variable create \
+    --name "$variable_name" \
+    --pipeline-name "$pipeline_name" \
+    --allow-override true \
+    --secret false \
+    --value "0" \
+    --output none
+
+  echo "[Info] Variable '$variable_name' created successfully for pipeline '$pipeline_name'."
+}
+
 validate_env_vars
 
 echo "[Info] ############ CREATING AZDO PIPELINES  ############"
 set_global_azdo_config
 
 create_azdo_pipeline \
-  "pl-ci-qa" \
+  "$AZDO_PIPELINE_CI_QA" \
   "This pipeline runs python and Fabric unit tests and linting. It also creates an ephemeral Fabric workspace. Runs on PRs to dev branch." \
   "/devops/azure-pipelines-ci-qa.yml"
 
 create_azdo_pipeline \
-  "pl-ci-qa-cleanup" \
+  "$AZDO_PIPELINE_CI_QA_CLEANUP" \
   "This pipeline cleans up the ephemeral Fabric workspace created during the QA pipeline run. Adhoc pipeline to be run after PR is closed." \
   "/devops/azure-pipelines-ci-qa-cleanup.yml"
 
 create_azdo_pipeline \
-  "pl-ci-publish-artifacts" \
+  "$AZDO_PIPELINE_CI_PUBLISH_ARTIFACTS" \
   "This pipeline publishes the build artifacts after the PR is merged to dev/stg/prod branches." \
   "/devops/azure-pipelines-ci-artifacts.yml"
+
+create_azdo_pipeline_variable \
+  "$AZDO_PIPELINE_CI_QA_CLEANUP" \
+  "$AZDO_PIPELINE_VARIABLE_PR_ID"
 
 echo "[Info] ############ FINISHED AZDO PIPELINES CREATION ############"

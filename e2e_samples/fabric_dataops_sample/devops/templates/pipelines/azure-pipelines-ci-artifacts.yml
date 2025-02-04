@@ -1,9 +1,9 @@
 trigger:
   branches:
     include:
-      - <DEV_BRANCH_NAME>
-      - <STG_BRANCH_NAME>
-      - <PROD_BRANCH_NAME>
+      - <ENV1_BRANCH_NAME>
+      - <ENV2_BRANCH_NAME>
+      - <ENV3_BRANCH_NAME>
   paths:
     exclude:
       - fabric/workspace
@@ -15,35 +15,35 @@ stages:
   - stage: publish_dev_artifacts
     displayName: 'Publish artifacts for development environment'
     condition: |
-      eq(variables['Build.SourceBranchName'], 'dev')
+      eq(variables['Build.SourceBranchName'], '<ENV1_BRANCH_NAME>')
     variables:
-      - group: <DEV_VARIABLE_GROUP_NAME>
+      - group: <ENV1_VARIABLE_GROUP_NAME>
     jobs:
       - template: templates/jobs/publish-adls-artifacts.yml
         parameters:
-          serviceConnection: <DEV_SERVICE_CONNECTION_NAME>
+          serviceConnection: <ENV1_SERVICE_CONNECTION_NAME>
       - template: templates/jobs/publish-fabric-env-artifacts.yml
 
   - stage: publish_stg_artifacts
     displayName: 'Publish artifacts for staging environment'
     condition: |
-      eq(variables['Build.SourceBranchName'], 'stg')
+      eq(variables['Build.SourceBranchName'], '<ENV2_BRANCH_NAME>')
     variables:
-      - group: <STG_VARIABLE_GROUP_NAME>
+      - group: <ENV2_VARIABLE_GROUP_NAME>
     jobs:
       - template: templates/jobs/publish-adls-artifacts.yml
         parameters:
-          serviceConnection: <STG_SERVICE_CONNECTION_NAME>
+          serviceConnection: <ENV2_SERVICE_CONNECTION_NAME>
       - template: templates/jobs/publish-fabric-env-artifacts.yml
 
   - stage: publish_prod_artifacts
     displayName: 'Publish artifacts for production environment'
     condition: |
-      eq(variables['Build.SourceBranchName'], 'prod')
+      eq(variables['Build.SourceBranchName'], '<ENV3_BRANCH_NAME>')
     variables:
-      - group: <PROD_VARIABLE_GROUP_NAME>
+      - group: <ENV3_VARIABLE_GROUP_NAME>
     jobs:
       - template: templates/jobs/publish-adls-artifacts.yml
         parameters:
-          serviceConnection: <PROD_SERVICE_CONNECTION_NAME>
+          serviceConnection: <ENV3_SERVICE_CONNECTION_NAME>
       - template: templates/jobs/publish-fabric-env-artifacts.yml

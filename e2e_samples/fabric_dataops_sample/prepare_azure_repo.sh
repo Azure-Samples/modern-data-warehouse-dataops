@@ -48,10 +48,10 @@ for i in "${!ENVIRONMENT_NAMES[@]}"; do
   azdo_service_connection_name="sc-${base_name}-${environment_name}"
   azdo_git_branch_name="${branch_name}"
 
-  upper_environment_name=$(echo "$environment_name" | tr '[:lower:]' '[:upper:]')
-  placeholder_branch_name="<${upper_environment_name}_BRANCH_NAME>"
-  placeholder_variable_group_name="<${upper_environment_name}_VARIABLE_GROUP_NAME>"
-  placeholder_service_connection_name="<${upper_environment_name}_SERVICE_CONNECTION_NAME>"
+  index=$((i+1))
+  placeholder_branch_name="<ENV${index}_BRANCH_NAME>"
+  placeholder_variable_group_name="<ENV${index}_VARIABLE_GROUP_NAME>"
+  placeholder_service_connection_name="<ENV${index}_SERVICE_CONNECTION_NAME>"
 
   # Replace placeholders in the pipeline files
   if [[ "$OSTYPE" == "darwin"* ]]; then

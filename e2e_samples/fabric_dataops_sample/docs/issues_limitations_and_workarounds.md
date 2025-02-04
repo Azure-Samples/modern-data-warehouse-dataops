@@ -4,7 +4,19 @@ This document lists the known issues and limitations specific to the sample, as 
 
 ## Contents <!-- omit in toc -->
 
+- [Dependencies on `ENVIRONMENT_NAMES` variable](#dependencies-on-environment_names-variable)
 - [Incorrect details in Pipeline's snapshot](#incorrect-details-in-pipelines-snapshot)
+
+## Dependencies on `ENVIRONMENT_NAMES` variable
+
+The sample uses the `ENVIRONMENT_NAMES` variable in the [.env](./../.envtemplate) file to define the environment names. By default, it includes three values: `dev`, `stg`, and `prod`. It's highly recommended to use these values as-is. Additionally, it is recommended to use the same values for branch names as part of the `GIT_BRANCH_NAMES` variable.
+
+If you need to change these values, you may need to update the following:
+
+- The [prepare_azure_repo.sh](./../prepare_azure_repo.sh) script
+- The [deploy.sh](./../deploy.sh) script
+- The [cleanup.sh](./../cleanup.sh) script
+- The [Azure DevOps pipeline](./../devops/templates/pipelines/) YAML files
 
 ## Incorrect details in Pipeline's snapshot
 
