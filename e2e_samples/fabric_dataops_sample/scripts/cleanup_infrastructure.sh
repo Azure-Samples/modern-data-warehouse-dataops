@@ -44,6 +44,16 @@ fabric_api_endpoint="https://api.fabric.microsoft.com/v1"
 adls_gen2_shortcut_name="sc-adls-main"
 adls_gen2_shortcut_path="Files"
 
+# Azure DevOps pipelines to be deleted
+azdo_pipeline_ci_qa="pl-ci-qa"
+azdo_pipeline_ci_qa_cleanup="pl-ci-qa-cleanup"
+azdo_pipeline_ci_publish_artifacts="pl-ci-publish-artifacts"
+
+set_global_azdo_config() {
+  # Set the global Azure DevOps (AzDo) configuration
+  az devops configure --defaults organization="https://dev.azure.com/$git_organization_name" project="$git_project_name"
+}
+
 cleanup_terraform_resources() {
   local original_directory=$(pwd)
   cd "$1" || exit
@@ -161,6 +171,25 @@ get_connection_id_by_name() {
   echo "$connection_id"
 }
 
+get_azdo_pipeline_id () {
+  local pipeline_name=$1
+  local pipeline_output=$(az pipelines list --query "[?name=='$pipeline_name']" --output json)
+  local pipeline_id=$(echo "$pipeline_output" | jq -r '.[0].id')
+  echo "$pipeline_id"
+}
+
+delete_azdo_pipeline() {
+  local pipeline_name=$1
+  local pipeline_id=$(get_azdo_pipeline_id "$pipeline_name")
+
+  if [[ -z "$pipeline_id" || "$pipeline_id" == "null" ]]; then
+    echo "[Info] No AzDo pipeline with name '$pipeline_name' found."
+  else
+    az pipelines delete --id "$pipeline_id" --yes 1>/dev/null
+    echo "[Info] Deleted pipeline '$pipeline_name' (Pipeline ID: '$pipeline_id')"
+  fi
+}
+
 echo "[Info] ############ STARTING CLEANUP STEPS############"
 
 echo "[Info] ############ Destroy terraform resources ############"
@@ -185,6 +214,13 @@ fi
 
 echo "[Info] ############ Cleanup Terraform Intermediate files (state, lock etc.,) ############"
 cleanup_terraform_files
+
+echo "[Info] ############ Deleting AzDo Pipelines ###########"
+set_global_azdo_config
+
+delete_azdo_pipeline "$azdo_pipeline_ci_qa"
+delete_azdo_pipeline "$azdo_pipeline_ci_qa_cleanup"
+delete_azdo_pipeline "$azdo_pipeline_ci_publish_artifacts"
 
 echo "[Info] ############ Cleanup AzDo Pipeline files ('/devops/*.yml) ############"
 cleanup_azdo_pipeline_files
