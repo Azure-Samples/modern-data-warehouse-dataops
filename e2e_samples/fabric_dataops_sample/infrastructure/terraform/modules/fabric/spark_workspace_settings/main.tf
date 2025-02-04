@@ -8,6 +8,7 @@ resource "fabric_spark_workspace_settings" "settings" {
 
   high_concurrency = {
     notebook_interactive_run_enabled = var.notebook_interactive_run_enabled
+    notebook_pipeline_run_enabled    = var.notebook_pipeline_run_enabled
   }
 
   environment = {
@@ -25,5 +26,10 @@ resource "fabric_spark_workspace_settings" "settings" {
       max_node_count = var.starter_pool_max_node_count
     }
     customize_compute_enabled = var.customize_compute_enabled
+  }
+
+  job = {
+    conservative_job_admission_enabled = var.conservative_job_admission_enabled
+    session_timeout_in_minutes         = var.session_timeout_in_minutes
   }
 }

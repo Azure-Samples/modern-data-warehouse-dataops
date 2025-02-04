@@ -60,3 +60,21 @@ variable "notebook_interactive_run_enabled" {
   description = "Whether notebook interactive run is enabled for high concurrency"
   default     = true
 }
+
+variable "notebook_pipeline_run_enabled" {
+  type        = bool
+  description = "Whether notebook pipeline run is enabled for high concurrency"
+  default     = true
+}
+
+variable "conservative_job_admission_enabled" {
+  type        = bool
+  description = "Whether conservative job admission is enabled"
+  default     = false
+}
+
+variable "session_timeout_in_minutes" {
+  type        = number
+  description = "Time to terminate inactive Spark sessions."
+  default     = 30
+}

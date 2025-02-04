@@ -3,6 +3,7 @@ resource "fabric_notebook" "notebook" {
   display_name = var.notebook_name
   description  = var.notebook_description
   workspace_id = var.workspace_id
+  format       = var.format
   definition = {
     "notebook-content.ipynb" = {
       source = var.notebook_definition_path
