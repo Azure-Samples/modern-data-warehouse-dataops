@@ -28,7 +28,7 @@ Refer to [devops/templates/pipelines/azure-pipelines-ci-qa.yml](./../devops/temp
 
 As mentioned above, the 'QA pipeline' creates a new ephemeral Fabric workspace for each PR. Once this PR is closed or abandoned, the 'QA cleanup pipeline' ensures that these temporary resources are deleted, freeing up system resources.
 
-Refer to [devops/azure-pipelines-ci-qa-cleanup.yml](./../devops/azure-pipelines-ci-qa-cleanup.yml) for the actual pipeline definition.
+Refer to [devops/templates/pipelines/azure-pipelines-ci-qa-cleanup.yml](./../devops/templates/pipelines/azure-pipelines-ci-qa-cleanup.yml) for the actual pipeline definition.
 
 ### Build artifacts pipeline
 
