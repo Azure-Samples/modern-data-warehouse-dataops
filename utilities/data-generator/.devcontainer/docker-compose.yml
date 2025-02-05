@@ -5,7 +5,6 @@
 
 services:
   data_simulator_dc:
-    env_file: .env
     build:
       context: ../../../
       dockerfile: utilities/data-generator/.devcontainer/Dockerfile
