@@ -21,6 +21,9 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
   - [High-level deployment sequence](#high-level-deployment-sequence)
   - [Deployed resources](#deployed-resources)
   - [Pre-requisites](#pre-requisites)
+  - [Software pre-requisites](#software-pre-requisites)
+    - [If using dev container (Recommended)](#if-using-dev-container-recommended)
+    - [If not using dev container](#if-not-using-dev-container)
   - [Familiarize yourself with known issues, limitations, and workarounds](#familiarize-yourself-with-known-issues-limitations-and-workarounds)
 - [How to use the sample](#how-to-use-the-sample)
   - [Initial infrastructure deployment](#initial-infrastructure-deployment)
@@ -111,7 +114,7 @@ At a high level, the deployment sequence proceeds as follows:
 - Run the deployment script to create Azure and supported Fabric resources, **using either a service principal or managed identity** for authentication.
 - Run the deployment script again, **this time using an Entra ID user** for authentication. This step will create the Lakehouse shortcut to the ADLS Gen2 storage account and deploy Fabric items that cannot be authenticated via service principal or managed identity.
 
-Please follow the [How to use the sample](#how-to-use-the-sample) section for detailed instructions.
+Note that the sample uses multiple security groups and Entra id types (managed identity, service principal, Entra user etc.). In some cases, there is a choice (using managed identity vs service principal) and in some cases it is required (e.g., certain Fabric REST APIs do not support sp/mi authentication). Please follow the [How to use the sample](#how-to-use-the-sample) section for detailed instructions.
 
 ### Deployed resources
 
@@ -152,19 +155,20 @@ Note that the script deploys the aforementioned resources across multiple enviro
 - An Entra user that can access Microsoft Fabric (Free license is enough).
 - An existing Entra [security group](https://learn.microsoft.com/entra/fundamentals/concept-learn-about-groups) (referred to as sg-fabric-admins) for Fabric Workspace admins. This group is added as an admin to the deployed Fabric workspace.
   - Add the above user to this security group (sg-fabric-admins) to enable it to upload configuration files and reference data to ADLS Gen2, as the group is assigned the 'Storage Blob Data Contributor' (and 'Key Vault Secrets Officer') role during the deployment.
+- An existing Entra [security group](https://learn.microsoft.com/entra/fundamentals/concept-learn-about-groups) (referred to as sp-deployment-admins) for the deployment admins.
 - An Azure subscription with the following:
-  - The `Microsoft.Fabric` [resource provider](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#register-resource-provider) has been registered on the Azure subscription.
+  - The subscription is [registered](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#register-resource-provider) for the `Microsoft.Fabric` and `Microsoft.OperationalInsights` resource providers.
   - Multiple resource groups to which your user should be granted [Contributor](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/privileged#contributor) and [User Access Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/privileged#user-access-administrator) privileged roles. These resource groups are used to deploy Azure resources for each environment. So, if you are planning to have three environments (dev, staging, production), you need three resource groups. The names of these resource groups are specified as an array variable, `RESOURCE_GROUP_NAMES`, in the `.env` file. You can use the [configure_resource_groups.sh](./scripts/configure_resource_groups.sh) script to create these resource groups and assign the necessary roles.
-  - A [managed identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview) OR a [service principal](https://learn.microsoft.com/entra/identity-platform/app-objects-and-service-principals)
-  - Request that a Fabric administrator grant the above service principal or managed identity permission to [use Fabric APIs](https://learn.microsoft.com/rest/api/fabric/articles/identity-support#service-principals-and-managed-identities-support). To allow an app to use a service principal as an authentication method, the service principal must be added to an allowed security group (referred to as sp-deployment-admins). Note that this is a different security group than the one used for workspace admins (sg-fabric-admins). This group is then mentioned in the tenant settings as shown below:
+- A [managed identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview) OR a [service principal](https://learn.microsoft.com/entra/identity-platform/app-objects-and-service-principals)
+  - Request that a Fabric administrator grant the above service principal or managed identity permission to [use Fabric APIs](https://learn.microsoft.com/rest/api/fabric/articles/identity-support#service-principals-and-managed-identities-support). To allow an app to use a service principal as an authentication method, the service principal must be added to the deployment admins security group (sp-deployment-admins). This group is then mentioned in the tenant settings as shown below:
 
     ![Fabric API Permissions](./images/admin-portal-allow-apis.png)
 
-  - Grant the service principal or managed identity the `Contributor` and `User Access Administrator` privileged roles on the Azure resource group. For `User Access Administrator` role, you would need to add delegate condition during role assignment. A condition is an additional check to provide more fine-grained access control. Check the [documentation](https://learn.microsoft.com/azure/role-based-access-control/delegate-role-assignments-portal?tabs=template) for more details. During the deployment, the `Storage Blob Data Contributor` and the `Key Vault Secrets Officer` roles are granted to a newly created service principal (Fabric workspace identity) and an existing Entra security group (Fabric workspace admins). Here is a valid sample condition for the `User Access Administrator` role assignment:
+  - Grant the service principal or managed identity the `Contributor` and `User Access Administrator` privileged roles on the Azure resource group. For `User Access Administrator` role, you would need to add delegate condition during role assignment. A condition is an additional check to provide more fine-grained access control. Check the [documentation](https://learn.microsoft.com/azure/role-based-access-control/delegate-role-assignments-portal?tabs=template) for more details. During the deployment, the `Storage Blob Data Contributor` and the `Key Vault Secrets Officer` roles are granted to the newly created service principal for [Fabric workspace identity](https://learn.microsoft.com/fabric/security/workspace-identity) and the security group for the Fabric workspace admins (sg-fabric-admins). Here is a valid sample condition for the `User Access Administrator` role assignment:
 
     ![Role Assignment Condition](./images/role-assignment-condition.png)
 
-  - The sample reuses the above service principal or managed identity in the Azure DevOps service connection. This service connection performs data plane operations, such as uploading files to ADLS Gen2 and accessing Key Vault secrets. Therefore, add these principals to the Fabric Admins Entra security group (sg-fabric-admins) mentioned earlier.
+  - The sample reuses the above service principal or managed identity in the Azure DevOps service connection. This service connection performs data plane operations, such as uploading files to ADLS Gen2 and accessing Key Vault secrets. For that, add these principals to the security group for the Fabric workspace admins (sg-fabric-admins).
 
 - Microsoft Graph API permissions:
   - For service principal, grant the Graph API application permission `Group.Read.All` to read the security group properties.
@@ -178,16 +182,32 @@ Note that the script deploys the aforementioned resources across multiple enviro
 - Configure Fabric capacity administrators.
   - If you want to use an **existing** Fabric capacity, ensure that both your user account and the principal (service principal or managed identity) are [added as Capacity Administrators](https://learn.microsoft.com/fabric/admin/capacity-settings?tabs=fabric-capacity#add-and-remove-admins) to that capacity.
   - If you are creating a **new** Fabric capacity, you need to provide a list of users and principals (service principal or managed identity) that will be added as capacity admins in the `FABRIC_CAPACITY_ADMINS` environment variable. For users, mention 'userPrincipalName'. For principals (sp/mi), mention 'Object ID'. Don't add spaces after the comma.
+- Access to an Azure DevOps organization and project:
+  - Contributor permissions to an Azure Repo in such Azure DevOps environment. The service principal or managed identity requires Contributor permissions as well. Refer to the [documentation](https://learn.microsoft.com/azure/devops/organizations/security/add-users-team-project#add-users-or-groups-to-a-project) for more details.
+  - A branch and a folder in the repository where the Fabric items will be committed. The folder must already exist.
+
+### Software pre-requisites
+
+The sample includes a pre-configured dev container with all the necessary tools and dependencies. Using it is the recommended way to run the deployment scripts, as it helps avoid environment-related issues.
+
+That said, if you prefer not to use the dev container, you can easily set up your local environment. Below are the software pre-requisites for both scenarios:
+
+#### If using dev container (Recommended)
+
+- [Docker](https://www.docker.com/)
+- [VSCode](https://code.visualstudio.com/)
+- [Visual Studio Code Remote Development Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
+
+#### If not using dev container
+
+- For Windows users, [Windows Subsystem For Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
 - A bash shell with the following installed:
   - [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli?view=azure-cli-latest)
   - [Azure DevOps CLI](https://marketplace.visualstudio.com/items?itemName=ms-vsts.cli) extension
     - To install, run `az extension add --name azure-devops`
   - [jq](https://jqlang.github.io/jq/download/)
-  - terraform
-  - python version 3.9+ with `requests` package installed
-- Access to an Azure DevOps organization and project:
-  - Contributor permissions to an Azure Repo in such Azure DevOps environment. The service principal or managed identity requires Contributor permissions as well. Refer to the [documentation](https://learn.microsoft.com/azure/devops/organizations/security/add-users-team-project#add-users-or-groups-to-a-project) for more details.
-  - A branch and a folder in the repository where the Fabric items will be committed. The folder must already exist.
+  - [Terraform](https://developer.hashicorp.com/terraform/install?product_intent=terraform)
+  - [Python version 3.9+](https://www.python.org/downloads/) with `requests` package installed
 
 ### Familiarize yourself with known issues, limitations, and workarounds
 
@@ -247,7 +267,13 @@ Refer to the [known issues, limitations, and workarounds](docs/issues_limitation
   - The `EXISTING_FABRIC_CAPACITY_NAME` variable is the name of an existing Fabric capacity. If you want to create a new capacity, leave this blank.
   - The `GITHUB_BRANCH_NAMES` array variable defines the Git branches for each environment where the Fabric items will be committed. The workspace in each environment is integrated with the corresponding Git branch. It is highly recommended to use the default values ("dev" "stg" "prod") as-is. The length of the `ENVIRONMENT_NAMES` and `GIT_BRANCH_NAMES` array variables must be the same.
   - The `GIT_USERNAME` and `GIT_PERSONAL_ACCESS_TOKEN` variables are used to setup the initial branch structure where a set of files are copied and committed to Azure repo before running the main deployment. The token should have a minimum of `Code -> Read & write` [scope](https://learn.microsoft.com/azure/devops/integrate/get-started/authentication/oauth?view=azure-devops#scopes). Refer to the [documentation](https://learn.microsoft.com/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate) for more details.
-  - The `FABRIC_CAPACITY_ADMINS` variable is a comma-separated list of users and service principals that will be added as capacity admins to the newly created Fabric capacity. If you are using an existing capacity, you can leave this blank. But in that case, make sure that your account and the principal (service principal or managed identity) are [added as Capacity Administrators](https://learn.microsoft.com/fabric/admin/capacity-settings?tabs=fabric-capacity#add-and-remove-admins) to that capacity, as mentioned in the [pre-requisites](#pre-requisites).
+  - The `FABRIC_CAPACITY_ADMINS` variable is a comma-separated list of users and service principals that will be added as capacity admins to the newly created Fabric capacity. If you are using an existing capacity, you can leave this blank. But in that case, make sure that your account and the principal (service principal or managed identity) are [added as Capacity Administrators](https://learn.microsoft.com/fabric/admin/capacity-settings?tabs=fabric-capacity#add-and-remove-admins) to that capacity, as mentioned in the [pre-requisites](#pre-requisites). Also, note that the "Object ID" for the service principal is that of the enterprise application (service principal) and not the application as shown below:
+
+    ![Service Principal Object ID](./images/application-enterprise-object-id.png)
+
+- [Optional] If you want to use the dev container, open the repository in VSCode. Make sure that docker is running and the remote development extension is installed (check [pre-requisites](#if-using-dev-container-recommended) for details). Open the Command Palette (`Ctrl+Shift+P` on Windows, `Cmd+Shift+P` on Mac) and search for `Dev Containers: Open Folder in Container...`. Select `e2e_samples/fabric_dataops_sample` folder and confirm. This will build the dev container and open a new VSCode window inside the container. Here is a screenshot of how it looks:
+
+  ![Dev Container](./images/dev-container.png)
 
 - Before running the actual deployment, the branching structure in the Azure repo needs to be created. This is done by running the [prepare_azure_repo.sh](./prepare_azure_repo.sh) bash script. As the script uses PAT token, there is no need to login to Azure CLI. The script relies on the `GIT_USERNAME` and `GIT_PERSONAL_ACCESS_TOKEN` environment variables for permissions, which are sourced from the `.env` file, to be set.
 
@@ -376,16 +402,7 @@ Coming soon...
 
 ## Cleaning up
 
-Once you have finished with the sample, you can delete the deployed resources by running the cleanup script.
-
-The [cleanup script](./cleanup.sh) performs the following actions:
-
-- Deletes all the deployed Azure and Fabric resources.
-- Deletes Fabric connection to ADLS Gen2 storage.
-- Ensures that the Azure Key Vault is purged.
-- Removes intermediate Terraform files created during deployment process including state files.
-
-You will need to authenticate **with user context** and run the cleanup script.
+Once you have finished with the sample, you can delete the deployed resources by running the [cleanup script](./cleanup.sh). You will need to authenticate **with user context** as shown below:
 
   ```bash
   source .env
@@ -394,6 +411,17 @@ You will need to authenticate **with user context** and run the cleanup script.
   az config set core.login_experience_v2=on
   ./cleanup.sh
   ```
+
+The cleanup script performs the following actions:
+
+- The Azure, Microsoft Fabric and Azure DevOps resources, deployed via Terraform, are removed.
+- The Fabric connection to ADLS Gen2 storage is deleted.
+- The Azure Key Vaults are purged.
+- The intermediate Terraform files created during deployment process including state files are removed.
+- The Azure Devops pipelines are deleted.
+- The Azure Devops pipelines definition files created (with substituted values) in the `/devops` folder are removed.
+
+Note that the script does not remove Azure repo branches or their contents. You can manually delete them from the Azure DevOps portal if needed. Note that the branches will be recreated when you run the [prepare_azure_repo.sh](./prepare_azure_repo.sh) script again.
 
 ## Frequently asked questions
 

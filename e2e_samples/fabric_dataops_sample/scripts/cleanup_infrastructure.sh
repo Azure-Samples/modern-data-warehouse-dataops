@@ -78,10 +78,8 @@ cleanup_terraform_resources() {
 
   if [[ -z ${existing_fabric_capacity_name} ]]; then
     create_fabric_capacity=true
-    echo "[Info] Variable 'EXISTING_FABRIC_CAPACITY_NAME' is empty, a new Fabric capacity will be created."
   else
     create_fabric_capacity=false
-    echo "[Info] Variable 'EXISTING_FABRIC_CAPACITY_NAME' is NOT empty, the provided Fabric capacity will be used."
   fi
 
   echo "[Info] Switching to terraform '$environment_name' workspace."
