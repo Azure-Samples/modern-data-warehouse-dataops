@@ -74,19 +74,19 @@ Here is a high-level summary of the steps involved:
 
 In this sample, the DevOps process occurs across five distinct environments, each corresponding to its own fabric workspace. These workspaces serve different purposes throughout the development and deployment lifecycle. Here are the details of each workspace:
 
-- **Dev Workspace**: The **Dev Workspace** serves as the central integration point where developers merge their individual **Feature Workspaces**. This workspace and its associated Git branch should not be modified directly; changes must be made through a pull request (PR) merge followed by a Git sync.
+- **Dev Workspace**: The `Dev` workspace serves as the central integration point where developers merge their individual `Feature` Workspaces. This workspace and its associated Git branch should not be modified directly; changes must be made through a pull request (PR) merge followed by a Git sync.
 
-- **Feature Workspace**: The **Feature Workspaces** are created from the **Dev Workspace** to enable isolated development of new features without impacting the main codebase. Once development and unit testing are complete, the feature is merged back into the **Dev Workspace** for integration with other changes.
+- **Feature Workspace**: The `Feature` workspaces are created from the `Dev` workspace to enable isolated development of new features without impacting the main codebase. Once development and unit testing are complete, the feature is merged back into the `Dev` workspace for integration with other changes.
 
-- **Ephemeral Workspace**: The **Ephemeral Workspace** is a temporary Fabric workspace created during the **QA Pipeline** to test changes in isolation before merging into the **Dev Workspace**. It allows developers to independently validate their changes and confirm expected behavior before integration. The **Ephemeral Workspace** is automatically created when a pull request (PR) is opened and is deleted upon PR completion.
+- **Ephemeral Workspace**: The `Ephemeral` workspace is a temporary Fabric workspace created during the `QA Pipeline` to test changes in isolation before merging into the `Dev` workspace. It allows developers to independently validate their changes and confirm expected behavior before integration. The `Ephemeral` workspace is automatically created when a pull request (PR) is opened and is deleted upon PR completion.
 
-- **Staging Workspace**: The **Staging Workspace** replicates the production environment and is used for final integration testing and user acceptance testing (UAT). Once the code is validated in the **Dev Workspace**, it is deployed to the **Staging Workspace** for further testing before being released to production. A pull request (PR) is opened to merge changes from the **Dev Workspace** to the **Staging Workspace**.
+- **Staging Workspace**: The `Staging` workspace replicates the production environment and is used for final integration testing and user acceptance testing (UAT). Once the code is validated in the `Dev` workspace, it is deployed to the `Staging` workspace for further testing before being released to production. A pull request (PR) is opened to merge changes from the `Dev` workspace to the `Staging` workspace.
 
-- **Prod Workspace**: The **Prod Workspace** is the live, production environment where only thoroughly tested and approved code is deployed. A pull request (PR) is opened to merge changes from the **Staging Workspace** to the **Prod Workspace**.
+- **Prod Workspace**: The `Prod` workspace is the live, production environment where only thoroughly tested and approved code is deployed. A pull request (PR) is opened to merge changes from the `Staging` workspace** to the `Prod` Workspace.
 
 ### Automated testing
 
-Automated testing is an integral part of the CI/CD process to ensure the correctness of changes across different workspaces.  The process primarily involves two types of testing: [Unit Testing](#unit-testing) and [Integration Testing](#integration-testing).
+Automated testing is an integral part of the CI/CD process to ensure the correctness of changes across different workspaces.  The process primarily involves two types of testing: [Unit testing](#unit-testing) and [Integration testing](#integration-testing).
 
 #### Unit testing
 
@@ -181,10 +181,9 @@ Note that the script deploys the aforementioned resources across multiple enviro
 
 - Configure Fabric capacity administrators.
   - If you want to use an **existing** Fabric capacity, ensure that both your user account and the principal (service principal or managed identity) are [added as Capacity Administrators](https://learn.microsoft.com/fabric/admin/capacity-settings?tabs=fabric-capacity#add-and-remove-admins) to that capacity.
-  - If you are creating a **new** Fabric capacity, you need to provide a list of users and principals (service principal or managed identity) that will be added as capacity admins in the `FABRIC_CAPACITY_ADMINS` environment variable. For users, mention 'userPrincipalName'. For principals (sp/mi), mention 'Object ID'. Don't add spaces after the comma.
+  - If you are creating a **new** Fabric capacity, you need to provide a list of users and principals (service principal or managed identity) that will be added as capacity admins in the `FABRIC_CAPACITY_ADMINS` environment variable. For users, mention 'userPrincipalName'. For service principal or managed identity, mention 'Object ID' of the corresponding service principal object (Enterprise application). Don't add spaces after the comma.
 - Access to an Azure DevOps organization and project:
   - Contributor permissions to an Azure Repo in such Azure DevOps environment. The service principal or managed identity requires Contributor permissions as well. Refer to the [documentation](https://learn.microsoft.com/azure/devops/organizations/security/add-users-team-project#add-users-or-groups-to-a-project) for more details.
-  - A branch and a folder in the repository where the Fabric items will be committed. The folder must already exist.
 
 ### Software pre-requisites
 
@@ -267,7 +266,7 @@ Refer to the [known issues, limitations, and workarounds](docs/issues_limitation
   - The `EXISTING_FABRIC_CAPACITY_NAME` variable is the name of an existing Fabric capacity. If you want to create a new capacity, leave this blank.
   - The `GITHUB_BRANCH_NAMES` array variable defines the Git branches for each environment where the Fabric items will be committed. The workspace in each environment is integrated with the corresponding Git branch. It is highly recommended to use the default values ("dev" "stg" "prod") as-is. The length of the `ENVIRONMENT_NAMES` and `GIT_BRANCH_NAMES` array variables must be the same.
   - The `GIT_USERNAME` and `GIT_PERSONAL_ACCESS_TOKEN` variables are used to setup the initial branch structure where a set of files are copied and committed to Azure repo before running the main deployment. The token should have a minimum of `Code -> Read & write` [scope](https://learn.microsoft.com/azure/devops/integrate/get-started/authentication/oauth?view=azure-devops#scopes). Refer to the [documentation](https://learn.microsoft.com/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate) for more details.
-  - The `FABRIC_CAPACITY_ADMINS` variable is a comma-separated list of users and service principals that will be added as capacity admins to the newly created Fabric capacity. If you are using an existing capacity, you can leave this blank. But in that case, make sure that your account and the principal (service principal or managed identity) are [added as Capacity Administrators](https://learn.microsoft.com/fabric/admin/capacity-settings?tabs=fabric-capacity#add-and-remove-admins) to that capacity, as mentioned in the [pre-requisites](#pre-requisites). Also, note that the "Object ID" for the service principal is that of the enterprise application (service principal) and not the application as shown below:
+  - The `FABRIC_CAPACITY_ADMINS` variable is a comma-separated list of users and service principals that will be added as capacity admins to the newly created Fabric capacity. If you are using an existing capacity, you can leave this blank. But in that case, make sure that your account and the principal (service principal or managed identity) are [added as Capacity Administrators](https://learn.microsoft.com/fabric/admin/capacity-settings?tabs=fabric-capacity#add-and-remove-admins) to that capacity, as mentioned in the [pre-requisites](#pre-requisites). Also, note that the "Object ID" for the service principal or managed identity is that of the enterprise application (service principal object) and not the application as shown below:
 
     ![Service Principal Object ID](./images/application-enterprise-object-id.png)
 
