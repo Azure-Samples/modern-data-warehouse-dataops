@@ -6,7 +6,7 @@ This document lists the known issues and limitations specific to the sample, as 
 
 - [Dependencies on `ENVIRONMENT_NAMES` variable](#dependencies-on-environment_names-variable)
 - [Incorrect details in Pipeline's snapshot](#incorrect-details-in-pipelines-snapshot)
-- [Synthetic Data used in this sample](#synthetic-data-used-in-this-sample)
+- [Use of synthetic data in the sample](#use-of-synthetic-data-in-the-sample)
 
 ## Dependencies on `ENVIRONMENT_NAMES` variable
 
