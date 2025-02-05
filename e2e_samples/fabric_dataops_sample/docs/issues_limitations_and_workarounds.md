@@ -16,8 +16,10 @@ For pipeline executions, regardless of the user's selection, the first notebook'
     - Snapshot URL can be obtained like this: `https://{endpoint}/groups/{workspaceId}/synapsenotebooks/{artifactId}/snapshots/{runId}`. Example: `https://app.powerbi.com/groups/aaaa-bbbb-cccc-dddd/synapsenotebooks/zzzz-yyyy-zzxxxd/snapshots/149xxx-yyyy-zzzz`.
     - Open the URL browser to see the snapshot.
 
-## Synthetic Data used in this sample
+## Use of synthetic data in the sample
 
-- The data used in this sample is synthetically generated for testing and demonstration purposes within our data pipeline. It is not based on real-world data and may lack logical or practical accuracy for analytical use. Please treat it solely as sample data for validating pipeline functionality rather than for analysis, decision-making, or reporting showcases.
-- Each time the data pipeline runs, the same dataset is downloaded into a new subfolder within the landing directory and reprocessed.
-- In future iterations of this sample, we plan to introduce more realistic data to demonstrate real world dataengineering scenarios.
+The data used in this sample is synthetically generated for testing and demonstration purposes only. It is not based on real-world data and may lack logical or practical accuracy for analytical use. It should be treated solely as sample data for validating Fabric notebook/pipeline functionality, rather than for analysis, decision-making, or reporting showcases.
+
+Each time the data pipeline runs, the same dataset is downloaded into a new subfolder within the landing directory and reprocessed.
+
+The use of synthetic data helps avoid dependencies on external APIs and safeguards against copyrights issues. In future, we plan to introduce synthetic data generation capabilities within the sample. This feature will allow users to generate realistic data for simulating real-world data engineering scenarios.
