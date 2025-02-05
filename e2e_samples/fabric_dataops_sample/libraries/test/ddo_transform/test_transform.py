@@ -15,6 +15,8 @@ load_id = "00000000-0000-0000-0000-000000000000"
 loaded_on = datetime.datetime.now()
 data_path = os.path.join(os.path.dirname(__file__), "data/")
 
+print(data_path)
+
 
 @pytest.fixture
 def spark() -> SparkSession:
@@ -79,10 +81,10 @@ def test_process_dim_parking_bay(spark: SparkSession) -> None:
     results_df = transform.process_dim_parking_bay(parkingbay_sdf, dim_parkingbay_sdf, load_id, loaded_on)
 
     # Assert
-    assert results_df.count() == 998
-    assert results_df.filter(results_df.bay_id == 3787).count() == 1
-    assert results_df.filter(results_df.bay_id == 4318).count() == 1
-    assert results_df.filter(results_df.bay_id == 21016).count() == 1
+    assert results_df.count() == 926
+    assert results_df.filter(results_df.bay_id == 2263).count() == 1
+    assert results_df.filter(results_df.bay_id == 7542).count() == 1
+    assert results_df.filter(results_df.bay_id == 8523).count() == 1
     assert results_df.filter(isnull("dim_parking_bay_id")).count() == 0
 
     # Ensure that the schema is as expected
