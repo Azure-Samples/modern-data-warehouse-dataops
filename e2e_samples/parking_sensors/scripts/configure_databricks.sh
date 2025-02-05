@@ -122,8 +122,23 @@ tmpfile=.tmpfile
 adfLsDir=$adfTempDir/linkedService
 jq --arg databricksExistingClusterId "$cluster_id" '.properties.typeProperties.existingClusterId = $databricksExistingClusterId' $adfLsDir/Ls_AzureDatabricks_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AzureDatabricks_01.json
 
-log "Uploading libs TO dbfs..."
-databricks fs cp --recursive --overwrite "./databricks/libs/ddo_transform-localdev-py2.py3-none-any.whl" "dbfs:/ddo_transform-localdev-py2.py3-none-any.whl"
+# Find the generated .whl file dynamically
+WHL_FILE=$(find ./src/ddo_transform/dist/ -name "*.whl" | head -n 1)
+
+if [ -z "$WHL_FILE" ]; then
+    log "Error: No .whl file found in dist directory. Make sure the package is built." "error"
+    exit 1
+fi
+
+WHL_FILENAME=$(basename "$WHL_FILE")
+
+# Upload the dynamically found .whl file to Databricks
+log "Uploading $WHL_FILENAME to Databricks DBFS..."
+databricks fs cp --recursive --overwrite "$WHL_FILE" "dbfs:/$WHL_FILENAME"
+log "Successfully uploaded $WHL_FILENAME to Databricks DBFS." "success"
+
+# Delete the dist folder and WHL file locally
+rm -rf ./src/ddo_transform/dist
 
 # Create JSON file for library installation
 json_file="./databricks/config/libs.config.json"
