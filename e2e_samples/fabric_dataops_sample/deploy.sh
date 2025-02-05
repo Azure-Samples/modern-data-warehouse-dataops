@@ -13,13 +13,21 @@ log_file="deploy_${BASE_NAME}_$(date +"%Y%m%d_%H%M%S").log"
 exec > >(tee -a "$log_file")
 exec 2>&1
 
+# Global variable to capture the first environment ("dev") branch name
+azdo_policies_branch_name=""
+# Global variable to capture the last environment ("prod") branch name
+azdo_pipelines_branch_name=""
+
 for i in "${!ENVIRONMENT_NAMES[@]}"; do
 
   if [ "$i" -eq 0 ]; then
     deploy_fabric_items="true"
+    azdo_policies_branch_name=${GIT_BRANCH_NAMES[$i]}
   else
     deploy_fabric_items="false"
   fi
+
+  azdo_pipelines_branch_name=${GIT_BRANCH_NAMES[$i]}
 
   ENVIRONMENT_NAME=${ENVIRONMENT_NAMES[$i]} \
   RESOURCE_GROUP_NAME=${RESOURCE_GROUP_NAMES[$i]} \
@@ -38,3 +46,16 @@ for i in "${!ENVIRONMENT_NAMES[@]}"; do
   DEPLOY_FABRIC_ITEMS=$deploy_fabric_items \
   bash -c "./scripts/deploy_infrastructure.sh"
 done
+
+# Deploy Azure DevOps pipelines and create branch policies
+user_principal_type=$(az account show --query user.type -o tsv)
+if [ "$user_principal_type" == "user" ]; then
+  AZDO_ORGANIZATION_NAME=$GIT_ORGANIZATION_NAME \
+  AZDO_PROJECT_NAME=$GIT_PROJECT_NAME \
+  AZDO_REPOSITORY_NAME=$GIT_REPOSITORY_NAME \
+  AZDO_PIPELINES_BRANCH_NAME=$azdo_pipelines_branch_name \
+  AZDO_POLICIES_BRANCH_NAME=$azdo_policies_branch_name \
+  bash -c "./scripts/deploy_azdo_pipelines.sh"
+else
+  echo "[Warning] Skipping Azure DevOps pipelines deployment as those are deployed using the user context."
+fi

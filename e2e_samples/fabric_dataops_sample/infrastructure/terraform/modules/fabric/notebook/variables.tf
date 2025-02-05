@@ -20,6 +20,17 @@ variable "notebook_description" {
   default     = ""
 }
 
+variable "format" {
+  description = "The format of the notebook"
+  type        = string
+  default     = "ipynb"
+
+  validation {
+    condition     = contains(["ipynb", "py"], var.format)
+    error_message = "The format must be either 'ipynb' or 'py'."
+  }
+}
+
 variable "notebook_definition_path" {
   description = "The path to the 'ipynb' notebook file"
   type        = string

@@ -3,7 +3,7 @@ trigger: none
 pr:
   branches:
     include:
-      - <DEV_BRANCH_NAME>
+      - <ENV1_BRANCH_NAME>
   paths:
     include:
       - $(Build.SourcesDirectory)/fabric/*
@@ -11,7 +11,7 @@ pr:
       - $(Build.SourcesDirectory)/config/*
 
 variables:
-  - group: <VARIABLE_GROUP_NAME>
+  - group: <ENV1_VARIABLE_GROUP_NAME>
   - name: FEATURE_BRANCH
     value: $[replace(variables['System.PullRequest.SourceBranch'], 'refs/heads/', '')]
   - name: PR_ID

@@ -3,6 +3,7 @@ resource "fabric_data_pipeline" "data_pipeline" {
   display_name = var.data_pipeline_name
   description  = var.data_pipeline_description
   workspace_id = var.workspace_id
+  format       = var.format
   definition = {
     "pipeline-content.json" = {
       source = var.data_pipeline_definition_path

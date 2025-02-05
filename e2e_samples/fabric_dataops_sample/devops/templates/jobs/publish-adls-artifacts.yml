@@ -1,0 +1,33 @@
+parameters:
+  - name: serviceConnection
+    type: string
+
+jobs:
+  - job: 'publish_adls_artifacts'
+    displayName: 'Publish ADLS Gen2 storage account artifacts'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+
+      - task: AzureCLI@2
+        inputs:
+          azureSubscription: ${{ parameters.serviceConnection }}
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            FABRIC_BEARER_TOKEN=$(az account get-access-token --resource https://api.fabric.microsoft.com --query accessToken -o tsv)
+
+            echo "##vso[task.setvariable variable=FABRIC_BEARER_TOKEN]$FABRIC_BEARER_TOKEN"
+          displayName: 'Get Fabric Bearer Token'
+
+      - script: |
+          chmod +x devops/scripts/build_adls_files.sh
+          ./devops/scripts/build_adls_files.sh
+        displayName: 'Create artifacts for ADLS'
+        workingDirectory: $(Build.SourcesDirectory)
+
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: '$(Build.SourcesDirectory)/adls/'
+          ArtifactName: 'adls'
+        displayName: 'Publish ADLS Artifacts'

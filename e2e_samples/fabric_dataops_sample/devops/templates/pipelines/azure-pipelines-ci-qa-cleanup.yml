@@ -1,7 +1,7 @@
 trigger: none
 
 variables:
-  - group: <VARIABLE_GROUP_NAME>
+  - group: "<ENV1_VARIABLE_GROUP_NAME>"
   - name: STORAGE_CONTAINER_NAME
     value: "feature-$(PR_ID)"
 

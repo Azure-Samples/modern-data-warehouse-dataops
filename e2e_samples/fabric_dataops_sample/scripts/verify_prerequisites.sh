@@ -108,6 +108,12 @@ check_env_vars() {
     exit 1
   fi
 
+  # Ensure 'ENVIRONMENT_NAMES' and 'GIT_BRANCH_NAMES' arrays have the same length
+  if [ ${#ENVIRONMENT_NAMES[@]} -ne ${#GIT_BRANCH_NAMES[@]} ]; then
+    echo "[Error] ENVIRONMENT_NAMES and GIT_BRANCH_NAMES arrays must have the same length."
+    exit 1
+  fi
+
   echo "[Info] All compulsory environment variables are set and non-empty."
 }
 
