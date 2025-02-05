@@ -1,3 +1,5 @@
+data "azurerm_subscription" "current" {}
+
 data "azurerm_role_definition" "storage_blob_contributor_role" {
   name = "Storage Blob Data Contributor"
 }

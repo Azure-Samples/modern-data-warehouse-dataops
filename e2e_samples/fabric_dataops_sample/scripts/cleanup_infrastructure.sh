@@ -23,15 +23,18 @@ git_organization_name="$GIT_ORGANIZATION_NAME"
 git_project_name="$GIT_PROJECT_NAME"
 git_repository_name="$GIT_REPOSITORY_NAME"
 git_branch_name="$GIT_BRANCH_NAME"
-git_directory_name="$GIT_DIRECTORY_NAME"
 # Workspace admin variables
 fabric_workspace_admin_sg_name="$FABRIC_WORKSPACE_ADMIN_SG_NAME"
 # Fabric Capacity variables
 existing_fabric_capacity_name="$EXISTING_FABRIC_CAPACITY_NAME"
 fabric_capacity_admins="$FABRIC_CAPACITY_ADMINS"
+deploy_fabric_items="$DEPLOY_FABRIC_ITEMS"
 
 ## KeyVault secret variables
 appinsights_connection_string_name="appinsights-connection-string"
+
+# Git directory name for syncing Fabric workspace items
+fabric_workspace_directory="/fabric/workspace"
 
 # Fabric bearer token variables, set globally
 fabric_bearer_token=""
@@ -40,6 +43,16 @@ fabric_api_endpoint="https://api.fabric.microsoft.com/v1"
 # Fabric related variables
 adls_gen2_shortcut_name="sc-adls-main"
 adls_gen2_shortcut_path="Files"
+
+# Azure DevOps pipelines to be deleted
+azdo_pipeline_ci_qa="pl-ci-qa"
+azdo_pipeline_ci_qa_cleanup="pl-ci-qa-cleanup"
+azdo_pipeline_ci_publish_artifacts="pl-ci-publish-artifacts"
+
+set_global_azdo_config() {
+  # Set the global Azure DevOps (AzDo) configuration
+  az devops configure --defaults organization="https://dev.azure.com/$git_organization_name" project="$git_project_name"
+}
 
 cleanup_terraform_resources() {
   local original_directory=$(pwd)
@@ -58,9 +71,10 @@ cleanup_terraform_resources() {
       use_msi=true
     fi
   fi
-  echo "[Info] use_cli is '${use_cli}'"
-  echo "[Info] use_msi is '${use_msi}'"
-  echo "[Info] client_id is '${client_id}'"
+  echo "[Info] 'use_cli' is '${use_cli}'"
+  echo "[Info] 'use_msi' is '${use_msi}'"
+  echo "[Info] 'client_id' is '${client_id}'"
+  echo "[Info] 'deploy_fabric_items' is '${deploy_fabric_items}'"
 
   if [[ -z ${existing_fabric_capacity_name} ]]; then
     create_fabric_capacity=true
@@ -93,8 +107,10 @@ cleanup_terraform_resources() {
     -var "git_project_name=$git_project_name" \
     -var "git_repository_name=$git_repository_name" \
     -var "git_branch_name=$git_branch_name" \
-    -var "git_directory_name=$git_directory_name" \
-    -var "kv_appinsights_connection_string_name=$appinsights_connection_string_name"
+    -var "git_directory_name=$fabric_workspace_directory" \
+    -var "fabric_adls_shortcut_name=$adls_gen2_shortcut_name" \
+    -var "kv_appinsights_connection_string_name=$appinsights_connection_string_name" \
+    -var "deploy_fabric_items=$deploy_fabric_items"
 
   cd "$original_directory"
 }
@@ -139,12 +155,39 @@ cleanup_terraform_files() {
   echo "[Info] Terraform lock file deleted successfully."
 }
 
+cleanup_azdo_pipeline_files() {
+  # List and delete Azure DevOps pipeline files
+  echo "[Info] Listing Azure DevOps pipeline files that will be deleted:"
+  find ./devops -maxdepth 1 -type f -name "*.yml"
+  find ./devops -maxdepth 1 -type f -name "*.yml" -exec rm -f {} + 2>/dev/null
+  echo "[Info] Azure DevOps pipeline files deleted successfully."
+}
+
 get_connection_id_by_name() {
   connection_name=$1
   list_connection_url="$fabric_api_endpoint/connections"
   response=$(curl -s -X GET -H "Authorization: Bearer $fabric_bearer_token" -H "Content-Type: application/json" "$list_connection_url" )
   connection_id=$(echo "$response" | jq -r --arg name "$connection_name" '.value[] | select(.displayName == $name) | .id')
   echo "$connection_id"
+}
+
+get_azdo_pipeline_id () {
+  local pipeline_name=$1
+  local pipeline_output=$(az pipelines list --query "[?name=='$pipeline_name']" --output json)
+  local pipeline_id=$(echo "$pipeline_output" | jq -r '.[0].id')
+  echo "$pipeline_id"
+}
+
+delete_azdo_pipeline() {
+  local pipeline_name=$1
+  local pipeline_id=$(get_azdo_pipeline_id "$pipeline_name")
+
+  if [[ -z "$pipeline_id" || "$pipeline_id" == "null" ]]; then
+    echo "[Info] No AzDo pipeline with name '$pipeline_name' found."
+  else
+    az pipelines delete --id "$pipeline_id" --yes 1>/dev/null
+    echo "[Info] Deleted pipeline '$pipeline_name' (Pipeline ID: '$pipeline_id')"
+  fi
 }
 
 echo "[Info] ############ STARTING CLEANUP STEPS############"
@@ -171,5 +214,15 @@ fi
 
 echo "[Info] ############ Cleanup Terraform Intermediate files (state, lock etc.,) ############"
 cleanup_terraform_files
+
+echo "[Info] ############ Deleting AzDo Pipelines ###########"
+set_global_azdo_config
+
+delete_azdo_pipeline "$azdo_pipeline_ci_qa"
+delete_azdo_pipeline "$azdo_pipeline_ci_qa_cleanup"
+delete_azdo_pipeline "$azdo_pipeline_ci_publish_artifacts"
+
+echo "[Info] ############ Cleanup AzDo Pipeline files ('/devops/*.yml) ############"
+cleanup_azdo_pipeline_files
 
 echo "[Info] ############ FINISHED INFRA CLEANUP ############"

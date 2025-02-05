@@ -1,4 +1,5 @@
 resource "fabric_spark_environment_settings" "spark_env_settings" {
+  count              = var.enable ? 1 : 0
   workspace_id       = var.workspace_id
   environment_id     = var.environment_id
   publication_status = var.publication_status
