@@ -127,3 +127,52 @@ create_adf_trigger () {
     adfTUrl="${adfFactoryBaseUrl}/triggers/${name}?api-version=${apiVersion}"
     az rest --method put --uri "$adfTUrl" --body @"${ADF_DIR}"/trigger/"${name}".json -o none
 }
+
+# Function to give time for the portal to process the cleanup
+wait_for_process() {
+    local seconds=${1:-15}
+    log "Giving the portal $seconds seconds to process the information..."
+    sleep "$seconds"
+}
+
+cleanup_federated_credentials() {
+    ##Function used in the Clean_up.sh and deploy_azdo_service_connections_azure.sh scripts
+    local sc_id=$1
+    local spnAppObjId=$(az devops service-endpoint show --id "$sc_id" --org "$AZDO_ORGANIZATION_URL" -p "$AZDO_PROJECT" --query "data.appObjectId" -o tsv)
+    # if the Service connection does not have an associated Service Principal, 
+    # then it means it won't have associated federated credentials
+    if [ -z "$spnAppObjId" ]; then
+        log "Service Principal Object ID not found for Service Connection ID: $sc_id. Skipping federated credential cleanup."
+        return
+    fi
+
+    local spnCredlist=$(az ad app federated-credential list --id "$spnAppObjId" --query "[].id" -o json)
+    log "Attempting to delete federated credentials."
+
+    # Sometimes the Azure Portal needs a little bit more time to process the information.
+    if [ -z "$spnCredlist" ]; then
+        log "It was not possible to list Federated credentials for Service Principal. Retrying once more.."
+        wait_for_process
+        spnCredlist=$(az ad app federated-credential list --id "$spnAppObjId" --query "[].id" -o json)
+        if [ -z "$spnCredlist" ]; then
+            log "It was not possible to list Federated credentials for specified Service Principal."
+            return
+        fi
+    fi
+    
+    local credArray=($(echo "$spnCredlist" | jq -r '.[]'))
+    #(&& and ||) to log success or failure of each delete operation
+    for cred in "${credArray[@]}"; do
+        az ad app federated-credential delete --federated-credential-id "$cred" --id "$spnAppObjId" &&
+        log "Deleted federated credential: $cred" || 
+        log "Failed to delete federated credential: $cred"
+    done
+    # Refresh the list of federated credentials
+    spnCredlist=$(az ad app federated-credential list --id "$spnAppObjId" --query "[].id" -o json)
+    if [ "$(echo "$spnCredlist" | jq -e '. | length > 0')" = "true" ]; then
+        log "Failed to delete federated credentials" "danger"
+        exit 1
+    fi
+  log "Completed federated credential cleanup for the Service Principal: $spnAppObjId"
+}
+
