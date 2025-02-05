@@ -140,6 +140,7 @@ Here is a list of resources that are deployed:
 - Azure DevOps Resources
   - Variable Group (two per environment with one with KeyVault integration for secrets)
   - Service Connection
+  - Azure DevOps Pipelines
 - Additional Resources
   - Fabric workspace GIT integration
   - Azure Role assignments to entra security group and workspace identity
@@ -179,6 +180,8 @@ Note that the script deploys the aforementioned resources across multiple enviro
   - If you are creating a **new** Fabric capacity, you need to provide a list of users and principals (service principal or managed identity) that will be added as capacity admins in the `FABRIC_CAPACITY_ADMINS` environment variable. For users, mention 'userPrincipalName'. For principals (sp/mi), mention 'Object ID'. Don't add spaces after the comma.
 - A bash shell with the following installed:
   - [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli?view=azure-cli-latest)
+  - [Azure DevOps CLI](https://marketplace.visualstudio.com/items?itemName=ms-vsts.cli) extension
+    - To install, run `az extension add --name azure-devops`
   - [jq](https://jqlang.github.io/jq/download/)
   - terraform
   - python version 3.9+ with `requests` package installed
@@ -239,10 +242,10 @@ Refer to the [known issues, limitations, and workarounds](docs/issues_limitation
 
   - The `BASE_NAME` variable is used as a suffix to name all the Azure and Fabric resources. If skipped, the terraform script will generated a random six character string and use it as the base name. It is recommended to use a random alphanumeric string of up to six characters.
   - The `APP_CLIENT_ID` and `APP_CLIENT_SECRET` variables are required only if you are using service principal authentication. If you are using Managed Identity authentication, you can leave these blank.
-  - The `ENVIRONMENT_NAMES` array variable defined the deployment stages/environments. The script will deploy set of resources for each environment specified in this variable. For example, you can define three stages development, staging, and production as ("dev" "stg" "prod").
+  - The `ENVIRONMENT_NAMES` array variable defined the deployment stages/environments. The script will deploy set of resources for each environment specified in this variable. It is highly recommended to use the default values ("dev" "stg" "prod") as-is. Refer to the [known issues, limitations, and workarounds](./docs/issues_limitations_and_workarounds.md#dependencies-on-environment_names-variable) page for more details.
   - The `RESOURCE_GROUP_NAMES` array variable defines the Azure resource groups corresponding to each environment. The script will deploy resources for each environment in the corresponding resource group. For example, you can define three resource groups for the three stages as ("rg-dev" "rg-stg" "rg-prod"). The length of `ENVIRONMENT_NAMES` and `RESOURCE_GROUP_NAMES` array variables must be the same. Note that the deployment script does not create these resource groups (see [here](#why-existing-resource-groups-are-required) for details) and you need to create them in advance as outlined in the [pre-requisites](#pre-requisites).
   - The `EXISTING_FABRIC_CAPACITY_NAME` variable is the name of an existing Fabric capacity. If you want to create a new capacity, leave this blank.
-  - The `GITHUB_BRANCH_NAMES` array variable defines the Git branches for each environment where the Fabric items will be committed. The workspace in each environment is integrated with the corresponding Git branch. For example, you can define three branches for the three stages/environments as ("dev" "stg" "prod"). The length of the `ENVIRONMENT_NAMES` and `GIT_BRANCH_NAMES` array variables must be the same.
+  - The `GITHUB_BRANCH_NAMES` array variable defines the Git branches for each environment where the Fabric items will be committed. The workspace in each environment is integrated with the corresponding Git branch. It is highly recommended to use the default values ("dev" "stg" "prod") as-is. The length of the `ENVIRONMENT_NAMES` and `GIT_BRANCH_NAMES` array variables must be the same.
   - The `GIT_USERNAME` and `GIT_PERSONAL_ACCESS_TOKEN` variables are used to setup the initial branch structure where a set of files are copied and committed to Azure repo before running the main deployment. The token should have a minimum of `Code -> Read & write` [scope](https://learn.microsoft.com/azure/devops/integrate/get-started/authentication/oauth?view=azure-devops#scopes). Refer to the [documentation](https://learn.microsoft.com/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate) for more details.
   - The `FABRIC_CAPACITY_ADMINS` variable is a comma-separated list of users and service principals that will be added as capacity admins to the newly created Fabric capacity. If you are using an existing capacity, you can leave this blank. But in that case, make sure that your account and the principal (service principal or managed identity) are [added as Capacity Administrators](https://learn.microsoft.com/fabric/admin/capacity-settings?tabs=fabric-capacity#add-and-remove-admins) to that capacity, as mentioned in the [pre-requisites](#pre-requisites).
 

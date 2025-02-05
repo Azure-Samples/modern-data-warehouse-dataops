@@ -4,6 +4,7 @@ export TENANT_ID=""
 ## The Azure subscription ID that will be used to deploy azure resources.
 export SUBSCRIPTION_ID=""
 ## Space-separated array of deployment stages, development (dev), staging (stg), production (prod) etc., for your application.
+## Highly recommended to use the default values mentioned below.
 export ENVIRONMENT_NAMES=("dev" "stg" "prod")
 ## Space-separated array of 'pre-existing' Azure resource groups corresponding to each environment.
 export RESOURCE_GROUP_NAMES=("rg-dev" "rg-stg" "rg-prod")
@@ -22,6 +23,7 @@ export GIT_PROJECT_NAME=""
 ## Your repository under the Azure DevOps project.
 export GIT_REPOSITORY_NAME=""
 ## Space-separated array of the GIT branches corresponding to each environment where Fabric items will be committed to.
+## Highly recommended to use the default values mentioned below.
 export GIT_BRANCH_NAMES=("dev" "stg" "prod")
 ## The username for the Azure DevOps project.
 export GIT_USERNAME=""
