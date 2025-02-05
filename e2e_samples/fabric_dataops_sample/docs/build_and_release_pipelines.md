@@ -22,7 +22,7 @@ The 'QA pipeline' is triggered whenever a pull request (PR) is submitted to the 
   - Setting up configurations not covered by Git syncing.
   - Running tests in the ephemeral workspace created.
 
-Refer to [devops/azure-pipelines-ci-qa.yml](./../devops/azure-pipelines-ci-qa.yml) for the actual pipeline definition.
+Refer to [devops/templates/pipelines/azure-pipelines-ci-qa.yml](./../devops/templates/pipelines/azure-pipelines-ci-qa.yml) for the actual pipeline definition.
 
 ### QA cleanup pipeline
 
@@ -34,7 +34,7 @@ Refer to [devops/azure-pipelines-ci-qa-cleanup.yml](./../devops/azure-pipelines-
 
 The 'Build artifacts pipeline' is triggered once the feature PR is merged to the `dev` branch. This pipeline publishes configuration files and custom libraries as artifacts, which are then used by the release and deployment pipeline.
 
-Refer to [/devops/azure-pipelines-ci-artifacts.yml](./../devops/azure-pipelines-ci-artifacts.yml) for the actual pipeline definition.
+Refer to [/devops/templates/pipelines/azure-pipelines-ci-artifacts.yml](./../devops/templates/pipelines/azure-pipelines-ci-artifacts.yml) for the actual pipeline definition.
 
 ## CD pipelines
 
