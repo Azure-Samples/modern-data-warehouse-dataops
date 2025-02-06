@@ -114,7 +114,7 @@ At a high level, the deployment sequence proceeds as follows:
 - Run the deployment script to create Azure and supported Fabric resources, **using either a service principal or managed identity** for authentication.
 - Run the deployment script again, **this time using an Entra ID user** for authentication. This step will create the Lakehouse shortcut to the ADLS Gen2 storage account and deploy Fabric items that cannot be authenticated via service principal or managed identity.
 
-Note that the sample uses multiple security groups and Entra id types (managed identity, service principal, Entra user etc.). In some cases, there is a choice (using managed identity vs service principal) and in some cases it is required (e.g., certain Fabric REST APIs do not support sp/mi authentication). Please follow the [How to use the sample](#how-to-use-the-sample) section for detailed instructions.
+Note that the sample uses multiple security groups and Entra ID types (managed identity, service principal, Entra user etc.). In some cases, there is a choice (using managed identity vs service principal) and in some cases it is required (e.g., certain Fabric REST APIs do not support sp/mi authentication). Please follow the [How to use the sample](#how-to-use-the-sample) section for detailed instructions.
 
 ### Deployed resources
 
@@ -160,7 +160,7 @@ Note that the script deploys the aforementioned resources across multiple enviro
   - The subscription is [registered](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#register-resource-provider) for the `Microsoft.Fabric` and `Microsoft.OperationalInsights` resource providers.
   - Multiple resource groups to which your user should be granted [Contributor](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/privileged#contributor) and [User Access Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/privileged#user-access-administrator) privileged roles. These resource groups are used to deploy Azure resources for each environment. So, if you are planning to have three environments (dev, staging, production), you need three resource groups. The names of these resource groups are specified as an array variable, `RESOURCE_GROUP_NAMES`, in the `.env` file. You can use the [configure_resource_groups.sh](./scripts/configure_resource_groups.sh) script to create these resource groups and assign the necessary roles.
 - A [managed identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview) OR a [service principal](https://learn.microsoft.com/entra/identity-platform/app-objects-and-service-principals)
-  - Request that a Fabric administrator grant the above service principal or managed identity permission to [use Fabric APIs](https://learn.microsoft.com/rest/api/fabric/articles/identity-support#service-principals-and-managed-identities-support). To allow an app to use a service principal as an authentication method, the service principal must be added to the deployment admins security group (sp-deployment-admins). This group is then mentioned in the tenant settings as shown below:
+  - Request that a Fabric administrator grant the above service principal or managed identity permission to [use Fabric APIs](https://learn.microsoft.com/rest/api/fabric/articles/identity-support#service-principals-and-managed-identities-support). To allow an app to use a service principal as an authentication method, the service principal must be added to the deployment admin's security group (sp-deployment-admins). This group is then mentioned in the tenant settings as shown below:
 
     ![Fabric API Permissions](./images/admin-portal-allow-apis.png)
 
@@ -270,7 +270,7 @@ Refer to the [known issues, limitations, and workarounds](docs/issues_limitation
 
     ![Service Principal Object ID](./images/application-enterprise-object-id.png)
 
-- [Optional] If you want to use the dev container, open the repository in VSCode. Make sure that docker is running and the remote development extension is installed (check [pre-requisites](#if-using-dev-container-recommended) for details). Open the Command Palette (`Ctrl+Shift+P` on Windows, `Cmd+Shift+P` on Mac) and search for `Dev Containers: Open Folder in Container...`. Select `e2e_samples/fabric_dataops_sample` folder and confirm. This will build the dev container and open a new VSCode window inside the container. Here is a screenshot of how it looks:
+- [Optional] If you want to use the dev container, open the repository in VSCode. Make sure that docker is running and the remote development extension is installed (check the [pre-requisites](#if-using-dev-container-recommended) for details). Open the Command Palette (`Ctrl+Shift+P` on Windows, `Cmd+Shift+P` on Mac) and search for `Dev Containers: Open Folder in Container...`. Select `e2e_samples/fabric_dataops_sample` folder and confirm. This will build the dev container and open a new VSCode window inside the container. Here is a screenshot of how it looks:
 
   ![Dev Container](./images/dev-container.png)
 
@@ -397,7 +397,19 @@ Here are the instructions to run the application:
 
 ### Triggering the CI/CD pipelines
 
-Coming soon...
+Once you have successfully run the pipeline, the next step is to create a new workspace, make some changes, and create a pull request to merge the changes into the dev branch. This will trigger the QA pipelines to validate the changes in an isolated ephemeral workspace. Follow these steps to proceed:
+
+- Open the Fabric workspace corresponding to the dev environment.
+- Use the [Branch out to new workspace](https://learn.microsoft.com/fabric/cicd/git-integration/manage-branches?tabs=azure-devops#scenario-2---develop-using-another-workspace) functionality to create a new feature workspace. This branch-out operation creates a new feature branch from the dev branch, sets up a new Fabric workspace, integrates it with the feature branch, and syncs the Fabric items. Here is a GIF showing the process:
+
+  ![Branch out to new workspace](./images/branch-out-to-new-workspace.gif)
+  ![Branch out to new workspace](./images/Feb-06-2025.gif)
+  ![Branch out to new workspace](./images/make-workspace-changes.gif)
+
+- Once the sync is complete, make a simple change in the setup notebook `nb-setup` and selectively commit the change to the feature branch.
+- Create a pull request to merge the changes from the feature branch to the dev branch. This will trigger the QA pipeline to validate the changes in an ephemeral workspace. You won't be able to complete the PR until the QA pipeline completes successfully.
+
+The whole process would look something like this:
 
 ## Cleaning up
 

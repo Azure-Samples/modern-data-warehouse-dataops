@@ -54,19 +54,17 @@ for i in "${!ENVIRONMENT_NAMES[@]}"; do
   placeholder_service_connection_name="<ENV${index}_SERVICE_CONNECTION_NAME>"
 
   # Replace placeholders in the pipeline files
-  if [[ "$OSTYPE" == "darwin"* ]]; then
-    replace "$placeholder_branch_name" "$azdo_git_branch_name" "$ci_artifacts_pipeline"
-    replace "$placeholder_variable_group_name" "$azdo_variable_group_name" "$ci_artifacts_pipeline"
-    replace "$placeholder_service_connection_name" "$azdo_service_connection_name" "$ci_artifacts_pipeline"
+  replace "$placeholder_branch_name" "$azdo_git_branch_name" "$ci_artifacts_pipeline"
+  replace "$placeholder_variable_group_name" "$azdo_variable_group_name" "$ci_artifacts_pipeline"
+  replace "$placeholder_service_connection_name" "$azdo_service_connection_name" "$ci_artifacts_pipeline"
 
-    replace "$placeholder_branch_name" "$azdo_git_branch_name" "$ci_qa_cleanup_pipeline"
-    replace "$placeholder_variable_group_name" "$azdo_variable_group_name" "$ci_qa_cleanup_pipeline"
-    replace "$placeholder_service_connection_name" "$azdo_service_connection_name" "$ci_qa_cleanup_pipeline"
+  replace "$placeholder_branch_name" "$azdo_git_branch_name" "$ci_qa_cleanup_pipeline"
+  replace "$placeholder_variable_group_name" "$azdo_variable_group_name" "$ci_qa_cleanup_pipeline"
+  replace "$placeholder_service_connection_name" "$azdo_service_connection_name" "$ci_qa_cleanup_pipeline"
 
-    replace "$placeholder_branch_name" "$azdo_git_branch_name" "$ci_qa_pipeline"
-    replace "$placeholder_variable_group_name" "$azdo_variable_group_name" "$ci_qa_pipeline"
-    replace "$placeholder_service_connection_name" "$azdo_service_connection_name" "$ci_qa_pipeline"
-  fi
+  replace "$placeholder_branch_name" "$azdo_git_branch_name" "$ci_qa_pipeline"
+  replace "$placeholder_variable_group_name" "$azdo_variable_group_name" "$ci_qa_pipeline"
+  replace "$placeholder_service_connection_name" "$azdo_service_connection_name" "$ci_qa_pipeline"
 done
 
 echo "[Info] ############    AZDO PIPELINE FILES CREATED   ############"
