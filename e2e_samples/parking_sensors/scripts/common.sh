@@ -135,44 +135,62 @@ wait_for_process() {
     sleep "$seconds"
 }
 
-cleanup_federated_credentials() {
-    ##Function used in the Clean_up.sh and deploy_azdo_service_connections_azure.sh scripts
+delete_azdo_service_connection_principal(){
+    # This function deletes the Service Principal associated with the provided AzDO Service Connection
     local sc_id=$1
     local spnAppObjId=$(az devops service-endpoint show --id "$sc_id" --org "$AZDO_ORGANIZATION_URL" -p "$AZDO_PROJECT" --query "data.appObjectId" -o tsv)
-    # if the Service connection does not have an associated Service Principal, 
-    # then it means it won't have associated federated credentials
     if [ -z "$spnAppObjId" ]; then
-        log "Service Principal Object ID not found for Service Connection ID: $sc_id. Skipping federated credential cleanup."
+        log "Service Principal Object ID not found for Service Connection ID: $sc_id. Skipping Service Principal cleanup."
         return
     fi
-
-    local spnCredlist=$(az ad app federated-credential list --id "$spnAppObjId" --query "[].id" -o json)
-    log "Attempting to delete federated credentials."
-
-    # Sometimes the Azure Portal needs a little bit more time to process the information.
-    if [ -z "$spnCredlist" ]; then
-        log "It was not possible to list Federated credentials for Service Principal. Retrying once more.."
-        wait_for_process
-        spnCredlist=$(az ad app federated-credential list --id "$spnAppObjId" --query "[].id" -o json)
-        if [ -z "$spnCredlist" ]; then
-            log "It was not possible to list Federated credentials for specified Service Principal."
-            return
-        fi
-    fi
-    
-    local credArray=($(echo "$spnCredlist" | jq -r '.[]'))
-    #(&& and ||) to log success or failure of each delete operation
-    for cred in "${credArray[@]}"; do
-        az ad app federated-credential delete --federated-credential-id "$cred" --id "$spnAppObjId" &&
-        log "Deleted federated credential: $cred" || 
-        log "Failed to delete federated credential: $cred"
-    done
-    # Refresh the list of federated credentials
-    spnCredlist=$(az ad app federated-credential list --id "$spnAppObjId" --query "[].id" -o json)
-    if [ "$(echo "$spnCredlist" | jq -e '. | length > 0')" = "true" ]; then
-        log "Failed to delete federated credentials" "danger"
-        exit 1
-    fi
-  log "Completed federated credential cleanup for the Service Principal: $spnAppObjId"
+    log "Attempting to delete Service Principal."
+    az ad app delete --id "$spnAppObjId" &&
+    log "Deleted Service Principal: $spnAppObjId" || 
+    log "Failed to delete Service Principal: $spnAppObjId"
 }
 
+deploy_infrastructure_environment() {
+  ##function to allow user deploy enviromnents
+    ## 1) Only Dev
+    ## 2) Dev and Stage
+    ## 3)  Dev, Stage and Prod
+  ##Default  is option 3.
+  ENV_DEPLOY=${1:-3}
+  project=${2:-mdwdops}
+    case $ENV_DEPLOY in
+    1)
+        log "Deploying Dev Environment only..."
+        env_names="dev"
+        ;;
+    2)    
+        log "Deploying Dev and Stage Environments..."    
+        env_names="dev stg"
+        ;;
+    3) 
+        log "Full Deploy: Dev, Stage and Prod Environments..."
+        env_names="dev stg prod"
+        ;;
+    *)
+        log "Invalid choice. Exiting..." "warning"
+        exit
+        ;;
+    esac
+
+    # Loop through the environments and deploy
+    for env_name in $env_names; do
+        echo "Currently deploying to the environment: $env_name"
+        export PROJECT=$project
+        export DEPLOYMENT_ID=$DEPLOYMENT_ID
+        export ENV_NAME=$env_name
+        export AZURE_LOCATION=$AZURE_LOCATION
+        export AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID
+        export AZURESQL_SERVER_PASSWORD=$AZURESQL_SERVER_PASSWORD
+        bash -c "./scripts/deploy_infrastructure.sh" || {
+            echo "Deployment failed for $env_name"
+            exit 1
+        }
+         export ENV_DEPLOY=$ENV_DEPLOY
+
+    done
+
+}

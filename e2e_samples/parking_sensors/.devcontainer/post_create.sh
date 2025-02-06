@@ -12,7 +12,7 @@ pip install -r /workspace/e2e_samples/parking_sensors/src/ddo_transform/requirem
 # This script was reused from the Databricks CLI installation script located here
 # https://github.com/databricks/setup-cli/blob/main/install.sh
 # Check for the latest release version here: https://github.com/databricks/cli/releases
-VERSION="0.233.0"
+VERSION="0.240.0"
 FILE="databricks_cli_$VERSION"
 
 #/home/mdwuser
@@ -91,8 +91,8 @@ echo "tempdir: $tmpdir"
 wget -q https://github.com/databricks/cli/releases/download/v$VERSION/$FILE.zip -O /$tmpdir/${FILE}.zip
 
 # Verify the checksum
-cd /$tmpdir && sha256sum ${FILE}.zip > /$tmpdir/${FILE}.zip.sha256
-cd /$tmpdir 
+cd $tmpdir && sha256sum ${FILE}.zip > $tmpdir/${FILE}.zip.sha256
+cd $tmpdir 
 # Run the sha256sum check
 sha256sum -c ${FILE}.zip.sha256
 
@@ -105,7 +105,7 @@ else
 fi
 
 # Unzip the downloaded file
-unzip -q /$tmpdir/${FILE}.zip #-d /home/mdwuser/databricks
+unzip -q $tmpdir/${FILE}.zip #-d /home/mdwuser/databricks
 
 # Add databricks to path.
 chmod +x ./databricks
@@ -114,7 +114,7 @@ cp ./databricks "$TARGET"
 echo "Installed $("databricks" -v) at $TARGET/databricks."
 
 # Clean up the zip file and checksum
-rm /$tmpdir/${FILE}.zip /$tmpdir/${FILE}.zip.sha256
+rm $tmpdir/${FILE}.zip $tmpdir/${FILE}.zip.sha256
 
 # Clean up temporary directory.
 cd "$OLDPWD"

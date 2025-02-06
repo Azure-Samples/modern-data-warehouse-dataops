@@ -40,6 +40,7 @@ set -o nounset
 # AZURE_LOCATION
 # RESOURCE_GROUP_NAME
 # KV_URL
+# KV_NAME
 # DATABRICKS_HOST
 # DATABRICKS_TOKEN
 # DATABRICKS_WORKSPACE_RESOURCE_ID
@@ -64,14 +65,14 @@ if [ "$ENV_NAME" == "dev" ]
 then 
     # In DEV, we fix the path to "dev" folder  to simplify as this is manual publish DEV ADF.
     # In other environments, the ADF release pipeline overwrites these automatically.
-    databricksDbfsLibPath="dbfs:/mnt/datalake/sys/databricks/libs/dev/"
-    databricksNotebookPath='/releases/dev/'
+    databricksDbfsLibPath="dbfs:/mnt/datalake/sys/databricks/libs/dev"
+    databricksNotebookPath='/releases/dev'
 else
     databricksDbfsLibPath='dbfs:/mnt/datalake/sys/databricks/libs/$(Build.BuildId)'
     databricksNotebookPath='/releases/$(Build.BuildId)'
 fi
 
-databricksClusterId="$DATABRICKS_CLUSTER_ID"
+databricksClusterId=$(az keyvault secret show --name "databricksClusterId" --vault-name "$KV_NAME" --query "value" -o tsv)
 
 # Create vargroup
 vargroup_name="${PROJECT}-release-$ENV_NAME"
@@ -79,7 +80,7 @@ if vargroup_id=$(az pipelines variable-group list -o json | jq -r -e --arg vg_na
     log "Variable group: $vargroup_name already exists. Deleting..." "info"
     az pipelines variable-group delete --id "$vargroup_id" -y  -o none
 fi
-log "Creating variable group: $vargroup_name"
+log "Creating variable group: $vargroup_name" "info"
 az pipelines variable-group create \
     --name "$vargroup_name" \
     --authorize "true" \
@@ -99,7 +100,7 @@ if vargroup_secrets_id=$(az pipelines variable-group list -o json | jq -r -e --a
     log "Variable group: $vargroup_secrets_name already exists. Deleting..." "info"
     az pipelines variable-group delete --id "$vargroup_secrets_id" -y -o none
 fi
-log "Creating variable group: $vargroup_secrets_name"
+log "Creating variable group: $vargroup_secrets_name" "info"
 vargroup_secrets_id=$(az pipelines variable-group create \
     --name "$vargroup_secrets_name" \
     --authorize "true" \

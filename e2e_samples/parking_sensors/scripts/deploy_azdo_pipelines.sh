@@ -38,7 +38,7 @@ set -o nounset
 # AZDO_PIPELINES_BRANCH_NAME
 # DEV_DATAFACTORY_NAME
 
-source ./scripts/common.sh
+. ./scripts/common.sh
 
 # Retrieve Github Service Connection Id
 github_sc_name="${PROJECT}-github"
@@ -57,12 +57,16 @@ create_azdo_pipeline "ci-qa-sql" "This pipeline builds the sql dacpac"
 
 create_azdo_pipeline "ci-artifacts" "This pipeline publishes build artifacts"
 
+###################
 # Release Pipelines
-cd_release_pipeline_id=$(create_azdo_pipeline "cd-release" "This pipeline releases across environments")
-
-
-az pipelines variable create \
-    --name devAdfName \
-    --pipeline-id "$cd_release_pipeline_id" \
-    --value "$DEV_DATAFACTORY_NAME" \
-    -o none
+###################
+# Release Pipelines - only if it has at least 2 environments
+if [ "$ENV_DEPLOY" -eq 2 ] || [ "$ENV_DEPLOY" -eq 3 ]; then
+    log " Release Pipeline are been created - option selected: $ENV_DEPLOY"
+    cd_release_pipeline_id=$(create_azdo_pipeline "cd-release" "This pipeline releases across environments")
+    az pipelines variable create \
+        --name devAdfName \
+        --pipeline-id "$cd_release_pipeline_id" \
+        --value "$DEV_DATAFACTORY_NAME" \
+        -o none
+fi

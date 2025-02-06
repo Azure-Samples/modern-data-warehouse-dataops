@@ -28,7 +28,6 @@ az config set core.login_experience_v2=on
 az account set -s $AZURE_SUBSCRIPTION_ID  -o none
 
 az devops configure --defaults organization=$AZDO_ORGANIZATION_URL project=$AZDO_PROJECT  -o none
-
 # check required variables are specified.
 
 if [ -z "$GITHUB_REPO" ]
@@ -94,4 +93,10 @@ then
     # set purge protection variable to true if the env variable has not been set
     export ENABLE_KEYVAULT_PURGE_PROTECTION=${ENABLE_KEYVAULT_PURGE_PROTECTION:-true}
     log "No ENABLE_KEYVAULT_PURGE specified. Defaulting to $ENABLE_KEYVAULT_PURGE_PROTECTION" "info"
+fi
+
+ENV_DEPLOY=${ENV_DEPLOY:-}
+if [ -z "$ENV_DEPLOY" ]; then
+    export ENV_DEPLOY
+    log "No Deployment option was specified in the configuration" "info"
 fi
