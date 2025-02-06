@@ -38,7 +38,7 @@ set -o nounset
 # AZDO_PIPELINES_BRANCH_NAME
 # DEV_DATAFACTORY_NAME
 
-. ./scripts/init_environment.sh
+. ./scripts/common.sh
 
 # Retrieve Github Service Connection Id
 github_sc_name="${PROJECT}-github"
