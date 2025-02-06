@@ -301,7 +301,6 @@ Set up the environment variables as specified, fork the GitHub repository, and l
       - To enable Observability and Monitoring components through code(Observability-as-code), please set enable_monitoring parameter to true in  `arm.parameters` files located in the `infrastructure` folder. This will deploy log analytics workspace to collect monitoring data from key resources, setup an Azure dashboards to monitor key metrics and configure alerts for ADF pipelines.
   
      **Login and Cluster Configuration**
-
       - Ensure that you have completed the configuration for the variables described in the previous section, titled **Configuration: Variables and Login**.
 
 2. **Deploy Azure resources**
