@@ -1,0 +1,16 @@
+name: llm-citation-generator
+module: experiments.llm_citation_generator.main
+class_name: LLMCitationGenerator
+evaluators:
+  fuzzy_match:
+    module: evaluators.fuzzy_match
+    class_name: FuzzyMatchEvaluator
+    evaluator_config:
+      column_mapping:
+        response: ${data.citations}
+  exact_numeric_match:
+    module: evaluators.exact_numeric_match
+    class_name: NumericEvaluator
+    evaluator_config:
+      column_mapping:
+        response: ${data.citations}

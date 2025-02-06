@@ -1,0 +1,15 @@
+name: revenue-FY24Q3
+call_args:
+  question: "What was the company’s revenue for the third quarter of Fiscal Year 2024?"
+evaluation:
+  evaluators:
+    fuzzy_match:
+      evaluator_config:
+        column_mapping:
+          truth: ${data.inputs.truth.revenue-FY24Q3}
+    exact_numeric_match:
+      evaluator_config:
+        column_mapping:
+          truth: ${data.inputs.truth.revenue-FY24Q3}
+  tags:
+    question: revenue-FY24Q3

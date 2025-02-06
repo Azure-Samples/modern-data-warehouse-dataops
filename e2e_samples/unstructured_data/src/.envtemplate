@@ -1,0 +1,26 @@
+###
+## REQUIRED. Environment variables for citation generator
+
+# Blob
+AZURE_STORAGE_ACCOUNT_URL=
+
+# Azure OpenAI
+AZURE_OPENAI_ENDPOINT=
+AZURE_OPENAI_API_VERSION=
+AZURE_OPENAI_KEY=
+
+# Document Intelligence
+DOCUMENT_INTELLIGENCE_ENDPOINT=
+DOCUMENT_INTELLIGENCE_KEY=
+
+###
+# Optional. Environment variables for citation generator
+
+# Citation DB
+# CITATION_DB_ENABLED=True
+# CITATION_DB_CONNECTION_STRING=
+
+
+# App Inights
+# APPLICATIONINSIGHTS_CONNECTION_STRING=
+# AZURE_SDK_TRACING_IMPLEMENTATION=opentelemetry
