@@ -31,6 +31,7 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
     - [Verifying the infrastructure deployment](#verifying-the-infrastructure-deployment)
   - [Running the application code](#running-the-application-code)
   - [Triggering the CI/CD pipelines](#triggering-the-cicd-pipelines)
+    - [Key observations](#key-observations)
 - [Cleaning up](#cleaning-up)
 - [Frequently asked questions](#frequently-asked-questions)
   - [Infrastructure deployment related](#infrastructure-deployment-related)
@@ -397,18 +398,18 @@ Here are the instructions to run the application:
 
 ### Triggering the CI/CD pipelines
 
-Once you have successfully run the pipeline, the next step is to create a new workspace, make some changes, and create a pull request to merge the changes into the dev branch. Follow these steps to proceed:
+Once you have successfully run the Fabric data pipeline, the next step is to create a new workspace, make some changes, and create a pull request to merge the changes into the dev branch. Follow these steps to proceed:
 
 - Open the Fabric workspace corresponding to the dev environment.
 - Use the [Branch out to new workspace](https://learn.microsoft.com/fabric/cicd/git-integration/manage-branches?tabs=azure-devops#scenario-2---develop-using-another-workspace) functionality to create a new feature workspace. This branch-out operation creates a new feature branch from the dev branch, sets up a new Fabric workspace, integrates it with the feature branch, and syncs the Fabric items. Here is a GIF showing the process:
 
   ![Branch out to new workspace](./images/branch-out-to-new-workspace.gif)
 
-- Once the sync is complete, make a simple change in the setup notebook `nb-setup` and selectively commit the change to the feature branch.
+- Once the sync is complete, make a simple change in the setup notebook `nb-setup` (or anywhere else) and selectively commit the change to the feature branch.
 
   ![Branch out to new workspace](./images/make-workspace-changes.gif)
 
-- Now that the change is committed, create a pull request to merge the changes from the feature branch to the dev branch. This will trigger the [QA pipeline](./devops/templates/pipelines/azure-pipelines-ci-qa.yml) to validate the changes in an ephemeral workspace. You won't be able to complete the PR until the QA pipeline completes successfully.
+- Once the changes are committed, create a pull request to merge the changes from the feature branch to the dev branch in Azure DevOps. This will trigger the [QA pipeline](./devops/templates/pipelines/azure-pipelines-ci-qa.yml) to validate the changes in an ephemeral workspace. You won't be able to complete the PR until the QA pipeline completes successfully.
 
   ![Create PR](./images/create-pr.gif)
 
@@ -419,6 +420,30 @@ Once you have successfully run the pipeline, the next step is to create a new wo
 - Once the QA pipeline completes successfully, you can merge the changes into the dev branch. Afterwards, you can run the [pl-ci-qa-cleanup](./devops/templates/pipelines/azure-pipelines-ci-qa-cleanup.yml) pipeline to delete the ephemeral workspace. You need to pass the `PR_ID` as the pipeline variable. Note that this is an adhoc pipeline and is not triggered automatically. This pipeline also requires interactive login to Azure CLI as shown above.
 
   ![Trigger cleanup pipeline](./images/trigger-cleanup-pipeline.gif)
+
+- There is another pipeline, [pl-ci-publish-artifacts](./devops/templates/pipelines/azure-pipelines-ci-artifacts.yml), that is triggered when a PR merges changes to the following files for different environments (dev, stg, prod etc.):
+  - Configuration data in `/config` folder.
+  - Reference data in `/data` folder.
+  - Custom libraries in `/libraries` folder.
+  - Fabric Environment configuration in `/fabric/fabric_environment` folder.
+  - Unit tests in `/fabric/tests` folder.
+
+  This pipeline publishes artifacts for respective environments. You can see the artifacts published in the pipeline run as shown below:
+
+  ![Published artifacts](./images/published-artifacts.gif)
+
+#### Key observations
+
+If you have followed the steps above carefully, you will observe the following:
+
+- The lakehouse created in the feature workspace is empty.
+- The Fabric environment in the feature workspace is shown as uncommitted.
+- The notebooks in the feature workspace has the dev lakehouse attached as the default lakehouse.
+- The workspace settings for the feature workspace are different from those in the dev workspace.
+- You cannot visualize the changes that you are committing in the feature workspace from Fabric UI.
+- ...
+
+Please refer to [known issues, limitations, and workarounds](./docs/issues_limitations_and_workarounds.md) for a detailed understanding of these observations and how to address them.
 
 ## Cleaning up
 
