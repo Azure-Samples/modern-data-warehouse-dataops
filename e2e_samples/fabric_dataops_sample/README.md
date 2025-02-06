@@ -397,19 +397,28 @@ Here are the instructions to run the application:
 
 ### Triggering the CI/CD pipelines
 
-Once you have successfully run the pipeline, the next step is to create a new workspace, make some changes, and create a pull request to merge the changes into the dev branch. This will trigger the QA pipelines to validate the changes in an isolated ephemeral workspace. Follow these steps to proceed:
+Once you have successfully run the pipeline, the next step is to create a new workspace, make some changes, and create a pull request to merge the changes into the dev branch. Follow these steps to proceed:
 
 - Open the Fabric workspace corresponding to the dev environment.
 - Use the [Branch out to new workspace](https://learn.microsoft.com/fabric/cicd/git-integration/manage-branches?tabs=azure-devops#scenario-2---develop-using-another-workspace) functionality to create a new feature workspace. This branch-out operation creates a new feature branch from the dev branch, sets up a new Fabric workspace, integrates it with the feature branch, and syncs the Fabric items. Here is a GIF showing the process:
 
   ![Branch out to new workspace](./images/branch-out-to-new-workspace.gif)
-  ![Branch out to new workspace](./images/Feb-06-2025.gif)
-  ![Branch out to new workspace](./images/make-workspace-changes.gif)
 
 - Once the sync is complete, make a simple change in the setup notebook `nb-setup` and selectively commit the change to the feature branch.
-- Create a pull request to merge the changes from the feature branch to the dev branch. This will trigger the QA pipeline to validate the changes in an ephemeral workspace. You won't be able to complete the PR until the QA pipeline completes successfully.
 
-The whole process would look something like this:
+  ![Branch out to new workspace](./images/make-workspace-changes.gif)
+
+- Now that the change is committed, create a pull request to merge the changes from the feature branch to the dev branch. This will trigger the [QA pipeline](./devops/templates/pipelines/azure-pipelines-ci-qa.yml) to validate the changes in an ephemeral workspace. You won't be able to complete the PR until the QA pipeline completes successfully.
+
+  ![Create PR](./images/create-pr.gif)
+
+- During the QA pipeline run, you need to do an interactive login to Azure CLI to authenticate with your user context. Open the page `https://microsoft.com/devicelogin` and enter the code displayed in the pipeline.
+
+  ![Azure CLI Login](./images/pipeline-interactive-login.png)
+
+- Once the QA pipeline completes successfully, you can merge the changes into the dev branch. Afterwards, you can run the [pl-ci-qa-cleanup](./devops/templates/pipelines/azure-pipelines-ci-qa-cleanup.yml) pipeline to delete the ephemeral workspace. You need to pass the `PR_ID` as the pipeline variable. Note that this is an adhoc pipeline and is not triggered automatically. This pipeline also requires interactive login to Azure CLI as shown above.
+
+  ![Trigger cleanup pipeline](./images/trigger-cleanup-pipeline.gif)
 
 ## Cleaning up
 
