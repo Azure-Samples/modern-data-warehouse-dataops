@@ -52,8 +52,9 @@ class TestLoadExperiments(unittest.TestCase):
 
     @patch("orchestrator.experiment_loader.load_exp_config")
     @patch("orchestrator.experiment_loader.load_variant")
+    @patch("orchestrator.experiment_loader.load_instance")
     def test_load_experiments_duplicate_variant_names(
-        self, mock_load_variant: MagicMock, mock_load_exp_config: MagicMock
+        self, mock_load_instance: MagicMock, mock_load_variant: MagicMock, mock_load_exp_config: MagicMock
     ) -> None:
         # Mocking the configuration and variant loading
         mock_exp_config = MagicMock()

@@ -1,15 +1,16 @@
 from pathlib import Path
 
 from orchestrator.config import Config
-from orchestrator.evaluation_config import EvaluatorConfigMap
+from orchestrator.evaluation_config import EvaluatorLoadConfigMap
 from orchestrator.evaluation_wrapper import EvaluationWrapper
-from orchestrator.experiment_config import load_exp_config, load_variant
+from orchestrator.experiment_config import load_exp_config
 from orchestrator.file_utils import load_file
 from orchestrator.metadata import ExperimentMetadata
 from orchestrator.utils import load_instance, merge_dicts
+from orchestrator.variant_config import load_variant
 
 
-def load_evaluators_and_config(evaluator_map: EvaluatorConfigMap, init_args: dict) -> tuple[dict, dict]:
+def load_evaluators_and_config(evaluator_map: EvaluatorLoadConfigMap, init_args: dict) -> tuple[dict, dict]:
     evaluators = {}
     evaluator_config = {}
     for name, c in evaluator_map.items():
@@ -34,6 +35,8 @@ def load_evaluation(
     experiments_dir: Path = Config.experiments_dir,
 ) -> EvaluationWrapper:
     metadata_dict = load_file(metadata_path)
+    if not isinstance(metadata_dict, dict):
+        raise ValueError(f"Invalid metadata in {metadata_path}")
     metadata = ExperimentMetadata(**metadata_dict)
 
     exp_config_fullpath = experiments_dir.joinpath(metadata.experiment_config_path)

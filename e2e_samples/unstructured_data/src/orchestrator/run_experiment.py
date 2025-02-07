@@ -15,7 +15,7 @@ logger.setLevel(logging.INFO)
 
 @dataclass
 class ExperimentRunResults:
-    results: list[dict]
+    results: list[list[dict]]
     run_id: str
 
 
@@ -23,18 +23,15 @@ def run_experiment(
     experiment: ExperimentWrapper,
     data_path: Path,
     write_to_file: bool,
-    is_eval_data: bool = False,
+    is_eval_data: bool,
 ) -> list[dict]:
     """
     Run an experiment using the provided ExperimentWrapper instance and data.
     Args:
-        experiment (ExperimentWrapper): An instance of ExperimentWrapper to
-            run the experiment.
+        experiment (ExperimentWrapper): An instance of ExperimentWrapper to run the experiment.
         data_path (Path): Path to the JSONL file containing the data for the experiment.
-        output_dir (Optional[Path], optional): Directory where the results will be
-            written. Defaults to None.
-        is_eval_data (bool, optional): Flag indicating whether the data is evaluation
-            data. Defaults to False.
+        output_dir (Optional[Path], optional): Directory where the results will be written. Defaults to None.
+        is_eval_data (bool, optional): Flag indicating whether the data is evaluation data. Defaults to False.
     Returns:
         list[dict]: A list of dictionaries containing the results of the experiment.
     """
@@ -42,7 +39,7 @@ def run_experiment(
     data = load_jsonl_file(data_path)
 
     for i, data_line in enumerate(data):
-        result = experiment.run(data_filename=data_path.name, line_number=i, call_args=data_line)
+        result = experiment.run(data_filename=data_path.name, line_number=i + 1, call_args=data_line)
         results.append(result)
 
     if write_to_file is not None:
@@ -52,7 +49,7 @@ def run_experiment(
 
 
 def run_experiments(
-    config_filepath: Path | str,
+    config_filepath: str,
     variants: list[str],
     data_path: Path,
     run_id: Optional[str] = None,
@@ -64,16 +61,13 @@ def run_experiments(
     Run a set of experiments based on the provided configuration and variants.
 
     Args:
-        config_filepath (Path | str): Path to the configuration file.
-        variants (list[str]): List of variant names to run experiments for.
-            These are relative paths from the experiment's variants directory
+        config_filepath (str): Path to the configuration file.
+        variants (list[str]): List of variant names to run experiments for. These are relative paths from the
+            experiment's variants directory
         data_path (Path): Path to the data required for the experiments.
-        run_id (Optional[str], optional): An optional run identifier. If not provided,
-            a new run ID will be generated.
-        output_dir (Optional[Path], optional): Directory to store the output results.
-            Defaults to None.
-        is_eval_data (bool, optional): Flag indicating if the data is for
-            evaluation purposes. Defaults to False.
+        run_id (Optional[str], optional): An optional run identifier. If not provided, a new run ID will be generated.
+        output_dir (Optional[Path], optional): Directory to store the output results. Defaults to None.
+        is_eval_data (bool, optional): Flag indicating if the data is for evaluation purposes. Defaults to False.
 
     Returns:
         ExperimentRunResults: An object containing the results of the experiments,

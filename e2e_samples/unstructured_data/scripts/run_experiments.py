@@ -5,22 +5,24 @@ This script assumes that the experiment data contains all data needed for evalua
 
 Usage:
     python ./scripts/run_experiments.py \
-        -e <experiment-name> \
+        -e <experiment-config-path> \
         -v <path-from-variants-dir-1> <path-from-variants-dir-2> \
         -i <run-id> -d <path-in-data-dir> \
         -t <app_insights|local>
 
 Options:
-    -e, --experiment-name <experiment-name>   The directory name of the experiment.
-                                                Default is "llm_citation_generator".
-    -v, --variants <paths>                    A list of variant paths. Paths are
-                                                relative from the variants directory
-                                                for the experiment.
-    -i, --run-id <run-id>                     The run id. Default is timestamp: YmdHMS.
-    -d, --data-path <path>                    The path to the data file in the data
-                                                directory.
-    -t, --telemetry <app_insights|local>      The telemetry configuration. Can be
-                                                "app_insights" or "local".
+    -e, --experiment-config-path <experiment-config-path>
+        The path to the experiment config from the experiments directory.
+        Defaults to "llm_citation_generator/config/experiment.yaml".
+    -v, --variants <paths>
+        A list of variant paths. Paths are relative from the variants directory for the experiment.
+    -i, --run-id <run-id>
+        The run id. Default is timestamp: YmdHMS.
+    -d, --data-path <path>
+        The path to the data file in the data directory.
+    -t, --telemetry <app_insights|local>
+        The telemetry configuration. Can be "app_insights" or "local". If not provided, telemetry is not set up.
+        If provided, default value is 'local'.
 
 Example:
     python ./scripts/run_experiments.py \
@@ -30,8 +32,8 @@ Example:
         -t app_insights
 
 Environment Variables:
-    This script uses environment variables defined in a .env file.
-    The .env file should be located in the root directory of the project.
+    This script uses environment variables defined in a .env file
+    a template is provided at e2e_samples/unstructured_data/src/.envtemplate
 """
 
 if __name__ == "__main__":

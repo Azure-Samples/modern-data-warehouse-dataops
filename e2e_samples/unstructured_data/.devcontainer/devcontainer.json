@@ -42,7 +42,8 @@
                 "yzhang.markdown-all-in-one",
                 "DavidAnson.vscode-markdownlint",
                 "eamodio.gitlens",
-                "GitHub.copilot"
+                "GitHub.copilot",
+                "ms-python.mypy-type-checker"
             ]
         }
     },

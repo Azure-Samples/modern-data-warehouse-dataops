@@ -47,8 +47,8 @@ def evaluate_experiment_results_from_metadata(
     results = []
     for path in metadata_paths:
         if write_to_file:
-            # set output path when writing to file
             output_path = path.parent.joinpath(f"{eval_run_id}{ExperimentMetadata.eval_results_filename_suffix}")
+
         evaluation = load_evaluation(
             metadata_path=path,
             eval_run_id=eval_run_id,

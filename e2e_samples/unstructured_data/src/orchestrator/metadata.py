@@ -9,18 +9,11 @@ class ExperimentMetadata:
     This class is used to run evaluations on experiment results.
 
     Attributes:
-        experiment_name: str
-            The name of the experiment.
-        variant_name: str
-            The name of the variant.
-        run_id: str
-            The ID of the run.
-        evaluation: Optional[EvaluationConfig]
-            The evaluation configuration (default is None).
-        exp_results_path: Optional[str]
-            The path to the experiment results (default is None).
-        eval_data_path: Optional[str]
-            The path to the evaluation data (default is None).
+        experiment_name (str): The name of the experiment.
+        variant_name (str): The name of the variant.
+        run_id (str): The ID of the run.
+        exp_results_path (Optional[str]): The path to the experiment results (default is None).
+        eval_data_path (Optional[str]): The path to the evaluation data (default is None).
     """
 
     run_id: str

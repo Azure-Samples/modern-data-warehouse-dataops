@@ -16,15 +16,9 @@ class Config:
     Config class to manage configuration settings for the application.
 
     Attributes:
-        evaluators_dir (Path): Directory path for evaluators, which can be set via the
-            environment variable 'EVALUATORS_DIR'. Defaults to
-            '<repo-root>/src/evaluators' if the environment variable is not set.
-        experiments_dir (Path): Directory path for experiments, which can be set via the
-            environment variable 'EXPERIMENTS_DIR'. Defaults to
-            '<repo-root>/src/experiments' if the environment variable is not set.
-        run_outputs_dir (Path): Directory path for run outputs, which can be set via the
-            environment variable 'RUN_OUTPUTS_DIR'. Defaults to
-            '<repo-root>/run_outputs' if the environment variable is not set.
+        evaluators_dir (Path): Directory path for evaluators. Set with the environment variable 'EVALUATORS_DIR'.
+        experiments_dir (Path): Directory path for experiments. Set with the environment variable 'EXPERIMENTS_DIR'.
+        run_outputs_dir (Path): Directory path for run outputs. Set with the environment variable 'RUN_OUTPUTS_DIR'.
     """
 
     evaluators_dir: Path = Path(os.environ.get("EVALUATORS_DIR", SRC_DIR.joinpath("evaluators")))

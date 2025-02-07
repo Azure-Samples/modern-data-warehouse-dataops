@@ -16,12 +16,9 @@ class AMLWorkspace:
     AMLWorkspace class represents an Azure Machine Learning workspace.
 
     Attributes:
-        subscription_id (str):
-            The subscription ID for the Azure account.
-        resource_group (str):
-            The resource group in which the workspace is located.
-        workspace_name (str):
-            The name of the Azure Machine Learning workspace.
+        subscription_id (str): The subscription ID for the Azure account.
+        resource_group (str): The resource group in which the workspace is located.
+        workspace_name (str): The name of the Azure Machine Learning workspace.
     """
 
     subscription_id: str
@@ -43,14 +40,10 @@ def store_results(
     Args:
         experiment_name (str): The name of the experiment to log results to.
         job_name (str): The name of the job/run to log.
-        aml_workspace (AMLWorkspace): The AML workspace configuration object containing
-            subscription ID, resource group, and workspace name.
+        aml_workspace (AMLWorkspace): The AML workspace configuration object
         tags (dict[str, str], optional): A dictionary of tags to associate with the run.
-            Defaults to an empty dictionary.
         metrics (dict[str, int | float], optional): A dictionary of metrics to log.
-            Defaults to an empty dictionary.
         artifacts (list[Path], optional): A list of file paths to log as artifacts.
-        Defaults to an empty list.
     Returns:
         None
     """

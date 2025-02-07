@@ -19,8 +19,7 @@ class EvaluatorLoadConfig:
     Attributes:
         module (str): The module where the evaluator class is located.
         class_name (str): The name of the evaluator class.
-        evaluator_config (dict[str, EvaluatorConfig]): A dictionary containing evaluator
-            configurations, where the key is a string and the value is an instance of EvaluatorConfig.
+        evaluator_config (dict[str, EvaluatorConfig]): A dictionary containing evaluator configurations
         init_args (dict): A dictionary containing initialization arguments for the evaluator.
     """
 
@@ -30,7 +29,7 @@ class EvaluatorLoadConfig:
     init_args: dict = field(default_factory=dict)
 
 
-EvaluatorConfigMap = dict[str, EvaluatorLoadConfig | None]
+EvaluatorLoadConfigMap = dict[str, EvaluatorLoadConfig | None]
 
 
 @dataclass
@@ -43,15 +42,12 @@ class EvaluationConfig:
         tags (dict): Additional tags for the evaluation configuration.
     Args:
         init_args (dict, optional): Initialization arguments for the evaluation.
-            Defaults to an empty dictionary.
         evaluators (dict, optional): A dictionary of evaluator configurations.
-            Defaults to an empty dictionary.
         tags (dict, optional): Additional tags for the evaluation configuration.
-            Defaults to an empty dictionary.
     """
 
     init_args: dict = field(default_factory=dict)
-    evaluators: EvaluatorConfigMap = field(default_factory=EvaluatorConfigMap)
+    evaluators: EvaluatorLoadConfigMap = field(default_factory=EvaluatorLoadConfigMap)
     tags: dict = field(default_factory=dict)
 
     def __init__(
@@ -70,20 +66,17 @@ class EvaluationConfig:
 
 
 def merge_eval_config_maps(
-    exp_evaluators: EvaluatorConfigMap,
-    variant_evaluators: EvaluatorConfigMap,
-) -> EvaluatorConfigMap:
+    exp_evaluators: EvaluatorLoadConfigMap,
+    variant_evaluators: EvaluatorLoadConfigMap,
+) -> EvaluatorLoadConfigMap:
     """
     Merges two evaluator configuration maps into a single map.
     Args:
-        exp_evaluators (EvaluatorConfigMap): The evaluator configuration map
-            from the experiment.
-        variant_evaluators (EvaluatorConfigMap): The evaluator configuration
-            map from the variant.
+        exp_evaluators (EvaluatorLoadConfigMap): The evaluator configuration map from the experiment config.
+        variant_evaluators (EvaluatorLoadConfigMap): The evaluator configuration map from the variant config.
     Returns:
-        EvaluatorConfigMap: A dictionary containing the merged evaluator configurations.
-            If a configuration, exists in both maps, the variant configuration
-            will take precedence.
+        EvaluatorLoadConfigMap: A dictionary containing the merged evaluator configurations. If a configuration, exists
+            in both maps, the variant configuration will take precedence.
     """
 
     merged = {}

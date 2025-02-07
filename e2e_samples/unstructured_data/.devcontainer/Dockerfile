@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y \
 
 # Upgrade pip, setuptools, and wheel
 RUN pip install --upgrade pip setuptools wheel
-RUN pip install black pre-commit
+RUN pip install black pre-commit mypy
 
 # Install Azure CLI
 RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash

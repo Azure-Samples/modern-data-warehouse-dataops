@@ -29,8 +29,21 @@ class TestUtils(unittest.TestCase):
 
         self.assertDictEqual(merged, expected_output)
         # ensure original dicts are unchanged
-        self.assertDictEqual(d1["a"], {"a1": "d1-value", "a2": "d1-value"})
-        self.assertDictEqual(d2["a"], {"a1": "d2-value"})
+        self.assertDictEqual(
+            d1,
+            {
+                "a": {"a1": "d1-value", "a2": "d1-value"},
+                "b": [{"b1": "d1-value"}, {"b2": "d1-value"}],
+            },
+        )
+        self.assertDictEqual(
+            d2,
+            {
+                "a": {"a1": "d2-value"},
+                "b": [{"b1": "d2-value"}],
+                "c": "d2-value",
+            },
+        )
 
     def test_flatten_dict(self) -> None:
         d = {"a": {"b": {"c": "value1"}}, "d": {"e": "value2"}, "f": "value3"}

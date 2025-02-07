@@ -6,7 +6,7 @@ from typing import Callable, Optional
 
 from azure.ai.evaluation import EvaluationResult, evaluate
 from orchestrator.aml import AMLWorkspace, store_results
-from orchestrator.evaluation_config import EvaluatorConfigMap
+from orchestrator.evaluation_config import EvaluatorConfig
 
 
 @dataclass
@@ -18,7 +18,7 @@ class EvaluationWrapper:
     data_path: str
     experiment_run_id: str
     evaluators: dict[str, Callable]
-    evaluator_config: EvaluatorConfigMap
+    evaluator_config: dict[str, EvaluatorConfig]
     tags: dict = field(default_factory=dict)
 
     def evaluate_experiment_result(

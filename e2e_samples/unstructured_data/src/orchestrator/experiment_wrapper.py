@@ -26,6 +26,7 @@ class ExperimentWrapper:
         experiment (Callable): The experiment instance to be run.
         metadata (ExperimentMetadata): Metadata associated with the experiment.
         output_container (str): The container for the experiment output.
+        additional_call_args (dict): Additional keyword arguments to pass to the experiment __call__ method.
     """
 
     experiment: Callable
@@ -33,7 +34,7 @@ class ExperimentWrapper:
     variant_name: str
     metadata: ExperimentMetadata
     output_container: str
-    additional_call_args: Optional[dict] = field(default_factory=dict)
+    additional_call_args: dict = field(default_factory=dict)
 
     def run(
         self,
@@ -44,28 +45,26 @@ class ExperimentWrapper:
         """
         Runs the experiment with the provided data filename and line number.
         Args:
-            data_filename (str, optional): The name of the data file.
-                Defaults to "none".
-            line_number (int, optional): The line number in the data file.
-                Defaults to 0.
+            data_filename (str, optional): The name of the data file. Defaults to "none".
+            line_number (int, optional): The line number in the data file. Defaults to 0.
             call_kwargs: keyword arguments to pass to the experiment's __call__ method.
         Returns:
-            dict: A dictionary containing the results of the experiment. If an
-                error occurs, the dictionary will contain an 'error' key with
-                the error message.
+            dict: A dictionary containing the results of the experiment. If an error occurs,
+                the dictionary will contain an 'error' key with the error message.
         """
-        line_number += 1
         attributes = {
             "experiment.name": self.experiment_name,
             "experiment.variant.name": self.variant_name,
             "experiment.run_id": self.metadata.run_id,
             "data.filename": data_filename,
-            "data.line_number": line_number,
+            "data.line_number": str(line_number),
         }
 
-        inputs = {**self.additional_call_args, **call_args}
         exp_fullname = f"{self.experiment_name}:{self.variant_name}"
 
+        if call_args is None:
+            call_args = {}
+        inputs = {**self.additional_call_args, **call_args}
         output = flatten_dict({"inputs": inputs})
         try:
             with tracer.start_as_current_span("experiment", attributes=attributes):

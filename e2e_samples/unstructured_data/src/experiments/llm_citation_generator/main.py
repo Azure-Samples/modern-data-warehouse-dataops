@@ -19,8 +19,6 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 PROMPT_TEMPLATES_DIR = Path(__file__).parent.joinpath("prompt_templates")
-SYSTEM_PROMPT_PATH = PROMPT_TEMPLATES_DIR.joinpath("system_prompt.txt")
-QUESTION_PROMPT_PATH = PROMPT_TEMPLATES_DIR.joinpath("question_prompt.txt")
 
 SUBMISSION_CONTAINER = "data"
 RESULTS_CONTAINER = "di-results"
@@ -30,6 +28,8 @@ class LLMCitationGenerator:
     def __init__(
         self,
         run_id: Optional[str] = None,
+        system_prompt_file: str = "system_prompt.txt",
+        question_prompt_file: str = "question_prompt.txt",
         **kwargs: Any,
     ) -> None:
         # DB
@@ -47,7 +47,6 @@ class LLMCitationGenerator:
         self.blob_service_client = get_blob_service_client(account_url=os.environ["AZURE_STORAGE_ACCOUNT_URL"])
 
         # LLM
-        # TODO: move to default azure credential?
         self.llm_client = ChatCompletionsClient(
             endpoint=os.environ["AZURE_OPENAI_ENDPOINT"],
             credential=AzureKeyCredential(os.environ["AZURE_OPENAI_KEY"]),
@@ -55,10 +54,10 @@ class LLMCitationGenerator:
         )
 
         # Prompts
-        sys_prompt_txt = read_file(SYSTEM_PROMPT_PATH)
+        sys_prompt_txt = read_file(PROMPT_TEMPLATES_DIR.joinpath(system_prompt_file))
         self.system_prompt = Template(sys_prompt_txt).render()
 
-        question_prompt_txt = read_file(QUESTION_PROMPT_PATH)
+        question_prompt_txt = read_file(PROMPT_TEMPLATES_DIR.joinpath(question_prompt_file))
         self.question_prompt_template = Template(question_prompt_txt)
 
     def __call__(self, submission_folder: str, question: str, question_id: Optional[int] = None, **kwargs: Any) -> dict:
@@ -136,7 +135,7 @@ if __name__ == "__main__":
 
     generator = LLMCitationGenerator()
     output = generator(
-        submission_folder="test-submission",
+        submission_folder="test-submission-2",
         question="What was the company’s revenue for the third quarter of Fiscal Year 2024?",
     )
     for c in output["citations"]:
