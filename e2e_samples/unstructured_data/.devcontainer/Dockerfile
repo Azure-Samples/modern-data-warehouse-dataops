@@ -29,7 +29,6 @@ RUN rm packages-microsoft-prod.deb
 # Install the SQL driver
 RUN apt-get update
 RUN ACCEPT_EULA=Y apt-get install -y msodbcsql18
-# optional: for bcp and sqlcmd
 RUN ACCEPT_EULA=Y apt-get install -y mssql-tools18
 RUN echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.zshrc
 
