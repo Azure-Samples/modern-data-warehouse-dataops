@@ -1,5 +1,6 @@
 name: llm-citation-generator
 module: experiments.llm_citation_generator.main
+variants_dir: ./questions
 class_name: LLMCitationGenerator
 evaluators:
   fuzzy_match:

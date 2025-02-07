@@ -1,0 +1,15 @@
+name: earnings-per-share
+call_args:
+  question: "What are the earnings per share (EPS) for this quarter?"
+evaluation:
+  evaluators:
+    fuzzy_match:
+      evaluator_config:
+        column_mapping:
+          truth: ${data.inputs.truth.earnings-per-share}
+    exact_numeric_match:
+      evaluator_config:
+        column_mapping:
+          truth: ${data.inputs.truth.earnings-per-share}
+  tags:
+    question: earnings-per-share

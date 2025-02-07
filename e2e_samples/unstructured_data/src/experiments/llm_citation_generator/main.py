@@ -37,11 +37,8 @@ class LLMCitationGenerator:
         self.run_id = run_id
         self.db_creator = "llm-citation-generator"
         self.db_conn_str = os.environ.get("CITATION_DB_CONNECTION_STRING")
-        if self.write_to_db:
-            if self.db_conn_str is None:
-                raise ValueError(
-                    "CITATION_DB_CONNECTION_STRING env variable is required when CITATION_DB_ENABLED is True"
-                )
+        if self.write_to_db and self.db_conn_str is None:
+            raise ValueError("CITATION_DB_CONNECTION_STRING env variable is required when CITATION_DB_ENABLED is True")
 
         # Blob
         self.blob_service_client = get_blob_service_client(account_url=os.environ["AZURE_STORAGE_ACCOUNT_URL"])
@@ -61,6 +58,12 @@ class LLMCitationGenerator:
         self.question_prompt_template = Template(question_prompt_txt)
 
     def __call__(self, submission_folder: str, question: str, question_id: Optional[int] = None, **kwargs: Any) -> dict:
+        # Fail early if required env variables are not set
+        if self.write_to_db and (question_id is None or self.db_conn_str is None):
+            raise ValueError(
+                "question_id and CITATION_DB_CONNECTION_STRING env var are required when CITATION_DB_ENABLED is True"
+            )
+
         # Get DI results for submission
         docs = analyze_submission_folder(
             blob_service_client=self.blob_service_client,
@@ -105,13 +108,9 @@ class LLMCitationGenerator:
 
         output: dict = {"citations": citation_results}
 
-        valid_citations = [c for c in citations if isinstance(c, Citation)]
-
         # Write to DB
         if self.write_to_db:
-            if question_id is None:
-                raise ValueError("question_id is required when CITATION_DB_ENABLED is True")
-
+            valid_citations = [c for c in citations if isinstance(c, Citation)]
             form_name = f"{submission_folder}_{self.run_id}" if self.run_id is not None else submission_folder
             logger.info(f"Adding {len(valid_citations)} citations to form {form_name}")
 
