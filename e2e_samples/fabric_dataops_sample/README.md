@@ -24,7 +24,7 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
   - [Software pre-requisites](#software-pre-requisites)
     - [If using dev container (Recommended)](#if-using-dev-container-recommended)
     - [If not using dev container](#if-not-using-dev-container)
-  - [Familiarize yourself with known issues, limitations, and workarounds](#familiarize-yourself-with-known-issues-limitations-and-workarounds)
+  - [Familiarize yourself with known issues, limitations, and FAQs](#familiarize-yourself-with-known-issues-limitations-and-faqs)
 - [How to use the sample](#how-to-use-the-sample)
   - [Initial infrastructure deployment](#initial-infrastructure-deployment)
     - [Deploying infrastructure using Terraform and Fabric APIs](#deploying-infrastructure-using-terraform-and-fabric-apis)
@@ -33,14 +33,6 @@ This sample aims to provide customers with a reference end-to-end (E2E) implemen
   - [Triggering the CI/CD pipelines](#triggering-the-cicd-pipelines)
     - [Key observations](#key-observations)
 - [Cleaning up](#cleaning-up)
-- [Frequently asked questions](#frequently-asked-questions)
-  - [Infrastructure deployment related](#infrastructure-deployment-related)
-    - [Why existing resource groups are required?](#why-existing-resource-groups-are-required)
-    - [How to use a managed identity for authentication?](#how-to-use-a-managed-identity-for-authentication)
-    - [Why is the variable FABRIC\_CAPACITY\_ADMINS required?](#why-is-the-variable-fabric_capacity_admins-required)
-    - [What is the significance of `use_cli` and `use_msi` flags?](#what-is-the-significance-of-use_cli-and-use_msi-flags)
-  - [Application code and execution related](#application-code-and-execution-related)
-    - [Why are lakehouse mount points created in notebooks?](#why-are-lakehouse-mount-points-created-in-notebooks)
 - [References](#references)
 
 ## Solution Overview
@@ -209,9 +201,11 @@ That said, if you prefer not to use the dev container, you can easily set up you
   - [Terraform](https://developer.hashicorp.com/terraform/install?product_intent=terraform)
   - [Python version 3.9+](https://www.python.org/downloads/) with `requests` package installed
 
-### Familiarize yourself with known issues, limitations, and workarounds
+### Familiarize yourself with known issues, limitations, and FAQs
 
-Refer to the [known issues, limitations, and workarounds](docs/issues_limitations_and_workarounds.md) page for details. Reviewing this page is highly recommended to understand the limitations, issues, and challenges you may encounter while building CI/CD pipelines for Fabric. It also provides workarounds and alternative approaches to overcome these challenges. This information will also help you understand why certain approaches are used in the infrastructure deployment scripts and Azure DevOps pipelines.
+Refer to the [known issues, limitations, and FAQs](docs/known_issues_limitations_and_faqs.md) page for details. Reviewing this page is highly recommended to understand the limitations, issues, and challenges you may encounter while building CI/CD pipelines for Fabric. It also provides workarounds and alternative approaches to overcome these challenges. This information will also help you understand why certain approaches are used in the infrastructure deployment scripts and Azure DevOps pipelines.
+
+The document also includes a list of frequently asked questions (FAQs) that provide additional context and guidance on various aspects of the sample.
 
 ## How to use the sample
 
@@ -262,8 +256,8 @@ Refer to the [known issues, limitations, and workarounds](docs/issues_limitation
 
   - The `BASE_NAME` variable is used as a suffix to name all the Azure and Fabric resources. If skipped, the terraform script will generated a random six character string and use it as the base name. It is recommended to use a random alphanumeric string of up to six characters.
   - The `APP_CLIENT_ID` and `APP_CLIENT_SECRET` variables are required only if you are using service principal authentication. If you are using Managed Identity authentication, you can leave these blank.
-  - The `ENVIRONMENT_NAMES` array variable defined the deployment stages/environments. The script will deploy set of resources for each environment specified in this variable. It is highly recommended to use the default values ("dev" "stg" "prod") as-is. Refer to the [known issues, limitations, and workarounds](./docs/issues_limitations_and_workarounds.md#dependencies-on-environment_names-variable) page for more details.
-  - The `RESOURCE_GROUP_NAMES` array variable defines the Azure resource groups corresponding to each environment. The script will deploy resources for each environment in the corresponding resource group. For example, you can define three resource groups for the three stages as ("rg-dev" "rg-stg" "rg-prod"). The length of `ENVIRONMENT_NAMES` and `RESOURCE_GROUP_NAMES` array variables must be the same. Note that the deployment script does not create these resource groups (see [here](#why-existing-resource-groups-are-required) for details) and you need to create them in advance as outlined in the [pre-requisites](#pre-requisites).
+  - The `ENVIRONMENT_NAMES` array variable defined the deployment stages/environments. The script will deploy set of resources for each environment specified in this variable. It is highly recommended to use the default values ("dev" "stg" "prod") as-is. Refer to the [known issues, limitations, and FAQs](./docs/known_issues_limitations_and_faqs.md#what-are-the-implications-of-changing-default-values-in-the-env-file) page for more details.
+  - The `RESOURCE_GROUP_NAMES` array variable defines the Azure resource groups corresponding to each environment. The script will deploy resources for each environment in the corresponding resource group. For example, you can define three resource groups for the three stages as ("rg-dev" "rg-stg" "rg-prod"). The length of `ENVIRONMENT_NAMES` and `RESOURCE_GROUP_NAMES` array variables must be the same. Note that the deployment script does not create these resource groups (see [here](./docs/known_issues_limitations_and_faqs.md#why-existing-resource-groups-are-required) for details) and you need to create them in advance as outlined in the [pre-requisites](#pre-requisites).
   - The `EXISTING_FABRIC_CAPACITY_NAME` variable is the name of an existing Fabric capacity. If you want to create a new capacity, leave this blank.
   - The `GITHUB_BRANCH_NAMES` array variable defines the Git branches for each environment where the Fabric items will be committed. The workspace in each environment is integrated with the corresponding Git branch. It is highly recommended to use the default values ("dev" "stg" "prod") as-is. The length of the `ENVIRONMENT_NAMES` and `GIT_BRANCH_NAMES` array variables must be the same.
   - The `GIT_USERNAME` and `GIT_PERSONAL_ACCESS_TOKEN` variables are used to setup the initial branch structure where a set of files are copied and committed to Azure repo before running the main deployment. The token should have a minimum of `Code -> Read & write` [scope](https://learn.microsoft.com/azure/devops/integrate/get-started/authentication/oauth?view=azure-devops#scopes). Refer to the [documentation](https://learn.microsoft.com/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate) for more details.
@@ -289,7 +283,7 @@ Refer to the [known issues, limitations, and workarounds](docs/issues_limitation
 - For the following step you have 2 authentication options:
 
   1. **Managed Identity authentication** (Recommended as it does not require dealing with secrets)
-      - Create or use an existing Azure VM and assign it a Managed Identity. If you need to create a new VM, see the instructions [here](#how-to-use-a-managed-identity-for-authentication).
+      - Create or use an existing Azure VM and assign it a Managed Identity. If you need to create a new VM, see the instructions [here](./docs/known_issues_limitations_and_faqs.md#how-to-use-a-managed-identity-for-authentication).
       - Connect to the VM and open a bash shell
       - Authenticate to Azure using the VM Managed Identity
 
@@ -443,7 +437,7 @@ If you have followed the steps above carefully, you will observe the following:
 - You cannot visualize the changes that you are committing in the feature workspace from Fabric UI.
 - ...
 
-Please refer to [known issues, limitations, and workarounds](./docs/issues_limitations_and_workarounds.md) for a detailed understanding of these observations and how to address them.
+Please refer to [known issues, limitations, and FAQs](./docs/known_issues_limitations_and_faqs.md) for a detailed understanding of these observations and how to address them.
 
 ## Cleaning up
 
@@ -467,78 +461,6 @@ The cleanup script performs the following actions:
 - The Azure Devops pipelines definition files created (with substituted values) in the `/devops` folder are removed.
 
 Note that the script does not remove Azure repo branches or their contents. You can manually delete them from the Azure DevOps portal if needed. Note that the branches will be recreated when you run the [prepare_azure_repo.sh](./prepare_azure_repo.sh) script again.
-
-## Frequently asked questions
-
-### Infrastructure deployment related
-
-#### Why existing resource groups are required?
-
-This sample follows the principle of least privilege and aligns with enterprise best practices, where the IT infrastructure or platform team is responsible for creating resource groups and granting only the necessary permissions to those specific groups. Allowing resource groups to be created as part of the deployment would require subscription-level permissions, which is not recommended.
-
-For the same reason, the script requires existing security groups for Fabric workspace admins instead of creating new ones.
-
-Having said that, a privileged user with `Contributor` and `User Access Administrator` roles at the subscription level can use the [configure_resource_groups.sh](./scripts/configure_resource_groups.sh) script can be used to create the required resource groups and assigning the necessary roles. This script creates the required resource groups for each stage/environment and assigns the `Contributor` and `User Access Administrator` roles to the specified Entra security group. The `User Access Administrator` role is assigned with a delegate condition to provide more fine-grained access control.
-
-#### How to use a managed identity for authentication?
-
-When using a user-assigned managed identity, you assign the managed identity to the 'source' azure resource, such as Virtual Machine (VM), Azure Function and such. Here are the instructions to setup up an Azure VM for authentication with managed identity.
-
-If you need to create a new Linux VM, it is recommended that you create an [Ubuntu VM](https://learn.microsoft.com/azure/virtual-machines/linux/quick-create-portal?tabs=ubuntu) and enable [Entra login to the VM](https://learn.microsoft.com/entra/identity/devices/howto-vm-sign-in-azure-ad-linux). Leave access to the VM [disabled by default](https://learn.microsoft.com/azure/defender-for-cloud/just-in-time-access-overview), and [enable just-in-time (JIT) access to the VM](https://learn.microsoft.com/azure/defender-for-cloud/just-in-time-access-usage).
-
-Next, you need to assign a managed identity to this virtual machine. Refer to [assign a Managed Identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/how-to-configure-managed-identities) for detail.
-
-On the VM make sure you have installed the following (below instructions are for Ubuntu):
-
-```bash
-# Install nano or shell text editor of your choice
-sudo apt install nano
-
-# Install Azure CLI. Below instructions are for Ubuntu, for other distributions see https://learn.microsoft.com/cli/azure/install-azure-cli-linux?
-curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-
-# Install git
-sudo apt install git
-
-# Install terraform - https://developer.hashicorp.com/terraform/install
-
-# Install jq
-sudo apt install jq -y
-
-# Install pip
-sudo apt install python3-pip -y
-
-# Install python requests package
-python -m pip install requests
-```
-
-#### Why is the variable FABRIC_CAPACITY_ADMINS required?
-
-This variable is required due to a current Fabric limitation, where adding a security group as a capacity administrator is not supported. Ideally, customers would create a security group for capacity administrators and assign that group as an admin for the capacity. However, due to this limitation, the script requires a list of users and service principals to be added as capacity admins to the newly created Fabric capacity.
-
-Additionally, the current design of the Fabric capacity template results in all existing capacity admins being removed and replaced with only those specified in the `FABRIC_CAPACITY_ADMINS` variable. Therefore, it’s essential to include all intended capacity admins in this variable.
-
-For an existing capacity, the principal executing the script must have permission to read the capacity details. As a prerequisite, all user accounts and the principal (service principal or managed identity) used for deployment should already be assigned as Capacity Administrators for that capacity.
-
-#### What is the significance of `use_cli` and `use_msi` flags?
-
-These flags are used to determine the authentication method to be used during the deployment based on the login context. The following table covers the possible scenarios:
-
-| Logged-in As | `use_cli` | `use_msi` | `APP_CLIENT_ID` | `APP_CLIENT_SECRET` |
-| --- | --- | --- | --- | --- |
-| Service Principal | `false` | `false` | Required | Required |
-| Managed Identity | `false` | `true` | Not Required | Not Required |
-| Entra ID User | `true` | `false` | Not Required | Not Required |
-
-Terraform also uses these flags to determine the authentication method for the Fabric provider. If both `use_cli` and `use_msi` are set to `false`, the `client_id` and `client_secret` attributes are set for the provider to use service principal authentication.
-
-Additionally, in [main.tf](./infrastructure/terraform/main.tf), some modules are deployed only when `use_cli` is set to `true`. This is necessary for Fabric items that do not support service principal or managed identity authentication. These items are deployed using user-context authentication.
-
-### Application code and execution related
-
-#### Why are lakehouse mount points created in notebooks?
-
-If you need to read non-data files (e.g., config/yaml), referring them via ABFS path does not work. In such scenarios, you can mount lakehouse path as mount point and then access the required files.
 
 ## References
 
