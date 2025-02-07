@@ -481,3 +481,6 @@ single_tech_samples/synapseanalytics/sample3_integration_testing/synapse/workspa
 single_tech_samples/synapseanalytics/sample3_integration_testing/synapse/workspace/linkedService/Ls_KeyVault_01.json
 single_tech_samples/synapseanalytics/sample3_integration_testing/synapse/workspace/pipeline/P_Sample3.json
 single_tech_samples/synapseanalytics/sample3_integration_testing/synapse/workspace/trigger/T_Stor.json
+
+# Unstructured Data
+e2e_samples/unstructured_data/run_outputs
