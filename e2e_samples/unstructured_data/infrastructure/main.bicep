@@ -9,6 +9,11 @@ param keyvault_name string
 param enable_keyvault_soft_delete bool = true
 param enable_keyvault_purge_protection bool = true
 // param entra_admin_login string
+param sql_server_name string
+param sql_db_name string
+param aad_group_name string
+param aad_group_object_id string
+param ip_address string
 
 module databricks './modules/databricks.bicep' = {
   name: 'databricks_deploy_${deployment_id}'
@@ -45,6 +50,18 @@ module keyvault './modules/keyvault.bicep' = {
   }
 }
 
+module sql './modules/sql.bicep' = {
+  name: 'sql_deploy_${deployment_id}'
+  params: {
+    sql_server_name: sql_server_name
+    sql_db_name: sql_db_name
+    env: env
+    location: location
+    aad_group_name: aad_group_name
+    aad_group_object_id: aad_group_object_id
+    ip_address: ip_address
+  }
+}
 
 // module appinsights './modules/appinsights.bicep' = {
 //   name: 'appinsights_deploy_${deployment_id}'
