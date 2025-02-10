@@ -100,6 +100,7 @@ fi
 PROJECT=krakendemo
 ENV_NAME=dev
 DEPLOYMENT_ID="$(random_str 5)"
+TEAM_NAME=kraken
 ###################
 # AZURE_LOCATION
 # REQUIRED ENV VARIABLES:
@@ -118,7 +119,17 @@ log "Deploying to Subscription: $AZURE_SUBSCRIPTION_ID" "info"
 # Create resource group
 resource_group_name="$PROJECT-$DEPLOYMENT_ID-$ENV_NAME-rg"
 log "Creating resource group: $resource_group_name"
-az group create --name "$resource_group_name" --location "$AZURE_LOCATION" --tags Environment="$ENV_NAME" -o none
+az group create --name "$resource_group_name" --location "$AZURE_LOCATION" --tags Environment="$ENV_NAME" TeamName="$TEAM_NAME" -o none
+
+# Create security group
+security_group_name="$PROJECT-$DEPLOYMENT_ID-$ENV_NAME-sg"
+log "Creating security group: $security_group_name"
+az ad group create --display-name "$security_group_name" --mail-nickname "$security_group_name"
+security_group_id=$(az ad group show --group "$security_group_name" --query objectId -o none)
+
+# Add self to security group
+log "Adding self to security group: $security_group_name"
+az ad group member add --group "$security_group_name" --member-id "$(az ad signed-in-user show --output json | jq -r '.id')"
 
 # By default, set all KeyVault permission to deployer
 # Retrieve KeyVault User Id
@@ -154,6 +165,11 @@ if [[ $(echo "$kv_list" | jq -r '.[0]') != null ]]; then
     fi
 fi
 
+# Handle SQL Server and Database
+sql_server_name="$PROJECT-sql-$ENV_NAME-$DEPLOYMENT_ID"
+sql_db_name="$PROJECT-sqldb-$ENV_NAME-$DEPLOYMENT_ID"
+ip_address=$(curl -4 icanhazip.com)
+
 # Validate arm template
 log "Validating deployment"
 arm_output=$(az deployment group validate \
@@ -162,6 +178,8 @@ arm_output=$(az deployment group validate \
     --parameters project="${PROJECT}" keyvault_owner_object_id="${kv_owner_object_id}" deployment_id="${DEPLOYMENT_ID}" \
     --parameters keyvault_name="${kv_name}" enable_keyvault_soft_delete="${ENABLE_KEYVAULT_SOFT_DELETE}" \
     --parameters enable_keyvault_purge_protection="${ENABLE_KEYVAULT_PURGE_PROTECTION}"\
+    --parameters sql_server_name="${sql_server_name}" sql_db_name="${sql_db_name}" ip_address="${ip_address}" \
+    --parameters aad_group_name="${security_group_name}" aad_group_object_id="${security_group_id}" \
     --output json)
 
 # Deploy arm template
