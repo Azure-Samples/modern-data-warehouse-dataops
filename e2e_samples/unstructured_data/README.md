@@ -22,7 +22,7 @@ As a reference implementation, this should serve as an experiment to deploy in a
 ## How to use the sample
 
 ```bash
-cd e2e_samples/unstructured_data 
+cd e2e_samples/unstructured_data
 
 cp .envtemplate .env
 
