@@ -434,7 +434,7 @@ If you have followed the steps above carefully, you will observe the following:
 - The Fabric environment in the feature workspace is shown as uncommitted.
 - The notebooks in the feature workspace has the dev lakehouse attached as the default lakehouse.
 - The workspace settings for the feature workspace are different from those in the dev workspace.
-- You cannot visualize the changes that you are committing in the feature workspace from Fabric UI.
+- The Fabric workspace UI does not provide an option to visually compare the changes. It only shows that the items are 'Modified' but there is no way to see the actual changes.
 - ...
 
 Please refer to [known issues, limitations, and FAQs](./docs/known_issues_limitations_and_faqs.md) for a detailed understanding of these observations and how to address them.
