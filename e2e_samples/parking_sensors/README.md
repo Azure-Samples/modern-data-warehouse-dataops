@@ -271,7 +271,7 @@ Set up the environment variables as specified, fork the GitHub repository, and l
      - **AZDO_PROJECT** - Target Azure DevOps project where Azure Pipelines and Variable groups will be deployed
      - **AZDO_ORGANIZATION_URL** - Target Azure DevOps Organization of Azure DevOps project in this form `https://dev.azure.com/<organization>/`. Must be in the same tenant as $TENANT_ID
      - **GITHUB_REPO** - Name of your forked github repo in this form `<my_github_handle>/<repo>`. (ei. "devlace/mdw-dataops-import")
-     - **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). The token is needed to connect to the GitHub repository. When generating a token use a `fine-grained` token, select your repository and under repository permissions select Read access to Content and Webhooks. Under Account permissions select read access to Email.
+     - **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). The token is needed to connect to the GitHub repository. When generating a token use a `fine-grained` token, select your repository and under repository permissions select Read access to Content and Read and Write access to Webhooks. Under Account permissions select read access to Email.
 
      Optionally, set the following environment variables:
 
