@@ -7,22 +7,16 @@ The [frequently asked questions (FAQs)](#frequently-asked-questions) section add
 ## Contents <!-- omit in toc -->
 
 - [Known issues](#known-issues)
-  - [Fabric environment shown as 'Uncommitted' after branch-out](#fabric-environment-shown-as-uncommitted-after-branch-out)
-    - [Workaround](#workaround)
-  - [The lakehouse is empty after branch-out](#the-lakehouse-is-empty-after-branch-out)
-    - [Workaround](#workaround-1)
-  - [The default lakehouse attached to notebooks is incorrect after branch-out](#the-default-lakehouse-attached-to-notebooks-is-incorrect-after-branch-out)
-    - [Workaround](#workaround-2)
-  - [Fabric spark custom pool settings are not synced during branch-out](#fabric-spark-custom-pool-settings-are-not-synced-during-branch-out)
-    - [Workaround](#workaround-3)
-  - [Fabric Environment does not recognize change in library with same file name](#fabric-environment-does-not-recognize-change-in-library-with-same-file-name)
-    - [Workaround](#workaround-4)
   - [Missing lakehouse/environment in the new workspace](#missing-lakehouseenvironment-in-the-new-workspace)
-    - [Workaround](#workaround-5)
+  - [Storage account related error](#storage-account-related-error)
+  - [Fabric environment shown as 'Uncommitted' after branch-out](#fabric-environment-shown-as-uncommitted-after-branch-out)
+  - [The lakehouse is empty after branch-out](#the-lakehouse-is-empty-after-branch-out)
+  - [The default lakehouse attached to notebooks is incorrect after branch-out](#the-default-lakehouse-attached-to-notebooks-is-incorrect-after-branch-out)
+  - [Fabric spark custom pool settings are not synced during branch-out](#fabric-spark-custom-pool-settings-are-not-synced-during-branch-out)
   - [Incorrect details in pipeline's snapshot](#incorrect-details-in-pipelines-snapshot)
-    - [Workaround](#workaround-6)
 - [Limitations](#limitations)
   - [Fabric REST APIs limitations](#fabric-rest-apis-limitations)
+  - [Fabric Environment does not recognize change in custom libraries with same file name](#fabric-environment-does-not-recognize-change-in-custom-libraries-with-same-file-name)
 - [Frequently asked questions](#frequently-asked-questions)
   - [Infrastructure deployment related](#infrastructure-deployment-related)
     - [Why existing resource groups are required?](#why-existing-resource-groups-are-required)
@@ -36,6 +30,36 @@ The [frequently asked questions (FAQs)](#frequently-asked-questions) section add
 
 ## Known issues
 
+### Missing lakehouse/environment in the new workspace
+
+When the `deploy.sh` script is executed for the first time in the service principal or managed identity context, the Fabric items, including notebooks, the lakehouse, and the environment are created in the dev workspace. The script also add the Fabric admin's security group as the workspace admin. But if you login to the workspace as a user who is part of above security group (and thus a workspace 'Administrator'), you may sometimes find that the lakehouse and environment are missing from the workspace.
+
+![Missing lakehouse/environment](./../images/missing-lakehouse-environment.png)
+
+In reality, the lakehouse and environment are present in the workspace, but they are not visible to the user. This appears to be a race condition, and it is currently being investigated by the Fabric team.
+
+#### Workaround  <!-- omit in toc -->
+
+There are two workarounds to resolve this issue:
+
+1. Go to the 'Manage access' section in the workspace and change the role of the Fabric admin's security group from `Administrator` to `Contributor`. After that, refresh the browser a couple of times. This will make the lakehouse and environment visible in the workspace.
+
+   Once done, you can change the role of the Fabric admin's security group back to `Administrator` by running the deployment script again in the service principal/managed identity context. This will revert the role of the security group to `Administrator`, and the lakehouse and environment will remain visible. Alternatively, a Tenant administrator can also switch this role from the Admin portal.
+
+1. Instead of relying on the security group, directly grant the user the 'Administrator' workspace role. This will also result in making the lakehouse and environment visible in the workspace.
+
+### Storage account related error
+
+When you deploy the sample, you may encounter an error during the Terraform state refresh. The error message will be `Error: retrieving static website properties for Storage Account`. The error typically occurs when you redeploy the sample without changing the `BASE_NAME` in the environment file.
+
+![Storage website](./../images/storage-error.png)
+
+Again, this appears to be a race condition in which the previously deleted storage account is not cleaned up in time.
+
+#### Workaround  <!-- omit in toc -->
+
+If you encounter this issue, the cleanup script will not work because the Terraform state refresh will fail. In this case, the only option is to manually destroy the deployment. Once everything is deleted, you can do a clean deployment, but be sure to update the `BASE_NAME` to a different value in the environment file.
+
 ### Fabric environment shown as 'Uncommitted' after branch-out
 
 After branching-out to a new workspace, the Git status of the Fabric environment in the new workspace is shown as `Uncommitted`. If you open the environment, you will see that the environment does not have the public and custom libraries that were originally uploaded to the dev environment. However, these files are present in the repository.
@@ -44,7 +68,7 @@ After branching-out to a new workspace, the Git status of the Fabric environment
 
 If you attempt to commit the changes, the libraries in the repository will be deleted. If you try to `undo` the changes, you will receive the notification `Your selected changes were undone`, but the Git status will remain `Uncommitted`.
 
-#### Workaround
+#### Workaround <!-- omit in toc -->
 
 To resolve this issue, you need to manually upload the required libraries to the new workspace and publish the changes. Make sure to publish only the libraries related changes and nothing else. With that, you will be able to commit the changes without losing the libraries.
 
@@ -54,9 +78,9 @@ After branching-out to a new workspace, the lakehouse in the new workspace is em
 
 However, this makes the lakehouse unusable for development in the new workspace. Developers need the lakehouse schemas and tables (even if they are empty) and config files to start development. There should be a way to hydrate the lakehouse in the new workspace.
 
-#### Workaround
+#### Workaround <!-- omit in toc -->
 
-This is a challenging issue to resolve. Here is a possible workaround in the context of this sample:
+There are several approaches to handle this. Here is a possible workaround in the context of this sample:
 
 - The sample hosts the config and reference files externally on ADLS Gen2 storage and makes them available in the lakehouse using a OneLake ADLS Gen2 shortcut. To make this config data available in the feature workspace, developers can create a new OneLake shortcut in the new workspace pointing to the dev workspace's shortcut. This way, the config files become available in the new workspace.
 
@@ -68,41 +92,31 @@ This is a challenging issue to resolve. Here is a possible workaround in the con
 
 ### The default lakehouse attached to notebooks is incorrect after branch-out
 
-TBA
+This issue is a side effect of how Fabric Git sync works. When you branch out to a new workspace, the notebook definition file in Git contains a reference (added as a metadata comment) to the lakehouse in the development workspace. When this file is synced, the same reference is carried over to the new workspace. As a result, the default lakehouse attached to the notebooks still points to the development workspace's lakehouse, which is incorrect.
 
-#### Workaround
+#### Workaround <!-- omit in toc -->
 
-TBA
+Here are some recommendation approaches to handle this issue:
+
+- **Avoid relying on the default lakehouse:** Write notebooks in a way that they do not depend on the attached default lakehouse. This ensures that even if the reference is incorrect, the notebooks will still function properly and, more importantly, will not modify data in the wrong lakehouse. The notebooks used in this sample follow this approach.
+- **Manually update the lakehouse reference:** You can manually change the lakehouse reference in the feature workspace to point to the correct lakehouse. However, this approach has a major drawback—updating the default lakehouse in the notebook will appear as an uncommitted change in the workspace. If you commit this change, it will eventually be merged into the development workspace through a pull request, modifying the lakehouse reference there and potentially breaking the development workspace. This issue applies generally to any post-processing done on Fabric items that are Git-synced.
+- **Automate the branch-out and post-processing steps:** Automating the branch-out and post-processing can help update the lakehouse reference in notebooks seamlessly. While this is a code-intensive approach, it provides greater flexibility in handling Fabric Git sync issues. The post-processing steps can be implemented as a notebook that users can execute or as an Azure DevOps (AzDo) pipeline that developers can trigger. The sample will be updated in the future to include this automation.
 
 ### Fabric spark custom pool settings are not synced during branch-out
 
-TBA
+The sample deploys a custom spark pool and configures the spark workspace settings as part of the Terraform deployment. However, these settings are not Git-synced and are not included in the repository. As a result, when you branch out to a new workspace, the custom spark pool settings are not carried over. This can cause issues when running notebooks that rely on these settings.
 
-#### Workaround
+#### Workaround <!-- omit in toc -->
 
-TBA
+In some cases, it might be acceptable to use different pool settings or default values in the feature workspace. In such case, it can be left to the developer to update the pool and workspace spark settings as needed. As these settings are not Git synced, they will not be part of the pull request and will not affect the development workspace.
 
-### Fabric Environment does not recognize change in library with same file name
-
-TBA
-
-#### Workaround
-
-TBA
-
-### Missing lakehouse/environment in the new workspace
-
-TBA
-
-#### Workaround
-
-TBA
+Otherwise, these update can be applied as part of the post-processing step mentioned above. This post processing step can read the settings of the dev workspace and apply the same to the feature workspace using the [Fabric REST APIs](https://learn.microsoft.com/rest/api/fabric/spark/workspace-settings/update-spark-settings?tabs=HTTP).
 
 ### Incorrect details in pipeline's snapshot
 
 For pipeline executions, regardless of the user's selection, the first notebook's execution snapshot is shown, and other snapshots are inaccessible.
 
-#### Workaround
+#### Workaround <!-- omit in toc -->
 
 To view the snapshot of a specific notebook execution, follow these steps:
 
@@ -121,6 +135,16 @@ The support for managed identities and service principals is not available in fe
 - [Data pipelines](https://learn.microsoft.com/en-us/rest/api/fabric/datapipeline/items)
 
 To handle this limitation, the sample requires executing the deployment script twice - once with the managed identity or service principal and once with the user's credentials. The Git integration and data pipeline are created using the user's credentials.
+
+### Fabric Environment does not recognize change in custom libraries with same file name
+
+Currently, the Fabric environment does not recognize changes in custom libraries with the same file name. For example, the sample uses a custom library named [ddo_transform_standardize.py](./../libraries/src/ddo_transform_standardize.py), which is referenced in the notebooks. If you make changes to this file and upload it to the environment, the environment does not recognize that the content of the file has changed and does not update the library. This behavior is same for both REST APIs and the UI experience. This issue is under investigation by the Fabric team.
+
+#### Workaround <!-- omit in toc -->
+
+There are two workarounds to handle this issue:
+
+- **Add versioning to the file name:** To ensure that the environment recognizes the change, you can add a version number to the file name. For example, you can rename the file to `ddo_transform_standardize_v2.py`. This way, the environment will recognize the new file as a different library and update it accordingly.
 
 ## Frequently asked questions
 
