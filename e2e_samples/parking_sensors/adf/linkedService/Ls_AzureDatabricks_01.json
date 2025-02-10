@@ -15,5 +15,6 @@
       },
       "existingClusterId": ""
     }
-  }
+  },
+  "type": "Microsoft.DataFactory/factories/linkedservices"
 }

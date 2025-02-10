@@ -116,11 +116,13 @@ fi
 
 az keyvault secret set --vault-name "$KEYVAULT_NAME" --name "databricksClusterId" --value "$cluster_id" -o none
 
-adfTempDir=.tmp/adf
+adfTempDir=.tmp
 mkdir -p $adfTempDir && cp -a adf/ .tmp/
 tmpfile=.tmpfile
-adfLsDir=$adfTempDir/linkedService
-jq --arg databricksExistingClusterId "$cluster_id" '.properties.typeProperties.existingClusterId = $databricksExistingClusterId' $adfLsDir/Ls_AzureDatabricks_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AzureDatabricks_01.json
+adfLsDir="adf/linkedService"
+jq --arg databricksExistingClusterId "$cluster_id" '.properties.typeProperties.existingClusterId = $databricksExistingClusterId' $adfTempDir/$adfLsDir/Ls_AzureDatabricks_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AzureDatabricks_01.json
+
+read -p "Please update the Azure Data Factory linked service with the new Databricks cluster ID and press [Enter] to continue..."
 
 log "Uploading libs TO dbfs..."
 databricks fs cp --recursive --overwrite "./databricks/libs/ddo_transform-localdev-py2.py3-none-any.whl" "dbfs:/ddo_transform-localdev-py2.py3-none-any.whl"
