@@ -165,10 +165,10 @@ create_azdo_branch_policy () {
   echo "[Info] Build policy created/updated successfully."
 }
 
-validate_env_vars
-
 echo "[Info] ############ CREATING AZDO PIPELINES  ############"
 set_global_azdo_config
+
+validate_env_vars
 
 create_azdo_pipeline \
   "$azdo_pipeline_ci_qa" \
