@@ -350,7 +350,6 @@ Set up the environment variables as specified, fork the GitHub repository, and l
       - Select "Trigger > Trigger Now".
       - To monitor the run, go to "Monitor > Pipeline runs".
       ![Data Factory Run](docs/images/ADFRun.png "Data Factory Run]")
-      - Currently, the data pipeline is configured to use "on-demand" databricks clusters so it takes a few minutes to spin up. That said, it is not uncommon to change these to point to "existing" running clusters in Development for faster data pipeline runs.
 
 5. **Optional. Visualize data in PowerBI**
     > This requires [PowerBI Desktop App](https://powerbi.microsoft.com/en-us/desktop/) installed.
