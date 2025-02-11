@@ -65,7 +65,7 @@ if __name__ == "__main__":
         "--variants",
         nargs="*",
         required=False,
-        default=["revenue-FY24Q3.yaml", "earnings-per-share.yaml"],
+        default=["revenue.yaml", "earnings-per-share.yaml"],
         help="A list of variants paths. Paths are relative from the \
             variants directory for the experiment",
     )

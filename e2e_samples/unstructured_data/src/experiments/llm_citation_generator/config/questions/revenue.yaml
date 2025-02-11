@@ -1,0 +1,15 @@
+name: revenue
+call_args:
+  question: "What was the company’s revenue for this quarter of this year?"
+evaluation:
+  evaluators:
+    fuzzy_match:
+      evaluator_config:
+        column_mapping:
+          truth: ${data.inputs.truth.revenue}
+    exact_numeric_match:
+      evaluator_config:
+        column_mapping:
+          truth: ${data.inputs.truth.revenue}
+  tags:
+    question: revenue

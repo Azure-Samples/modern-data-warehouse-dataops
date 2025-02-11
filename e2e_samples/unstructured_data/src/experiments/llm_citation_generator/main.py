@@ -20,9 +20,6 @@ logger.setLevel(logging.INFO)
 
 PROMPT_TEMPLATES_DIR = Path(__file__).parent.joinpath("prompt_templates")
 
-SUBMISSION_CONTAINER = "data"
-RESULTS_CONTAINER = "di-results"
-
 
 class LLMCitationGenerator:
     def __init__(
@@ -30,6 +27,8 @@ class LLMCitationGenerator:
         run_id: Optional[str] = None,
         system_prompt_file: str = "system_prompt.txt",
         question_prompt_file: str = "question_prompt.txt",
+        submission_container: str = "msft-quarterly-earnings",
+        results_container: str = "msft-quarterly-earnings-di-results",
         **kwargs: Any,
     ) -> None:
         # DB
@@ -42,6 +41,8 @@ class LLMCitationGenerator:
 
         # Blob
         self.blob_service_client = get_blob_service_client(account_url=os.environ["AZURE_STORAGE_ACCOUNT_URL"])
+        self.submission_container = submission_container
+        self.results_container = results_container
 
         # LLM
         self.llm_client = ChatCompletionsClient(
@@ -68,8 +69,8 @@ class LLMCitationGenerator:
         docs = analyze_submission_folder(
             blob_service_client=self.blob_service_client,
             folder_name=submission_folder,
-            submission_container=SUBMISSION_CONTAINER,
-            results_container=RESULTS_CONTAINER,
+            submission_container=self.submission_container,
+            results_container=self.results_container,
         )
 
         # Prepare question prompt
