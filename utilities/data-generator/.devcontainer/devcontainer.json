@@ -1,0 +1,25 @@
+{
+	"name": "Parking Sensors Data Simulator",
+    "dockerComposeFile": "./docker-compose.yml",
+	"workspaceFolder": "/workspace/utilities/data-generator",
+    "service": "data_simulator_dc",
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "terminal.integrated.shell.linux": "/bin/zsh",
+                "terminal.integrated.defaultProfile.linux": "zsh"
+            },
+            "extensions": [
+                "charliermarsh.ruff",
+                "hashicorp.terraform",
+                "tamasfe.even-better-toml",
+                "yzhang.markdown-all-in-one",
+                "DavidAnson.vscode-markdownlint",
+                "ms-azuretools.vscode-bicep",
+                "eamodio.gitlens"
+            ]
+        }
+    },
+    "remoteUser": "vscode",
+    "postCreateCommand": "./.devcontainer/post_create.sh"
+}
