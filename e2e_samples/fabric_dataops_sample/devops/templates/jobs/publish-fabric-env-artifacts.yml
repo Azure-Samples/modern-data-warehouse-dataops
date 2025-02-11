@@ -1,0 +1,47 @@
+jobs:
+  - job: 'publish_fabric_environment_artifacts'
+    displayName: 'Publish Fabric Environment configuration artifacts'
+
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '3.8'
+          architecture: 'x64'
+
+      - script: |
+          pip install -r requirements.txt
+        displayName: 'Install Requirements'
+        workingDirectory: $(Build.SourcesDirectory)/libraries
+
+      - script: |
+          echo "Linting files in $(Build.SourcesDirectory)..."
+          flake8 .
+        displayName: 'Linting Files'
+        workingDirectory: $(Build.SourcesDirectory)/libraries
+
+      - script: |
+          echo "Running tests in $(Build.SourcesDirectory)/libraries/test..."
+          pytest .
+        displayName: 'Run Tests'
+        workingDirectory: $(Build.SourcesDirectory)/libraries
+
+      - script: |
+          mkdir fabric_env/
+          cp fabric/fabric_environment/environment.yml fabric_env/
+
+          mkdir fabric_env/custom_libraries/
+          cp libraries/src/ddo_transform_standardize.py fabric_env/custom_libraries/
+          cp libraries/src/ddo_transform_transform.py fabric_env/custom_libraries/
+          cp libraries/src/otel_monitor_invoker.py fabric_env/custom_libraries/
+
+        displayName: 'Build Fabric Environment Config Artifacts'
+        workingDirectory: $(Build.SourcesDirectory)
+
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: $(Build.SourcesDirectory)/fabric_env/
+          ArtifactName: 'fabric_env'
+        displayName: 'Publish Fabric Environment Config Files'

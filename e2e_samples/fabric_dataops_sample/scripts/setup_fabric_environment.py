@@ -7,6 +7,8 @@ from typing import Optional
 
 import requests
 
+enable_polling: bool = True
+
 
 def display_usage() -> None:
     print(
@@ -44,15 +46,15 @@ def validate_token(fabric_bearer_token: str) -> None:
     response = requests.get(validation_url, headers=headers)
 
     if response.status_code == 200:
-        print("[I] Fabric token is valid.")
+        print("[Info] Fabric token is valid.")
     else:
         response_json = response.json()
         error_code = response_json.get("errorCode")
         if error_code == "TokenExpired":
-            print("[E] Fabric token has expired.")
+            print("[Error] Fabric token has expired.")
         else:
-            print("[E] Failed to validate Fabric token.")
-            print(f"[E] {response_json}")
+            print("[Error] Failed to validate Fabric token.")
+            print(f"[Error] {response_json}")
         exit(1)
 
 
@@ -65,27 +67,37 @@ def set_headers(fabric_bearer_token: str) -> None:
     headers = {"Authorization": f"Bearer {fabric_bearer_token}", "Content-Type": "application/json"}
 
 
+def get_env_spark_libraries_status(workspace_id: str, environment_id: str) -> str:
+    environment_status_url = f"{fabric_api_endpoint}/workspaces/{workspace_id}/environments/{environment_id}"
+    response = requests.get(environment_status_url, headers=headers)
+
+    if response.status_code == 200:
+        json_data = response.json()
+        return json_data["properties"]["publishDetails"]["componentPublishInfo"]["sparkLibraries"]["state"]
+    else:
+        print(f"[Error] Failed to retrieve environment status: {response.status_code} - {response.text}")
+        exit(1)
+
+
 def poll_long_running_operation(response_headers: dict) -> None:
     operation_id = response_headers.get("x-ms-operation-id")
     retry_after = response_headers.get("Retry-After")
-    print(f"[I] Polling long running operation with id '{operation_id}' every '{retry_after}' seconds.")
+    print(f"[Info] Polling long running operation with id '{operation_id}' every '{retry_after}' seconds.")
     operation_status_url = f"{fabric_api_endpoint}/operations/{operation_id}"
     while True:
         response = requests.get(operation_status_url, headers=headers)
         if response.status_code == 200:
             operation_status = response.json().get("status")
             if operation_status == "Succeeded":
-                print("[I] Long running operation completed successfully.")
+                print("[Info] Long running operation completed successfully.")
                 break
             elif operation_status == "Failed":
-                print("[E] Long running operation failed.")
-                break
+                raise Exception("[Error] Long running operation failed.")
             else:
-                print("[I] Long running operation in progress.")
+                print("[Info] Long running operation in progress.")
                 time.sleep(int(retry_after))
         else:
-            print(f"[E] Failed to retrieve operation status: {response.status_code} - {response.text}")
-            break
+            raise Exception(f"[Error] Failed to retrieve operation status: {response.status_code} - {response.text}")
 
 
 def get_workspace_id(workspace_name: str) -> Optional[str]:
@@ -93,8 +105,7 @@ def get_workspace_id(workspace_name: str) -> Optional[str]:
     response = requests.get(get_workspaces_url, headers=headers)
 
     if response.status_code != 200:
-        print(f"[I] Failed to retrieve workspaces: {response.status_code} - {response.text}")
-        return None
+        raise Exception(f"[Error] Failed to retrieve workspaces: {response.status_code} - {response.text}")
 
     workspaces = response.json().get("value", [])
 
@@ -109,8 +120,7 @@ def get_environment_id(workspace_id: str, environment_name: str) -> Optional[str
     response = requests.get(get_environments_url, headers=headers)
 
     if response.status_code != 200:
-        print(f"[I] Failed to retrieve environments: {response.status_code} - {response.text}")
-        return None
+        raise Exception(f"[Error] Failed to retrieve environments: {response.status_code} - {response.text}")
 
     environments = response.json().get("value", [])
 
@@ -133,10 +143,11 @@ def upload_staging_libraries(
     response = requests.post(staging_libraries_url, headers=file_headers, files=files, data=payload)
 
     if response.status_code == 200:
-        print(f"[I] Staging libraries uploaded from file '{file_name}' successfully.")
+        print(f"[Info] Staging libraries uploaded from file '{file_name}' successfully.")
     else:
-        print(f"[E] Staging libraries upload from file '{file_name}' failed: {response.status_code} - {response.text}")
-        print(response.text)
+        raise Exception(
+            f"[Error] Staging libraries upload from file '{file_name}' failed: {response.status_code} - {response.text}"
+        )
 
 
 def publish_environment(workspace_id: str, environment_id: str) -> None:
@@ -146,12 +157,12 @@ def publish_environment(workspace_id: str, environment_id: str) -> None:
     response = requests.post(publish_environment_url, headers=headers)
 
     if response.status_code == 200:
-        print("[I] Environment published successfully.")
+        print("[Info] Environment publishing request submitted successfully.")
     elif response.status_code == 202:
-        print("[I] Environment publishing is in progress.")
+        print("[Info] Environment publishing is in progress.")
         poll_long_running_operation(response.headers)
     else:
-        print(f"[E] Failed to publish environment: {response.status_code} - {response.text}")
+        raise Exception(f"[Error] Failed to publish environment: {response.status_code} - {response.text}")
 
 
 def get_libraries(workspace_id: str, environment_id: str, status: str) -> None:
@@ -162,9 +173,8 @@ def get_libraries(workspace_id: str, environment_id: str, status: str) -> None:
             f"{fabric_api_endpoint}/workspaces/{workspace_id}/environments/{environment_id}/{status}/libraries"
         )
     else:
-        print(f"[E] Invalid status: {status}")
-        return
-    print(f"[I] Retrieving information about '{status}' libraries.")
+        raise Exception(f"[Error] Invalid status: {status}")
+    print(f"[Info] Retrieving information about '{status}' libraries.")
 
     response = requests.get(libraries_url, headers=headers)
 
@@ -174,62 +184,80 @@ def get_libraries(workspace_id: str, environment_id: str, status: str) -> None:
         response_json = response.json()
         error_code = response_json.get("errorCode")
         if error_code == "EnvironmentLibrariesNotFound":
-            print(f"[W] The environment does not have any '{status}' libraries.")
+            print(f"[Warning] The environment does not have any '{status}' libraries.")
         else:
-            print(f"[E] Failed to retrieve '{status}' libraries.")
-            print(f"[E] {response_json}")
-
-
-def update_spark_settings(workspace_id: str, environment_name: str, runtime_version: str = "1.2") -> None:
-    update_spark_settings_url = f"{fabric_api_endpoint}/workspaces/{workspace_id}/spark/settings"
-    payload = {
-        "environment": {"name": environment_name, "runtimeVersion": runtime_version},
-        "automaticLog": {"enabled": True},
-    }
-
-    response = requests.patch(update_spark_settings_url, headers=headers, json=payload)
-
-    if response.status_code == 200:
-        print("[I] Spark settings (default environment) updated successfully for the workspace.")
-    else:
-        print(f"[E] Failed to update Spark settings: {response.status_code} - {response.text}")
+            print(f"[Error] Failed to retrieve '{status}' libraries.")
+            print(f"[Error] {response_json}")
 
 
 if __name__ == "__main__":
 
     workspace_name, environment_name, fabric_bearer_token = parse_arguments()
 
+    # Setting request headers
     set_headers(fabric_bearer_token)
+    # Validating token
     validate_token(fabric_bearer_token)
 
+    # Getting workspace id
     workspace_id = get_workspace_id(workspace_name)
     if workspace_id:
-        print(f"[I] Workspace details: '{workspace_name}' ({workspace_id})")
+        print(f"[Info] Workspace details: '{workspace_name}' ({workspace_id})")
     else:
-        print(f"[E] Failed to retrieve workspace id for '{workspace_name}'")
-        exit(1)
+        raise Exception(f"[Error] Failed to retrieve workspace id for '{workspace_name}'")
 
+    # Getting environment id
     environment_id = get_environment_id(workspace_id, environment_name)
     if environment_id:
-        print(f"[I] Environment details: '{environment_name}' ({environment_id})")
+        print(f"[Info] Environment details: '{environment_name}' ({environment_id})")
     else:
-        print(f"[E] Failed to retrieve environment id for '{environment_name}'")
-        exit(1)
+        raise Exception(f"[Error] Failed to retrieve environment id for '{environment_name}'")
 
-    upload_staging_libraries(
-        workspace_id, environment_id, "./../../config/fabric_environment", "environment.yml", "multipart/form-data"
-    )
+    # Uploading "environment.yml" to staging
     upload_staging_libraries(
         workspace_id,
         environment_id,
-        "./../../config/fabric_environment",
-        "azure_monitor_opentelemetry-1.6.1-py3-none-any.whl",
+        "./../fabric/fabric_environment",
+        "environment.yml",
+        "multipart/form-data",
+    )
+
+    # Uploading python library file to staging
+    upload_staging_libraries(
+        workspace_id,
+        environment_id,
+        "./../libraries/src",
+        "otel_monitor_invoker.py",
         "application/x-python-wheel",
     )
 
+    # Uploading python library file to staging
+    upload_staging_libraries(
+        workspace_id,
+        environment_id,
+        "./../libraries/src",
+        "ddo_transform_standardize.py",
+        "application/x-python-wheel",
+    )
+
+    # Uploading python library file to staging
+    upload_staging_libraries(
+        workspace_id,
+        environment_id,
+        "./../libraries/src",
+        "ddo_transform_transform.py",
+        "application/x-python-wheel",
+    )
+
+    # Publishing environment (publishing the staged changes)
     publish_environment(workspace_id, environment_id)
 
-    get_libraries(workspace_id, environment_id, status="published")
-    get_libraries(workspace_id, environment_id, status="staging")
-
-    update_spark_settings(workspace_id, environment_name, runtime_version="1.2")
+    if enable_polling:
+        # Polling environment status
+        while get_env_spark_libraries_status(workspace_id, environment_id) == "running":
+            print("[Info] Environment publishing is in progress.")
+            time.sleep(60)
+        print("[Info] Environment publishing completed.")
+        get_libraries(workspace_id, environment_id, status="published")
+    else:
+        get_libraries(workspace_id, environment_id, status="staging")
