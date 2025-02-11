@@ -119,8 +119,8 @@ az keyvault secret set --vault-name "$KEYVAULT_NAME" --name "databricksClusterId
 adfTempDir=.tmp
 mkdir -p $adfTempDir && cp -a adf/ .tmp/
 tmpfile=.tmpfile
-adfLsDir="adf/linkedService"
-jq --arg databricksExistingClusterId "$cluster_id" '.properties.typeProperties.existingClusterId = $databricksExistingClusterId' $adfTempDir/$adfLsDir/Ls_AzureDatabricks_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AzureDatabricks_01.json
+adfLsDir=$adfTempDir/linkedService
+jq --arg databricksExistingClusterId "$cluster_id" '.properties.typeProperties.existingClusterId = $databricksExistingClusterId' $adfLsDir/$Ls_AzureDatabricks_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AzureDatabricks_01.json
 
 read -p "Please update the Azure Data Factory linked service with the new Databricks cluster ID and press [Enter] to continue..."
 
