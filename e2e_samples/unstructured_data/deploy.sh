@@ -77,7 +77,7 @@ fi
 AZURE_LOCATION=${AZURE_LOCATION:-}
 if [ -z "$AZURE_LOCATION" ]
 then
-    export AZURE_LOCATION="eastus"
+    export AZURE_LOCATION="westus2"
     log "No resource group location [AZURE_LOCATION] specified, defaulting to $AZURE_LOCATION" "info"
 fi
 
@@ -125,10 +125,10 @@ az group create --name "$resource_group_name" --location "$AZURE_LOCATION" --tag
 security_group_name="$PROJECT-$DEPLOYMENT_ID-$ENV_NAME-sg"
 log "Creating security group: $security_group_name"
 az ad group create --display-name "$security_group_name" --mail-nickname "$security_group_name"
-security_group_id=$(az ad group show --group "$security_group_name" --query objectId -o none)
+security_group_id=$(az ad group show --group "$security_group_name" -o json | jq -r '.id')
 
 # Add self to security group
-log "Adding self to security group: $security_group_name"
+log "Adding self to security group: $security_group_id"
 az ad group member add --group "$security_group_name" --member-id "$(az ad signed-in-user show --output json | jq -r '.id')"
 
 # By default, set all KeyVault permission to deployer
@@ -190,6 +190,8 @@ arm_output=$(az deployment group create \
     --parameters project="${PROJECT}" keyvault_owner_object_id="${kv_owner_object_id}" deployment_id="${DEPLOYMENT_ID}" \
     --parameters keyvault_name="${kv_name}" enable_keyvault_soft_delete="${ENABLE_KEYVAULT_SOFT_DELETE}" \
     --parameters enable_keyvault_purge_protection="${ENABLE_KEYVAULT_PURGE_PROTECTION}"\
+    --parameters sql_server_name="${sql_server_name}" sql_db_name="${sql_db_name}" ip_address="${ip_address}" \
+    --parameters aad_group_name="${security_group_name}" aad_group_object_id="${security_group_id}" \
     --output json)
 
 if [[ -z $arm_output ]]; then

@@ -154,3 +154,7 @@ output databricks_id string = databricks.outputs.databricks_id
 output keyvault_name string = keyvault.outputs.keyvault_name
 output keyvault_resource_id string = keyvault.outputs.keyvault_resource_id
 // output loganalytics_name string = loganalytics.outputs.loganalyticswsname
+output sql_server_name string = sql.outputs.sql_server_name
+output sql_server_resource_id string = sql.outputs.sql_server_resource_id
+output sql_db_name string = sql.outputs.sql_db_name
+output sql_db_resource_id string = sql.outputs.sql_db_resource_id

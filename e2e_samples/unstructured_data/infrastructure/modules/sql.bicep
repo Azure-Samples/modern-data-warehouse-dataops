@@ -54,7 +54,7 @@ resource sql_db 'Microsoft.Sql/servers/databases@2022-05-01-preview' = {
   }
 }
 
-resource sqlServerAdministrator 'Microsoft.Sql/servers/administrators@2024-05-01-preview' = {
+resource sql_server_administrator 'Microsoft.Sql/servers/administrators@2024-05-01-preview' = {
   parent: sql_server
   name: 'ActiveDirectory'
   properties: {
@@ -65,7 +65,7 @@ resource sqlServerAdministrator 'Microsoft.Sql/servers/administrators@2024-05-01
   }
 }
 
-resource aadAuth 'Microsoft.Sql/servers/azureADOnlyAuthentications@2024-05-01-preview' = {
+resource aad_auth 'Microsoft.Sql/servers/azureADOnlyAuthentications@2024-05-01-preview' = {
   name: 'Default'
   parent: sql_server
   properties: {
@@ -74,7 +74,7 @@ resource aadAuth 'Microsoft.Sql/servers/azureADOnlyAuthentications@2024-05-01-pr
 }
 
 // Firewall
-resource DB_Firewall 'Microsoft.Sql/servers/firewallRules@2021-11-01-preview' = {
+resource db_firewall 'Microsoft.Sql/servers/firewallRules@2021-11-01-preview' = {
   name: 'Database server firewall'
   parent: sql_server
   properties: {
@@ -82,3 +82,14 @@ resource DB_Firewall 'Microsoft.Sql/servers/firewallRules@2021-11-01-preview' = 
     endIpAddress: ip_address
   }
 }
+
+// Outputs
+@description('The name of the SQL Server.')
+output sql_server_name string = sql_server.name
+@description('The resource ID of the SQL Server.')
+output sql_server_resource_id string = sql_server.id
+
+@description('The name of the SQL Database.')
+output sql_db_name string = sql_db.name
+@description('The resource ID of the SQL Server.')
+output sql_db_resource_id string = sql_db.id

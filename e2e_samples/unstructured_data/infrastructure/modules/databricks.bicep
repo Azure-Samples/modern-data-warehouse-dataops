@@ -28,6 +28,7 @@ resource databricks 'Microsoft.Databricks/workspaces@2024-09-01-preview' = {
   tags: {
     DisplayName: 'Databricks Workspace'
     Environment: env
+    TeamName: 'Kraken'
   }
   sku: {
     name: 'premium'
