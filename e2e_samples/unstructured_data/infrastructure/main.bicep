@@ -74,7 +74,7 @@ module keyvault './modules/keyvault.bicep' = {
 //     env: env
 //     deployment_id: deployment_id
 //     loganalytics_workspace_name: loganalytics.outputs.loganalyticswsname
-//     datafactory_name: datafactory.outputs.datafactory_name    
+//     datafactory_name: datafactory.outputs.datafactory_name
 //   }
 // }
 
