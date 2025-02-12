@@ -1,0 +1,11 @@
+I am giving you text from documents. Your goal is to find a piece of text that contains an answer to the following question:
+{{ question }}
+
+Your response should answer the question directly and precisely. Do not provide responses if the topics are related.
+Your response should contain the following information in a json object with the fields.
+* "citations" -- an array of json objects, containing extracted answer(s). If the answers cannot be found in the source document, the array should be empty. Do NOT attempt to come up with the answer if it's not present in the source.
+Each element of the array should include the following fields:
+    * "excerpt" -- a string, up to 30 words, containing an extractive answer to the question. This field should contain the exact text from the source document. Do NOT modify the content of the source, provide the response as is.
+    * "explanation" -- a string, containing an explanation on why the reference text contains an answer to the question.
+
+Carefully extract the answers along with the evidence from the provided source document.

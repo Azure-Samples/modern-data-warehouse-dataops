@@ -1,0 +1,8 @@
+services:
+  unstructured_data_dc:
+    build:
+      context: ../../../
+      dockerfile: e2e_samples/unstructured_data/.devcontainer/Dockerfile
+    volumes:
+      - ../../..:/workspace
+    command: sleep infinity
