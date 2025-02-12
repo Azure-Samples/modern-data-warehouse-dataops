@@ -143,6 +143,5 @@ if __name__ == "__main__":
     submission_folder = "josh-test"
     for experiment in experiments:
         result = experiment.run(submission_folder=submission_folder)
-        experiment.write_results(output_dir=RepoPaths.run_outputs, results=result)
         print(result)
     print(f"Run ID: {run_id}")
