@@ -300,6 +300,9 @@ KEYVAULT_RESOURCE_ID=$(echo "$arm_output" | jq -r '.properties.outputs.keyvault_
 ####################
 # DATA FACTORY
 
+# Get Databricks ClusterID from KeyVault
+databricksClusterId=$(az keyvault secret show --name "databricksClusterId" --vault-name "$kv_name" --query "value" -o tsv)
+
 log "Updating Data Factory LinkedService to point to newly deployed resources (KeyVault and DataLake)."
 # Create a copy of the ADF dir into a .tmp/ folder.
 adfTempDir=.tmp/adf
@@ -310,6 +313,7 @@ adfLsDir=$adfTempDir/linkedService
 adfPlDir=$adfTempDir/pipeline
 jq --arg kvurl "$kv_dns_name" '.properties.typeProperties.baseUrl = $kvurl' $adfLsDir/Ls_KeyVault_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_KeyVault_01.json
 jq --arg databricksWorkspaceUrl "$databricks_host" '.properties.typeProperties.domain = $databricksWorkspaceUrl' $adfLsDir/Ls_AzureDatabricks_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AzureDatabricks_01.json
+jq --arg databricksExistingClusterId "$databricksClusterId" '.properties.typeProperties.existingClusterId = $databricksExistingClusterId' $adfLsDir/Ls_AzureDatabricks_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AzureDatabricks_01.json
 jq --arg datalakeUrl "https://$azure_storage_account.dfs.core.windows.net" '.properties.typeProperties.url = $datalakeUrl' $adfLsDir/Ls_AdlsGen2_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AdlsGen2_01.json
 jq --arg databricks_folder_name_standardize "$databricks_folder_name_standardize" '.properties.activities[0].typeProperties.notebookPath = $databricks_folder_name_standardize' $adfPlDir/P_Ingest_ParkingData.json > "$tmpfile" && mv "$tmpfile" $adfPlDir/P_Ingest_ParkingData.json
 jq --arg databricks_folder_name_transform  "$databricks_folder_name_transform" '.properties.activities[4].typeProperties.notebookPath = $databricks_folder_name_transform' $adfPlDir/P_Ingest_ParkingData.json > "$tmpfile" && mv "$tmpfile" $adfPlDir/P_Ingest_ParkingData.json
