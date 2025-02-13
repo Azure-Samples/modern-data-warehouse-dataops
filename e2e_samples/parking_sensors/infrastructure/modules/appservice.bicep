@@ -28,7 +28,9 @@ resource appService 'Microsoft.Web/sites@2024-04-01' = {
   location: location
   properties: {
     serverFarmId: appServicePlan.id
+    httpsOnly: true
     siteConfig: {
+      minTlsVersion: '1.3'
       appSettings: [
         {
           name: 'WEBSITE_NODE_DEFAULT_VERSION'
