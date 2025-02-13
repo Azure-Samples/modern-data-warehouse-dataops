@@ -1,0 +1,8 @@
+name: "1"
+additional_config_path: ./config.yaml
+parent_variants:
+  - ../../common/1.yaml
+init_params:
+  prompt_templates:
+    variables:
+      question: "What was the company’s revenue for this quarter of this year?"

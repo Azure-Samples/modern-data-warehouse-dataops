@@ -1,0 +1,9 @@
+name: total-revenue
+evaluation:
+  init_params:
+    truth_key: total-revenue
+  evaluators:
+    fuzzy_match:
+    exact_numeric_match:
+  tags:
+    question: total-revenue

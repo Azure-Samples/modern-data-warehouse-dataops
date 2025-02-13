@@ -1,0 +1,8 @@
+name: common-1
+init_params:
+  prompt_templates:
+    system:
+      path: system/1.txt
+    user:
+      prompt: |
+        {{ context }}

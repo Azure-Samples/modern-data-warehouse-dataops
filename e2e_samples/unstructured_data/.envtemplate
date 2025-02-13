@@ -31,3 +31,27 @@ TEAM_NAME=
 
 # Whether to enable or not Keyvault Purge Protection. Default if unset: true
 # ENABLE_KEYVAULT_PURGE_PROTECTION=
+
+### Citation Generator
+
+# Blob
+AZURE_STORAGE_ACCOUNT_URL=
+
+# Azure OpenAI
+AZURE_OPENAI_ENDPOINT=
+AZURE_OPENAI_MODEL_DEPLOYMENT_NAME=
+AZURE_OPENAI_API_KEY=
+AZURE_OPENAI_VERSION=
+
+# DI
+DOCUMENT_INTELLIGENCE_ENDPOINT=
+DOCUMENT_INTELLIGENCE_KEY=
+
+# Citation DB
+# CITATION_DB_SERVER_NAME=
+# CITATION_DB_NAME=
+# CITATION_DB_CONNECTION_STRING='Driver={ODBC Driver 18 for SQL Server};Server=tcp:${CITATION_DB_SERVER_NAME}.database.windows.net,1433;Database=${CITATION_DB_NAME};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30'
+
+
+# App Insights
+# APPLICATIONINSIGHTS_CONNECTION_STRING=
