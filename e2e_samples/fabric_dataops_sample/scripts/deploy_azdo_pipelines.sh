@@ -15,6 +15,12 @@ set -o nounset
 # BASE_NAME
 ###################
 
+# AzDo Pipeline name variables
+azdo_pipeline_ci_qa="pl-${BASE_NAME}-ci-qa"
+azdo_pipeline_ci_qa_cleanup="pl-${BASE_NAME}-ci-qa-cleanup"
+azdo_pipeline_ci_publish_artifacts="pl-${BASE_NAME}-ci-publish-artifacts"
+azdo_pipeline_variable_pr_id="PR_ID"
+
 get_azdo_repo_id () {
   local repo_name=$1
   local repo_output=$(az repos list --query "[?name=='$repo_name']" --output json)
@@ -164,12 +170,6 @@ echo "[Info] ############ CREATING AZDO PIPELINES  ############"
 set_global_azdo_config
 
 validate_env_vars
-
-# AzDo Pipeline name variables
-azdo_pipeline_ci_qa="pl-${BASE_NAME}-ci-qa"
-azdo_pipeline_ci_qa_cleanup="pl-${BASE_NAME}-ci-qa-cleanup"
-azdo_pipeline_ci_publish_artifacts="pl-${BASE_NAME}-ci-publish-artifacts"
-azdo_pipeline_variable_pr_id="PR_ID"
 
 create_azdo_pipeline \
   "$azdo_pipeline_ci_qa" \
