@@ -53,16 +53,6 @@ resource sql_db 'Microsoft.Sql/servers/databases@2024-05-01-preview' = {
     tier: 'Standard'
   }
 }
-resource sql_server_administrator 'Microsoft.Sql/servers/administrators@2024-05-01-preview' = {
-  parent: sql_server
-  name: 'ActiveDirectory'
-  properties: {
-    administratorType: 'ActiveDirectory'
-    login: aad_group_name
-    sid: aad_group_object_id
-    tenantId: subscription().tenantId
-  }
-}
 
 resource aad_auth 'Microsoft.Sql/servers/azureADOnlyAuthentications@2024-05-01-preview' = {
   name: 'Default'
