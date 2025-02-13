@@ -66,15 +66,4 @@ resource webApp 'Microsoft.Web/sites@2024-04-01' = {
   }
 }
 
-// potential source control configuration, currently not working as intended
-// resource sourceControl 'Microsoft.Web/sites/sourcecontrols@2024-04-01' = {
-//   parent: webApp
-//   name: 'web'
-//   properties: {
-//     repoUrl: '${repoUrl}.git:${repoPath}'
-//     branch: 'main'
-//     isManualIntegration: true
-//   }
-// }
-
 output hostingPlanId string = appServicePlan.id
