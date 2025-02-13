@@ -45,9 +45,9 @@ adls_gen2_shortcut_name="sc-adls-main"
 adls_gen2_shortcut_path="Files"
 
 # Azure DevOps pipelines to be deleted
-azdo_pipeline_ci_qa="pl-ci-qa"
-azdo_pipeline_ci_qa_cleanup="pl-ci-qa-cleanup"
-azdo_pipeline_ci_publish_artifacts="pl-ci-publish-artifacts"
+azdo_pipeline_ci_qa="pl-${BASE_NAME}-ci-qa"
+azdo_pipeline_ci_qa_cleanup="pl-${BASE_NAME}-ci-qa-cleanup"
+azdo_pipeline_ci_publish_artifacts="pl-${BASE_NAME}-ci-publish-artifacts"
 
 set_global_azdo_config() {
   # Set the global Azure DevOps (AzDo) configuration
