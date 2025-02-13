@@ -65,6 +65,32 @@ module sql './modules/sql.bicep' = {
   }
 }
 
+module appservice './modules/appservice.bicep' = {
+  name: 'appservice_deploy_${deployment_id}'
+  params: {
+    env: env
+    webAppName: 'excitation'
+    hostingPlanName: 'excitation-testing'
+    location: location
+    sku: 'S1'
+    tier: 'Standard'
+    TeamName: team_name
+  }
+}
+
+module functionapp './modules/functionapp.bicep' = {
+  name: 'functionapp_deploy_${deployment_id}'
+  params: {
+    env: env
+    functionAppName: 'excitationfuncapp'
+    hostingPlanId: appservice.outputs.hostingPlanId
+    storageAccountName: storage.outputs.storage_account_name
+    storageAccountKey: storage.outputs.storage_account_key
+    location: location
+    TeamName: team_name
+  }
+}
+
 module appinsights './modules/appinsights.bicep' = {
   name: 'appinsights_deploy_${deployment_id}'
   params: {
@@ -87,7 +113,6 @@ module loganalytics './modules/log_analytics.bicep' = if (enable_monitoring) {
   }
 }
 
-
 // module diagnostic './modules/diagnostic_settings.bicep' = if (enable_monitoring) {
 //   name: 'diagnostic_settings_deploy_${deployment_id}'
 //   params: {
@@ -98,7 +123,6 @@ module loganalytics './modules/log_analytics.bicep' = if (enable_monitoring) {
 //     datafactory_name: datafactory.outputs.datafactory_name
 //   }
 // }
-
 
 // module dashboard './modules/dashboard.bicep' = if (enable_monitoring) {
 //   name: 'dashboard_${deployment_id}'
@@ -148,8 +172,6 @@ module loganalytics './modules/log_analytics.bicep' = if (enable_monitoring) {
 //     loganalytics
 //   ]
 // }
-
-
 
 output storage_account_name string = storage.outputs.storage_account_name
 output storage_conn_string string = storage.outputs.storage_conn_string
