@@ -55,6 +55,7 @@ if [ "$user_principal_type" == "user" ]; then
   AZDO_REPOSITORY_NAME=$GIT_REPOSITORY_NAME \
   AZDO_PIPELINES_BRANCH_NAME=$azdo_pipelines_branch_name \
   AZDO_POLICIES_BRANCH_NAME=$azdo_policies_branch_name \
+  BASE_NAME=$BASE_NAME \
   bash -c "./scripts/deploy_azdo_pipelines.sh"
 else
   echo "[Warning] Skipping Azure DevOps pipelines deployment as those are deployed using the user context."
