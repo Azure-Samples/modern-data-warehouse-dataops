@@ -13,7 +13,6 @@ The [frequently asked questions (FAQs)](#frequently-asked-questions) section add
   - [The lakehouse is empty after branch-out](#the-lakehouse-is-empty-after-branch-out)
   - [The default lakehouse attached to notebooks is incorrect after branch-out](#the-default-lakehouse-attached-to-notebooks-is-incorrect-after-branch-out)
   - [Fabric spark custom pool settings are not synced during branch-out](#fabric-spark-custom-pool-settings-are-not-synced-during-branch-out)
-  - [Incorrect details in pipeline's snapshot](#incorrect-details-in-pipelines-snapshot)
 - [Limitations](#limitations)
   - [Fabric REST APIs limitations](#fabric-rest-apis-limitations)
   - [Fabric Environment does not recognize change in custom libraries with same file name](#fabric-environment-does-not-recognize-change-in-custom-libraries-with-same-file-name)
@@ -111,19 +110,6 @@ The sample deploys a custom spark pool and configures the spark workspace settin
 In some cases, it might be acceptable to use different pool settings or default values in the feature workspace. In such case, it can be left to the developer to update the pool and workspace spark settings as needed. As these settings are not Git synced, they will not be part of the pull request and will not affect the development workspace.
 
 Otherwise, these update can be applied as part of the post-processing step mentioned above. This post processing step can read the settings of the dev workspace and apply the same to the feature workspace using the [Fabric REST APIs](https://learn.microsoft.com/rest/api/fabric/spark/workspace-settings/update-spark-settings?tabs=HTTP).
-
-### Incorrect details in pipeline's snapshot
-
-For pipeline executions, regardless of the user's selection, the first notebook's execution snapshot is shown, and other snapshots are inaccessible.
-
-#### Workaround <!-- omit in toc -->
-
-To view the snapshot of a specific notebook execution, follow these steps:
-
-- Get the end point, workspace id, and artifact id for the notebook under consideration. These are constant for a given notebook and will not change for each execution.
-- From Pipeline execution, go to the execution for the above notebook, click on 'output' and from the output copy the `run id`. Note that each notebook activity may have a different value, even if all these notebooks are part of the same pipeline execution.
-- Snapshot URL can be obtained like this: `https://{endpoint}/groups/{workspaceId}/synapsenotebooks/{artifactId}/snapshots/{runId}`.
-- Open the URL browser to see the snapshot.
 
 ## Limitations
 
