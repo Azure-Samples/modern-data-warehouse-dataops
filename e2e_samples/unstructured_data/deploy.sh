@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 # Access granted under MIT Open Source License: https://en.wikipedia.org/wiki/MIT_License
@@ -49,7 +48,7 @@ fi
 
 # Check if already logged in, it will logout first
 
-if az account show > /dev/null 2>&1; then
+if az account show >/dev/null 2>&1; then
     log "Already logged in. Logging out and logging in again."
     az logout
 fi
@@ -57,42 +56,36 @@ fi
 az config set core.login_experience_v2=off
 az login --tenant $TENANT_ID
 az config set core.login_experience_v2=on
-az account set -s $AZURE_SUBSCRIPTION_ID  -o none
+az account set -s $AZURE_SUBSCRIPTION_ID -o none
 
-if [ -z "$AZURE_SUBSCRIPTION_ID" ]
-then
+if [ -z "$AZURE_SUBSCRIPTION_ID" ]; then
     log "Please specify an Azure Subscription ID using the [AZURE_SUBSCRIPTION_ID] environment variable." "danger"
     exit 1
 fi
 
-
 # initialize optional variables.
 
 DEPLOYMENT_ID=${DEPLOYMENT_ID:-}
-if [ -z "$DEPLOYMENT_ID" ]
-then
+if [ -z "$DEPLOYMENT_ID" ]; then
     export DEPLOYMENT_ID="$(random_str 5)"
     log "No deployment id [DEPLOYMENT_ID] specified, defaulting to $DEPLOYMENT_ID" "info"
 fi
 
 AZURE_LOCATION=${AZURE_LOCATION:-}
-if [ -z "$AZURE_LOCATION" ]
-then
+if [ -z "$AZURE_LOCATION" ]; then
     export AZURE_LOCATION="westus2"
     log "No resource group location [AZURE_LOCATION] specified, defaulting to $AZURE_LOCATION" "info"
 fi
 
 ENABLE_KEYVAULT_SOFT_DELETE=${ENABLE_KEYVAULT_SOFT_DELETE:-}
-if [ -z "$ENABLE_KEYVAULT_SOFT_DELETE" ]
-then
+if [ -z "$ENABLE_KEYVAULT_SOFT_DELETE" ]; then
     # set soft delete variable to true if the env variable has not been set
     export ENABLE_KEYVAULT_SOFT_DELETE=${ENABLE_KEYVAULT_SOFT_DELETE:-true}
     log "No ENABLE_KEYVAULT_SOFT_DELETE specified. Defaulting to $ENABLE_KEYVAULT_SOFT_DELETE" "info"
 fi
 
 ENABLE_KEYVAULT_PURGE_PROTECTION=${ENABLE_KEYVAULT_PURGE_PROTECTION:-}
-if [ -z "$ENABLE_KEYVAULT_PURGE_PROTECTION" ]
-then
+if [ -z "$ENABLE_KEYVAULT_PURGE_PROTECTION" ]; then
     # set purge protection variable to true if the env variable has not been set
     export ENABLE_KEYVAULT_PURGE_PROTECTION=${ENABLE_KEYVAULT_PURGE_PROTECTION:-true}
     log "No ENABLE_KEYVAULT_PURGE specified. Defaulting to $ENABLE_KEYVAULT_PURGE_PROTECTION" "info"
@@ -155,10 +148,10 @@ if [[ $(echo "$kv_list" | jq -r '.[0]') != null ]]; then
         read -p "Deleted KeyVault with the same name exists but can be purged. Do you want to purge the existing KeyVault?"$'\n'"Answering YES will mean you WILL NOT BE ABLE TO RECOVER the old KeyVault and its contents. Answer [y/N]: " response
 
         case "$response" in
-            [yY][eE][sS]|[yY])
+        [yY][eE][sS] | [yY])
             az keyvault purge --name "$kv_name" --no-wait
             ;;
-            *)
+        *)
             log "You selected not to purge the existing KeyVault. Please change deployment id. Exiting..." "danger"
             exit 1
             ;;
@@ -178,9 +171,9 @@ arm_output=$(az deployment group validate \
     --template-file "./infrastructure/main.bicep" \
     --parameters project="${PROJECT}" keyvault_owner_object_id="${kv_owner_object_id}" deployment_id="${DEPLOYMENT_ID}" \
     --parameters keyvault_name="${kv_name}" enable_keyvault_soft_delete="${ENABLE_KEYVAULT_SOFT_DELETE}" \
-    --parameters enable_keyvault_purge_protection="${ENABLE_KEYVAULT_PURGE_PROTECTION}"\
+    --parameters enable_keyvault_purge_protection="${ENABLE_KEYVAULT_PURGE_PROTECTION}" \
     --parameters sql_server_name="${sql_server_name}" sql_db_name="${sql_db_name}" ip_address="${ip_address}" \
-    --parameters aad_group_name="${security_group_name}" aad_group_object_id="${security_group_id}" team_name="${TEAM_NAME}"\
+    --parameters aad_group_name="${security_group_name}" aad_group_object_id="${security_group_id}" team_name="${TEAM_NAME}" \
     --output json)
 
 # Deploy arm template
@@ -190,16 +183,15 @@ arm_output=$(az deployment group create \
     --template-file "./infrastructure/main.bicep" \
     --parameters project="${PROJECT}" keyvault_owner_object_id="${kv_owner_object_id}" deployment_id="${DEPLOYMENT_ID}" \
     --parameters keyvault_name="${kv_name}" enable_keyvault_soft_delete="${ENABLE_KEYVAULT_SOFT_DELETE}" \
-    --parameters enable_keyvault_purge_protection="${ENABLE_KEYVAULT_PURGE_PROTECTION}"\
+    --parameters enable_keyvault_purge_protection="${ENABLE_KEYVAULT_PURGE_PROTECTION}" \
     --parameters sql_server_name="${sql_server_name}" sql_db_name="${sql_db_name}" ip_address="${ip_address}" \
-    --parameters aad_group_name="${security_group_name}" aad_group_object_id="${security_group_id}" team_name="${TEAM_NAME}"\
+    --parameters aad_group_name="${security_group_name}" aad_group_object_id="${security_group_id}" team_name="${TEAM_NAME}" \
     --output json)
 
 if [[ -z $arm_output ]]; then
     log "ARM deployment failed." "danger"
     exit 1
 fi
-
 
 ########################
 # RETRIEVE KEYVAULT INFORMATION
@@ -211,7 +203,6 @@ kv_dns_name=https://${kv_name}.vault.azure.net/
 # Store in KeyVault
 az keyvault secret set --vault-name "$kv_name" --name "kvUrl" --value "$kv_dns_name" -o none
 az keyvault secret set --vault-name "$kv_name" --name "subscriptionId" --value "$AZURE_SUBSCRIPTION_ID" -o none
-
 
 #########################
 # CREATE AND CONFIGURE SERVICE PRINCIPAL FOR ADLA GEN2
@@ -250,6 +241,31 @@ az storage container create --name di-results --account-name "$azure_storage_acc
 az keyvault secret set --vault-name "$kv_name" --name "datalakeAccountName" --value "$azure_storage_account" -o none
 az keyvault secret set --vault-name "$kv_name" --name "datalakeKey" --value "$azure_storage_key" -o none
 az keyvault secret set --vault-name "$kv_name" --name "datalakeurl" --value "https://$azure_storage_account.dfs.core.windows.net" -o none
+
+### CLONE EXCITATION REPO####
+git clone https://github.com/billba/excitation
+
+###WEBAPP DEPLOYMENT####
+cd excitation/client
+web_app_service_name=$(echo "$arm_output" | jq -r '.properties.outputs.appservice_name.value')
+echo "deploying webapp in to service plan: $web_app_service_name in rg: $resource_group_name"
+../../scripts/appzipdeploy.sh $resource_group_name $web_app_service_name
+
+cd ../../
+########Function App Deployment########
+
+function_app=$(echo "$arm_output" | jq -r '.properties.outputs.functionapp_name.value')
+
+cd excitation/reference-azure-backend/functions
+
+echo "deploying function app in to: $function_app in rg: $resource_group_name"
+
+../../../scripts/functionzipdeploy.sh $AZURE_SUBSCRIPTION_ID $resource_group_name $function_app $azure_storage_account
+
+cd ../../../
+### REMOVE CLONED EXCITATION REPO####
+
+rm -rf excitation
 
 ####################
 # APPLICATION INSIGHTS
@@ -294,7 +310,6 @@ sp_stor_out=$(az ad sp create-for-rbac \
     --name "$sp_stor_name" \
     --output json)
 
-
 # store storage service principal details in Keyvault
 sp_stor_id=$(echo "$sp_stor_out" | jq -r '.appId')
 sp_stor_pass=$(echo "$sp_stor_out" | jq -r '.password')
@@ -333,12 +348,12 @@ az keyvault secret set --vault-name "$kv_name" --name "databricksWorkspaceResour
 # Configure databricks (KeyVault-backed Secret scope, mount to storage via SP, databricks tables, cluster)
 # NOTE: must use Microsoft Entra access token, not PAT token
 DATABRICKS_TOKEN=$databricks_aad_token \
-DATABRICKS_HOST=$databricks_host \
-KEYVAULT_DNS_NAME=$kv_dns_name \
-USER_NAME=$kv_owner_name \
-AZURE_LOCATION=$AZURE_LOCATION \
-KEYVAULT_RESOURCE_ID=$(echo "$arm_output" | jq -r '.properties.outputs.keyvault_resource_id.value') \
-STORAGE_CONN_STRING=$(echo "$arm_output" | jq -r '.properties.outputs.storage_conn_string.value') \
+    DATABRICKS_HOST=$databricks_host \
+    KEYVAULT_DNS_NAME=$kv_dns_name \
+    USER_NAME=$kv_owner_name \
+    AZURE_LOCATION=$AZURE_LOCATION \
+    KEYVAULT_RESOURCE_ID=$(echo "$arm_output" | jq -r '.properties.outputs.keyvault_resource_id.value') \
+    STORAGE_CONN_STRING=$(echo "$arm_output" | jq -r '.properties.outputs.storage_conn_string.value') \
     bash -c "./infrastructure/configure_databricks.sh"
 
 ####################
@@ -374,7 +389,6 @@ STORAGE_CONN_STRING=$(echo "$arm_output" | jq -r '.properties.outputs.storage_co
 # SP_ADF_PASS=$sp_adf_pass \
 # SP_ADF_TENANT=$sp_adf_tenant \
 #     bash -c "./scripts/deploy_azdo_variables.sh"
-
 
 # ####################
 # #####BUILD ENV FILE FROM CONFIG INFORMATION
