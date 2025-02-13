@@ -9,7 +9,7 @@ export NC='\033[0m'
 # Helper functions
 random_str() {
     local length=$1
-    od -vAn -N5 -tuC /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 5 | tr '[:upper:]' '[:lower:]' 
+    od -vAn -N5 -tuC /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 5 | tr '[:upper:]' '[:lower:]'
     return 0
 }
 
@@ -57,12 +57,12 @@ log() {
 
 delete_azdo_pipeline_if_exists() {
     declare full_pipeline_name=$1
-    
+
     ## when returning a pipeline that does exist, delete.
-    
+
     pipeline_output=$(az pipelines list --query "[?name=='$full_pipeline_name']" --output json)
     pipeline_id=$(echo "$pipeline_output" | jq -r '.[0].id')
-    
+
     if [[ -z "$pipeline_id" || "$pipeline_id" == "null" ]]; then
         log "No Deployment pipeline with name $full_pipeline_name found."
     else
@@ -139,7 +139,7 @@ cleanup_federated_credentials() {
     ##Function used in the Clean_up.sh and deploy_azdo_service_connections_azure.sh scripts
     local sc_id=$1
     local spnAppObjId=$(az devops service-endpoint show --id "$sc_id" --org "$AZDO_ORGANIZATION_URL" -p "$AZDO_PROJECT" --query "data.appObjectId" -o tsv)
-    # if the Service connection does not have an associated Service Principal, 
+    # if the Service connection does not have an associated Service Principal,
     # then it means it won't have associated federated credentials
     if [ -z "$spnAppObjId" ]; then
         log "Service Principal Object ID not found for Service Connection ID: $sc_id. Skipping federated credential cleanup."
@@ -159,12 +159,12 @@ cleanup_federated_credentials() {
             return
         fi
     fi
-    
+
     local credArray=($(echo "$spnCredlist" | jq -r '.[]'))
     #(&& and ||) to log success or failure of each delete operation
     for cred in "${credArray[@]}"; do
         az ad app federated-credential delete --federated-credential-id "$cred" --id "$spnAppObjId" &&
-        log "Deleted federated credential: $cred" || 
+        log "Deleted federated credential: $cred" ||
         log "Failed to delete federated credential: $cred"
     done
     # Refresh the list of federated credentials
@@ -175,4 +175,3 @@ cleanup_federated_credentials() {
     fi
   log "Completed federated credential cleanup for the Service Principal: $spnAppObjId"
 }
-

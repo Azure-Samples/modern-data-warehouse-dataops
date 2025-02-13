@@ -2,18 +2,18 @@
 
 # Access granted under MIT Open Source License: https://en.wikipedia.org/wiki/MIT_License
 #
-# Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated 
-# documentation files (the "Software"), to deal in the Software without restriction, including without limitation 
-# the rights to use, copy, modify, merge, publish, distribute, sublicense, # and/or sell copies of the Software, 
+# Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+# documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense, # and/or sell copies of the Software,
 # and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 #
-# The above copyright notice and this permission notice shall be included in all copies or substantial portions 
+# The above copyright notice and this permission notice shall be included in all copies or substantial portions
 # of the Software.
 #
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED 
-# TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
-# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
-# CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+# TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+# CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
 #######################################################
@@ -40,7 +40,7 @@ source .env
 
 #Check variables are set for login.
 
-if [ -z "${TENANT_ID:-}" ] || [ -z "${AZURE_SUBSCRIPTION_ID:-}" ] ]; then 
+if [ -z "${TENANT_ID:-}" ] || [ -z "${AZURE_SUBSCRIPTION_ID:-}" ]; then
     log "To run this script the following environment variables are required." "danger"
     log "Check if your .env file contains values for variables: \nTENANT_ID, AZURE_SUBSCRIPTION_ID" "danger"
     exit 1
@@ -69,21 +69,21 @@ fi
 
 DEPLOYMENT_ID=${DEPLOYMENT_ID:-}
 if [ -z "$DEPLOYMENT_ID" ]
-then 
+then
     export DEPLOYMENT_ID="$(random_str 5)"
     log "No deployment id [DEPLOYMENT_ID] specified, defaulting to $DEPLOYMENT_ID" "info"
 fi
 
 AZURE_LOCATION=${AZURE_LOCATION:-}
 if [ -z "$AZURE_LOCATION" ]
-then    
-    export AZURE_LOCATION="eastus"
+then
+    export AZURE_LOCATION="westus2"
     log "No resource group location [AZURE_LOCATION] specified, defaulting to $AZURE_LOCATION" "info"
 fi
 
 ENABLE_KEYVAULT_SOFT_DELETE=${ENABLE_KEYVAULT_SOFT_DELETE:-}
 if [ -z "$ENABLE_KEYVAULT_SOFT_DELETE" ]
-then 
+then
     # set soft delete variable to true if the env variable has not been set
     export ENABLE_KEYVAULT_SOFT_DELETE=${ENABLE_KEYVAULT_SOFT_DELETE:-true}
     log "No ENABLE_KEYVAULT_SOFT_DELETE specified. Defaulting to $ENABLE_KEYVAULT_SOFT_DELETE" "info"
@@ -91,15 +91,16 @@ fi
 
 ENABLE_KEYVAULT_PURGE_PROTECTION=${ENABLE_KEYVAULT_PURGE_PROTECTION:-}
 if [ -z "$ENABLE_KEYVAULT_PURGE_PROTECTION" ]
-then 
+then
     # set purge protection variable to true if the env variable has not been set
     export ENABLE_KEYVAULT_PURGE_PROTECTION=${ENABLE_KEYVAULT_PURGE_PROTECTION:-true}
     log "No ENABLE_KEYVAULT_PURGE specified. Defaulting to $ENABLE_KEYVAULT_PURGE_PROTECTION" "info"
 fi
 
-PROJECT=krakendemo
+PROJECT="${PROJECT_NAME:-}"
 ENV_NAME=dev
 DEPLOYMENT_ID="$(random_str 5)"
+TEAM_NAME="${TEAM_NAME:-}"
 ###################
 # AZURE_LOCATION
 # REQUIRED ENV VARIABLES:
@@ -118,7 +119,17 @@ log "Deploying to Subscription: $AZURE_SUBSCRIPTION_ID" "info"
 # Create resource group
 resource_group_name="$PROJECT-$DEPLOYMENT_ID-$ENV_NAME-rg"
 log "Creating resource group: $resource_group_name"
-az group create --name "$resource_group_name" --location "$AZURE_LOCATION" --tags Environment="$ENV_NAME" -o none
+az group create --name "$resource_group_name" --location "$AZURE_LOCATION" --tags Environment="$ENV_NAME" TeamName="$TEAM_NAME" -o none
+
+# Create security group
+security_group_name="$PROJECT-$DEPLOYMENT_ID-$ENV_NAME-sg"
+log "Creating security group: $security_group_name"
+az ad group create --display-name "$security_group_name" --mail-nickname "$security_group_name"
+security_group_id=$(az ad group show --group "$security_group_name" -o json | jq -r '.id')
+
+# Add self to security group
+log "Adding self to security group: $security_group_id"
+az ad group member add --group "$security_group_name" --member-id "$(az ad signed-in-user show --output json | jq -r '.id')"
 
 # By default, set all KeyVault permission to deployer
 # Retrieve KeyVault User Id
@@ -154,6 +165,11 @@ if [[ $(echo "$kv_list" | jq -r '.[0]') != null ]]; then
     fi
 fi
 
+# Handle SQL Server and Database
+sql_server_name="$PROJECT-sql-$ENV_NAME-$DEPLOYMENT_ID"
+sql_db_name="$PROJECT-sqldb-$ENV_NAME-$DEPLOYMENT_ID"
+ip_address=$(curl -4 icanhazip.com)
+
 # Validate arm template
 log "Validating deployment"
 arm_output=$(az deployment group validate \
@@ -162,6 +178,8 @@ arm_output=$(az deployment group validate \
     --parameters project="${PROJECT}" keyvault_owner_object_id="${kv_owner_object_id}" deployment_id="${DEPLOYMENT_ID}" \
     --parameters keyvault_name="${kv_name}" enable_keyvault_soft_delete="${ENABLE_KEYVAULT_SOFT_DELETE}" \
     --parameters enable_keyvault_purge_protection="${ENABLE_KEYVAULT_PURGE_PROTECTION}"\
+    --parameters sql_server_name="${sql_server_name}" sql_db_name="${sql_db_name}" ip_address="${ip_address}" \
+    --parameters aad_group_name="${security_group_name}" aad_group_object_id="${security_group_id}" team_name="${TEAM_NAME}"\
     --output json)
 
 # Deploy arm template
@@ -172,6 +190,8 @@ arm_output=$(az deployment group create \
     --parameters project="${PROJECT}" keyvault_owner_object_id="${kv_owner_object_id}" deployment_id="${DEPLOYMENT_ID}" \
     --parameters keyvault_name="${kv_name}" enable_keyvault_soft_delete="${ENABLE_KEYVAULT_SOFT_DELETE}" \
     --parameters enable_keyvault_purge_protection="${ENABLE_KEYVAULT_PURGE_PROTECTION}"\
+    --parameters sql_server_name="${sql_server_name}" sql_db_name="${sql_db_name}" ip_address="${ip_address}" \
+    --parameters aad_group_name="${security_group_name}" aad_group_object_id="${security_group_id}" team_name="${TEAM_NAME}"\
     --output json)
 
 if [[ -z $arm_output ]]; then
@@ -268,7 +288,7 @@ sp_stor_out=$(az ad sp create-for-rbac \
     --name "$sp_stor_name" \
     --output json)
 
-    
+
 # store storage service principal details in Keyvault
 sp_stor_id=$(echo "$sp_stor_out" | jq -r '.appId')
 sp_stor_pass=$(echo "$sp_stor_out" | jq -r '.password')
