@@ -14,6 +14,7 @@ param sql_db_name string
 param aad_group_name string
 param aad_group_object_id string
 param ip_address string
+param team_name string
 
 module databricks './modules/databricks.bicep' = {
   name: 'databricks_deploy_${deployment_id}'
@@ -22,6 +23,7 @@ module databricks './modules/databricks.bicep' = {
     env: env
     location: location
     deployment_id: deployment_id
+    team_name: team_name
     // contributor_principal_id: datafactory.outputs.datafactory_principal_id
   }
 }

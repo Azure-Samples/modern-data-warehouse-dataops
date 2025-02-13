@@ -40,7 +40,7 @@ source .env
 
 #Check variables are set for login.
 
-if [ -z "${TENANT_ID:-}" ] || [ -z "${AZURE_SUBSCRIPTION_ID:-}" ] ]; then
+if [ -z "${TENANT_ID:-}" ] || [ -z "${AZURE_SUBSCRIPTION_ID:-}" ]; then
     log "To run this script the following environment variables are required." "danger"
     log "Check if your .env file contains values for variables: \nTENANT_ID, AZURE_SUBSCRIPTION_ID" "danger"
     exit 1
@@ -97,10 +97,10 @@ then
     log "No ENABLE_KEYVAULT_PURGE specified. Defaulting to $ENABLE_KEYVAULT_PURGE_PROTECTION" "info"
 fi
 
-PROJECT=krakendemo
+PROJECT="${PROJECT_NAME:-}"
 ENV_NAME=dev
 DEPLOYMENT_ID="$(random_str 5)"
-TEAM_NAME=kraken
+TEAM_NAME="${TEAM_NAME:-}"
 ###################
 # AZURE_LOCATION
 # REQUIRED ENV VARIABLES:
@@ -179,7 +179,7 @@ arm_output=$(az deployment group validate \
     --parameters keyvault_name="${kv_name}" enable_keyvault_soft_delete="${ENABLE_KEYVAULT_SOFT_DELETE}" \
     --parameters enable_keyvault_purge_protection="${ENABLE_KEYVAULT_PURGE_PROTECTION}"\
     --parameters sql_server_name="${sql_server_name}" sql_db_name="${sql_db_name}" ip_address="${ip_address}" \
-    --parameters aad_group_name="${security_group_name}" aad_group_object_id="${security_group_id}" \
+    --parameters aad_group_name="${security_group_name}" aad_group_object_id="${security_group_id}" team_name="${TEAM_NAME}"\
     --output json)
 
 # Deploy arm template
@@ -191,7 +191,7 @@ arm_output=$(az deployment group create \
     --parameters keyvault_name="${kv_name}" enable_keyvault_soft_delete="${ENABLE_KEYVAULT_SOFT_DELETE}" \
     --parameters enable_keyvault_purge_protection="${ENABLE_KEYVAULT_PURGE_PROTECTION}"\
     --parameters sql_server_name="${sql_server_name}" sql_db_name="${sql_db_name}" ip_address="${ip_address}" \
-    --parameters aad_group_name="${security_group_name}" aad_group_object_id="${security_group_id}" \
+    --parameters aad_group_name="${security_group_name}" aad_group_object_id="${security_group_id}" team_name="${TEAM_NAME}"\
     --output json)
 
 if [[ -z $arm_output ]]; then

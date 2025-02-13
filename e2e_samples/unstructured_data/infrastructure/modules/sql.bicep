@@ -26,7 +26,7 @@ param aad_group_object_id string
 @description('IP address to whitelist.')
 param ip_address string
 
-resource sql_server 'Microsoft.Sql/servers@2022-05-01-preview' = {
+resource sql_server 'Microsoft.Sql/servers@2024-05-01-preview' = {
   name: sql_server_name
   location: location
   tags: {
@@ -44,7 +44,7 @@ resource sql_server 'Microsoft.Sql/servers@2022-05-01-preview' = {
   }
 }
 
-resource sql_db 'Microsoft.Sql/servers/databases@2022-05-01-preview' = {
+resource sql_db 'Microsoft.Sql/servers/databases@2024-05-01-preview' = {
   parent: sql_server
   name: sql_db_name
   location: location
@@ -53,7 +53,6 @@ resource sql_db 'Microsoft.Sql/servers/databases@2022-05-01-preview' = {
     tier: 'Standard'
   }
 }
-
 resource sql_server_administrator 'Microsoft.Sql/servers/administrators@2024-05-01-preview' = {
   parent: sql_server
   name: 'ActiveDirectory'
@@ -74,7 +73,7 @@ resource aad_auth 'Microsoft.Sql/servers/azureADOnlyAuthentications@2024-05-01-p
 }
 
 // Firewall
-resource db_firewall 'Microsoft.Sql/servers/firewallRules@2021-11-01-preview' = {
+resource db_firewall 'Microsoft.Sql/servers/firewallRules@2024-05-01-preview' = {
   name: 'Database server firewall'
   parent: sql_server
   properties: {

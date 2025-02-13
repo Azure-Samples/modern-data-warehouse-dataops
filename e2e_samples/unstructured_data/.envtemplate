@@ -7,6 +7,12 @@ TENANT_ID=
 # Azure subscription id to use to deploy resources. Default: default azure subscription.
 AZURE_SUBSCRIPTION_ID=
 
+# Project Name used within resource names
+PROJECT=
+
+# Value used for TeamName tag on resource and resource group deployments
+TEAM_NAME=
+
 ###
 # OPTIONAL. Environment variables for deployment script.
 # Uncomment to set values.
