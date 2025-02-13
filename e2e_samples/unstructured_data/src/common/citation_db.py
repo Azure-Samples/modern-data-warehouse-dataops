@@ -9,6 +9,7 @@ import pyodbc
 import yaml
 from azure.identity import DefaultAzureCredential
 from common.analyze_submissions import AnalyzedDocument
+from common.citation import ValidCitation
 from common.citation_generator_utils import Citation
 from common.path_utils import RepoPaths
 
@@ -30,7 +31,7 @@ def commit_forms_docs_citations_to_db(
     question_id: int,
     docs: list[AnalyzedDocument],
     creator: str,
-    citations: list[Citation],
+    citations: list[ValidCitation],
 ) -> int:
     try:
         conn = get_conn(conn_str)

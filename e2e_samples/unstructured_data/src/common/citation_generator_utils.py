@@ -1,90 +1,92 @@
-from dataclasses import dataclass, field
-from typing import Any, Optional
-
 from common.analyze_submissions import AnalyzedDocument
-from common.fuzzy_matching import map_citation_to_documents
+from common.citation import Citation, InvalidCitation, ValidCitation
+from common.fuzzy_matching import find_best_match
 
 
-@dataclass
-class Citation:
-    excerpt: str
-    document_name: str
-    explanation: Optional[str] = field(default=None)
-    extra: Optional[dict] = field(default_factory=dict)
-    status: str = "Valid"
-
-
-@dataclass
-class InvalidCitation:
-    excerpt: Optional[str] = field(default=None)
-    explanation: Optional[str] = field(default=None)
-    document_name: Optional[str] = field(default=None)
-    error: Optional[str] = field(default=None)
-    status: str = "Invalid"
-
-
-def validate_retrieved_citations(
-    retrieved_citations: Any, docs: list[AnalyzedDocument]
-) -> list[Citation | InvalidCitation]:
-    """Validates retrieved citations and return invalid or valid citations
+def validate_citation(
+    citation: Citation,
+    chunk: str,
+    doc: AnalyzedDocument,
+    match_threshold: float = 0.5,
+) -> ValidCitation | InvalidCitation:
+    """
+    Maps a citation to a chunk of text within an analyzed document.
 
     Args:
-        retrieved_citations (Any): The citations to validate
-        docs (list[AnalyzedDocument]): the list of docs to validate the
-            citation exerpts are in the document text
+        citation (Citation): The citation object containing the excerpt to be matched.
+        chunk (str): The chunk of text to search within.
+        doc (AnalyzedDocument): The analyzed document containing the text to be searched.
+        match_threshold (float, optional): The threshold for considering a match valid. Defaults to 0.5.
 
     Returns:
-        list[ValidCitation | Invalidcitation]: a list of valid or invalid citations
+        ValidCitation: If a valid match is found, returns a ValidCitation object containing details of the match.
+        InvalidCitation: If no valid match is found, returns an InvalidCitation object with an error message.
     """
-    if not isinstance(retrieved_citations, list):
-        retrieved_citations = [retrieved_citations]
-
-    citations: list[Citation | InvalidCitation] = []
-    for c in retrieved_citations:
-        citation = _validate_retrieved_citation(retrieved_citation=c, docs=docs)
-        citations.extend(citation)
-    return citations
-
-
-def _validate_retrieved_citation(
-    retrieved_citation: Any, docs: list[AnalyzedDocument]
-) -> list[Citation | InvalidCitation]:
-    results: list[Citation | InvalidCitation] = []
-    if isinstance(retrieved_citation, dict):
-        # ensure the dict has the required keys
-        exerpt = retrieved_citation.get("excerpt")
-        if exerpt is None:
-            return [
-                InvalidCitation(
-                    error="Missing 'excerpt' key",
-                    **retrieved_citation,
-                )
-            ]
-
-        doc_map = {}
-        for doc in docs:
-            doc_map[doc.document_name] = doc.di_result["content"]
-
-        # Fuzzy matching to grab actual text from document
-        mapped_citation = map_citation_to_documents(exerpt, doc_map)
-        print(
-            f"[LOG] Original citation: {exerpt} \
-              ***** Mapped citation: {mapped_citation}"
+    if citation.excerpt is None:
+        return InvalidCitation(
+            citation=citation,
+            error="Missing 'excerpt' key",
         )
-        if mapped_citation:
-            results.append(
-                Citation(
-                    document_name=mapped_citation["doc_id"],
-                    excerpt=mapped_citation["matched_text"],
-                    explanation=retrieved_citation.get("explanation"),
+
+    # chunk the docs to the citation length
+    window_size = len(citation.excerpt.split())
+
+    chunk_chars = chunk.split()
+    chunks = [" ".join(chunk_chars[i : i + window_size]) for i in range(len(chunk_chars) - window_size + 1)]
+
+    best_match, best_ratio = find_best_match(citation.excerpt, chunks)
+
+    if best_ratio > match_threshold:
+
+        prev_page_words = ""
+        for i, p in enumerate(doc.di_result["pages"]):
+            page_words = " ".join([w["content"] for w in p["words"]])
+
+            start_char_idx = page_words.find(best_match)
+            if prev_page_words:
+                combined_page_words = f"{prev_page_words} {page_words}"
+            else:
+                combined_page_words = page_words
+
+            match_from_prev_page = False
+            if start_char_idx == -1 and prev_page_words:
+                start_char_idx = combined_page_words.find(best_match)
+                match_from_prev_page = True
+
+            # if citation is found
+            if start_char_idx != -1:
+                # word_start_idx = len(combined_page_words[:start_char_idx].split())
+                match_word_len = len(best_match.split())
+
+                if match_from_prev_page:
+                    word_start_idx = len(combined_page_words[:start_char_idx].split())
+                    start_page = p["page_number"] - 1
+                    di_word_start = doc.di_result["pages"][i - 1]["words"][word_start_idx]
+                    prev_page_word_length = len(doc.di_result["pages"][i - 1]["words"])
+                    word_end_idx = start_char_idx - prev_page_word_length + match_word_len
+                    di_word_end = doc.di_result["pages"][i - 1]["words"][word_end_idx]
+                else:
+                    word_start_idx = len(page_words[:start_char_idx].split())
+                    start_page = p["page_number"]
+                    di_word_start = doc.di_result["pages"][i]["words"][word_start_idx]
+                    word_end_idx = word_start_idx + match_word_len - 1
+                    di_word_end = doc.di_result["pages"][i]["words"][word_end_idx]
+
+                return ValidCitation(
+                    citation=citation,
+                    best_match=best_match,
+                    start_page=start_page,
+                    end_page=p["page_number"],
+                    di_word_start=di_word_start,
+                    di_word_end=di_word_end,
+                    match_ratio=best_ratio,
                 )
-            )
-        # if no matches were found, its invalid
-        else:
-            results.append(
-                InvalidCitation(
-                    error="Excerpt is not an exact match is the document",
-                    **retrieved_citation,
-                )
-            )
-    return results
+            # elif prev_page_words:
+            #     prev_page_words = ""
+            else:
+                prev_page_words = page_words
+
+    return InvalidCitation(
+        citation=citation,
+        error="Citation not found",
+    )
