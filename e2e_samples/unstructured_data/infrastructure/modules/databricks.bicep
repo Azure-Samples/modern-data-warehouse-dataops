@@ -14,6 +14,8 @@ param env string
 param location string = resourceGroup().location
 @description('The unique identifier for this deployment.')
 param deployment_id string
+@description('The team name tag value for the resource.')
+param team_name string
 // @description('The principal ID of the contributor.')
 // param contributor_principal_id string
 // Variables
@@ -28,6 +30,7 @@ resource databricks 'Microsoft.Databricks/workspaces@2024-09-01-preview' = {
   tags: {
     DisplayName: 'Databricks Workspace'
     Environment: env
+    TeamName: team_name
   }
   sku: {
     name: 'premium'

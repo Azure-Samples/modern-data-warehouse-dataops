@@ -9,6 +9,12 @@ param keyvault_name string
 param enable_keyvault_soft_delete bool = true
 param enable_keyvault_purge_protection bool = true
 // param entra_admin_login string
+param sql_server_name string
+param sql_db_name string
+param aad_group_name string
+param aad_group_object_id string
+param ip_address string
+param team_name string
 
 module databricks './modules/databricks.bicep' = {
   name: 'databricks_deploy_${deployment_id}'
@@ -17,6 +23,7 @@ module databricks './modules/databricks.bicep' = {
     env: env
     location: location
     deployment_id: deployment_id
+    team_name: team_name
     // contributor_principal_id: datafactory.outputs.datafactory_principal_id
   }
 }
@@ -45,6 +52,18 @@ module keyvault './modules/keyvault.bicep' = {
   }
 }
 
+module sql './modules/sql.bicep' = {
+  name: 'sql_deploy_${deployment_id}'
+  params: {
+    sql_server_name: sql_server_name
+    sql_db_name: sql_db_name
+    env: env
+    location: location
+    aad_group_name: aad_group_name
+    aad_group_object_id: aad_group_object_id
+    ip_address: ip_address
+  }
+}
 
 // module appinsights './modules/appinsights.bicep' = {
 //   name: 'appinsights_deploy_${deployment_id}'
@@ -137,3 +156,7 @@ output databricks_id string = databricks.outputs.databricks_id
 output keyvault_name string = keyvault.outputs.keyvault_name
 output keyvault_resource_id string = keyvault.outputs.keyvault_resource_id
 // output loganalytics_name string = loganalytics.outputs.loganalyticswsname
+output sql_server_name string = sql.outputs.sql_server_name
+output sql_server_resource_id string = sql.outputs.sql_server_resource_id
+output sql_db_name string = sql.outputs.sql_db_name
+output sql_db_resource_id string = sql.outputs.sql_db_resource_id
