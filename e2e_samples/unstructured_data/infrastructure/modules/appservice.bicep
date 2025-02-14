@@ -30,7 +30,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2024-04-01' = {
   name: hostingPlanName
   location: location
   tags: {
-    DisplayName: '${webAppName}-AppServicePlan'
+    DisplayName: hostingPlanName
     Environment: env
     TeamName: TeamName
   }
@@ -50,7 +50,7 @@ resource webApp 'Microsoft.Web/sites@2024-04-01' = {
   location: location
   kind: 'app'
   tags: {
-    DisplayName: '${webAppName}-App'
+    DisplayName: webAppName
     Environment: env
     TeamName: TeamName
   }
@@ -66,4 +66,5 @@ resource webApp 'Microsoft.Web/sites@2024-04-01' = {
   }
 }
 
-output hostingPlanId string = appServicePlan.id
+output webAppUrl string = webApp.properties.defaultHostName
+output appServicePlanName string = appServicePlan.name

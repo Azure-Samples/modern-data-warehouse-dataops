@@ -15,16 +15,20 @@ param functionAppName string
 @description('The name of Team for tagging purposes.')
 param TeamName string
 
-@description('The storage account key.')
-@secure()
-param storageAccountKey string
-
 // param ftpsState string = 'FtpsOnly'
 param storageAccountName string
 
 param linuxFxVersion string = 'node|22-lts'
-param hostingPlanId string
+param hostingPlanName string
 param alwaysOn bool = false
+
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' existing = {
+  name: storageAccountName
+}
+
+resource hostingPlan 'Microsoft.Web/serverfarms@2024-04-01' existing = {
+  name: hostingPlanName
+}
 
 resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
   name: functionAppName
@@ -35,7 +39,7 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
     Environment: env
   }
   properties: {
-    serverFarmId: hostingPlanId
+    serverFarmId: hostingPlan.id
     siteConfig: {
       alwaysOn: alwaysOn
       appSettings: [
@@ -49,11 +53,11 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
         }
         {
           name: 'AzureWebJobsStorage'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccountKey}'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
         }
         {
           name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccountKey}'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
         }
         {
           name: 'WEBSITE_CONTENTSHARE'
