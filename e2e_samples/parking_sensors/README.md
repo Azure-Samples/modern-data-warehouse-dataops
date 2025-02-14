@@ -61,7 +61,7 @@ The sample demonstrate how DevOps principles can be applied end to end Data Pipe
 
 ## Solution Overview
 
-The solution pulls fictional near realtime parking sensor data from a data generator that was installed during the deploy and saves this to [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction). It then validates, cleanses, and transforms the data to a known schema using [Azure Databricks](https://azure.microsoft.com/en-us/products/databricks/). A second Azure Databricks job then transforms these into a [Star Schema](https://en.wikipedia.org/wiki/Star_schema) which are then loaded into [Azure Synapse Analytics (formerly SQLDW)](https://azure.microsoft.com/en-us/products/synapse-analytics/) using [Polybase](https://docs.microsoft.com/en-us/sql/relational-databases/polybase/polybase-guide?view=sql-server-ver15). The entire pipeline is orchestrated with [Azure Data Factory](https://azure.microsoft.com/en-us/products/data-factory/).
+The solution pulls fictional near realtime parking sensor data from a data generator that was installed during the deploy and saves this to [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction). It then validates, cleanses, and transforms the data to a known schema using [Azure Databricks](https://azure.microsoft.com/en-us/products/databricks/). A second Azure Databricks notebook then transforms these into a [Star Schema](https://en.wikipedia.org/wiki/Star_schema) which are then loaded into [Azure Synapse Analytics (formerly SQLDW)](https://azure.microsoft.com/en-us/products/synapse-analytics/) using [Polybase](https://docs.microsoft.com/en-us/sql/relational-databases/polybase/polybase-guide?view=sql-server-ver15). The entire pipeline is orchestrated with [Azure Data Factory](https://azure.microsoft.com/en-us/products/data-factory/).
 
 ### Architecture
 
@@ -277,9 +277,9 @@ Set up the environment variables as specified, fork the GitHub repository, and l
         - If the variable is set as shown in the optional configuration below, the prompt will be skipped.
         - If not configured, a prompt will display the following options.
      - The options are:
-        - **Option 1**: Deploy only to the development environment (Dev). Optional configuration for environment variable set #ENV_DEPLOY=1.
-        - **Option 2**: Deploy to both development (Dev) and staging (Stage) environments. Optional configuration for environment variable  #ENV_DEPLOY=2.
-        - **Option 3** : Deploy to development (Dev), staging (Stage), and production (Prod) environments. Optional configuration for environment variable #ENV_DEPLOY=3
+        - **Option 1**: Deploy only to the development environment (Dev). Optional configuration for environment variable set ENV_DEPLOY=1.
+        - **Option 2**: Deploy to both development (Dev) and staging (Stage) environments. Optional configuration for environment variable  ENV_DEPLOY=2.
+        - **Option 3** : Deploy to development (Dev), staging (Stage), and production (Prod) environments. Optional configuration for environment variable ENV_DEPLOY=3
      - **AZURE_LOCATION** - Azure location to deploy resources. *Default*: `westus`.
      - **DEPLOYMENT_ID** - string appended to all resource names. This is to ensure uniqueness of azure resource names. *Default*: random five character string.
      - **AZDO_PIPELINES_BRANCH_NAME** - git branch where Azure DevOps pipelines definitions are retrieved from. *Default*: main.
