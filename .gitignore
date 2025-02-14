@@ -481,3 +481,6 @@ single_tech_samples/synapseanalytics/sample3_integration_testing/synapse/workspa
 single_tech_samples/synapseanalytics/sample3_integration_testing/synapse/workspace/linkedService/Ls_KeyVault_01.json
 single_tech_samples/synapseanalytics/sample3_integration_testing/synapse/workspace/pipeline/P_Sample3.json
 single_tech_samples/synapseanalytics/sample3_integration_testing/synapse/workspace/trigger/T_Stor.json
+
+# Environment variables for data simulator web app
+!/e2e_samples/parking_sensors/data/data-simulator/.env

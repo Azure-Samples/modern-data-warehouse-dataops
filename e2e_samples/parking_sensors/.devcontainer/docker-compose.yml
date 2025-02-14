@@ -3,7 +3,6 @@
 # Licensed under the MIT License. See https://go.microsoft.com/fwlink/?linkid=2090316 for license information.
 #-------------------------------------------------------------------------------------------------------------
 
-version: '3'
 services:
   parking_sensor_dc:
     env_file: .env
