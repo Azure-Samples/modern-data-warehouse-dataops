@@ -108,7 +108,7 @@
                 },
                 "inputs": [
                     {
-                        "referenceName": "Ds_Http_Parking_Locations",
+                        "referenceName": "Ds_Http_Parking_Sensors",
                         "type": "DatasetReference"
                     }
                 ],
@@ -164,7 +164,7 @@
                 },
                 "inputs": [
                     {
-                        "referenceName": "Ds_Http_Parking_Sensors",
+                        "referenceName": "Ds_Http_Parking_Locations",
                         "type": "DatasetReference"
                     }
                 ],

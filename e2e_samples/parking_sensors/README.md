@@ -372,7 +372,9 @@ If you've encountered any issues, please review the [Troubleshooting](../../docs
 After a successful deployment, you should have the following resources:
 
 - In Azure, **three (3) Resource Groups** (one per environment) each with the following Azure resources.
-  - **Data Factory** - with pipelines, datasets, linked services, triggers deployed and configured correctly per environment.
+  - **App Service plan** - B1 Service plan for managing REST API web application
+  - **App Service** - nodejs app service providing REST API for simulated parking data.
+  - **Data Factory(v2)** - with pipelines, datasets, linked services, triggers deployed and configured correctly per environment.
   - **Data Lake Store Gen2** and a **Service Principal (SP)** with Storage Contributor rights assigned.
   - **Databricks workspace**
     - notebooks uploaded at `/notebooks` folder in the workspace
