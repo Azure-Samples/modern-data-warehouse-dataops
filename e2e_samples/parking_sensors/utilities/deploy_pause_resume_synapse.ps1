@@ -152,12 +152,22 @@ try {
 try {
     $existingAutomationAccount = Get-AzAutomationAccount -ResourceGroupName $ResourceGroupName -Name $AutomationAccountName -ErrorAction SilentlyContinue
     if (-not $existingAutomationAccount) {
+        $allAutomationAccounts = Get-AzAutomationAccount -Name $AutomationAccountName -ErrorAction SilentlyContinue
+        if ($allAutomationAccounts -and ($allAutomationAccounts.ResourceGroupName -ne $ResourceGroupName)) {
+            Log-Message "Automation Account '$AutomationAccountName' already exists in another resource group: '$($allAutomationAccounts.ResourceGroupName)'. Please reconcile manually." "ERROR"
+            exit 1
+        } else {
+            if (-not $DryRun) {
+                New-AzAutomationAccount -ResourceGroupName $ResourceGroupName -Name $AutomationAccountName -Location $Location -ErrorAction Stop
+            }
+            Log-Message "Automation Account '$AutomationAccountName' created in Resource Group '$ResourceGroupName'." "INFO"
+        }
+    } elseif ($existingAutomationAccount.Location -ne $Location) {
         if (-not $DryRun) {
+            Remove-AzAutomationAccount -ResourceGroupName $ResourceGroupName -Name $AutomationAccountName -Force -ErrorAction Stop
             New-AzAutomationAccount -ResourceGroupName $ResourceGroupName -Name $AutomationAccountName -Location $Location -ErrorAction Stop
         }
-        Log-Message "Automation Account '$AutomationAccountName' created in Resource Group '$ResourceGroupName'." "INFO"
-    } elseif ($existingAutomationAccount.Location -ne $Location) {
-        Log-Message "Automation Account '$AutomationAccountName' exists but in a different location ('$existingAutomationAccount.Location'). Please reconcile manually." "WARNING"
+        Log-Message "Automation Account '$AutomationAccountName' recreated in location '$Location'." "INFO"
     } else {
         Log-Message "Automation Account '$AutomationAccountName' already exists and is up to date." "INFO"
     }

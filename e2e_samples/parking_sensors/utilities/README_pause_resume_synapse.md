@@ -63,10 +63,14 @@ It supports both manual execution and deployment as an Azure Automation Runbook 
 
 1. **Azure Subscription**: Ensure you have access to an Azure subscription.
 2. **Azure PowerShell Module**: Ensure `Az.Accounts`, `Az.Sql`, `Az.Synapse`, `Az.Automation`, and `Az.Resources` modules are installed. Alternatively, use the `-InstallModules` parameter to install missing modules automatically.
-3. **Required Azure Roles**:
+3. **Latest PowerShell Az Version**: Ensure you are using the latest version of the PowerShell Az module (tested on 13.1.0). This command will show the installed versions of the Az module:
+    ```powershell
+    Get-Module -Name Az -ListAvailable
+    ```
+4. **Required Azure Roles**:
    - Assign the `Contributor` role to the Automation Account's managed identity for the scope `/subscriptions/<subscriptionid>`.
    - Optionally, assign more restrictive permissions as needed (e.g., for specific Resource Groups).
-4. **PowerShell Environment**: If running locally, ensure the account has appropriate permissions.
+5. **PowerShell Environment**: If running locally, ensure the account has appropriate permissions.
 
 ---
 
@@ -105,7 +109,7 @@ To deploy the Pause/Resume Synapse SQL Pools script to Azure Automation using th
 |--------------------------|---------------------------------------------------------------------------------------------------------|---------------|----------------------------------------------|
 | `SubscriptionId`         | Azure Subscription ID for deploying the runbook.                                                       |               | `12345678-1234-1234-1234-123456789abc`       |
 | `ResourceGroupName`      | Name of the resource group where the Automation Account will reside.                                    | `Automation-RG` | `Automation-RG`                              |
-| `AutomationAccountName`  | Name of the Automation Account to be created or used.                                                   | `SynapseAutomation` | `SynapseAutomation`                          |
+| `AutomationAccountName`  | Name of the Automation Account to be created or used. Ensure the name is unique across your subscription. | `SynapseAutomation` | `SynapseAutomation`                          |
 | `Location`               | Azure region for the Automation Account.                                                                | `East US`     | `East US`                                    |
 | `RunbookName`            | Name of the runbook to be created.                                                                      | `PauseResumeSynapse` | `PauseResumeSynapse`                        |
 | `ScriptPath`             | Path to the PowerShell script to import as a runbook.                                                   | `./pause_resume_synapse.ps1` | `./pause_resume_synapse.ps1`                |
@@ -320,10 +324,48 @@ Register-AzAutomationScheduledRunbook `
 
 ## Troubleshooting
 
-- **Module Errors**: Ensure Azure modules are installed and updated: `Update-Module -Name Az -Force`.
+- **Module Errors**: Ensure Azure modules are installed and updated:
+    ```powershell
+    Update-Module -Name Az -Force
+    ```
+
 - **Permission Issues**: Verify the Managed Identity has appropriate role assignments. Ensure local accounts have sufficient permissions.
+
 - **Azure Automation Errors**: Review the Runbook job logs for detailed error messages.
+
 - **Deployment Script Errors**: If using the deployment script, ensure all required parameters are provided and correct. Review the script output for any errors or warnings.
+
+- **Issue: Az-Login Gets Stuck**: If you encounter the following error while trying to authenticate:
+    ```
+    Unable to acquire token for tenant 'TenantId' with error 'Authentication failed against tenant TenantId. User interaction is required. This may be due to the conditional access policy settings such as multi-factor authentication (MFA). If you need to access subscriptions in that tenant, please rerun 'Connect-AzAccount' with additional parameter '-TenantId TenantId'
+    ```
+    A possible solution would be:
+    ```powershell
+    Clear-AzContext -Force
+    Disconnect-AzAccount
+    Connect-AzAccount -TenantId TenantId
+    ```
+    Replace `TenantId` with your tenant ID.
+
+- **Latest PowerShell Az Version**: Ensure you are using the latest version of the PowerShell Az module (tested on 13.1.0). This command will show the installed versions of the Az module:
+    ```powershell
+    Get-Module -Name Az -ListAvailable
+    ```
+    If an older version is installed and causing issues, remove it first:
+    ```powershell
+    Uninstall-Module -Name Az -AllVersions -Force
+    ```
+    If you encounter errors, try running:
+    ```powershell
+    Get-Module -Name Az -ListAvailable | Uninstall-Module -Force
+    ```
+    Now, install the latest version:
+    ```powershell
+    Install-Module -Name Az -Repository PSGallery -Force
+    ```
+    After the update, restart PowerShell.
+
+- **General Troubleshooting**: If you encounter issues not covered above, review the Azure documentation and community forums for additional guidance.
 
 ---
 
