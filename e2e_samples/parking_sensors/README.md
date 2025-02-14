@@ -278,7 +278,7 @@ Set up the environment variables as specified, fork the GitHub repository, and l
         - If not configured, a prompt will display the following options.
      - The options are:
         - **Option 1**: Deploy only to the development environment (Dev). Optional configuration for environment variable set ENV_DEPLOY=1.
-        - **Option 2**: Deploy to both development (Dev) and staging (Stage) environments. Optional configuration for environment variable  #ENV_DEPLOY=2.
+        - **Option 2**: Deploy to both development (Dev) and staging (Stage) environments. Optional configuration for environment variable  ENV_DEPLOY=2.
         - **Option 3** : Deploy to development (Dev), staging (Stage), and production (Prod) environments. Optional configuration for environment variable #ENV_DEPLOY=3
      - **AZURE_LOCATION** - Azure location to deploy resources. *Default*: `westus`.
      - **DEPLOYMENT_ID** - string appended to all resource names. This is to ensure uniqueness of azure resource names. *Default*: random five character string.
