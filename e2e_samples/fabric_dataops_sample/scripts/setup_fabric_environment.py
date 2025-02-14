@@ -254,7 +254,7 @@ if __name__ == "__main__":
 
     if enable_polling:
         # Polling environment status
-        while get_env_spark_libraries_status(workspace_id, environment_id) == "running":
+        while get_env_spark_libraries_status(workspace_id, environment_id).lower() in ["running", "waiting"]:
             print("[Info] Environment publishing is in progress.")
             time.sleep(60)
         print("[Info] Environment publishing completed.")

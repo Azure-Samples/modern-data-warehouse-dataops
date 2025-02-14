@@ -161,7 +161,10 @@ if __name__ == "__main__":
         utils.publish_environment(fabric_headers, workspace_id, environment_id)
 
         # Polling environment status
-        while utils.get_publish_environment_status(fabric_headers, workspace_id, environment_id) == "running":
+        while utils.get_publish_environment_status(fabric_headers, workspace_id, environment_id).lower() in [
+            "running",
+            "waiting",
+        ]:
             print("[Info] Environment publishing is in progress.")
             time.sleep(60)
         print("[Info] Environment publishing completed.")

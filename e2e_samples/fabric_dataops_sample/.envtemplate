@@ -27,7 +27,7 @@ export GIT_REPOSITORY_NAME=""
 export GIT_BRANCH_NAMES=("dev" "stg" "prod")
 ## The username for the Azure DevOps project.
 export GIT_USERNAME=""
-## The personal access token of the above user.
+## The personal access token of the above user (this is an AzDO token, not a GitHub token).
 export GIT_PERSONAL_ACCESS_TOKEN=""
 # Workspace admin variables
 ## The name of the Entra security groups with admin members.
