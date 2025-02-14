@@ -33,7 +33,7 @@ class ParkingBaySensor extends Sensor {
   updateState() {
     this.data.status_timestamp = new Date().toISOString();
     clearInterval(this.interval);      
-    if (this.data.status_description == "Occupied") {
+    if (this.data.status_description == "Present") {
       this.data.status_description = "Unoccupied";
       this.interval = setInterval(() => {
         this.updateState();
@@ -41,7 +41,7 @@ class ParkingBaySensor extends Sensor {
       }, this.getMinutes(1, 5));
     }
     else {
-      this.data.status_description = "Occupied";
+      this.data.status_description = "Present";
       this.interval = setInterval(() => {
         this.updateState();
         this.emit("stateChanged", this.output());
