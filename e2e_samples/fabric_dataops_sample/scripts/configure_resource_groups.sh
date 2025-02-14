@@ -46,12 +46,6 @@ assign_roles() {
     --scope "$scope" \
     --output none
 
-  echo "[Info] Assigning 'Key Vault Purge Operator' role to '$security_group' for '$resource_group'."
-  az role assignment create --assignee "$security_group" \
-    --role "Key Vault Purge Operator" \
-    --scope "$scope" \
-    --output none
-
   echo "[Info] Assigning 'User Access Administrator' role with restricted permissions to '$security_group' for '$resource_group'."
   az role assignment create --assignee "$security_group" \
     --role "User Access Administrator" \

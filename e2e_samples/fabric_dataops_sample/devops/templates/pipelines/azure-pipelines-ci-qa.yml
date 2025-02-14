@@ -43,7 +43,7 @@ stages:
             workingDirectory: $(Build.SourcesDirectory)/libraries
 
           - script: |
-              echo "Linting files in $(WORKING_DIR)..."
+              echo "Linting files in $(Build.SourcesDirectory)/libraries..."
               flake8 .
             displayName: 'Linting Files'
             workingDirectory: $(Build.SourcesDirectory)/libraries
