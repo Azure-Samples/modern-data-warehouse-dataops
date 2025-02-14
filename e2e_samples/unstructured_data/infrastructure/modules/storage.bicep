@@ -73,4 +73,3 @@ resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
 // Outputs
 @description('The name of the storage account.')
 output storage_account_name string = storage.name
-output storage_account_key string = listKeys(storage.id, storage.apiVersion).keys[0].value

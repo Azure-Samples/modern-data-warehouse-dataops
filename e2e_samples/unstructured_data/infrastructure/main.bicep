@@ -83,9 +83,8 @@ module functionapp './modules/functionapp.bicep' = {
   params: {
     env: env
     functionAppName: 'excitationfuncapp'
-    hostingPlanId: appservice.outputs.hostingPlanId
+    hostingPlanName: appservice.name
     storageAccountName: storage.outputs.storage_account_name
-    storageAccountKey: storage.outputs.storage_account_key
     location: location
     TeamName: team_name
   }
