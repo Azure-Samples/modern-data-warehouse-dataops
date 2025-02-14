@@ -19,7 +19,10 @@ param deployment_id string
 // param contributor_principal_id string
 // Variables
 @description('Role definition ID for Storage Blob Data Contributor.')
-var storage_blob_data_contributor = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')
+var storage_blob_data_contributor = subscriptionResourceId(
+  'Microsoft.Authorization/roleDefinitions',
+  'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
+)
 // Storage Account Resource
 resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   name: '${project}st${env}${deployment_id}'
