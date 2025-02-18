@@ -7,7 +7,7 @@ from typing import Any, Optional
 
 from common.analyze_submissions import analyze_submission_folder
 from common.azure_storage_utils import get_blob_service_client
-from common.chunking import DocContentChunker, get_encoded_tokens
+from common.chunking import AnalyzedDocChunker, get_encoded_tokens
 from common.citation import Citation, InvalidCitation, ValidCitation
 from common.citation_db import commit_forms_docs_citations_to_db
 from common.citation_generator_utils import validate_citation
@@ -41,7 +41,7 @@ class LLMCitationGenerator:
         self.system_prompt = system_prompt_template.render(question=question)
 
         self.user_prompt_template = load_template(PROMPT_TEMPLATES_DIR.joinpath(user_prompt_file))
-        # get token count without context
+        # get token count without context to calculate max context tokens
         user_prompt_without_context = self.user_prompt_template.render(question=question)
         prompt_tokens_without_context = get_encoded_tokens(
             text=self.system_prompt + user_prompt_without_context, encoding_name=token_encoding_name
@@ -54,8 +54,10 @@ class LLMCitationGenerator:
                 f"Max context tokens {max_context_tokens} must be greater than overlap {overlap}.\
                     Please reduce overlap or reduce the prompt length."
             )
-        self.chunker = DocContentChunker(
-            max_tokens=max_context_tokens, encoding_name=token_encoding_name, overlap=overlap
+        self.chunker = AnalyzedDocChunker(
+            max_tokens=max_context_tokens,
+            encoding_name=token_encoding_name,
+            overlap=overlap,
         )
 
         self.db_question_id = db_question_id
@@ -86,18 +88,18 @@ class LLMCitationGenerator:
 
         logger.debug(f"Found {len(docs)} documents for submission {submission_folder}")
 
-        chunked_docs = self.chunker.chunk(docs=docs)
+        chunked_docs = self.chunker.chunk_by_token(docs=docs)
 
         citations: list[InvalidCitation | ValidCitation] = []
         docs_len = len(chunked_docs)
         for doc_idx, cd in enumerate(chunked_docs):
-            logger.debug(f"Chunked document: {cd.doc.document_name}")
+            logger.debug(f"Chunked document: {cd.document_name}")
 
             chunk_len = len(cd.chunks)
-            for chunk_idx, chunk in enumerate(cd.chunks):
+            for chunk_idx, doc_chunk in enumerate(cd.chunks):
                 logger.debug(f"Sending chunk {chunk_idx+1} of {chunk_len} for doc {doc_idx+1} of {docs_len} to LLM")
 
-                user_prompt = self.user_prompt_template.render(context=chunk, question=self.question)
+                user_prompt = self.user_prompt_template.render(context=doc_chunk, question=self.question)
                 # ask llm with context
                 msgs = [
                     llm.system_message(content=self.system_prompt),
@@ -119,21 +121,18 @@ class LLMCitationGenerator:
                         if isinstance(c, dict):
                             citation = Citation(
                                 excerpt=c.get("excerpt"),
-                                document_name=cd.doc.document_name,
+                                document_name=cd.document_name,
                                 explanation=c.get("explanation"),
                                 raw=citation_str,
                             )
-                            validated_citation = validate_citation(citation=citation, chunk=chunk, doc=cd.doc)
+
+                            validated_citation = validate_citation(citation=citation, chunk=doc_chunk)
                             citations.append(validated_citation)
                         else:
                             citations.append(
                                 InvalidCitation(
-                                    citation=Citation(
-                                        excerpt=None,
-                                        document_name=cd.doc.document_name,
-                                        explanation=None,
-                                        raw=citation_str,
-                                    ),
+                                    document_name=cd.document_name,
+                                    raw=citation_str,
                                     error="Invalid citation format",
                                 )
                             )
@@ -179,7 +178,7 @@ if __name__ == "__main__":
         variants=variants,
         run_id=run_id,
     )
-    submission_folder = "josh-test"
+    submission_folder = "F24Q3"
     for experiment in experiments:
         result = experiment.run(submission_folder=submission_folder)
         print(result)

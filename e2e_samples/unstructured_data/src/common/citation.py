@@ -3,6 +3,12 @@ from typing import Optional
 
 
 @dataclass
+class MatchResult:
+    ratio: float
+    text: str
+
+
+@dataclass
 class Citation:
     document_name: str
     excerpt: Optional[str] = field(default=None)
@@ -11,19 +17,16 @@ class Citation:
 
 
 @dataclass
-class ValidCitation:
-    citation: Citation
-    best_match: str
-    start_page: Optional[int] = field(default=None)
-    end_page: Optional[int] = field(default=None)
-    di_word_start: Optional[dict] = field(default=None)
-    di_word_end: Optional[dict] = field(default=None)
-    match_ratio: Optional[float] = field(default=None)
+class ValidatedCitation(Citation):
+    match: Optional[MatchResult] = field(default=None)
+
+
+@dataclass
+class ValidCitation(ValidatedCitation):
     status: str = "Valid"
 
 
 @dataclass
-class InvalidCitation:
-    citation: Citation
+class InvalidCitation(ValidatedCitation):
     error: Optional[str] = field(default=None)
     status: str = "Invalid"

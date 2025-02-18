@@ -58,7 +58,10 @@ class NumericEvaluator:
             # we have truth but no citations
             return {"ratio": 0.0}
         for r in response:
-            excerpt = r.get("excerpt")
+            citation = r.get("citation", {})
+            excerpt = citation.get("excerpt")
+            if excerpt is None:
+                return {"ratio": 0.0}
             numbers = re.findall(r"[\$]?\s*\d{1,3}(?:,\d{3})*(?:\.\d+)?", excerpt)
             chars_to_remove = ["$", ",", " "]
             numbers_processed = ["".join(char for char in num if char not in chars_to_remove) for num in numbers]

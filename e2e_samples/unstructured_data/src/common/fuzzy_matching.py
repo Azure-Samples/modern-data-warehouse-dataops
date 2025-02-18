@@ -1,17 +1,12 @@
 import re
 
+from common.citation import MatchResult
 from rouge_score import rouge_scorer
 
 
 def preprocess_text(text: str) -> str:
     # Remove special characters and extra spaces
     return re.sub(r"\s+", " ", re.sub(r"[^\w\s]", "", text.lower()).strip())
-
-
-def chunk_document(doc_id: str, document: str, chunk_size: int) -> list[dict[str, str]]:
-    # Split the document into overlapping chunks
-    words = document.split()
-    return [{doc_id: " ".join(words[i : i + chunk_size])} for i in range(len(words) - chunk_size + 1)]
 
 
 def similarity_ratio(citation: str, doc_chunk: str) -> float:
@@ -29,18 +24,18 @@ def similarity_ratio(citation: str, doc_chunk: str) -> float:
     return scorer.score(citation, doc_chunk)["rougeL"].recall
 
 
-def find_best_match(citation: str, chunks: list[str]) -> tuple[str, float]:
+def find_best_match(citation: str, chunks: list[str]) -> MatchResult | None:
     """Finds the document chunk that has the closes
     match with the citation.
     """
     best_match, best_ratio = "", 0.0
     preprocessed_citation = preprocess_text(citation)
-    for chunk_text in chunks:
-        preprocess_chunk = preprocess_text(chunk_text)
+    for chunk in chunks:
+        preprocess_chunk = preprocess_text(chunk)
         ratio = similarity_ratio(preprocessed_citation, preprocess_chunk)
         if ratio > best_ratio:
             best_ratio = ratio
-            best_match = chunk_text
+            best_match = chunk
             if best_ratio == 1.0:
                 break
-    return best_match, best_ratio
+    return MatchResult(text=best_match, ratio=best_ratio)
