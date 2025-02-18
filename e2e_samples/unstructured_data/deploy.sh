@@ -249,27 +249,6 @@ az keyvault secret set --vault-name "$kv_name" --name "datalakeAccountName" --va
 az keyvault secret set --vault-name "$kv_name" --name "datalakeKey" --value "$azure_storage_key" -o none
 az keyvault secret set --vault-name "$kv_name" --name "datalakeurl" --value "https://$azure_storage_account.dfs.core.windows.net" -o none
 
-####################
-# APPLICATION INSIGHTS
-
-log "Retrieving ApplicationInsights information from the deployment."
-appinsights_name=$(echo "$arm_output" | jq -r '.properties.outputs.appinsights_name.value')
-appinsights_key=$(az monitor app-insights component show \
-    --app "$appinsights_name" \
-    --resource-group "$resource_group_name" \
-    --output json |
-    jq -r '.instrumentationKey')
-appinsights_connstr=$(az monitor app-insights component show \
-    --app "$appinsights_name" \
-    --resource-group "$resource_group_name" \
-    --output json |
-    jq -r '.connectionString')
-
-# Store in Keyvault
-az keyvault secret set --vault-name "$kv_name" --name "applicationInsightsKey" --value "$appinsights_key" -o none
-az keyvault secret set --vault-name "$kv_name" --name "applicationInsightsConnectionString" --value "$appinsights_connstr" -o none
-
-
 
 # ###########################
 # # RETRIEVE DATABRICKS INFORMATION AND CONFIGURE WORKSPACE
