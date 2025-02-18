@@ -45,12 +45,6 @@ fi
 # Create secret scope
 databricks secrets create-scope --scope "$scope_name" --scope-backend-type "AZURE_KEYVAULT" --resource-id "$KEYVAULT_RESOURCE_ID" --dns-name "$KEYVAULT_DNS_NAME"
 
-# Upload notebooks
-log "Uploading notebooks..."
-user_name=$(az account show -o jsonc | jq -r '.user.name')
-databricks_folder_name="/Workspace/Users/${user_name}"
-log "databricks_folder_name: ${databricks_folder_name}"
-
 # Define suitable VM for DB cluster
 file_path="./databricks/config/cluster.config.json"
 
