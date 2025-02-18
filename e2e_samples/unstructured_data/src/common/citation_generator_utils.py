@@ -1,30 +1,16 @@
-from dataclasses import dataclass, field
-from typing import Any, Optional
+from dataclasses import asdict
 
-from common.analyze_submissions import AnalyzedDocument
-from common.fuzzy_matching import map_citation_to_documents
-
-
-@dataclass
-class Citation:
-    excerpt: str
-    document_name: str
-    explanation: Optional[str] = field(default=None)
-    status: str = "Valid"
+from common.chunking import chunk_by_word_size
+from common.citation import Citation, InvalidCitation, ValidCitation
+from common.fuzzy_matching import find_best_match
 
 
-@dataclass
-class InvalidCitation:
-    excerpt: Optional[str] = field(default=None)
-    explanation: Optional[str] = field(default=None)
-    document_name: Optional[str] = field(default=None)
-    error: Optional[str] = field(default=None)
-    status: str = "Invalid"
-
-
-def validate_retrieved_citations(
-    retrieved_citations: Any, docs: list[AnalyzedDocument]
-) -> list[Citation | InvalidCitation]:
+def validate_citation(
+    citation: Citation,
+    chunk: str,
+    match_threshold: float = 0.5,
+    buffer_size: int = 3,
+) -> ValidCitation | InvalidCitation:
     """Validates retrieved citations and return invalid or valid citations
 
     Args:
@@ -35,55 +21,30 @@ def validate_retrieved_citations(
     Returns:
         list[ValidCitation | Invalidcitation]: a list of valid or invalid citations
     """
-    if not isinstance(retrieved_citations, list):
-        retrieved_citations = [retrieved_citations]
-
-    citations: list[Citation | InvalidCitation] = []
-    for c in retrieved_citations:
-        citation = _validate_retrieved_citation(retrieved_citation=c, docs=docs)
-        citations.extend(citation)
-    return citations
-
-
-def _validate_retrieved_citation(
-    retrieved_citation: Any, docs: list[AnalyzedDocument]
-) -> list[Citation | InvalidCitation]:
-    results: list[Citation | InvalidCitation] = []
-    if isinstance(retrieved_citation, dict):
-        # ensure the dict has the required keys
-        exerpt = retrieved_citation.get("excerpt")
-        if exerpt is None:
-            return [
-                InvalidCitation(
-                    error="Missing 'excerpt' key",
-                    **retrieved_citation,
-                )
-            ]
-
-        doc_map = {}
-        for doc in docs:
-            doc_map[doc.document_name] = doc.di_result["content"]
-
-        # Fuzzy matching to grab actual text from document
-        mapped_citation = map_citation_to_documents(exerpt, doc_map)
-        print(
-            f"[LOG] Original citation: {exerpt} \
-              ***** Mapped citation: {mapped_citation}"
+    citation_dict = asdict(citation)
+    if citation.excerpt is None:
+        return InvalidCitation(
+            error="Missing 'excerpt' key",
+            **citation_dict,
         )
-        if mapped_citation:
-            results.append(
-                Citation(
-                    document_name=str(mapped_citation["doc_id"]),
-                    excerpt=str(mapped_citation["matched_text"]),
-                    explanation=retrieved_citation.get("explanation"),
-                )
-            )
-        # if no matches were found, its invalid
-        else:
-            results.append(
-                InvalidCitation(
-                    error="Excerpt is not an exact match is the document",
-                    **retrieved_citation,
-                )
-            )
-    return results
+
+    window_size = len(citation.excerpt.split())
+    word_chunks = chunk_by_word_size(chunk, window_size + buffer_size)
+
+    match = find_best_match(citation.excerpt, word_chunks)
+
+    if not match:
+        error_msg = "No match found"
+    elif match.ratio > match_threshold:
+        return ValidCitation(
+            match=match,
+            **citation_dict,
+        )
+    else:
+        error_msg = f"No match found above threshold {match_threshold}, Best ratio: {match.ratio}"
+
+    return InvalidCitation(
+        match=match,
+        error=error_msg,
+        **citation_dict,
+    )

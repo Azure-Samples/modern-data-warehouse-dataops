@@ -2,11 +2,16 @@ import logging
 import random
 import string
 import struct
+from pathlib import Path
+from typing import Any, Optional
 
 import pyodbc
+import yaml
 from azure.identity import DefaultAzureCredential
 from common.analyze_submissions import AnalyzedDocument
+from common.citation import ValidCitation
 from common.citation_generator_utils import Citation
+from common.path_utils import RepoPaths
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -26,7 +31,7 @@ def commit_to_db(
     question_id: int,
     docs: list[AnalyzedDocument],
     creator: str,
-    citations: list[Citation],
+    citations: list[ValidCitation],
 ) -> int:
     try:
         conn = get_conn(conn_str)
@@ -225,3 +230,52 @@ def create_question(
     question_id = cursor.fetchval()
     conn.commit()
     return question_id
+
+
+def get_template_questions(cursor: pyodbc.Cursor, template_id: int) -> list:
+    query = """
+    SELECT q.* FROM dbo.question q
+    JOIN dbo.template t ON q.templateId = t.templateId
+    WHERE t.templateId = (?)
+    """
+    cursor.execute(query, (template_id))
+    return cursor.fetchall()
+
+
+def get_template_by_id(cursor: pyodbc.Cursor, template_id: int) -> Any:
+    query = """
+    SELECT * FROM dbo.template
+    WHERE templateId = ?;
+    """
+    cursor.execute(query, (template_id,))
+    template = cursor.fetchone()
+    return template
+
+
+def create_template_question_lockfile(
+    cursor: pyodbc.Cursor, template_id: int, output_dir: Optional[Path] = None
+) -> Path:
+    if output_dir is None:
+        output_dir = RepoPaths.data.joinpath("citationdb")
+
+    output_template_data = {}
+    db_template = get_template_by_id(cursor, template_id)
+    print(db_template)
+    template_col_names = [c[0] for c in cursor.description]
+    for i, c in enumerate(template_col_names):
+        output_template_data[c] = db_template[i]
+
+    output_questions_data = []
+    db_questions = get_template_questions(cursor, template_id)
+    questions_col_names = [c[0] for c in cursor.description]
+    for q in db_questions:
+        question_data = {}
+        for i, c in enumerate(questions_col_names):
+            question_data[c] = q[i]
+        output_questions_data.append(question_data)
+
+    data = {"template": output_template_data, "questions": output_questions_data}
+    output_path = output_dir.joinpath(f"template_{template_id}.lock.yaml")
+    with open(output_path, "w") as f:
+        yaml.dump(data, f)
+    return output_path
