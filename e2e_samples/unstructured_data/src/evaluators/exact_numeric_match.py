@@ -58,8 +58,7 @@ class NumericEvaluator:
             # we have truth but no citations
             return {"ratio": 0.0}
         for r in response:
-            citation = r.get("citation", {})
-            excerpt = citation.get("excerpt")
+            excerpt = r.get("excerpt")
             if excerpt is None:
                 return {"ratio": 0.0}
             numbers = re.findall(r"[\$]?\s*\d{1,3}(?:,\d{3})*(?:\.\d+)?", excerpt)

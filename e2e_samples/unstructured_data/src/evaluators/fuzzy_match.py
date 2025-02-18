@@ -32,8 +32,7 @@ class FuzzyMatchEvaluator:
 
         scores = []
         for r in response:
-            citation = r.get("citation", {})
-            excerpt = citation.get("excerpt")
+            excerpt = r.get("excerpt")
             if excerpt is None:
                 scores.append(0.0)
             else:
