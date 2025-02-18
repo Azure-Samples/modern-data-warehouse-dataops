@@ -291,8 +291,8 @@ Set up the environment variables as specified, fork the GitHub repository, and l
      - Open the project inside the vscode Dev Container (see details [here](docs/devcontainer.md)).
       > Note that the environment file is only loaded once, during the container build process. If you modify any environment variables after building your Dev Container, you will need to manually reload the new values by running `source .devcontainer/.env`
 
-   - To further customize the solution, set parameters in `arm.parameters` files located in the `infrastructure` folder.
-      - To enable Observability and Monitoring components through code(Observability-as-code), please set enable_monitoring parameter to true in  `arm.parameters` files located in the `infrastructure` folder. This will deploy log analytics workspace to collect monitoring data from key resources, setup an Azure dashboards to monitor key metrics and configure alerts for ADF pipelines.
+   - To further customize the solution, set parameters in `main.parameters.env.json` files located in the `infrastructure` folder.
+      - To enable Observability and Monitoring components through code(Observability-as-code), please set enable_monitoring parameter to true in  `main.parameters.env.json` files located in the `infrastructure` folder. This will deploy log analytics workspace to collect monitoring data from key resources, setup an Azure dashboards to monitor key metrics and configure alerts for ADF pipelines.
   
      **Login and Cluster Configuration**
       - Ensure that you have completed the configuration for the variables described in the previous section, titled **Configuration: Variables and Login**.
@@ -332,8 +332,8 @@ Set up the environment variables as specified, fork the GitHub repository, and l
    > **Ensure you Import Existing Data Factory resources to repository**. The deployment script deployed ADF objects with Linked Service configurations in line with the newly deployed environments. Importing existing ADF resources definitions to the repository overrides any default Linked Services values so they are correctly in sync with your DEV environment.
 
 4. **Trigger an initial Release**
-
-   - In the **DEV** Data Factory portal, navigate to Pipelines and open the "P_Ingest_ParkingData" pipeline.
+   - Before triggering a initial release, make sure that "Disable implied YAML CI trigger" setting on your AzDo Organization or Project is set to **on**. This setting will allow to trigger the ci run following the trigger section defined on the yml file and avoid unintended runs for any changes pushed on the repository.
+   - In the **DEV** Data Factory portal, navigate to Pipelines and open the "P_Ingest_MelbParkingData" pipeline.
    - In the top left corner, open the git drop down and create a Dev branch by clicking in "New Branch".
    - Once the Dev branch is created, select the branch from the drop-down list and make a change in the Description fields from one of the pipeline tasks.
    - Save the pipeline.

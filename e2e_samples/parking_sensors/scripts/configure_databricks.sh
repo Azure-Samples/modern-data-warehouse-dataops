@@ -71,12 +71,14 @@ photon_node_types=$(echo "$node_types" | jq -r '.node_types[] | select(.photon_d
 # Find common VM sizes
 common_vms=$(grep -Fwf <(echo "$photon_node_types") vm_names.txt)
 
-# Find the VM with the least resources
+# Find the least resource option that has 4GB memory for each core
 least_resource_vm=$(echo "$vm_sizes" | jq --arg common_vms "$common_vms" '
   map(select(.name == ($common_vms | split("\n")[]))) |
-  sort_by(.numberOfCores, .memoryInMB) |
+  map(select(.memoryInMB >= (.numberOfCores * 4 * 1024))) |
+  sort_by( .memoryInMB) |
   .[0]
 ')
+
 log "VM with the least resources:$least_resource_vm" "info"
 
 # Update the JSON file with the least resource VM
