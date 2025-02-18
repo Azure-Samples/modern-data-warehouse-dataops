@@ -7,6 +7,12 @@ TENANT_ID=
 # Azure subscription id to use to deploy resources. Default: default azure subscription.
 AZURE_SUBSCRIPTION_ID=
 
+# Project Name used within resource names
+PROJECT=
+
+# Value used for TeamName tag on resource and resource group deployments
+TEAM_NAME=
+
 ###
 # OPTIONAL. Environment variables for deployment script.
 # Uncomment to set values.
@@ -41,6 +47,11 @@ AZURE_OPENAI_VERSION=
 DOCUMENT_INTELLIGENCE_ENDPOINT=
 DOCUMENT_INTELLIGENCE_KEY=
 
-# DB
-# CITATION_DB_ENABLED=True
-# CITATION_DB_CONNECTION_STRING=
+# Citation DB
+# CITATION_DB_SERVER_NAME=
+# CITATION_DB_NAME=
+# CITATION_DB_CONNECTION_STRING='Driver={ODBC Driver 18 for SQL Server};Server=tcp:${CITATION_DB_SERVER_NAME}.database.windows.net,1433;Database=${CITATION_DB_NAME};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30'
+
+
+# App Insights
+# APPLICATIONINSIGHTS_CONNECTION_STRING=

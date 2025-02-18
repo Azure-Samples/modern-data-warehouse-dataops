@@ -69,7 +69,7 @@ class LLMCitationGenerator:
             # ensure we have required arguments for citation db
             self.db_conn_str = os.environ["CITATION_DB_CONNECTION_STRING"]
             if self.db_question_id is None:
-                raise KeyError("'question_id' is a required argument when Citation DB is enabled.")
+                raise KeyError("'db_question_id' is a required argument when Citation DB is enabled.")
 
         self.blob_account_url = os.environ["AZURE_STORAGE_ACCOUNT_URL"]
         self.llm_creds = OAICredentials.from_env()

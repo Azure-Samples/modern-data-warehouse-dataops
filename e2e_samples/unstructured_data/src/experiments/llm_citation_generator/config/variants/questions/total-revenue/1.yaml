@@ -4,5 +4,3 @@ parent_variants:
   - ../../common/1.yaml
 init_params:
   question: "What was the company’s revenue for this quarter of this year?"
-  # system_prompt_template:
-  #   variables:
