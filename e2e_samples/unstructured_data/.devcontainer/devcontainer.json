@@ -43,10 +43,11 @@
                 "DavidAnson.vscode-markdownlint",
                 "eamodio.gitlens",
                 "GitHub.copilot",
-                "ms-python.mypy-type-checker"
+                "ms-python.mypy-type-checker",
+				"ms-azuretools.vscode-bicep"
             ]
         }
     },
     "remoteUser": "vscode",
-    "postCreateCommand": "./.devcontainer/post_create.sh"
+    "postCreateCommand": "bash ./.devcontainer/post_create.sh"
 }

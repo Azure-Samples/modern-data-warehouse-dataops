@@ -4,7 +4,7 @@ param env string = 'dev'
 param location string = resourceGroup().location
 param deployment_id string
 param keyvault_owner_object_id string
-// param enable_monitoring bool
+param enable_monitoring bool = true
 param keyvault_name string
 param enable_keyvault_soft_delete bool = true
 param enable_keyvault_purge_protection bool = true
@@ -65,25 +65,25 @@ module sql './modules/sql.bicep' = {
   }
 }
 
-// module appinsights './modules/appinsights.bicep' = {
-//   name: 'appinsights_deploy_${deployment_id}'
-//   params: {
-//     project: project
-//     env: env
-//     location: location
-//     deployment_id: deployment_id
-//   }
-// }
+module appinsights './modules/appinsights.bicep' = {
+  name: 'appinsights_deploy_${deployment_id}'
+  params: {
+    project: project
+    env: env
+    location: location
+    deployment_id: deployment_id
+  }
+}
 
-// module loganalytics './modules/log_analytics.bicep' = if (enable_monitoring) {
-//   name: 'log_analytics_deploy_${deployment_id}'
-//   params: {
-//     project: project
-//     env: env
-//     location: location
-//     deployment_id: deployment_id
-//   }
-// }
+module loganalytics './modules/log_analytics.bicep' = if (enable_monitoring) {
+  name: 'log_analytics_deploy_${deployment_id}'
+  params: {
+    project: project
+    env: env
+    location: location
+    deployment_id: deployment_id
+  }
+}
 
 
 // module diagnostic './modules/diagnostic_settings.bicep' = if (enable_monitoring) {
@@ -152,10 +152,10 @@ module sql './modules/sql.bicep' = {
 output storage_account_name string = storage.outputs.storage_account_name
 output databricks_output object = databricks.outputs.databricks_output
 output databricks_id string = databricks.outputs.databricks_id
-// output appinsights_name string = appinsights.outputs.appinsights_name
+output appinsights_name string = appinsights.outputs.appinsights_name
 output keyvault_name string = keyvault.outputs.keyvault_name
 output keyvault_resource_id string = keyvault.outputs.keyvault_resource_id
-// output loganalytics_name string = loganalytics.outputs.loganalyticswsname
+output loganalytics_name string = loganalytics.outputs.loganalyticswsname
 output sql_server_name string = sql.outputs.sql_server_name
 output sql_server_resource_id string = sql.outputs.sql_server_resource_id
 output sql_db_name string = sql.outputs.sql_db_name
