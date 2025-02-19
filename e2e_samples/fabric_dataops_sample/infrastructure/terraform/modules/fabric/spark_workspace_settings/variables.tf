@@ -22,7 +22,7 @@ variable "default_pool_name" {
 variable "runtime_version" {
   type        = string
   description = "Fabric environment runtime version"
-  default     = "1.2"
+  default     = "1.3"
 }
 
 variable "default_pool_type" {
@@ -59,4 +59,22 @@ variable "notebook_interactive_run_enabled" {
   type        = bool
   description = "Whether notebook interactive run is enabled for high concurrency"
   default     = true
+}
+
+variable "notebook_pipeline_run_enabled" {
+  type        = bool
+  description = "Whether notebook pipeline run is enabled for high concurrency"
+  default     = true
+}
+
+variable "conservative_job_admission_enabled" {
+  type        = bool
+  description = "Whether conservative job admission is enabled"
+  default     = false
+}
+
+variable "session_timeout_in_minutes" {
+  type        = number
+  description = "Time to terminate inactive Spark sessions."
+  default     = 30
 }

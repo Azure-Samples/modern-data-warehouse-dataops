@@ -1,0 +1,61 @@
+name: "Asset Bundle Dev Deployment"
+
+on:
+  workflow_run:
+    workflows: ["Asset Bundle Sandbox Deployment"]
+    types:
+    - completed
+
+env:
+  ENV: dev
+  WORKING_DIR: single_tech_samples/databricks/databricks_terraform/
+
+jobs:
+  deploy:
+    name: "Deploy bundle"
+    runs-on: ubuntu-latest
+    environment: development
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIR }}
+    if: |
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main'
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup Databricks CLI
+      uses: databricks/setup-cli@main
+
+    - name: Azure Login Using Service Principal
+      uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_DEV_CREDENTIALS }}
+
+    - name: Deploy Databricks Bundle
+      run: |
+        databricks bundle validate -t ${{ env.ENV }} -o json
+        databricks bundle deploy -t ${{ env.ENV }}
+      working-directory: .
+      env:
+        DATABRICKS_BUNDLE_ENV: ${{ env.ENV }}
+
+    - name: Install Task
+      uses: arduino/setup-task@v2
+      with:
+        version: 3.x
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Set Test Flows
+      run: task collect-tests
+
+    - name: Run test workflows
+      run: task run-tests
+      env:
+        # gets test_flows from Set Test Flows step
+        # and passes to the run-tests task
+        test_flows: ${{ env.test_flows }}
+        # bundle file required variables
+        DATABRICKS_BUNDLE_ENV: ${{ env.ENV }}

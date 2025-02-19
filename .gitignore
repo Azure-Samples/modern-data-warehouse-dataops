@@ -24,6 +24,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+*playground/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -464,6 +465,7 @@ MigrationBackup/
 .terraform.lock.hcl
 plan.tfplan
 terraform.tfstate
+terraform.tfstate.d
 terraform.tfstate.backup
 .terraform.tfstate.lock.info
 
@@ -484,3 +486,4 @@ single_tech_samples/synapseanalytics/sample3_integration_testing/synapse/workspa
 
 # Environment variables for data simulator web app
 !/e2e_samples/parking_sensors/data/data-simulator/.env
+_scratch/*

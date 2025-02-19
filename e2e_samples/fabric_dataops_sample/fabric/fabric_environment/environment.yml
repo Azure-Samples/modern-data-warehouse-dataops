@@ -1,0 +1,7 @@
+dependencies:
+  - pip:
+      - jupyter-black==0.4.0
+      - pytest==8.3.3
+      - ipytest==0.14.2
+      - azure-monitor-opentelemetry-exporter==1.0.0b32
+      - great-expectations==0.14.12

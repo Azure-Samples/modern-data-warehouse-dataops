@@ -1,9 +1,9 @@
 output "lakehouse_id" {
-  value       = fabric_lakehouse.lakehouse.id
+  value       = var.enable ? fabric_lakehouse.lakehouse[0].id : ""
   description = "Microsoft Fabric lakehouse id"
 }
 
 output "lakehouse_name" {
-  value       = fabric_lakehouse.lakehouse.display_name
+  value       = var.enable ? fabric_lakehouse.lakehouse[0].display_name : ""
   description = "Microsoft Fabric lakehouse display name"
 }

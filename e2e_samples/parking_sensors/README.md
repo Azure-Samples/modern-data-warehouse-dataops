@@ -269,17 +269,21 @@ Set up the environment variables as specified, fork the GitHub repository, and l
      - **AZDO_PROJECT** - Target Azure DevOps project where Azure Pipelines and Variable groups will be deployed
      - **AZDO_ORGANIZATION_URL** - Target Azure DevOps Organization of Azure DevOps project in this form `https://dev.azure.com/<organization>/`. Must be in the same tenant as $TENANT_ID
      - **GITHUB_REPO** - Name of your forked github repo in this form `<my_github_handle>/<repo>`. (ei. "devlace/mdw-dataops-import")
-     - **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). The token is needed to connect to the GitHub repository. When generating a token use a `fine-grained` token, select your repository and under repository permissions select Read access to Content and Webhooks. Under Account permissions select read access to Email.
+     - **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). The token is needed to connect to the GitHub repository. When generating a token use a `fine-grained` token, select your repository and under repository permissions select Read access to Content and Read and Write access to Webhooks. Under Account permissions select read access to Email.
 
      Optionally, set the following environment variables:
 
      - **ENV_DEPLOY**- Specifies the number of environments to deploy.
+
         - If the variable is set as shown in the optional configuration below, the prompt will be skipped.
-        - If not configured, a prompt will display the following options.
-     - The options are:
-        - **Option 1**: Deploy only to the development environment (Dev). Optional configuration for environment variable set ENV_DEPLOY=1.
-        - **Option 2**: Deploy to both development (Dev) and staging (Stage) environments. Optional configuration for environment variable  ENV_DEPLOY=2.
-        - **Option 3** : Deploy to development (Dev), staging (Stage), and production (Prod) environments. Optional configuration for environment variable ENV_DEPLOY=3
+        - If not configured, a prompt will display the following options.         
+
+      - The options are:
+
+        - **Option 1**: Deploy only to the development environment (Dev). Optional configuration for environment variable set #ENV_DEPLOY=1.
+        - **Option 2**: Deploy to both development (Dev) and staging (Stage) environments. Optional configuration for environment variable  #ENV_DEPLOY=2.
+        - **Option 3** : Deploy to development (Dev), staging (Stage), and production (Prod) environments. Optional configuration for environment variable #ENV_DEPLOY=3
+      
      - **AZURE_LOCATION** - Azure location to deploy resources. *Default*: `westus`.
      - **DEPLOYMENT_ID** - string appended to all resource names. This is to ensure uniqueness of azure resource names. *Default*: random five character string.
      - **AZDO_PIPELINES_BRANCH_NAME** - git branch where Azure DevOps pipelines definitions are retrieved from. *Default*: main.
@@ -305,7 +309,7 @@ Set up the environment variables as specified, fork the GitHub repository, and l
        - **Option 1**: Deploy only to the development environment (Dev). Note that this option does not deploy release pipelines, as a minimum of two environments is required for pipeline releases.
        - **Option 2**: Deploy to both development (Dev) and staging (Stage) environments.
        - **Option 3** (Or Press Enter): Deploy to development (Dev), staging (Stage), and production (Prod) environments.
-     - This may take around **~30mins or more** to run end to end. So grab yourself a cup of coffee... ☕ But before you do so keep the following in mind:
+      - This may take around **~30mins or more** to run end to end. So grab yourself a cup of coffee... ☕ But before you do so keep the following in mind:
         - You might encounter deployment issues if the script attempts to create a Key Vault that conflicts with a previously soft-deleted Key Vault. In such cases, the deployment script may prompt you to confirm the purge of the previously deleted Key Vault.
         - There are 3 points in time where you will need to authenticate to the databricks workspace, before the script continues to run. You will find the following message for the deployment of the dev, stage and production environments. Click the link highlighted in green, consent to authenticate to the databricks workspace and when the workspace opens successfully, return to the deployment windows and press Enter to continue:  ![image](docs/images/databricks_ws.png)
      - If you encounter an error with `cannot execute: required file not found` verify the line ending settings of your git configuration. This error is likely that the lines in the file are ending with CRLF. Using VSCode, verify that `./deploy.sh` is set to LF only. This can be done using the control pallet and typing `>Change End of Line Sequence`. Also, verify the files in the `scripts` folder are also set to LF only.
