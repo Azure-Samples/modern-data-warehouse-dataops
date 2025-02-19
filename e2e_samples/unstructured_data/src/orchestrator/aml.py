@@ -1,13 +1,12 @@
-import logging
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
 import mlflow
 from azureml.core import Workspace
+from orchestrator.logging import get_logger
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger = get_logger(__name__)
 
 
 @dataclass
@@ -66,7 +65,7 @@ def store_results(
 
     # Start the run
     with mlflow.start_run(run_name=job_name):
-        logging.info(f"Logging {job_name} to MLFlow on AML")
+        logger.info(f"Logging {job_name} to MLFlow on AML")
 
         # Add tags
         if tags is not None:
@@ -83,7 +82,7 @@ def store_results(
             for artifact in artifacts:
                 mlflow.log_artifact(str(artifact))
 
-        logging.info("Completed uploading result to AML.")
+        logger.info("Completed uploading result to AML.")
 
     # End run
     mlflow.end_run()

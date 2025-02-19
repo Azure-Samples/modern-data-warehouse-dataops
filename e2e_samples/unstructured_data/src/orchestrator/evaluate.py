@@ -1,4 +1,3 @@
-import logging
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
@@ -6,11 +5,12 @@ from typing import Optional
 from opentelemetry import trace
 from orchestrator.aml import AMLWorkspace
 from orchestrator.evaluation_loader import load_evaluation
+from orchestrator.logging import get_logger
 from orchestrator.metadata import ExperimentMetadata
 from orchestrator.utils import get_output_dirs_by_run_id, new_run_id
 
 tracer = trace.get_tracer(__name__)
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 @dataclass

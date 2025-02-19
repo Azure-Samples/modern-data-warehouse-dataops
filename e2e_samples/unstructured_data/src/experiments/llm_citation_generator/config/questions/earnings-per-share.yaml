@@ -1,5 +1,5 @@
 name: earnings-per-share
-call_args:
+init_args:
   question: "What are the earnings per share (EPS) for this quarter?"
 evaluation:
   evaluators:

@@ -1,6 +1,6 @@
 name: revenue
-call_args:
-  question: "What was the company’s revenue for this quarter of this year?"
+init_args:
+  question: "What was the company’s revenue for this quarter of this Fiscal Year?"
 evaluation:
   evaluators:
     fuzzy_match:

@@ -1,6 +1,4 @@
 import json
-import logging
-import os
 from dataclasses import asdict
 from pathlib import Path
 from typing import Any, Optional
@@ -8,19 +6,20 @@ from typing import Any, Optional
 from azure.ai.inference import ChatCompletionsClient
 from azure.ai.inference.models import SystemMessage, UserMessage
 from azure.core.credentials import AzureKeyCredential
+from azure.core.exceptions import ResourceNotFoundError
 from common.analyze_submissions import analyze_submission_folder
 from common.azure_storage_utils import get_blob_service_client
-from common.chunking import AnalyzedDocChunker, get_encoded_tokens
+from common.chunking import AnalyzedDocChunker, get_chunk_max_tokens
 from common.citation import Citation, InvalidCitation, ValidCitation
-from common.citation_db import commit_to_db
+from common.citation_db import CitationDB, commit_to_db
 from common.citation_generator_utils import validate_citation
-from common.file_utils import read_file
-from common.llm.credentials import OAICredentials
+from common.config import Config
+from common.di_utils import get_doc_analysis_client
+from common.logging_utils import get_logger
+from common.oai_credentials import OAICredentials
 from common.prompt_templates import load_template
-from jinja2 import Template
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger = get_logger(__name__)
 
 PROMPT_TEMPLATES_DIR = Path(__file__).parent.joinpath("prompt_templates")
 
@@ -29,95 +28,74 @@ class LLMCitationGenerator:
     def __init__(
         self,
         question: str,
-        run_id: Optional[str] = None,
+        db_question_id: Optional[int] = None,
         system_prompt_file: str = "system_prompt.txt",
         user_prompt_file: str = "user_prompt.txt",
         submission_container: str = "msft-quarterly-earnings",
         results_container: str = "msft-quarterly-earnings-di-results",
-        variant_name: Optional[str] = None,
-        db_question_id: Optional[int] = None,
         token_encoding_name: str = "o200k_base",  # gpt-4o
-        max_tokens: int = 3000,
+        max_tokens: int = 4000,
         overlap: int = 100,
+        run_id: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
+        config = Config.from_env()
         # DB
-        self.write_to_db = os.getenv("CITATION_DB_ENABLED", "False").lower() == "true"
-        self.run_id = run_id
-        self.db_creator = "llm-citation-generator"
-        self.db_conn_str = os.environ.get("CITATION_DB_CONNECTION_STRING")
-        if self.write_to_db and self.db_conn_str is None:
-            raise ValueError("CITATION_DB_CONNECTION_STRING env variable is required when CITATION_DB_ENABLED is True")
+        self.citation_db = None
+        if config.citation_db_enabled:
+            self.citation_db = CitationDB(
+                conn_str=config.citation_db_conn_str, question_id=db_question_id, run_id=run_id
+            )
 
         # Blob
-        self.blob_service_client = get_blob_service_client(account_url=os.environ["AZURE_STORAGE_ACCOUNT_URL"])
+        if config.azure_storage_account_url is None:
+            raise ValueError("AZURE_STORAGE_ACCOUNT_URL is required")
+        self.blob_service_client = get_blob_service_client(account_url=config.azure_storage_account_url)
         self.submission_container = submission_container
         self.results_container = results_container
 
         # LLM
+        llm_creds = OAICredentials.from_config(config)
         self.llm_client = ChatCompletionsClient(
-            endpoint=os.environ["AZURE_OPENAI_ENDPOINT"],
-            credential=AzureKeyCredential(os.environ["AZURE_OPENAI_KEY"]),
-            api_version=os.environ["AZURE_OPENAI_API_VERSION"],
+            endpoint=llm_creds.deployment_endpoint,
+            credential=AzureKeyCredential(llm_creds.api_key),
+            api_version=llm_creds.api_version,
         )
 
         # Prompts
-        sys_prompt_txt = read_file(PROMPT_TEMPLATES_DIR.joinpath(system_prompt_file))
-        self.system_prompt = Template(sys_prompt_txt).render()
-
-        question_prompt_txt = read_file(PROMPT_TEMPLATES_DIR.joinpath(user_prompt_file))
-        self.question_prompt_template = Template(question_prompt_txt)
-
         self.question = question
-        # Prompts
         system_prompt_template = load_template(PROMPT_TEMPLATES_DIR.joinpath(system_prompt_file))
         self.system_prompt = system_prompt_template.render(question=question)
 
         self.user_prompt_template = load_template(PROMPT_TEMPLATES_DIR.joinpath(user_prompt_file))
-        # get token count without context to calculate max context tokens
         user_prompt_without_context = self.user_prompt_template.render(question=question)
-        prompt_tokens_without_context = get_encoded_tokens(
-            text=self.system_prompt + user_prompt_without_context, encoding_name=token_encoding_name
+
+        # Chunking
+        chunk_max_tokens = get_chunk_max_tokens(
+            self.system_prompt + user_prompt_without_context, token_encoding_name, max_tokens, overlap
         )
-        max_context_tokens = max_tokens - len(prompt_tokens_without_context)
-        if max_context_tokens <= 0:
-            raise ValueError(f"Prompt is too long. Please reduce the prompt length to fit within {max_tokens} tokens.")
-        elif max_context_tokens < overlap:
-            raise ValueError(
-                f"Max context tokens {max_context_tokens} must be greater than overlap {overlap}.\
-                    Please reduce overlap or reduce the prompt length."
-            )
         self.chunker = AnalyzedDocChunker(
-            max_tokens=max_context_tokens,
+            max_tokens=chunk_max_tokens,
             encoding_name=token_encoding_name,
             overlap=overlap,
         )
 
-        # Blob
-        self.blob_service_client = get_blob_service_client(account_url=os.environ["AZURE_STORAGE_ACCOUNT_URL"])
-        self.submission_container = submission_container
-        self.results_container = results_container
+        # DI
+        if config.di_endpoint is None:
+            raise ValueError("DOCUMENT_INTELLIGENCE_ENDPOINT is required")
+        if config.di_key is None:
+            raise ValueError("DOCUMENT_INTELLIGENCE_KEY is required")
+        self.di_client = get_doc_analysis_client(endpoint=config.di_endpoint, api_key=config.di_key)
+        self.override_di_results = config.override_di_results
 
-        self.db_question_id = db_question_id
-        self.db_form_suffix = f"{variant_name}_{run_id}"
-
-        self.write_to_db = os.getenv("CITATION_DB_ENABLED", "False").lower() == "true"
-        if self.write_to_db:
-            self.db_creator = "llm-citation-generator"
-            # ensure we have required arguments for citation db
-            self.db_conn_str = os.environ["CITATION_DB_CONNECTION_STRING"]
-            if self.db_question_id is None:
-                raise KeyError("'db_question_id' is a required argument when Citation DB is enabled.")
-
-        self.blob_account_url = os.environ["AZURE_STORAGE_ACCOUNT_URL"]
-        self.llm_creds = OAICredentials.from_env()
-
-    def __call__(self, submission_folder: str, question: str, question_id: Optional[int] = None, **kwargs: Any) -> dict:
+    def __call__(self, submission_folder: str, **kwargs: Any) -> dict:
         docs = analyze_submission_folder(
             blob_service_client=self.blob_service_client,
             folder_name=submission_folder,
+            di_client=self.di_client,
             submission_container=self.submission_container,
             results_container=self.results_container,
+            override_di=self.override_di_results,
         )
 
         if len(docs) == 0:
@@ -134,30 +112,46 @@ class LLMCitationGenerator:
 
             chunk_len = len(cd.chunks)
             for chunk_idx, doc_chunk in enumerate(cd.chunks):
+                if chunk_idx > 2:
+                    break
                 logger.debug(f"Sending chunk {chunk_idx+1} of {chunk_len} for doc {doc_idx+1} of {docs_len} to LLM")
-                question_prompt = self.question_prompt_template.render(documents=doc_chunk, question=question)
+                question_prompt = self.user_prompt_template.render(context=doc_chunk, question=self.question)
                 msgs = [
                     SystemMessage(content=self.system_prompt),
                     UserMessage(content=question_prompt),
                 ]
-                completion = self.llm_client.complete(
-                    messages=msgs,
-                    response_format="json_object",
-                    seed=44,
-                    temperature=0,
-                )
+                try:
+                    completion = self.llm_client.complete(
+                        messages=msgs,
+                        response_format="json_object",
+                        seed=44,
+                        temperature=0,
+                    )
+                except ResourceNotFoundError as e:
+                    logger.error(
+                        f"Azure ChatCompletionsClient not found. Please ensure the correct env variables are set {e}"
+                    )
+                    raise e
                 citation_str = completion.choices[0].message.content
 
-                citation_str = completion.choices[0].message.content
-
-                # citation_results = []
                 if citation_str is not None:
                     loaded_citations = json.loads(citation_str)
                     citations_to_validate: list = loaded_citations.get("citations", [])
+                    logger.debug(f"Validating {len(citations_to_validate)} citations")
                     for c in citations_to_validate:
                         if isinstance(c, dict):
+                            excerpt = c.get("excerpt")
+                            if excerpt is None:
+                                citations.append(
+                                    InvalidCitation(
+                                        document_name=cd.document_name,
+                                        raw=c.get("raw"),
+                                        error="Missing 'excerpt' key",
+                                    )
+                                )
+                                continue
                             citation = Citation(
-                                excerpt=c.get("excerpt"),
+                                excerpt=excerpt,
                                 document_name=cd.document_name,
                                 explanation=c.get("explanation"),
                                 raw=citation_str,
@@ -176,17 +170,17 @@ class LLMCitationGenerator:
         output: dict = {"citations": [asdict(c) for c in citations]}
 
         # Write to DB
-        if self.write_to_db:
+        if self.citation_db is not None:
             valid_citations = [c for c in citations if isinstance(c, ValidCitation)]
-            form_name = f"{submission_folder}_{self.run_id}" if self.run_id is not None else submission_folder
+            form_name = f"{submission_folder}{self.citation_db.form_suffix}"
             logger.info(f"Adding {len(valid_citations)} citations to form {form_name}")
 
             form_id = commit_to_db(
-                conn_str=self.db_conn_str,
+                conn_str=self.citation_db.conn_string,
                 form_name=form_name,
-                question_id=question_id,
+                question_id=self.citation_db.question_id,
                 docs=docs,
-                creator=self.db_creator,
+                creator=self.citation_db.creator,
                 citations=valid_citations,
             )
             output["form_id"] = form_id
@@ -199,10 +193,9 @@ if __name__ == "__main__":
 
     load_dotenv()
 
-    generator = LLMCitationGenerator(question="")
+    generator = LLMCitationGenerator(question="What was the company’s revenue for the latest Fiscal Year?")
     output = generator(
-        submission_folder="test-submission-2",
-        question="What was the company’s revenue for the third quarter of Fiscal Year 2024?",
+        submission_folder="F24Q3",
     )
     for c in output["citations"]:
         print(f"Document: {c.get('document_name')}")

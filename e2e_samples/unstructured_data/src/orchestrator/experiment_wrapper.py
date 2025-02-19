@@ -1,4 +1,3 @@
-import logging
 import os
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
@@ -7,11 +6,11 @@ from typing import Callable, Optional
 from opentelemetry import trace
 from orchestrator.config import Config
 from orchestrator.file_utils import write_json_file, write_jsonl_file
+from orchestrator.logging import get_logger
 from orchestrator.metadata import ExperimentMetadata
 from orchestrator.utils import flatten_dict
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger = get_logger(__name__)
 
 tracer = trace.get_tracer(__name__)
 

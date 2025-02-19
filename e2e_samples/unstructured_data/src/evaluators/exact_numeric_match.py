@@ -1,8 +1,6 @@
 import re
 from typing import Any
 
-from evaluators.types import EvalResult
-
 
 class NumericEvaluator:
     """
@@ -44,20 +42,20 @@ class NumericEvaluator:
             - `1,234.56` (without dollar sign)
     """
 
-    def __init__(self, **kwargs: Any):
+    def __init__(self, **kwargs: Any) -> None:
         pass
 
-    def __call__(self, response: list, truth: str, **kwargs: Any) -> EvalResult:
-        if not truth:
+    def __call__(self, response: list, truth: str, **kwargs: Any):  # type: ignore
+        if truth is None:
             if response:
                 # we have responses, but truth says we should not have any
-                return EvalResult(ratio=0.0)
+                return {"ratio": 0.0}
             else:
                 # If truth is none and no citations. The generator did well
-                return EvalResult(ratio=1.0)
+                return {"ratio": 1.0}
         elif not response:
             # we have truth but no citations
-            return EvalResult(ratio=0.0)
+            return {"ratio": 0.0}
         for r in response:
             excerpt = r.get("excerpt")
             numbers = re.findall(r"[\$]?\s*\d{1,3}(?:,\d{3})*(?:\.\d+)?", excerpt)
@@ -65,5 +63,5 @@ class NumericEvaluator:
             numbers_processed = ["".join(char for char in num if char not in chars_to_remove) for num in numbers]
             truth_processed = "".join(char for char in truth if char not in chars_to_remove)
             if truth_processed in numbers_processed:
-                return EvalResult(ratio=1.0)
-        return EvalResult(ratio=0.0)
+                return {"ratio": 1.0}
+        return {"ratio": 0.0}

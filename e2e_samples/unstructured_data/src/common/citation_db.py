@@ -1,4 +1,3 @@
-import logging
 import random
 import string
 import struct
@@ -10,11 +9,25 @@ import yaml
 from azure.identity import DefaultAzureCredential
 from common.analyze_submissions import AnalyzedDocument
 from common.citation import ValidCitation
-from common.citation_generator_utils import Citation
+from common.logging_utils import get_logger
 from common.path_utils import RepoPaths
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger = get_logger(__name__)
+
+
+class CitationDB:
+
+    def __init__(
+        self, conn_str: Optional[str] = None, question_id: Optional[int] = None, run_id: Optional[str] = None
+    ) -> None:
+        if conn_str is None:
+            raise ValueError("CITATION_DB_CONNECTION_STRING env variable is required when CITATION_DB_ENABLED is True")
+        if question_id is None:
+            raise ValueError("db_question_id is required when CITATION_DB_ENABLED is True")
+        self.form_suffix = f"_{run_id}" if run_id is not None else ""
+        self.conn_string = conn_str
+        self.question_id = question_id
+        self.creator = "llm-citation-generator"
 
 
 def get_conn(conn_str: str) -> pyodbc.Connection:
@@ -86,7 +99,7 @@ def create_citations(
     cursor: pyodbc.Cursor,
     form_id: int,
     question_id: int,
-    citations: list[Citation],
+    citations: list[ValidCitation],
     creator: str,
     docs_name_id_map: dict,
 ) -> None:
@@ -95,7 +108,7 @@ def create_citations(
         doc_id = docs_name_id_map[c.document_name]
 
         # TODO: update citation id creation
-        citation_id = "".join(random.choice(string.ascii_letters) for _ in range(12))
+        citation_id = "".join(random.choice(string.ascii_letters) for _ in range(8))
 
         query = """
         INSERT INTO dbo.citation

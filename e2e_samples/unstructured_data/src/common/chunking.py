@@ -56,6 +56,19 @@ def chunk_by_token(encoding_name: str, text: str, max_tokens: int, overlap: int)
     return chunks
 
 
+def get_chunk_max_tokens(text: str, encoding_name: str, max_tokens: int, overlap: int) -> int:
+    prompt_tokens_without_context = get_encoded_tokens(text=text, encoding_name=encoding_name)
+    max_context_tokens = max_tokens - len(prompt_tokens_without_context)
+    if max_context_tokens <= 0:
+        raise ValueError(f"Prompt is too long. Please reduce the prompt length to fit within {max_tokens} tokens.")
+    elif max_context_tokens < overlap:
+        raise ValueError(
+            f"Max context tokens {max_context_tokens} must be greater than overlap {overlap}.\
+                Please reduce overlap or reduce the prompt length."
+        )
+    return max_context_tokens
+
+
 @dataclass
 class AnalyzedDocChunker:
     max_tokens: int

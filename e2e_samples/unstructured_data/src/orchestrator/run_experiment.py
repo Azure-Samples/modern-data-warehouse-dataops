@@ -1,4 +1,3 @@
-import logging
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
@@ -7,10 +6,10 @@ from orchestrator.config import Config
 from orchestrator.experiment_loader import load_experiments
 from orchestrator.experiment_wrapper import ExperimentWrapper
 from orchestrator.file_utils import load_jsonl_file
+from orchestrator.logging import get_logger
 from orchestrator.utils import new_run_id
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger = get_logger(__name__)
 
 
 @dataclass

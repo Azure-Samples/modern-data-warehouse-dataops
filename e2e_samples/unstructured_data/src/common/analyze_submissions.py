@@ -4,8 +4,9 @@ import tempfile
 from dataclasses import dataclass
 from typing import Any
 
+from azure.ai.formrecognizer import DocumentAnalysisClient
 from azure.storage.blob import BlobServiceClient
-from common.di_utils import analyze_document, get_doc_analysis_client
+from common.di_utils import analyze_document
 
 
 @dataclass
@@ -36,24 +37,23 @@ def convert_polygon_format(data: dict | list) -> dict | list | Any:
 def analyze_submission_folder(
     blob_service_client: BlobServiceClient,
     folder_name: str,
-    submission_container: str,
-    results_container: str,
+    di_client: DocumentAnalysisClient,
+    submission_container: str = "msft-quarterly-earnings",
+    results_container: str = "msft-quarterly-earnings-di-results",
+    override_di: bool = False,
 ) -> list[AnalyzedDocument]:
-    override_di = os.getenv("OVERRIDE_DI_RESULTS", False)
-
     # model_id and di_client can be configurable in the future
     model_id = "prebuilt-layout"
-    di_client = get_doc_analysis_client()
 
     submission_container_client = blob_service_client.get_container_client(submission_container)
     results_container_client = blob_service_client.get_container_client(results_container)
 
     docs = []
-    blob_list = submission_container_client.list_blobs(name_starts_with=folder_name + "/")
+    all_blobs = submission_container_client.list_blobs(name_starts_with=folder_name + "/")
     # we currently only want to process pdfs
-    pdf_blob_list = [doc for doc in blob_list if doc.name.endswith(".pdf")]
+    blob_list = [doc for doc in all_blobs if doc.name.endswith(".pdf")]
 
-    for submission in pdf_blob_list:
+    for submission in blob_list:
         doc_name = f"formRecognizer/{model_id}/{submission.name}"
         submission_blob_client = submission_container_client.get_blob_client(submission.name)
         results_blob_client = results_container_client.get_blob_client(doc_name + ".json")

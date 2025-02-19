@@ -1,13 +1,9 @@
-import os
 from dataclasses import dataclass
 from pathlib import Path
 
-from dotenv import load_dotenv
+from orchestrator.env import EVALUATORS_DIR, EXPERIMENTS_DIR, RUN_OUTPUTS_DIR
 
-load_dotenv()
-
-REPO_ROOT = Path(__file__).absolute().parent.parent.parent
-SRC_DIR = REPO_ROOT.joinpath("src")
+SRC_DIR = Path(__file__).absolute().parent.parent
 
 
 @dataclass
@@ -21,6 +17,8 @@ class Config:
         run_outputs_dir (Path): Directory path for run outputs. Set with the environment variable 'RUN_OUTPUTS_DIR'.
     """
 
-    evaluators_dir: Path = Path(os.environ.get("EVALUATORS_DIR", SRC_DIR.joinpath("evaluators")))
-    experiments_dir: Path = Path(os.environ.get("EXPERIMENTS_DIR", SRC_DIR.joinpath("experiments")))
-    run_outputs_dir: Path = Path(os.environ.get("RUN_OUTPUTS_DIR ", REPO_ROOT.joinpath("run_outputs")))
+    evaluators_dir: Path = Path(EVALUATORS_DIR) if EVALUATORS_DIR is not None else SRC_DIR.joinpath("evaluators")
+    experiments_dir: Path = Path(EXPERIMENTS_DIR) if EXPERIMENTS_DIR is not None else SRC_DIR.joinpath("experiments")
+    run_outputs_dir: Path = (
+        Path(RUN_OUTPUTS_DIR) if RUN_OUTPUTS_DIR is not None else SRC_DIR.parent.joinpath("run_outputs")
+    )

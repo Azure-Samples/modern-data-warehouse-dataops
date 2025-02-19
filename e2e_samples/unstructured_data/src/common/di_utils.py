@@ -1,16 +1,10 @@
-import os
 from pathlib import Path
 
 from azure.ai.formrecognizer import AnalyzeResult, DocumentAnalysisClient
 from azure.core.credentials import AzureKeyCredential
 
 
-def get_doc_analysis_client() -> DocumentAnalysisClient:
-    endpoint = os.getenv("DOCUMENT_INTELLIGENCE_ENDPOINT")
-    api_key = os.getenv("DOCUMENT_INTELLIGENCE_KEY")
-
-    if endpoint is None or api_key is None:
-        raise ValueError("DOCUMENT_INTELLIGENCE_ENDPOINT and DOCUMENT_INTELLIGENCE_KEY must be set")
+def get_doc_analysis_client(endpoint: str, api_key: str) -> DocumentAnalysisClient:
 
     return DocumentAnalysisClient(endpoint=endpoint, credential=AzureKeyCredential(api_key))
 

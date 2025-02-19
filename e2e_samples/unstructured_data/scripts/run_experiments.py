@@ -37,20 +37,17 @@ Environment Variables:
 """
 
 if __name__ == "__main__":
-    from dotenv import load_dotenv
-
-    load_dotenv()
 
     import argparse
     import logging
     from pathlib import Path
 
+    from common.logging_utils import get_logger
     from orchestrator.run_experiment import run_experiments
     from orchestrator.telemetry_utils import configure_telemetry
 
     logging.basicConfig()
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.INFO)
+    logger = get_logger(__name__)
 
     parser = argparse.ArgumentParser()
     parser.add_argument(

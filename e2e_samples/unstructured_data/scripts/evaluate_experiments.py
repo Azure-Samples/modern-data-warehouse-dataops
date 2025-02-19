@@ -97,6 +97,8 @@ if __name__ == "__main__":
             aml_workspace=aml_workspace,
             write_to_file=True,
         )
+    else:
+        raise ValueError("Please provide either a --run-id or --metadata_paths")
 
     for r in output.results:
         logger.info(r)
