@@ -5,21 +5,19 @@
   'prod'
 ])
 param env string
-
 @description('The location of the resource.')
-param location string = resourceGroup().location
-
+param location string
 @description('The name of the FunctionApp.')
 param functionAppName string
-
 @description('The name of Team for tagging purposes.')
 param TeamName string
-
-// param ftpsState string = 'FtpsOnly'
+@description('The name of the storage account.')
 param storageAccountName string
-
+@description('The version of the node runtime.')
 param linuxFxVersion string = 'node|22-lts'
+@description('The name given to the hosting plan.')
 param hostingPlanName string
+@description('The site config always on setting.')
 param alwaysOn bool = false
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' existing = {
@@ -78,21 +76,12 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
         ]
       }
       nodeVersion: '22.14.0'
-      // ftpsState: ftpsState
       linuxFxVersion: linuxFxVersion
     }
     clientAffinityEnabled: false
     virtualNetworkSubnetId: null
     publicNetworkAccess: 'Enabled'
     httpsOnly: true
-  }
-}
-
-resource scmPolicy 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2024-04-01' = {
-  parent: functionApp
-  name: 'scm'
-  properties: {
-    allow: false
   }
 }
 
@@ -103,3 +92,5 @@ resource ftpPolicy 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2024-
     allow: false
   }
 }
+
+output functionapp_name string = functionApp.name

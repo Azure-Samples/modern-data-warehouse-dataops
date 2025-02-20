@@ -83,7 +83,7 @@ module functionapp './modules/functionapp.bicep' = {
   params: {
     env: env
     functionAppName: 'excitationfuncapp'
-    hostingPlanName: appservice.outputs.appServicePlanName
+    hostingPlanName: appservice.outputs.appservice_plan_name
     storageAccountName: storage.outputs.storage_account_name
     location: location
     TeamName: team_name
@@ -185,3 +185,5 @@ output sql_server_name string = sql.outputs.sql_server_name
 output sql_server_resource_id string = sql.outputs.sql_server_resource_id
 output sql_db_name string = sql.outputs.sql_db_name
 output sql_db_resource_id string = sql.outputs.sql_db_resource_id
+output appservice_name string = appservice.outputs.appservice_plan_name
+output functionapp_name string = functionapp.outputs.functionapp_name
