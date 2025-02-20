@@ -7,7 +7,7 @@ from typing import Any, Optional
 
 from common.analyze_submissions import analyze_submission_folder
 from common.azure_storage_utils import get_blob_service_client
-from common.chunking import AnalyzedDocChunker, get_encoded_tokens
+from common.chunking import AnalyzedDocChunker, get_context_max_tokens
 from common.citation import Citation, InvalidCitation, ValidCitation
 from common.citation_db import commit_forms_docs_citations_to_db
 from common.citation_generator_utils import validate_citation
@@ -31,7 +31,7 @@ class LLMCitationGenerator:
         variant_name: Optional[str] = None,
         db_question_id: Optional[int] = None,
         token_encoding_name: str = "o200k_base",  # gpt-4o
-        max_tokens: int = 3000,
+        max_tokens: int = 4096,  # gpt-4o max tokens defaults to 4096
         overlap: int = 100,
         **kwargs: Any,
     ) -> None:
@@ -39,21 +39,14 @@ class LLMCitationGenerator:
         # Prompts
         system_prompt_template = load_template(PROMPT_TEMPLATES_DIR.joinpath(system_prompt_file))
         self.system_prompt = system_prompt_template.render(question=question)
-
         self.user_prompt_template = load_template(PROMPT_TEMPLATES_DIR.joinpath(user_prompt_file))
         # get token count without context to calculate max context tokens
         user_prompt_without_context = self.user_prompt_template.render(question=question)
-        prompt_tokens_without_context = get_encoded_tokens(
-            text=self.system_prompt + user_prompt_without_context, encoding_name=token_encoding_name
+        max_context_tokens = get_context_max_tokens(
+            text=self.system_prompt + user_prompt_without_context,
+            encoding_name=token_encoding_name,
+            max_tokens=max_tokens,
         )
-        max_context_tokens = max_tokens - len(prompt_tokens_without_context)
-        if max_context_tokens <= 0:
-            raise ValueError(f"Prompt is too long. Please reduce the prompt length to fit within {max_tokens} tokens.")
-        elif max_context_tokens < overlap:
-            raise ValueError(
-                f"Max context tokens {max_context_tokens} must be greater than overlap {overlap}.\
-                    Please reduce overlap or reduce the prompt length."
-            )
         self.chunker = AnalyzedDocChunker(
             max_tokens=max_context_tokens,
             encoding_name=token_encoding_name,
@@ -92,6 +85,7 @@ class LLMCitationGenerator:
 
         citations: list[InvalidCitation | ValidCitation] = []
         docs_len = len(chunked_docs)
+        # loop through each document's chunks and call llm
         for doc_idx, cd in enumerate(chunked_docs):
             logger.debug(f"Chunked document: {cd.document_name}")
 
@@ -99,8 +93,9 @@ class LLMCitationGenerator:
             for chunk_idx, doc_chunk in enumerate(cd.chunks):
                 logger.debug(f"Sending chunk {chunk_idx+1} of {chunk_len} for doc {doc_idx+1} of {docs_len} to LLM")
 
+                # add chunk as context
                 user_prompt = self.user_prompt_template.render(context=doc_chunk, question=self.question)
-                # ask llm with context
+
                 msgs = [
                     llm.system_message(content=self.system_prompt),
                     llm.user_message(content=user_prompt),
@@ -113,14 +108,24 @@ class LLMCitationGenerator:
                 )
                 citation_str = completion.choices[0].message.content
 
-                # citation_results = []
+                # validate and add citations
                 if citation_str is not None:
                     loaded_citations = json.loads(citation_str)
                     citations_to_validate: list = loaded_citations.get("citations", [])
                     for c in citations_to_validate:
                         if isinstance(c, dict):
+                            excerpt = c.get("excerpt")
+                            if excerpt is None:
+                                citations.append(
+                                    InvalidCitation(
+                                        document_name=cd.document_name,
+                                        raw=citation_str,
+                                        error="Invalid citation format",
+                                    )
+                                )
+                                continue
                             citation = Citation(
-                                excerpt=c.get("excerpt"),
+                                excerpt=excerpt,
                                 document_name=cd.document_name,
                                 explanation=c.get("explanation"),
                                 raw=citation_str,
@@ -139,7 +144,7 @@ class LLMCitationGenerator:
 
         output["citations"] = [asdict(c) for c in citations]
 
-        # # upload to db
+        # upload to db
         if self.write_to_db:
             form_name = f"{submission_folder}_{self.db_form_suffix}"
             valid_citations = [c for c in citations if isinstance(c, ValidCitation)]
