@@ -41,14 +41,19 @@ def load_experiments(
         if variant.name is None:
             raise ValueError(f"Variant must have a name: {v_fullpath}")
 
-        # ensure names are unique for the run
-        existing = unique_variants.get(variant.name)
+        if variant.version is None:
+            raise ValueError(f"Variant must have a version: {v_fullpath}")
+
+        name_version = f"{variant.name}:{variant.version}"
+
+        # ensure name and version are unique for the run
+        existing = unique_variants.get(name_version)
         if existing is not None:
             raise ValueError(
                 f"Variant names must be unqiue for experiment runs. Found duplicate name: {variant.name} at paths:"
                 f" [{v_fullpath}, {existing}]"
             )
-        unique_variants[variant.name] = v_fullpath
+        unique_variants[name_version] = v_fullpath
 
         # set path
         variant.path = v_path
@@ -75,6 +80,7 @@ def load_experiments(
                 experiment=experiment,
                 experiment_name=exp_config.name,
                 variant_name=variant.name,
+                variant_version=variant.version,
                 metadata=metadata,
                 output_container=variant.output_container or variant.default_output_container,
                 additional_call_args=variant.call_args,

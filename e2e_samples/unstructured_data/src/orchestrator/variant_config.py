@@ -23,6 +23,7 @@ class VariantConfig:
         default_output_container (str): The default output container, set to ".".
     """
 
+    version: Optional[str] = None
     name: Optional[str] = None
     parent_variants: list[str] = field(default_factory=list)
     init_args: dict = field(default_factory=dict)
@@ -45,6 +46,9 @@ def merge_variant_configs(vc1: VariantConfig, vc2: VariantConfig) -> VariantConf
     merged = deepcopy(vc2)
     if merged.name is None and vc1.name is not None:
         merged.name = vc1.name
+
+    if merged.version is None and vc1.version is not None:
+        merged.version = vc1.version
 
     if merged.output_container is None and vc1.output_container is not None:
         merged.output_container = vc1.output_container
@@ -86,15 +90,12 @@ def load_variant(
         evaluation_data = data.get("evaluation", {})
         data["evaluation"] = EvaluationConfig(**evaluation_data)
         variant = VariantConfig(**data)
-        # check that the first variant has a name
-        if check_has_name and variant.name is None:
-            raise ValueError("A loaded variant must have a name")
 
         # merge evaluators from experiment config
         if exp_evaluators is not None and variant.evaluation is not None:
             variant.evaluation.evaluators = merge_eval_config_maps(exp_evaluators, variant.evaluation.evaluators)
 
-        # merge additional variants
+        # merge parent variants
         if variant.parent_variants:
             for p in variant.parent_variants:
                 config_path = path.parent.joinpath(p)

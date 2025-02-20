@@ -1,6 +1,4 @@
-name: earnings-per-share
-init_args:
-  question: "What are the earnings per share (EPS) for this quarter?"
+name: earnings_per_share
 evaluation:
   evaluators:
     fuzzy_match:

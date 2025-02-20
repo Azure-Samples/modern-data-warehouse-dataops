@@ -1,0 +1,5 @@
+version: "1"
+parent_variants:
+  - base_config.yaml
+init_args:
+  question: "What are the earnings per share (EPS) for this quarter?"

@@ -1,3 +1,4 @@
+import logging
 import random
 import string
 import struct
@@ -9,25 +10,10 @@ import yaml
 from azure.identity import DefaultAzureCredential
 from common.analyze_submissions import AnalyzedDocument
 from common.citation import ValidCitation
-from common.logging_utils import get_logger
 from common.path_utils import RepoPaths
 
-logger = get_logger(__name__)
-
-
-class CitationDB:
-
-    def __init__(
-        self, conn_str: Optional[str] = None, question_id: Optional[int] = None, run_id: Optional[str] = None
-    ) -> None:
-        if conn_str is None:
-            raise ValueError("CITATION_DB_CONNECTION_STRING env variable is required when CITATION_DB_ENABLED is True")
-        if question_id is None:
-            raise ValueError("db_question_id is required when CITATION_DB_ENABLED is True")
-        self.form_suffix = f"_{run_id}" if run_id is not None else ""
-        self.conn_string = conn_str
-        self.question_id = question_id
-        self.creator = "llm-citation-generator"
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 def get_conn(conn_str: str) -> pyodbc.Connection:
@@ -38,7 +24,7 @@ def get_conn(conn_str: str) -> pyodbc.Connection:
     return pyodbc.connect(conn_str, attrs_before={SQL_COPT_SS_ACCESS_TOKEN: token_struct})
 
 
-def commit_to_db(
+def commit_forms_docs_citations_to_db(
     conn_str: str,
     form_name: str,
     question_id: int,
@@ -50,7 +36,7 @@ def commit_to_db(
         conn = get_conn(conn_str)
         cursor = conn.cursor()
 
-        template_id = get_template_id_by_question_id(cursor=cursor, question_id=question_id)
+        template_id = get_question_template_id(cursor=cursor, question_id=question_id)
 
         # get form_id, create form if it does not exist
         form_id = get_or_create_form_id(
@@ -82,15 +68,13 @@ def commit_to_db(
         conn.close()
 
 
-def get_template_id_by_question_id(cursor: pyodbc.Cursor, question_id: int) -> int:
+def get_question_template_id(cursor: pyodbc.Cursor, question_id: int) -> int:
     query = """
     SELECT templateId FROM dbo.question
     WHERE questionId = ?;
     """
     cursor.execute(query, (question_id))
     template_id = cursor.fetchone()
-    if template_id is None:
-        raise ValueError(f"Question with question_id: {question_id} does not exist")
     return template_id[0]
 
 
@@ -212,6 +196,16 @@ def get_or_create_document_ids(
     return docs_name_id_map
 
 
+def get_template_by_id(cursor: pyodbc.Cursor, template_id: int) -> Any:
+    query = """
+    SELECT * FROM dbo.template
+    WHERE templateId = ?;
+    """
+    cursor.execute(query, (template_id,))
+    template = cursor.fetchone()
+    return template
+
+
 def create_template(
     cursor: pyodbc.Cursor, conn: pyodbc.Connection, template_name: str, creator: str = "citation-generator"
 ) -> int:
@@ -253,16 +247,6 @@ def get_template_questions(cursor: pyodbc.Cursor, template_id: int) -> list:
     """
     cursor.execute(query, (template_id))
     return cursor.fetchall()
-
-
-def get_template_by_id(cursor: pyodbc.Cursor, template_id: int) -> Any:
-    query = """
-    SELECT * FROM dbo.template
-    WHERE templateId = ?;
-    """
-    cursor.execute(query, (template_id,))
-    template = cursor.fetchone()
-    return template
 
 
 def create_template_question_lockfile(

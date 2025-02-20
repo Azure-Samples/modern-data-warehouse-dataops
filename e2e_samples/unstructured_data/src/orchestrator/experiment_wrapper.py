@@ -31,6 +31,7 @@ class ExperimentWrapper:
     experiment: Callable
     experiment_name: str
     variant_name: str
+    variant_version: str
     metadata: ExperimentMetadata
     output_container: str
     additional_call_args: dict = field(default_factory=dict)
@@ -54,6 +55,7 @@ class ExperimentWrapper:
         attributes = {
             "experiment.name": self.experiment_name,
             "experiment.variant.name": self.variant_name,
+            "experiment.variant.version": self.variant_version,
             "experiment.run_id": self.metadata.run_id,
             "data.filename": data_filename,
             "data.line_number": str(line_number),
@@ -107,11 +109,12 @@ class ExperimentWrapper:
             - Logs the paths to the results and metadata files.
         """
         # create directory structure:
-        # output_dir/exp_name/output_container/var_name/run_id
+        # output_dir/exp_name/output_container/variant_name/variant_version/run_id
         write_dir = output_dir.joinpath(
             self.experiment_name,
             self.output_container,
             self.variant_name,
+            self.variant_version,
             self.metadata.run_id,
         )
         os.makedirs(write_dir, exist_ok=True)
