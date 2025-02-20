@@ -42,12 +42,12 @@ if __name__ == "__main__":
     import logging
     from pathlib import Path
 
-    from common.logging_utils import get_logger
     from orchestrator.run_experiment import run_experiments
     from orchestrator.telemetry_utils import configure_telemetry
 
     logging.basicConfig()
-    logger = get_logger(__name__)
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.INFO)
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -62,7 +62,7 @@ if __name__ == "__main__":
         "--variants",
         nargs="*",
         required=False,
-        default=["revenue.yaml", "earnings-per-share.yaml"],
+        default=["revenue/1.yaml", "earnings_per_share/1.yaml"],
         help="A list of variants paths. Paths are relative from the \
             variants directory for the experiment",
     )
