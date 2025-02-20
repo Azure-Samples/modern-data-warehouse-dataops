@@ -1,16 +1,15 @@
 import json
 from pathlib import Path
-from typing import Any
 
 import yaml
 
 
-def load_json_file(path: str | Path) -> Any:
+def load_json_file(path: str | Path) -> dict:
     with open(path) as f:
         return json.load(f)
 
 
-def load_yaml_file(path: str | Path) -> Any:
+def load_yaml_file(path: str | Path) -> dict:
     with open(path) as f:
         return yaml.safe_load(f)
 
@@ -20,7 +19,7 @@ def read_file(path: str | Path) -> str:
         return f.read()
 
 
-def load_file(path: str | Path) -> Any | str:
+def load_file(path: str | Path) -> dict | str:
     str_path = str(path)
     if str_path.endswith(".json"):
         return load_json_file(path)
