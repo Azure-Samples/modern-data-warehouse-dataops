@@ -20,7 +20,7 @@ class TestEvaluateExperimentResultsFromMetadata(unittest.TestCase):
         # Setup
         metadata_paths = [Path("/path/to/metadata1"), Path("/path/to/metadata2")]
         mock_evaluation = MagicMock()
-        mock_evaluation.evaluate_experiment_result.return_value = "result"
+        mock_evaluation.run.return_value = "result"
         mock_load_evaluation.return_value = mock_evaluation
 
         # Execute
@@ -31,7 +31,7 @@ class TestEvaluateExperimentResultsFromMetadata(unittest.TestCase):
         self.assertEqual(results.results, ["result", "result"])
         mock_load_evaluation.assert_any_call(metadata_path=metadata_paths[0], eval_run_id="test_run_id")
         mock_load_evaluation.assert_any_call(metadata_path=metadata_paths[1], eval_run_id="test_run_id")
-        mock_evaluation.evaluate_experiment_result.assert_any_call(aml_workspace=None, output_path=None)
+        mock_evaluation.run.assert_any_call(aml_workspace=None, output_path=None)
 
     @patch("orchestrator.evaluate.new_run_id", return_value="test_run_id")
     @patch("orchestrator.evaluate.load_evaluation")
@@ -41,7 +41,7 @@ class TestEvaluateExperimentResultsFromMetadata(unittest.TestCase):
         # Setup
         metadata_paths = [Path("/path/to/metadata1"), Path("/path/to/metadata2")]
         mock_evaluation = MagicMock()
-        mock_evaluation.evaluate_experiment_result.return_value = "result"
+        mock_evaluation.run.return_value = "result"
         mock_load_evaluation.return_value = mock_evaluation
 
         # Execute
@@ -58,12 +58,8 @@ class TestEvaluateExperimentResultsFromMetadata(unittest.TestCase):
         expected_output_path_2 = metadata_paths[1].parent.joinpath(
             f"test_run_id{ExperimentMetadata.eval_results_filename_suffix}"
         )
-        mock_evaluation.evaluate_experiment_result.assert_any_call(
-            aml_workspace=None, output_path=expected_output_path_1
-        )
-        mock_evaluation.evaluate_experiment_result.assert_any_call(
-            aml_workspace=None, output_path=expected_output_path_2
-        )
+        mock_evaluation.run.assert_any_call(aml_workspace=None, output_path=expected_output_path_1)
+        mock_evaluation.run.assert_any_call(aml_workspace=None, output_path=expected_output_path_2)
 
     @patch("orchestrator.evaluate.get_output_dirs_by_run_id")
     @patch("orchestrator.evaluate.evaluate_experiment_results_from_metadata")

@@ -22,12 +22,24 @@ class EvaluationWrapper:
     evaluator_config: dict[str, EvaluatorConfig]
     tags: dict = field(default_factory=dict)
 
-    def evaluate_experiment_result(
+    def run(
         self,
         evaluation_name: Optional[str] = None,
         output_path: Optional[Path] = None,
         aml_workspace: Optional[AMLWorkspace] = None,
     ) -> EvaluationResult:
+        """
+        Evaluates the against a jsonl file and optionally uploads the results to Azure Machine Learning (AML) workspace.
+
+        Args:
+            evaluation_name (Optional[str]): The name of the evaluation. Defaults to None.
+            output_path (Optional[Path]): The path to save the evaluation results. If not provided, a temporary
+                directory will be used. Defaults to None.
+            aml_workspace (Optional[AMLWorkspace]): The AML workspace to upload the results to. Defaults to None.
+
+        Returns:
+            EvaluationResult: The results of the evaluation.
+        """
         tags = {
             "run_id": self.experiment_run_id,
             "variant.name": self.variant_name,

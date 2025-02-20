@@ -54,7 +54,7 @@ def evaluate_experiment_results_from_metadata(
             eval_run_id=eval_run_id,
         )
 
-        result = evaluation.evaluate_experiment_result(aml_workspace=aml_workspace, output_path=output_path)
+        result = evaluation.run(aml_workspace=aml_workspace, output_path=output_path)
         results.append(result)
 
     return EvaluationResults(results=results, eval_run_id=eval_run_id)

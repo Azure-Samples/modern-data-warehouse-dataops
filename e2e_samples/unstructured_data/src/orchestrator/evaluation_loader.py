@@ -11,13 +11,29 @@ from orchestrator.variant_config import load_variant
 
 
 def load_evaluators_and_config(evaluator_map: EvaluatorLoadConfigMap, init_args: dict) -> tuple[dict, dict]:
+    """
+    Load evaluators and their configurations based on the provided evaluator map and initialization arguments.
+
+    Args:
+        evaluator_map (EvaluatorLoadConfigMap): A mapping of evaluator names to their load configurations.
+        init_args (dict): A dictionary of initialization arguments to be merged with each evaluator's specific
+            init_args.
+
+    Returns:
+        tuple[dict, dict]: A tuple containing two dictionaries:
+            - The first dictionary maps evaluator names to their loaded instances.
+            - The second dictionary maps evaluator names to their configurations.
+
+    Raises:
+        ValueError: If any evaluator load config is missing, or if any evaluator's module or class name is missing.
+    """
     evaluators = {}
     evaluator_config = {}
     for name, c in evaluator_map.items():
         if c is None:
             raise ValueError(f"Missing evaluator load config for {name}")
 
-        if c.module is None or c.class_name is None:
+        if not isinstance(c.module, str) or not isinstance(c.class_name, str):
             raise ValueError(f"Missing module or class name for evaluator {name}")
 
         init_args = merge_dicts(init_args, c.init_args)
@@ -34,6 +50,22 @@ def load_evaluation(
     eval_run_id: str,
     experiments_dir: Path = Config.experiments_dir,
 ) -> EvaluationWrapper:
+    """
+    Load evaluation data and configuration based on provided metadata and experiment directory.
+
+    Args:
+        metadata_path (Path): Path to the metadata file.
+        eval_run_id (str): Unique identifier for the evaluation run.
+        experiments_dir (Path, optional): Directory containing experiment configurations.
+            Defaults to Config.experiments_dir.
+
+    Returns:
+        EvaluationWrapper: An object containing all necessary information for the evaluation.
+
+    Raises:
+        ValueError: If the metadata is invalid, or if required fields are missing in the metadata or variant
+            configuration.
+    """
     metadata_dict = load_file(metadata_path)
     if not isinstance(metadata_dict, dict):
         raise ValueError(f"Invalid metadata in {metadata_path}")

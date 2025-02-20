@@ -13,7 +13,7 @@ class TestEvaluationWrapper(unittest.TestCase):
     @patch("orchestrator.evaluation_wrapper.store_results")
     @patch("tempfile.mkdtemp")
     @patch("shutil.rmtree")
-    def test_evaluate_experiment_result(
+    def test_run(
         self, mock_rmtree: MagicMock, mock_mkdtemp: MagicMock, mock_store_results: MagicMock, mock_evaluate: MagicMock
     ) -> None:
         # Setup
@@ -36,7 +36,7 @@ class TestEvaluationWrapper(unittest.TestCase):
         )
 
         # Test without output_path and aml_workspace
-        results = wrapper.evaluate_experiment_result(evaluation_name="test_evaluation")
+        results = wrapper.run(evaluation_name="test_evaluation")
         self.assertEqual(results, {"metrics": {"accuracy": 0.95}})
         mock_evaluate.assert_called_once_with(
             evaluation_name="test_evaluation",
@@ -49,7 +49,7 @@ class TestEvaluationWrapper(unittest.TestCase):
 
         # Test with output_path and aml_workspace
         output_path = Path("/tmp/output.json")
-        results = wrapper.evaluate_experiment_result(
+        results = wrapper.run(
             evaluation_name="test_evaluation",
             output_path=output_path,
             aml_workspace=mock_aml_workspace,
