@@ -61,16 +61,6 @@ databricks workspace import "$DATABRICKS_RELEASE_FOLDER/01_explore" --file "./da
 databricks workspace import "$DATABRICKS_RELEASE_FOLDER/02_standardize" --file "./databricks/notebooks/02_standardize.py" --format SOURCE --language PYTHON --overwrite
 databricks workspace import "$DATABRICKS_RELEASE_FOLDER/03_transform" --file "./databricks/notebooks/03_transform.py" --format SOURCE --language PYTHON --overwrite
 
-if [ "$ENV_NAME" == "dev" ]; then
-    databricks workspace mkdirs "/releases/dev"
-    databricks_release_folder="/releases/dev"
-    log "Dev releases folder: $databricks_release_folder"
-    databricks workspace import "$databricks_release_folder/00_setup.py" --file "./databricks/notebooks/00_setup.py" --format SOURCE --language PYTHON --overwrite
-    databricks workspace import "$databricks_release_folder/01_explore.py" --file "./databricks/notebooks/01_explore.py" --format SOURCE --language PYTHON --overwrite
-    databricks workspace import "$databricks_release_folder/02_standardize.py" --file "./databricks/notebooks/02_standardize.py" --format SOURCE --language PYTHON --overwrite
-    databricks workspace import "$databricks_release_folder/03_transform.py" --file "./databricks/notebooks/03_transform.py" --format SOURCE --language PYTHON --overwrite
-fi
-
 # Define suitable VM for DB cluster
 file_path="./databricks/config/cluster.config.json"
 
