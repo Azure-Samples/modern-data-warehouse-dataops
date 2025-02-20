@@ -1,88 +1,78 @@
 import unittest
+from unittest.mock import MagicMock, patch
 
-from common.analyze_submissions import AnalyzedDocument
-from common.citation_generator_utils import Citation, InvalidCitation, validate_retrieved_citations
+from common.citation import Citation, InvalidCitation, MatchResult, ValidCitation
+from common.citation_generator_utils import validate_citation
 
 
-class TestCitationGeneratorUtils(unittest.TestCase):
+class TestValidateCitation(unittest.TestCase):
 
-    def test_validate_retrieved_citations_valid_citations(self) -> None:
-        docs = [
-            AnalyzedDocument(
-                document_name="test",
-                doc_url="",
-                di_url="",
-                di_result={"content": "this is some sample content to test"},
-            )
-        ]
-        retrieved_citations = [{"excerpt": "content to test", "explanation": "test explanation"}]
-        citations = validate_retrieved_citations(retrieved_citations=retrieved_citations, docs=docs)
-        self.assertEqual(len(citations), 1)
-        self.assertIsInstance(citations[0], Citation)
-        self.assertEqual(citations[0].document_name, "test")
-        # buffer size increases the citation length
-        self.assertEqual(citations[0].excerpt, "is some sample content to test")
-        self.assertEqual(citations[0].explanation, "test explanation")
+    @patch("common.citation_generator_utils.find_best_match")
+    def test_validate_citation_valid(self, mock_find_best_match: MagicMock) -> None:
+        excerpt = "test excerpt"
+        doc_name = "test_doc.pdf"
+        raw = "some raw text"
+        citation = Citation(document_name=doc_name, raw=raw, excerpt=excerpt)
+        chunk = "This is a test chunk containing the test excerpt and some more text."
 
-    def test_validate_retrieved_citations_valid_citation_when_retrieved_not_list(  # noqa: E501
-        self,
-    ) -> None:
-        docs = [
-            AnalyzedDocument(
-                document_name="test",
-                doc_url="",
-                di_url="",
-                di_result={"content": "this is some sample content to test"},
-            )
-        ]
-        retrieved_citations = {"excerpt": "content to test"}
-        citations = validate_retrieved_citations(retrieved_citations=retrieved_citations, docs=docs)
-        self.assertEqual(len(citations), 1)
-        self.assertIsInstance(citations[0], Citation)
-        self.assertEqual(citations[0].document_name, "test")
-        self.assertEqual(citations[0].excerpt, "is some sample content to test")
+        mock_find_best_match.return_value = MatchResult(ratio=1.0, text=excerpt)
 
-    def test_validate_retrieved_citations_invalid_citation_missing_keys(self) -> None:
-        docs = [
-            AnalyzedDocument(
-                document_name="test",
-                doc_url="",
-                di_url="",
-                di_result={"content": "is some sample content to test"},
-            )
-        ]
-        retrieved_citations = [{"explanation": "some explanation"}]
-        citations = validate_retrieved_citations(retrieved_citations=retrieved_citations, docs=docs)
+        result = validate_citation(citation, chunk)
 
-        self.assertEqual(len(citations), 1)
+        self.assertIsInstance(result, ValidCitation)
+        self.assertEqual(result.excerpt, excerpt)
+        self.assertEqual(result.document_name, doc_name)
+        self.assertEqual(result.raw, raw)
+        self.assertIsNotNone(result.match)
+        if result.match is not None:
+            self.assertEqual(result.match.ratio, 1.0)
 
-        self.assertIsInstance(citations[0], InvalidCitation)
-        if isinstance(citations[0], InvalidCitation):
-            self.assertEqual(
-                citations[0].error,
-                "Missing 'excerpt' key",
-            )
-        self.assertEqual(citations[0].excerpt, None)
+    @patch("common.citation_generator_utils.find_best_match")
+    def test_validate_citation_invalid_no_match(self, mock_find_best_match: MagicMock) -> None:
+        excerpt = "test excerpt"
+        doc_name = "test_doc.pdf"
+        raw = "some raw text"
+        citation = Citation(document_name=doc_name, raw=raw, excerpt=excerpt)
+        chunk = "This is a test chunk containing the test excerpt and some more text."
 
-    def test_validate_retrieved_citations_invalid_citation_excerpt_not_match(
-        self,
-    ) -> None:
-        docs = [
-            AnalyzedDocument(
-                document_name="test",
-                doc_url="",
-                di_url="",
-                di_result={"content": "is some sample content to test"},
-            )
-        ]
-        retrieved_citations = [
-            {"explanation": "some explanation", "excerpt": "not in document"},
-        ]
-        citations = validate_retrieved_citations(retrieved_citations=retrieved_citations, docs=docs)
+        mock_find_best_match.return_value = None
 
-        self.assertEqual(len(citations), 1)
-        self.assertIsInstance(citations[0], InvalidCitation)
-        if isinstance(citations[0], InvalidCitation):
-            self.assertEqual(citations[0].error, "Excerpt is not an exact match is the document")
-        self.assertEqual(citations[0].excerpt, retrieved_citations[0]["excerpt"])
-        self.assertEqual(citations[0].explanation, retrieved_citations[0]["explanation"])
+        result = validate_citation(citation, chunk)
+
+        self.assertIsInstance(result, InvalidCitation)
+        self.assertIsNone(result.match)
+        self.assertEqual(result.excerpt, excerpt)
+        self.assertEqual(result.document_name, doc_name)
+        self.assertEqual(result.raw, raw)
+
+    @patch("common.citation_generator_utils.find_best_match")
+    def test_validate_citation_invalid_below_threshold(self, mock_find_best_match: MagicMock) -> None:
+        excerpt = "test excerpt"
+        doc_name = "test_doc.pdf"
+        raw = "some raw text"
+        citation = Citation(document_name=doc_name, raw=raw, excerpt=excerpt)
+        chunk = "This is a test chunk containing the test excerpt and some more text."
+
+        mock_find_best_match.return_value = MatchResult(ratio=0.0, text=excerpt)
+
+        result = validate_citation(citation, chunk)
+
+        self.assertIsInstance(result, InvalidCitation)
+        self.assertEqual(result.excerpt, excerpt)
+        self.assertEqual(result.document_name, doc_name)
+        self.assertEqual(result.raw, raw)
+        self.assertIsNotNone(result.match)
+        if result.match is not None:
+            self.assertEqual(result.match.ratio, 0.0)
+
+    def test_validate_citation_missing_excerpt(self) -> None:
+        doc_name = "test_doc.pdf"
+        raw = "some raw text"
+        citation = Citation(document_name=doc_name, raw=raw, excerpt=None)
+        chunk = "This is a test chunk containing some more text."
+
+        result = validate_citation(citation, chunk)
+
+        self.assertIsInstance(result, InvalidCitation)
+        if isinstance(result, InvalidCitation):
+            self.assertEqual(result.error, "Missing 'excerpt' key")

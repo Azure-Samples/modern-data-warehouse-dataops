@@ -20,8 +20,8 @@ class TestEvaluationWrapper(unittest.TestCase):
         mock_mkdtemp.return_value = "/tmp/testdir"
         mock_evaluate.return_value = {"metrics": {"accuracy": 0.95}}
         mock_aml_workspace = MagicMock(spec=AMLWorkspace)
-        evaluator_config = EvaluatorConfig()
-        evaluators = {"evaluator1": MagicMock()}
+        evaluator_config = {"evaluator1": EvaluatorConfig()}
+        evaluators = {"evaluator1": lambda x: x}
 
         wrapper = EvaluationWrapper(
             experiment_name="test_experiment",

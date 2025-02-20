@@ -31,14 +31,16 @@ class TestVariantConfig(unittest.TestCase):
 
         eval1 = merged.evaluation.evaluators.get("eval1")
         self.assertIsNotNone(eval1, "eval1 should not be None")
-        self.assertEqual(eval1.module, "module1", "eval1 module is incorrect")  # type: ignore
-        self.assertEqual(eval1.class_name, "class_name1", "eval1 class_name is incorrect")  # type: ignore
-        self.assertDictEqual(eval1.init_args, {"arg1": "value1", "arg2": "value2"}, "eval1 init_args are incorrect")  # type: ignore
+        if eval1 is not None:
+            self.assertEqual(eval1.module, "module1", "eval1 module is incorrect")
+            self.assertEqual(eval1.class_name, "class_name1", "eval1 class_name is incorrect")
+            self.assertDictEqual(eval1.init_args, {"arg1": "value1", "arg2": "value2"}, "eval1 init_args are incorrect")
 
         eval2 = merged.evaluation.evaluators.get("eval2")
         self.assertIsNotNone(eval2, "eval2 should not be None")
-        self.assertEqual(eval2.module, "module2", "eval2 module is incorrect")  # type: ignore
-        self.assertEqual(eval2.class_name, "class_name2", "eval2 class_name is incorrect")  # type: ignore
+        if eval2 is not None:
+            self.assertEqual(eval2.module, "module2", "eval2 module is incorrect")
+            self.assertEqual(eval2.class_name, "class_name2", "eval2 class_name is incorrect")
         self.assertEqual(merged.output_container, vc2.output_container, "output_container is incorrect")
 
     def test_merge_evaluation_none(self) -> None:
@@ -53,8 +55,9 @@ class TestVariantConfig(unittest.TestCase):
 
         eval1 = merged.evaluation.evaluators.get("eval1")
         self.assertIsNotNone(eval1, "eval1 should not be None")
-        self.assertEqual(eval1.module, "module1", "module is incorrect")  # type: ignore
-        self.assertEqual(eval1.class_name, "class_name1", "class_name is incorrect")  # type: ignore
+        if eval1 is not None:
+            self.assertEqual(eval1.module, "module1", "module is incorrect")
+            self.assertEqual(eval1.class_name, "class_name1", "class_name is incorrect")
 
     def test_merge_output_container(self) -> None:
         vc1 = VariantConfig(output_container="container1")
@@ -125,8 +128,9 @@ class TestVariantConfig(unittest.TestCase):
         self.assertEqual(variant.call_args, {"call_arg1": "value1"}, "call_args are incorrect")
         eval1 = variant.evaluation.evaluators.get("eval1")
         self.assertIsNotNone(eval1, "eval1 should not be None")
-        self.assertEqual(eval1.module, "module1", "module is incorrect")  # type: ignore
-        self.assertEqual(eval1.class_name, "class_name1", "class_name is incorrect")  # type: ignore
+        if eval1 is not None:
+            self.assertEqual(eval1.module, "module1", "module is incorrect")
+            self.assertEqual(eval1.class_name, "class_name1", "class_name is incorrect")
         self.assertEqual(variant.output_container, "container1", "output_container is incorrect")
 
     @patch("orchestrator.variant_config.load_file")
@@ -165,12 +169,14 @@ class TestVariantConfig(unittest.TestCase):
 
         eval1 = variant.evaluation.evaluators.get("eval1")
         self.assertIsNotNone(eval1, "eval1 should not be None")
-        self.assertEqual(eval1.module, "module1", "eval1 module is incorrect")  # type: ignore
-        self.assertEqual(eval1.class_name, "class_name1", "eval1 class_name is incorrect")  # type: ignore
+        if eval1 is not None:
+            self.assertEqual(eval1.module, "module1", "eval1 module is incorrect")
+            self.assertEqual(eval1.class_name, "class_name1", "eval1 class_name is incorrect")
         eval2 = variant.evaluation.evaluators.get("eval2")
         self.assertIsNotNone(eval2, "eval2 should not be None")
-        self.assertEqual(eval2.module, "module2", "eval2 module is incorrect")  # type: ignore
-        self.assertEqual(eval2.class_name, "class_name2", "eval2 class_name is incorrect")  # type: ignore
+        if eval2 is not None:
+            self.assertEqual(eval2.module, "module2", "eval2 module is incorrect")
+            self.assertEqual(eval2.class_name, "class_name2", "eval2 class_name is incorrect")
 
         self.assertEqual(variant.output_container, "container2", "variant1 output_container is incorrect")
 
@@ -201,11 +207,14 @@ class TestVariantConfig(unittest.TestCase):
         self.assertEqual(len(variant.evaluation.evaluators.keys()), 2, "evaluators count is incorrect")
         eval1 = variant.evaluation.evaluators.get("eval1")
         self.assertIsNotNone(eval1, "eval1 should not be None")
-        self.assertEqual(eval1.module, "module1", "eval1 module is incorrect")  # type: ignore
-        self.assertEqual(eval1.class_name, "class_name1", "eval1 class_name is incorrect")  # type: ignore
+        if eval1 is not None:
+            self.assertEqual(eval1.module, "module1", "eval1 module is incorrect")
+            self.assertEqual(eval1.class_name, "class_name1", "eval1 class_name is incorrect")
         eval3 = variant.evaluation.evaluators["eval3"]
         self.assertIsNotNone(eval3, "eval3 should not be None")
-        self.assertEqual(eval3.module, "module3", "eval3 module is incorrect")  # type: ignore
-        self.assertEqual(eval3.class_name, "class_name3", "eval3 class_name is incorrect")  # type: ignore
+        if eval3 is not None:
+            self.assertEqual(eval3.module, "module3", "eval3 module is incorrect")
+            self.assertEqual(eval3.class_name, "class_name3", "eval3 class_name is incorrect")
+
         self.assertEqual(variant.output_container, "container1", "output_container is incorrect")
         mock_load_file.assert_called_once_with(variant_path)

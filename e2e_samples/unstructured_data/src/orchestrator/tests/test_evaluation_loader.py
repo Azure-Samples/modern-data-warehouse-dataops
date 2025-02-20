@@ -18,7 +18,7 @@ class TestEvaluationLoader(unittest.TestCase):
         eval_1_config: dict = {"column_mapping": {}}
         init_args = {"arg1": "value1"}
 
-        eval_map = {
+        eval_map: EvaluatorLoadConfigMap = {
             "eval_1": EvaluatorLoadConfig(
                 module=module,
                 class_name=class_name,
@@ -37,7 +37,7 @@ class TestEvaluationLoader(unittest.TestCase):
         self.assertEqual(evaluator_config["eval_1"], eval_1_config)
 
     def test_load_evaluators_and_config_missing_config(self) -> None:
-        eval_map = {"eval_1": None}
+        eval_map: EvaluatorLoadConfigMap = {"eval_1": None}
 
         with self.assertRaises(ValueError) as context:
             load_evaluators_and_config(evaluator_map=eval_map, init_args={})
@@ -116,7 +116,7 @@ class TestEvaluationLoader(unittest.TestCase):
         )
 
         self.assertIsInstance(result, EvaluationWrapper)
-        self.assertEqual(result.data_path, str(metadata_path.parent.joinpath(metadata.eval_data_path)))
+        self.assertEqual(result.data_path, str(metadata_path.parent.joinpath("data.json")))
         self.assertEqual(result.experiment_name, exp_config.name)
         self.assertEqual(result.variant_name, variant.name)
         self.assertEqual(result.evaluators, evaluators)
