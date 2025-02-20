@@ -50,65 +50,63 @@ log "Uploading notebooks..."
 databricks_folder_name="/Workspace/Users/${USER_NAME,,}"
 log "databricks_folder_name: ${databricks_folder_name}"
 
-# TODO: uncomment and edit the databricks configuration that is needed for this sample
-
-# databricks workspace import "$databricks_folder_name/00_setup.py" --file "./databricks/notebooks/00_setup.py" --format SOURCE --language PYTHON --overwrite
-# databricks workspace import "$databricks_folder_name/01_explore.py" --file "./databricks/notebooks/01_explore.py" --format SOURCE --language PYTHON --overwrite
+databricks workspace import "$databricks_folder_name/run_experiments.py" --file "./scripts/run_experiments.py" --format SOURCE --language PYTHON --overwrite
+databricks workspace import "$databricks_folder_name/evaluate_experiments.py" --file "./scripts/evaluate_experiments.py" --format SOURCE --language PYTHON --overwrite
 # databricks workspace import "$databricks_folder_name/02_standardize.py" --file "./databricks/notebooks/02_standardize.py" --format SOURCE --language PYTHON --overwrite
 # databricks workspace import "$databricks_folder_name/03_transform.py" --file "./databricks/notebooks/03_transform.py" --format SOURCE --language PYTHON --overwrite
 
-# # Define suitable VM for DB cluster
-# file_path="./databricks/config/cluster.config.json"
+# Define suitable VM for DB cluster
+file_path="./scripts/cluster.config.json"
 
-# # Get available VM sizes in the specified region
-# vm_sizes=$(az vm list-sizes --location "$AZURE_LOCATION" --output json)
+# Get available VM sizes in the specified region
+vm_sizes=$(az vm list-sizes --location "$AZURE_LOCATION" --output json)
 
-# # Get available Databricks node types using the list-node-types API
-# node_types=$(databricks clusters list-node-types --output json)
+# Get available Databricks node types using the list-node-types API
+node_types=$(databricks clusters list-node-types --output json)
 
-# # Extract VM names and node type IDs into temporary files
-# echo "$vm_sizes" | jq -r '.[] | .name' > vm_names.txt
-# # Get available Databricks node types using the list-node-types API and filter node types to only include those that support Photon
-# photon_node_types=$(echo "$node_types" | jq -r '.node_types[] | select(.photon_driver_capable == true) | .node_type_id')
+# Extract VM names and node type IDs into temporary files
+echo "$vm_sizes" | jq -r '.[] | .name' > vm_names.txt
+# Get available Databricks node types using the list-node-types API and filter node types to only include those that support Photon
+photon_node_types=$(echo "$node_types" | jq -r '.node_types[] | select(.photon_driver_capable == true) | .node_type_id')
 
-# # Find common VM sizes
-# common_vms=$(grep -Fwf <(echo "$photon_node_types") vm_names.txt)
+# Find common VM sizes
+common_vms=$(grep -Fwf <(echo "$photon_node_types") vm_names.txt)
 
-# # Find the VM with the least resources
-# least_resource_vm=$(echo "$vm_sizes" | jq --arg common_vms "$common_vms" '
-#   map(select(.name == ($common_vms | split("\n")[]))) |
-#   sort_by(.numberOfCores, .memoryInMB) |
-#   .[0]
-# ')
-# log "VM with the least resources:$least_resource_vm" "info"
+# Find the VM with the least resources
+least_resource_vm=$(echo "$vm_sizes" | jq --arg common_vms "$common_vms" '
+  map(select(.name == ($common_vms | split("\n")[]))) |
+  sort_by(.numberOfCores, .memoryInMB) |
+  .[0]
+')
+log "VM with the least resources:$least_resource_vm" "info"
 
-# # Update the JSON file with the least resource VM
-# if [ -n "$least_resource_vm" ]; then
-#     node_type_id=$(echo "$least_resource_vm" | jq -r '.name')
-#     jq --arg node_type_id "$node_type_id" '.node_type_id = $node_type_id' "$file_path" > tmp.$$.json && mv tmp.$$.json "$file_path"
-#     log "The JSON file at '$file_path' has been updated with the node_type_id: $node_type_id"
-# else
-#     log "No common VM options found between Azure and Databricks." "error"
-# fi
+# Update the JSON file with the least resource VM
+if [ -n "$least_resource_vm" ]; then
+    node_type_id=$(echo "$least_resource_vm" | jq -r '.name')
+    jq --arg node_type_id "$node_type_id" '.node_type_id = $node_type_id' "$file_path" > tmp.$$.json && mv tmp.$$.json "$file_path"
+    log "The JSON file at '$file_path' has been updated with the node_type_id: $node_type_id"
+else
+    log "No common VM options found between Azure and Databricks." "error"
+fi
 
-# # Clean up temporary files
-# rm vm_names.txt
+# Clean up temporary files
+rm vm_names.txt
 
-# # Create initial cluster, if not yet exists
-# # cluster.config.json file needs to refer to one of the available SKUs on yout Region
-# # az vm list-skus --location <LOCATION> --all --output table
-# cluster_config="./databricks/config/cluster.config.json"
-# log "Creating an interactive cluster using config in $cluster_config..."
-# cluster_name=$(cat "$cluster_config" | jq -r ".cluster_name")
-# if databricks_cluster_exists "$cluster_name"; then
-#     log "Cluster ${cluster_name} already exists! Skipping creation..." "info"
-# else
-#     log "Creating cluster ${cluster_name}..."
-#     databricks clusters create --json "@$cluster_config"
-# fi
+# Create initial cluster, if not yet exists
+# cluster.config.json file needs to refer to one of the available SKUs on yout Region
+# az vm list-skus --location <LOCATION> --all --output table
+cluster_config="./scripts/cluster.config.json"
+log "Creating an interactive cluster using config in $cluster_config..."
+cluster_name=$(cat "$cluster_config" | jq -r ".cluster_name")
+if databricks_cluster_exists "$cluster_name"; then
+    log "Cluster ${cluster_name} already exists! Skipping creation..." "info"
+else
+    log "Creating cluster ${cluster_name}..."
+    databricks clusters create --json "@$cluster_config"
+fi
 
-# cluster_id=$(databricks clusters list --output JSON | jq -r '.[]|select(.default_tags.ClusterName == "ddo_cluster")|.cluster_id')
-# log "Cluster ID:" $cluster_id
+cluster_id=$(databricks clusters list --output JSON | jq -r '.[]|select(.default_tags.ClusterName == "ddo_cluster")|.cluster_id')
+log "Cluster ID:" $cluster_id
 
 # adfTempDir=.tmp/adf
 # mkdir -p $adfTempDir && cp -a adf/ .tmp/
