@@ -2,6 +2,7 @@ import os
 from typing import Optional
 
 from azure.monitor.opentelemetry import configure_azure_monitor
+from opentelemetry.instrumentation.openai import OpenAIInstrumentor
 from opentelemetry.sdk.resources import SERVICE_NAME, Resource
 from orchestrator.logging import get_logger
 
@@ -10,6 +11,12 @@ logger = get_logger(__name__)
 DEFAULT_OTEL_SERVICE_NAME = "unstructured-data-e2e-sample"
 APP_INSIGHTS = "APP_INSIGHTS"
 LOCAL = "LOCAL"
+
+
+def instrument() -> None:
+    # turn off logging prompts, completions, and embeddings to span attributes
+    os.environ["TRACELOOP_TRACE_CONTENT"] = "false"
+    OpenAIInstrumentor(upload_base64_image=None).instrument()
 
 
 def configure_telemetry(environment: Optional[str] = LOCAL) -> None:
@@ -40,6 +47,7 @@ def configure_telemetry(environment: Optional[str] = LOCAL) -> None:
         resource = Resource(attributes={SERVICE_NAME: os.getenv("OTEL_SERVICE_NAME", DEFAULT_OTEL_SERVICE_NAME)})
         logger.info("Configuring telemetry for Azure Monitor")
         configure_azure_monitor(connection_string=conn_str, resource=resource)
+        instrument()
     elif environment == LOCAL:
         from promptflow.tracing import start_trace
 
