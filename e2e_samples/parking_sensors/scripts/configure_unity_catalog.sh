@@ -38,16 +38,18 @@ set -o nounset
 
 . ./scripts/common.sh
 
-# Create the databrickscnf file
-cat <<EOL > ~/.databrickscnf
+# Create the databrickscfg file
+cat <<EOL > ~/.databrickscfg
 [DEFAULT]
 host=$DATABRICKS_HOST
 token=$DATABRICKS_KV_TOKEN
 EOL
 
-cat ~/.databrickscnf
+cat ~/.databrickscfg
 
 log "Creating and configuring Unity Catalog for $ENVIRONMENT_NAME."
+
+catalog_name=$CATALOG_NAME
 
 ###################################################################################################
 # Functions.
@@ -57,14 +59,18 @@ create_db_external_location(){
     declare external_location_name=$2
 
     # Check if the external location already exists
-    existing_location=$(databricks external-locations list | grep -w $external_location_name)
+    log "External Location Name: $external_location_name" "Info"
 
-    if [ -z "$existing_location" ]; then
-        log "External location '$external_location_name' does not exist. Creating it now..." "Info"
-        databricks external-locations create --json @$json_ext_location
-        log "External location '$external_location_name' created successfully."
+    if [ -n "$external_location_name" ]; then
+      if [ -z "$(databricks external-locations list | grep -w $external_location_name)" ]; then
+          log "External location '$external_location_name' does not exist. Creating it now..." "Info"
+          databricks external-locations create --json @$json_ext_location
+          log "External location '$external_location_name' created successfully."
+      else
+          log "External location '$external_location_name' already exists. Skipping creation." "Info"
+      fi
     else
-        log "External location '$external_location_name' already exists. Skipping creation." "Info"
+      log "External location name is empty. Skipping creation." "Info"
     fi
 }
 
@@ -72,15 +78,18 @@ create_db_catalog(){
     declare json_uc=$1
     declare catalog_name=$2
 
+    log "Catalog Name: $catalog_name" "Info"
     # Check if the catalog already exists
-    existing_catalog=$(databricks catalogs list | grep -w $catalog_name)
-
-    if [ -z "$existing_catalog" ]; then
-        log "Catalog '$catalog_name' does not exist. Creating it now..." "Info"
-        databricks catalogs create --json @$json_uc
-        log "Catalog '$catalog_name' created successfully."
+    if [ -n "$catalog_name" ]; then
+      if [ -z "$(databricks catalogs list | grep -w "$catalog_name")" ]; then
+          log "Catalog '$catalog_name' does not exist. Creating it now..." "Info"
+          databricks catalogs create --json @$json_uc
+          log "Catalog '$catalog_name' created successfully."
+      else
+          log "Catalog '$catalog_name' already exists. Skipping creation." "Info"
+      fi
     else
-        log "Catalog '$catalog_name' already exists. Skipping creation." "Info"
+      log "Catalog name is empty. Skipping creation." "Info"
     fi
 }
 
@@ -149,14 +158,17 @@ cat <<EOF > $json_storage_credential
 EOF
 
 # Check if the storage credential already exists
-existing_credential=$(databricks storage-credentials list | grep -w $STG_CREDENTIAL_NAME)
-
-if [ -z "$existing_credential" ]; then
-  log "Storage credential '$STG_CREDENTIAL_NAME' does not exist. Creating it now..."
-  databricks storage-credentials create --json @$json_storage_credential
-  log "Storage credential '$STG_CREDENTIAL_NAME' created successfully." "Info"
+echo "Credential Name: $STG_CREDENTIAL_NAME"
+if [ -n "$STG_CREDENTIAL_NAME" ]; then
+  if [ -z "$(databricks storage-credentials list | grep -w $STG_CREDENTIAL_NAME)" ]; then
+    log "Storage credential '$STG_CREDENTIAL_NAME' does not exist. Creating it now..."
+    databricks storage-credentials create --json @$json_storage_credential
+    log "Storage credential '$STG_CREDENTIAL_NAME' created successfully." "Info"
+  else
+    log "Storage credential '$STG_CREDENTIAL_NAME' already exists. Skipping creation." "Info"
+  fi
 else
-   log "Storage credential '$STG_CREDENTIAL_NAME' already exists. Skipping creation." "Info"
+  log "Storage credential name is empty. Skipping creation." "Info"
 fi
 
 ###################################################################################################
@@ -219,16 +231,16 @@ create_db_external_location $data_json_ext_location $DATA_EXT_LOCATION_NAME
 ###################################################################################################
 # 8. Create the <DEV/STG/PROD> catalog with the previously created external location.
 ###################################################################################################
-comment="Catalog for $CATALOG_NAME environment."
+comment="Catalog for $catalog_name environment."
 
 json_uc="./databricks/config/uc.json"
 # Create the JSON file
 cat <<EOF > $json_uc
 {
-  "name": "$CATALOG_NAME",
+  "name": "$catalog_name",
   "comment": "$comment",
   "storage_root": "abfss://$container_name@$CATALOG_STG_ACCOUNT_NAME.dfs.core.windows.net"
 }
 EOF
 
-create_db_catalog $json_uc $CATALOG_NAME
+create_db_catalog $json_uc $catalog_name
