@@ -148,6 +148,7 @@ module sql './modules/sql.bicep' = {
 // }
 
 
+
 output storage_account_name string = storage.outputs.storage_account_name
 output databricks_output object = databricks.outputs.databricks_output
 output databricks_id string = databricks.outputs.databricks_id
