@@ -4,9 +4,9 @@ Proposal
 
 ## Context
 
-The Unstructured Data Processing sample will require the setup of a Databricks workflow with individual jobs, each job corresponding to a Jupyter notebook. In order for each of these jobs to be triggered, we can modify the job setup such that each one is triggered when a new file is added to the storage account or a new ciation is added to the database.
+The Unstructured Data Processing sample will require the setup of a Databricks workflow with individual jobs, each job corresponding to a Jupyter notebook. In order for each of these jobs to be triggered, we can modify the job setup such that each one is triggered when a new file is added to the storage account or a new citation is added to the database.
 
-![Architecture Diagram](architecture-diagram.png)
+![Architecture Diagram](../images/application_architecture.drawio.png)
 
 ## Decision
 
@@ -32,6 +32,8 @@ databricks jobs create --json '{
   },
 }'
 ```
+
+The option configuration for "wait_after_last_change_seconds" can be used for batch processing of full submissions, as this setting will pause the trigger after initial file arrival until a reasonable length of time has passed for all the files to arrive.
 
 * [What is the Databricks CLI?](https://docs.databricks.com/en/dev-tools/cli/index.html)
 * [`databricks jobs create` trigger documentation](https://docs.databricks.com/api/workspace/jobs/create#trigger)
