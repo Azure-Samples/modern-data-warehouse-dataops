@@ -10,7 +10,7 @@ def validate_citation(
     chunk: str,
     match_threshold: float = 0.5,
     buffer_size: int = 3,
-) -> Citation | InvalidCitation:
+) -> ValidCitation | InvalidCitation:
     """Validates retrieved citations and return invalid or valid citations
 
     Args:
