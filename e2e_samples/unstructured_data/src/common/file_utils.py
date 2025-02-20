@@ -1,6 +1,6 @@
 from pathlib import Path
 
 
-def read_file(path: Path | str) -> str:
+def read_file(path: str | Path) -> str:
     with open(path) as f:
         return f.read()

@@ -16,7 +16,7 @@ from common.llm.credentials import OAICredentials
 from common.prompt_templates import load_template
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 PROMPT_TEMPLATES_DIR = Path(__file__).parent.joinpath("prompt_templates")
 

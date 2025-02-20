@@ -11,9 +11,9 @@ class MatchResult:
 @dataclass
 class Citation:
     document_name: str
+    raw: str
     excerpt: Optional[str] = field(default=None)
     explanation: Optional[str] = field(default=None)
-    raw: Optional[str] = field(default=None)
 
 
 @dataclass
@@ -24,9 +24,11 @@ class ValidatedCitation(Citation):
 @dataclass
 class ValidCitation(ValidatedCitation):
     status: str = "Valid"
+    excerpt: str
 
 
 @dataclass
 class InvalidCitation(ValidatedCitation):
     error: Optional[str] = field(default=None)
+    excerpt: Optional[str] = field(default=None)
     status: str = "Invalid"
