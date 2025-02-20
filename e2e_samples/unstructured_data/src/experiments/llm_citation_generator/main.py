@@ -30,8 +30,8 @@ class LLMCitationGenerator:
         run_id: Optional[str] = None,
         variant_name: Optional[str] = None,
         db_question_id: Optional[int] = None,
-        token_encoding_name: str = "o200k_base",  # gpt-4o
-        max_tokens: int = 4096,  # gpt-4o max tokens defaults to 4096
+        token_encoding_name: str = "o200k_base",  # gpt-4o, see https://gpt-tokenizer.dev/ for encoding names
+        max_tokens: int = 4096,  # Azure gpt-4o max tokens defaults to 4096
         overlap: int = 100,
         **kwargs: Any,
     ) -> None:
