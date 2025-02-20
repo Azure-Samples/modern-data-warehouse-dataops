@@ -1,5 +1,0 @@
-Context:
-{{ context }}
-
-Question:
-{{ question }}

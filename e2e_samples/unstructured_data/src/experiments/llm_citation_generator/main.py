@@ -7,31 +7,52 @@ from typing import Any, Optional
 
 from common.analyze_submissions import analyze_submission_folder
 from common.azure_storage_utils import get_blob_service_client
+from common.chunking import AnalyzedDocChunker, get_context_max_tokens
+from common.citation import Citation, InvalidCitation, ValidCitation
 from common.citation_db import commit_forms_docs_citations_to_db
-from common.citation_generator_utils import Citation, validate_retrieved_citations
+from common.citation_generator_utils import validate_citation
 from common.llm.azure_openai import AzureOpenAILLM
 from common.llm.credentials import OAICredentials
-from common.prompt_templates import get_rendered_prompt_template
+from common.prompt_templates import load_template
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-BASE_DIR = Path(__file__).parent
-PROMPT_TEMPLATES_DIR = str(BASE_DIR.joinpath("prompt_templates"))
+PROMPT_TEMPLATES_DIR = Path(__file__).parent.joinpath("prompt_templates")
 
 
 class LLMCitationGenerator:
     def __init__(
         self,
-        prompt_templates: dict,
-        run_id: str,
-        variant_name: str,
+        question: str,
+        user_prompt_file: str = "user_prompt.txt",
+        system_prompt_file: str = "system_prompt.txt",
+        run_id: Optional[str] = None,
+        variant_name: Optional[str] = None,
         db_question_id: Optional[int] = None,
+        token_encoding_name: str = "o200k_base",  # gpt-4o, see https://gpt-tokenizer.dev/ for encoding names
+        max_tokens: int = 4096,  # Azure gpt-4o max tokens defaults to 4096
+        overlap: int = 100,
         **kwargs: Any,
     ) -> None:
-        self.common_prompt_variables = prompt_templates.get("variables", {})
-        self.system_prompt_template = prompt_templates.get("system", {})
-        self.user_prompt_template = prompt_templates.get("user", {})
+        self.question = question
+        # Prompts
+        system_prompt_template = load_template(PROMPT_TEMPLATES_DIR.joinpath(system_prompt_file))
+        self.system_prompt = system_prompt_template.render(question=question)
+        self.user_prompt_template = load_template(PROMPT_TEMPLATES_DIR.joinpath(user_prompt_file))
+        # get token count without context to calculate max context tokens
+        user_prompt_without_context = self.user_prompt_template.render(question=question)
+        max_context_tokens = get_context_max_tokens(
+            text=self.system_prompt + user_prompt_without_context,
+            encoding_name=token_encoding_name,
+            max_tokens=max_tokens,
+        )
+        self.chunker = AnalyzedDocChunker(
+            max_tokens=max_context_tokens,
+            encoding_name=token_encoding_name,
+            overlap=overlap,
+        )
+
         self.db_question_id = db_question_id
         self.db_form_suffix = f"{variant_name}_{run_id}"
 
@@ -47,6 +68,7 @@ class LLMCitationGenerator:
         self.llm_creds = OAICredentials.from_env()
 
     def __call__(self, submission_folder: str, **kwargs: Any) -> dict:
+        output: dict = {}
         llm = AzureOpenAILLM(creds=self.llm_creds)
         blob_service_client = get_blob_service_client(account_url=self.blob_account_url)
         docs = analyze_submission_folder(
@@ -54,57 +76,78 @@ class LLMCitationGenerator:
             folder_name=submission_folder,
         )
 
-        context_list = []
-        for d in docs:
-            content = d.di_result["content"]
-            context_list.append(f"{content}\n")
-        context = "".join(context_list)
+        if len(docs) == 0:
+            raise ValueError(f"No documents found for submission {submission_folder}")
 
-        # context and common variables like the question may be in
-        # either system prompt or user prompt
-        # add to both. Non-common vars take precidence
-        # Copy the class dicts so the updated values are not used on subsequent calls
-        common_variables = self.common_prompt_variables.copy()
-        common_variables["context"] = context
+        logger.debug(f"Found {len(docs)} documents for submission {submission_folder}")
 
-        system_prompt_template = self.system_prompt_template.copy()
-        system_prompt_template["variables"] = common_variables | self.system_prompt_template.get("variables", {})
+        chunked_docs = self.chunker.chunk_by_token(docs=docs)
 
-        user_prompt_template = self.user_prompt_template.copy()
-        user_prompt_template["variables"] = common_variables | self.user_prompt_template.get("variables", {})
+        citations: list[InvalidCitation | ValidCitation] = []
+        docs_len = len(chunked_docs)
+        # loop through each document's chunks and call llm
+        for doc_idx, cd in enumerate(chunked_docs):
+            logger.debug(f"Chunked document: {cd.document_name}")
 
-        system_prompt = get_rendered_prompt_template(templates_dir=PROMPT_TEMPLATES_DIR, **system_prompt_template)
-        user_prompt = get_rendered_prompt_template(templates_dir=PROMPT_TEMPLATES_DIR, **user_prompt_template)
+            chunk_len = len(cd.chunks)
+            for chunk_idx, doc_chunk in enumerate(cd.chunks):
+                logger.debug(f"Sending chunk {chunk_idx+1} of {chunk_len} for doc {doc_idx+1} of {docs_len} to LLM")
 
-        # ask llm with context
-        msgs = [
-            llm.system_message(content=system_prompt),
-            llm.user_message(content=user_prompt),
-        ]
-        completion = llm.client.complete(
-            messages=msgs,
-            response_format=llm.json_response_format(),
-            seed=42,
-            temperature=0,
-        )
-        citation_str = completion.choices[0].message.content
+                # add chunk as context
+                user_prompt = self.user_prompt_template.render(context=doc_chunk, question=self.question)
 
-        citation_results = []
-        if citation_str is not None:
-            citations_to_validate = json.loads(citation_str)
-            citations = validate_retrieved_citations(
-                retrieved_citations=citations_to_validate.get("citations", []),
-                docs=docs,
-            )
+                msgs = [
+                    llm.system_message(content=self.system_prompt),
+                    llm.user_message(content=user_prompt),
+                ]
+                completion = llm.client.complete(
+                    messages=msgs,
+                    response_format=llm.json_response_format(),
+                    seed=42,
+                    temperature=0,
+                )
+                citation_str = completion.choices[0].message.content
 
-            for c in citations:
-                citation_results.append(asdict(c))
+                # validate and add citations
+                if citation_str is not None:
+                    loaded_citations = json.loads(citation_str)
+                    citations_to_validate: list = loaded_citations.get("citations", [])
+                    for c in citations_to_validate:
+                        if isinstance(c, dict):
+                            excerpt = c.get("excerpt")
+                            if excerpt is None:
+                                citations.append(
+                                    InvalidCitation(
+                                        document_name=cd.document_name,
+                                        raw=citation_str,
+                                        error="Invalid citation format",
+                                    )
+                                )
+                                continue
+                            citation = Citation(
+                                excerpt=excerpt,
+                                document_name=cd.document_name,
+                                explanation=c.get("explanation"),
+                                raw=citation_str,
+                            )
 
-        output: dict[str, Any] = {"citations": citation_results}
-        # # upload to db
+                            validated_citation = validate_citation(citation=citation, chunk=doc_chunk)
+                            citations.append(validated_citation)
+                        else:
+                            citations.append(
+                                InvalidCitation(
+                                    document_name=cd.document_name,
+                                    raw=citation_str,
+                                    error="Invalid citation format",
+                                )
+                            )
+
+        output["citations"] = [asdict(c) for c in citations]
+
+        # upload to db
         if self.write_to_db:
             form_name = f"{submission_folder}_{self.db_form_suffix}"
-            valid_citations = [c for c in citations if isinstance(c, Citation)]
+            valid_citations = [c for c in citations if isinstance(c, ValidCitation)]
             logger.info(f"Adding {len(valid_citations)} citations to form {form_name}")
             if self.db_question_id is None:
                 raise KeyError("'db_question_id' is a required argument when Citation DB is enabled.")
@@ -140,7 +183,7 @@ if __name__ == "__main__":
         variants=variants,
         run_id=run_id,
     )
-    submission_folder = "josh-test"
+    submission_folder = "F24Q3"
     for experiment in experiments:
         result = experiment.run(submission_folder=submission_folder)
         print(result)
