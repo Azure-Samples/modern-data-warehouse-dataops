@@ -62,9 +62,9 @@ if __name__ == "__main__":
         "--variants",
         nargs="*",
         required=False,
-        default=["revenue/1.yaml", "earnings_per_share/1.yaml"],
+        default=["total-revenue/1.yaml", "earnings-per-share/1.yaml"],
         help="A list of variants paths. Paths are relative from the \
-            variants directory for the experiment",
+            variants (questions) directory for the experiment",
     )
     parser.add_argument(
         "-r",
