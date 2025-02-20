@@ -14,6 +14,7 @@ class EvaluationWrapper:
 
     experiment_name: str
     variant_name: str
+    version: str
     eval_run_id: str
     data_path: str
     experiment_run_id: str
@@ -30,6 +31,7 @@ class EvaluationWrapper:
         tags = {
             "run_id": self.experiment_run_id,
             "variant.name": self.variant_name,
+            "variant.version": self.version,
             "eval_run_id": self.eval_run_id,
         }
         tags.update(self.tags)

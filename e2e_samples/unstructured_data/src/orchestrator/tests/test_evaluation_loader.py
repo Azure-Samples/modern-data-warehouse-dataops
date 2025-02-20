@@ -2,7 +2,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from orchestrator.evaluation_config import EvaluatorLoadConfig
+from orchestrator.evaluation_config import EvaluatorLoadConfig, EvaluatorLoadConfigMap
 from orchestrator.evaluation_loader import load_evaluation, load_evaluators_and_config
 from orchestrator.evaluation_wrapper import EvaluationWrapper
 from orchestrator.metadata import ExperimentMetadata
@@ -55,7 +55,7 @@ class TestEvaluationLoader(unittest.TestCase):
         init_args_1 = {"arg1": "value1"}
         init_args_2 = {"arg2": "value2"}
 
-        eval_map = {
+        eval_map: EvaluatorLoadConfigMap = {
             "eval_1": EvaluatorLoadConfig(
                 module=module,
                 class_name=class_name,
@@ -116,7 +116,7 @@ class TestEvaluationLoader(unittest.TestCase):
         )
 
         self.assertIsInstance(result, EvaluationWrapper)
-        self.assertEqual(result.data_path, metadata_path.parent.joinpath(metadata.eval_data_path))
+        self.assertEqual(result.data_path, str(metadata_path.parent.joinpath(metadata.eval_data_path)))
         self.assertEqual(result.experiment_name, exp_config.name)
         self.assertEqual(result.variant_name, variant.name)
         self.assertEqual(result.evaluators, evaluators)

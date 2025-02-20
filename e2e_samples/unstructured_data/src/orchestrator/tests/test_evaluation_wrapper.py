@@ -26,6 +26,7 @@ class TestEvaluationWrapper(unittest.TestCase):
         wrapper = EvaluationWrapper(
             experiment_name="test_experiment",
             variant_name="test_variant",
+            version="test_version",
             eval_run_id="test_eval_run_id",
             data_path="test_data_path",
             experiment_run_id="test_experiment_run_id",
@@ -67,6 +68,7 @@ class TestEvaluationWrapper(unittest.TestCase):
             aml_workspace=mock_aml_workspace,
             tags={
                 "run_id": "test_experiment_run_id",
+                "variant.version": "test_version",
                 "variant.name": "test_variant",
                 "eval_run_id": "test_eval_run_id",
                 "custom_tag": "value",

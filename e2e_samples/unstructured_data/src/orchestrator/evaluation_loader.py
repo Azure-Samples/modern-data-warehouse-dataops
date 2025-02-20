@@ -53,10 +53,17 @@ def load_evaluation(
         init_args=variant.evaluation.init_args,
     )
 
+    if variant.name is None or variant.version is None:
+        raise ValueError(f"Variant must have a name and version: {variant_path}")
+
+    if metadata.eval_data_path is None:
+        raise ValueError(f"Missing eval_data_path in metadata: {metadata_path}")
+
     return EvaluationWrapper(
-        data_path=metadata_path.parent.joinpath(metadata.eval_data_path),
+        data_path=str(metadata_path.parent.joinpath(metadata.eval_data_path)),
         experiment_name=exp_config.name,
         variant_name=variant.name,
+        version=variant.version,
         evaluators=evaluators,
         evaluator_config=evaluator_config,
         eval_run_id=eval_run_id,

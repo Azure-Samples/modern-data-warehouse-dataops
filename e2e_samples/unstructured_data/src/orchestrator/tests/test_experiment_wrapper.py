@@ -20,6 +20,7 @@ class TestExperimentWrapper(unittest.TestCase):
             experiment=self.mock_experiment,
             experiment_name="test_experiment",
             variant_name="test_variant",
+            variant_version="1.0",
             metadata=self.metadata,
             output_container="test_container",
             additional_call_args={"additional_arg": "value"},
