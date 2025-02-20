@@ -129,7 +129,6 @@ class LLMCitationGenerator:
                                 excerpt=excerpt,
                                 document_name=cd.document_name,
                                 explanation=c.get("explanation"),
-                                raw=citation_str,
                             )
 
                             validated_citation = validate_citation(citation=citation, chunk=doc_chunk)
@@ -170,16 +169,24 @@ class LLMCitationGenerator:
 
 if __name__ == "__main__":
     from dotenv import load_dotenv
+    from orchestrator.run_experiment import load_experiments
     from orchestrator.telemetry_utils import configure_telemetry
+    from orchestrator.utils import new_run_id
 
-    load_dotenv()
-
+    load_dotenv(override=True)
     configure_telemetry()  # local telemetry
-    generator = LLMCitationGenerator(question="What was the company’s revenue for this quarter of this Fiscal Year?")
-    output = generator(
-        submission_folder="josh-test",
+
+    # update values as needed
+    submission_folder = "F24Q3"
+    variants = ["total-revenue/1.yaml"]
+    write_to_file = False
+
+    run_id = new_run_id()
+    experiments = load_experiments(
+        config_filepath="llm_citation_generator/config/experiment.yaml", variants=variants, run_id=run_id
     )
-    total_citations = len(output["citations"])
-    for i, c in enumerate(output["citations"]):
-        logger.info(f"***** Citation {i+1} of {total_citations} *****")
-        logger.info(c)
+    for experiment in experiments:
+        result = experiment.run(submission_folder=submission_folder)
+        if write_to_file:
+            experiment.write_results([result])
+    logger.info(f"Run ID: {run_id}")

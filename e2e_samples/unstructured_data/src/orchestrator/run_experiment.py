@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
-from orchestrator.config import Config
 from orchestrator.experiment_loader import load_experiments
 from orchestrator.experiment_wrapper import ExperimentWrapper
 from orchestrator.file_utils import load_jsonl_file
@@ -38,7 +37,7 @@ def run_experiment(
     data = load_jsonl_file(data_path)
 
     for i, data_line in enumerate(data):
-        result = experiment.run(data_filename=data_path.name, line_number=i + 1, call_args=data_line)
+        result = experiment.run(data_filename=data_path.name, line_number=i + 1, **data_line)
         results.append(result)
 
     if write_to_file is not None:
@@ -54,7 +53,6 @@ def run_experiments(
     run_id: Optional[str] = None,
     write_to_file: bool = False,
     is_eval_data: bool = False,
-    experiments_directory: Path = Config.experiments_dir,
 ) -> ExperimentRunResults:
     """
     Run a set of experiments based on the provided configuration and variants.
@@ -79,7 +77,6 @@ def run_experiments(
         config_filepath=config_filepath,
         variants=variants,
         run_id=run_id,
-        experiments_dir=experiments_directory,
     )
 
     results = []

@@ -35,11 +35,9 @@ class TestLoadExperiments(unittest.TestCase):
         config_filepath = "config.yaml"
         variants = ["variant1.yaml"]
         run_id = "test_run_id"
-        experiments_dir = MagicMock()
-        experiments_dir.joinpath.return_value = experiments_dir
 
         # Call the function
-        result = load_experiments(config_filepath, variants, run_id, experiments_dir)
+        result = load_experiments(config_filepath, variants, run_id)
 
         # Assertions
         self.assertEqual(len(result), 1)
@@ -70,11 +68,9 @@ class TestLoadExperiments(unittest.TestCase):
         config_filepath = "config.yaml"
         variants = ["variant1.yaml", "variant2.yaml"]
         run_id = "test_run_id"
-        experiments_dir = MagicMock()
-        experiments_dir.joinpath.return_value = experiments_dir
 
         # Call the function and assert it raises a ValueError
         with self.assertRaises(ValueError) as context:
-            load_experiments(config_filepath, variants, run_id, experiments_dir)
+            load_experiments(config_filepath, variants, run_id)
 
         self.assertIn("Variant names must be unqiue for experiment runs.", str(context.exception))

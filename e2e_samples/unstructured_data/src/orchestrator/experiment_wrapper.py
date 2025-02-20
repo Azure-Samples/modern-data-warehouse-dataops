@@ -1,7 +1,7 @@
 import os
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Callable, Optional
+from typing import Any, Callable
 
 from opentelemetry import trace
 from orchestrator.config import Config
@@ -40,7 +40,7 @@ class ExperimentWrapper:
         self,
         data_filename: str = "none",
         line_number: int = 0,
-        call_args: Optional[dict] = None,
+        **call_kwargs: Any,
     ) -> dict:
         """
         Runs the experiment with the provided data filename and line number.
@@ -63,9 +63,7 @@ class ExperimentWrapper:
 
         exp_fullname = f"{self.experiment_name}:{self.variant_name}"
 
-        if call_args is None:
-            call_args = {}
-        inputs = {**self.additional_call_args, **call_args}
+        inputs = {**self.additional_call_args, **call_kwargs}
         output = flatten_dict({"inputs": inputs})
         try:
             with tracer.start_as_current_span("experiment", attributes=attributes):

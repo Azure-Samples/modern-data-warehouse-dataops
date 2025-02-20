@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from orchestrator.config import Config
 from orchestrator.experiment_config import load_exp_config
 from orchestrator.experiment_wrapper import ExperimentWrapper
 from orchestrator.metadata import ExperimentMetadata
@@ -11,7 +12,6 @@ def load_experiments(
     config_filepath: str,
     variants: list[str],
     run_id: str,
-    experiments_dir: Path,
 ) -> list[ExperimentWrapper]:
     """
     Load and initialize experiments based on the provided configuration
@@ -24,7 +24,7 @@ def load_experiments(
     Returns:
         list[ExperimentWrapper]: A list of initialized ExperimentWrapper objects.
     """
-    exp_config_fullpath = experiments_dir.joinpath(config_filepath)
+    exp_config_fullpath = Config.experiments_dir.joinpath(config_filepath)
     exp_config = load_exp_config(exp_config_fullpath)
 
     variants_dir = exp_config_fullpath.parent.joinpath(exp_config.variants_dir)

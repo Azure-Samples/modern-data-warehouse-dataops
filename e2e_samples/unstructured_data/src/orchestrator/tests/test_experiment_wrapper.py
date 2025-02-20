@@ -29,7 +29,7 @@ class TestExperimentWrapper(unittest.TestCase):
     @patch("orchestrator.experiment_wrapper.tracer")
     def test_run_success(self, mock_tracer: MagicMock) -> None:
         self.mock_experiment.return_value = {"result": "success"}
-        result = self.wrapper.run(data_filename="test_data.jsonl", line_number=5, call_args={"param1": "value1"})
+        result = self.wrapper.run(data_filename="test_data.jsonl", line_number=5, param1="value1")
 
         self.assertEqual(result["result"], "success")
         self.mock_experiment.assert_called_once_with(param1="value1", additional_arg="value")
@@ -38,7 +38,7 @@ class TestExperimentWrapper(unittest.TestCase):
     @patch("orchestrator.experiment_wrapper.tracer")
     def test_run_non_dict_result(self, mock_tracer: MagicMock) -> None:
         self.mock_experiment.return_value = "success"
-        result = self.wrapper.run(data_filename="test_data.jsonl", line_number=5, call_args={"param1": "value1"})
+        result = self.wrapper.run(data_filename="test_data.jsonl", line_number=5, param1="value1")
 
         self.assertEqual(result["output"], "success")
         self.mock_experiment.assert_called_once_with(param1="value1", additional_arg="value")
@@ -47,7 +47,7 @@ class TestExperimentWrapper(unittest.TestCase):
     @patch("orchestrator.experiment_wrapper.tracer")
     def test_run_exception(self, mock_tracer: MagicMock) -> None:
         self.mock_experiment.side_effect = Exception("Test exception")
-        result = self.wrapper.run(data_filename="test_data.jsonl", line_number=5, call_args={"param1": "value1"})
+        result = self.wrapper.run(data_filename="test_data.jsonl", line_number=5, param1="value1")
 
         self.assertIn("error", result)
         self.assertEqual(result["error"], "Test exception")
