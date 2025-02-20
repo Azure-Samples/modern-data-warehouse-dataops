@@ -1,4 +1,4 @@
-name: revenue
+name: total-revenue
 # init_args:
 #   db_question_id: <db_question_id>
 evaluation:
@@ -6,10 +6,10 @@ evaluation:
     fuzzy_match:
       evaluator_config:
         column_mapping:
-          truth: ${data.inputs.truth.revenue}
+          truth: ${data.inputs.truth.total-revenue}
     exact_numeric_match:
       evaluator_config:
         column_mapping:
-          truth: ${data.inputs.truth.revenue}
+          truth: ${data.inputs.truth.total-revenue}
   tags:
-    question: revenue
+    question: total-revenue
