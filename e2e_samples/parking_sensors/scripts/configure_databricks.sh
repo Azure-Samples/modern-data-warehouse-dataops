@@ -1,20 +1,18 @@
 #!/bin/bash
 
-# Access granted under MIT Open Source License: https://en.wikipedia.org/wiki/MIT_License
+#######################################################
+# Configures Azure Databricks cluster and workspace
 #
-# Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated 
-# documentation files (the "Software"), to deal in the Software without restriction, including without limitation 
-# the rights to use, copy, modify, merge, publish, distribute, sublicense, # and/or sell copies of the Software, 
-# and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+# Prerequisites:
+# - User is logged in to the azure cli
+# - Correct Azure subscription is selected
+# - Correct Azure DevOps Project selected
 #
-# The above copyright notice and this permission notice shall be included in all copies or substantial portions 
-# of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED 
-# TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
-# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
-# CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
-# DEALINGS IN THE SOFTWARE.
+# Called from: e2e_samples/parking_sensors/scripts/deploy.sh
+# - Creates a new cluster and deploys a sample python library
+# - Stores the cluster ID in KeyVault
+# - Deploys sample python notebooks to the Databricks workspace
+#######################################################
 
 set -o errexit
 set -o pipefail
@@ -78,12 +76,14 @@ photon_node_types=$(echo "$node_types" | jq -r '.node_types[] | select(.photon_d
 # Find common VM sizes
 common_vms=$(grep -Fwf <(echo "$photon_node_types") vm_names.txt)
 
-# Find the VM with the least resources
+# Find the least resource option that has 4GB memory for each core
 least_resource_vm=$(echo "$vm_sizes" | jq --arg common_vms "$common_vms" '
   map(select(.name == ($common_vms | split("\n")[]))) |
-  sort_by(.numberOfCores, .memoryInMB) |
+  map(select(.memoryInMB >= (.numberOfCores * 4 * 1024))) |
+  sort_by( .memoryInMB) |
   .[0]
 ')
+
 log "VM with the least resources:$least_resource_vm" "info"
 
 # Update the JSON file with the least resource VM
@@ -121,11 +121,6 @@ fi
 
 az keyvault secret set --vault-name "$KEYVAULT_NAME" --name "databricksClusterId" --value "$cluster_id" -o none
 
-adfTempDir=.tmp/adf
-mkdir -p $adfTempDir && cp -a adf/ .tmp/
-tmpfile=.tmpfile
-adfLsDir=$adfTempDir/linkedService
-jq --arg databricksExistingClusterId "$cluster_id" '.properties.typeProperties.existingClusterId = $databricksExistingClusterId' $adfLsDir/Ls_AzureDatabricks_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AzureDatabricks_01.json
 
 log "Uploading libs TO dbfs..."
 databricks fs cp --recursive --overwrite "./databricks/libs/ddo_transform-localdev-py2.py3-none-any.whl" "dbfs:/ddo_transform-localdev-py2.py3-none-any.whl"
@@ -201,7 +196,7 @@ cat <<EOF > $json_file_config
 EOF
 
 job_id=$(databricks jobs create --json @$json_file_config | jq -r ".job_id")
-log "Job ID:" $job_id
+log "Job ID: ${job_id}"
 
 databricks jobs run-now --json "{\"job_id\":$job_id, \"notebook_params\": {\"PYSPARK_PYTHON\": \"/databricks/python3/bin/python3\", \"MOUNT_DATA_PATH\": \"/mnt/datalake\", \"MOUNT_DATA_CONTAINER\": \"datalake\", \"DATABASE\": \"datalake\"}}"
 # Upload libs -- for initial dev package

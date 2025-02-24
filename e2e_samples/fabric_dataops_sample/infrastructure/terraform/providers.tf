@@ -9,6 +9,7 @@ provider "fabric" {
   tenant_id     = var.tenant_id
   client_id     = var.use_msi || var.use_cli ? null : var.client_id
   client_secret = var.use_msi || var.use_cli ? null : var.client_secret
+  preview       = true
 }
 
 provider "azurerm" {
@@ -23,16 +24,15 @@ provider "azurerm" {
 
   features {
     key_vault {
-      purge_soft_delete_on_destroy = true
+      purge_soft_delete_on_destroy = false
     }
   }
 }
 
-provider "azapi" {
-  tenant_id       = var.tenant_id
-  subscription_id = var.subscription_id
-  client_id       = var.use_msi || var.use_cli ? null : var.client_id
-  client_secret   = var.use_msi || var.use_cli ? null : var.client_secret
+provider "azuredevops" {
+  org_service_url = "https://dev.azure.com/${var.git_organization_name}"
+  tenant_id       = var.use_msi ? null : var.tenant_id
+  client_id       = var.use_msi ? null : var.client_id
+  client_secret   = var.use_msi ? null : var.client_secret
   use_msi         = var.use_msi
-  use_cli         = var.use_cli
 }

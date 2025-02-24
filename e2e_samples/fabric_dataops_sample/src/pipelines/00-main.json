@@ -2,6 +2,22 @@
   "properties": {
     "activities": [
       {
+        "type": "SetVariable",
+        "typeProperties": {
+          "variableName": "infilefolder",
+          "value": {
+            "value": "@utcnow('yyyy_MM_dd_hh_mm_ss')",
+            "type": "Expression"
+          }
+        },
+        "policy": {
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "name": "set_infilefolder",
+        "dependsOn": []
+      },
+      {
         "type": "TridentNotebook",
         "typeProperties": {
           "notebookId": "{{ .setup_notebook_id }}",
@@ -10,6 +26,13 @@
             "workspace_id": {
               "value": {
                 "value": "@pipeline().parameters.workspace_id",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "workspace_name": {
+              "value": {
+                "value": "@pipeline().parameters.workspace_name",
                 "type": "Expression"
               },
               "type": "string"
@@ -49,6 +72,13 @@
             },
             "config_file_path": {
               "value": "sc-adls-main/config/application.cfg",
+              "type": "string"
+            },
+            "infilefolder": {
+              "value": {
+                "value": "@variables('infilefolder')",
+                "type": "Expression"
+              },
               "type": "string"
             }
           },
@@ -65,7 +95,14 @@
           "secureOutput": false
         },
         "name": "nb-setup",
-        "dependsOn": []
+        "dependsOn": [
+          {
+            "activity": "set_infilefolder",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
       },
       {
         "type": "TridentNotebook",
@@ -76,6 +113,13 @@
             "workspace_id": {
               "value": {
                 "value": "@pipeline().parameters.workspace_id",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "workspace_name": {
+              "value": {
+                "value": "@pipeline().parameters.workspace_name",
                 "type": "Expression"
               },
               "type": "string"
@@ -115,6 +159,20 @@
             },
             "config_file_path": {
               "value": "sc-adls-main/config/application.cfg",
+              "type": "string"
+            },
+            "infilefolder": {
+              "value": {
+                "value": "@variables('infilefolder')",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "load_id": {
+              "value": {
+                "value": "@pipeline().RunId",
+                "type": "Expression"
+              },
               "type": "string"
             }
           },
@@ -153,6 +211,13 @@
               },
               "type": "string"
             },
+            "workspace_name": {
+              "value": {
+                "value": "@pipeline().parameters.workspace_name",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
             "local_mount": {
               "value": {
                 "value": "@concat('abfss://', pipeline().parameters.workspace_id, '@onelake.dfs.fabric.microsoft.com/', pipeline().parameters.lakehouse_id, '/Files')",
@@ -188,6 +253,13 @@
             },
             "config_file_path": {
               "value": "sc-adls-main/config/application.cfg",
+              "type": "string"
+            },
+            "load_id": {
+              "value": {
+                "value": "@pipeline().RunId",
+                "type": "Expression"
+              },
               "type": "string"
             }
           },
@@ -230,6 +302,11 @@
       "lakehouse_name": {
         "type": "string",
         "defaultValue": "{{ .lakehouse_name }}"
+      }
+    },
+    "variables": {
+      "infilefolder": {
+        "type": "String"
       }
     }
   }

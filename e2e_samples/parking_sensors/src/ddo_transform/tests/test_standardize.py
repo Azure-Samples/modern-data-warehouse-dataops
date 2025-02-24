@@ -33,7 +33,7 @@ def test_standardize_parking_bay(spark):
     """Test data transform"""
     # Arrange
     schema = standardize.get_schema("in_parkingbay_schema")
-    parkingbay_sdf = spark.read.json("./data/MelbParkingBayData.json", multiLine=True, schema=schema)
+    parkingbay_sdf = spark.read.json("./data/ParkingLocationData.json", multiLine=True, schema=schema)
     load_id = 1
     loaded_on = datetime.datetime.now()
     # Act
@@ -51,7 +51,7 @@ def test_standardize_sensordata(spark):
     """Test data transform"""
     # Arrange
     schema = standardize.get_schema("in_sensordata_schema")
-    sensordata_sdf = spark.read.json("./data/MelbParkingSensorData.json", multiLine=True, schema=schema)
+    sensordata_sdf = spark.read.json("./data/ParkingSensorData.json", multiLine=True, schema=schema)
     load_id = 1
     loaded_on = datetime.datetime.now()
     # Act

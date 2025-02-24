@@ -44,10 +44,11 @@ import datetime
 
 load_id = loadid
 loaded_on = datetime.datetime.now()
+
 abfss_path= f"""abfss://datalake@{stgaccountname}.dfs.core.windows.net/data/lnd/"""
 base_path = os.path.join(abfss_path,infilefolder)
-parkingbay_filepath = os.path.join(base_path, "MelbParkingBayData.json")
-sensors_filepath = os.path.join(base_path, "MelbParkingSensorData.json")
+parkingbay_filepath = os.path.join(base_path, "ParkingLocationData.json")
+sensors_filepath = os.path.join(base_path, "ParkingSensorData.json")
 
 
 # COMMAND ----------
@@ -76,12 +77,12 @@ sensordata_schema = s.get_schema("in_sensordata_schema")
 # Read data
 parkingbay_sdf = spark.read\
   .schema(parkingbay_schema)\
-  .option("badRecordsPath", os.path.join(base_path, "__corrupt", "MelbParkingBayData"))\
+  .option("badRecordsPath", os.path.join(base_path, "__corrupt", "ParkingLocationData"))\
   .option("multiLine", True)\
   .json(parkingbay_filepath)
 sensordata_sdf = spark.read\
   .schema(sensordata_schema)\
-  .option("badRecordsPath", os.path.join(base_path, "__corrupt", "MelbParkingSensorData"))\
+  .option("badRecordsPath", os.path.join(base_path, "__corrupt", "ParkingSensorData"))\
   .option("multiLine", True)\
   .json(sensors_filepath)
 
