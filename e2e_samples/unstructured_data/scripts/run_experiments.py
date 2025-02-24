@@ -7,7 +7,8 @@ Usage:
     python ./scripts/run_experiments.py \
         -e <experiment-config-path> \
         -v <path-from-variants-dir-1> <path-from-variants-dir-2> \
-        -i <run-id> -d <path-in-data-dir> \
+        -r <run-id> \
+        -d <path-in-data-dir> \
         -t <app_insights|local>
 
 Options:
@@ -16,7 +17,7 @@ Options:
         Defaults to "llm_citation_generator/config/experiment.yaml".
     -v, --variants <paths>
         A list of variant paths. Paths are relative from the variants directory for the experiment.
-    -i, --run-id <run-id>
+    -r, --run-id <run-id>
         The run id. Default is timestamp: YmdHMS.
     -d, --data-path <path>
         The path to the data file in the data directory.
@@ -26,8 +27,8 @@ Options:
 
 Example:
     python ./scripts/run_experiments.py \
-        -e llm_citation_generator \
-        -v revenue-FY24Q3.yaml \
+        -e llm_citation_generator/config/experiment.yaml \
+        -v total-revenue/1.yaml \
         -d test-data.jsonl \
         -t app_insights
 
@@ -70,7 +71,7 @@ if __name__ == "__main__":
         "-r",
         "--run-id",
         required=False,
-        help="The run id. For citation generator, this will be the form suffix. \
+        help="The run id. For Citation Generator, this will be the form suffix. \
             Default is a timestamp: YmdHMS. Supply this to run against an existing \
             form wihich ends with the run id",
     )
