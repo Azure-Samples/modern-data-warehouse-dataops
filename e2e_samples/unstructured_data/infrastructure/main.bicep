@@ -72,6 +72,7 @@ module appinsights './modules/appinsights.bicep' = {
     env: env
     location: location
     deployment_id: deployment_id
+    team_name: team_name
   }
 }
 
@@ -82,6 +83,7 @@ module loganalytics './modules/log_analytics.bicep' = if (enable_monitoring) {
     env: env
     location: location
     deployment_id: deployment_id
+    team_name: team_name
   }
 }
 

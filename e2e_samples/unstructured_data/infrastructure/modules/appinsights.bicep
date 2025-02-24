@@ -13,6 +13,8 @@ param env string
 param location string = resourceGroup().location
 @description('The unique identifier for this deployment.')
 param deployment_id string
+@description('The team name tag value for the resource.')
+param team_name string
 // Resource: Application Insights
 resource appinsights 'Microsoft.Insights/components@2020-02-02' = {
   name: '${project}-appi-${env}-${deployment_id}'
@@ -22,6 +24,7 @@ resource appinsights 'Microsoft.Insights/components@2020-02-02' = {
     Environment: env
     Project: project
     DeploymentId: deployment_id
+    TeamName: team_name
   }
   kind: 'other'
   properties: {

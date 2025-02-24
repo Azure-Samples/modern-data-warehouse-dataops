@@ -13,6 +13,8 @@ param env string
 param location string = resourceGroup().location
 @description('The unique identifier for this deployment.')
 param deployment_id string
+@description('The team name tag value for the resource.')
+param team_name string
 @description('The retention period for logs in days.')
 param retentionInDays int = 31
 // Log Analytics Workspace Resource
@@ -22,6 +24,7 @@ resource loganalyticsworkspace 'Microsoft.OperationalInsights/workspaces@2023-09
   tags: {
     DisplayName: 'Log Analytics'
     Environment: env
+    TeamName: team_name
   }
   properties: {
     retentionInDays: retentionInDays
