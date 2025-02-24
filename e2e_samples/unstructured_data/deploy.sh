@@ -258,21 +258,17 @@ az extension add --name application-insights
 log "Retrieving ApplicationInsights information from the deployment."
 appinsights_name=$(echo "$arm_output" | jq -r '.properties.outputs.appinsights_name.value')
 
-log "appinsights_name: $appinsights_name"
 appinsights_key=$(az monitor app-insights component show \
     --app "$appinsights_name" \
     --resource-group "$resource_group_name" \
     --output json |
     jq -r '.instrumentationKey')
 
-log "appinsights_key: $appinsights_name"
 appinsights_connstr=$(az monitor app-insights component show \
     --app "$appinsights_name" \
     --resource-group "$resource_group_name" \
     --output json |
     jq -r '.connectionString')
-
-log "appinsights_connstr: $appinsights_connstr"
 
 # Store in Keyvault
 az keyvault secret set --vault-name "$kv_name" --name "applicationInsightsKey" --value "$appinsights_key" -o none
