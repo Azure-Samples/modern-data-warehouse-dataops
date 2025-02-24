@@ -32,7 +32,7 @@ set -o nounset
 
 #!/bin/bash
 
-. ./scripts/common.sh
+. ./infrastructure/common.sh
 # Source environment variables
 source .env
 
@@ -336,7 +336,7 @@ KEYVAULT_DNS_NAME=$kv_dns_name \
 USER_NAME=$kv_owner_name \
 AZURE_LOCATION=$AZURE_LOCATION \
 KEYVAULT_RESOURCE_ID=$(echo "$arm_output" | jq -r '.properties.outputs.keyvault_resource_id.value') \
-    bash -c "./scripts/configure_databricks.sh"
+    bash -c "./infrastructure/configure_databricks.sh"
 
 ####################
 # AZDO Azure Service Connection and Variables Groups

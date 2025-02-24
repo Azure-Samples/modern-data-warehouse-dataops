@@ -29,7 +29,7 @@ set -o nounset
 # USER_NAME
 # AZURE_LOCATION
 
-. ./scripts/common.sh
+. ./infrastructure/common.sh
 
 log "Configuring Databricks workspace."
 
@@ -56,7 +56,7 @@ databricks workspace import "$databricks_folder_name/evaluate_experiments.py" --
 # databricks workspace import "$databricks_folder_name/03_transform.py" --file "./databricks/notebooks/03_transform.py" --format SOURCE --language PYTHON --overwrite
 
 # Define suitable VM for DB cluster
-file_path="./scripts/cluster.config.json"
+file_path="./infrastructure/cluster.config.json"
 
 # Get available VM sizes in the specified region
 vm_sizes=$(az vm list-sizes --location "$AZURE_LOCATION" --output json)
@@ -95,7 +95,7 @@ rm vm_names.txt
 # Create initial cluster, if not yet exists
 # cluster.config.json file needs to refer to one of the available SKUs on yout Region
 # az vm list-skus --location <LOCATION> --all --output table
-cluster_config="./scripts/cluster.config.json"
+cluster_config="./infrastructure/cluster.config.json"
 log "Creating an interactive cluster using config in $cluster_config..."
 cluster_name=$(cat "$cluster_config" | jq -r ".cluster_name")
 if databricks_cluster_exists "$cluster_name"; then
