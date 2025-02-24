@@ -14,11 +14,11 @@ param TeamName string
 @description('The name of the storage account.')
 param storageAccountName string
 @description('The version of the node runtime.')
-param linuxFxVersion string = 'node|22-lts'
+param linuxFxVersion string = 'NODE|22'
 @description('The name given to the hosting plan.')
 param hostingPlanName string
 @description('The site config always on setting.')
-param alwaysOn bool = false
+param alwaysOn bool = true
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' existing = {
   name: storageAccountName
@@ -31,6 +31,9 @@ resource hostingPlan 'Microsoft.Web/serverfarms@2024-04-01' existing = {
 resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
   name: functionAppName
   location: location
+  identity: {
+    type: 'SystemAssigned'
+  }
   kind: 'functionapp,linux'
   tags: {
     TeamName: TeamName
@@ -39,6 +42,7 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
   properties: {
     serverFarmId: hostingPlan.id
     siteConfig: {
+      acrUseManagedIdentityCreds: true
       alwaysOn: alwaysOn
       appSettings: [
         {
@@ -61,21 +65,13 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
           name: 'WEBSITE_CONTENTSHARE'
           value: toLower(functionAppName)
         }
-        {
-          name: 'WEBSITE_NODE_DEFAULT_VERSION'
-          value: '22.14.0'
-        }
-        // {
-        //   name: 'WEBSITE_RUN_FROM_PACKAGE'
-        //   value: '<zip uri, e.g. blob storage uri>'
-        // }
       ]
       cors: {
         allowedOrigins: [
           'https://ms.portal.azure.com'
+          '*' // Allow all origins
         ]
       }
-      nodeVersion: '22.14.0'
       linuxFxVersion: linuxFxVersion
     }
     clientAffinityEnabled: false
@@ -90,6 +86,27 @@ resource ftpPolicy 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2024-
   name: 'ftp'
   properties: {
     allow: false
+  }
+}
+
+resource scmPolicy 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2024-04-01' = {
+  parent: functionApp
+  name: 'scm'
+  properties: {
+    allow: true
+  }
+}
+
+resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(storageAccount.id, 'Storage Blob Data Contributor')
+  scope: storageAccount
+  properties: {
+    roleDefinitionId: subscriptionResourceId(
+      'Microsoft.Authorization/roleDefinitions',
+      'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
+    ) // Storage Blob Data Contributor
+    principalId: functionApp.identity.principalId
+    principalType: 'ServicePrincipal'
   }
 }
 

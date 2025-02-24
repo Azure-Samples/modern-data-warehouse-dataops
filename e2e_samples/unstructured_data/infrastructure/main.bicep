@@ -69,8 +69,8 @@ module appservice './modules/appservice.bicep' = {
   name: 'appservice_deploy_${deployment_id}'
   params: {
     env: env
-    webAppName: 'excitation-testing'
-    hostingPlanName: 'excitation-testing'
+    webAppName: 'excitation${deployment_id}'
+    hostingPlanName: 'excitation${deployment_id}'
     location: location
     sku: 'S1'
     tier: 'Standard'
@@ -82,7 +82,7 @@ module functionapp './modules/functionapp.bicep' = {
   name: 'functionapp_deploy_${deployment_id}'
   params: {
     env: env
-    functionAppName: 'excitationfuncapp'
+    functionAppName: 'functionapp${deployment_id}'
     hostingPlanName: appservice.outputs.appservice_plan_name
     storageAccountName: storage.outputs.storage_account_name
     location: location

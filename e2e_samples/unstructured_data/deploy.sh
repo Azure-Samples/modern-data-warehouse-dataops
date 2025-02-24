@@ -258,8 +258,13 @@ function_app=$(echo "$arm_output" | jq -r '.properties.outputs.functionapp_name.
 
 cd excitation/reference-azure-backend/functions
 
-echo "deploying function app in to: $function_app in rg: $resource_group_name"
+echo "removing extra files as it results in errors"
+rm ./LICENSE.md
+rm ./README.md
+rm ./azure.yaml
+rm ./.gitignore
 
+echo "deploying function app in to: $function_app in rg: $resource_group_name"
 ../../../scripts/functionzipdeploy.sh $AZURE_SUBSCRIPTION_ID $resource_group_name $function_app $azure_storage_account
 
 cd ../../../
@@ -418,3 +423,7 @@ DATABRICKS_TOKEN=$databricks_aad_token \
 # KV_URL=${kv_dns_name}
 
 log "Completed deploying Azure resources $resource_group_name ($ENV_NAME)" "success"
+
+echo "Deployment completed successfully."
+
+echo "cleanup resources with: ./clean_up.sh $resource_group_name"

@@ -39,6 +39,9 @@ rm -rf $FILE_PATH
 # zip -r $FILE_PATH . -x "node_modules/*"
 echo "current directory:" $(pwd)
 
+npm install
+npm run build
+
 tar --exclude="./node_modules/*" \
     --exclude="*.env" -acf $FILE_PATH ./*
 
@@ -49,4 +52,9 @@ tar --exclude="./node_modules/*" \
 # New AZ deploy way(Unclear if the build artifacts can be ignored)
 az webapp deploy --resource-group $RESOURCE_GROUP --name $APP_SERVICE_NAME --src-path $FILE_PATH --type zip --async true --track-status false
 
-echo "ZIP DEPLOY COMPLETED"
+if [ $? -eq 0 ]; then
+    echo "Web App Deployment completed successfully."
+else
+    echo "Web App Zip Deployment failed"
+    exit 1
+fi
