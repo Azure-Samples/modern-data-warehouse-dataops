@@ -26,6 +26,10 @@ RUN dpkg -i packages-microsoft-prod.deb
 # Delete the file
 RUN rm packages-microsoft-prod.deb
 
+RUN curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+
+RUN az extension add --name application-insights
+
 # Install the SQL driver
 RUN apt-get update
 RUN ACCEPT_EULA=Y apt-get install -y msodbcsql18
@@ -34,3 +38,6 @@ RUN echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.zshrc
 
 # Set the user to USERNAME
 USER $USERNAME
+
+# Set the default shell to bash rather than sh
+ENV SHELL /bin/bash
