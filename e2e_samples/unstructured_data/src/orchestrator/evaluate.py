@@ -8,10 +8,10 @@ from typing import Any, Callable, Optional
 from azure.ai.evaluation import evaluate
 from opentelemetry import trace
 
-from orchestrator.aml import AMLWorkspace, store_results
 from orchestrator.evaluation_config import EvaluatorConfig
 from orchestrator.file_utils import load_json_file
 from orchestrator.metadata import ExperimentMetadata
+from orchestrator.store_results import store_results
 from orchestrator.utils import get_output_dirs_by_run_id, new_run_id
 
 tracer = trace.get_tracer(__name__)
@@ -32,7 +32,6 @@ def evaluate_experiment_result(
     evaluator_config: Optional[dict[str, EvaluatorConfig]] = None,
     evaluation_name: Optional[str] = None,
     output_path: Optional[Path] = None,
-    aml_workspace: Optional[AMLWorkspace] = None,
     tags: Optional[dict] = None,
 ) -> Any:
     """
@@ -52,11 +51,10 @@ def evaluate_experiment_result(
     # ensure required values are set if uploading to aml
     if tags is None:
         tags = {}
-    if aml_workspace:
-        if job_name is None:
-            raise ValueError("When uploading to AML, a job_name is required.")
-        if experiment_name is None:
-            raise ValueError("When uploading to AML, an experiment_name is required.")
+    if job_name is None:
+        raise ValueError("When uploading to AML, a job_name is required.")
+    if experiment_name is None:
+        raise ValueError("When uploading to AML, an experiment_name is required.")
 
     try:
         # create temp dir if output path is not provided
@@ -74,16 +72,13 @@ def evaluate_experiment_result(
             output_path=str(output_path),
         )
 
-        # upload to aml
-        if aml_workspace:
-            store_results(
-                experiment_name=experiment_name,
-                job_name=job_name,
-                aml_workspace=aml_workspace,
-                tags=tags,
-                metrics=results["metrics"],
-                artifacts=[output_path],
-            )
+        store_results(
+            experiment_name=experiment_name,
+            job_name=job_name,
+            tags=tags,
+            metrics=results["metrics"],
+            artifacts=[output_path],
+        )
 
     # clean up temp dir
     finally:
@@ -95,7 +90,6 @@ def evaluate_experiment_result(
 
 def evaluate_experiment_results_by_run_id(
     run_id: str,
-    aml_workspace: Optional[AMLWorkspace] = None,
     write_to_file: bool = False,
 ) -> EvaluationResults:
     # get list of metadata paths by run_id
@@ -106,14 +100,12 @@ def evaluate_experiment_results_by_run_id(
 
     return evaluate_experiment_results_from_metadata(
         metadata_paths=metadata_paths,
-        aml_workspace=aml_workspace,
         write_to_file=write_to_file,
     )
 
 
 def evaluate_experiment_results_from_metadata(
     metadata_paths: list[Path],
-    aml_workspace: Optional[AMLWorkspace] = None,
     write_to_file: bool = False,
 ) -> EvaluationResults:
     eval_run_id = new_run_id()
@@ -157,7 +149,6 @@ def evaluate_experiment_results_from_metadata(
             job_name=metadata.variant_name,
             evaluator_config=evaluator_config,
             output_path=output_path,
-            aml_workspace=aml_workspace,
             tags=tags,
         )
         results.append(result)
