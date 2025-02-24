@@ -1,17 +1,16 @@
 import re
 from typing import Any
 
+from evaluators.citation_evaluator import CitationEvaluator
+
 
 class NumericEvaluator:
     """
     # noqa: W605
     Exact matches numeric values in a given response against the ground truth value.
 
-    Args:
-        truth_key: The key within the ground truth dictionary that is being evaluated.
-
     Methods:
-        __call__(response, truth):
+        __call__(response, ground_truth):
             Evaluates the response against the ground truth numeric value.
             Returns: A dictionary containing a "ratio" key.
                 - "ratio":
@@ -42,26 +41,28 @@ class NumericEvaluator:
             - `1,234.56` (without dollar sign)
     """
 
-    def __init__(self, **kwargs: Any) -> None:
-        pass
+    def __call__(self, response: str, ground_truth: str) -> float:
+        numbers = re.findall(r"[\$]?\s*\d{1,3}(?:,\d{3})*(?:\.\d+)?", response)
+        chars_to_remove = ["$", ",", " "]
+        numbers_processed = ["".join(char for char in num if char not in chars_to_remove) for num in numbers]
+        truth_processed = "".join(char for char in ground_truth if char not in chars_to_remove)
+        if truth_processed in numbers_processed:
+            return 1.0
+        return 0.0
 
-    def __call__(self, response: list, truth: str, **kwargs: Any):  # type: ignore
-        if truth is None:
-            if response:
-                # we have responses, but truth says we should not have any
-                return {"ratio": 0.0}
-            else:
-                # If truth is none and no citations. The generator did well
-                return {"ratio": 1.0}
-        elif not response:
-            # we have truth but no citations
-            return {"ratio": 0.0}
-        for r in response:
-            excerpt = r.get("excerpt")
-            numbers = re.findall(r"[\$]?\s*\d{1,3}(?:,\d{3})*(?:\.\d+)?", excerpt)
-            chars_to_remove = ["$", ",", " "]
-            numbers_processed = ["".join(char for char in num if char not in chars_to_remove) for num in numbers]
-            truth_processed = "".join(char for char in truth if char not in chars_to_remove)
-            if truth_processed in numbers_processed:
-                return {"ratio": 1.0}
-        return {"ratio": 0.0}
+
+class NumericCitationEvaluator(CitationEvaluator):
+    """
+    NumericCitationEvaluator is a class that evaluates numeric citations by extending the CitationEvaluator class.
+
+    Attributes:
+        evaluator (NumericEvaluator): An instance of NumericEvaluator used for evaluation.
+        match_threshold (float): The threshold for matching numeric citations, set to 1.0 by default.
+
+    Methods:
+        __init__(**kwargs): Initializes the NumericCitationEvaluator with the given keyword arguments.
+    """
+
+    def __init__(self, **kwargs: Any):
+        # threshold is 1.0 because we want only exact matches to pass
+        super().__init__(evaluator=NumericEvaluator(), match_threshold=1.0, **kwargs)
