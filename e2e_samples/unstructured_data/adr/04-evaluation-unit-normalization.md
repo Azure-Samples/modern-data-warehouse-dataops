@@ -3,12 +3,15 @@
 Proposal
 
 ## Context
+
 The purpose of this document is to outline the architecture for evaluating LLM-generated citations against ground-truth data, specifically for questions involving financial values. Given that the citations may vary in format, units and numerical representation, a robust evaluation mechanism is required to ensure accurate comparison.
 
 ## Decision
 
 Ground-truth financial values may be expressed in different formats and units compared to LLM-generated citations. Eg.,
+
 - Ground-truth: 1,500 million USD.
+
 - LLM-generated citation: 1.5B in revenue.
 
 The evaluator should normalize and compare these values despite variations in representation.
@@ -21,14 +24,20 @@ Both heuristic (E.g., regex) and LLM based approaches (prompting the LLM to extr
 
 2. **Normalization**: Convert all numbers to a common unit (eg., millions or billions). This step needs to account for different formats of expressing numbers (eg., commas, decimals, currency symbols).
 Example conversions:
+
    - 1,500 million -> 1.5B
+
    - 1,500 million USD -> 1.5B
+
    - 1.5 billion -> 1.5B
 
 3. **Evaluation**: Compare the normalized values using the following metrics:
+
    - Exact Numeric match: Check if the normalized values match exactly.
+
    - Percentage match: Calculate the percentage difference between the normalized values.
    Percentage difference is useful for quantifying the deviation between the LLM-generated value and ground-truth value. We could add thresholds such as if the percentage difference is less than 5%, consider it a match.It can also be useful for Error Analysis in identifying cases where the LLM is significantly off the ground-truth value.
+
    - [Optional] Unit match: If we prefer the LLM to generate the citations in a specific unit, check if the unit matches with the ground-truth unit.
 
 ## Consequences
