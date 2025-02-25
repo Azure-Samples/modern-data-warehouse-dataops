@@ -14,7 +14,7 @@ def store_results(
     tags: Optional[dict[str, str]] = None,
     metrics: Optional[dict[str, int | float]] = None,
     artifacts: Optional[list[Path]] = None,
-):
+) -> None:
     mlflow.set_tracking_uri("databricks")
 
     # Define the experiment name
