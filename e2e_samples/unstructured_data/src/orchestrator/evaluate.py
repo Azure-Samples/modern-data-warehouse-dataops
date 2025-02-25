@@ -40,7 +40,6 @@ def evaluate_experiment_result(
         metadata_path (Path): Path to the metadata file containing experiment details.
         output_path (Optional[Path], optional): Path to store the evaluation results.
             If None, a temporary directory will be used. Defaults to None.
-        aml_workspace (Optional[AMLWorkspace], optional): AML workspace
             to store the results. Defaults to None.
     Raises:
         ValueError: If the evaluation data path is missing in the metadata.
@@ -48,13 +47,13 @@ def evaluate_experiment_result(
     Returns:
         dict: A dictionary containing the evaluation results.
     """
-    # ensure required values are set if uploading to aml
+    # ensure required values are set if uploading results
     if tags is None:
         tags = {}
     if job_name is None:
-        raise ValueError("When uploading to AML, a job_name is required.")
+        raise ValueError("When uploading results, a job_name is required.")
     if experiment_name is None:
-        raise ValueError("When uploading to AML, an experiment_name is required.")
+        raise ValueError("When uploading results, an experiment_name is required.")
 
     try:
         # create temp dir if output path is not provided
@@ -72,6 +71,7 @@ def evaluate_experiment_result(
             output_path=str(output_path),
         )
 
+        # upload results
         store_results(
             experiment_name=experiment_name,
             job_name=job_name,

@@ -14,35 +14,17 @@ def store_results(
     tags: Optional[dict[str, str]] = None,
     metrics: Optional[dict[str, int | float]] = None,
     artifacts: Optional[list[Path]] = None,
-) -> None:
-    """
-    Store results of an evaluation in Azure Machine Learning
-        (AML) workspace using MLflow.
-    Args:
-        experiment_name (str): The name of the experiment to log results to.
-        job_name (str): The name of the job/run to log.
-        tags (dict[str, str], optional): A dictionary of tags to associate with the run.
-        metrics (dict[str, int | float], optional): A dictionary of metrics to log.
-        artifacts (list[Path], optional): A list of file paths to log as artifacts.
-    Returns:
-        None
-    """
-
-    # # Set our tracking server uri for mlflow logging
+):
     mlflow.set_tracking_uri("databricks")
 
-    # Create an AML Experiment with the provided name if the experiment does not exist
-    experiment = mlflow.get_experiment_by_name(experiment_name)
-    if experiment is None:
-        mlflow.create_experiment(experiment_name)
+    # Define the experiment name
+    experiment_name = f"/Shared/{experiment_name}"
 
-    # Associate with experiment
-    mlflow.set_experiment(experiment_name=experiment_name)
+    # Create or set the experiment
+    mlflow.set_experiment(experiment_name)
 
-    # Start the run
+    # Start a new run
     with mlflow.start_run(run_name=job_name):
-        logging.info(f"Logging {job_name} to MLFlow on AML")
-
         # Add tags
         if tags is not None:
             for tag, description in tags.items():
@@ -58,7 +40,4 @@ def store_results(
             for artifact in artifacts:
                 mlflow.log_artifact(str(artifact))
 
-        logging.info("Completed uploading result to AML.")
-
-    # End run
-    mlflow.end_run()
+    print(f"Finished recording experiment: {experiment_name}.")
