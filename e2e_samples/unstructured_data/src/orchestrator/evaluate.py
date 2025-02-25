@@ -7,7 +7,6 @@ from typing import Any, Callable, Optional
 
 from azure.ai.evaluation import evaluate
 from opentelemetry import trace
-
 from orchestrator.evaluation_config import EvaluatorConfig
 from orchestrator.file_utils import load_json_file
 from orchestrator.metadata import ExperimentMetadata
