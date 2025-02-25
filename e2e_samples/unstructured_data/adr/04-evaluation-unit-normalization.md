@@ -19,15 +19,16 @@ Following are the proposed steps:
 Additionally, the preprocessing step may need to include context matching to isolate the financial category (eg., revenue, assets, profit) to which the extracted numbers belong. E.g., The LLM-generated citation may contain multiple numbers like "1.5B revenue, 500M profit".
 Both heuristic (E.g., regex) and LLM based approaches (prompting the LLM to extract revenue number and unit from text) can be considered for this step.
 
-2. **Normalization**: Convert all numbers to a common unit (eg., millions or billions). This step needs to account for different formats of expressing numbers (eg., commans, decimals, currency symbols).
+2. **Normalization**: Convert all numbers to a common unit (eg., millions or billions). This step needs to account for different formats of expressing numbers (eg., commas, decimals, currency symbols).
 Example conversions:
    - 1,500 million -> 1.5B
    - 1,500 million USD -> 1.5B
    - 1.5 billion -> 1.5B
 
 3. **Evaluation**: Compare the normalized values using the following metrics:
-   - Numeric match: Check if the normalized values match exactly.
+   - Exact Numeric match: Check if the normalized values match exactly.
    - Percentage match: Calculate the percentage difference between the normalized values.
+   Percentage difference is useful for quantifying the deviation between the LLM-generated value and ground-truth value. We could add thresholds such as if the percentage difference is less than 5%, consider it a match.It can also be useful for Error Analysis in identifying cases where the LLM is significantly off the ground-truth value.
    - [Optional] Unit match: If we prefer the LLM to generate the citations in a specific unit, check if the unit matches with the ground-truth unit.
 
 ## Consequences
