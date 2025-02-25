@@ -6,10 +6,12 @@ evaluation:
     fuzzy_match:
       evaluator_config:
         column_mapping:
-          truth: ${data.inputs.truth.earnings-per-share}
+          truth: ${data.inputs.truth.earnings-per-share.citations}
+          expected_match: ${data.inputs.truth.earnings-per-share.expected_match}
     exact_numeric_match:
       evaluator_config:
         column_mapping:
-          truth: ${data.inputs.truth.earnings-per-share}
+          truth: ${data.inputs.truth.earnings-per-share.citations}
+          expected_match: ${data.inputs.truth.earnings-per-share.expected_match}
   tags:
     question: earnings-per-share

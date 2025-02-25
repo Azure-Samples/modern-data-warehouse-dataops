@@ -42,13 +42,21 @@ class NumericEvaluator:
     """
 
     def __call__(self, response: str, ground_truth: str) -> float:
-        numbers = re.findall(r"[\$]?\s*\d{1,3}(?:,\d{3})*(?:\.\d+)?", response)
+        numbers_regex = r"[\$]?\s*\d{1,3}(?:,\d{3})*(?:\.\d+)?"
+        numbers = re.findall(numbers_regex, response)
+        truth_numbers = re.findall(numbers_regex, ground_truth)
+
         chars_to_remove = ["$", ",", " "]
+
         numbers_processed = ["".join(char for char in num if char not in chars_to_remove) for num in numbers]
-        truth_processed = "".join(char for char in ground_truth if char not in chars_to_remove)
-        if truth_processed in numbers_processed:
-            return 1.0
-        return 0.0
+        truth_numbers_processed = [
+            "".join(char for char in num if char not in chars_to_remove) for num in truth_numbers
+        ]
+
+        for t in truth_numbers_processed:
+            if t not in numbers_processed:
+                return 0.0
+        return 1.0
 
 
 class NumericCitationEvaluator(CitationEvaluator):
