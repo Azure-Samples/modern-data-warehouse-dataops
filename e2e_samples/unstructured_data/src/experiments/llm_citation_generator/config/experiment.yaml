@@ -11,7 +11,7 @@ evaluators:
         response: ${data.citations}
   exact_numeric_match:
     module: evaluators.exact_numeric_match
-    class_name: NumericCitationEvaluator
+    class_name: ExactNumericMatchCitationEvaluator
     evaluator_config:
       column_mapping:
         response: ${data.citations}

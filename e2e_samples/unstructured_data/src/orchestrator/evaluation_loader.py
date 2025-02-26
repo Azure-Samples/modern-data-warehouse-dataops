@@ -36,9 +36,9 @@ def load_evaluators_and_config(evaluator_map: EvaluatorLoadConfigMap, init_args:
         if not isinstance(c.module, str) or not isinstance(c.class_name, str):
             raise ValueError(f"Missing module or class name for evaluator {name}")
 
-        init_args = merge_dicts(init_args, c.init_args)
+        merged_init_args = merge_dicts(init_args, c.init_args)
 
-        evaluators[name] = load_instance(module=c.module, class_name=c.class_name, init_args=init_args)
+        evaluators[name] = load_instance(module=c.module, class_name=c.class_name, init_args=merged_init_args)
 
         evaluator_config[name] = c.evaluator_config
 

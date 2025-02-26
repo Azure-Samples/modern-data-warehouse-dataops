@@ -1,9 +1,6 @@
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Optional, Protocol
-
-
-class EvaluatorProtocol(Protocol):
-    def __call__(self, *, response: str, ground_truth: str) -> float | dict[str, float]: ...
+from typing import Optional
 
 
 @dataclass
@@ -13,10 +10,12 @@ class Score:
 
 
 @dataclass
-class CitationEvaluator:
-    evaluator: EvaluatorProtocol
+class CitationEvaluator(ABC):
     match_threshold: float
-    score_key: Optional[str] = None
+
+    @abstractmethod
+    def evaluate(self, ground_truth: str, response: str) -> float:
+        pass
 
     def __call__(self, truth: list, response: list, expected_match: Optional[str] = None):  # type: ignore
         if expected_match is None or expected_match == "any":
@@ -41,12 +40,7 @@ class CitationEvaluator:
             truth_doc = t.get("document")
             citation_doc = citation.get("document_name")
             if citation_doc == truth_doc:
-                score = self.evaluator(ground_truth=truth_excerpt, response=excerpt)
-
-                if isinstance(score, dict):
-                    if self.score_key is None:
-                        raise ValueError("score_key must be set when evaluator returns a dict")
-                    score = score[self.score_key]
+                score = self.evaluate(ground_truth=truth_excerpt, response=excerpt)
 
                 if score > best_score:
                     best_score_truth_idx = i
