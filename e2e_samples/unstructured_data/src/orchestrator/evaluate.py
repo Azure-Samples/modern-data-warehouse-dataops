@@ -1,9 +1,7 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 from opentelemetry import trace
-from orchestrator.aml import AMLWorkspace
 from orchestrator.evaluation_loader import load_evaluation
 from orchestrator.logging import get_logger
 from orchestrator.metadata import ExperimentMetadata
@@ -21,7 +19,6 @@ class EvaluationResults:
 
 def evaluate_experiment_results_by_run_id(
     run_id: str,
-    aml_workspace: Optional[AMLWorkspace] = None,
     write_to_file: bool = False,
 ) -> EvaluationResults:
     # get list of metadata paths by run_id
@@ -32,14 +29,12 @@ def evaluate_experiment_results_by_run_id(
 
     return evaluate_experiment_results_from_metadata(
         metadata_paths=metadata_paths,
-        aml_workspace=aml_workspace,
         write_to_file=write_to_file,
     )
 
 
 def evaluate_experiment_results_from_metadata(
     metadata_paths: list[Path],
-    aml_workspace: Optional[AMLWorkspace] = None,
     write_to_file: bool = False,
 ) -> EvaluationResults:
     eval_run_id = new_run_id()
@@ -54,7 +49,7 @@ def evaluate_experiment_results_from_metadata(
             eval_run_id=eval_run_id,
         )
 
-        result = evaluation.run(aml_workspace=aml_workspace, output_path=output_path)
+        result = evaluation.run(output_path=output_path)
         results.append(result)
 
     return EvaluationResults(results=results, eval_run_id=eval_run_id)

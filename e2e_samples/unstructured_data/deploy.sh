@@ -32,7 +32,7 @@ set -o nounset
 
 #!/bin/bash
 
-. ./scripts/common.sh
+. ./infrastructure/common.sh
 # Source environment variables
 source .env
 
@@ -100,7 +100,7 @@ fi
 
 PROJECT="${PROJECT_NAME:-}"
 ENV_NAME=dev
-DEPLOYMENT_ID="$(random_str 5)"
+DEPLOYMENT_ID=$DEPLOYMENT_ID
 TEAM_NAME="${TEAM_NAME:-}"
 ###################
 # AZURE_LOCATION
@@ -252,13 +252,18 @@ az keyvault secret set --vault-name "$kv_name" --name "datalakeurl" --value "htt
 ####################
 # APPLICATION INSIGHTS
 
+# temporary, move to .devcontainer
+az extension add --name application-insights
+
 log "Retrieving ApplicationInsights information from the deployment."
 appinsights_name=$(echo "$arm_output" | jq -r '.properties.outputs.appinsights_name.value')
+
 appinsights_key=$(az monitor app-insights component show \
     --app "$appinsights_name" \
     --resource-group "$resource_group_name" \
     --output json |
     jq -r '.instrumentationKey')
+
 appinsights_connstr=$(az monitor app-insights component show \
     --app "$appinsights_name" \
     --resource-group "$resource_group_name" \
@@ -268,8 +273,6 @@ appinsights_connstr=$(az monitor app-insights component show \
 # Store in Keyvault
 az keyvault secret set --vault-name "$kv_name" --name "applicationInsightsKey" --value "$appinsights_key" -o none
 az keyvault secret set --vault-name "$kv_name" --name "applicationInsightsConnectionString" --value "$appinsights_connstr" -o none
-
-
 
 # ###########################
 # # RETRIEVE DATABRICKS INFORMATION AND CONFIGURE WORKSPACE
@@ -333,7 +336,7 @@ KEYVAULT_DNS_NAME=$kv_dns_name \
 USER_NAME=$kv_owner_name \
 AZURE_LOCATION=$AZURE_LOCATION \
 KEYVAULT_RESOURCE_ID=$(echo "$arm_output" | jq -r '.properties.outputs.keyvault_resource_id.value') \
-    bash -c "./scripts/configure_databricks.sh"
+    bash -c "./infrastructure/configure_databricks.sh"
 
 ####################
 # AZDO Azure Service Connection and Variables Groups
@@ -397,5 +400,4 @@ KEYVAULT_RESOURCE_ID=$(echo "$arm_output" | jq -r '.properties.outputs.keyvault_
 # APPINSIGHTS_KEY=${appinsights_key}
 # KV_URL=${kv_dns_name}
 
-# EOF
-# log "Completed deploying Azure resources $resource_group_name ($ENV_NAME)" "success"
+log "Completed deploying Azure resources $resource_group_name ($ENV_NAME)" "success"

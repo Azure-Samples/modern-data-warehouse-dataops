@@ -8,7 +8,7 @@ TENANT_ID=
 AZURE_SUBSCRIPTION_ID=
 
 # Project Name used within resource names
-PROJECT=
+PROJECT_NAME=
 
 # Value used for TeamName tag on resource and resource group deployments
 TEAM_NAME=

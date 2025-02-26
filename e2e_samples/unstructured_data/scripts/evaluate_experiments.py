@@ -35,7 +35,6 @@ if __name__ == "__main__":
     import argparse
     import logging
 
-    from orchestrator.aml import AMLWorkspace
     from orchestrator.config import Config
     from orchestrator.evaluate import evaluate_experiment_results_by_run_id, evaluate_experiment_results_from_metadata
 
@@ -71,13 +70,13 @@ if __name__ == "__main__":
     if args.metadata_paths is not None and args.run_id is not None:
         raise ValueError("Please provide either a --run-id or --metadata_paths")
 
-    aml_workspace = None
-    if args.upload_to_aml:
-        aml_workspace = AMLWorkspace(
-            os.getenv("SUBSCRIPTION_ID"),
-            os.getenv("RESOURCE_GROUP"),
-            os.getenv("WORKSPACE_NAME"),
-        )
+    # aml_workspace = None
+    # if args.upload_to_aml:
+    #     aml_workspace = AMLWorkspace(
+    #         os.getenv("SUBSCRIPTION_ID"),
+    #         os.getenv("RESOURCE_GROUP"),
+    #         os.getenv("WORKSPACE_NAME"),
+    #     )
 
     metatdata_paths = None
     if args.metadata_paths is not None:
@@ -87,14 +86,14 @@ if __name__ == "__main__":
 
         output = evaluate_experiment_results_from_metadata(
             metadata_paths=metatdata_paths,
-            aml_workspace=aml_workspace,
+            # aml_workspace=aml_workspace,
             write_to_file=True,
         )
 
     elif args.run_id is not None:
         output = evaluate_experiment_results_by_run_id(
             run_id=args.run_id,
-            aml_workspace=aml_workspace,
+            # aml_workspace=aml_workspace,
             write_to_file=True,
         )
     else:

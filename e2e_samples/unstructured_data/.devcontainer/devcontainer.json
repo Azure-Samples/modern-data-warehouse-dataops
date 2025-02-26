@@ -1,5 +1,5 @@
 {
-    "name": "MDE - Fabric DataOps Sample",
+    "name": "MDE - Unstructured Data Sample",
     "dockerComposeFile": "./docker-compose.yaml",
     "service": "unstructured_data_dc",
     "workspaceFolder": "/workspace/e2e_samples/unstructured_data",
@@ -43,10 +43,11 @@
                 "DavidAnson.vscode-markdownlint",
                 "eamodio.gitlens",
                 "GitHub.copilot",
-                "ms-python.mypy-type-checker"
+                "ms-python.mypy-type-checker",
+				"ms-azuretools.vscode-bicep"
             ]
         }
     },
     "remoteUser": "vscode",
-    "postCreateCommand": "./.devcontainer/post_create.sh"
+    "postCreateCommand": "bash ./.devcontainer/post_create.sh"
 }

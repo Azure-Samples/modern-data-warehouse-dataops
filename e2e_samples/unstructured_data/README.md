@@ -58,7 +58,7 @@ cp .envtemplate .env
 # then
 chmod +x ./deploy.sh
 
-./deploy.sh
+bash deploy.sh
 ```
 
 ### Applying the Database Schema
