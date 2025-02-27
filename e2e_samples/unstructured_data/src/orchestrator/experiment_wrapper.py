@@ -81,7 +81,7 @@ class ExperimentWrapper:
                 f"Uncaught error running experiment '{exp_fullname}' \
                 on data line number {line_number}. Error: {type(e).__name__} {e}"
             )
-            output.update(error=str(e))
+            output["error"] = str(e)
         return output
 
     def write_results(
@@ -135,4 +135,4 @@ class ExperimentWrapper:
         metadata_dict = asdict(self.metadata)
         write_json_file(metadata_path, metadata_dict)
 
-        logger.info(f"Results written to {results_path}. Metadata written to {metadata_path}")
+        logger.info(f"Results written to {results_path} Metadata written to {metadata_path}")

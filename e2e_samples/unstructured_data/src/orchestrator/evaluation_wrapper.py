@@ -5,8 +5,8 @@ from pathlib import Path
 from typing import Callable, Optional
 
 from azure.ai.evaluation import EvaluationResult, evaluate
-from orchestrator.aml import AMLWorkspace, store_results
 from orchestrator.evaluation_config import EvaluatorConfig
+from orchestrator.store_results import MlflowType, store_results
 
 
 @dataclass
@@ -26,7 +26,7 @@ class EvaluationWrapper:
         self,
         evaluation_name: Optional[str] = None,
         output_path: Optional[Path] = None,
-        aml_workspace: Optional[AMLWorkspace] = None,
+        mlflow_type: Optional[MlflowType] = None,
     ) -> EvaluationResult:
         """
         Evaluates the against a jsonl file and optionally uploads the results to Azure Machine Learning (AML) workspace.
@@ -64,12 +64,11 @@ class EvaluationWrapper:
                 output_path=str(output_path),
             )
 
-            # upload to aml
-            if aml_workspace:
+            # upload to databricks
+            if mlflow_type == MlflowType.DATABRICKS:
                 store_results(
                     experiment_name=self.experiment_name,
                     job_name=self.variant_name,
-                    aml_workspace=aml_workspace,
                     tags=tags,
                     metrics=results["metrics"],
                     artifacts=[output_path],
