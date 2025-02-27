@@ -1,4 +1,4 @@
-{"submission_folder": "F24Q3", "truth": {"total-revenue": "Revenue was $61.9 billion and increased 17%", "earnings-per-share": "$2.94"}}
-{"submission_folder": "F24Q4", "truth": {"total-revenue": null, "earnings-per-share": null}}
-{"submission_folder": "F25Q1", "truth": {"total-revenue": null, "earnings-per-share": null}}
-{"submission_folder": "F25Q2", "truth": {"total-revenue": null, "earnings-per-share": null}}
+{"submission_folder": "F24Q3", "truth": {"total_revenue": "Revenue was $61.9 billion and increased 17%", "earnings_per_share": "$2.94"}}
+{"submission_folder": "F24Q4", "truth": {"total_revenue": null, "earnings_per_share": null}}
+{"submission_folder": "F25Q1", "truth": {"total_revenue": null, "earnings_per_share": null}}
+{"submission_folder": "F25Q2", "truth": {"total_revenue": null, "earnings_per_share": null}}

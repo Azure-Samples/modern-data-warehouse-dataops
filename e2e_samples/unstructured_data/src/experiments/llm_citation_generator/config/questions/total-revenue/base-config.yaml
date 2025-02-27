@@ -6,10 +6,10 @@ evaluation:
     fuzzy_match:
       evaluator_config:
         column_mapping:
-          truth: ${data.inputs.truth.total-revenue}
+          truth: ${data.inputs__truth__total_revenue}
     exact_numeric_match:
       evaluator_config:
         column_mapping:
-          truth: ${data.inputs.truth.total-revenue}
+          truth: ${data.inputs__truth__total_revenue}
   tags:
     question: total-revenue
