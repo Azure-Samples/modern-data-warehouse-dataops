@@ -36,3 +36,9 @@ variable "definition_update_enabled" {
   type        = bool
   default     = true
 }
+
+variable "format" {
+  description = "The Data Pipeline format"
+  type        = string
+  default     = "Default"
+}

@@ -11,7 +11,7 @@ RUN apt-get upgrade -y
 RUN apt-get -y install --no-install-recommends apt-utils 2>&1
 
 # Install git, process tools, lsb-release (common in install instructions for CLIs)
-RUN apt-get -y install git procps lsb-release 
+RUN apt-get -y install git procps lsb-release zip
 
 # Install any missing dependencies for enhanced language service
 RUN apt-get install -y libicu[0-9][0-9]
@@ -22,6 +22,7 @@ RUN az config set extension.use_dynamic_install=yes_without_prompt
 RUN az config set extension.dynamic_install_allow_preview=true
 RUN az extension add --name application-insights
 RUN az extension add --name azure-devops
+RUN az extension add --name ad
 RUN az bicep upgrade
 
 # Install jq & makepasswd for some frequently used utility

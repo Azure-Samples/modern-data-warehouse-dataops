@@ -10,7 +10,7 @@ set -o errexit
 #######################################################
 
 ## Environment variables
-environment="$ENVIRONMENT_NAME"
+environment_name="$ENVIRONMENT_NAME"
 tenant_id="$TENANT_ID"
 subscription_id="$SUBSCRIPTION_ID"
 resource_group_name="$RESOURCE_GROUP_NAME"
@@ -23,38 +23,18 @@ git_organization_name="$GIT_ORGANIZATION_NAME"
 git_project_name="$GIT_PROJECT_NAME"
 git_repository_name="$GIT_REPOSITORY_NAME"
 git_branch_name="$GIT_BRANCH_NAME"
-git_directory_name="$GIT_DIRECTORY_NAME"
 # Workspace admin variables
 fabric_workspace_admin_sg_name="$FABRIC_WORKSPACE_ADMIN_SG_NAME"
 # Fabric Capacity variables
 existing_fabric_capacity_name="$EXISTING_FABRIC_CAPACITY_NAME"
 fabric_capacity_admins="$FABRIC_CAPACITY_ADMINS"
-# ADLS Gen2 connection variable
-adls_gen2_connection_id="$ADLS_GEN2_CONNECTION_ID"
+deploy_fabric_items="$DEPLOY_FABRIC_ITEMS"
 
-## KeuVault secret variables
+## KeyVault secret variables
 appinsights_connection_string_name="appinsights-connection-string"
 
-# Variable set based on Terraform output
-tf_storage_account_id=""
-tf_storage_container_name=""
-tf_storage_account_url=""
-tf_keyvault_id=""
-tf_keyvault_name=""
-tf_keyvault_uri=""
-tf_workspace_name=""
-tf_workspace_id=""
-tf_lakehouse_name=""
-tf_lakehouse_id=""
-tf_environment_name=""
-tf_environment_id=""
-tf_setup_notebook_name=""
-tf_setup_notebook_id=""
-tf_standardize_notebook_name=""
-tf_standardize_notebook_id=""
-tf_transform_notebook_name=""
-tf_transform_notebook_id=""
-tf_appinsights_connection_string_value=""
+# Git directory name for syncing Fabric workspace items
+fabric_workspace_directory="/fabric/workspace"
 
 # Fabric bearer token variables, set globally
 fabric_bearer_token=""
@@ -63,6 +43,16 @@ fabric_api_endpoint="https://api.fabric.microsoft.com/v1"
 # Fabric related variables
 adls_gen2_shortcut_name="sc-adls-main"
 adls_gen2_shortcut_path="Files"
+
+# Azure DevOps pipelines to be deleted
+azdo_pipeline_ci_qa="pl-${base_name}-ci-qa"
+azdo_pipeline_ci_qa_cleanup="pl-${base_name}-ci-qa-cleanup"
+azdo_pipeline_ci_publish_artifacts="pl-${base_name}-ci-publish-artifacts"
+
+set_global_azdo_config() {
+  # Set the global Azure DevOps (AzDo) configuration
+  az devops configure --defaults organization="https://dev.azure.com/$git_organization_name" project="$git_project_name"
+}
 
 cleanup_terraform_resources() {
   local original_directory=$(pwd)
@@ -81,24 +71,26 @@ cleanup_terraform_resources() {
       use_msi=true
     fi
   fi
-  echo "[Info] use_cli is '${use_cli}'"
-  echo "[Info] use_msi is '${use_msi}'"
-  echo "[Info] client_id is '${client_id}'"
+  echo "[Info] 'use_cli' is '${use_cli}'"
+  echo "[Info] 'use_msi' is '${use_msi}'"
+  echo "[Info] 'client_id' is '${client_id}'"
+  echo "[Info] 'deploy_fabric_items' is '${deploy_fabric_items}'"
 
   if [[ -z ${existing_fabric_capacity_name} ]]; then
     create_fabric_capacity=true
-    echo "[Info] Variable 'EXISTING_FABRIC_CAPACITY_NAME' is empty, a new Fabric capacity will be created."
   else
     create_fabric_capacity=false
-    echo "[Info] Variable 'EXISTING_FABRIC_CAPACITY_NAME' is NOT empty, the provided Fabric capacity will be used."
   fi
+
+  echo "[Info] Switching to terraform '$environment_name' workspace."
+  terraform workspace select -or-create=true "$environment_name"
 
   terraform init
   terraform destroy \
     -auto-approve \
     -var "use_cli=$use_cli" \
     -var "use_msi=$use_msi" \
-    -var "environment_name=$environment" \
+    -var "environment_name=$environment_name" \
     -var "tenant_id=$tenant_id" \
     -var "subscription_id=$subscription_id" \
     -var "resource_group_name=$resource_group_name" \
@@ -113,28 +105,10 @@ cleanup_terraform_resources() {
     -var "git_project_name=$git_project_name" \
     -var "git_repository_name=$git_repository_name" \
     -var "git_branch_name=$git_branch_name" \
-    -var "git_directory_name=$git_directory_name" \
-    -var "kv_appinsights_connection_string_name=$appinsights_connection_string_name"
-
-  tf_storage_account_id=$(terraform output --raw storage_account_id)
-  tf_storage_container_name=$(terraform output --raw storage_container_name)
-  tf_storage_account_url=$(terraform output --raw storage_account_primary_dfs_endpoint)
-  tf_keyvault_id=$(terraform output --raw keyvault_id)
-  tf_keyvault_name=$(terraform output --raw keyvault_name)
-  tf_keyvault_uri=$(terraform output --raw keyvault_uri)
-  tf_workspace_name=$(terraform output --raw workspace_name)
-  tf_workspace_id=$(terraform output --raw workspace_id)
-  tf_lakehouse_name=$(terraform output --raw lakehouse_name)
-  tf_lakehouse_id=$(terraform output --raw lakehouse_id)
-  tf_environment_id=$(terraform output --raw environment_id)
-  tf_environment_name=$(terraform output --raw environment_name)
-  tf_setup_notebook_name=$(terraform output --raw setup_notebook_name)
-  tf_setup_notebook_id=$(terraform output --raw setup_notebook_id)
-  tf_standardize_notebook_name=$(terraform output --raw standardize_notebook_name)
-  tf_standardize_notebook_id=$(terraform output --raw standardize_notebook_id)
-  tf_transform_notebook_name=$(terraform output --raw transform_notebook_name)
-  tf_transform_notebook_id=$(terraform output --raw transform_notebook_id)
-  tf_appinsights_connection_string_value=$(terraform output --raw appinsights_connection_string)
+    -var "git_directory_name=$fabric_workspace_directory" \
+    -var "fabric_adls_shortcut_name=$adls_gen2_shortcut_name" \
+    -var "kv_appinsights_connection_string_name=$appinsights_connection_string_name" \
+    -var "deploy_fabric_items=$deploy_fabric_items"
 
   cd "$original_directory"
 }
@@ -150,63 +124,69 @@ set_bearer_token() {
 delete_connection() {
   # Function to delete a connection if it exists
   connection_id=$1
-  get_connection_url="$fabric_api_endpoint/connections/$connection_id"
   delete_connection_url="$fabric_api_endpoint/connections/$connection_id"
 
-  # Check if the connection exists
-  response=$(curl -s -X GET -H "Authorization: Bearer $fabric_bearer_token" "$get_connection_url")
-  connection_name=$(echo "$response" | jq -r '.displayName')
+  response=$(curl -s -X DELETE -H "Authorization: Bearer $fabric_bearer_token" "$delete_connection_url")
 
-  if [[ -n $connection_name ]] && [[ $connection_name != "null" ]]; then
-    # Connection exists, proceed to delete
-    delete_response=$(curl -s -X DELETE -H "Authorization: Bearer $fabric_bearer_token" "$delete_connection_url")
-
-    if [[ -z $delete_response ]]; then
-      echo "[Info] Connection '$connection_id' deleted successfully."
-    else
-      echo "[Error] Failed to delete connection '$connection_id'."
-      echo "[Error] $delete_response"
-    fi
+  if [[ -z $response ]]; then
+    echo "[Info] Connection '$connection_id' deleted successfully."
   else
-    echo "[Info] Connection '$connection_id' not found. It could have not been created or deleted earlier."
+    echo "[Error] Failed to delete connection '$connection_id'."
+    echo "[Error] $response"
   fi
 }
 
 cleanup_terraform_files() {
   # List and delete .terraform directories
-  echo "[Info] Listing .terraform directories that will be deleted:"
+  echo "[Info] Listing Terraform state directory that will be deleted:"
+  find . -type d -name "${environment_name}" -path "*/terraform.tfstate.d/*"
+  find . -type d -name "${environment_name}" -path "*/terraform.tfstate.d/*" -exec rm -rf {} + 2>/dev/null
+  echo "[Info] Listing '.terraform' directory that will be deleted:"
   find . -type d -name ".terraform"
   find . -type d -name ".terraform" -exec rm -rf {} + 2>/dev/null
-  echo "[Info] .terraform directories deleted successfully."
+  echo "[Info] Terraform directories deleted successfully."
 
   # List and delete specific Terraform files
-  echo "[Info] Listing Terraform files that will be deleted:"
-  find . -type f \( -name "*.tfstate" -o -name "*.tfstate.backup" -o -name ".terraform.lock.hcl" \)
-  find . -type f \( -name "*.tfstate" -o -name "*.tfstate.backup" -o -name ".terraform.lock.hcl" \) -exec rm -f {} + 2>/dev/null
-  echo "[Info] Terraform intermediate files deleted successfully."
+  echo "[Info] Listing Terraform lock file that will be deleted:"
+  find . -type f -name ".terraform.lock.hcl"
+  find . -type f -name ".terraform.lock.hcl" -exec rm -f {} + 2>/dev/null
+  echo "[Info] Terraform lock file deleted successfully."
 }
 
-remove_adls_gen2_connection_id_from_env_file() {
-  local env_file="$1"
+cleanup_azdo_pipeline_files() {
+  # List and delete Azure DevOps pipeline files
+  echo "[Info] Listing Azure DevOps pipeline files that will be deleted:"
+  find ./devops -maxdepth 1 -type f -name "*.yml"
+  find ./devops -maxdepth 1 -type f -name "*.yml" -exec rm -f {} + 2>/dev/null
+  echo "[Info] Azure DevOps pipeline files deleted successfully."
+}
 
-  if [[ -f "$env_file" ]]; then
-    # Display the current content
-    echo "Current ADLS_GEN2_CONNECTION_ID in $env_file:"
-    grep '^export ADLS_GEN2_CONNECTION_ID=' "$env_file"
+get_connection_id_by_name() {
+  connection_name=$1
+  list_connection_url="$fabric_api_endpoint/connections"
+  response=$(curl -s -X GET -H "Authorization: Bearer $fabric_bearer_token" -H "Content-Type: application/json" "$list_connection_url" )
+  connection_id=$(echo "$response" | jq -r --arg name "$connection_name" '.value[] | select(.displayName == $name) | .id')
+  echo "$connection_id"
+}
 
-    # Remove the content
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        sed -i '' 's/^export ADLS_GEN2_CONNECTION_ID=.*$/export ADLS_GEN2_CONNECTION_ID=""/' "$env_file"
-    else
-        sed -i 's/^export ADLS_GEN2_CONNECTION_ID=.*$/export ADLS_GEN2_CONNECTION_ID=""/' "$env_file"
-    fi
+get_azdo_pipeline_id () {
+  local pipeline_name=$1
+  local pipeline_output=$(az pipelines list --query "[?name=='$pipeline_name']" --output json)
+  local pipeline_id=$(echo "$pipeline_output" | jq -r '.[0].id')
+  echo "$pipeline_id"
+}
 
-    echo "ADLS_GEN2_CONNECTION_ID content has been cleared."
+delete_azdo_pipeline() {
+  local pipeline_name=$1
+  local pipeline_id=$(get_azdo_pipeline_id "$pipeline_name")
+
+  if [[ -z "$pipeline_id" || "$pipeline_id" == "null" ]]; then
+    echo "[Info] No AzDo pipeline with name '$pipeline_name' found."
   else
-    echo "Error: File '$env_file' not found."
+    az pipelines delete --id "$pipeline_id" --yes 1>/dev/null
+    echo "[Info] Deleted pipeline '$pipeline_name' (Pipeline ID: '$pipeline_id')"
   fi
 }
-
 
 echo "[Info] ############ STARTING CLEANUP STEPS############"
 
@@ -217,17 +197,30 @@ echo "[Info] ############ Terraform resources destroyed############"
 echo "[Info] Setting up fabric bearer token ############"
 set_bearer_token
 
-echo "[Info] ############ ADLS Gen2 connection ID Deletion ############"
+echo "[Info] ############ ADLS Gen2 connection deletion ############"
+# Deriving ADLS Gen2 connection name instead of relying on Terraform output for idempotency
+adls_gen2_connection_name="conn-adls-st${base_name//[-_]/}${environment_name}"
+
+adls_gen2_connection_id=$(get_connection_id_by_name "$adls_gen2_connection_name")
+
 if [[ -z $adls_gen2_connection_id ]]; then
-  echo "[Warning] ADLS Gen2 connection ID not provided. Skipping ADLS Gen2 connection deletion."
+  echo "[Warning] No Fabric connection with name '$adls_gen2_connection_name' found, skipping deletion."
 else
+  echo "[Info] Fabric Connection details: '$adls_gen2_connection_name' ($adls_gen2_connection_id)"
   delete_connection "$adls_gen2_connection_id"
 fi
 
-echo "[Info] ############ Remove ADLS_GEN2_CONNECTION_ID value from .env file############"
-remove_adls_gen2_connection_id_from_env_file ".env"
-
 echo "[Info] ############ Cleanup Terraform Intermediate files (state, lock etc.,) ############"
 cleanup_terraform_files
+
+echo "[Info] ############ Deleting AzDo Pipelines ###########"
+set_global_azdo_config
+
+delete_azdo_pipeline "$azdo_pipeline_ci_qa"
+delete_azdo_pipeline "$azdo_pipeline_ci_qa_cleanup"
+delete_azdo_pipeline "$azdo_pipeline_ci_publish_artifacts"
+
+echo "[Info] ############ Cleanup AzDo Pipeline files ('/devops/*.yml) ############"
+cleanup_azdo_pipeline_files
 
 echo "[Info] ############ FINISHED INFRA CLEANUP ############"

@@ -80,8 +80,4 @@ DEV_DATAFACTORY_NAME=$DEV_DATAFACTORY_NAME \
 log "DEPLOYMENT SUCCESSFUL
 Details of the deployment can be found in local .env.* files.\n\n" "success"
 
-log "IMPORTANT:
-This script has updated your local Azure Pipeline YAML definitions to point to your Github repo.
-ACTION REQUIRED: Commit and push up these changes to your Github repo before proceeding.\n\n" "warning"
-
-log "See README > Setup and Deployment for more details and next steps."
+log "See README > Setup and Deployment for more details and next steps." 

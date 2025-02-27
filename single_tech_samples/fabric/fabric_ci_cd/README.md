@@ -326,7 +326,7 @@ We plan to use this script in the future to automate the process of uploading "c
 
 As you may have noticed, the Azure DevOps pipelines mentioned above take Fabric token as a variable. If this token is expired, the pipelines will fail. To avoid this, the token must be updated in the Azure DevOps variable group before pipeline execution. And this is a manual process for now.
 
-To automate this process to some extent, you can use the [update-token-to-azdo-variable.sh](./../../../utilities/fabric/lakehouse-file-upload/upload-file-to-lakehouse.py) script. This is a generic Bash script that performs the following actions:
+To automate this process to some extent, you can use the [update-token-to-azdo-variable.sh](./scripts/update-token-to-azdo-variable/update-token-to-azdo-variable.sh) script. This is a generic Bash script that performs the following actions:
 
 - Prompts the user to run `az login` interactively and generates the Fabric bearer token with the appropriate scope.
 - Adds or updates the "token" variable in the Azure DevOps variable group, marking it as "secret".
