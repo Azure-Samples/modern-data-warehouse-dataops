@@ -2,9 +2,9 @@ import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from orchestrator.aml import AMLWorkspace
 from orchestrator.evaluation_config import EvaluatorConfig
 from orchestrator.evaluation_wrapper import EvaluationWrapper
+from orchestrator.store_results import MlflowType
 
 
 class TestEvaluationWrapper(unittest.TestCase):
@@ -19,7 +19,6 @@ class TestEvaluationWrapper(unittest.TestCase):
         # Setup
         mock_mkdtemp.return_value = "/tmp/testdir"
         mock_evaluate.return_value = {"metrics": {"accuracy": 0.95}}
-        mock_aml_workspace = MagicMock(spec=AMLWorkspace)
         evaluator_config = {"evaluator1": EvaluatorConfig()}
         evaluators = {"evaluator1": lambda x: x}
 
@@ -35,7 +34,7 @@ class TestEvaluationWrapper(unittest.TestCase):
             tags={"custom_tag": "value"},
         )
 
-        # Test without output_path and aml_workspace
+        # Test without output_path and mlflow_type
         results = wrapper.run(evaluation_name="test_evaluation")
         self.assertEqual(results, {"metrics": {"accuracy": 0.95}})
         mock_evaluate.assert_called_once_with(
@@ -52,7 +51,7 @@ class TestEvaluationWrapper(unittest.TestCase):
         results = wrapper.run(
             evaluation_name="test_evaluation",
             output_path=output_path,
-            aml_workspace=mock_aml_workspace,
+            mlflow_type=MlflowType.DATABRICKS,
         )
         self.assertEqual(results, {"metrics": {"accuracy": 0.95}})
         mock_evaluate.assert_called_with(
@@ -65,7 +64,6 @@ class TestEvaluationWrapper(unittest.TestCase):
         mock_store_results.assert_called_once_with(
             experiment_name="test_experiment",
             job_name="test_variant",
-            aml_workspace=mock_aml_workspace,
             tags={
                 "run_id": "test_experiment_run_id",
                 "variant.version": "test_version",
