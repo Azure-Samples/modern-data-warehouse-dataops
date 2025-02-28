@@ -1,15 +1,15 @@
-import os
 from pathlib import Path
+from typing import Optional
 
 from azure.ai.formrecognizer import AnalyzeResult, DocumentAnalysisClient
 from azure.core.credentials import AzureKeyCredential
+from common.config import DIConfig
 
 
-def get_doc_analysis_client() -> DocumentAnalysisClient:
-    endpoint = os.environ["DOCUMENT_INTELLIGENCE_ENDPOINT"]
-    api_key = os.environ["DOCUMENT_INTELLIGENCE_KEY"]
-
-    return DocumentAnalysisClient(endpoint=endpoint, credential=AzureKeyCredential(api_key))
+def get_doc_analysis_client(config: Optional[DIConfig]) -> DocumentAnalysisClient:
+    if config is None:
+        config = DIConfig()
+    return DocumentAnalysisClient(endpoint=config.endpoint, credential=AzureKeyCredential(config.api_key))
 
 
 def analyze_document(

@@ -10,9 +10,10 @@ import yaml
 from azure.identity import DefaultAzureCredential
 from common.analyze_submissions import AnalyzedDocument
 from common.citation import ValidCitation
+from common.logging import get_logger
 from common.path_utils import RepoPaths
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 logger.setLevel(logging.INFO)
 
 
