@@ -1,4 +1,5 @@
 import logging
+from enum import Enum
 from pathlib import Path
 from typing import Optional
 
@@ -6,6 +7,10 @@ import mlflow
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+
+
+class MlflowType(Enum):
+    DATABRICKS = "databricks"
 
 
 def store_results(

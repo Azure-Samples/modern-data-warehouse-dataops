@@ -112,6 +112,7 @@ class LLMCitationGenerator:
                 if citation_str is not None:
                     loaded_citations = json.loads(citation_str)
                     citations_to_validate: list = loaded_citations.get("citations", [])
+                    logger.debug(f"Validating {len(citations_to_validate)} citations")
                     for c in citations_to_validate:
                         if isinstance(c, dict):
                             excerpt = c.get("excerpt")
@@ -128,7 +129,6 @@ class LLMCitationGenerator:
                                 excerpt=excerpt,
                                 document_name=cd.document_name,
                                 explanation=c.get("explanation"),
-                                raw=citation_str,
                             )
 
                             validated_citation = validate_citation(citation=citation, chunk=doc_chunk)
@@ -141,6 +141,8 @@ class LLMCitationGenerator:
                                     error="Invalid citation format",
                                 )
                             )
+                else:
+                    logger.info(f"LLM returned None for document {cd.document_name}")
 
         output["citations"] = [asdict(c) for c in citations]
 
@@ -166,7 +168,6 @@ class LLMCitationGenerator:
 
 
 if __name__ == "__main__":
-    from common.path_utils import RepoPaths
     from dotenv import load_dotenv
     from orchestrator.run_experiment import load_experiments
     from orchestrator.telemetry_utils import configure_telemetry
@@ -174,17 +175,18 @@ if __name__ == "__main__":
 
     load_dotenv(override=True)
     configure_telemetry()  # local telemetry
-    config_filepath = RepoPaths.experiment_config_path("llm_citation_generator")
 
-    variants = ["questions/total-revenue/1.yaml"]
+    # update values as needed
+    submission_folder = "F24Q3"
+    variants = ["total-revenue/1.yaml"]
+    write_to_file = False
+
     run_id = new_run_id()
     experiments = load_experiments(
-        config_filepath=config_filepath,
-        variants=variants,
-        run_id=run_id,
+        config_filepath="llm_citation_generator/config/experiment.yaml", variants=variants, run_id=run_id
     )
-    submission_folder = "F24Q3"
     for experiment in experiments:
         result = experiment.run(submission_folder=submission_folder)
-        print(result)
-    print(f"Run ID: {run_id}")
+        if write_to_file:
+            experiment.write_results([result])
+    logger.info(f"Run ID: {run_id}")

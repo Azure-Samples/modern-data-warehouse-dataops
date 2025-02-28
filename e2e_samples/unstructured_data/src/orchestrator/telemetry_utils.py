@@ -1,18 +1,14 @@
-import logging
 import os
 from typing import Optional
 
 from azure.monitor.opentelemetry import configure_azure_monitor
-from opentelemetry import trace
 from opentelemetry.instrumentation.openai import OpenAIInstrumentor
 from opentelemetry.sdk.resources import SERVICE_NAME, Resource
+from orchestrator.logging import get_logger
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger = get_logger(__name__)
 
-tracer = trace.get_tracer(__name__)
-
-DEFAULT_OTEL_SERVICE_NAME = "private-dno-experiments"
+DEFAULT_OTEL_SERVICE_NAME = "unstructured-data-e2e-sample"
 APP_INSIGHTS = "APP_INSIGHTS"
 LOCAL = "LOCAL"
 

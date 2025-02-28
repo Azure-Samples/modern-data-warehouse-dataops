@@ -1,0 +1,15 @@
+name: total-revenue
+# init_args:
+#   db_question_id: <db_question_id>
+evaluation:
+  evaluators:
+    fuzzy_match:
+      evaluator_config:
+        column_mapping:
+          truth: ${data.inputs__truth__total_revenue}
+    exact_numeric_match:
+      evaluator_config:
+        column_mapping:
+          truth: ${data.inputs__truth__total_revenue}
+  tags:
+    question: total-revenue

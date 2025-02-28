@@ -1,17 +1,16 @@
-import importlib
-import logging
 import os
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Callable
 
 from opentelemetry import trace
-from orchestrator.experiment_config import ExperimentConfig, VariantConfig
+from orchestrator.config import Config
 from orchestrator.file_utils import write_json_file, write_jsonl_file
+from orchestrator.logging import get_logger
 from orchestrator.metadata import ExperimentMetadata
+from orchestrator.utils import flatten_dict
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger = get_logger(__name__)
 
 tracer = trace.get_tracer(__name__)
 
@@ -19,111 +18,85 @@ tracer = trace.get_tracer(__name__)
 @dataclass
 class ExperimentWrapper:
     """
-    A wrapper class for running experiments and managing their metadata.
+    ExperimentWrapper is a class that wraps around an experiment,
+        providing methods to run the experiment and write the results to a
+        specified output directory.
     Attributes:
-        experiment (Callable): The experiment to be run.
+        experiment (Callable): The experiment instance to be run.
         metadata (ExperimentMetadata): Metadata associated with the experiment.
-    Methods:
-        __init__(exp_config: ExperimentConfig, variant_config: VariantConfig,
-            run_id: str):
-            Initializes the ExperimentWrapper with the given configuration and run ID.
-        run(data_filename: str = "none", line_number: int | str = "none", **kwargs)
-            -> dict:
-            Runs the experiment with the provided data and additional keyword arguments.
-        write_results(output_dir: Path, results: list, is_eval_data: bool = False)
-            -> str:
-            Writes the results of the experiment to the specified output directory and
-                updates metadata.
+        output_container (str): The container for the experiment output.
+        additional_call_args (dict): Additional keyword arguments to pass to the experiment __call__ method.
     """
 
     experiment: Callable
+    experiment_name: str
+    variant_name: str
+    variant_version: str
     metadata: ExperimentMetadata
-
-    def __init__(
-        self,
-        exp_config: ExperimentConfig,
-        variant_config: VariantConfig,
-        run_id: str,
-    ):
-        module = importlib.import_module(exp_config.module)
-        cls = getattr(module, exp_config.class_name)
-
-        # build up init_params,
-        # wrapper passes the run_id and variant_name to experiment __call__ method
-        init_params = variant_config.init_params or {}
-        init_params["run_id"] = run_id
-        init_params["variant_name"] = variant_config.name
-        self.experiment = cls(**init_params)
-
-        self.metadata = ExperimentMetadata(
-            experiment_name=exp_config.name,
-            variant_name=variant_config.name,
-            evaluation=variant_config.evaluation,
-            run_id=run_id,
-        )
+    output_container: str
+    additional_call_args: dict = field(default_factory=dict)
 
     def run(
         self,
         data_filename: str = "none",
         line_number: int = 0,
-        **kwargs: Any,
+        **call_kwargs: Any,
     ) -> dict:
         """
         Runs the experiment with the provided data filename and line number.
         Args:
-            data_filename (str, optional): The name of the data file.
-                Defaults to "none".
-            line_number (int | str, optional): The line number in the data file.
-                Defaults to "none".
-            **kwargs: keyword arguments to pass to the experiment's __call__ method.
+            data_filename (str, optional): The name of the data file. Defaults to "none".
+            line_number (int, optional): The line number in the data file. Defaults to 0.
+            call_kwargs: keyword arguments to pass to the experiment's __call__ method.
         Returns:
-            dict: A dictionary containing the results of the experiment. If an
-                error occurs, the dictionary will contain an 'error' key with
-                the error message.
+            dict: A dictionary containing the results of the experiment. If an error occurs,
+                the dictionary will contain an 'error' key with the error message.
         """
-        line_number += 1
-        attributes: dict = {
-            "experiment.name": self.metadata.experiment_name,
-            "experiment.variant.name": self.metadata.variant_name,
+        attributes = {
+            "experiment.name": self.experiment_name,
+            "experiment.variant.name": self.variant_name,
+            "experiment.variant.version": self.variant_version,
             "experiment.run_id": self.metadata.run_id,
             "data.filename": data_filename,
-            "data.line_number": line_number,
+            "data.line_number": str(line_number),
         }
 
-        run_result = {**kwargs}
+        exp_fullname = f"{self.experiment_name}:{self.variant_name}"
+
+        inputs = {**self.additional_call_args, **call_kwargs}
+        output = flatten_dict({"inputs": inputs}, sep="__")
         try:
             with tracer.start_as_current_span("experiment", attributes=attributes):
-                logger.info(
-                    f"Running experiment on data line number: {line_number}, "
-                    f"experiment: '{self.metadata.fullname()}'"
-                )
-                result = self.experiment(**kwargs)
+                logger.info(f"Running experiment on data line number: {line_number}, " f"experiment: '{exp_fullname}'")
+                result = self.experiment(**inputs)
+
                 if not isinstance(result, dict):
-                    run_result.update(output=result)
-                else:
-                    run_result.update(**result)
+                    result = {"output": result}
+
+                flattened_result = flatten_dict(result)
+                output.update(flattened_result)
 
         except Exception as e:
             logger.error(
-                f"Uncaught error running experiment '{self.metadata.fullname()}' \
+                f"Uncaught error running experiment '{exp_fullname}' \
                 on data line number {line_number}. Error: {type(e).__name__} {e}"
             )
-            run_result.update(error=str(e))
-        return run_result
+            output["error"] = str(e)
+        return output
 
     def write_results(
         self,
-        output_dir: Path,
         results: list,
         is_eval_data: bool = False,
+        output_dir: Path = Config.run_outputs_dir,
     ) -> None:
         """
         Writes the experiment results and metadata to a specified output directory
         Args:
-            output_dir (Path): The directory where the results will be written.
             results (list): The list of results to be written.
             is_eval_data (bool, optional): Flag indicating if the results are evaluation
                 data. Defaults to False.
+            output_dir (Path): The directory where the results will be written.
         Returns:
             str: The path to the directory where the results were written.
         Side Effects:
@@ -133,10 +106,13 @@ class ExperimentWrapper:
             - Writes metadata
             - Logs the paths to the results and metadata files.
         """
-        # create directory structure: output_dir/exp_name/var_name/run_id
+        # create directory structure:
+        # output_dir/exp_name/output_container/variant_name/variant_version/run_id
         write_dir = output_dir.joinpath(
-            self.metadata.experiment_name,
-            self.metadata.variant_name,
+            self.experiment_name,
+            self.output_container,
+            self.variant_name,
+            self.variant_version,
             self.metadata.run_id,
         )
         os.makedirs(write_dir, exist_ok=True)
@@ -156,6 +132,7 @@ class ExperimentWrapper:
 
         # write metadata
         metadata_path = write_dir.joinpath(self.metadata.filename)
-        write_json_file(metadata_path, asdict(self.metadata))
+        metadata_dict = asdict(self.metadata)
+        write_json_file(metadata_path, metadata_dict)
 
-        logger.info(f"Results written to {results_path}. Metadata written to {metadata_path}")
+        logger.info(f"Results written to {results_path} Metadata written to {metadata_path}")

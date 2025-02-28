@@ -42,12 +42,11 @@ class NumericEvaluator:
             - `1,234.56` (without dollar sign)
     """
 
-    def __init__(self, truth_key: str, **kwargs: Any) -> None:
-        self.truth_key = truth_key
+    def __init__(self, **kwargs: Any) -> None:
+        pass
 
-    def __call__(self, response: list, truth: dict, **kwargs: Any):  # type: ignore
-        truth_value = truth.get(self.truth_key)
-        if truth_value is None:
+    def __call__(self, response: list, truth: str, **kwargs: Any):  # type: ignore
+        if truth is None:
             if response:
                 # we have responses, but truth says we should not have any
                 return {"ratio": 0.0}
@@ -62,7 +61,7 @@ class NumericEvaluator:
             numbers = re.findall(r"[\$]?\s*\d{1,3}(?:,\d{3})*(?:\.\d+)?", excerpt)
             chars_to_remove = ["$", ",", " "]
             numbers_processed = ["".join(char for char in num if char not in chars_to_remove) for num in numbers]
-            truth_processed = "".join(char for char in truth_value if char not in chars_to_remove)
+            truth_processed = "".join(char for char in truth if char not in chars_to_remove)
             if truth_processed in numbers_processed:
                 return {"ratio": 1.0}
         return {"ratio": 0.0}

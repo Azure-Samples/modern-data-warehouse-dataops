@@ -13,13 +13,11 @@ class FuzzyMatchEvaluator:
         truth_key: The key within the ground truth dictionary that is being evaluated.
     """
 
-    def __init__(self, truth_key: str, **kwargs: Any) -> None:
-        self.truth_key = truth_key
+    def __init__(self, **kwargs: Any) -> None:
         self.evaluator = RougeScoreEvaluator(rouge_type=RougeType.ROUGE_L)
 
-    def __call__(self, response: list, truth: dict, **kwargs: Any):  # type: ignore
-        truth_value = truth.get(self.truth_key)
-        if truth_value is None:
+    def __call__(self, response: list, truth: str, **kwargs: Any):  # type: ignore
+        if truth is None:
             if response:
                 # we have responses, but truth says we should not have any
                 return {"ratio": 0.0}
@@ -36,7 +34,7 @@ class FuzzyMatchEvaluator:
             if excerpt is None:
                 scores.append(0.0)
             else:
-                score_dict = self.evaluator(response=excerpt, ground_truth=truth_value)
+                score_dict = self.evaluator(response=excerpt, ground_truth=truth)
                 scores.append(score_dict["rouge_recall"])
 
         return {"ratio": sum(scores) / len(scores)}
