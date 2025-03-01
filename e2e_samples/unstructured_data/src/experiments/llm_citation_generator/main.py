@@ -13,7 +13,7 @@ from common.citation_db import commit_forms_docs_citations_to_db
 from common.citation_generator_utils import validate_citation
 from common.config import AzureOpenAIConfig, AzureStorageConfig, DIConfig, get_citation_db_config
 from common.di_utils import get_doc_analysis_client
-from common.llm.ai_inference import get_chat_completions_client
+from common.llm import get_chat_completions_client
 from common.logging import get_logger
 from common.prompt_templates import load_template
 
@@ -191,8 +191,7 @@ class LLMCitationGenerator:
             creator=self.db_config.creator,
             citations=valid_citations,
         )
-        ids = {"form_id": form_id, "question_id": self.db_config.question_id}
-        return ids
+        return {"form_id": form_id, "question_id": self.db_config.question_id}
 
 
 if __name__ == "__main__":
