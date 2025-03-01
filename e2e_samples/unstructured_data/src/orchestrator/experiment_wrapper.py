@@ -64,7 +64,7 @@ class ExperimentWrapper:
         exp_fullname = f"{self.experiment_name}:{self.variant_name}"
 
         inputs = {**self.additional_call_args, **call_kwargs}
-        output = flatten_dict({"inputs": inputs})
+        output = flatten_dict({"inputs": inputs}, sep="__")
         try:
             with tracer.start_as_current_span("experiment", attributes=attributes):
                 logger.info(f"Running experiment on data line number: {line_number}, " f"experiment: '{exp_fullname}'")
