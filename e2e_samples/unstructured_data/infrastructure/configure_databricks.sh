@@ -50,10 +50,9 @@ log "Uploading notebooks..."
 databricks_folder_name="/Workspace/Users/${USER_NAME,,}"
 log "databricks_folder_name: ${databricks_folder_name}"
 
-databricks workspace import "$databricks_folder_name/run_experiments.py" --file "./scripts/run_experiments.py" --format SOURCE --language PYTHON --overwrite
-databricks workspace import "$databricks_folder_name/evaluate_experiments.py" --file "./scripts/evaluate_experiments.py" --format SOURCE --language PYTHON --overwrite
-# databricks workspace import "$databricks_folder_name/02_standardize.py" --file "./databricks/notebooks/02_standardize.py" --format SOURCE --language PYTHON --overwrite
-# databricks workspace import "$databricks_folder_name/03_transform.py" --file "./databricks/notebooks/03_transform.py" --format SOURCE --language PYTHON --overwrite
+databricks_config=$(databricks repos create https://github.com/Azure-Samples/modern-data-warehouse-dataops.git --path /Shared/modern-data-warehouse-dataops)
+repo_id=$(echo $databricks_config | jq -r '.id')
+databricks repos update $repo_id --branch kraken/unstructured-data-processing
 
 # Define suitable VM for DB cluster
 file_path="./infrastructure/cluster.config.json"
