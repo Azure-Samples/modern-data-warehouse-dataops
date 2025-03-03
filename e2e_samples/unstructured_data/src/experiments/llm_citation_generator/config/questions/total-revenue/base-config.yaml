@@ -1,4 +1,4 @@
-name: total-revenue
+name: total_revenue
 # init_args:
 #   db_question_id: <db_question_id>
 evaluation:
@@ -6,12 +6,12 @@ evaluation:
     fuzzy_match:
       evaluator_config:
         column_mapping:
-          truth: ${data.inputs__truth__total_revenue.citations}
-          expected_match: ${data.inputs__truth__total_revenue.expected_match}
+          truth: ${data.inputs__truth__total_revenue__citations}
+          expected_match: ${data.inputs__truth__total_revenue__expected_match}
     exact_numeric_match:
       evaluator_config:
         column_mapping:
-          truth: ${data.inputs__truth__total_revenue.citations}
-          expected_match: ${data.inputs__truth__total_revenue.expected_match}
+          truth: ${data.inputs__truth__total_revenue__citations}
+          expected_match: ${data.inputs__truth__total_revenue__expected_match}
   tags:
-    question: total-revenue
+    question: total_revenue
