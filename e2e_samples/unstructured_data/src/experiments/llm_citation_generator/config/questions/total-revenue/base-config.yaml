@@ -1,4 +1,4 @@
-name: total-revenue
+name: total_revenue
 init_args:
   db_question_id: 1
 evaluation:
@@ -14,4 +14,4 @@ evaluation:
           truth: ${data.inputs__truth__total_revenue__citations}
           expected_match: ${data.inputs__truth__total_revenue__expected_match}
   tags:
-    question: total-revenue
+    question: total_revenue

@@ -1,14 +1,30 @@
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
 from azure.ai.formrecognizer import AnalyzeResult, DocumentAnalysisClient
 from azure.core.credentials import AzureKeyCredential
-from common.config import DIConfig
+from common.env import DI_ENDPOINT, DI_KEY, DI_OVERRIDE_RESULTS
+
+
+@dataclass
+class DIConfig:
+    endpoint: str
+    api_key: str
+    override_results: bool = False
+
+    @classmethod
+    def from_env(cls) -> "DIConfig":
+        return cls(
+            endpoint=DI_ENDPOINT.get_strict(),
+            api_key=DI_KEY.get_strict(),
+            override_results=DI_OVERRIDE_RESULTS or False,
+        )
 
 
 def get_doc_analysis_client(config: Optional[DIConfig]) -> DocumentAnalysisClient:
     if config is None:
-        config = DIConfig()
+        config = DIConfig.from_env()
     return DocumentAnalysisClient(endpoint=config.endpoint, credential=AzureKeyCredential(config.api_key))
 
 
