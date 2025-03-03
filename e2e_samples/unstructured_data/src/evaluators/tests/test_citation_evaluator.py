@@ -26,7 +26,7 @@ class TestCitationEvaluator(unittest.TestCase):
 
         result = self.mock_citation_evaluator.evaluate_any(truth, citations)
 
-        self.assertEqual(result["precision"], 1.0)
+        self.assertEqual(result, 1.0)
 
     def test_evaluate_any_no_match(self) -> None:
         citations = [
@@ -44,7 +44,7 @@ class TestCitationEvaluator(unittest.TestCase):
 
         result = self.mock_citation_evaluator.evaluate_any(truth, citations)
 
-        self.assertEqual(result["precision"], 0.0)
+        self.assertEqual(result, 0.0)
 
     def test_evaluate_any_some_match(self) -> None:
         citations = [
@@ -62,7 +62,7 @@ class TestCitationEvaluator(unittest.TestCase):
 
         result = self.mock_citation_evaluator.evaluate_any(truth, citations)
 
-        self.assertEqual(result["precision"], 0.5)
+        self.assertEqual(result, 0.5)
 
     def test_evaluate_any_empty_citations(self) -> None:
         citations: list = []
@@ -70,7 +70,7 @@ class TestCitationEvaluator(unittest.TestCase):
 
         result = self.mock_citation_evaluator.evaluate_any(truth, citations)
 
-        self.assertEqual(result["precision"], 0.0)
+        self.assertEqual(result, 0.0)
 
     def test_evaluate_any_no_excerpt(self) -> None:
         citations: list = [{}]
@@ -78,7 +78,7 @@ class TestCitationEvaluator(unittest.TestCase):
 
         result = self.mock_citation_evaluator.evaluate_any(truth, citations)
 
-        self.assertEqual(result["precision"], 0.0)
+        self.assertEqual(result, 0.0)
 
     def test_get_best_truth_score_no_match(self) -> None:
         citation = {"excerpt": "excerpt-1", "document_name": "doc1"}
