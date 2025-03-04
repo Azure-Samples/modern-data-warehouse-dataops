@@ -44,7 +44,8 @@
                 "eamodio.gitlens",
                 "GitHub.copilot",
                 "ms-python.mypy-type-checker",
-				"ms-azuretools.vscode-bicep"
+				"ms-azuretools.vscode-bicep",
+                "ms-toolsai.jupyter"
             ]
         }
     },

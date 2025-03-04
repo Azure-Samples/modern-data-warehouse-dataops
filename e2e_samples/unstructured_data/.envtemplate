@@ -20,9 +20,6 @@ TEAM_NAME=
 # Azure location to deploy resources. Default: westus
 # AZURE_LOCATION=
 
-# Azure subscription id to use to deploy resources. Default: default azure subscription.
-# AZURE_SUBSCRIPTION_ID=
-
 # String appended to all resource names to ensure uniqueness of azure resource names. Default: random five character string
 # DEPLOYMENT_ID=
 
@@ -32,7 +29,7 @@ TEAM_NAME=
 # Whether to enable or not Keyvault Purge Protection. Default if unset: true
 # ENABLE_KEYVAULT_PURGE_PROTECTION=
 
-### Citation Generator
+### Required. Environment variables for Citation Generator.
 
 # Blob
 AZURE_STORAGE_ACCOUNT_URL=
@@ -47,6 +44,7 @@ AZURE_OPENAI_VERSION=
 DOCUMENT_INTELLIGENCE_ENDPOINT=
 DOCUMENT_INTELLIGENCE_KEY=
 
+### Optional. Environment variables for Citation Generator.
 # Citation DB
 # CITATION_DB_ENABLED=true
 # CITATION_DB_SERVER_NAME=
