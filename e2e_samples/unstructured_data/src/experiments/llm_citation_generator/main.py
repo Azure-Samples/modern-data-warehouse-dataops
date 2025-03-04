@@ -5,12 +5,13 @@ from typing import Any, Optional
 
 from azure.ai.inference.models import SystemMessage, UserMessage
 from azure.identity import DefaultAzureCredential
-from common.analyze_submissions import AnalyzedDocument, analyze_submission_folder
+from common.analyze_submissions import analyze_submission_folder
 from common.azure_storage_utils import AzureStorageConfig, get_blob_service_client
 from common.chunking import AnalyzedDocChunker, get_context_max_tokens
 from common.citation import Citation, InvalidCitation, ValidCitation
-from common.citation_db import commit_forms_docs_citations_to_db, get_citation_db_config
+from common.citation_db import CitationDBConfig, commit_forms_docs_citations_to_db
 from common.citation_generator_utils import validate_citation
+from common.config_utils import EnvFetcher
 from common.di_utils import DIConfig, get_doc_analysis_client
 from common.llm import AzureOpenAIConfig, get_chat_completions_client
 from common.logging import get_logger
@@ -31,16 +32,29 @@ class LLMCitationGenerator:
         token_encoding_name: str = "o200k_base",  # gpt-4o, see https://gpt-tokenizer.dev/ for encoding names
         max_tokens: int = 4096,  # Azure gpt-4o max tokens defaults to 4096
         overlap: int = 100,
-        aoai_config: Optional[AzureOpenAIConfig] = None,
-        di_config: Optional[DIConfig] = None,
-        az_storage_config: Optional[AzureStorageConfig] = None,
-        db_conn_string: Optional[str] = None,
         submission_container: str = "msft-quarterly-earnings",
         results_container: str = "msft-quarterly-earnings-di-results",
         run_id: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
-        self.question = question
+        # Fetch config values from env
+        fetcher = EnvFetcher()
+        # DI
+        self.di_client = get_doc_analysis_client(DIConfig.fetch(fetcher))
+        self.overwrite_di = fetcher.get_bool("OVERWRITE_DI_RESULTS", False)
+
+        # LLM
+        self.llm = get_chat_completions_client(AzureOpenAIConfig.fetch(fetcher))
+
+        # Azure Storage
+        self.blob_client = get_blob_service_client(AzureStorageConfig.fetch(fetcher), DefaultAzureCredential())
+        self.submission_container = submission_container
+        self.results_continer = results_container
+
+        # DB
+        self.db_config = CitationDBConfig.fetch(
+            fetcher=fetcher, question_id=db_question_id, creator="llm-citation-generator", run_id=run_id
+        )
 
         # Prompts
         system_prompt_template = load_template(PROMPT_TEMPLATES_DIR.joinpath(system_prompt_file))
@@ -52,6 +66,7 @@ class LLMCitationGenerator:
             encoding_name=token_encoding_name,
             max_tokens=max_tokens,
         )
+        self.question = question
 
         # Chunking
         self.chunker = AnalyzedDocChunker(
@@ -60,25 +75,8 @@ class LLMCitationGenerator:
             overlap=overlap,
         )
 
-        # Blob
-        self.blob_client = get_blob_service_client(az_storage_config, DefaultAzureCredential())
-        self.submission_container = submission_container
-        self.results_continer = results_container
-
-        # DI
-        self.di_client = get_doc_analysis_client(di_config)
-
-        # LLM
-        self.llm = get_chat_completions_client(aoai_config)
-
-        # DB
-        self.db_config = get_citation_db_config(
-            creator="llm-citation-generator", conn_str=db_conn_string, question_id=db_question_id, run_id=run_id
-        )
-
     def __call__(self, submission_folder: str, **kwargs: Any) -> dict:
-
-        output: dict = {"citations": []}
+        output: dict = {}
 
         docs = analyze_submission_folder(
             blob_service_client=self.blob_client,
@@ -86,6 +84,7 @@ class LLMCitationGenerator:
             di_client=self.di_client,
             submission_container=self.submission_container,
             results_container=self.results_continer,
+            overwrite_di_results=self.overwrite_di,
         )
 
         if len(docs) == 0:
@@ -112,7 +111,24 @@ class LLMCitationGenerator:
 
         output["citations"] = [asdict(c) for c in citations]
 
-        output["db_info"] = self._write_to_db(submission_folder=submission_folder, docs=docs, citations=citations)
+        if self.db_config is not None:
+            # remove invalid citations
+            valid_citations = [c for c in citations if isinstance(c, ValidCitation)]
+
+            form_name = f"{submission_folder}{self.db_config.form_suffix}"
+            logger.info(f"Adding {len(citations)} citations to form {form_name}")
+
+            form_id = commit_forms_docs_citations_to_db(
+                conn_str=self.db_config.conn_str,
+                form_name=form_name,
+                question_id=self.db_config.question_id,
+                docs=docs,
+                creator=self.db_config.creator,
+                citations=valid_citations,
+            )
+            output["db_form_id"] = form_id
+            output["db_question_id"] = self.db_config.question_id
+
         return output
 
     def _generate_citations(self, chunk: str) -> str:
@@ -180,27 +196,6 @@ class LLMCitationGenerator:
                     )
                 )
         return citations
-
-    def _write_to_db(
-        self, submission_folder: str, docs: list[AnalyzedDocument], citations: list[ValidCitation | InvalidCitation]
-    ) -> Optional[dict]:
-        if self.db_config is None:
-            return None
-
-        valid_citations = [c for c in citations if isinstance(c, ValidCitation)]
-
-        form_name = f"{submission_folder}{self.db_config.form_suffix}"
-        logger.info(f"Adding {len(citations)} citations to form {form_name}")
-
-        form_id = commit_forms_docs_citations_to_db(
-            conn_str=self.db_config.conn_str,
-            form_name=form_name,
-            question_id=self.db_config.question_id,
-            docs=docs,
-            creator=self.db_config.creator,
-            citations=valid_citations,
-        )
-        return {"form_id": form_id, "question_id": self.db_config.question_id}
 
 
 if __name__ == "__main__":

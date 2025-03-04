@@ -1,9 +1,9 @@
 import logging
 from typing import Optional
 
-from common.env import EnvValueFetcher
+from common.config_utils import EnvFetcher
 
-DEFAULT_LOG_LEVEL = EnvValueFetcher().get("LOG_LEVEL") or "INFO"
+DEFAULT_LOG_LEVEL = EnvFetcher().get("EXPERIMENT_LOG_LEVEL") or "INFO"
 
 
 def get_logger(name: str, level: Optional[str] = None) -> logging.Logger:

@@ -9,7 +9,7 @@ load_dotenv()
 T = TypeVar("T")
 
 
-class ValueFetcher(ABC):
+class Fetcher(ABC):
     """
     Abstract class for getting values from different sources.
     """
@@ -53,7 +53,7 @@ class ValueFetcher(ABC):
         return default if default else False
 
 
-class EnvValueFetcher(ValueFetcher):
+class EnvFetcher(Fetcher):
     """
     Class to get values from environment variables.
     """

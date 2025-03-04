@@ -7,7 +7,6 @@ from typing import Any
 from azure.ai.formrecognizer import DocumentAnalysisClient
 from azure.storage.blob import BlobServiceClient
 from common.di_utils import analyze_document
-from dotenv import load_dotenv
 
 
 @dataclass
@@ -39,12 +38,10 @@ def analyze_submission_folder(
     blob_service_client: BlobServiceClient,
     folder_name: str,
     di_client: DocumentAnalysisClient,
-    submission_container: str = "msft-quarterly-earnings",
-    results_container: str = "msft-quarterly-earnings-di-results",
+    submission_container: str,
+    results_container: str,
+    overwrite_di_results: bool = False,
 ) -> list[AnalyzedDocument]:
-    load_dotenv(override=True)
-    override_di = os.getenv("OVERRIDE_DI_RESULTS", False)
-
     # model_id and di_client can be configurable in the future
     model_id = "prebuilt-layout"
 
@@ -62,7 +59,7 @@ def analyze_submission_folder(
         results_blob_client = results_container_client.get_blob_client(doc_name + ".json")
 
         # If DI results already exist and we're not overriding, load it into memory
-        if results_blob_client.exists() and not override_di:
+        if results_blob_client.exists() and not overwrite_di_results:
             blob_data = results_blob_client.download_blob()
             content = blob_data.readall()
             content = json.loads(content)
