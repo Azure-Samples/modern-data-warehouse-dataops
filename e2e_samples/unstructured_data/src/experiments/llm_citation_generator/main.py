@@ -64,7 +64,6 @@ class LLMCitationGenerator:
             if self.db_question_id is None:
                 raise KeyError("'db_question_id' is a required argument when Citation DB is enabled.")
 
-        self.blob_account_url = os.environ["AZURE_STORAGE_ACCOUNT_URL"]
         self.storage_conn_str = os.environ["AZURE_STORAGE_CONNECTION_STRING"]
         self.llm_creds = OAICredentials.from_env()
 
@@ -72,8 +71,6 @@ class LLMCitationGenerator:
         output: dict = {}
         llm = AzureOpenAILLM(creds=self.llm_creds)
         blob_service_client = get_blob_service_client(conn_string=self.storage_conn_str)
-        logger.debug(f"Connecting to blob storage at {self.blob_account_url}")
-        logger.debug(f"Using blob storage connection string: {self.storage_conn_str}")
         docs = analyze_submission_folder(
             blob_service_client=blob_service_client,
             folder_name=submission_folder,
