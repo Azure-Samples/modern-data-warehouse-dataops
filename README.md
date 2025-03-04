@@ -63,6 +63,9 @@ This [sample](e2e_samples/parking_sensors/) demonstrates batch, end-to-end data 
 This project welcomes contributions and suggestions. Please see our [Contributing guide](/CONTRIBUTING.md).
 
 ## Important Notice Concerning Financial and Performance Information from the Microsoft Investor Relations Website
+
+This repository uses documents which contain Microsoft Financial and Performance Information (i.e. PDFs of Press Releases, Form 10-Q, etc.) to demonstrate the sample's capabilities.
+
 Certain financial and other information on the Investor Relations website is reproduced or derived from more comprehensive information contained in our quarterly earnings releases and periodic reports and other filings with the Securities and Exchange Commission. The information contained on the Investor Relations website is unaudited unless otherwise noted or accompanied by an audit opinion and is not intended as a substitute for, and should be read in the context of, the more comprehensive information contained in these other documents. In the event of any conflict, the information contained in our quarterly earnings releases and our periodic reports and filings with the SEC shall take precedence.
  
 The Investor Relations website, including without limitation the “Outlook” portion of the "Earnings and Financials" section, may contain information from third parties. Examples, include estimates of future performance or hyperlinks to third party websites. This information does not represent opinions, forecasts, or factual assertions of Microsoft and we do not endorse it by including it in this website.
@@ -70,8 +73,8 @@ The Investor Relations website, including without limitation the “Outlook” p
  
 All information on this website speaks only as of
  
-- the last fiscal quarter or year for which we have filed a Form 10-Q or 10-K or,
-- for historical information, the date or period expressly indicated in or with such information.
+- **the last fiscal quarter or year for which we have filed a Form 10-Q or 10-K or,**
+- **for historical information, the date or period expressly indicated in or with such information.**
  
 We undertake no duty to update this information or any information provided by third parties.
  
