@@ -28,7 +28,7 @@ The sample demonstrate how DevOps principles can be applied end to end Data Pipe
   - [Setup](#setup)
     - [Prerequisites](#prerequisites)
     - [Deployment Options](#deployment-options)
-      - [Software Prerequisites if you use Dev Container](#software-prerequisites-if-you-use-dev-container)
+      - [Software Prerequisites if you use Dev Container **(Recommended)**](#software-prerequisites-if-you-use-dev-container-recommended)
       - [Software Prerequisites if you do not use Dev Container](#software-prerequisites-if-you-do-not-use-dev-container)
   - [Deployment](#deployment)
   - [Deployed Resources](#deployed-resources)
@@ -61,7 +61,7 @@ The sample demonstrate how DevOps principles can be applied end to end Data Pipe
 
 ## Solution Overview
 
-The solution pulls near realtime [Melbourne Parking Sensor data](https://www.melbourne.vic.gov.au/about-council/governance-transparency/open-data/Pages/on-street-parking-data.aspx) from a publicly available REST api endpoint and saves this to [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction). It then validates, cleanses, and transforms the data to a known schema using [Azure Databricks](https://azure.microsoft.com/en-us/products/databricks/). A second Azure Databricks job then transforms these into a [Star Schema](https://en.wikipedia.org/wiki/Star_schema) which are then loaded into [Azure Synapse Analytics (formerly SQLDW)](https://azure.microsoft.com/en-us/products/synapse-analytics/) using [Polybase](https://docs.microsoft.com/en-us/sql/relational-databases/polybase/polybase-guide?view=sql-server-ver15). The entire pipeline is orchestrated with [Azure Data Factory](https://azure.microsoft.com/en-us/products/data-factory/).
+The solution pulls fictional near realtime parking sensor data from a data generator that was installed during the deploy and saves this to [Azure Data Lake Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction). It then validates, cleanses, and transforms the data to a known schema using [Azure Databricks](https://azure.microsoft.com/en-us/products/databricks/). A second Azure Databricks notebook then transforms these into a [Star Schema](https://en.wikipedia.org/wiki/Star_schema) which are then loaded into [Azure Synapse Analytics (formerly SQLDW)](https://azure.microsoft.com/en-us/products/synapse-analytics/) using [Polybase](https://docs.microsoft.com/en-us/sql/relational-databases/polybase/polybase-guide?view=sql-server-ver15). The entire pipeline is orchestrated with [Azure Data Factory](https://azure.microsoft.com/en-us/products/data-factory/).
 
 ### Architecture
 
@@ -228,9 +228,7 @@ Follow the setup prerequisites, permissions, and deployment environment options.
 
 As previously mentioned, there are two approaches to setting up the deployment environment, and the prerequisites for each will be detailed below. We recommend opting for the Dev Container, as it streamlines the setup process, ensures consistency, and minimizes configuration effort. Using the Dev Container requires installation and configuration; refer to the documentation linked below for further details.
 
-##### Software Prerequisites if you use Dev Container
-
-**(Recommended)**
+##### Software Prerequisites if you use Dev Container **(Recommended)**
 
 - [Docker](https://www.docker.com/)
 
@@ -297,8 +295,8 @@ Set up the environment variables as specified, fork the GitHub repository, and l
      - Open the project inside the vscode Dev Container (see details [here](docs/devcontainer.md)).
       > Note that the environment file is only loaded once, during the container build process. If you modify any environment variables after building your Dev Container, you will need to manually reload the new values by running `source .devcontainer/.env`
 
-   - To further customize the solution, set parameters in `arm.parameters` files located in the `infrastructure` folder.
-      - To enable Observability and Monitoring components through code(Observability-as-code), please set enable_monitoring parameter to true in  `arm.parameters` files located in the `infrastructure` folder. This will deploy log analytics workspace to collect monitoring data from key resources, setup an Azure dashboards to monitor key metrics and configure alerts for ADF pipelines.
+   - To further customize the solution, set parameters in `main.parameters.env.json` files located in the `infrastructure` folder.
+      - To enable Observability and Monitoring components through code(Observability-as-code), please set enable_monitoring parameter to true in  `main.parameters.env.json` files located in the `infrastructure` folder. This will deploy log analytics workspace to collect monitoring data from key resources, setup an Azure dashboards to monitor key metrics and configure alerts for ADF pipelines.
   
      **Login and Cluster Configuration**
       - Ensure that you have completed the configuration for the variables described in the previous section, titled **Configuration: Variables and Login**.
@@ -314,9 +312,9 @@ Set up the environment variables as specified, fork the GitHub repository, and l
       - This may take around **~30mins or more** to run end to end. So grab yourself a cup of coffee... ☕ But before you do so keep the following in mind:
         - You might encounter deployment issues if the script attempts to create a Key Vault that conflicts with a previously soft-deleted Key Vault. In such cases, the deployment script may prompt you to confirm the purge of the previously deleted Key Vault.
         - There are 3 points in time where you will need to authenticate to the databricks workspace, before the script continues to run. You will find the following message for the deployment of the dev, stage and production environments. Click the link highlighted in green, consent to authenticate to the databricks workspace and when the workspace opens successfully, return to the deployment windows and press Enter to continue:  ![image](docs/images/databricks_ws.png)
-       - If you encounter an error with `cannot execute: required file not found` verify the line ending settings of your git configuration. This error is likely that the lines in the file are ending with CRLF. Using VSCode, verify that `./deploy.sh` is set to LF only. This can be done using the control pallet and typing `>Change End of Line Sequence`. Also, verify the files in the `scripts` folder are also set to LF only.
-      - After a successful deployment, you will find `.env.{environment_name}` files containing essential configuration information per environment. See [here](#deployed-resources) for list of deployed resources.
-      - Note that if you are using **Dev Container**, you would run the same script but inside the Dev Container terminal.
+     - If you encounter an error with `cannot execute: required file not found` verify the line ending settings of your git configuration. This error is likely that the lines in the file are ending with CRLF. Using VSCode, verify that `./deploy.sh` is set to LF only. This can be done using the control pallet and typing `>Change End of Line Sequence`. Also, verify the files in the `scripts` folder are also set to LF only.
+     - After a successful deployment, you will find `.env.{environment_name}` files containing essential configuration information per environment. See [here](#deployed-resources) for list of deployed resources.
+     - Note that if you are using **Dev Container**, you would run the same script but inside the Dev Container terminal.
 
 3. **Setup ADF git integration in DEV Data Factory**
 
@@ -338,7 +336,7 @@ Set up the environment variables as specified, fork the GitHub repository, and l
    > **Ensure you Import Existing Data Factory resources to repository**. The deployment script deployed ADF objects with Linked Service configurations in line with the newly deployed environments. Importing existing ADF resources definitions to the repository overrides any default Linked Services values so they are correctly in sync with your DEV environment.
 
 4. **Trigger an initial Release**
-
+   - Before triggering a initial release, make sure that "Disable implied YAML CI trigger" setting on your AzDo Organization or Project is set to **on**. This setting will allow to trigger the ci run following the trigger section defined on the yml file and avoid unintended runs for any changes pushed on the repository.
    - In the **DEV** Data Factory portal, navigate to Pipelines and open the "P_Ingest_MelbParkingData" pipeline.
    - In the top left corner, open the git drop down and create a Dev branch by clicking in "New Branch".
    - Once the Dev branch is created, select the branch from the drop-down list and make a change in the Description fields from one of the pipeline tasks.
@@ -352,11 +350,10 @@ Set up the environment variables as specified, fork the GitHub repository, and l
       - You may need to authorize the Pipelines initially to use the Service Connection and deploy the target environments for the first time.
       ![Release Pipeline](docs/images/ReleasePipeline.png "Release Pipelines")
    - **Optional**. Trigger the Data Factory Pipelines per environment.
-      - In the Data Factory portal of each environment, navigate to "Author", then select the `P_Ingest_MelbParkingData`.
+      - In the Data Factory portal of each environment, navigate to "Author", then select the `P_Ingest_ParkingData`.
       - Select "Trigger > Trigger Now".
       - To monitor the run, go to "Monitor > Pipeline runs".
       ![Data Factory Run](docs/images/ADFRun.png "Data Factory Run]")
-      - Currently, the data pipeline is configured to use "on-demand" databricks clusters so it takes a few minutes to spin up. That said, it is not uncommon to change these to point to "existing" running clusters in Development for faster data pipeline runs.
 
 5. **Optional. Visualize data in PowerBI**
     > This requires [PowerBI Desktop App](https://powerbi.microsoft.com/en-us/desktop/) installed.
@@ -379,7 +376,9 @@ If you've encountered any issues, please review the [Troubleshooting](../../docs
 After a successful deployment, you should have the following resources:
 
 - In Azure, **three (3) Resource Groups** (one per environment) each with the following Azure resources.
-  - **Data Factory** - with pipelines, datasets, linked services, triggers deployed and configured correctly per environment.
+  - **App Service plan** - B1 Service plan for managing REST API web application
+  - **App Service** - nodejs app service providing REST API for simulated parking data.
+  - **Data Factory(v2)** - with pipelines, datasets, linked services, triggers deployed and configured correctly per environment.
   - **Data Lake Store Gen2** and a **Service Principal (SP)** with Storage Contributor rights assigned.
   - **Databricks workspace**
     - notebooks uploaded at `/notebooks` folder in the workspace
@@ -440,6 +439,8 @@ ADLS Gen2 is structured as the following:
 
 The following lists some limitations of the solution and associated deployment script:
 
+- Azure Subscription will need to have regional App Service quota available to deploy the data simulator application.
+  - **Workaround**: To resolve this, consult the steps in the documentation [here](https://aka.ms/antquotahelp).
 - Azure DevOps Variable Groups linked to KeyVault can only be created via the UI, cannot be created programmatically and was not incorporated in the automated deployment of the solution.
   - **Workaround**: Deployment add sensitive configuration as "secrets" in Variable Groups with the downside of duplicated information. If you wish, you may manually link a second Variable Group to KeyVault to pull out the secrets. KeyVault secret names should line up with required variables in the Azure DevOps pipelines. See [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml#link-secrets-from-an-azure-key-vault) for more information.
 - Azure DevOps Service Connection Removal: If you encounter an error like: *"Cannot delete this service connection while federated credentials for app <app-id> exist in Entra tenant <tenant-id>. Please make sure federated credentials have been removed prior to deleting the service connection."* This issue occurs when you try to delete a Service Connection in the Azure DevOps (AzDo) portal, but the Service Connection has federated credentials that need to be manually removed from the Azure Portal.
