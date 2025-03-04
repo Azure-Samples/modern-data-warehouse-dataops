@@ -1,4 +1,4 @@
-{"submission_folder": "F24Q3", "truth": {"total_revenue": "Revenue was $61.9 billion and increased 17%", "earnings_per_share": "$2.94"}}
-{"submission_folder": "F24Q4", "truth": {"total_revenue": null, "earnings_per_share": null}}
-{"submission_folder": "F25Q1", "truth": {"total_revenue": null, "earnings_per_share": null}}
-{"submission_folder": "F25Q2", "truth": {"total_revenue": null, "earnings_per_share": null}}
+{"submission_folder": "F24Q3", "truth": {"total_revenue": {"expected_match": "any", "citations": [{ "excerpt": "61,858", "context": "$ (in millions)", "document": "form10Q.pdf", "page-number": "3"}, {"excerpt": "Revenue was $61.9 billion and increased 17%", "context": "$ (in millions)", "document": "pressrelease.pdf", "page-number": "1"}]}, "earnings_per_share": {"expected_match": "any", "citations": [{"excerpt": "2.94", "context": "$", "document": "form10Q.pdf", "page-number": "3"},{"excerpt": "Diluted earnings per share was $2.94 and increased 20%", "document": "pressrelease.pdf", "page-number": "2"}]}}}
+{"submission_folder": "F24Q4", "truth": {"total_revenue": {"citations": []}, "earnings_per_share": {"citations": []}}}
+{"submission_folder": "F25Q1", "truth": {"total_revenue": {"citations": []}, "earnings_per_share": {"citations": []}}}
+{"submission_folder": "F25Q2", "truth": {"total_revenue": {"citations": []}, "earnings_per_share": {"citations": []}}}
