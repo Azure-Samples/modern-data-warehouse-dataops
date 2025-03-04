@@ -38,6 +38,8 @@ resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
       bypass: 'AzureServices'
       defaultAction: 'Allow'
     }
+    allowBlobPublicAccess: true // TODO: Check if this is necessary
+    allowSharedKeyAccess: true
     supportsHttpsTrafficOnly: true
     encryption: {
       services: {
@@ -70,3 +72,6 @@ resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
 // Outputs
 @description('The name of the storage account.')
 output storage_account_name string = storage.name
+
+@description('The account connection string')
+output storage_conn_string string = 'DefaultEndpointsProtocol=https;AccountName=${storage.name};AccountKey=${listKeys(storage.id, storage.apiVersion).keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
