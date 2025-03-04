@@ -17,7 +17,7 @@ class AzureOpenAIConfig:
         deployment_name = fetcher.get_strict("AZURE_OPENAI_MODEL_DEPLOYMENT_NAME")
         return cls(
             api_key=fetcher.get_strict("AZURE_OPENAI_API_KEY"),
-            api_version=fetcher.get_strict("AZURE_OPENAI_API_VERSION"),
+            api_version=fetcher.get_strict("AZURE_OPENAI_VERSION"),
             deployment_endpoint=f"{endpoint}/openai/deployments/{deployment_name}",
         )
 
