@@ -79,31 +79,32 @@ jobs:
             set -o pipefail
             set -o nounset
 
-            # Check if release directory exists.
-            databricks_release_path="/Workspace$DATABRICKS_NOTEBOOK_PATH"
-            if databricks workspace list $databricks_release_path > /dev/null 2>&1; then
-                echo "Folder '$databricks_release_path' already exists."
+            # Check if release notebook directory exists.
+            databricks_release_notebook_path="/Workspace$DATABRICKS_NOTEBOOK_PATH"
+            if databricks workspace list $databricks_release_notebook_path > /dev/null 2>&1; then
+                echo "Folder '$databricks_release_notebook_path' already exists."
             else
-                databricks workspace mkdirs $databricks_release_path
-                echo "Folder '$databricks_release_path' created."
+                databricks workspace mkdirs $databricks_release_notebook_path
+                echo "Folder '$databricks_release_notebook_path' created."
             fi
 
-            echo "Creating folder in ADLS..."
-            relative_path=${DBFS_LIBS_PATH#dbfs:/mnt/}
-            fs_name="$(cut -d '/' -f 1 <<< $relative_path)"
-            fs_folder_path="/$(cut -d '/' -f 2- <<< $relative_path)"
-            stg_account_name=$(databricks secrets get-secret storage_scope datalakeAccountName | jq -r .value | base64 -d)
-            stg_account_key=$(databricks secrets get-secret storage_scope datalakeKey | jq -r .value | base64 -d)
-            az storage fs directory create -n "$fs_folder_path" -f $fs_name --account-name $stg_account_name --account-key $stg_account_key -o none
+            # Check if release libs directory exists.
+            databricks_release_libs_path="/Workspace$DATABRICKS_LIBS_PATH"
+            if databricks workspace list $databricks_release_libs_path > /dev/null 2>&1; then
+                echo "Folder '$databricks_release_libs_path' already exists."
+            else
+                databricks workspace mkdirs $databricks_release_libs_path
+                echo "Folder '$databricks_release_libs_path' created."
+            fi
 
-            echo "Uploading app libraries to DBFS..."
-            echo "Uploading SOURCE whl file: ${WHEEL_FILE_PATH}/${WHEEL_FILE_NAME} to dbfs DESTINATION: ${DBFS_LIBS_PATH}/${WHEEL_FILE_NAME}"
-            databricks fs cp --recursive --overwrite "${WHEEL_FILE_PATH}/${WHEEL_FILE_NAME}" "${DBFS_LIBS_PATH}/${WHEEL_FILE_NAME}"
-            echo "Uploading notebooks at ${NOTEBOOKS_PATH} to workspace (${databricks_release_path})..."
-            databricks workspace import "${databricks_release_path}/00_setup" --file "${NOTEBOOKS_PATH}/00_setup.py" --format SOURCE --language PYTHON --overwrite
-            databricks workspace import "${databricks_release_path}/01_explore" --file "${NOTEBOOKS_PATH}/01_explore.py" --format SOURCE --language PYTHON --overwrite
-            databricks workspace import "${databricks_release_path}/02_standardize" --file "${NOTEBOOKS_PATH}/02_standardize.py" --format SOURCE --language PYTHON --overwrite
-            databricks workspace import "${databricks_release_path}/03_transform" --file "${NOTEBOOKS_PATH}/03_transform.py" --format SOURCE --language PYTHON --overwrite
+            echo "Uploading app libraries to Workspace..."
+            databricks workspace import --language PYTHON --format AUTO --overwrite --file "${WHEEL_FILE_PATH}/${WHEEL_FILE_NAME}" "$databricks_release_libs_path/ddo_transform-localdev-py2.py3-none-any.whl"
+
+            echo "Uploading notebooks at ${NOTEBOOKS_PATH} to workspace (${databricks_release_notebook_path})..."
+            databricks workspace import "${databricks_release_notebook_path}/00_setup" --file "${NOTEBOOKS_PATH}/00_setup.py" --format SOURCE --language PYTHON --overwrite
+            databricks workspace import "${databricks_release_notebook_path}/01_explore" --file "${NOTEBOOKS_PATH}/01_explore.py" --format SOURCE --language PYTHON --overwrite
+            databricks workspace import "${databricks_release_notebook_path}/02_standardize" --file "${NOTEBOOKS_PATH}/02_standardize.py" --format SOURCE --language PYTHON --overwrite
+            databricks workspace import "${databricks_release_notebook_path}/03_transform" --file "${NOTEBOOKS_PATH}/03_transform.py" --format SOURCE --language PYTHON --overwrite
 
             # Create JSON file for library installation
             temp_dir=$(mktemp -d)
@@ -114,7 +115,7 @@ jobs:
               "cluster_id": "${{ parameters.dbclusterid }}",
               "libraries": [
                 {
-                  "whl": "dbfs:/ddo_transform-localdev-py2.py3-none-any.whl"
+                  "whl": "/Workspace/releases/dev/libs/ddo_transform-localdev-py2.py3-none-any.whl"
                 }
               ]
             }
@@ -130,5 +131,6 @@ jobs:
             WHEEL_FILE_NAME: $(setPackageWheelName.packageWheelName)
             NOTEBOOKS_PATH: $(Pipeline.Workspace)/ciartifacts/databricks/notebooks
             DATABRICKS_NOTEBOOK_PATH: $(databricksNotebookPath)
+            DATABRICKS_LIBS_PATH: $(databricksLibPath)
           displayName: 'Deploy notebooks and packages'
  

@@ -47,12 +47,11 @@ set -o nounset
 if [ "$ENV_NAME" == "dev" ]
 then 
     # In DEV, we fix the path to "dev" folder  to simplify as this is manual publish DEV ADF.
-    # In other environments, the ADF release pipeline overwrites these automatically.
-    databricksDbfsLibPath="dbfs:/mnt/datalake/sys/databricks/libs/dev"
-    databricksNotebookPath='/releases/dev'
+    databricksLibPath='/releases/dev/libs'
+    databricksNotebookPath='/releases/dev/notebooks'
 else
-    databricksDbfsLibPath='dbfs:/mnt/datalake/sys/databricks/libs/$(Build.BuildId)'
-    databricksNotebookPath='/releases/$(Build.BuildId)'
+    databricksLibPath='/releases/$(Build.BuildId)/libs'
+    databricksNotebookPath='/releases/$(Build.BuildId)/notebooks'
 fi
 
 databricksClusterId=$(az keyvault secret show --name "databricksClusterId" --vault-name "$KV_NAME" --query "value" -o tsv)
@@ -71,11 +70,12 @@ az pipelines variable-group create \
         azureLocation="$AZURE_LOCATION" \
         rgName="$RESOURCE_GROUP_NAME" \
         adfName="$DATAFACTORY_NAME" \
-        databricksDbfsLibPath="$databricksDbfsLibPath" \
+        databricksLibPath="$databricksLibPath" \
         databricksNotebookPath="$databricksNotebookPath" \
         databricksClusterId="$databricksClusterId" \
         apiBaseUrl="$API_BASE_URL" \
     -o none
+# databricksDbfsLibPath="$databricksDbfsLibPath" \
 
 # Create vargroup - for secrets
 vargroup_secrets_name="${PROJECT}-secrets-$ENV_NAME"

@@ -33,8 +33,14 @@ set -o nounset
 # USER_NAME
 # DATABRICKS_RELEASE_FOLDER
 # AZURE_LOCATION
+# PROJECT
+# DEPLOYMENT_ID
 
 . ./scripts/common.sh
+
+
+data_stg_account_name="${PROJECT}st${ENVIRONMENT_NAME}${DEPLOYMENT_ID}"
+resource_group_name="${PROJECT}-${DEPLOYMENT_ID}-${ENVIRONMENT_NAME}-rg"
 
 log "Configuring Databricks workspace."
 
@@ -53,11 +59,13 @@ databricks secrets create-scope --json "{\"scope\": \"$scope_name\", \"scope_bac
 # Upload notebooks
 log "Uploading notebooks..."
 databricks workspace mkdirs "$DATABRICKS_RELEASE_FOLDER"
-log "$ENV_NAME releases folder: $DATABRICKS_RELEASE_FOLDER"
-databricks workspace import "$DATABRICKS_RELEASE_FOLDER/00_setup" --file "./databricks/notebooks/00_setup.py" --format SOURCE --language PYTHON --overwrite
-databricks workspace import "$DATABRICKS_RELEASE_FOLDER/01_explore" --file "./databricks/notebooks/01_explore.py" --format SOURCE --language PYTHON --overwrite
-databricks workspace import "$DATABRICKS_RELEASE_FOLDER/02_standardize" --file "./databricks/notebooks/02_standardize.py" --format SOURCE --language PYTHON --overwrite
-databricks workspace import "$DATABRICKS_RELEASE_FOLDER/03_transform" --file "./databricks/notebooks/03_transform.py" --format SOURCE --language PYTHON --overwrite
+log "$ENVIRONMENT_NAME releases folder: $DATABRICKS_RELEASE_FOLDER"
+databricks workspace mkdirs "$DATABRICKS_RELEASE_FOLDER/notebooks"
+log "$ENVIRONMENT_NAME notebooks folder: $DATABRICKS_RELEASE_FOLDER/notebooks"	
+databricks workspace import "$DATABRICKS_RELEASE_FOLDER/notebooks/00_setup" --file "./databricks/notebooks/00_setup.py" --format SOURCE --language PYTHON --overwrite
+databricks workspace import "$DATABRICKS_RELEASE_FOLDER/notebooks/01_explore" --file "./databricks/notebooks/01_explore.py" --format SOURCE --language PYTHON --overwrite
+databricks workspace import "$DATABRICKS_RELEASE_FOLDER/notebooks/02_standardize" --file "./databricks/notebooks/02_standardize.py" --format SOURCE --language PYTHON --overwrite
+databricks workspace import "$DATABRICKS_RELEASE_FOLDER/notebooks/03_transform" --file "./databricks/notebooks/03_transform.py" --format SOURCE --language PYTHON --overwrite
 
 # Define suitable VM for DB cluster
 file_path="./databricks/config/cluster.config.json"
@@ -89,8 +97,6 @@ log "VM with the least resources:$least_resource_vm" "info"
 # Update the JSON file with the least resource VM
 if [ -n "$least_resource_vm" ]; then
     node_type_id=$(echo "$least_resource_vm" | jq -r '.name')
-    jq --arg node_type_id "$node_type_id" '.node_type_id = $node_type_id' "$file_path" > tmp.$$.json && mv tmp.$$.json "$file_path"
-    log "The JSON file at '$file_path' has been updated with the node_type_id: $node_type_id"
 else
     log "No common VM options found between Azure and Databricks." "error"
 fi
@@ -99,9 +105,31 @@ fi
 rm vm_names.txt
 
 # Create initial cluster, if not yet exists
-# cluster.config.json file needs to refer to one of the available SKUs on yout Region
-# az vm list-skus --location <LOCATION> --all --output table
+catalog_name="${PROJECT}-${DEPLOYMENT_ID}-catalog-${ENVIRONMENT_NAME}"
 cluster_config="./databricks/config/cluster.config.json"
+cat <<EOF > $cluster_config
+
+{
+  "cluster_name": "ddo_cluster",
+  "autoscale": {
+    "min_workers": 1,
+    "max_workers": 2
+  },
+  "spark_version": "14.3.x-scala2.12",
+  "autotermination_minutes": 30,
+  "node_type_id": "$node_type_id",
+  "data_security_mode": "USER_ISOLATION",
+  "runtime_engine": "PHOTON",
+  "spark_env_vars": {
+    "PYSPARK_PYTHON": "/databricks/python3/bin/python3",
+    "DATABASE": "datalake"
+  },
+  "spark_conf": {
+    "spark.sql.catalog.$catalog_name": "com.databricks.sql.catalog"
+  }
+}
+EOF
+
 log "Creating an interactive cluster using config in $cluster_config..."
 cluster_name=$(cat "$cluster_config" | jq -r ".cluster_name")
 if databricks_cluster_exists "$cluster_name"; then 
@@ -122,8 +150,12 @@ fi
 az keyvault secret set --vault-name "$KEYVAULT_NAME" --name "databricksClusterId" --value "$cluster_id" -o none
 
 
-log "Uploading libs TO dbfs..."
-databricks fs cp --recursive --overwrite "./databricks/libs/ddo_transform-localdev-py2.py3-none-any.whl" "dbfs:/ddo_transform-localdev-py2.py3-none-any.whl"
+log "Uploading libs TO libraries folder..."
+
+libs_path="$DATABRICKS_RELEASE_FOLDER/libs"
+
+databricks workspace mkdirs "$libs_path"
+databricks workspace import --language PYTHON --format AUTO --overwrite --file "./databricks/libs/ddo_transform-localdev-py2.py3-none-any.whl" "/Workspace/$libs_path/ddo_transform-localdev-py2.py3-none-any.whl"
 
 # Create JSON file for library installation
 json_file="./databricks/config/libs.config.json"
@@ -132,7 +164,7 @@ cat <<EOF > $json_file
   "cluster_id": "$cluster_id",
   "libraries": [
     {
-      "whl": "dbfs:/ddo_transform-localdev-py2.py3-none-any.whl"
+      "whl": "/Workspace/releases/dev/libs/ddo_transform-localdev-py2.py3-none-any.whl"
     }
   ]
 }
@@ -141,37 +173,9 @@ EOF
 # Install library on the cluster using the JSON file
 databricks libraries install --json @$json_file
 
-################################################
-# Configure Unity Catalog
-cat_stg_account_name="${PROJECT}catalog${ENV_NAME}${DEPLOYMENT_ID}"
-data_stg_account_name="${PROJECT}st${ENV_NAME}${DEPLOYMENT_ID}"
-resource_group_name="${PROJECT}-${DEPLOYMENT_ID}-${ENV_NAME}-rg"
-mng_resource_group_name="${PROJECT}-${DEPLOYMENT_ID}-dbw-${ENV_NAME}-rg"
-stg_credential_name="${PROJECT}-${DEPLOYMENT_ID}-stg-credential-${ENV_NAME}"
-catalog_ext_location_name="${PROJECT}-catalog-${DEPLOYMENT_ID}-ext-location-${ENV_NAME}"
-data_ext_location_name="${PROJECT}-data-${DEPLOYMENT_ID}-ext-location-${ENV_NAME}"
-catalog_name="${PROJECT}-${DEPLOYMENT_ID}-catalog-${ENV_NAME}"
-
-SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID \
-DATABRICKS_TOKEN=$DATABRICKS_TOKEN \
-DATABRICKS_KV_TOKEN=$DATABRICKS_KV_TOKEN \
-DATABRICKS_HOST=$DATABRICKS_HOST \
-ENVIRONMENT_NAME=$ENV_NAME \
-AZURE_LOCATION=$AZURE_LOCATION \
-CATALOG_STG_ACCOUNT_NAME=$cat_stg_account_name \
-DATA_STG_ACCOUNT_NAME=$data_stg_account_name \
-RESOURCE_GROUP_NAME=$resource_group_name \
-MNG_RESOURCE_GROUP_NAME=$mng_resource_group_name \
-STG_CREDENTIAL_NAME=$stg_credential_name \
-CATALOG_EXT_LOCATION_NAME=$catalog_ext_location_name \
-DATA_EXT_LOCATION_NAME=$data_ext_location_name \
-CATALOG_NAME=$catalog_name \
-    bash -c "./scripts/configure_unity_catalog.sh"
-################################################
-
 # Creates a Job to setup workspace
 log "Creating a job to setup the workspace..."
-notebook_path="${DATABRICKS_RELEASE_FOLDER}/00_setup"
+notebook_path="${DATABRICKS_RELEASE_FOLDER}/notebooks/00_setup"
 log "notebook_path: ${notebook_path}"
 json_file_config="./databricks/config/job.setup.config.json"
 cat <<EOF > $json_file_config
@@ -195,11 +199,19 @@ cat <<EOF > $json_file_config
 }
 EOF
 
+databricks catalogs list 
+if [ -n "$catalog_name" ]; then
+  if [ -z "$(databricks catalogs list | grep -w "$catalog_name")" ]; then
+      log "Catalog '$catalog_name' does not exist. It should exist..." "danger"
+      exit 1
+  fi
+else 
+  log "Catalog name is empty. It should exist." "danger"
+  exit 1
+fi
+
 job_id=$(databricks jobs create --json @$json_file_config | jq -r ".job_id")
 log "Job ID: ${job_id}"
 
-databricks jobs run-now --json "{\"job_id\":$job_id, \"notebook_params\": {\"PYSPARK_PYTHON\": \"/databricks/python3/bin/python3\", \"MOUNT_DATA_PATH\": \"/mnt/datalake\", \"MOUNT_DATA_CONTAINER\": \"datalake\", \"DATABASE\": \"datalake\"}}"
-# Upload libs -- for initial dev package
-# Needs to run AFTER mounting dbfs:/mnt/datalake in setup workspace
-
+databricks jobs run-now --json "{\"job_id\":$job_id, \"notebook_params\": {\"PYSPARK_PYTHON\": \"/databricks/python3/bin/python3\", \"DATABASE\": \"datalake\" }}"
 log "Completed configuring databricks." "success"
