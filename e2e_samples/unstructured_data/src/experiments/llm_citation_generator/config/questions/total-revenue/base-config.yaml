@@ -1,6 +1,6 @@
 name: total_revenue
-init_args:
-  db_question_id: 1
+# init_args:
+#   db_question_id: <db_question_id>
 evaluation:
   evaluators:
     fuzzy_match:
