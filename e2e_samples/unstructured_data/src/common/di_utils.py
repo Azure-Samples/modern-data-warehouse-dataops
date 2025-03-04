@@ -4,7 +4,7 @@ from typing import Optional
 
 from azure.ai.formrecognizer import AnalyzeResult, DocumentAnalysisClient
 from azure.core.credentials import AzureKeyCredential
-from common.env import DI_ENDPOINT, DI_KEY, DI_OVERRIDE_RESULTS
+from common.env import EnvValueFetcher
 
 
 @dataclass
@@ -15,10 +15,12 @@ class DIConfig:
 
     @classmethod
     def from_env(cls) -> "DIConfig":
+        fetcher = EnvValueFetcher()
+
         return cls(
-            endpoint=DI_ENDPOINT.get_strict(),
-            api_key=DI_KEY.get_strict(),
-            override_results=DI_OVERRIDE_RESULTS or False,
+            endpoint=fetcher.get_strict("DOCUMENT_INTELLIGENCE_ENDPOINT"),
+            api_key=fetcher.get_strict("DOCUMENT_INTELLIGENCE_KEY"),
+            override_results=fetcher.get_bool("OVERRIDE_DI_RESULTS", False),
         )
 
 

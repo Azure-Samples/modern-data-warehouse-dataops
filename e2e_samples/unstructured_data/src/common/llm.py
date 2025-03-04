@@ -3,12 +3,7 @@ from typing import Optional
 
 from azure.ai.inference import ChatCompletionsClient
 from azure.core.credentials import AzureKeyCredential
-from common.env import (
-    AZURE_OPENAI_API_KEY,
-    AZURE_OPENAI_API_VERSION,
-    AZURE_OPENAI_ENDPOINT,
-    AZURE_OPENAI_MODEL_DEPLOYMENT_NAME,
-)
+from common.env import EnvValueFetcher
 
 
 @dataclass
@@ -21,11 +16,12 @@ class AzureOpenAIConfig:
 
     @classmethod
     def from_env(cls) -> "AzureOpenAIConfig":
-        endpoint = AZURE_OPENAI_ENDPOINT.get_strict()
-        deployment_name = AZURE_OPENAI_MODEL_DEPLOYMENT_NAME.get_strict()
+        fetcher = EnvValueFetcher()
+        endpoint = fetcher.get_strict("AZURE_OPENAI_ENDPOINT")
+        deployment_name = fetcher.get_strict("AZURE_OPENAI_MODEL_DEPLOYMENT_NAME")
         return cls(
-            api_key=AZURE_OPENAI_API_KEY.get_strict(),
-            api_version=AZURE_OPENAI_API_VERSION.get_strict(),
+            api_key=fetcher.get_strict("AZURE_OPENAI_API_KEY"),
+            api_version=fetcher.get_strict("AZURE_OPENAI_API_VERSION"),
             deployment_name=deployment_name,
             endpoint=endpoint,
             deployment_endpoint=f"{endpoint}/openai/deployments/{deployment_name}",

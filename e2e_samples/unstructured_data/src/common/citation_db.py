@@ -10,7 +10,7 @@ import yaml
 from azure.identity import DefaultAzureCredential
 from common.analyze_submissions import AnalyzedDocument
 from common.citation import ValidCitation
-from common.env import CITATION_DB_CONNECTION_STRING, CITATION_DB_ENABLED
+from common.env import EnvValueFetcher
 from common.logging import get_logger
 from common.path_utils import RepoPaths
 
@@ -24,16 +24,17 @@ class CitationDBConfig:
     conn_str: str
     creator: str
 
-    def __init__(self, conn_str: str, question_id: int, creator: str, run_id: Optional[str] = None):
-        self.conn_str = conn_str
-        self.question_id = question_id
-        self.form_suffix = f"_{run_id}" if run_id else ""
-        self.creator = creator
-
     @classmethod
-    def from_env(cls, creator: str, question_id: int, run_id: Optional[str] = None) -> "CitationDBConfig":
-        conn_str = CITATION_DB_CONNECTION_STRING.get_strict()
-        return cls(conn_str=conn_str, question_id=question_id, creator=creator, run_id=run_id)
+    def from_env(
+        cls, creator: str, question_id: int, form_suffix: str, enabled: bool = False
+    ) -> Optional["CitationDBConfig"]:
+        fetcher = EnvValueFetcher()
+        is_enabled = fetcher.get_bool("CITATION_DB_ENABLED", enabled)
+        if not is_enabled:
+            return None
+
+        conn_str = fetcher.get_strict("CITATION_DB_CONNECTION_STRING")
+        return cls(conn_str=conn_str, question_id=question_id, creator=creator, form_suffix=form_suffix)
 
 
 def get_citation_db_config(
@@ -42,24 +43,20 @@ def get_citation_db_config(
     question_id: Optional[int] = None,
     run_id: Optional[str] = None,
 ) -> Optional[CitationDBConfig]:
-    enabled = CITATION_DB_ENABLED
-    if enabled is None:
-        enabled = False
-
-    if not enabled:
-        return None
 
     if question_id is None:
         raise KeyError("'question_id' is a required argument when Citation DB is enabled.")
+
+    form_suffix = f"_{run_id}" if run_id else ""
 
     if conn_str is None:
         return CitationDBConfig.from_env(
             creator=creator,
             question_id=question_id,
-            run_id=run_id,
+            form_suffix=form_suffix,
         )
 
-    return CitationDBConfig(conn_str=conn_str, question_id=question_id, creator=creator, run_id=run_id)
+    return CitationDBConfig(conn_str=conn_str, question_id=question_id, creator=creator, form_suffix=form_suffix)
 
 
 def get_conn(conn_str: str) -> pyodbc.Connection:

@@ -46,7 +46,7 @@ class LLMCitationGenerator:
         system_prompt_template = load_template(PROMPT_TEMPLATES_DIR.joinpath(system_prompt_file))
         self.system_prompt = system_prompt_template.render(question=question)
         self.user_prompt_template = load_template(PROMPT_TEMPLATES_DIR.joinpath(user_prompt_file))
-        # get token count without context to calculate max context tokens
+        # Get token count without context to calculate max context tokens
         max_context_tokens = get_context_max_tokens(
             text=self.system_prompt + self.user_prompt_template.render(question=question),
             encoding_name=token_encoding_name,
@@ -77,11 +77,8 @@ class LLMCitationGenerator:
         )
 
     def __call__(self, submission_folder: str, **kwargs: Any) -> dict:
-        if self.db_config is not None:
-            db_question_id = self.db_config.question_id
-        else:
-            db_question_id = None
-        output: dict = {"citations": [], "db_form_id": None, "db_question_id": db_question_id}
+
+        output: dict = {"citations": []}
 
         docs = analyze_submission_folder(
             blob_service_client=self.blob_client,
@@ -108,17 +105,26 @@ class LLMCitationGenerator:
             for chunk_idx, doc_chunk in enumerate(cd.chunks):
                 logger.debug(f"Sending chunk {chunk_idx+1} of {chunk_len} for doc {doc_idx+1} of {docs_len} to LLM")
 
-                llm_response = self.get_citations(doc_chunk)
+                llm_response = self._generate_citations(doc_chunk)
 
                 validated_citations = self._validate_citations(llm_response, cd.document_name, doc_chunk)
                 citations.extend(validated_citations)
 
         output["citations"] = [asdict(c) for c in citations]
 
-        output["db_info"] = self.write_to_db(submission_folder=submission_folder, docs=docs, citations=citations)
+        output["db_info"] = self._write_to_db(submission_folder=submission_folder, docs=docs, citations=citations)
         return output
 
-    def get_citations(self, chunk: str) -> str:
+    def _generate_citations(self, chunk: str) -> str:
+        """
+        Generates citations based on the provided text chunk.
+
+        Args:
+            chunk (str): The text chunk to be used as context for generating citations.
+
+        Returns:
+            str: The generated citations in JSON format.
+        """
         # add chunk as context
         user_prompt = self.user_prompt_template.render(context=chunk, question=self.question)
 
@@ -140,10 +146,12 @@ class LLMCitationGenerator:
         citations: list[InvalidCitation | ValidCitation] = []
         loaded_citations = json.loads(llm_response)
         citations_to_validate: list = loaded_citations.get("citations", [])
+
         logger.debug(f"Validating {len(citations_to_validate)} citations")
         for c in citations_to_validate:
             if isinstance(c, dict):
                 excerpt = c.get("excerpt")
+                # if excerpt is None, the citation is invalid
                 if excerpt is None:
                     citations.append(
                         InvalidCitation(
@@ -153,15 +161,17 @@ class LLMCitationGenerator:
                         )
                     )
                     continue
+
                 citation = Citation(
                     excerpt=excerpt,
                     document_name=doc_name,
                     explanation=c.get("explanation"),
                 )
-
+                # validate citation
                 validated_citation = validate_citation(citation=citation, chunk=chunk)
                 citations.append(validated_citation)
             else:
+                # if the citation is not a dict, it is invalid
                 citations.append(
                     InvalidCitation(
                         document_name=doc_name,
@@ -171,7 +181,7 @@ class LLMCitationGenerator:
                 )
         return citations
 
-    def write_to_db(
+    def _write_to_db(
         self, submission_folder: str, docs: list[AnalyzedDocument], citations: list[ValidCitation | InvalidCitation]
     ) -> Optional[dict]:
         if self.db_config is None:
@@ -194,12 +204,10 @@ class LLMCitationGenerator:
 
 
 if __name__ == "__main__":
-    from dotenv import load_dotenv
     from orchestrator.run_experiment import load_experiments
     from orchestrator.telemetry_utils import configure_telemetry
     from orchestrator.utils import new_run_id
 
-    load_dotenv(override=True)
     configure_telemetry()  # local telemetry
 
     # update values as needed

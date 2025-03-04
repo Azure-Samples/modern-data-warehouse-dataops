@@ -1,20 +1,69 @@
-from common.env_utils import EnvVar, EnvVarBool
+import os
+from abc import ABC, abstractmethod
+from typing import Optional, TypeVar, Union
+
 from dotenv import load_dotenv
 
 load_dotenv()
 
-AZURE_OPENAI_API_VERSION = EnvVar[str]("AZURE_OPENAI_API_VERSION")
-AZURE_OPENAI_API_KEY = EnvVar[str]("AZURE_OPENAI_API_KEY")
-AZURE_OPENAI_ENDPOINT = EnvVar[str]("AZURE_OPENAI_ENDPOINT")
-AZURE_OPENAI_MODEL_DEPLOYMENT_NAME = EnvVar[str]("AZURE_OPENAI_MODEL_DEPLOYMENT_NAME")
+T = TypeVar("T")
 
-DI_ENDPOINT = EnvVar[str]("DOCUMENT_INTELLIGENCE_ENDPOINT")
-DI_KEY = EnvVar[str]("DOCUMENT_INTELLIGENCE_KEY")
-DI_OVERRIDE_RESULTS = EnvVarBool("OVERRIDE_DI_RESULTS").value
 
-AZURE_STORAGE_ACCOUNT_URL = EnvVar[str]("AZURE_STORAGE_ACCOUNT_URL")
+class ValueFetcher(ABC):
+    """
+    Abstract class for getting values from different sources.
+    """
 
-CITATION_DB_ENABLED = EnvVarBool("CITATION_DB_ENABLED").value
-CITATION_DB_CONNECTION_STRING = EnvVar[str]("CITATION_DB_CONNECTION_STRING")
+    @abstractmethod
+    def _get(self, key: str) -> Optional[str]:
+        """
+        Abstract method to get the value.
 
-LOG_LEVEL = EnvVar[str]("EXPERIMENT_LOG_LEVEL").value
+        :param key: The key to look up.
+        :param default: The default value if the key is not found.
+        :return: The value associated with the key.
+        """
+        pass
+
+    def get_strict(self, key: str, default: Optional[T] = None) -> Union[str, T]:
+        """
+        Retrieve the value strictly, raising an error if not found.
+
+        :param key: The key to look up.
+        :param default: The default value if the key is not found.
+        :return: The value associated with the key.
+        :raises KeyError: If the key is not found and no default is provided.
+        """
+        value = self.get(key, default)
+        if value is None:
+            raise KeyError(f"{key} is required.")
+        return value
+
+    def get(self, key: str, default: Optional[T] = None) -> Optional[Union[str, T]]:
+        value = self._get(key)
+        if value is None:
+            return default
+
+        return value
+
+    def get_bool(self, key: str, default: Optional[bool] = None) -> bool:
+        value = self._get(key)
+        if isinstance(value, str):
+            return value.lower() == "true"
+        return default if default else False
+
+
+class EnvValueFetcher(ValueFetcher):
+    """
+    Class to get values from environment variables.
+    """
+
+    def _get(self, key: str) -> Optional[str]:
+        """
+        Get the value from the environment variable.
+
+        :param key: The key to look up.
+        :param default: The default value if the key is not found.
+        :return: The value associated with the key.
+        """
+        return os.getenv(key)

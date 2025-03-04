@@ -3,7 +3,7 @@ from typing import Optional
 
 from azure.identity import DefaultAzureCredential
 from azure.storage.blob import BlobServiceClient
-from common.env import AZURE_STORAGE_ACCOUNT_URL
+from common.env import EnvValueFetcher
 
 
 @dataclass
@@ -12,9 +12,8 @@ class AzureStorageConfig:
 
     @classmethod
     def from_env(cls) -> "AzureStorageConfig":
-        return cls(
-            account_url=AZURE_STORAGE_ACCOUNT_URL.get_strict(),
-        )
+        fetcher = EnvValueFetcher()
+        return cls(account_url=fetcher.get_strict("AZURE_STORAGE_ACCOUNT_URL"))
 
 
 def get_blob_service_client(
