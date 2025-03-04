@@ -38,7 +38,7 @@ resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
       bypass: 'AzureServices'
       defaultAction: 'Allow'
     }
-    allowBlobPublicAccess: true // TODO: Check if this is necessary
+    allowBlobPublicAccess: true
     allowSharedKeyAccess: true
     supportsHttpsTrafficOnly: true
     encryption: {
