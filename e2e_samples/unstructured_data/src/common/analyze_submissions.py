@@ -37,8 +37,8 @@ def convert_polygon_format(data: dict | list) -> dict | list | Any:
 def analyze_submission_folder(
     blob_service_client: BlobServiceClient,
     folder_name: str,
-    submission_container: str = "msft-quarterly-earnings",
-    results_container: str = "msft-quarterly-earnings-di-results",
+    submission_container: str = "input-documents",
+    results_container: str = "di-results",
 ) -> list[AnalyzedDocument]:
     load_dotenv(override=True)
     override_di = os.getenv("OVERRIDE_DI_RESULTS", False)
