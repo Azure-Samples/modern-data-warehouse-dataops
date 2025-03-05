@@ -67,14 +67,14 @@ This project welcomes contributions and suggestions. Please see our [Contributin
 This repository uses documents which contain Microsoft Financial and Performance Information (i.e. PDFs of Press Releases, Form 10-Q, etc.) to demonstrate the sample's capabilities.
 
 Certain financial and other information on the Investor Relations website is reproduced or derived from more comprehensive information contained in our quarterly earnings releases and periodic reports and other filings with the Securities and Exchange Commission. The information contained on the Investor Relations website is unaudited unless otherwise noted or accompanied by an audit opinion and is not intended as a substitute for, and should be read in the context of, the more comprehensive information contained in these other documents. In the event of any conflict, the information contained in our quarterly earnings releases and our periodic reports and filings with the SEC shall take precedence.
- 
+
 The Investor Relations website, including without limitation the “Outlook” portion of the "Earnings and Financials" section, may contain information from third parties. Examples, include estimates of future performance or hyperlinks to third party websites. This information does not represent opinions, forecasts, or factual assertions of Microsoft and we do not endorse it by including it in this website.
- 
+
 All information on this website speaks only as of
- 
+
 - **the last fiscal quarter or year for which we have filed a Form 10-Q or 10-K or,**
 - **for historical information, the date or period expressly indicated in or with such information.**
- 
+
 We undertake no duty to update this information or any information provided by third parties.
- 
+
 Certain statements on this site, including those in the “Outlook” portion of this site, are "forward-looking statements" and are based on our expectations and assumptions as of the date the statement was made. Our actual results could differ materially from those described in these forward-looking statements because of risks and uncertainties. These risks and uncertainties are described in our quarterly earnings releases and in the “Management’s Discussion and Analysis of Financial Condition and Results of Operations” and “Risk Factors” sections of our periodic reports and filings with the SEC. Copies of our SEC reports may be obtained by contacting our Investor Relations department at (800) 285-7772 or by clicking [here](https://www.microsoft.com/en-us/investor/sec-filings).
