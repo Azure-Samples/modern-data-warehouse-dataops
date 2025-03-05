@@ -336,6 +336,7 @@ KEYVAULT_DNS_NAME=$kv_dns_name \
 USER_NAME=$kv_owner_name \
 AZURE_LOCATION=$AZURE_LOCATION \
 KEYVAULT_RESOURCE_ID=$(echo "$arm_output" | jq -r '.properties.outputs.keyvault_resource_id.value') \
+STORAGE_CONN_STRING=$(echo "$arm_output" | jq -r '.properties.outputs.storage_conn_string.value') \
     bash -c "./infrastructure/configure_databricks.sh"
 
 ####################
