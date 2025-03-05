@@ -28,6 +28,7 @@ set -o nounset
 # KEYVAULT_DNS_NAME
 # USER_NAME
 # AZURE_LOCATION
+# STORAGE_CONN_STRING
 
 . ./infrastructure/common.sh
 
@@ -43,7 +44,12 @@ if [[ ! -z $(databricks secrets list-scopes | grep "$scope_name") ]]; then
 fi
 
 # Create secret scope
-databricks secrets create-scope --json "{\"scope\": \"$scope_name\", \"scope_backend_type\": \"AZURE_KEYVAULT\", \"backend_azure_keyvault\": { \"resource_id\": \"$KEYVAULT_RESOURCE_ID\", \"dns_name\": \"$KEYVAULT_DNS_NAME\" } }"
+databricks secrets create-scope $scope_name --scope-backend-type "DATABRICKS"
+# TODO: Azure KV backed scope is READONLY for databricks, can update the script to add to KV directly later
+# databricks secrets create-scope --json "{\"scope\": \"$scope_name\", \"scope_backend_type\": \"AZURE_KEYVAULT\", \"backend_azure_keyvault\": { \"resource_id\": \"$KEYVAULT_RESOURCE_ID\", \"dns_name\": \"$KEYVAULT_DNS_NAME\" } }"
+
+# Creating databricks scoped secret
+databricks secrets put-secret $scope_name "storage-conn-string" --string-value "$STORAGE_CONN_STRING"
 
 # Upload notebooks
 log "Uploading notebooks..."

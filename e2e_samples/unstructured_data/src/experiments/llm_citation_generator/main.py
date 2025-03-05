@@ -48,6 +48,7 @@ class LLMCitationGenerator:
 
         # Azure Storage
         self.blob_client = get_blob_service_client(AzureStorageConfig.fetch(fetcher), DefaultAzureCredential())
+
         self.submission_container = submission_container
         self.results_continer = results_container
 
@@ -207,7 +208,7 @@ if __name__ == "__main__":
 
     # update values as needed
     submission_folder = "F24Q3"
-    variants = ["total-revenue/1.yaml"]
+    variants = ["total_revenue/1.yaml"]
     write_to_file = False
 
     run_id = new_run_id()

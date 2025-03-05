@@ -152,6 +152,8 @@ module loganalytics './modules/log_analytics.bicep' = if (enable_monitoring) {
 
 
 output storage_account_name string = storage.outputs.storage_account_name
+output storage_conn_string string = storage.outputs.storage_conn_string
+
 output databricks_output object = databricks.outputs.databricks_output
 output databricks_id string = databricks.outputs.databricks_id
 output appinsights_name string = appinsights.outputs.appinsights_name
