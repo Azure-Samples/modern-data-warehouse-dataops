@@ -72,6 +72,11 @@ To apply the database schema, follow these steps:
 3. Run `npm install` and `npm start` from your terminal to locally run the Azure Function.
 4. Navigate to your SQL database's Query Editor and confirm creation of all tables listed under the `reference-azure-backend/functions/src/entity` folder.
 
+### Adding input data into Storage Account
+
+There were 2 containers created as part of the infra setup in te storage account: `input-documents` and `di-results`.
+Input docuemnts should be places in container `input-documents` and orginized in folders.
+
 ## Cleaning up
 
 TODO: Destroy steps
