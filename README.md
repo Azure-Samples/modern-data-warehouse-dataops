@@ -70,7 +70,6 @@ Certain financial and other information on the Investor Relations website is rep
  
 The Investor Relations website, including without limitation the “Outlook” portion of the "Earnings and Financials" section, may contain information from third parties. Examples, include estimates of future performance or hyperlinks to third party websites. This information does not represent opinions, forecasts, or factual assertions of Microsoft and we do not endorse it by including it in this website.
  
- 
 All information on this website speaks only as of
  
 - **the last fiscal quarter or year for which we have filed a Form 10-Q or 10-K or,**
