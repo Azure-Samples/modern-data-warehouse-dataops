@@ -18,20 +18,20 @@ logger = get_logger(__name__)
 
 
 @dataclass
-class CitationDBConfig:
+class CitationDBOptions:
     form_suffix: str
-    conn_str: str
     creator: str
 
+
+@dataclass
+class CitationDBConfig:
+    conn_str: str
+    options: CitationDBOptions
+
     @classmethod
-    def fetch(cls, fetcher: Fetcher, creator: str, form_suffix: Optional[str] = None) -> "CitationDBConfig":
-        form_suffix = form_suffix or ""
+    def fetch(cls, fetcher: Fetcher, options: CitationDBOptions) -> "CitationDBConfig":
         conn_str = fetcher.get_strict("CITATION_DB_CONNECTION_STRING")
-        return cls(conn_str=conn_str, creator=creator, form_suffix=form_suffix)
-
-
-def get_db_form_suffix(run_id: Optional[str]) -> str:
-    return f"_{run_id}" if run_id else ""
+        return cls(conn_str=conn_str, options=options)
 
 
 def get_conn(conn_str: str) -> pyodbc.Connection:

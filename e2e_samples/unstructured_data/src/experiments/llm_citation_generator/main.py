@@ -9,7 +9,7 @@ from common.analyze_submissions import analyze_submission_folder
 from common.azure_storage_utils import get_blob_service_client
 from common.chunking import AnalyzedDocChunker, get_context_max_tokens
 from common.citation import Citation, InvalidCitation, ValidCitation
-from common.citation_db import commit_forms_docs_citations_to_db
+from common.citation_db import CitationDBOptions, commit_forms_docs_citations_to_db
 from common.citation_generator_utils import validate_citation
 from common.config import CitationGeneratorConfig
 from common.config_utils import EnvFetcher
@@ -39,19 +39,21 @@ class LLMCitationGenerator:
         # Fetch config values from env
         fetcher = EnvFetcher()
 
-        db_enabled = fetcher.get_bool("CITATION_DB_ENABLED", False)
-        db_creator = None
-        db_form_suffix = None
-        if db_enabled:
+        db_options = None
+        self.db_enabled = fetcher.get_bool("CITATION_DB_ENABLED", False)
+        if self.db_enabled:
+            logger.debug("Citation DB is enabled")
             if db_question_id is None:
                 raise ValueError("db_question_id must be provided if CITATION_DB_ENABLED")
             should_generate_new_forms = fetcher.get_bool("GENERATE_NEW_FORMS", False)
             db_form_suffix = f"_{run_id}" if should_generate_new_forms else None
-            db_creator = "llm-citation-generator"
+            db_options = CitationDBOptions(form_suffix=db_form_suffix, creator="llm-citation-generator")
 
-        config = CitationGeneratorConfig.fetch(
-            fetcher=fetcher, db_creator=db_creator, db_enabled=db_enabled, db_form_suffix=db_form_suffix
-        )
+        config = CitationGeneratorConfig.fetch(fetcher=fetcher, db_options=db_options)
+
+        # DB
+        self.question_id = db_question_id
+        self.db_config = config.db
 
         # DI
         self.di_client = get_doc_analysis_client(config.di)
@@ -62,10 +64,6 @@ class LLMCitationGenerator:
 
         # Azure Storage
         self.blob_client = get_blob_service_client(config.az_storage, DefaultAzureCredential())
-
-        # DB
-        self.question_id = db_question_id
-        self.db_config = config.db
 
         # Prompts
         system_prompt_template = load_template(PROMPT_TEMPLATES_DIR.joinpath(system_prompt_file))
@@ -128,11 +126,11 @@ class LLMCitationGenerator:
 
         output["citations"] = [asdict(c) for c in citations]
 
-        if self.db_config is not None:
+        if self.db_enabled and self.db_config is not None:
             # remove invalid citations
             valid_citations = [c for c in citations if isinstance(c, ValidCitation)]
 
-            form_name = f"{submission_folder}{self.db_config.form_suffix}"
+            form_name = f"{submission_folder}{self.db_config.options.form_suffix}"
             logger.info(f"Adding {len(citations)} citations to form {form_name}")
             if self.question_id is None:
                 logger.error("db_question_id must be provided if db_config is not None")
@@ -142,7 +140,7 @@ class LLMCitationGenerator:
                     form_name=form_name,
                     question_id=self.question_id,
                     docs=docs,
-                    creator=self.db_config.creator,
+                    creator=self.db_config.options.creator,
                     citations=valid_citations,
                 )
                 output["db_form_id"] = form_id
