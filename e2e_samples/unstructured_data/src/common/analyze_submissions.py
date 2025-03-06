@@ -4,9 +4,9 @@ import tempfile
 from dataclasses import dataclass
 from typing import Any
 
+from azure.ai.formrecognizer import DocumentAnalysisClient
 from azure.storage.blob import BlobServiceClient
-from common.di_utils import analyze_document, get_doc_analysis_client
-from dotenv import load_dotenv
+from common.di_utils import analyze_document
 
 
 @dataclass
@@ -37,15 +37,13 @@ def convert_polygon_format(data: dict | list) -> dict | list | Any:
 def analyze_submission_folder(
     blob_service_client: BlobServiceClient,
     folder_name: str,
-    submission_container: str = "msft-quarterly-earnings",
-    results_container: str = "msft-quarterly-earnings-di-results",
+    di_client: DocumentAnalysisClient,
+    submission_container: str,
+    results_container: str,
+    overwrite_di_results: bool = False,
 ) -> list[AnalyzedDocument]:
-    load_dotenv(override=True)
-    override_di = os.getenv("OVERRIDE_DI_RESULTS", False)
-
     # model_id and di_client can be configurable in the future
     model_id = "prebuilt-layout"
-    di_client = get_doc_analysis_client()
 
     submission_container_client = blob_service_client.get_container_client(submission_container)
     results_container_client = blob_service_client.get_container_client(results_container)
@@ -61,7 +59,7 @@ def analyze_submission_folder(
         results_blob_client = results_container_client.get_blob_client(doc_name + ".json")
 
         # If DI results already exist and we're not overriding, load it into memory
-        if results_blob_client.exists() and not override_di:
+        if results_blob_client.exists() and not overwrite_di_results:
             blob_data = results_blob_client.download_blob()
             content = blob_data.readall()
             content = json.loads(content)

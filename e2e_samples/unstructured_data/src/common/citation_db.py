@@ -1,7 +1,7 @@
-import logging
 import random
 import string
 import struct
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Optional
 
@@ -10,10 +10,32 @@ import yaml
 from azure.identity import DefaultAzureCredential
 from common.analyze_submissions import AnalyzedDocument
 from common.citation import ValidCitation
+from common.config_utils import Fetcher
+from common.logging import get_logger
 from common.path_utils import RepoPaths
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger = get_logger(__name__)
+
+
+@dataclass
+class CitationDBOptions:
+    form_suffix: str
+    creator: str
+
+    def __init__(self, creator: str, form_suffix: Optional[str] = None) -> None:
+        self.form_suffix = form_suffix or ""
+        self.creator = creator
+
+
+@dataclass
+class CitationDBConfig:
+    conn_str: str
+    options: CitationDBOptions
+
+    @classmethod
+    def fetch(cls, fetcher: Fetcher, options: CitationDBOptions) -> "CitationDBConfig":
+        conn_str = fetcher.get_strict("CITATION_DB_CONNECTION_STRING")
+        return cls(conn_str=conn_str, options=options)
 
 
 def get_conn(conn_str: str) -> pyodbc.Connection:
