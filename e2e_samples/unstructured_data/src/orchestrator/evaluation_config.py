@@ -1,96 +1,83 @@
-from copy import deepcopy
-from dataclasses import asdict, dataclass
-from typing import Dict, Optional, TypedDict
+from dataclasses import asdict, dataclass, field, is_dataclass
+from typing import Optional, TypedDict
 
+from orchestrator.types import NotGiven
 from orchestrator.utils import merge_dicts
 
 
 class EvaluatorConfig(TypedDict, total=False):
     """Configuration for an evaluator"""
 
-    column_mapping: Dict[str, str]
+    column_mapping: dict[str, str]
     """Dictionary mapping evaluator input name to column in data"""
 
 
 @dataclass
 class EvaluatorLoadConfig:
     """
-    EvaluatorLoadConfig is a configuration class for loading an evaluator.
-
+    Configuration class for loading an evaluator.
     Attributes:
         module (str): The module where the evaluator class is located.
-        class_name (str): The name of the evaluator class to be instantiated.
-        evaluator_config (Optional[dict]): Optional configuration dictionary for the
-            evaluator.
-        init_params (Optional[dict]): Optional initialization parameters for the
-            evaluator.
+        class_name (str): The name of the evaluator class.
+        evaluator_config (dict[str, EvaluatorConfig]): A dictionary containing evaluator configurations
+        init_args (dict): A dictionary containing initialization arguments for the evaluator.
     """
 
-    module: str
-    class_name: str
-    evaluator_config: Optional[dict[str, EvaluatorConfig]] = None
-    init_params: Optional[dict] = None
+    module: Optional[str | NotGiven] = field(default_factory=NotGiven)
+    class_name: Optional[str | NotGiven] = field(default_factory=NotGiven)
+    evaluator_config: EvaluatorConfig | dict = field(default_factory=dict)
+    init_args: dict = field(default_factory=dict)
 
 
-EvaluatorLoadConfigMap = Dict[str, EvaluatorLoadConfig]
+EvaluatorLoadConfigMap = dict[str, EvaluatorLoadConfig | None]
 
 
 @dataclass
 class EvaluationConfig:
     """
-    EvaluationConfig class to hold configuration for evaluation.
+    Configuration class for evaluation settings.
     Attributes:
-        init_params (Optional[dict]): Initialization parameters for the evaluation.
-        evaluators (Optional[EvaluatorConfigMap]): A mapping of evaluator names to
-            their configurations.
-        tags (Optional[dict]): Additional tags for the evaluation configuration.
-    Methods:
-        from_dict(cls, data: dict):
-            Creates an instance of EvaluationConfig from a dictionary.
-            Args:
-                data (dict): A dictionary containing the configuration data.
-            Returns:
-                EvaluationConfig: An instance of EvaluationConfig populated with
-                    the provided data.
+        init_args (dict): Initialization arguments for the evaluation.
+        evaluators (EvaluatorConfigMap): A mapping of evaluator names to their configs.
+        tags (dict): Additional tags for the evaluation configuration.
+    Args:
+        init_args (dict, optional): Initialization arguments for the evaluation.
+        evaluators (dict, optional): A dictionary of evaluator configurations.
+        tags (dict, optional): Additional tags for the evaluation configuration.
     """
 
-    init_params: Optional[dict] = None
-    evaluators: Optional[EvaluatorLoadConfigMap] = None
-    tags: Optional[dict] = None
+    init_args: dict = field(default_factory=dict)
+    evaluators: EvaluatorLoadConfigMap = field(default_factory=EvaluatorLoadConfigMap)
+    tags: dict = field(default_factory=dict)
 
-    @classmethod
-    def from_dict(cls, data: dict) -> "EvaluationConfig":
-        data_copy = deepcopy(data)
-        evaluators = data.get("evaluators")
-        if isinstance(evaluators, dict):
-            evaluators = {name: EvaluatorLoadConfig(**config) for name, config in evaluators.items()}
-        data_copy["evaluators"] = evaluators
+    def __init__(
+        self,
+        init_args: Optional[dict] = None,
+        evaluators: Optional[dict] = None,
+        tags: Optional[dict] = None,
+    ):
+        self.init_args = init_args or {}
+        self.tags = tags or {}
 
-        return cls(**data_copy)
+        self.evaluators = evaluators or {}
+        for name, config in self.evaluators.items():
+            if isinstance(config, dict):
+                self.evaluators[name] = EvaluatorLoadConfig(**config)
 
 
 def merge_eval_config_maps(
     exp_evaluators: EvaluatorLoadConfigMap,
-    variant_evaluators: Optional[EvaluatorLoadConfigMap] = None,
-) -> Optional[Dict[str, EvaluatorLoadConfig]]:
+    variant_evaluators: EvaluatorLoadConfigMap,
+) -> EvaluatorLoadConfigMap:
     """
-    Merges two evaluator configuration maps.
-    This function takes two evaluator configuration maps, `exp_evaluators` and
-    `variant_evaluators`, and merges them. If `variant_evaluators` is None, the
-    function returns None. Otherwise, it combines the configurations from both
-    maps. If a configuration exists in both maps, the configurations are merged
-    using the `merge_dicts` function. If a configuration exists in only one map,
-    that configuration is used.
+    Merges two evaluator configuration maps into a single map.
     Args:
-        exp_evaluators (EvaluatorConfigMap): The experiment evaluator config map.
-        variant_evaluators (Optional[EvaluatorConfigMap]): The variant evaluator
-            config map to merge with the experiment config map. Defaults to None.
+        exp_evaluators (EvaluatorLoadConfigMap): The evaluator configuration map from the experiment config.
+        variant_evaluators (EvaluatorLoadConfigMap): The evaluator configuration map from the variant config.
     Returns:
-        Optional[Dict[str, EvaluatorLoadConfig]]: A dictionary containing the merged
-        evaluator configurations, or None if `variant_evaluators` is None.
+        EvaluatorLoadConfigMap: A dictionary containing the merged evaluator configurations. If a configuration, exists
+            in both maps, the variant configuration will take precedence.
     """
-    if variant_evaluators is None:
-        return None
 
     merged = {}
     for name, variant_eval_config in variant_evaluators.items():
@@ -100,7 +87,11 @@ def merge_eval_config_maps(
         elif variant_eval_config is None:
             merged[name] = exp_eval_config
         else:
-            merged_config = merge_dicts(asdict(exp_eval_config), asdict(variant_eval_config))
+            if is_dataclass(exp_eval_config):
+                exp_eval_config_dict = asdict(exp_eval_config)
+            else:
+                exp_eval_config_dict = exp_eval_config
+            merged_config = merge_dicts(exp_eval_config_dict, asdict(variant_eval_config))
             merged[name] = EvaluatorLoadConfig(**merged_config)
 
     return merged

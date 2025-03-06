@@ -1,7 +1,0 @@
-name: common-2
-init_params:
-  prompt_templates:
-    system:
-      path: system/2.txt
-    user:
-      path: user/context-question.txt

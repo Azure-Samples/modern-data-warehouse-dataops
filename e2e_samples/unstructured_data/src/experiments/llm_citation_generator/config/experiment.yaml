@@ -1,18 +1,17 @@
 name: llm-citation-generator
 module: experiments.llm_citation_generator.main
+variants_dir: ./questions
 class_name: LLMCitationGenerator
 evaluators:
   fuzzy_match:
     module: evaluators.fuzzy_match
-    class_name: FuzzyMatchEvaluator
+    class_name: FuzzyMatchCitationEvaluator
     evaluator_config:
       column_mapping:
         response: ${data.citations}
-        truth: ${data.truth}
   exact_numeric_match:
     module: evaluators.exact_numeric_match
-    class_name: NumericEvaluator
+    class_name: ExactNumericMatchCitationEvaluator
     evaluator_config:
       column_mapping:
         response: ${data.citations}
-        truth: ${data.truth}

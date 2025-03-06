@@ -1,42 +1,30 @@
-from typing import Any
+from dataclasses import dataclass
 
 from azure.ai.evaluation import RougeScoreEvaluator, RougeType
+from evaluators.citation_evaluator import CitationEvaluator
 
 
-class FuzzyMatchEvaluator:
+@dataclass
+class FuzzyMatchCitationEvaluator(CitationEvaluator):
     """
     Calculates the ROUGE score for a given response and ground truth.
     Rouge-L metric is used here which measures the longest common
     subsequence (LCS) between the response and ground truth.
-
-    Args:
-        truth_key: The key within the ground truth dictionary that is being evaluated.
     """
 
-    def __init__(self, truth_key: str, **kwargs: Any) -> None:
-        self.truth_key = truth_key
-        self.evaluator = RougeScoreEvaluator(rouge_type=RougeType.ROUGE_L)
+    score_key: str = "rouge_recall"
+    evaluator: RougeScoreEvaluator = RougeScoreEvaluator(rouge_type=RougeType.ROUGE_L)
 
-    def __call__(self, response: list, truth: dict, **kwargs: Any):  # type: ignore
-        truth_value = truth.get(self.truth_key)
-        if truth_value is None:
-            if response:
-                # we have responses, but truth says we should not have any
-                return {"ratio": 0.0}
-            else:
-                # If truth is none and no citations. The generator did well
-                return {"ratio": 1.0}
-        elif not response:
-            # we have truth but no citations
-            return {"ratio": 0.0}
+    def __init__(
+        self,
+        match_threshold: float = 0.7,
+        rouge_type: RougeType = RougeType.ROUGE_L,
+        score_key: str = "rouge_recall",
+    ):
+        self.evaluator = RougeScoreEvaluator(rouge_type=rouge_type)
+        self.score_key = score_key
+        super().__init__(match_threshold=match_threshold)
 
-        scores = []
-        for r in response:
-            excerpt = r.get("excerpt")
-            if excerpt is None:
-                scores.append(0.0)
-            else:
-                score_dict = self.evaluator(response=excerpt, ground_truth=truth_value)
-                scores.append(score_dict["rouge_recall"])
-
-        return {"ratio": sum(scores) / len(scores)}
+    def evaluate(self, ground_truth: str, response: str) -> float:
+        score = self.evaluator(ground_truth=ground_truth, response=response)
+        return score[self.score_key]

@@ -1,105 +1,90 @@
 from pathlib import Path
-from typing import Optional
 
-from orchestrator.evaluation_config import EvaluatorLoadConfigMap, merge_eval_config_maps
-from orchestrator.experiment_config import ExperimentConfig, VariantConfig, merge_variant_configs
+from orchestrator.config import Config
+from orchestrator.experiment_config import load_exp_config
 from orchestrator.experiment_wrapper import ExperimentWrapper
-from orchestrator.file_utils import load_file, load_yaml_file
-
-
-def load_variants(
-    variant_filepath: Path, exp_evaluators: Optional[EvaluatorLoadConfigMap] = None
-) -> list[VariantConfig]:
-    """
-    Load and merge variant configurations from the specified file path.
-    This function loads a variant configuration from a YAML file, merges additional
-    configurations if specified, merges evaluator configurations, and recursively
-    loads and merges parent variant configurations.
-    Args:
-        variant_filepath (Path): The path to the variant file to load.
-        exp_evaluators (EvaluatorConfigMap): The evaluator configurations to merge.
-    Returns:
-        list[VariantConfig]: A list of merged variant configurations.
-    """
-
-    def load(path: Path) -> list[VariantConfig]:
-        data: dict = load_yaml_file(path)
-        variant = VariantConfig.from_dict(data)
-
-        # merge additional config
-        if variant.additional_config_path is not None:
-            config = load_yaml_file(path.parent.joinpath(variant.additional_config_path))
-            variant = merge_variant_configs(VariantConfig.from_dict(config), variant)
-            variant.additional_config_path = None
-
-        # merge evaluators
-        if variant.evaluation is not None:
-            if exp_evaluators is not None:
-                variant.evaluation.evaluators = merge_eval_config_maps(exp_evaluators, variant.evaluation.evaluators)
-
-        # load and merge parent variants
-        variants: list[VariantConfig] = []
-        if variant.parent_variants:
-            for pv_path in variant.parent_variants:
-                parent_variants = load(path.parent.joinpath(pv_path))
-
-                for pv in parent_variants:
-                    merged = merge_variant_configs(pv, variant)
-                    merged.parent_variants = None
-
-                    variants.append(merged)
-        # if parent_variants is not provided, append the variant
-        else:
-            variants.append(variant)
-
-        return variants
-
-    return load(variant_filepath)
+from orchestrator.metadata import ExperimentMetadata
+from orchestrator.utils import load_instance
+from orchestrator.variant_config import load_variant
 
 
 def load_experiments(
-    config_filepath: Path | str,
+    config_filepath: str,
     variants: list[str],
     run_id: str,
 ) -> list[ExperimentWrapper]:
     """
-    Load and prepare experiments based on the provided configuration file and variants.
-
+    Load and initialize experiments based on the provided configuration
+    file and variants.
     Args:
-        config_filepath (Path | str): The path to the experiment configuration file.
-        variants (list[str]): A list of variant file paths to load. The paths are
-            relative to the variants directory.
-        run_id (Optional[str]): An optional run identifier. If not provided, new run ID
-            will be generated.
+        config_filepath (str): Path to the experiment configuration file.
+        variants (list[str]): List of variant file paths to load.
+        run_id (str): Unique identifier for the experiment run.
+        experiments_dir (str, optional): Directory where experiment configurations are stored.
     Returns:
-        list[ExperimentWrapper]: A list of ExperimentWrapper objects representing the
-            loaded experiments.
+        list[ExperimentWrapper]: A list of initialized ExperimentWrapper objects.
     """
+    exp_config_fullpath = Config.experiments_dir.joinpath(config_filepath)
+    exp_config = load_exp_config(exp_config_fullpath)
 
-    if isinstance(config_filepath, str):
-        config_filepath = Path(config_filepath)
-
-    exp_config_data = load_file(config_filepath)
-    if not isinstance(exp_config_data, dict):
-        raise TypeError("Expected load_file to return a dictionary")
-    exp_config = ExperimentConfig.from_dict(exp_config_data)
-
-    variants_dir = config_filepath.parent.joinpath(exp_config.variants_dir)
-    variant_configs: list[VariantConfig] = []
-    for v in variants:
-        loaded_variants = load_variants(
-            variant_filepath=variants_dir.joinpath(v),
+    variants_dir = exp_config_fullpath.parent.joinpath(exp_config.variants_dir)
+    unique_variants: dict[str, Path] = {}
+    wrappers: list[ExperimentWrapper] = []
+    for v_path in variants:
+        v_fullpath = variants_dir.joinpath(v_path)
+        variant = load_variant(
+            variant_path=v_fullpath,
             exp_evaluators=exp_config.evaluators,
         )
-        variant_configs.extend(loaded_variants)
 
-    experiments: list[ExperimentWrapper] = []
-    for vc in variant_configs:
-        experiments.append(
+        # ensure variant has a name
+        if variant.name is None:
+            raise ValueError(f"Variant must have a name: {v_fullpath}")
+
+        if variant.version is None:
+            raise ValueError(f"Variant must have a version: {v_fullpath}")
+
+        name_version = f"{variant.name}:{variant.version}"
+
+        # ensure name and version are unique for the run
+        existing = unique_variants.get(name_version)
+        if existing is not None:
+            raise ValueError(
+                f"Variant names must be unqiue for experiment runs. Found duplicate name: {variant.name} at paths:"
+                f" [{v_fullpath}, {existing}]"
+            )
+        unique_variants[name_version] = v_fullpath
+
+        # set path
+        variant.path = v_path
+        # add run_id and variant name to init_args
+        variant.init_args["run_id"] = variant.init_args.get("run_id", run_id)
+        variant.init_args["variant_name"] = variant.init_args.get("variant_name", variant.name)
+
+        # create metadata
+        metadata = ExperimentMetadata(
+            experiment_config_path=config_filepath,
+            variant_config_path=variant.path,
+            run_id=run_id,
+        )
+
+        # load experiment
+        experiment = load_instance(
+            module=exp_config.module,
+            class_name=exp_config.class_name,
+            init_args=variant.init_args,
+        )
+
+        wrappers.append(
             ExperimentWrapper(
-                exp_config=exp_config,
-                variant_config=vc,
-                run_id=run_id,
+                experiment=experiment,
+                experiment_name=exp_config.name,
+                variant_name=variant.name,
+                variant_version=variant.version,
+                metadata=metadata,
+                output_container=variant.output_container or variant.default_output_container,
+                additional_call_args=variant.call_args,
             )
         )
-    return experiments
+
+    return wrappers
