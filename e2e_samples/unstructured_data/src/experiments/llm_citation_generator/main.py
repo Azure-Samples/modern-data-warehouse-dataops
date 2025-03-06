@@ -6,14 +6,15 @@ from typing import Any, Optional
 from azure.ai.inference.models import SystemMessage, UserMessage
 from azure.identity import DefaultAzureCredential
 from common.analyze_submissions import analyze_submission_folder
-from common.azure_storage_utils import AzureStorageConfig, get_blob_service_client
+from common.azure_storage_utils import get_blob_service_client
 from common.chunking import AnalyzedDocChunker, get_context_max_tokens
 from common.citation import Citation, InvalidCitation, ValidCitation
-from common.citation_db import CitationDBConfig, commit_forms_docs_citations_to_db
+from common.citation_db import commit_forms_docs_citations_to_db
 from common.citation_generator_utils import validate_citation
+from common.config import CitationGeneratorConfig
 from common.config_utils import EnvFetcher
-from common.di_utils import DIConfig, get_doc_analysis_client
-from common.llm import AzureOpenAIConfig, get_chat_completions_client
+from common.di_utils import get_doc_analysis_client
+from common.llm import get_chat_completions_client
 from common.logging import get_logger
 from common.prompt_templates import load_template
 
@@ -32,30 +33,40 @@ class LLMCitationGenerator:
         token_encoding_name: str = "o200k_base",  # gpt-4o, see https://gpt-tokenizer.dev/ for encoding names
         max_tokens: int = 4096,  # Azure gpt-4o max tokens defaults to 4096
         overlap: int = 100,
-        submission_container: str = "msft-quarterly-earnings",
-        results_container: str = "msft-quarterly-earnings-di-results",
         run_id: Optional[str] = None,
+        config: Optional[CitationGeneratorConfig] = None,
         **kwargs: Any,
     ) -> None:
         # Fetch config values from env
         fetcher = EnvFetcher()
+
+        db_enabled = fetcher.get_bool("CITATION_DB_ENABLED", False)
+        db_creator = None
+        db_form_suffix = None
+        if db_enabled:
+            if db_question_id is None:
+                raise ValueError("db_question_id must be provided if CITATION_DB_ENABLED")
+            should_generate_new_forms = fetcher.get_bool("GENERATE_NEW_FORMS", False)
+            db_form_suffix = f"_{run_id}" if should_generate_new_forms else None
+            db_creator = "llm-citation-generator"
+
+        config = CitationGeneratorConfig.fetch(
+            fetcher=fetcher, db_creator=db_creator, db_enabled=db_enabled, db_form_suffix=db_form_suffix
+        )
+
         # DI
-        self.di_client = get_doc_analysis_client(DIConfig.fetch(fetcher))
+        self.di_client = get_doc_analysis_client(config.di)
         self.overwrite_di = fetcher.get_bool("OVERWRITE_DI_RESULTS", False)
 
         # LLM
-        self.llm = get_chat_completions_client(AzureOpenAIConfig.fetch(fetcher))
+        self.llm = get_chat_completions_client(config.azure_openai)
 
         # Azure Storage
-        self.blob_client = get_blob_service_client(AzureStorageConfig.fetch(fetcher), DefaultAzureCredential())
-
-        self.submission_container = submission_container
-        self.results_continer = results_container
+        self.blob_client = get_blob_service_client(config.az_storage, DefaultAzureCredential())
 
         # DB
-        self.db_config = CitationDBConfig.fetch(
-            fetcher=fetcher, question_id=db_question_id, creator="llm-citation-generator", run_id=run_id
-        )
+        self.question_id = db_question_id
+        self.db_config = config.db
 
         # Prompts
         system_prompt_template = load_template(PROMPT_TEMPLATES_DIR.joinpath(system_prompt_file))
@@ -76,15 +87,21 @@ class LLMCitationGenerator:
             overlap=overlap,
         )
 
-    def __call__(self, submission_folder: str, **kwargs: Any) -> dict:
+    def __call__(
+        self,
+        submission_folder: str,
+        submission_container: str = "msft-quarterly-earnings",
+        results_container: str = "msft-quarterly-earnings-di-results",
+        **kwargs: Any,
+    ) -> dict:
         output: dict = {}
 
         docs = analyze_submission_folder(
             blob_service_client=self.blob_client,
             folder_name=submission_folder,
             di_client=self.di_client,
-            submission_container=self.submission_container,
-            results_container=self.results_continer,
+            submission_container=submission_container,
+            results_container=results_container,
             overwrite_di_results=self.overwrite_di,
         )
 
@@ -118,17 +135,19 @@ class LLMCitationGenerator:
 
             form_name = f"{submission_folder}{self.db_config.form_suffix}"
             logger.info(f"Adding {len(citations)} citations to form {form_name}")
-
-            form_id = commit_forms_docs_citations_to_db(
-                conn_str=self.db_config.conn_str,
-                form_name=form_name,
-                question_id=self.db_config.question_id,
-                docs=docs,
-                creator=self.db_config.creator,
-                citations=valid_citations,
-            )
-            output["db_form_id"] = form_id
-            output["db_question_id"] = self.db_config.question_id
+            if self.question_id is None:
+                logger.error("db_question_id must be provided if db_config is not None")
+            else:
+                form_id = commit_forms_docs_citations_to_db(
+                    conn_str=self.db_config.conn_str,
+                    form_name=form_name,
+                    question_id=self.question_id,
+                    docs=docs,
+                    creator=self.db_config.creator,
+                    citations=valid_citations,
+                )
+                output["db_form_id"] = form_id
+                output["db_question_id"] = self.question_id
 
         return output
 

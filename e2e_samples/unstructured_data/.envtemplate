@@ -45,7 +45,13 @@ DOCUMENT_INTELLIGENCE_ENDPOINT=
 DOCUMENT_INTELLIGENCE_KEY=
 
 ### Optional. Environment variables for Citation Generator.
+
 # Citation DB
+# Setting GENERATE_NEW_FORMS to true will generate new forms for each submission.
+# This enables experiments to be run against the same submission mutliple times and not overwrite an existing form.
+# form name is <submission_id>_<run_id> when set to 'true'
+# form name is <submission_id> when set to 'false'
+# GENERATE_NEW_FORMS=true
 # CITATION_DB_ENABLED=true
 # CITATION_DB_SERVER_NAME=
 # CITATION_DB_NAME=
