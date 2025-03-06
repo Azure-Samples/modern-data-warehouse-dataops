@@ -339,7 +339,9 @@ USER_NAME=$kv_owner_name \
 AZURE_LOCATION=$AZURE_LOCATION \
 KEYVAULT_RESOURCE_ID=$(echo "$arm_output" | jq -r '.properties.outputs.keyvault_resource_id.value') \
 STORAGE_CONN_STRING=$(echo "$arm_output" | jq -r '.properties.outputs.storage_conn_string.value') \
+SQL_CONN_STRING="placeholder" \
     bash -c "./infrastructure/configure_databricks.sh"
+# TODO: generate and add the full sql connection string later
 
 ####################
 # AZDO Azure Service Connection and Variables Groups
