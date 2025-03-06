@@ -7,7 +7,6 @@ from typing import Any, Optional
 
 import pyodbc
 import yaml
-
 from common.analyze_submissions import AnalyzedDocument
 from common.citation import ValidCitation
 from common.config_utils import Fetcher
