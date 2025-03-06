@@ -36,7 +36,7 @@ resource hostingPlan 'Microsoft.Web/serverfarms@2024-04-01' existing = {
   name: hosting_plan_name
 }
 
-resource appInsights 'Astronomer.Astro/organizations@2022-03-01' existing = {
+resource appInsights 'Microsoft.Insights/components@2020-02-02' existing = {
   name: app_insights_name
 }
 
