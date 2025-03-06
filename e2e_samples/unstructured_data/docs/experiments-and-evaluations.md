@@ -11,26 +11,7 @@ An experiment can be run using the orchestrator, which is responsible for runnin
 
 ### How to Run
 
-#### Script
-
-A script has been provided to run experiments from the command line and is located at `scripts/run_experiments.py`.
-
-```text
-Usage:
-    - python ./scripts/run_experiments.py
-    - python ./scripts/run_experiments.py -e <experiment-config-path> -v <path-from-variants-dir-1> <path-from-variants-dir-2> -i <run-id> -d <path-in-data-dir> -o <output-dir> -t <app_insights|local>
-    - python ./scripts/run_experiments.py -e llm_citation_generator/config/experiment.yaml -v questions/total-revenue/1.yaml questions/earnings-per-share/1.yaml -d test-data.jsonl -o -t local
-
-Options:
-    -e, --experiment-config-path <experiment-config-path>   The directory name of the experiment. Default is "llm_citation_generator".
-    -v, --variants <paths>                                  A list of variant paths. Paths are relative from the variants directory for the experiment.
-    -i, --run-id <run-id>                                   The run id. Default is a timestamp: YmdHMS.
-    -d, --data-path <path>                                  The path to the data file in the data directory.
-    -o, --output-dir <path>                                 The output directory for the experiment results.
-    -t, --telemetry <app_insights|local>                    The telemetry configuration. Can be "app_insights" or "local".
-```
-
-An experiment must have an `experiment.yaml` which defines how to load the experiment and optionally defines a set of evaluators.
+A Notebooks for running an [experiments](../scripts/run_experiments.ipynb) is available in the scripts directory.
 
 #### Code
 
@@ -191,36 +172,13 @@ When variant configuration files are merged and duplicate keys are found:
 
 ## Evaluation
 
-Evaluations can be performed on experiment results and optionally uploaded to an Azure Machine Learning Workspace.
-
-### Run an Evaluation
-
 Evaluations can be performed by providing a run ID or list of metadata files from an experiment run. When the orchestrator runs an experiment, a metadata file is generated. The orchestrator will traverse the `run_outputs` directory and load every `metadata.json` file under a directory with the name of the run ID. The metadata file contains the information needed to run an evaluation.
 
-The results are written to the metadata's directory with a name of `<eval-run-id>_eval_results.json`. In addition, the results can be uploaded to a provided AML workspace.
+The results are written to the metadata's directory with a name of `<eval-run-id>_eval_results.json`. The evaluation configuration is loaded from the variant and experiment configuration files.
 
-The evaluation configuration is loaded from the variant and experiment configuration files.
+An [evaluation](../scripts/evaluate_experiments.ipynb) Notebook is available in the scripts directory.
 
-#### Script
-
-A script has been provided to run evaluations from the command line and is located at `scripts/evaluate_experiments.py`.
-
-```text
-Usage:
-    python evaluate_experiments.py [options]
-
-Options:
--r, --run-id <run_id>          The run id to run evaluations against.
--m, --metadata-paths <paths>   A list of metadata paths to evaluate. Paths are relative from the run_outputs directory.
--u, --upload-to-aml            Providing this flag will upload to the AML workspace. `SUBSCRIPTION_ID`, `RESOURCE_GROUP`, and `WORKSPACE_NAME` environment variables must be set in `.env`.
-
-Example:
-    python evaluate_experiments.py -r <run-id> -u
-```
-
-If the run_id is provided, the `run_outputs` directory will be traversed and load every `metadata.json` file under a directory with the name of the run ID. Alternatively, a list of metadata files can be provided. The paths are relative to the run_outputs directory. Either run_id or metadata paths must be provided but not both.
-
-#### Code
+### Code
 
 To run an evaluation on experiment results in Python, use the orchestrator's `evaluate_experiment_results_from_metadata` or `evaluate_experiment_results_by_run_id` functions.
 
