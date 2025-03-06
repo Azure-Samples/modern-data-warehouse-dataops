@@ -11,7 +11,7 @@ An experiment can be run using the orchestrator, which is responsible for runnin
 
 ### How to Run
 
-A Notebooks for running an [experiments](../scripts/run_experiments.ipynb) is available in the scripts directory.
+A Notebooks for running [experiments](../scripts/run_experiments.ipynb) is available in the scripts directory.
 
 #### Code
 
@@ -81,7 +81,14 @@ This experiment would expect a data file that looks like the following:
 {"submission_folder": "path/to/submission-3"}
 ```
 
-The experiment would also expect a variant that defines `init_args.question` in the YAML definition. The class is initialized once for each variant.
+The experiment would also expect a variant that defines:
+
+```yaml
+init_args:
+  question: The question
+```
+
+The class is initialized once for each variant.
 
 For each data line, the experiment's call method would be invoked using the data from that line. To support evaluations, the data file can also contain additional evaluation data in each line. For this reason, a `__call__` method should accept `**kwargs`, so they can be ignored if included in the data file.
 
