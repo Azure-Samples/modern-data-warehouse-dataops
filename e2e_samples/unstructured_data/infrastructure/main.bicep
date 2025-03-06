@@ -65,12 +65,24 @@ module sql './modules/sql.bicep' = {
   }
 }
 
+module appinsights './modules/appinsights.bicep' = {
+  name: 'appinsights_deploy_${deployment_id}'
+  params: {
+    project: project
+    env: env
+    location: location
+    deployment_id: deployment_id
+    team_name: team_name
+  }
+}
+
 module appservice './modules/appservice.bicep' = {
   name: 'appservice_deploy_${deployment_id}'
   params: {
     env: env
-    webAppName: 'excitation${deployment_id}'
-    hostingPlanName: 'excitation${deployment_id}'
+    web_app_name: 'excitation${deployment_id}'
+    hosting_plan_name: 'excitation${deployment_id}'
+    app_insights_name: appinsights.outputs.appinsights_name
     location: location
     sku: 'S1'
     tier: 'Standard'
@@ -90,17 +102,6 @@ module functionapp './modules/functionapp.bicep' = {
     app_insights_name: appinsights.outputs.appinsights_name
     location: location
     TeamName: team_name
-  }
-}
-
-module appinsights './modules/appinsights.bicep' = {
-  name: 'appinsights_deploy_${deployment_id}'
-  params: {
-    project: project
-    env: env
-    location: location
-    deployment_id: deployment_id
-    team_name: team_name
   }
 }
 
