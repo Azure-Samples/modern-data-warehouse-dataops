@@ -29,6 +29,7 @@ set -o nounset
 # USER_NAME
 # AZURE_LOCATION
 # STORAGE_CONN_STRING
+# SQL_CONN_STRING
 
 . ./infrastructure/common.sh
 
@@ -50,6 +51,7 @@ databricks secrets create-scope $scope_name --scope-backend-type "DATABRICKS"
 
 # Creating databricks scoped secret
 databricks secrets put-secret $scope_name "storage-conn-string" --string-value "$STORAGE_CONN_STRING"
+databricks secrets put-secret $scope_name "sql-conn-string" --string-value "$SQL_CONN_STRING"
 
 # Upload notebooks
 log "Uploading notebooks..."
