@@ -47,7 +47,7 @@ class LLMCitationGenerator:
                 raise ValueError("db_question_id must be provided if CITATION_DB_ENABLED")
             should_generate_new_forms = fetcher.get_bool("GENERATE_NEW_FORMS", False)
             db_form_suffix = f"_{run_id}" if should_generate_new_forms else None
-            db_options = CitationDBOptions(form_suffix=db_form_suffix, creator="llm-citation-generator")
+            db_options = CitationDBOptions(creator="llm-citation-generator", form_suffix=db_form_suffix)
 
         config = CitationGeneratorConfig.fetch(fetcher=fetcher, db_options=db_options)
 

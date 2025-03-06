@@ -22,6 +22,10 @@ class CitationDBOptions:
     form_suffix: str
     creator: str
 
+    def __init__(self, creator: str, form_suffix: Optional[str] = None) -> None:
+        self.form_suffix = form_suffix or ""
+        self.creator = creator
+
 
 @dataclass
 class CitationDBConfig:
