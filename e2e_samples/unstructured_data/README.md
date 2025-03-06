@@ -75,7 +75,8 @@ To apply the database schema, follow these steps:
 ### Adding input data into Storage Account
 
 There were 2 containers created as part of the infra setup in te storage account: `input-documents` and `di-results`.
-Input docuemnts should be places in container `input-documents` and orginized in folders.
+Input documents should be placed in container `input-documents` and organized in folders.
+`di-results` container will be auto-populated by the code at a later stage.
 
 ## Cleaning up
 
