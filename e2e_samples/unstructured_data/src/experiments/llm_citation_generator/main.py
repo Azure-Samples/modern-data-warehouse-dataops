@@ -87,8 +87,8 @@ class LLMCitationGenerator:
     def __call__(
         self,
         submission_folder: str,
-        submission_container: str = "msft-quarterly-earnings",
-        results_container: str = "msft-quarterly-earnings-di-results",
+        submission_container: str = "input-documents",
+        results_container: str = "di-results",
         **kwargs: Any,
     ) -> dict:
         output: dict = {}
