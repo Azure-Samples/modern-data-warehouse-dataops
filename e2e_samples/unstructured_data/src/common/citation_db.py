@@ -83,7 +83,8 @@ def commit_forms_docs_citations_to_db(
         return form_id
     finally:
         cursor.close()
-        conn.close()
+        # TODO: This was breaking, but we want to handle orphaned connections better
+        # conn.close()
 
 
 def get_question_template_id(cursor: pyodbc.Cursor, question_id: int) -> int:
