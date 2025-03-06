@@ -13,19 +13,24 @@ CONTAINER_NAME=$FUNCTION_APP
 EPOCH_TIME=$(date +%s)
 BLOB_NAME="deploy-${EPOCH_TIME}.zip"
 
+chmod -R 777 *
+
 # Build the project
 rm -rf dist/
 rm -rf deploy.zip
+# rm -rf .deployment
+
+# echo "[config]" >>.deployment
+# echo "SCM_DO_BUILD_DURING_DEPLOYMENT = true" >>.deployment
 
 npm install
 npm run build
 
-tar --exclude="node_modules/azure-functions-core-tools/*" \
-    --exclude="node_modules/typescript/*" \
-    --exclude="node_modules/@types/*" \
-    --exclude="infra/*" -a -c -f ./deploy.zip ./*
+# tar --exclude="infra/*" -a -c -f ./deploy.zip ./*
 
-az functionapp deployment source config-zip -g $RESOURCE_GROUP -n $FUNCTION_APP --src ./deploy.zip
+zip -r ./deploy.zip ./*
+
+az functionapp deployment source config-zip -g $RESOURCE_GROUP -n $FUNCTION_APP --src ./deploy.zip --verbose
 
 # # Create the storage container
 # az storage container create --name $FUNCTION_APP --account-name $STORAGE_ACCOUNT
@@ -46,10 +51,10 @@ az functionapp deployment source config-zip -g $RESOURCE_GROUP -n $FUNCTION_APP 
 # # Set the WEBSITE_RUN_FROM_PACKAGE app setting to the deployment package SAS URL
 # az functionapp config appsettings set -g $RESOURCE_GROUP -n $FUNCTION_APP --settings WEBSITE_RUN_FROM_PACKAGE=$BLOB_URL
 
-# # Sync the function triggers
-# az rest \
-#     --method post \
-#     --url "https://management.azure.com/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.Web/sites/$FUNCTION_APP/syncfunctiontriggers?api-version=2016-08-01"
+# Sync the function triggers
+az rest \
+    --method post \
+    --url "https://management.azure.com/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.Web/sites/$FUNCTION_APP/syncfunctiontriggers?api-version=2016-08-01"
 
 if [ $? -eq 0 ]; then
     echo "Function App Deployment completed successfully."

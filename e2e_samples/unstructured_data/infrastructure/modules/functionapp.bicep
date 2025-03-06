@@ -8,28 +8,40 @@ param env string
 @description('The location of the resource.')
 param location string
 @description('The name of the FunctionApp.')
-param functionAppName string
+param function_app_name string
 @description('The name of Team for tagging purposes.')
 param TeamName string
 @description('The name of the storage account.')
-param storageAccountName string
+param storage_account_name string
 @description('The version of the node runtime.')
 param linuxFxVersion string = 'NODE|22'
 @description('The name given to the hosting plan.')
-param hostingPlanName string
+param hosting_plan_name string
 @description('The site config always on setting.')
 param alwaysOn bool = true
+@description('The name of the SQL server.')
+@secure()
+param sql_server_name string
+@description('The name of the SQL database.')
+@secure()
+param sql_db_name string
+@description('The app insights.')
+param app_insights_name string
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' existing = {
-  name: storageAccountName
+  name: storage_account_name
 }
 
 resource hostingPlan 'Microsoft.Web/serverfarms@2024-04-01' existing = {
-  name: hostingPlanName
+  name: hosting_plan_name
+}
+
+resource appInsights 'Microsoft.Insights/components@2020-02-02' existing = {
+  name: app_insights_name
 }
 
 resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
-  name: functionAppName
+  name: function_app_name
   location: location
   identity: {
     type: 'SystemAssigned'
@@ -46,6 +58,26 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
       alwaysOn: alwaysOn
       appSettings: [
         {
+          name: 'SQL_DATABASE_NAME'
+          value: sql_db_name
+        }
+        {
+          name: 'SQL_SERVER_NAME'
+          value: sql_server_name
+        }
+        {
+          name: 'SQL_DATABASE_SYNC'
+          value: 'false'
+        }
+        {
+          name: 'BLOB_STORAGE_ACCOUNT_NAME'
+          value: storage_account_name
+        }
+        {
+          name: 'BLOB_STORAGE_ACCOUNT_KEY'
+          value: storageAccount.listKeys().keys[0].value
+        }
+        {
           name: 'FUNCTIONS_EXTENSION_VERSION'
           value: '~4'
         }
@@ -54,16 +86,32 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
           value: 'node'
         }
         {
+          name: 'WEBSITE_RUN_FROM_PACKAGE'
+          value: '1'
+        }
+        {
+          name: 'ENABLE_ORYX_BUILD'
+          value: '0'
+        }
+        {
           name: 'AzureWebJobsStorage'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storage_account_name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+        }
+        {
+          name: 'AzureWebJobFeatureFlags'
+          value: 'EnableWorkerIndexing'
         }
         {
           name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storage_account_name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+        }
+        {
+          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+          value: appInsights.properties.InstrumentationKey
         }
         {
           name: 'WEBSITE_CONTENTSHARE'
-          value: toLower(functionAppName)
+          value: toLower(function_app_name)
         }
       ]
       cors: {
@@ -74,8 +122,8 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
       }
       linuxFxVersion: linuxFxVersion
     }
-    clientAffinityEnabled: false
-    virtualNetworkSubnetId: null
+    // clientAffinityEnabled: false
+    // virtualNetworkSubnetId: null
     publicNetworkAccess: 'Enabled'
     httpsOnly: true
   }
@@ -85,7 +133,7 @@ resource ftpPolicy 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2024-
   parent: functionApp
   name: 'ftp'
   properties: {
-    allow: false
+    allow: true
   }
 }
 

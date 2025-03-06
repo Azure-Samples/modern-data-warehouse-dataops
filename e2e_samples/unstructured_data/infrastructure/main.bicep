@@ -82,9 +82,12 @@ module functionapp './modules/functionapp.bicep' = {
   name: 'functionapp_deploy_${deployment_id}'
   params: {
     env: env
-    functionAppName: 'functionapp${deployment_id}'
-    hostingPlanName: appservice.outputs.appservice_plan_name
-    storageAccountName: storage.outputs.storage_account_name
+    function_app_name: 'functionapp${deployment_id}'
+    hosting_plan_name: appservice.outputs.appservice_plan_name
+    storage_account_name: storage.outputs.storage_account_name
+    sql_server_name: sql.outputs.sql_server_name
+    sql_db_name: sql.outputs.sql_db_name
+    app_insights_name: appinsights.outputs.appinsights_name
     location: location
     TeamName: team_name
   }
