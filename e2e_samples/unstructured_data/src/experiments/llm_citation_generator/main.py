@@ -34,7 +34,6 @@ class LLMCitationGenerator:
         max_tokens: int = 4096,  # Azure gpt-4o max tokens defaults to 4096
         overlap: int = 100,
         run_id: Optional[str] = None,
-        config: Optional[CitationGeneratorConfig] = None,
         **kwargs: Any,
     ) -> None:
         # Fetch config values from env
