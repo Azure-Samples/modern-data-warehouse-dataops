@@ -32,6 +32,10 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' existing 
   name: storage_account_name
 }
 
+resource sqlServer 'Microsoft.Sql/servers@2024-05-01-preview' existing = {
+  name: sql_server_name
+}
+
 resource hostingPlan 'Microsoft.Web/serverfarms@2024-04-01' existing = {
   name: hosting_plan_name
 }
@@ -67,7 +71,7 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
         }
         {
           name: 'SQL_DATABASE_SYNC'
-          value: 'false'
+          value: 'false' // revert to false after function app first deployment, last line of deployment script?
         }
         {
           name: 'BLOB_STORAGE_ACCOUNT_NAME'
@@ -145,7 +149,7 @@ resource scmPolicy 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2024-
   }
 }
 
-resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+resource storageRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(storageAccount.id, 'Storage Blob Data Contributor')
   scope: storageAccount
   properties: {
@@ -155,6 +159,18 @@ resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
     ) // Storage Blob Data Contributor
     principalId: functionApp.identity.principalId
     principalType: 'ServicePrincipal'
+  }
+}
+
+resource sqlRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(sqlServer.id, 'SQL Server Contributor')
+  scope: sqlServer
+  properties: {
+    roleDefinitionId: subscriptionResourceId(
+      'Microsoft.Authorization/roleDefinitions',
+      'b24988ac-6180-42a0-ab88-20f7382dd24c'
+    ) // Contributor
+    principalId: functionApp.identity.principalId
   }
 }
 

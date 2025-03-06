@@ -30,6 +30,8 @@ set -o pipefail
 set -o nounset
 
 #!/bin/bash
+chmod 777 ./scripts/*.sh
+chmod 777 ./infrastructure/*.sh
 
 . ./infrastructure/common.sh
 # Source environment variables
@@ -242,6 +244,16 @@ az keyvault secret set --vault-name "$kv_name" --name "datalakeAccountName" --va
 az keyvault secret set --vault-name "$kv_name" --name "datalakeKey" --value "$azure_storage_key" -o none
 az keyvault secret set --vault-name "$kv_name" --name "datalakeurl" --value "https://$azure_storage_account.dfs.core.windows.net" -o none
 
+#### FUNCTION APP DB ROLE ASSIGNMENT ####
+
+function_app=$(echo "$arm_output" | jq -r '.properties.outputs.functionapp_name.value')
+
+echo "Assigning DB roles to function app: $function_app"
+./scripts/assign_db_roles.sh $resource_group_name $sql_server_name $sql_db_name $function_app
+
+## SQL_DATABASE_SYNC to TRUE
+az functionapp config appsettings set --name $function_app --resource-group $resource_group_name --settings "SQL_DATABASE_SYNC=true" -o none
+
 ### CLONE EXCITATION REPO####
 git clone https://github.com/billba/excitation
 
@@ -253,8 +265,6 @@ echo "deploying webapp in to service plan: $web_app_service_name in rg: $resourc
 
 cd ../../
 ########Function App Deployment########
-
-function_app=$(echo "$arm_output" | jq -r '.properties.outputs.functionapp_name.value')
 
 cd excitation/reference-azure-backend/functions
 
@@ -271,6 +281,9 @@ cd ../../../
 ### REMOVE CLONED EXCITATION REPO####
 
 rm -rf excitation
+
+## SQL_DATABASE_SYNC to FALSE
+az functionapp config appsettings set --name $function_app --resource-group $resource_group_name --settings "SQL_DATABASE_SYNC=false" -o none
 
 ####################
 # APPLICATION INSIGHTS

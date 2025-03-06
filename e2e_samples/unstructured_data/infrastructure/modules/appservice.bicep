@@ -9,22 +9,28 @@ param env string
 @description('The location of the resource.')
 param location string
 @description('The name of the web app.')
-param webAppName string
+param web_app_name string
 @description('The name of the hosting plan.')
-param hostingPlanName string
+param hosting_plan_name string
 @description('The SKU of the hosting plan.')
 param sku string
 @description('The tier of the hosting plan.')
 param tier string
 @description('The name of Team for tagging purposes.')
 param TeamName string
+@description('The name of the app insights.')
+param app_insights_name string
+
+resource appInsights 'Microsoft.Insights/components@2020-02-02' existing = {
+  name: app_insights_name
+}
 
 // app service plan
 resource appServicePlan 'Microsoft.Web/serverfarms@2024-04-01' = {
-  name: hostingPlanName
+  name: hosting_plan_name
   location: location
   tags: {
-    DisplayName: hostingPlanName
+    DisplayName: hosting_plan_name
     Environment: env
     TeamName: TeamName
   }
@@ -40,11 +46,11 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2024-04-01' = {
 
 // web app
 resource webApp 'Microsoft.Web/sites@2024-04-01' = {
-  name: webAppName
+  name: web_app_name
   location: location
   kind: 'app'
   tags: {
-    DisplayName: webAppName
+    DisplayName: web_app_name
     Environment: env
     TeamName: TeamName
   }
@@ -54,7 +60,18 @@ resource webApp 'Microsoft.Web/sites@2024-04-01' = {
       nodeVersion: '22.14.0'
       linuxFxVersion: 'NODE|22-lts'
       appCommandLine: 'pm2 serve /home/site/wwwroot/dist --no-daemon --spa'
+      appSettings: [
+        {
+          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+          value: appInsights.properties.InstrumentationKey
+        }
+        {
+          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+          value: appInsights.properties.ConnectionString
+        }
+      ]
     }
+
     httpsOnly: true
   }
 }

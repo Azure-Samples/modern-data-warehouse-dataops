@@ -35,6 +35,7 @@ RUN apt-get update
 RUN ACCEPT_EULA=Y apt-get install -y msodbcsql18
 RUN ACCEPT_EULA=Y apt-get install -y mssql-tools18
 RUN echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.zshrc
+RUN echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc
 
 # Set the user to USERNAME
 USER $USERNAME

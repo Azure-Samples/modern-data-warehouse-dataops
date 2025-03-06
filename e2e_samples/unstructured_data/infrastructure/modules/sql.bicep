@@ -72,6 +72,15 @@ resource db_firewall 'Microsoft.Sql/servers/firewallRules@2024-05-01-preview' = 
   }
 }
 
+resource azure_fire_wall_rule 'Microsoft.Sql/servers/firewallRules@2024-05-01-preview' = {
+  parent: sql_server
+  name: 'AllowAllAzureServices'
+  properties: {
+    startIpAddress: '0.0.0.0'
+    endIpAddress: '0.0.0.0'
+  }
+}
+
 // Outputs
 @description('The name of the SQL Server.')
 output sql_server_name string = sql_server.name
