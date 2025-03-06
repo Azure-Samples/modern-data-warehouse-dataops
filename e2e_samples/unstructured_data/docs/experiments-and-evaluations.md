@@ -83,22 +83,25 @@ This experiment would expect a data file that looks like the following:
 
 The experiment would also expect a variant that defines `init_args.question` in the YAML definition. The class is initialized once for each variant.
 
-For each data line, the experiment's call method would be invoked using the data from that line. To support evaluations, the data file can also contain additional evaluation data in each line. For this reason, a `__call__` method should accept `**kwargs`, so they can be ignored if included in the data file. All input data from this file is included in the experiment results output for each data line in a flat list.
+For each data line, the experiment's call method would be invoked using the data from that line. To support evaluations, the data file can also contain additional evaluation data in each line. For this reason, a `__call__` method should accept `**kwargs`, so they can be ignored if included in the data file.
+
+To support the use of collumn mapping from the latest azure.ai.evaluation library, all input data from this file is included in the experiment results output for each data line in a flat dictionary seperated by `__`. This library only supports passing in column mappings that contain `a-z`, `A-Z`, or `_`. For this resason,
+the experiment outputs each data line's results and it's inputs as a flat dictionary seperated by `__`. It is important to note that keys in the JSONL file should not contain any `-` and should use `_`.
 
 Example data file with truth:
 
 ```json
-{"submission_folder": "path/to/submission-1", "truth": {"total-revenue": "100", "earnings-per-share": "1.11"}}
-{"submission_folder": "path/to/submission-2", "truth": {"total-revenue": "150", "earnings-per-share": "2.22"}}
-{"submission_folder": "path/to/submission-3", "truth": {"total-revenue": "125", "earnings-per-share": "3.33"}}
+{"submission_folder": "path/to/submission-1", "truth": {"total_revenue": "100", "earnings-per-share": "1.11"}}
+{"submission_folder": "path/to/submission-2", "truth": {"total_revenue": "150", "earnings-per-share": "2.22"}}
+{"submission_folder": "path/to/submission-3", "truth": {"total_revenue": "125", "earnings-per-share": "3.33"}}
 ```
 
 Example output of the experiment results:
 
 ```json
-{"inputs.submission_folder": "path/to/submission-1", "inputs.truth.total-revenue": "100", "inputs.truth.earnings-per-share": "1.11", "citations": ["citation1", "citation2"]}
-{"submission_folder": "path/to/submission-2", "truth": {"inputs.truth.total-revenue": "150", "inputs.truth.earnings-per-share": "2.22"}, "citations": ["citation1"]}
-{"submission_folder": "path/to/submission-3", "truth": {"inputs.truth.total-revenue": "125", "inputs.truth.earnings-per-share": "3.33"}, "citations": ["citation1", "citation2", "citation3"]}
+{"inputs__submission_folder": "path/to/submission-1", "inputs__truth__total_revenue": "100", "inputs__truth__earnings-per-share": "1.11", "citations": ["citation1", "citation2"]}
+{"submission_folder": "path/to/submission-2", "truth": {"inputs__truth__total_revenue": "150", "inputs__truth__earnings_per_share": "2.22"}, "citations": ["citation1"]}
+{"submission_folder": "path/to/submission-3", "truth": {"inputs__truth__total_revenue": "125", "inputs__truth__earnings_per_share": "3.33"}, "citations": ["citation1", "citation2", "citation3"]}
 ```
 
 #### Experiment Configuration
@@ -112,7 +115,8 @@ Example `experiment.yaml`:
 name: llm-citation-generator                     # name of the experiment
 module: experiments.llm_citation_generator.main  # module to load
 class_name: LLMCitationGenerator                 # class name of the experiment
-variants_dir:                                    # the relative path to the variants directory, by default it is ./variants
+variants_dir: ./questions                                   # the relative path to the variants directory, by default it is ./variants
+# Optional evaluation configuration
 evaluators:                                      # evaluators - dict of [name, config]
   fuzzy_match:                                   # evaluator name
     module: evaluators.fuzzy_match               # evaluator module to load
@@ -142,6 +146,7 @@ init_args:                          # Initialization arguments for the experimen
   init_arg_1: some-value
 call_args:                          # __call__ arguments for the experiment. These will be combined with the JSONL data lines values
   call_arg_1: some-value
+# Optional evaluation configuration
 evaluation:                         # Defines the evaluation configuration for evaluation runs
   init_args:                        # Common init_args that are passed to ALL defined evaluators. Each evaluator can also define their own init_args or override what is listed here.
     eval_example_param_1: some-value
@@ -151,7 +156,7 @@ evaluation:                         # Defines the evaluation configuration for e
                                     # Values can be set or overridden here if the variant needs different values than what is provided in experiment.yaml.
         evaluator_config:
             column_mapping:
-                truth: ${data.truth.some-value}
+                truth: ${data.inputs__truth__some_value}
                                     # The values listed here will be merged with the values in experiment.yaml with these values taking precedence
 
   tags:                             # Any tags that should be included when uploading evaluation results to AML
@@ -237,6 +242,10 @@ You are all good to go. Remember to re-run your experiments to make sure the met
 #### Evaluation Configuration
 
 Evaluations can be configured by providing an `evaluation` object in the variant config file.
+
+The experiment outputs each data line's results and it's inputs as a flat dictionary seperated by `__`. Inputs data has a prefix of `inputs__`.
+
+When providing the collumn mapping, ensure the mapping aligns with the output format of the experiment results. See the above documentation for more about the experiment output format.
 
 ```yaml
 # variant config
