@@ -30,6 +30,9 @@ As a reference implementation, this should serve as an experiment to deploy in a
 - Key vault
 - SQL Server
 - SQL Database
+- App Service
+- Web App
+- Function App
 - Event Grid System Topic (delete this)
 
 A secondary Databricks-managed resource group is likewise created with the following resources:
