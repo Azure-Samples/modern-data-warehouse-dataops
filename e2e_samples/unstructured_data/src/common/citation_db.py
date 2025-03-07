@@ -1,6 +1,5 @@
 import random
 import string
-import struct
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Optional
