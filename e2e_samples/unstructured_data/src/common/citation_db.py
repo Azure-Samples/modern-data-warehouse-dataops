@@ -1,13 +1,11 @@
 import random
 import string
-import struct
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Optional
 
 import pyodbc
 import yaml
-from azure.identity import DefaultAzureCredential
 from common.analyze_submissions import AnalyzedDocument
 from common.citation import ValidCitation
 from common.config_utils import Fetcher
@@ -39,11 +37,7 @@ class CitationDBConfig:
 
 
 def get_conn(conn_str: str) -> pyodbc.Connection:
-    credential = DefaultAzureCredential()
-    token_bytes = credential.get_token("https://database.windows.net/.default").token.encode("UTF-16-LE")
-    token_struct = struct.pack(f"<I{len(token_bytes)}s", len(token_bytes), token_bytes)
-    SQL_COPT_SS_ACCESS_TOKEN = 1256  # This connection option is defined by microsoft in msodbcsql.h
-    return pyodbc.connect(conn_str, attrs_before={SQL_COPT_SS_ACCESS_TOKEN: token_struct})
+    return pyodbc.connect(conn_str)
 
 
 def commit_forms_docs_citations_to_db(
@@ -54,6 +48,8 @@ def commit_forms_docs_citations_to_db(
     creator: str,
     citations: list[ValidCitation],
 ) -> int:
+    conn = None
+    cursor = None
     try:
         conn = get_conn(conn_str)
         cursor = conn.cursor()
@@ -86,8 +82,10 @@ def commit_forms_docs_citations_to_db(
         )
         return form_id
     finally:
-        cursor.close()
-        conn.close()
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
 
 
 def get_question_template_id(cursor: pyodbc.Cursor, question_id: int) -> int:
