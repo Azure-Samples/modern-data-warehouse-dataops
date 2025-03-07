@@ -175,3 +175,4 @@ resource sqlRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-p
 }
 
 output functionapp_name string = functionApp.name
+output functionapp_url string = functionApp.properties.defaultHostName

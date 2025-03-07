@@ -57,21 +57,12 @@ resource webApp 'Microsoft.Web/sites@2024-04-01' = {
   properties: {
     serverFarmId: appServicePlan.id
     siteConfig: {
+      alwaysOn: true
       nodeVersion: '22.14.0'
       linuxFxVersion: 'NODE|22-lts'
       appCommandLine: 'pm2 serve /home/site/wwwroot/dist --no-daemon --spa'
-      appSettings: [
-        {
-          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-          value: appInsights.properties.InstrumentationKey
-        }
-        {
-          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-          value: appInsights.properties.ConnectionString
-        }
-      ]
+      minTlsVersion: '1.2'
     }
-
     httpsOnly: true
   }
 }
