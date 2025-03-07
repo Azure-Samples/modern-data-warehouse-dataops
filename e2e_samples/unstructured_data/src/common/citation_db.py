@@ -18,6 +18,12 @@ logger = get_logger(__name__)
 
 
 @dataclass
+class DBQuestion:
+    prefix: str
+    text: str
+
+
+@dataclass
 class CitationDBOptions:
     form_suffix: str
     creator: str
@@ -228,9 +234,7 @@ def get_template_by_id(cursor: pyodbc.Cursor, template_id: int) -> Any:
     return template
 
 
-def create_template(
-    cursor: pyodbc.Cursor, conn: pyodbc.Connection, template_name: str, creator: str = "citation-generator"
-) -> int:
+def create_template(cursor: pyodbc.Cursor, conn: pyodbc.Connection, template_name: str, creator: str) -> int:
     query = """
     INSERT into dbo.template (templateName, creator)
     OUTPUT Inserted.templateId
@@ -259,6 +263,38 @@ def create_question(
     question_id = cursor.fetchval()
     conn.commit()
     return question_id
+
+
+def create_template_and_questions(
+    config: CitationDBConfig, template_name: str, questions: list[DBQuestion]
+) -> tuple[Path, int]:
+    conn = None
+    cursor = None
+    try:
+        conn = get_conn(config.conn_str)
+        cursor = conn.cursor()
+        template_id = create_template(
+            cursor=cursor, conn=conn, template_name=template_name, creator=config.options.creator
+        )
+        for question in questions:
+            create_question(
+                cursor=cursor,
+                conn=conn,
+                template_id=template_id,
+                prefix=question.prefix,
+                text=question.text,
+                creator=config.options.creator,
+            )
+        path = create_template_question_lockfile(
+            cursor=cursor,
+            template_id=template_id,
+        )
+        return path, template_id
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 
 def get_template_questions(cursor: pyodbc.Cursor, template_id: int) -> list:
@@ -295,6 +331,8 @@ def create_template_question_lockfile(
 
     data = {"template": output_template_data, "questions": output_questions_data}
     output_path = output_dir.joinpath(f"template_{template_id}.lock.yaml")
+    # create directory if it does not exist
+    output_dir.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w") as f:
         yaml.dump(data, f)
     return output_path
