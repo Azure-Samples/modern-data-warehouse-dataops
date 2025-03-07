@@ -84,8 +84,9 @@ Input documents should be placed in container `input-documents` and organized in
 2. In `shared` folder of the workspace find the notebook `e2e_samples/unstructured_data/scripts/run_experiments.ipynb`
 3. Copy `.envtemplate` and renaming into `.env`
 4. Set values in `.env`
-5. Run the notebook using the cluster that was created as part of deployment
-6. To run the evaluation notebook (e2e_samples/unstructured_data/scripts/evaluate_experiments.ipynb) get the id of the experiment run from the experiment run output and update the value of `run_id`
+5. Update `data/test-data.jsonl` with paths to the folders in Storage Account
+6. Run the notebook using the cluster that was created as part of deployment
+7. To run the evaluation notebook (e2e_samples/unstructured_data/scripts/evaluate_experiments.ipynb) get the id of the experiment run from the experiment run output and update the value of `run_id`
 
 ## Cleaning up
 
