@@ -15,6 +15,9 @@ As a reference implementation, this should serve as an experiment to deploy in a
 - [Deploy Script Resources](#deploy-script-resources)
 - [How to use the sample](#how-to-use-the-sample)
   - [Applying the Database Schema](#applying-the-database-schema)
+  - [Popluate the database](#popluate-the-database)
+  - [Adding input data into Storage Account](#adding-input-data-into-storage-account)
+  - [Running notebooks in Databricks](#running-notebooks-in-databricks)
 - [Cleaning up](#cleaning-up)
 
 ## Architecture
@@ -72,6 +75,20 @@ To apply the database schema, follow these steps:
 3. Run `npm install` and `npm start` from your terminal to locally run the Azure Function.
 4. Navigate to your SQL database's Query Editor and confirm creation of all tables listed under the `reference-azure-backend/functions/src/entity` folder.
 
+### Popluate the database
+
+In the database, citations have a question ID which means the question must first exist in the database in order to create a citation. Before running the experiments and writing to the database, the database must be populated with a template and questions. Follow the steps below to popluate the database with the questions provided in the sample:
+
+1. Ensure environment variables are set for the citation db.
+2. Run `python ./scripts/populate_db.py`
+3. This will create a file called `data/template_<template-id>.lock.yaml`. This will contain the question IDs needed to write to the database
+4. Update the question variant YAML definitions with the apporiate db_question_id at [total_revenue](../unstructured_data/src/experiments/llm_citation_generator/config/questions/total_revenue/base-config.yaml) and [earnings_per_share](../unstructured_data/src/experiments/llm_citation_generator/config/questions/earnings_per_share/base-config.yaml).
+
+```yaml
+init_args:
+  db_question_id: <question_id>
+```
+
 ### Adding input data into Storage Account
 
 Two containers are created as a part of the infra setup in the storage account: `input-documents` and `di-results`.
@@ -84,8 +101,9 @@ Input documents should be placed in container `input-documents` and organized in
 2. In `shared` folder of the workspace find the notebook `e2e_samples/unstructured_data/scripts/run_experiments.ipynb`
 3. Copy `.envtemplate` and renaming into `.env`
 4. Set values in `.env`
-5. Run the notebook using the cluster that was created as part of deployment
-6. To run the evaluation notebook (e2e_samples/unstructured_data/scripts/evaluate_experiments.ipynb) get the id of the experiment run from the experiment run output and update the value of `run_id`
+5. Ensure the db_question_ids are set in [total_revenue](../unstructured_data/src/experiments/llm_citation_generator/config/questions/total_revenue/base-config.yaml) and [earnings_per_share](../unstructured_data/src/experiments/llm_citation_generator/config/questions/earnings_per_share/base-config.yaml). See [Populate the database](#popluate-the-database) for more details
+6. Run the notebook using the cluster that was created as part of deployment
+7. To run the evaluation notebook (e2e_samples/unstructured_data/scripts/evaluate_experiments.ipynb) get the id of the experiment run from the experiment run output and update the value of `run_id`
 
 ## Cleaning up
 
