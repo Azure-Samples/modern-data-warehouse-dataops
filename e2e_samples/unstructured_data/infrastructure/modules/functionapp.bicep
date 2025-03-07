@@ -162,8 +162,8 @@ resource storageRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-
   }
 }
 
-resource sqlRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid(sqlServer.id, 'SQL Server Contributor')
+resource sqlContributorRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(sqlServer.id, 'Contributor')
   scope: sqlServer
   properties: {
     roleDefinitionId: subscriptionResourceId(
@@ -174,5 +174,28 @@ resource sqlRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-p
   }
 }
 
+resource sqlServerContributorAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(sqlServer.id, 'SQL Server Contributor')
+  scope: sqlServer
+  properties: {
+    roleDefinitionId: subscriptionResourceId(
+      'Microsoft.Authorization/roleDefinitions',
+      '6d8ee4ec-f05a-4a1d-8b00-a9b17e38b437'
+    ) // SQL Server Contributor
+    principalId: functionApp.identity.principalId
+  }
+}
+
+resource sqlDBContributorAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(sqlServer.id, 'SQL DB Contributor')
+  scope: sqlServer
+  properties: {
+    roleDefinitionId: subscriptionResourceId(
+      'Microsoft.Authorization/roleDefinitions',
+      '9b7fa17d-e63e-47b0-bb0a-15c516ac86ec'
+    ) // SQL DB Contributor
+    principalId: functionApp.identity.principalId
+  }
+}
 output functionapp_name string = functionApp.name
 output functionapp_url string = functionApp.properties.defaultHostName

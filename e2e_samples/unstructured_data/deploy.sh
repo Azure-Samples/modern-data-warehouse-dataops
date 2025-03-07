@@ -244,16 +244,6 @@ az keyvault secret set --vault-name "$kv_name" --name "datalakeAccountName" --va
 az keyvault secret set --vault-name "$kv_name" --name "datalakeKey" --value "$azure_storage_key" -o none
 az keyvault secret set --vault-name "$kv_name" --name "datalakeurl" --value "https://$azure_storage_account.dfs.core.windows.net" -o none
 
-#### FUNCTION APP DB ROLE ASSIGNMENT ####
-
-function_app=$(echo "$arm_output" | jq -r '.properties.outputs.functionapp_name.value')
-
-echo "Assigning DB roles to function app: $function_app"
-./scripts/assign_db_roles.sh $resource_group_name $sql_server_name $sql_db_name $function_app
-
-## SQL_DATABASE_SYNC to TRUE
-az functionapp config appsettings set --name $function_app --resource-group $resource_group_name --settings "SQL_DATABASE_SYNC=true" -o none
-
 ### CLONE EXCITATION REPO####
 git clone https://github.com/billba/excitation
 
@@ -265,6 +255,15 @@ echo "deploying webapp in to service plan: $web_app_service_name in rg: $resourc
 
 cd ../../
 ########Function App Deployment########
+## FUNCTION APP DB ROLE ASSIGNMENT ##
+
+function_app=$(echo "$arm_output" | jq -r '.properties.outputs.functionapp_name.value')
+
+echo "Assigning DB roles to function app: $function_app"
+./scripts/assign_db_roles.sh $resource_group_name $sql_server_name $sql_db_name $function_app
+
+## SQL_DATABASE_SYNC to TRUE ###
+az functionapp config appsettings set --name $function_app --resource-group $resource_group_name --settings "SQL_DATABASE_SYNC=true" -o none
 
 cd excitation/reference-azure-backend/functions
 
@@ -281,9 +280,6 @@ cd ../../../
 ### REMOVE CLONED EXCITATION REPO####
 
 rm -rf excitation
-
-## SQL_DATABASE_SYNC to FALSE
-az functionapp config appsettings set --name $function_app --resource-group $resource_group_name --settings "SQL_DATABASE_SYNC=false" -o none
 
 ## add VITE_API_URL to webapp environmental variables using function app url
 function_app_url=$(echo "$arm_output" | jq -r '.properties.outputs.functionapp_url.value')
@@ -439,6 +435,11 @@ DATABRICKS_TOKEN=$databricks_aad_token \
 # DATAFACTORY_NAME=${datafactory_name}
 # APPINSIGHTS_KEY=${appinsights_key}
 # KV_URL=${kv_dns_name}
+
+## SQL_DATABASE_SYNC to FALSE
+echo "Changing function app variable SQL_DATABASE_SYNC set to FALSE"
+
+az functionapp config appsettings set --name $function_app --resource-group $resource_group_name --settings "SQL_DATABASE_SYNC=false" -o none
 
 log "Completed deploying Azure resources $resource_group_name ($ENV_NAME)" "success"
 

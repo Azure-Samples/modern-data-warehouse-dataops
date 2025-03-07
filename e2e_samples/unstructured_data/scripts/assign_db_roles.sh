@@ -15,4 +15,5 @@ sqlcmd -S "$SQL_SERVER.database.windows.net" -d $DATABASE -G -l 30 -Q "
     CREATE USER [$FUNCTION_APP] FROM EXTERNAL PROVIDER;
     ALTER ROLE db_datareader ADD MEMBER [$FUNCTION_APP];
     ALTER ROLE db_datawriter ADD MEMBER [$FUNCTION_APP];
+    ALTER ROLE db_ddladmin ADD MEMBER [$FUNCTION_APP];
 "

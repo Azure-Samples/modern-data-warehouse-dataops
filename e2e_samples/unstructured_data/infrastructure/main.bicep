@@ -76,6 +76,17 @@ module appinsights './modules/appinsights.bicep' = {
   }
 }
 
+module loganalytics './modules/log_analytics.bicep' = if (enable_monitoring) {
+  name: 'log_analytics_deploy_${deployment_id}'
+  params: {
+    project: project
+    env: env
+    location: location
+    deployment_id: deployment_id
+    team_name: team_name
+  }
+}
+
 module appservice './modules/appservice.bicep' = {
   name: 'appservice_deploy_${deployment_id}'
   params: {
@@ -103,18 +114,6 @@ module functionapp './modules/functionapp.bicep' = {
     TeamName: team_name
   }
 }
-
-module loganalytics './modules/log_analytics.bicep' = if (enable_monitoring) {
-  name: 'log_analytics_deploy_${deployment_id}'
-  params: {
-    project: project
-    env: env
-    location: location
-    deployment_id: deployment_id
-    team_name: team_name
-  }
-}
-
 // module diagnostic './modules/diagnostic_settings.bicep' = if (enable_monitoring) {
 //   name: 'diagnostic_settings_deploy_${deployment_id}'
 //   params: {

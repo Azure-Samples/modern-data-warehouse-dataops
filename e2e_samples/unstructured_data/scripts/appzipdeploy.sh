@@ -47,10 +47,10 @@ tar --exclude="./node_modules/*" \
 
 #### ------------------------------------- #######
 # Upload the zip for deployment directly from local (old Kudo Deploy, soon to be deprecated)
-# az webapp deployment source config-zip --resource-group $RESOURCE_GROUP --name $APP_SERVICE_NAME --src $FILE_PATH
+az webapp deployment source config-zip --resource-group $RESOURCE_GROUP --name $APP_SERVICE_NAME --src $FILE_PATH
 
 # New AZ deploy way(Unclear if the build artifacts can be ignored)
-az webapp deploy --resource-group $RESOURCE_GROUP --name $APP_SERVICE_NAME --src-path $FILE_PATH --type zip --async true --track-status false
+# az webapp deploy --resource-group $RESOURCE_GROUP --name $APP_SERVICE_NAME --src-path $FILE_PATH --type zip --async true --track-status false
 
 if [ $? -eq 0 ]; then
     echo "Web App Deployment completed successfully."
