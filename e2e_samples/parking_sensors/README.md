@@ -7,6 +7,7 @@ The sample demonstrate how DevOps principles can be applied end to end Data Pipe
 - [Solution Overview](#solution-overview)
   - [Architecture](#architecture)
   - [Continuous Integration and Continuous Delivery (CI/CD)](#continuous-integration-and-continuous-delivery-cicd)
+  - [Data Governance with Unity Catalog](#data-governance-with-unity-catalog)
   - [Technologies used](#technologies-used)
 - [Key Learnings](#key-learnings)
   - [1. Use Data Tiering in your Data Lake](#1-use-data-tiering-in-your-data-lake)
@@ -22,6 +23,7 @@ The sample demonstrate how DevOps principles can be applied end to end Data Pipe
     - [Build and Release Sequence](#build-and-release-sequence)
   - [Testing](#testing)
   - [Observability / Monitoring](#observability--monitoring)
+  - [Data Governance](#data-governance)
     - [Databricks](#databricks)
     - [Data Factory](#data-factory)
 - [How to use the sample](#how-to-use-the-sample)
@@ -80,6 +82,13 @@ The following shows the overall CI/CD process end to end.
 ![CI/CD](docs/images/CI_CD_process.drawio.png "CI/CD")
 
 See [here](#build-and-release-pipeline) for details.
+
+### Data Governance with Unity Catalog
+
+In the architecture below, the Unity Catalog architecture used during the deployment is represented.
+![Unity Catalog](docs/images/unity-catalog-architecture.drawio.png)
+
+See [here](#data-governance) for details.
 
 ### Technologies used
 
@@ -198,10 +207,24 @@ More resources:
 
  **Observability-as-Code** - Few key components of Observability and Monitoring are deployed and configured through Observability-as-Code at the time on Azure resources deployment. This includes log analytics workspace to collect monitoring data from key resources, central Azure dashboard to monitor key metrics and alerts to monitor the data pipelines. To learn more on monitoring specific service read below.
 
+### Data Governance
+
+In order to organize the data within the environments and facilitate security and governance. Details of the deployment below:
+
+- By default, a default catalog is created with the same name of the Databricks workspace. This catalog is not used on the scope of this sample.
+- Three Unity Catalogs are deployed: one per each environment deployed.
+- The catalog metadata is stored on a external location per environment - an ADLS Gen2 account which will be identified as ´´projectname catalog env deploymentid´´
+- Another external location is created per environment and that points to the storage account where the data is located.
+- A storage credential (MSI) is created per environment in order to create the extenal locations.
+- The notebooks are allowed to use the deployed catalogs and use the external location paths to the data.
+
+Note: the design decision adopted is specific for this sample. Other architectures can be adopted, depending on the specific requirements of the scenario at hand.
+
 #### Databricks
 
 - [Monitoring Azure Databricks with Azure Monitor](https://learn.microsoft.com/azure/architecture/databricks-monitoring/)
 - [Monitoring Azure Databricks Jobs with Application Insights](https://msdn.microsoft.com/en-us/magazine/mt846727.aspx)
+- [Unity Catalog Best Practices](https://learn.microsoft.com/en-us/azure/databricks/data-governance/unity-catalog/best-practices)
 
 #### Data Factory
 
@@ -223,6 +246,7 @@ Follow the setup prerequisites, permissions, and deployment environment options.
    - *Permissions needed*: ability to create and deploy to an azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
 3. [Azure DevOps Project](https://azure.microsoft.com/en-us/products/devops/) : Follow the documentation to create a new project, or use an existing project you wish to deploy these resources to.
    - *Permissions needed*: In order to be able to create [Service Connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml), [pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops&tabs=yaml), [variable groups](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml), your user will need to be a member of the **Contributors** group in your project.
+4. [Regional Metastore](https://learn.microsoft.com/en-us/azure/databricks/data-governance/unity-catalog/create-metastore) : If a regional metastore does not exist on the region where the deployment is being done, then an account admin must create one.
 
 #### Deployment Options
 
@@ -276,14 +300,12 @@ Set up the environment variables as specified, fork the GitHub repository, and l
      - **ENV_DEPLOY**- Specifies the number of environments to deploy.
 
         - If the variable is set as shown in the optional configuration below, the prompt will be skipped.
-        - If not configured, a prompt will display the following options.         
+        - If not configured, a prompt will display the following options. The options are:
 
-      - The options are:
+        - **Option 1**: Deploy only to the development environment (Dev). Optional configuration for environment variable set ENV_DEPLOY=1.
+        - **Option 2**: Deploy to both development (Dev) and staging (Stage) environments. Optional configuration for environment variable  ENV_DEPLOY=2.
+        - **Option 3** : Deploy to development (Dev), staging (Stage), and production (Prod) environments. Optional configuration for environment variable ENV_DEPLOY=3
 
-        - **Option 1**: Deploy only to the development environment (Dev). Optional configuration for environment variable set #ENV_DEPLOY=1.
-        - **Option 2**: Deploy to both development (Dev) and staging (Stage) environments. Optional configuration for environment variable  #ENV_DEPLOY=2.
-        - **Option 3** : Deploy to development (Dev), staging (Stage), and production (Prod) environments. Optional configuration for environment variable #ENV_DEPLOY=3
-      
      - **AZURE_LOCATION** - Azure location to deploy resources. *Default*: `westus`.
      - **DEPLOYMENT_ID** - string appended to all resource names. This is to ensure uniqueness of azure resource names. *Default*: random five character string.
      - **AZDO_PIPELINES_BRANCH_NAME** - git branch where Azure DevOps pipelines definitions are retrieved from. *Default*: main.
@@ -301,7 +323,7 @@ Set up the environment variables as specified, fork the GitHub repository, and l
      **Login and Cluster Configuration**
       - Ensure that you have completed the configuration for the variables described in the previous section, titled **Configuration: Variables and Login**.
 
-2. **Deploy Azure resources**
+1. **Deploy Azure resources**
    - `cd` into the `e2e_samples/parking_sensors` folder of the repo.
    - Run `./deploy.sh`.
      - The login process for deployment is interactive. When you run the script **deploy.sh**, a browser window will be open, prompting you to log in to Azure. If there is an open session from a previous deployment, it may log you out and request you to log in again- .
@@ -309,14 +331,14 @@ Set up the environment variables as specified, fork the GitHub repository, and l
        - **Option 1**: Deploy only to the development environment (Dev). Note that this option does not deploy release pipelines, as a minimum of two environments is required for pipeline releases.
        - **Option 2**: Deploy to both development (Dev) and staging (Stage) environments.
        - **Option 3** (Or Press Enter): Deploy to development (Dev), staging (Stage), and production (Prod) environments.
-      - This may take around **~30mins or more** to run end to end. So grab yourself a cup of coffee... ☕ But before you do so keep the following in mind:
+     - This may take around **~30mins or more** to run end to end. So grab yourself a cup of coffee... ☕ But before you do so keep the following in mind:
         - You might encounter deployment issues if the script attempts to create a Key Vault that conflicts with a previously soft-deleted Key Vault. In such cases, the deployment script may prompt you to confirm the purge of the previously deleted Key Vault.
         - There are 3 points in time where you will need to authenticate to the databricks workspace, before the script continues to run. You will find the following message for the deployment of the dev, stage and production environments. Click the link highlighted in green, consent to authenticate to the databricks workspace and when the workspace opens successfully, return to the deployment windows and press Enter to continue:  ![image](docs/images/databricks_ws.png)
      - If you encounter an error with `cannot execute: required file not found` verify the line ending settings of your git configuration. This error is likely that the lines in the file are ending with CRLF. Using VSCode, verify that `./deploy.sh` is set to LF only. This can be done using the control pallet and typing `>Change End of Line Sequence`. Also, verify the files in the `scripts` folder are also set to LF only.
      - After a successful deployment, you will find `.env.{environment_name}` files containing essential configuration information per environment. See [here](#deployed-resources) for list of deployed resources.
      - Note that if you are using **Dev Container**, you would run the same script but inside the Dev Container terminal.
 
-3. **Setup ADF git integration in DEV Data Factory**
+2. **Setup ADF git integration in DEV Data Factory**
 
    > **IMPORTANT NOTE**: Only the **DEV** Data Factory should be setup with Git integration. Do **not** setup git integration in the STG and PROD Data Factories.
 
@@ -355,7 +377,7 @@ Set up the environment variables as specified, fork the GitHub repository, and l
       - To monitor the run, go to "Monitor > Pipeline runs".
       ![Data Factory Run](docs/images/ADFRun.png "Data Factory Run]")
 
-5. **Optional. Visualize data in PowerBI**
+4. **Optional. Visualize data in PowerBI**
     > This requires [PowerBI Desktop App](https://powerbi.microsoft.com/en-us/desktop/) installed.
     - Open the provided PowerBi pbix (PowerBI_ParkingSensors.pbix) under `reports` folder.
     - Under Queries, select "Transform Data" > "Data source settings".
@@ -379,12 +401,16 @@ After a successful deployment, you should have the following resources:
   - **App Service plan** - B1 Service plan for managing REST API web application
   - **App Service** - nodejs app service providing REST API for simulated parking data.
   - **Data Factory(v2)** - with pipelines, datasets, linked services, triggers deployed and configured correctly per environment.
-  - **Data Lake Store Gen2** and a **Service Principal (SP)** with Storage Contributor rights assigned.
+  - 2 **Data Lake Store Gen2** and a **Service Principal (SP)** with Storage Contributor rights assigned.
   - **Databricks workspace**
     - notebooks uploaded at `/notebooks` folder in the workspace
     - SparkSQL tables created
     - ADLS Gen2 mounted at `dbfs:/mnt/datalake` using the Storage Service Principal.
     - Databricks KeyVault secrets scope created
+    - Unity Catalog
+    - 2 External locations:
+      - one pointing to the Data Lake Store Gen2 to refer to the data.
+      - one other pointing to a second Data Lake Store Gen2 to refer to the catalog metadata.
   - **Log Analytics Workspace** - including a kusto query on Query explorer -> Saved queries, to verify results that will be logged on Synapse notebooks (notebooks are not deployed yet).
   - **Azure Synapse SQL Dedicated Pool (formerly SQLDW)** - currently, empty. The Release Pipeline will deploy the SQL Database objects.
   - **Azure Synapse Spark Pool** - currently, empty. Configured to point the deployed Log Analytics workspace, under "Apache Spark Configuration".
@@ -443,7 +469,7 @@ The following lists some limitations of the solution and associated deployment s
   - **Workaround**: To resolve this, consult the steps in the documentation [here](https://aka.ms/antquotahelp).
 - Azure DevOps Variable Groups linked to KeyVault can only be created via the UI, cannot be created programmatically and was not incorporated in the automated deployment of the solution.
   - **Workaround**: Deployment add sensitive configuration as "secrets" in Variable Groups with the downside of duplicated information. If you wish, you may manually link a second Variable Group to KeyVault to pull out the secrets. KeyVault secret names should line up with required variables in the Azure DevOps pipelines. See [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml#link-secrets-from-an-azure-key-vault) for more information.
-- Azure DevOps Service Connection Removal: If you encounter an error like: *"Cannot delete this service connection while federated credentials for app <app-id> exist in Entra tenant <tenant-id>. Please make sure federated credentials have been removed prior to deleting the service connection."* This issue occurs when you try to delete a Service Connection in the Azure DevOps (AzDo) portal, but the Service Connection has federated credentials that need to be manually removed from the Azure Portal.
+- Azure DevOps Service Connection Removal: If you encounter an error like: *"Cannot delete this service connection while federated credentials for app **app-id** exist in Entra tenant **tenant-id**. Please make sure federated credentials have been removed prior to deleting the service connection."* This issue occurs when you try to delete a Service Connection in the Azure DevOps (AzDo) portal, but the Service Connection has federated credentials that need to be manually removed from the Azure Portal.
   - **Workaround - Manually Deleting App Registration (Service Principal) associated with AzDO Service Connection:**
     Navigate to the Azure DevOps Project, and under **Project settings > Service connections** locate your Service Connection and click on it. In the Service Connection page click on the link "Manage App Registration". In the Entra page that is displayed after clicking the link, click on the Delete button.
 - Azure DevOps Environment and Approval Gates can only be managed via the UI, cannot be managed programmatically and was not incorporated in the automated deployment of the solution.

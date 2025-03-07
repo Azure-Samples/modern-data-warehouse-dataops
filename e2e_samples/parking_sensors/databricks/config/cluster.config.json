@@ -1,3 +1,4 @@
+
 {
   "cluster_name": "ddo_cluster",
   "autoscale": {
@@ -6,13 +7,14 @@
   },
   "spark_version": "14.3.x-scala2.12",
   "autotermination_minutes": 30,
-  "node_type_id": "Standard_D4pls_v6",
-  "data_security_mode": "SHARED",
+  "node_type_id": "Standard_D4d_v4",
+  "data_security_mode": "USER_ISOLATION",
   "runtime_engine": "PHOTON",
   "spark_env_vars": {
     "PYSPARK_PYTHON": "/databricks/python3/bin/python3",
-    "MOUNT_DATA_PATH": "/mnt/datalake",
-    "MOUNT_DATA_CONTAINER": "datalake",
     "DATABASE": "datalake"
+  },
+  "spark_conf": {
+    "spark.sql.catalog.mdwdops-catalog-name": "com.databricks.sql.catalog"
   }
 }
