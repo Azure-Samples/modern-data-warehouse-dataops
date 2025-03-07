@@ -1,7 +1,9 @@
 # usage:
-# python ./scripts/create_db_template.py --name <template-name> --creator <creator>
-# python ./scripts/create_db_template.py -n test-template --creator llm-citation-generator
+# python ./scripts/populate_db.py
+# python ./scripts/populate_db.py --name <template-name> --creator <creator>
+# python ./scripts/populate_db.py -n test-template --creator llm-citation-generator
 
+# By default, the template name is "template-1" and the creator is "llm-citation-generator".
 
 if __name__ == "__main__":
     import argparse
