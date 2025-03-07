@@ -86,8 +86,9 @@ Input documents should be placed in container `input-documents` and organized in
 4. Set values in `.env`
 5. Update `data/test-data.jsonl` with paths to the folders in Storage Account
 6. Update `src/experiments/llm_citation_generator/config/questions/total_revenue/base-config.yaml` with id of the question (should be 1)
-7. Run the notebook using the cluster that was created as part of deployment
-8. To run the evaluation notebook (e2e_samples/unstructured_data/scripts/evaluate_experiments.ipynb) get the id of the experiment run from the experiment run output and update the value of `run_id`
+7. Whitelist Databricks IP in SQL server networking settings
+8. Run the notebook using the cluster that was created as part of deployment
+9. To run the evaluation notebook (e2e_samples/unstructured_data/scripts/evaluate_experiments.ipynb) get the id of the experiment run from the experiment run output and update the value of `run_id`
 
 ## Cleaning up
 
