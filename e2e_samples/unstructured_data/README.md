@@ -78,6 +78,15 @@ Two containers are created as a part of the infra setup in the storage account: 
 Input documents should be placed in container `input-documents` and organized in folders.
 `di-results` container will be auto-populated by the code at a later stage.
 
+### Running notebooks in Databricks
+
+1. Open the Databricks instance that was created as part of deployment script
+2. In `shared` folder of the workspace find the notebook `e2e_samples/unstructured_data/scripts/run_experiments.ipynb`
+3. Copy `.envtemplate` and renaming into `.env`
+4. Set values in `.env`
+5. Run the notebook using the cluster that was created as part of deployment
+6. To run the evaluation notebook (e2e_samples/unstructured_data/scripts/evaluate_experiments.ipynb) get the id of the experiment run from the experiment run output and update the value of `run_id`
+
 ## Cleaning up
 
 TODO: Destroy steps
