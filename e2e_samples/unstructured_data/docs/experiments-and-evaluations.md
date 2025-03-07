@@ -272,3 +272,9 @@ evaluation:                                     # The evaluation configuration o
           response: ${data.citations}
           truth: ${data.truth}
 ```
+
+## LLM Citation Generator experiment
+
+An experiment that uses Document Intelligence and an LLM to generate citations from a set of questions and documents.
+
+![citation generator dag flow diagram](../images/citation_generator_dag.png)
