@@ -16,7 +16,9 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-n", "--name", default="template-1", help="The name of the template to create")
-    parser.add_argument("-c", "--creator", default="llm-citation-generator", help="The name of the template to create")
+    parser.add_argument(
+        "-c", "--creator", default="llm-citation-generator", help="The creator of the template and questions"
+    )
     args = parser.parse_args()
     template_name = args.name
     creator = args.creator
