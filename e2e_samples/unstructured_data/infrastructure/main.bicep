@@ -82,7 +82,6 @@ module appservice './modules/appservice.bicep' = {
     env: env
     web_app_name: 'excitation${deployment_id}'
     hosting_plan_name: 'excitation${deployment_id}'
-    app_insights_name: appinsights.outputs.appinsights_name
     location: location
     sku: 'S1'
     tier: 'Standard'

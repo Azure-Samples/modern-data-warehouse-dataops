@@ -18,12 +18,6 @@ param sku string
 param tier string
 @description('The name of Team for tagging purposes.')
 param TeamName string
-@description('The name of the app insights.')
-param app_insights_name string
-
-resource appInsights 'Microsoft.Insights/components@2020-02-02' existing = {
-  name: app_insights_name
-}
 
 // app service plan
 resource appServicePlan 'Microsoft.Web/serverfarms@2024-04-01' = {
@@ -57,21 +51,11 @@ resource webApp 'Microsoft.Web/sites@2024-04-01' = {
   properties: {
     serverFarmId: appServicePlan.id
     siteConfig: {
+      alwaysOn: true
       nodeVersion: '22.14.0'
       linuxFxVersion: 'NODE|22-lts'
       appCommandLine: 'pm2 serve /home/site/wwwroot/dist --no-daemon --spa'
-      appSettings: [
-        {
-          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-          value: appInsights.properties.InstrumentationKey
-        }
-        {
-          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-          value: appInsights.properties.ConnectionString
-        }
-      ]
     }
-
     httpsOnly: true
   }
 }

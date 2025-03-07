@@ -285,6 +285,11 @@ rm -rf excitation
 ## SQL_DATABASE_SYNC to FALSE
 az functionapp config appsettings set --name $function_app --resource-group $resource_group_name --settings "SQL_DATABASE_SYNC=false" -o none
 
+## add VITE_API_URL to webapp environmental variables using function app url
+function_app_url=$(echo "$arm_output" | jq -r '.properties.outputs.functionapp_url.value')
+
+az webapp config appsettings set --name $web_app_service_name --resource-group $resource_group_name --settings "VITE_API_URL=https://$function_app_url" -o none
+
 ####################
 # APPLICATION INSIGHTS
 
