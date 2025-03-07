@@ -228,6 +228,8 @@ azure_storage_key=$(az storage account keys list \
 storage_file_system=datalake
 log "Creating ADLS Gen2 File system: $storage_file_system"
 az storage container create --name $storage_file_system --account-name "$azure_storage_account" --account-key "$azure_storage_key" -o none
+az storage container create --name input-documents --account-name "$azure_storage_account" --account-key "$azure_storage_key" -o none --public-access container
+az storage container create --name di-results --account-name "$azure_storage_account" --account-key "$azure_storage_key" -o none --public-access container
 
 # log "Creating folders within the file system."
 # # Create folders for databricks libs
