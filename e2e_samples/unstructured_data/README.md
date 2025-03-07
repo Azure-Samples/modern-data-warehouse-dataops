@@ -77,7 +77,7 @@ To apply the database schema, follow these steps:
 
 ### Popluate the database
 
-In the database, citations have a question ID which means the question must first exist in the database in order to create a citation. Before running the experiments and writing to the database, the database must be populated with a template and questions. Follow the steps below to popluate the database with the questions provided in the sample:
+Before generating citations and writing to the database, the database must be populated with a template and questions. In the database, citations have a question ID which means the question must first exist in the database in order to create a citation. Likwise, a question has a template ID. Follow the steps below to popluate the database with a template and the questions provided in the sample:
 
 1. Ensure environment variables are set for the citation db.
 2. Run `python ./scripts/populate_db.py`
