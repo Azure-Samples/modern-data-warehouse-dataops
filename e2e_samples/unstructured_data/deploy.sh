@@ -247,13 +247,6 @@ az keyvault secret set --vault-name "$kv_name" --name "datalakeurl" --value "htt
 ### CLONE EXCITATION REPO####
 git clone https://github.com/billba/excitation
 
-###WEBAPP DEPLOYMENT####
-cd excitation/client
-web_app_service_name=$(echo "$arm_output" | jq -r '.properties.outputs.appservice_name.value')
-echo "deploying webapp in to service plan: $web_app_service_name in rg: $resource_group_name"
-../../scripts/appzipdeploy.sh $resource_group_name $web_app_service_name
-
-cd ../../
 ########Function App Deployment########
 ## FUNCTION APP DB ROLE ASSIGNMENT ##
 
@@ -277,14 +270,23 @@ echo "deploying function app in to: $function_app in rg: $resource_group_name"
 ../../../scripts/functionzipdeploy.sh $AZURE_SUBSCRIPTION_ID $resource_group_name $function_app $azure_storage_account
 
 cd ../../../
+
+function_app_url=$(echo "$arm_output" | jq -r '.properties.outputs.functionapp_url.value')
+
+###WEBAPP DEPLOYMENT####
+cd excitation/client
+
+rm .env
+echo VITE_API_URL=https://$function_app_url/api >.env
+
+web_app_service_name=$(echo "$arm_output" | jq -r '.properties.outputs.appservice_name.value')
+echo "deploying webapp in to service plan: $web_app_service_name in rg: $resource_group_name"
+../../scripts/appzipdeploy.sh $resource_group_name $web_app_service_name
+
+cd ../../
 ### REMOVE CLONED EXCITATION REPO####
 
 rm -rf excitation
-
-## add VITE_API_URL to webapp environmental variables using function app url
-function_app_url=$(echo "$arm_output" | jq -r '.properties.outputs.functionapp_url.value')
-
-az webapp config appsettings set --name $web_app_service_name --resource-group $resource_group_name --settings "VITE_API_URL=https://$function_app_url" -o none
 
 ####################
 # APPLICATION INSIGHTS

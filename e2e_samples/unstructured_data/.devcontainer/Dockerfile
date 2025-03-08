@@ -28,6 +28,18 @@ RUN rm packages-microsoft-prod.deb
 
 RUN curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
 
+# Update the package list and install necessary packages
+RUN apt-get update && apt-get install -y \
+    curl \
+    gnupg \
+    lsb-release
+
+# Add NodeSource APT repository for Node.js
+RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash -
+
+# Install Node.js and npm
+RUN apt-get install -y nodejs
+
 RUN az extension add --name application-insights
 
 # Install the SQL driver

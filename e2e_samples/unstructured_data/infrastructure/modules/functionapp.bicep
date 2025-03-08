@@ -120,7 +120,6 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
       ]
       cors: {
         allowedOrigins: [
-          'https://ms.portal.azure.com'
           '*' // Allow all origins
         ]
       }
