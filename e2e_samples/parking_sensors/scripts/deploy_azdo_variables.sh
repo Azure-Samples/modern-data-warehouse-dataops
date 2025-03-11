@@ -75,7 +75,6 @@ az pipelines variable-group create \
         databricksClusterId="$databricksClusterId" \
         apiBaseUrl="$API_BASE_URL" \
     -o none
-# databricksDbfsLibPath="$databricksDbfsLibPath" \
 
 # Create vargroup - for secrets
 vargroup_secrets_name="${PROJECT}-secrets-$ENV_NAME"

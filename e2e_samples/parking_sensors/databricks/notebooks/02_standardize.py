@@ -77,10 +77,12 @@ sensordata_schema = s.get_schema("in_sensordata_schema")
 parkingbay_sdf = spark.read\
   .schema(parkingbay_schema)\
   .option("badRecordsPath", os.path.join(base_path, "__corrupt", "ParkingLocationData"))\
+  .option("badRecordsPath", os.path.join(base_path, "__corrupt", "ParkingLocationData"))\
   .option("multiLine", True)\
   .json(parkingbay_filepath)
 sensordata_sdf = spark.read\
   .schema(sensordata_schema)\
+  .option("badRecordsPath", os.path.join(base_path, "__corrupt", "ParkingSensorData"))\
   .option("badRecordsPath", os.path.join(base_path, "__corrupt", "ParkingSensorData"))\
   .option("multiLine", True)\
   .json(sensors_filepath)

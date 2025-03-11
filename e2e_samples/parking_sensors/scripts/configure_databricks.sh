@@ -2,6 +2,8 @@
 
 #######################################################
 # Configures Azure Databricks cluster and workspace
+#######################################################
+# Configures Azure Databricks cluster and workspace
 #
 # Prerequisites:
 # - User is logged in to the azure cli
@@ -90,8 +92,12 @@ least_resource_vm=$(echo "$vm_sizes" | jq --arg common_vms "$common_vms" '
   # Photon clusters in some regions may require 4GB per core of memory. Uncomment the next line if required.
   # map(select(.memoryInMB >= (.numberOfCores * 4 * 1024))) |
   sort_by( .memoryInMB) |
+  # Photon clusters in some regions may require 4GB per core of memory. Uncomment the next line if required.
+  # map(select(.memoryInMB >= (.numberOfCores * 4 * 1024))) |
+  sort_by( .memoryInMB) |
   .[0]
 ')
+
 
 log "VM with the least resources:$least_resource_vm" "info"
 
