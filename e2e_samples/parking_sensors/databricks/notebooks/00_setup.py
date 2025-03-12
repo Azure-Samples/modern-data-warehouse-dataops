@@ -1,48 +1,22 @@
 # Databricks notebook source
 # MAGIC %md
-# MAGIC ## Mount ADLS Gen2
+# MAGIC ## Parameters
 
 # COMMAND ----------
 
-import os
-
-# Set mount path
-storage_mount_data_path = os.environ['MOUNT_DATA_PATH']
-storage_mount_container = os.environ['MOUNT_DATA_CONTAINER']
-
-# Unmount if existing
-for mp in dbutils.fs.mounts():
-  if mp.mountPoint == storage_mount_data_path:
-    dbutils.fs.unmount(storage_mount_data_path)
-
-# Refresh mounts
-dbutils.fs.refreshMounts()
+dbutils.widgets.text("catalogname", "", "Catalog Name")
+catalogname = dbutils.widgets.get("catalogname")
+dbutils.widgets.text("stgaccountname", "", "Storage Account Name")
+stgaccountname = dbutils.widgets.get("stgaccountname")
 
 # COMMAND ----------
 
-# Retrieve storage credentials
-storage_account = dbutils.secrets.get(scope = "storage_scope", key = "datalakeAccountName")
-storage_sp_id = dbutils.secrets.get(scope = "storage_scope", key = "spStorId")
-storage_sp_key = dbutils.secrets.get(scope = "storage_scope", key = "spStorPass")
-storage_sp_tenant = dbutils.secrets.get(scope = "storage_scope", key = "spStorTenantId")
+# MAGIC %md
+# MAGIC ## Setup Catalog
 
-# Mount
-configs = {"fs.azure.account.auth.type": "OAuth",
-           "fs.azure.account.oauth.provider.type": "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider",
-           "fs.azure.account.oauth2.client.id": storage_sp_id,
-           "fs.azure.account.oauth2.client.secret": storage_sp_key,
-           "fs.azure.account.oauth2.client.endpoint": "https://login.microsoftonline.com/" + storage_sp_tenant + "/oauth2/token"} 
+# COMMAND ----------
 
-
-# Optionally, you can add <your-directory-name> to the source URI of your mount point.
-dbutils.fs.mount(
-  source = "abfss://" + storage_mount_container + "@" + storage_account + ".dfs.core.windows.net/",
-  mount_point = storage_mount_data_path,
-  extra_configs = configs)
-
-
-# Refresh mounts
-dbutils.fs.refreshMounts()
+spark.sql(f"USE CATALOG `{catalogname}`")
 
 # COMMAND ----------
 
@@ -59,70 +33,69 @@ dbutils.fs.refreshMounts()
 
 # COMMAND ----------
 
-# MAGIC %sql
-# MAGIC -- FACT tables
-# MAGIC DROP TABLE IF EXISTS dw.fact_parking;
-# MAGIC CREATE TABLE dw.fact_parking (
-# MAGIC   dim_date_id STRING,
-# MAGIC   dim_time_id STRING,
-# MAGIC   dim_parking_bay_id STRING,
-# MAGIC   dim_location_id STRING,
-# MAGIC   dim_st_marker_id STRING,
-# MAGIC   status STRING,
-# MAGIC   load_id STRING,
-# MAGIC   loaded_on TIMESTAMP
-# MAGIC )
-# MAGIC USING parquet
-# MAGIC LOCATION '/mnt/datalake/data/dw/fact_parking/';
-# MAGIC 
-# MAGIC REFRESH TABLE dw.fact_parking;
+# fact_parking
+spark.sql("DROP TABLE IF EXISTS dw.fact_parking;")
+spark.sql(f"""
+CREATE TABLE dw.fact_parking (
+  dim_date_id STRING,
+  dim_time_id STRING,
+  dim_parking_bay_id STRING,
+  dim_location_id STRING,
+  dim_st_marker_id STRING,
+  status STRING,
+  load_id STRING,
+  loaded_on TIMESTAMP
+) USING parquet LOCATION 'abfss://datalake@{stgaccountname}.dfs.core.windows.net/data/dw/fact_parking/';
+""")
+spark.sql("REFRESH TABLE dw.fact_parking;")
+
 
 # COMMAND ----------
 
-# MAGIC %sql
-# MAGIC -- DIMENSION tables
-# MAGIC DROP TABLE IF EXISTS dw.dim_st_marker;
-# MAGIC CREATE TABLE dw.dim_st_marker (
-# MAGIC   dim_st_marker_id STRING,
-# MAGIC   st_marker_id STRING,
-# MAGIC   load_id STRING,
-# MAGIC   loaded_on TIMESTAMP
-# MAGIC )
-# MAGIC USING parquet
-# MAGIC LOCATION '/mnt/datalake/data/dw/dim_st_marker/';
-# MAGIC 
-# MAGIC REFRESH TABLE dw.dim_st_marker;
-# MAGIC 
-# MAGIC --
-# MAGIC DROP TABLE IF EXISTS dw.dim_location;
-# MAGIC CREATE TABLE dw.dim_location (
-# MAGIC   dim_location_id STRING,
-# MAGIC   lat FLOAT,
-# MAGIC   lon FLOAT,
-# MAGIC   load_id STRING,
-# MAGIC   loaded_on TIMESTAMP
-# MAGIC )
-# MAGIC USING parquet
-# MAGIC LOCATION '/mnt/datalake/data/dw/dim_location/';
-# MAGIC 
-# MAGIC REFRESH TABLE dw.dim_location;
-# MAGIC 
-# MAGIC --
-# MAGIC DROP TABLE IF EXISTS dw.dim_parking_bay;
-# MAGIC CREATE TABLE dw.dim_parking_bay (
-# MAGIC   dim_parking_bay_id STRING,
-# MAGIC   bay_id INT,
-# MAGIC   `marker_id` STRING, 
-# MAGIC   `meter_id` STRING, 
-# MAGIC   `rd_seg_dsc` STRING, 
-# MAGIC   `rd_seg_id` STRING, 
-# MAGIC   load_id STRING,
-# MAGIC   loaded_on TIMESTAMP
-# MAGIC )
-# MAGIC USING parquet
-# MAGIC LOCATION '/mnt/datalake/data/dw/dim_parking_bay/';
-# MAGIC 
-# MAGIC REFRESH TABLE dw.dim_parking_bay;
+# DIMENSION tables
+# dim_st_marker
+spark.sql("DROP TABLE IF EXISTS dw.dim_st_marker;")
+spark.sql(f"""
+CREATE TABLE dw.dim_st_marker (
+  dim_st_marker_id STRING,
+  st_marker_id STRING,
+  load_id STRING,
+  loaded_on TIMESTAMP
+)
+USING parquet LOCATION 'abfss://datalake@{stgaccountname}.dfs.core.windows.net/data/dw/dim_st_marker/';
+""")
+spark.sql("REFRESH TABLE dw.dim_st_marker;")
+
+# dim_location
+spark.sql("DROP TABLE IF EXISTS dw.dim_location;")
+spark.sql(f"""
+CREATE TABLE dw.dim_location (
+  dim_location_id STRING,
+  lat FLOAT,
+  lon FLOAT,
+  load_id STRING,
+  loaded_on TIMESTAMP
+)
+USING parquet LOCATION 'abfss://datalake@{stgaccountname}.dfs.core.windows.net/data/dw/dim_location/';
+""")
+spark.sql("REFRESH TABLE dw.dim_location;")
+
+# dim_parking_bay
+spark.sql("DROP TABLE IF EXISTS dw.dim_parking_bay;")
+spark.sql(f"""
+CREATE TABLE dw.dim_parking_bay (
+  dim_parking_bay_id STRING,
+  bay_id INT,
+  `marker_id` STRING, 
+  `meter_id` STRING, 
+  `rd_seg_dsc` STRING, 
+  `rd_seg_id` STRING, 
+  load_id STRING,
+  loaded_on TIMESTAMP
+)
+USING parquet LOCATION 'abfss://datalake@{stgaccountname}.dfs.core.windows.net/data/dw/dim_parking_bay/';
+""")
+spark.sql("REFRESH TABLE dw.dim_parking_bay;")
 
 # COMMAND ----------
 
@@ -134,90 +107,92 @@ dbutils.fs.refreshMounts()
 
 from pyspark.sql.functions import col
 
+# Define the ADLS Gen2 location
+adls_gen2_location_seed = f"abfss://datalake@{stgaccountname}.dfs.core.windows.net/data/seed/"
+adls_gen2_location = f"abfss://datalake@{stgaccountname}.dfs.core.windows.net/data/dw/"
+
 # DimDate
-dimdate = spark.read.csv("dbfs:/mnt/datalake/data/seed/dim_date/dim_date.csv", header=True)
-dimdate.write.saveAsTable("dw.dim_date")
+dbutils.fs.rm(f"{adls_gen2_location}dim_date", recurse=True)
+dimdate = spark.read.csv(f"{adls_gen2_location_seed}dim_date/dim_date.csv", header=True)
+dimdate.write.format("delta").option("path", f"{adls_gen2_location}dim_date").saveAsTable("dw.dim_date")
 
 # DimTime
-dimtime = spark.read.csv("dbfs:/mnt/datalake/data/seed/dim_time/dim_time.csv", header=True)
-dimtime.write.saveAsTable("dw.dim_time")
+dbutils.fs.rm(f"{adls_gen2_location}dim_time", recurse=True)
+dimtime = spark.read.csv(f"{adls_gen2_location_seed}dim_time/dim_time.csv", header=True)
+dimtime.write.format("delta").option("path", f"{adls_gen2_location}dim_time").saveAsTable("dw.dim_time")
 
 # COMMAND ----------
 
-# MAGIC %sql
-# MAGIC -- INTERIM tables
-# MAGIC DROP TABLE IF EXISTS interim.parking_bay;
-# MAGIC CREATE TABLE interim.parking_bay (
-# MAGIC   bay_id INT,
-# MAGIC   `last_edit` TIMESTAMP,
-# MAGIC   `marker_id` STRING, 
-# MAGIC   `meter_id` STRING, 
-# MAGIC   `rd_seg_dsc` STRING, 
-# MAGIC   `rd_seg_id` STRING, 
-# MAGIC   `the_geom` STRUCT<`coordinates`: ARRAY<ARRAY<ARRAY<ARRAY<DOUBLE>>>>, `type`: STRING>,
-# MAGIC   load_id STRING,
-# MAGIC   loaded_on TIMESTAMP
-# MAGIC )
-# MAGIC USING parquet
-# MAGIC LOCATION '/mnt/datalake/data/interim/parking_bay/';
-# MAGIC 
-# MAGIC REFRESH TABLE interim.parking_bay;
-# MAGIC 
-# MAGIC --
-# MAGIC DROP TABLE IF EXISTS interim.sensor;
-# MAGIC CREATE TABLE interim.sensor (
-# MAGIC   bay_id INT,
-# MAGIC   `st_marker_id` STRING,
-# MAGIC   `lat` FLOAT,
-# MAGIC   `lon` FLOAT, 
-# MAGIC   `location` STRUCT<`coordinates`: ARRAY<DOUBLE>, `type`: STRING>, 
-# MAGIC   `status` STRING, 
-# MAGIC   load_id STRING,
-# MAGIC   loaded_on TIMESTAMP
-# MAGIC )
-# MAGIC USING parquet
-# MAGIC LOCATION '/mnt/datalake/data/interim/sensors/';
-# MAGIC 
-# MAGIC REFRESH TABLE interim.sensor;
+# INTERIM tables
+# interim.parking_bay
+spark.sql("DROP TABLE IF EXISTS interim.parking_bay;")
+spark.sql(f"""
+CREATE TABLE interim.parking_bay (
+  bay_id INT,
+  `last_edit` TIMESTAMP,
+  `marker_id` STRING, 
+  `meter_id` STRING, 
+  `rd_seg_dsc` STRING, 
+  `rd_seg_id` STRING, 
+  `the_geom` STRUCT<`coordinates`: ARRAY<ARRAY<ARRAY<ARRAY<DOUBLE>>>>, `type`: STRING>,
+  load_id STRING,
+  loaded_on TIMESTAMP
+)
+USING parquet LOCATION 'abfss://datalake@{stgaccountname}.dfs.core.windows.net/data/interim/parking_bay/';
+""")
+spark.sql("REFRESH TABLE interim.parking_bay;")
+
+# interim.sensor
+spark.sql("DROP TABLE IF EXISTS interim.sensor;")
+spark.sql(f"""
+CREATE TABLE interim.sensor (
+  bay_id INT,
+  `st_marker_id` STRING,
+  `lat` FLOAT,
+  `lon` FLOAT, 
+  `location` STRUCT<`coordinates`: ARRAY<DOUBLE>, `type`: STRING>, 
+  `status` STRING, 
+  load_id STRING,
+  loaded_on TIMESTAMP
+)
+USING parquet LOCATION 'abfss://datalake@{stgaccountname}.dfs.core.windows.net/data/interim/sensors/';
+""")
+spark.sql("REFRESH TABLE interim.sensor;")
 
 # COMMAND ----------
 
-# MAGIC %sql
-# MAGIC -- ERROR tables
-# MAGIC DROP TABLE IF EXISTS malformed.parking_bay;
-# MAGIC CREATE TABLE malformed.parking_bay (
-# MAGIC   bay_id INT,
-# MAGIC   `last_edit` TIMESTAMP,
-# MAGIC   `marker_id` STRING, 
-# MAGIC   `meter_id` STRING, 
-# MAGIC   `rd_seg_dsc` STRING, 
-# MAGIC   `rd_seg_id` STRING, 
-# MAGIC   `the_geom` STRUCT<`coordinates`: ARRAY<ARRAY<ARRAY<ARRAY<DOUBLE>>>>, `type`: STRING>,
-# MAGIC   load_id STRING,
-# MAGIC   loaded_on TIMESTAMP
-# MAGIC )
-# MAGIC USING parquet
-# MAGIC LOCATION '/mnt/datalake/data/interim/parking_bay/';
-# MAGIC 
-# MAGIC REFRESH TABLE interim.parking_bay;
-# MAGIC 
-# MAGIC --
-# MAGIC DROP TABLE IF EXISTS malformed.sensor;
-# MAGIC CREATE TABLE malformed.sensor (
-# MAGIC   bay_id INT,
-# MAGIC   `st_marker_id` STRING,
-# MAGIC   `lat` FLOAT,
-# MAGIC   `lon` FLOAT, 
-# MAGIC   `location` STRUCT<`coordinates`: ARRAY<DOUBLE>, `type`: STRING>, 
-# MAGIC   `status` STRING, 
-# MAGIC   load_id STRING,
-# MAGIC   loaded_on TIMESTAMP
-# MAGIC )
-# MAGIC USING parquet
-# MAGIC LOCATION '/mnt/datalake/data/interim/sensors/';
-# MAGIC 
-# MAGIC REFRESH TABLE interim.sensor;
+# ERROR tables
+# malformed.parking_bay
+spark.sql("DROP TABLE IF EXISTS malformed.parking_bay;")
+spark.sql(f"""
+CREATE TABLE malformed.parking_bay (
+  bay_id INT,
+  `last_edit` TIMESTAMP,
+  `marker_id` STRING, 
+  `meter_id` STRING, 
+  `rd_seg_dsc` STRING, 
+  `rd_seg_id` STRING, 
+  `the_geom` STRUCT<`coordinates`: ARRAY<ARRAY<ARRAY<ARRAY<DOUBLE>>>>, `type`: STRING>,
+  load_id STRING,
+  loaded_on TIMESTAMP
+)
+USING parquet LOCATION 'abfss://datalake@{stgaccountname}.dfs.core.windows.net/data/malformed/parking_bay/';
+""")
+spark.sql("REFRESH TABLE malformed.parking_bay;")
 
-# COMMAND ----------
-
-
+# malformed.sensor
+spark.sql("DROP TABLE IF EXISTS malformed.sensor;")
+spark.sql(f"""
+CREATE TABLE malformed.sensor (
+  bay_id INT,
+  `st_marker_id` STRING,
+  `lat` FLOAT,
+  `lon` FLOAT, 
+  `location` STRUCT<`coordinates`: ARRAY<DOUBLE>, `type`: STRING>, 
+  `status` STRING, 
+  load_id STRING,
+  loaded_on TIMESTAMP
+)
+USING parquet LOCATION 'abfss://datalake@{stgaccountname}.dfs.core.windows.net/data/malformed/sensors/';
+""")
+spark.sql("REFRESH TABLE  malformed.sensor;")

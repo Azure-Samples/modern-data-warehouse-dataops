@@ -39,6 +39,14 @@
                         "loadid": {
                             "value": "@pipeline().RunId",
                             "type": "Expression"
+                        },
+                        "catalogname": {
+                            "value": "",
+                            "type": "Expression"
+                        },
+                        "stgaccountname": {
+                            "value": "",
+                            "type": "Expression"
                         }
                     },
                     "libraries": [
@@ -207,6 +215,14 @@
                     "baseParameters": {
                         "loadid": {
                             "value": "@pipeline().RunId",
+                            "type": "Expression"
+                        },
+                        "catalogname": {
+                            "value": "",
+                            "type": "Expression"
+                        },
+                        "stgaccountname": {
+                            "value": "",
                             "type": "Expression"
                         }
                     },
