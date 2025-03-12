@@ -31,6 +31,7 @@ jobs:
       - script: |
           mkdir fabric_env/
           cp fabric/fabric_environment/environment.yml fabric_env/
+          cp fabric/fabric_environment/spark_pool_settings.yml fabric_env/
 
           mkdir fabric_env/custom_libraries/
           cp libraries/src/ddo_transform_standardize.py fabric_env/custom_libraries/

@@ -1,8 +1,9 @@
 import json
 import os
+import subprocess
 import time
 import uuid
-from typing import List, Optional
+from typing import Dict, List, Optional, Tuple
 
 import requests
 from requests.structures import CaseInsensitiveDict
@@ -848,3 +849,68 @@ def delete_storage_container(headers: dict, storage_account_name: str, storage_c
         print("[Info] Container already deleted or does not exist.")
     else:
         raise Exception(f"[Error] Delete container request failed': {response.status_code} - {response.text}")
+
+
+def get_lakehouse_id(headers: dict, workspace_id: str, lakehouse_name: str) -> Optional[str]:
+    url = f"{fabric_api_endpoint}/workspaces/{workspace_id}/items"
+
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        items = response.json().get("value", [])
+
+        for item in items:
+            if item.get("displayName") == lakehouse_name and item.get("type") == "Lakehouse":
+                return item.get("id")
+        print(f"[Info] Lakehouse '{lakehouse_name}' not found.")
+        return None
+    elif response.status_code == 404:
+        print(f"[Info] No items found. Response: {response.text}")
+        return None
+    else:
+        raise Exception(f"[Error] Failed to retrieve items: {response.status_code} - {response.text}")
+
+
+def get_bearer_tokens_and_headers() -> Tuple[Dict[str, str], Dict[str, str], Dict[str, str], str, str, str]:
+    fabric_bearer_token = (
+        subprocess.check_output(
+            "az account get-access-token --resource https://api.fabric.microsoft.com --query accessToken -o tsv",
+            shell=True,
+        )
+        .decode("utf-8")
+        .strip()
+    )
+
+    azure_management_bearer_token = (
+        subprocess.check_output(
+            "az account get-access-token --resource https://management.azure.com --query accessToken -o tsv",
+            shell=True,
+        )
+        .decode("utf-8")
+        .strip()
+    )
+
+    azure_storage_bearer_token = (
+        subprocess.check_output(
+            "az account get-access-token --resource https://storage.azure.com/ --query accessToken -o tsv",
+            shell=True,
+        )
+        .decode("utf-8")
+        .strip()
+    )
+
+    azure_management_headers = {
+        "Authorization": f"Bearer {azure_management_bearer_token}",
+        "Content-Type": "application/json",
+    }
+    azure_storage_headers = {"Authorization": f"Bearer {azure_storage_bearer_token}", "x-ms-version": "2021-02-12"}
+    fabric_headers = {"Authorization": f"Bearer {fabric_bearer_token}", "Content-Type": "application/json"}
+
+    return (
+        azure_management_headers,
+        azure_storage_headers,
+        fabric_headers,
+        azure_management_bearer_token,
+        azure_storage_bearer_token,
+        fabric_bearer_token,
+    )
