@@ -4,10 +4,6 @@ trigger:
       - <ENV1_BRANCH_NAME>
       - <ENV2_BRANCH_NAME>
       - <ENV3_BRANCH_NAME>
-  paths:
-    exclude:
-      - fabric/workspace
-      - devops
 
 pr: none
 
