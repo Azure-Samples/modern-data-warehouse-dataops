@@ -1,13 +1,13 @@
-trigger: none
-
-pr:
+trigger:
   branches:
     include:
       - <ENV2_BRANCH_NAME>
       - <ENV3_BRANCH_NAME>
 
+pr: none
+
 variables:
-  - ${{ elseif eq(variables['Build.SourceBranchName'], '<ENV2_BRANCH_NAME>') }}:
+  - ${{ if eq(variables['Build.SourceBranchName'], '<ENV2_BRANCH_NAME>') }}:
       - group: <ENV2_VARIABLE_GROUP_NAME>
   - ${{ elseif eq(variables['Build.SourceBranchName'], '<ENV3_BRANCH_NAME>') }}:
       - group: <ENV3_VARIABLE_GROUP_NAME>
