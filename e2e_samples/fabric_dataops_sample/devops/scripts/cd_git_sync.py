@@ -37,14 +37,12 @@ class ValidationError(Exception):
 
 def validate_env() -> None:
     """Validate the required environment variables and tokens."""
-    error_list = []
+    required_env_vars = [
+        "FABRIC_CAPACITY_NAME",
+        "FABRIC_WORKSPACE_NAME",
+    ]
 
-    if not azure_management_bearer_token:
-        error_list.append("azure_management_bearer_token")
-    if not azure_storage_bearer_token:
-        error_list.append("azure_storage_bearer_token")
-    if not fabric_bearer_token:
-        error_list.append("fabric_bearer_token")
+    error_list = [var for var in required_env_vars if not os.environ.get(var)]
 
     if error_list:
         raise ValidationError("The following mandatory environment variables are not set: " + ", ".join(error_list))
