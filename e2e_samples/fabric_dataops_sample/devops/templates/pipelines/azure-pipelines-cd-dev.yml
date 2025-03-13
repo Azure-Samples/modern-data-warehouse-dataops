@@ -1,0 +1,75 @@
+trigger: none
+
+pr: none
+
+resources:
+  pipelines:
+    - pipeline: ciartifacts
+      source: pl-<BASE_NAME>-ci-publish-artifacts
+      trigger:
+        branches:
+          - <ENV1_BRANCH_NAME>
+
+variables:
+  - ${{ if eq(variables['Build.SourceBranchName'], '<ENV1_BRANCH_NAME>') }}:
+      - group: <ENV1_VARIABLE_GROUP_NAME>
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+  - stage: Perform_CD
+    jobs:
+      - job: Perform_CD
+        displayName: 'Perform CD steps'
+        steps:
+          - script: |
+              echo "Triggering interactive Azure CLI login..."
+              az login --use-device-code
+            displayName: 'Azure CLI - Interactive Login'
+
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: '3.8'
+              addToPath: true
+
+          - download: ciartifacts
+            artifact: adls
+            displayName: 'Download ADLS Config Artifacts'
+          - download: ciartifacts
+            artifact: fabric_env
+            displayName: 'Download Fabric Environment Config Artifacts'
+          - script: |
+              echo "Artifacts downloaded"
+              ls -ltraR $(Pipeline.Workspace)/ciartifacts  # Verify files are downloaded
+            displayName: 'List all artifacts'
+
+          - script: |
+              pip install -r $(Build.SourcesDirectory)/devops/scripts/requirements.txt
+            displayName: 'Install Requirements'
+
+          - script: |
+
+              python -u $(Build.SourcesDirectory)/devops/scripts/cd_git_sync.py --verbose
+            displayName: 'Perform git sync'
+
+          - script: |
+              export CI_ARTIFACTS_PATH="$(Pipeline.Workspace)/ciartifacts"
+
+              python -u $(Build.SourcesDirectory)/devops/scripts/cd_ws_item_sync.py --verbose
+            displayName: 'Perform Workspace Item sync'
+
+
+          - script: |
+              export CI_ARTIFACTS_PATH="$(Pipeline.Workspace)/ciartifacts"
+
+              az storage blob upload-batch \
+                --account-name $STORAGE_ACCOUNT_NAME \
+                -d $STORAGE_CONTAINER_NAME \
+                -s ${CI_ARTIFACTS_PATH}/adls \
+                --auth-mode login \
+                --overwrite true \
+                --output none
+
+            displayName: 'Upload ADLS Config Artifacts'
+            workingDirectory: $(Build.SourcesDirectory)

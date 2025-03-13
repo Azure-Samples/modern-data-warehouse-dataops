@@ -26,16 +26,22 @@ echo "[Info] ############   CREATING AZDO PIPELINE FILES   ############"
 ci_artifacts_pipeline_template="devops/templates/pipelines/azure-pipelines-ci-artifacts.yml"
 ci_qa_cleanup_pipeline_template="devops/templates/pipelines/azure-pipelines-ci-qa-cleanup.yml"
 ci_qa_pipeline_template="devops/templates/pipelines/azure-pipelines-ci-qa.yml"
+cd_dev_pipeline_template="devops/templates/pipelines/azure-pipelines-cd-dev.yml"
+cd_stg_and_prod_pipeline_template="devops/templates/pipelines/azure-pipelines-cd-stg_and_prod.yml"
 
 # Azure DevOps (AzDo) pipeline actual files (to be created)
 ci_artifacts_pipeline="devops/azure-pipelines-ci-artifacts.yml"
 ci_qa_cleanup_pipeline="devops/azure-pipelines-ci-qa-cleanup.yml"
 ci_qa_pipeline="devops/azure-pipelines-ci-qa.yml"
+cd_dev_pipeline="devops/azure-pipelines-cd-dev.yml"
+cd_stg_and_prod_pipeline="devops/azure-pipelines-cd-stg_and_prod.yml"
 
 # Copy the pipeline template files to the actual pipeline files
 cp "$ci_artifacts_pipeline_template" "$ci_artifacts_pipeline"
 cp "$ci_qa_cleanup_pipeline_template" "$ci_qa_cleanup_pipeline"
 cp "$ci_qa_pipeline_template" "$ci_qa_pipeline"
+cp "$cd_dev_pipeline_template" "$cd_dev_pipeline"
+cp "$cd_stg_and_prod_pipeline_template" "$cd_stg_and_prod_pipeline"
 
 for i in "${!ENVIRONMENT_NAMES[@]}"; do
   environment_name="${ENVIRONMENT_NAMES[$i]}"
@@ -65,6 +71,15 @@ for i in "${!ENVIRONMENT_NAMES[@]}"; do
   replace "$placeholder_branch_name" "$azdo_git_branch_name" "$ci_qa_pipeline"
   replace "$placeholder_variable_group_name" "$azdo_variable_group_name" "$ci_qa_pipeline"
   replace "$placeholder_service_connection_name" "$azdo_service_connection_name" "$ci_qa_pipeline"
+
+  replace "$placeholder_branch_name" "$azdo_git_branch_name" "$cd_dev_pipeline"
+  replace "$placeholder_variable_group_name" "$azdo_variable_group_name" "$cd_dev_pipeline"
+  replace "$placeholder_service_connection_name" "$azdo_service_connection_name" "$cd_dev_pipeline"
+  replace "<BASE_NAME>" "$base_name" "$cd_dev_pipeline"
+
+  replace "$placeholder_branch_name" "$azdo_git_branch_name" "$cd_stg_and_prod_pipeline"
+  replace "$placeholder_variable_group_name" "$azdo_variable_group_name" "$cd_stg_and_prod_pipeline"
+  replace "$placeholder_service_connection_name" "$azdo_service_connection_name" "$cd_stg_and_prod_pipeline"
 done
 
 echo "[Info] ############    AZDO PIPELINE FILES CREATED   ############"
