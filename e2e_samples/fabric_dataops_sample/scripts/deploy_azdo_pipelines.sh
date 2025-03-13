@@ -19,6 +19,8 @@ set -o nounset
 azdo_pipeline_ci_qa="pl-${BASE_NAME}-ci-qa"
 azdo_pipeline_ci_qa_cleanup="pl-${BASE_NAME}-ci-qa-cleanup"
 azdo_pipeline_ci_publish_artifacts="pl-${BASE_NAME}-ci-publish-artifacts"
+azdo_pipeline_cd_dev="pl-${BASE_NAME}-cd-dev"
+azdo_pipeline_cd_stg_and_prod="pl-${BASE_NAME}-cd-stg_and_prod"
 azdo_pipeline_variable_pr_id="PR_ID"
 
 get_azdo_repo_id () {
@@ -188,6 +190,18 @@ create_azdo_pipeline \
   "$AZDO_PIPELINES_BRANCH_NAME" \
   "This pipeline publishes the build artifacts after the PR is merged to dev/stg/prod branches." \
   "/devops/azure-pipelines-ci-artifacts.yml"
+
+create_azdo_pipeline \
+  "$azdo_pipeline_cd_dev" \
+  "$AZDO_PIPELINES_BRANCH_NAME" \
+  "This pipeline perform deployment to dev branch." \
+  "/devops/azure-pipelines-cd-dev.yml"
+
+create_azdo_pipeline \
+  "$azdo_pipeline_cd_stg_and_prod" \
+  "$AZDO_PIPELINES_BRANCH_NAME" \
+  "This pipeline perform deployment to stg and prod branches." \
+  "/devops/azure-pipelines-cd-stg_and_prod.yml"
 
 create_azdo_pipeline_variable \
   "$azdo_pipeline_ci_qa_cleanup" \
