@@ -5,11 +5,6 @@ import time
 import utils
 import yaml
 
-# from dotenv import load_dotenv
-# load_dotenv(
-#     "/home/naga/dev/ext_gitrepos/naga_mde_feat/modern-data-warehouse-dataops/_scratch/naga_cd.env", override=True
-# )
-
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 
