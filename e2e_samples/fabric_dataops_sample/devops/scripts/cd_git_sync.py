@@ -35,6 +35,18 @@ class ValidationError(Exception):
         exit(1)
 
 
+def main() -> None:
+    """Main function to orchestrate the git sync process."""
+    validate_env()
+    logging.info("############ Workspace Related Tasks ############")
+    _ = get_capacity_details()
+    workspace_id = get_workspace_details()
+    logging.info("------------------ Accept Git changes and update the workspace ------------------")
+    sync_git_changes(workspace_id)
+    logging.info("------------------ Git Sync Completed ------------------")
+    logging.info("############ Workspace Related Tasks Completed ############")
+
+
 def validate_env() -> None:
     """Validate the required environment variables and tokens."""
     required_env_vars = [
@@ -90,18 +102,6 @@ def sync_git_changes(workspace_id: str) -> None:
             )
         else:
             logging.info("No new commit to update the workspace")
-
-
-def main() -> None:
-    """Main function to orchestrate the git sync process."""
-    validate_env()
-    logging.info("############ Workspace Related Tasks ############")
-    _ = get_capacity_details()
-    workspace_id = get_workspace_details()
-    logging.info("------------------ Accept Git changes and update the workspace ------------------")
-    sync_git_changes(workspace_id)
-    logging.info("------------------ Git Sync Completed ------------------")
-    logging.info("############ Workspace Related Tasks Completed ############")
 
 
 if __name__ == "__main__":

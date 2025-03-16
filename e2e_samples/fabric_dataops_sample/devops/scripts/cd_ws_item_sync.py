@@ -53,6 +53,29 @@ class ValidationError(Exception):
         exit(1)
 
 
+def main() -> None:
+    """Main function to orchestrate the workspace item sync process."""
+    validate_env()
+    _ = get_capacity_details()
+    logging.info("############ Workspace Related Tasks ############")
+    workspace_id = get_workspace_details()
+    connection_id = get_connection_details()
+    create_shortcut(workspace_id, connection_id)
+    logging.info("############ Environment Related Tasks ############")
+    environment_id = utils.get_environment_id(fabric_headers, workspace_id, fabric_environment_name)
+    if environment_id:
+        logging.info(f"Environment details: '{fabric_environment_name}' ({environment_id})")
+    else:
+        raise Exception(f"Failed to retrieve environment id for '{fabric_environment_name}'")
+    logging.info("------------------ Custom Pool Related Tasks ------------------")
+    update_custom_pool(workspace_id)
+    logging.info("------------------ Public and Custom Library Related Tasks ------------------")
+    update_libraries(workspace_id, environment_id)
+    logging.info("------------------ Publish environment if there are staged changes ------------------")
+    publish_environment_if_needed(workspace_id, environment_id)
+    logging.info("############ Workspace Related Tasks Completed ############")
+
+
 def validate_env() -> None:
     """Validate the required environment variables and tokens."""
     required_env_vars = [
@@ -229,29 +252,6 @@ def publish_environment_if_needed(workspace_id: str, environment_id: str) -> Non
         logging.info("Environment publishing completed.")
     else:
         logging.info("There are no changes in spark compute settings or libraries. Publishing the environment.")
-
-
-def main() -> None:
-    """Main function to orchestrate the workspace item sync process."""
-    validate_env()
-    _ = get_capacity_details()
-    logging.info("############ Workspace Related Tasks ############")
-    workspace_id = get_workspace_details()
-    connection_id = get_connection_details()
-    create_shortcut(workspace_id, connection_id)
-    logging.info("############ Environment Related Tasks ############")
-    environment_id = utils.get_environment_id(fabric_headers, workspace_id, fabric_environment_name)
-    if environment_id:
-        logging.info(f"Environment details: '{fabric_environment_name}' ({environment_id})")
-    else:
-        raise Exception(f"Failed to retrieve environment id for '{fabric_environment_name}'")
-    logging.info("------------------ Custom Pool Related Tasks ------------------")
-    update_custom_pool(workspace_id)
-    logging.info("------------------ Public and Custom Library Related Tasks ------------------")
-    update_libraries(workspace_id, environment_id)
-    logging.info("------------------ Publish environment if there are staged changes ------------------")
-    publish_environment_if_needed(workspace_id, environment_id)
-    logging.info("############ Workspace Related Tasks Completed ############")
 
 
 if __name__ == "__main__":
