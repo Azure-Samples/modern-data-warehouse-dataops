@@ -8,7 +8,6 @@
 # - Correct Azure subscription is selected
 #######################################################
 
-
 set -o errexit
 set -o pipefail
 set -o nounset
