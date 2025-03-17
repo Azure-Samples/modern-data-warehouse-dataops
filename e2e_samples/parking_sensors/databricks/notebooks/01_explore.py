@@ -3,9 +3,15 @@ import os
 import datetime
 
 # For testing
-base_path = 'dbfs:/mnt/datalake/data/lnd/2019_10_06_05_54_25'
+# Replace values before testing
+#infilefolder = '2022_03_23_10_28_02/'
+#stgaccountname = "stg_account_name"
+
+abfss_path= f"""abfss://datalake@{stgaccountname}.dfs.core.windows.net/data/lnd/"""
+base_path = os.path.join(abfss_path,infilefolder)
 parkingbay_filepath = os.path.join(base_path, "ParkingLocationData.json")
 sensors_filepath = os.path.join(base_path, "ParkingSensorData.json")
+
 
 # COMMAND ----------
 

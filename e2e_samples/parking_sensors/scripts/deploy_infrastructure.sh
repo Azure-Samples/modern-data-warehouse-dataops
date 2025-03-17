@@ -202,8 +202,6 @@ appinsights_connstr=$(az monitor app-insights component show \
 az keyvault secret set --vault-name "$kv_name" --name "applicationInsightsKey" --value "$appinsights_key" -o none
 az keyvault secret set --vault-name "$kv_name" --name "applicationInsightsConnectionString" --value "$appinsights_connstr" -o none
 
-
-
 # ###########################
 # # RETRIEVE DATABRICKS INFORMATION AND CONFIGURE WORKSPACE
 
@@ -252,6 +250,7 @@ read -p "Press Enter after you authenticate to the Azure Databricks workspace...
 databricks_token=$(DATABRICKS_TOKEN=$databricks_aad_token \
     DATABRICKS_HOST=$databricks_host \
     bash -c "databricks tokens create --comment 'deployment'" | jq -r .token_value)
+log "databricks_kv_token: $databricks_token"
 
 # Save in KeyVault
 az keyvault secret set --vault-name "$kv_name" --name "databricksDomain" --value "$databricks_host" -o none
@@ -264,14 +263,47 @@ if [ "$ENV_NAME" == "dev" ]; then
 else  
     databricks_release_folder="/releases/setup_release"
 fi
-databricks_folder_name_standardize="$databricks_release_folder/02_standardize"
-databricks_folder_name_transform="$databricks_release_folder/03_transform"
+databricks_folder_name_standardize="$databricks_release_folder/notebooks/02_standardize"
+databricks_folder_name_transform="$databricks_release_folder/notebooks/03_transform"
 log "databricks_folder_name_standardize: ${databricks_folder_name_standardize}" "info"
 log "databricks_folder_name_transform: ${databricks_folder_name_transform}" "info"
 
+################################################
+# Configure Unity Catalog
+cat_stg_account_name="${PROJECT}catalog${ENV_NAME}${DEPLOYMENT_ID}"
+data_stg_account_name="${PROJECT}st${ENV_NAME}${DEPLOYMENT_ID}"
+resource_group_name="${PROJECT}-${DEPLOYMENT_ID}-${ENV_NAME}-rg"
+mng_resource_group_name="${PROJECT}-${DEPLOYMENT_ID}-dbw-${ENV_NAME}-rg"
+stg_credential_name="${PROJECT}-${DEPLOYMENT_ID}-stg-credential-${ENV_NAME}"
+catalog_ext_location_name="${PROJECT}-catalog-${DEPLOYMENT_ID}-ext-location-${ENV_NAME}"
+data_ext_location_name="${PROJECT}-data-${DEPLOYMENT_ID}-ext-location-${ENV_NAME}"
+catalog_name="${PROJECT}-${DEPLOYMENT_ID}-catalog-${ENV_NAME}"
+
+SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID \
+DATABRICKS_KV_TOKEN=$databricks_token \
+DATABRICKS_HOST=$databricks_host \
+ENVIRONMENT_NAME=$ENV_NAME \
+AZURE_LOCATION=$AZURE_LOCATION \
+CATALOG_STG_ACCOUNT_NAME=$cat_stg_account_name \
+DATA_STG_ACCOUNT_NAME=$data_stg_account_name \
+RESOURCE_GROUP_NAME=$resource_group_name \
+MNG_RESOURCE_GROUP_NAME=$mng_resource_group_name \
+STG_CREDENTIAL_NAME=$stg_credential_name \
+CATALOG_EXT_LOCATION_NAME=$catalog_ext_location_name \
+DATA_EXT_LOCATION_NAME=$data_ext_location_name \
+CATALOG_NAME=$catalog_name \
+    bash -c "./scripts/configure_unity_catalog.sh"
+
 # Configure databricks (KeyVault-backed Secret scope, mount to storage via SP, databricks tables, cluster)
 # NOTE: must use Microsoft Entra access token, not PAT token
+AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID \
+RESOURCE_GROUP_NAME=$resource_group_name \
+STORAGE_ACCOUNT_NAME=$azure_storage_account \
+ENVIRONMENT_NAME=$ENV_NAME \
+PROJECT=$PROJECT \
+DEPLOYMENT_ID=$DEPLOYMENT_ID \
 DATABRICKS_TOKEN=$databricks_aad_token \
+DATABRICKS_KV_TOKEN=$databricks_token \
 DATABRICKS_HOST=$databricks_host \
 KEYVAULT_DNS_NAME=$kv_dns_name \
 KEYVAULT_NAME=$kv_name \
@@ -295,12 +327,17 @@ mkdir -p $adfTempDir && cp -a adf/ .tmp/
 tmpfile=.tmpfile
 adfLsDir=$adfTempDir/linkedService
 adfPlDir=$adfTempDir/pipeline
+catalog_name="${PROJECT}-${DEPLOYMENT_ID}-catalog-${ENV_NAME}"
 jq --arg kvurl "$kv_dns_name" '.properties.typeProperties.baseUrl = $kvurl' $adfLsDir/Ls_KeyVault_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_KeyVault_01.json
 jq --arg databricksWorkspaceUrl "$databricks_host" '.properties.typeProperties.domain = $databricksWorkspaceUrl' $adfLsDir/Ls_AzureDatabricks_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AzureDatabricks_01.json
 jq --arg databricksExistingClusterId "$databricksClusterId" '.properties.typeProperties.existingClusterId = $databricksExistingClusterId' $adfLsDir/Ls_AzureDatabricks_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AzureDatabricks_01.json
 jq --arg datalakeUrl "https://$azure_storage_account.dfs.core.windows.net" '.properties.typeProperties.url = $datalakeUrl' $adfLsDir/Ls_AdlsGen2_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AdlsGen2_01.json
 jq --arg databricks_folder_name_standardize "$databricks_folder_name_standardize" '.properties.activities[0].typeProperties.notebookPath = $databricks_folder_name_standardize' $adfPlDir/P_Ingest_ParkingData.json > "$tmpfile" && mv "$tmpfile" $adfPlDir/P_Ingest_ParkingData.json
 jq --arg databricks_folder_name_transform  "$databricks_folder_name_transform" '.properties.activities[4].typeProperties.notebookPath = $databricks_folder_name_transform' $adfPlDir/P_Ingest_ParkingData.json > "$tmpfile" && mv "$tmpfile" $adfPlDir/P_Ingest_ParkingData.json
+jq --arg notebook_base_param_catalog_name "$catalog_name" '.properties.activities[0].typeProperties.baseParameters.catalogname.value = $notebook_base_param_catalog_name' $adfPlDir/P_Ingest_ParkingData.json > "$tmpfile" && mv "$tmpfile" $adfPlDir/P_Ingest_ParkingData.json
+jq --arg notebook_base_param_stg_account_name "$azure_storage_account" '.properties.activities[0].typeProperties.baseParameters.stgaccountname.value = $notebook_base_param_stg_account_name' $adfPlDir/P_Ingest_ParkingData.json > "$tmpfile" && mv "$tmpfile" $adfPlDir/P_Ingest_ParkingData.json
+jq --arg notebook_base_param_catalog_name "$catalog_name" '.properties.activities[4].typeProperties.baseParameters.catalogname.value = $notebook_base_param_catalog_name' $adfPlDir/P_Ingest_ParkingData.json > "$tmpfile" && mv "$tmpfile" $adfPlDir/P_Ingest_ParkingData.json
+jq --arg notebook_base_param_stg_account_name "$azure_storage_account" '.properties.activities[4].typeProperties.baseParameters.stgaccountname.value = $notebook_base_param_stg_account_name' $adfPlDir/P_Ingest_ParkingData.json > "$tmpfile" && mv "$tmpfile" $adfPlDir/P_Ingest_ParkingData.json
 jq --arg new_url "$API_BASE_URL" '.properties.typeProperties.url = $new_url' "$adfLsDir/Ls_Http_DataSimulator.json" > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_Http_DataSimulator.json
 jq --arg new_url "$API_BASE_URL" '.properties.typeProperties.url = $new_url' $adfLsDir/Ls_Rest_ParkSensors_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_Rest_ParkSensors_01.json
 
