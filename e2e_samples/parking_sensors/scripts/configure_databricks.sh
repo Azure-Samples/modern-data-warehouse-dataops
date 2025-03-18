@@ -157,12 +157,26 @@ fi
 az keyvault secret set --vault-name "$KEYVAULT_NAME" --name "databricksClusterId" --value "$cluster_id" -o none
 
 
-log "Uploading libs TO libraries folder..."
+# Find the generated .whl file dynamically
+WHL_FILE=$(find ./src/ddo_transform/dist/ -name "*.whl" | head -n 1)
 
+if [ -z "$WHL_FILE" ]; then
+    log "Error: No .whl file found in dist directory. Make sure the package is built." "error"
+    exit 1
+fi
+
+WHL_FILENAME=$(basename "$WHL_FILE")
+
+# Upload the dynamically found .whl file to Databricks
 libs_path="$DATABRICKS_RELEASE_FOLDER/libs"
+log "Uploading $WHL_FILENAME to Databricks libraries folder ($libs_path)..."
 
 databricks workspace mkdirs "$libs_path"
-databricks workspace import --language PYTHON --format AUTO --overwrite --file "./databricks/libs/ddo_transform-localdev-py2.py3-none-any.whl" "/Workspace/$libs_path/ddo_transform-localdev-py2.py3-none-any.whl"
+databricks workspace import --language PYTHON --format AUTO --overwrite --file "$WHL_FILE" "/Workspace/$libs_path/$WHL_FILENAME"
+log "Successfully uploaded $WHL_FILENAME to Databricks libraries folder ($libs_path)..." "success"
+
+# Delete the dist folder and WHL file locally
+rm -rf ./src/ddo_transform/dist
 
 # Create JSON file for library installation
 json_file="./databricks/config/libs.config.json"
@@ -171,7 +185,7 @@ cat <<EOF > $json_file
   "cluster_id": "$cluster_id",
   "libraries": [
     {
-      "whl": "/Workspace/releases/dev/libs/ddo_transform-localdev-py2.py3-none-any.whl"
+      "whl": "/Workspace/releases/dev/libs/$WHL_FILENAME"
     }
   ]
 }

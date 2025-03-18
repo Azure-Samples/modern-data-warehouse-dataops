@@ -60,6 +60,14 @@ sed -i "s+devlace/mdw-dataops-clone+$GITHUB_REPO+" devops/azure-pipelines-cd-rel
 # azure-pipelines-cd-release.yml pipeline require DEV_DATAFACTORY_NAME set, retrieve this value from .env.dev file
 declare DEV_"$(grep -e '^DATAFACTORY_NAME' .env.dev | tail -1 | xargs)"
 
+# Build the WHL package
+log "Building the WHL package..."
+cd ./src/ddo_transform
+# Ensure the dist folder exists
+mkdir -p dist
+python setup.py bdist_wheel --universal
+cd ../..
+
 # Deploy all pipelines
 PROJECT=$project \
 GITHUB_REPO_URL=$github_repo_url \

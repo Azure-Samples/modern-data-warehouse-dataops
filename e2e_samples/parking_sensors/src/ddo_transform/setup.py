@@ -51,8 +51,6 @@ setup(
     name='ddo_transform',
     packages=find_packages(include=['ddo_transform']),
     setup_requires=setup_requirements,
-    test_suite='tests',
-    tests_require=test_requirements,
     url='https://github.com/devlace/datadevops',
     version=version,
     zip_safe=False,
