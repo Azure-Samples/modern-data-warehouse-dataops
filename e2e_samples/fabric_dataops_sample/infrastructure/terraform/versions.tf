@@ -4,23 +4,23 @@ terraform {
   required_providers {
     fabric = {
       source  = "microsoft/fabric"
-      version = "0.1.0-beta.8"
+      version = "0.1.0-rc.1"
     }
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "4.14.0"
+      version = "4.23.0"
     }
     azuread = {
       source  = "hashicorp/azuread"
-      version = "3.0.2"
+      version = "3.1.0"
     }
     azuredevops = {
       source  = "microsoft/azuredevops"
-      version = "1.5.0"
+      version = "1.8.0"
     }
     random = {
       source  = "hashicorp/random"
-      version = "3.6.2"
+      version = "3.7.1"
     }
   }
 }

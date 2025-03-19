@@ -487,3 +487,5 @@ single_tech_samples/synapseanalytics/sample3_integration_testing/synapse/workspa
 # Environment variables for data simulator web app
 !/e2e_samples/parking_sensors/data/data-simulator/.env
 _scratch/*
+
+*.cfg
