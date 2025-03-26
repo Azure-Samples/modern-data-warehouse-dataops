@@ -1,0 +1,16 @@
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directories:
+      - "/e2e_samples/*"
+      - "/single_tech_samples/*"
+      - "/utilities/*"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "npm"
+    directories:
+      - "/e2e_samples/*"
+      - "/single_tech_samples/*"
+      - "/utilities/*"
+    schedule:
+      interval: "weekly"
