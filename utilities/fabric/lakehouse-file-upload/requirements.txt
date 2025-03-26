@@ -3,5 +3,5 @@ azure-devops==7.1.0b4
 azure-identity==1.19.0
 azure-storage-blob==12.23.1
 azure-storage-file-datalake==12.17.0
-python-dotenv==1.0.1
+python-dotenv==1.1.0
 requests==2.32.3
