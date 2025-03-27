@@ -1,0 +1,83 @@
+trigger:
+  branches:
+    include:
+      - <ENV2_BRANCH_NAME>
+      - <ENV3_BRANCH_NAME>
+
+pr: none
+
+variables:
+  - ${{ if eq(variables['Build.SourceBranchName'], '<ENV2_BRANCH_NAME>') }}:
+      - group: <ENV2_VARIABLE_GROUP_NAME>
+  - ${{ elseif eq(variables['Build.SourceBranchName'], '<ENV3_BRANCH_NAME>') }}:
+      - group: <ENV3_VARIABLE_GROUP_NAME>
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+  - stage: Perform_CD
+    jobs:
+      - job: Perform_CD
+        displayName: 'Perform CD steps'
+        steps:
+          - script: |
+              echo "Triggering interactive Azure CLI login..."
+              az login --use-device-code
+            displayName: 'Azure CLI - Interactive Login'
+
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: '3.8'
+              addToPath: true
+
+          - script: |
+              pip install -r $(Build.SourcesDirectory)/devops/scripts/requirements.txt
+            displayName: 'Install Requirements'
+
+          - script: |
+              python -u $(Build.SourcesDirectory)/devops/scripts/cd_git_sync.py --verbose
+            displayName: 'Perform git sync'
+
+          - script: |
+
+              echo "Creating artifacts"
+              mkdir fabric_env/
+              cp fabric/fabric_environment/environment.yml fabric_env/
+              cp fabric/fabric_environment/spark_pool_settings.yml fabric_env/
+
+              mkdir fabric_env/custom_libraries/
+              cp libraries/src/ddo_transform_standardize.py fabric_env/custom_libraries/
+              cp libraries/src/ddo_transform_transform.py fabric_env/custom_libraries/
+              cp libraries/src/otel_monitor_invoker.py fabric_env/custom_libraries/
+
+            displayName: 'Build Fabric Environment Config Artifacts'
+            workingDirectory: $(Build.SourcesDirectory)
+
+
+          - script: |
+              export CI_ARTIFACTS_PATH="$(Build.SourcesDirectory)"
+              python -u $(Build.SourcesDirectory)/devops/scripts/cd_ws_item_sync.py --verbose
+            displayName: 'Perform Workspace Item sync'
+
+
+          - script: |
+
+              echo "generate FABRIC_BEARER_TOKEN"
+              FABRIC_BEARER_TOKEN=$(az account get-access-token --resource https://api.fabric.microsoft.com --query accessToken -o tsv)
+
+              export FABRIC_BEARER_TOKEN=$FABRIC_BEARER_TOKEN
+
+              chmod +x devops/scripts/build_adls_files.sh
+              ./devops/scripts/build_adls_files.sh
+
+              az storage blob upload-batch \
+                --account-name $STORAGE_ACCOUNT_NAME \
+                -d $STORAGE_CONTAINER_NAME \
+                -s adls \
+                --auth-mode login \
+                --overwrite true \
+                --output none
+
+            displayName: 'Generate and Upload ADLS Config Artifacts'
+            workingDirectory: $(Build.SourcesDirectory)
