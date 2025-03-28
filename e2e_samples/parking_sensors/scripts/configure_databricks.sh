@@ -175,9 +175,6 @@ databricks workspace mkdirs "$libs_path"
 databricks workspace import --language PYTHON --format AUTO --overwrite --file "$WHL_FILE" "/Workspace/$libs_path/$WHL_FILENAME"
 log "Successfully uploaded $WHL_FILENAME to Databricks libraries folder ($libs_path)..." "success"
 
-# Delete the dist folder and WHL file locally
-rm -rf ./src/ddo_transform/dist
-
 # Create JSON file for library installation
 json_file="./databricks/config/libs.config.json"
 cat <<EOF > $json_file
