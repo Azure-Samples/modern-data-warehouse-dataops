@@ -21,9 +21,9 @@ delete_uc(){
 
     kv_name="$PROJECT-kv-$ENV_NAME-$DEPLOYMENT_ID"
     if az keyvault show --name "$kv_name" &>/dev/null; then
-        databricksHost=$(az keyvault secret show --name "databricksDomain" --vault-name "$kv_name" --query "value" -o tsv)
+        databricksHost=$(az keyvault secret show --name "databricksDomain" --vault-name "$kv_name" --query "value" --output tsv)
         log "Databricks Host: $databricksHost"
-        databricksToken=$(az keyvault secret show --name "databricksToken" --vault-name "$kv_name" --query "value" -o tsv)
+        databricksToken=$(az keyvault secret show --name "databricksToken" --vault-name "$kv_name" --query "value" --output tsv)
         log "Databricks Token: $databricksToken"
         cat <<EOL > ~/.databrickscfg
 [DEFAULT]
@@ -106,28 +106,28 @@ delete_all(){
     log "THIS SCRIPT WILL DELETE RESOURCES PREFIXED WITH $prefix AND HAVING DEPLOYMENT_ID $DEPLOYMENT_ID!!" "danger"
 
     log "\nDEVOPS PIPELINES:\n"
-    az pipelines list -o tsv --only-show-errors --query "[?contains(name,'$prefix')].name"
+    az pipelines list --output tsv --only-show-errors --query "[?contains(name,'$prefix')].name"
     
     log "\nDEVOPS VARIABLE GROUPS:\n"
-    az pipelines variable-group list -o tsv --only-show-errors --query "[?contains(name, '$prefix')].name"
+    az pipelines variable-group list --output tsv --only-show-errors --query "[?contains(name, '$prefix')].name"
     
     log "\nDEVOPS SERVICE CONNECTIONS:\n"
-    az devops service-endpoint list -o tsv --only-show-errors --query "[?contains(name, '$prefix')].name"
+    az devops service-endpoint list --output tsv --only-show-errors --query "[?contains(name, '$prefix')].name"
     
     log "\nENTRA SERVICE PRINCIPALS:\n"
     if [[ -z $DEPLOYMENT_ID ]] 
     then
-        az ad sp list -o tsv --show-mine --query "[?contains(appDisplayName,'$prefix')].displayName"
+        az ad sp list --output tsv --show-mine --query "[?contains(appDisplayName,'$prefix')].displayName"
     else
-        az ad sp list -o tsv --show-mine --query "[?contains(appDisplayName,'$prefix') && contains(appDisplayName,'$DEPLOYMENT_ID')].displayName"
+        az ad sp list --output tsv --show-mine --query "[?contains(appDisplayName,'$prefix') && contains(appDisplayName,'$DEPLOYMENT_ID')].displayName"
     fi
 
     log "\nENTRA APP REGISTRATIONS:\n"
     if [[ -z $DEPLOYMENT_ID ]] 
     then
-        az ad app list -o tsv --show-mine --query "[?contains(displayName,'$prefix')].displayName"
+        az ad app list --output tsv --show-mine --query "[?contains(displayName,'$prefix')].displayName"
     else
-        az ad app list -o tsv --show-mine --query "[?contains(displayName,'$prefix') && contains(displayName,'$DEPLOYMENT_ID')].displayName"
+        az ad app list --output tsv --show-mine --query "[?contains(displayName,'$prefix') && contains(displayName,'$DEPLOYMENT_ID')].displayName"
     fi
 
     log "\nUNITY CATALOG OBJECTS:\n"
@@ -147,9 +147,9 @@ delete_all(){
     log "\nRESOURCE GROUPS:\n"
     if [[ -z $DEPLOYMENT_ID ]] 
     then
-        az group list -o tsv --query "[?contains(name,'$prefix') && ! contains(name,'dbw')].name"
+        az group list --output tsv --query "[?contains(name,'$prefix') && ! contains(name,'dbw')].name"
     else
-        az group list -o tsv --query "[?contains(name,'$prefix-$DEPLOYMENT_ID') && ! contains(name,'dbw')].name"
+        az group list --output tsv --query "[?contains(name,'$prefix-$DEPLOYMENT_ID') && ! contains(name,'dbw')].name"
     fi
 
     log "\nEND OF SUMMARY\n"
@@ -159,18 +159,18 @@ delete_all(){
         [yY][eE][sS]|[yY]) 
             log "Deleting pipelines that start with '$prefix' in name..."
             [[ -n $prefix ]] &&
-                az pipelines list -o tsv --query "[?contains(name, '$prefix')].id" |
+                az pipelines list --output tsv --query "[?contains(name, '$prefix')].id" |
                 xargs -r -I % az pipelines delete --id % --yes
 
             log "Deleting variable groups that start with '$prefix' in name..."
             [[ -n $prefix ]] &&
-                az pipelines variable-group list -o tsv --query "[?contains(name, '$prefix')].id" |
+                az pipelines variable-group list --output tsv --query "[?contains(name, '$prefix')].id" |
                 xargs -r -I % az pipelines variable-group delete --id % --yes
 
             log "Deleting service connections that start with '$prefix' in name..."
             [[ -n $prefix ]] &&
                  
-                sc_ids=($(az devops service-endpoint list --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" --query "[?contains(name, '$prefix')].id" -o tsv))
+                sc_ids=($(az devops service-endpoint list --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" --query "[?contains(name, '$prefix')].id" --output tsv))
                 for sc_id in "${sc_ids[@]}"; do
                     log "Processing Service Connection ID: $sc_id"
                     delete_azdo_service_connection_principal $sc_id
@@ -178,7 +178,7 @@ delete_all(){
                 # Important: Giving time to process the cleanup
                 wait_for_process 20
 
-                az devops service-endpoint list -o tsv --query "[?contains(name, '$prefix')].id" |
+                az devops service-endpoint list --output tsv --query "[?contains(name, '$prefix')].id" |
                 xargs -r -I % az devops service-endpoint delete --id % --yes
                 log "Finished cleaning up Service Connections"
 
@@ -196,12 +196,12 @@ delete_all(){
             then
                 log "Deleting service principals that contain '$prefix' in name, created by yourself..."
                 [[ -n $prefix ]] &&
-                    az ad sp list --query "[?contains(appDisplayName,'$prefix')].appId" -o tsv --show-mine | 
+                    az ad sp list --query "[?contains(appDisplayName,'$prefix')].appId" --output tsv --show-mine | 
                     xargs -r -I % az ad sp delete --id %
             else
                 log "Deleting service principals that contain '$prefix' and $DEPLOYMENT_ID in name, created by yourself..."
                 [[ -n $prefix ]] &&
-                    az ad sp list --query "[?contains(appDisplayName,'$prefix') && contains(appDisplayName,'$DEPLOYMENT_ID')].appId" -o tsv --show-mine | 
+                    az ad sp list --query "[?contains(appDisplayName,'$prefix') && contains(appDisplayName,'$DEPLOYMENT_ID')].appId" --output tsv --show-mine | 
                     xargs -r -I % az ad sp delete --id %
             fi
 
@@ -209,12 +209,12 @@ delete_all(){
             then
                 log "Deleting app registrations that contain '$prefix' in name, created by yourself..."
                 [[ -n $prefix ]] &&
-                    az ad app list --query "[?contains(displayName,'$prefix')].appId" -o tsv --show-mine | 
+                    az ad app list --query "[?contains(displayName,'$prefix')].appId" --output tsv --show-mine | 
                     xargs -r -I % az ad app delete --id %
             else
                 log "Deleting app registrations that contain '$prefix' and $DEPLOYMENT_ID in name, created by yourself..."
                 [[ -n $prefix ]] &&
-                    az ad app list --query "[?contains(displayName,'$prefix') && contains(displayName,'$DEPLOYMENT_ID')].appId" -o tsv --show-mine | 
+                    az ad app list --query "[?contains(displayName,'$prefix') && contains(displayName,'$DEPLOYMENT_ID')].appId" --output tsv --show-mine | 
                     xargs -r -I % az ad app delete --id %
             fi
 
@@ -222,12 +222,12 @@ delete_all(){
             then
                 log "Deleting resource groups that contain '$prefix' in name..."
                 [[ -n $prefix ]] &&
-                    az group list --query "[?contains(name,'$prefix') && ! contains(name,'dbw')].name" -o tsv |
+                    az group list --query "[?contains(name,'$prefix') && ! contains(name,'dbw')].name" --output tsv |
                     xargs -I % az group delete --verbose --name % -y
             else
                 log "Deleting resource groups that contain '$prefix-$DEPLOYMENT_ID' in name..."
                 [[ -n $prefix ]] &&
-                    az group list --query "[?contains(name,'$prefix-$DEPLOYMENT_ID') && ! contains(name,'dbw')].name" -o tsv |
+                    az group list --query "[?contains(name,'$prefix-$DEPLOYMENT_ID') && ! contains(name,'dbw')].name" --output tsv |
                     xargs -I % az group delete --verbose --name % -y
             fi
 

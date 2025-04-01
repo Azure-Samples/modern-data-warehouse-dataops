@@ -22,6 +22,31 @@ set -o nounset
 
 . ./scripts/common.sh
 
+create_adf_linked_service () {
+    declare name=$1
+    log "Creating ADF LinkedService: $name"
+    adfLsUrl="${adfFactoryBaseUrl}/linkedservices/${name}?api-version=${apiVersion}"
+    az rest --method put --uri "$adfLsUrl" --body @"${ADF_DIR}"/linkedService/"${name}".json --output none
+}
+create_adf_dataset () {
+    declare name=$1
+    log "Creating ADF Dataset: $name"
+    adfDsUrl="${adfFactoryBaseUrl}/datasets/${name}?api-version=${apiVersion}"
+    az rest --method put --uri "$adfDsUrl" --body @"${ADF_DIR}"/dataset/"${name}".json --output none
+}
+create_adf_pipeline () {
+    declare name=$1
+    log "Creating ADF Pipeline: $name"
+    adfPUrl="${adfFactoryBaseUrl}/pipelines/${name}?api-version=${apiVersion}"
+    az rest --method put --uri "$adfPUrl" --body @"${ADF_DIR}"/pipeline/"${name}".json --output none
+}
+create_adf_trigger () {
+    declare name=$1
+    log "Creating ADF Trigger: $name"
+    adfTUrl="${adfFactoryBaseUrl}/triggers/${name}?api-version=${apiVersion}"
+    az rest --method put --uri "$adfTUrl" --body @"${ADF_DIR}"/trigger/"${name}".json --output none
+}
+
 # Consts
 apiVersion="2018-06-01"
 baseUrl="https://management.azure.com/subscriptions/${AZURE_SUBSCRIPTION_ID}"

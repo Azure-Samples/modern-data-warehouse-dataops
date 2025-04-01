@@ -20,8 +20,8 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-. ./scripts/init_environment.sh
 . ./scripts/verify_prerequisites.sh
+. ./scripts/init_environment.sh
 
 # CONSTANT - this is prefixes to all resources of the Parking Sensor sample
 project=mdwdops 
