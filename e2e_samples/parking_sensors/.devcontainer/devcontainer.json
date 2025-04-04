@@ -17,5 +17,6 @@
 			"python.pythonPath": "/usr/local/bin/python"
 		}
 	},
+	"initializeCommand": "[ -f .devcontainer/.env ] || cp .devcontainer/.envtemplate .devcontainer/.env",
 	"postCreateCommand": "./.devcontainer/post_create.sh"
 }
