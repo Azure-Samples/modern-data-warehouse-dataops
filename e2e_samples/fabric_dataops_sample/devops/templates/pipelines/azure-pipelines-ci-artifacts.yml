@@ -2,12 +2,6 @@ trigger:
   branches:
     include:
       - <ENV1_BRANCH_NAME>
-      - <ENV2_BRANCH_NAME>
-      - <ENV3_BRANCH_NAME>
-  paths:
-    exclude:
-      - fabric/workspace
-      - devops
 
 pr: none
 
@@ -22,28 +16,4 @@ stages:
       - template: templates/jobs/publish-adls-artifacts.yml
         parameters:
           serviceConnection: <ENV1_SERVICE_CONNECTION_NAME>
-      - template: templates/jobs/publish-fabric-env-artifacts.yml
-
-  - stage: publish_stg_artifacts
-    displayName: 'Publish artifacts for staging environment'
-    condition: |
-      eq(variables['Build.SourceBranchName'], '<ENV2_BRANCH_NAME>')
-    variables:
-      - group: <ENV2_VARIABLE_GROUP_NAME>
-    jobs:
-      - template: templates/jobs/publish-adls-artifacts.yml
-        parameters:
-          serviceConnection: <ENV2_SERVICE_CONNECTION_NAME>
-      - template: templates/jobs/publish-fabric-env-artifacts.yml
-
-  - stage: publish_prod_artifacts
-    displayName: 'Publish artifacts for production environment'
-    condition: |
-      eq(variables['Build.SourceBranchName'], '<ENV3_BRANCH_NAME>')
-    variables:
-      - group: <ENV3_VARIABLE_GROUP_NAME>
-    jobs:
-      - template: templates/jobs/publish-adls-artifacts.yml
-        parameters:
-          serviceConnection: <ENV3_SERVICE_CONNECTION_NAME>
       - template: templates/jobs/publish-fabric-env-artifacts.yml
