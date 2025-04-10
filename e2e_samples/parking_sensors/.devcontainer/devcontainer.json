@@ -17,6 +17,6 @@
 			"python.pythonPath": "/usr/local/bin/python"
 		}
 	},
-	"initializeCommand": "node ./.devcontainer/createenv.js",
+	"initializeCommand": "node ./.devcontainer/create_env.js",
 	"postCreateCommand": "./.devcontainer/post_create.sh"
 }
