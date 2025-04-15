@@ -23,10 +23,8 @@ set -o nounset
 . ./scripts/verify_prerequisites.sh
 . ./scripts/init_environment.sh
 . ./scripts/build_dependencies.sh
-
-# CONSTANT - this is prefixes to all resources of the Parking Sensor sample
-project=mdwdops 
-github_repo_url="https://github.com/$GITHUB_REPO"
+. ./scripts/deploy_azdo_service_connections_github.sh
+. ./scripts/deploy_azdo_pipelines.sh
 
 #Ask the user the following options:
 ####
@@ -43,36 +41,19 @@ fi
 build_dependencies
 
 # Call the deploy function
-deploy_infrastructure_environment "$ENV_DEPLOY" "$project"
+deploy_infrastructure_environment "$ENV_DEPLOY" "$PROJECT"
 
-###################
-# Deploy AzDevOps Pipelines
-###################
+# # Create AzDo Github Service Connection -- required only once for the entire deployment
+setup_github_service_connection
 
-# Create AzDo Github Service Connection -- required only once for the entire deployment
-PROJECT=$project \
-GITHUB_PAT_TOKEN=$GITHUB_PAT_TOKEN \
-GITHUB_REPO_URL=$github_repo_url \
-    bash -c "./scripts/deploy_azdo_service_connections_github.sh"
+# # Deploy all pipelines
+deploy_azdo_pipelines
 
-# Replace 'devlace/mdw-dataops-clone' to deployer's github project
-sed -i "s+devlace/mdw-dataops-clone+$GITHUB_REPO+" devops/azure-pipelines-cd-release.yml
-
-# azure-pipelines-cd-release.yml pipeline require DEV_DATAFACTORY_NAME set, retrieve this value from .env.dev file
-declare DEV_"$(grep -e '^DATAFACTORY_NAME' .env.dev | tail -1 | xargs)"
-
-# Deploy all pipelines
-PROJECT=$project \
-GITHUB_REPO_URL=$github_repo_url \
-AZDO_PIPELINES_BRANCH_NAME=$AZDO_PIPELINES_BRANCH_NAME \
-DEV_DATAFACTORY_NAME=$DEV_DATAFACTORY_NAME \
-    bash -c "./scripts/deploy_azdo_pipelines.sh"
-
-####
-
+## Clean up
 remove_dependencies
+rm -rf ./scripts/deploystate.env
 
 log "DEPLOYMENT SUCCESSFUL
 Details of the deployment can be found in local .env.* files.\n\n" "success"
 
-log "See README > Setup and Deployment for more details and next steps." 
+log "See README > Setup and Deployment for more details and next steps."

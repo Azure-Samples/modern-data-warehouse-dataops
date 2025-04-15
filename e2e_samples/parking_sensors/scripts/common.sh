@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Source enviroment variables
+. .devcontainer/.env
+
 # Helper functions
 random_str() {
     local length=$1
@@ -10,6 +13,9 @@ random_str() {
 print_style () {
     case "$2" in
         "info")
+            COLOR="96m"
+            ;;
+        "debug")
             COLOR="96m"
             ;;
         "success")
@@ -52,6 +58,44 @@ log() {
     fi
 }
 
+deployed_stages_contains() {
+    local value=$1  # Takes the first argument as the value to search for
+        
+    for item in "${deployed_stages[@]}"; do  # Loops through each item in deployed_stages
+        if [[ "$item" == "$value" ]]; then  # Compares the item with the search value
+            return 0  # Returns success (true) if found
+        fi
+    done
+    return 1  # Returns failure (false) if not found
+}
+
+deploy_success() {
+    # write a value to a deploystate.env file
+    # Usage: deploy_success "last_deploy"
+    # Example: deploy_success "build_dependencies"
+    local value=$1
+    local file_name="deploystate.env"
+    local file_path="./$file_name"
+    
+    # Create file if it doesn't exist
+    if [[ ! -f "${file_path}" ]]; then
+        touch "${file_path}"
+        # Initialize empty array in the file
+        echo "deployed_stages=()" > "${file_path}"
+    fi
+    
+    # Source the file to get the current array
+    . "${file_path}"
+    
+    # Add new value to the array - fixing the syntax
+    deployed_stages+=("$value")
+    
+    # Write updated array back to the file
+    echo "deployed_stages=(${deployed_stages[*]})" > "${file_path}"
+    
+    log "Successfully recorded: $value" "success"
+}
+
 # Function to give time for the portal to process the cleanup
 wait_for_process() {
     local seconds=${1:-15}
@@ -71,50 +115,4 @@ delete_azdo_service_connection_principal(){
     az ad app delete --id "$spnAppObjId" &&
         log "Deleted Service Principal: $spnAppObjId" "info" || 
         log "Failed to delete Service Principal: $spnAppObjId" "info"
-}
-
-deploy_infrastructure_environment() {
-  ##function to allow user deploy enviromnents
-    ## 1) Only Dev
-    ## 2) Dev and Stage
-    ## 3)  Dev, Stage and Prod
-  ##Default  is option 3.
-  ENV_DEPLOY=${1:-3}
-  project=${2:-mdwdops}
-    case $ENV_DEPLOY in
-    1)
-        log "Deploying Dev Environment only..." "info"
-        env_names="dev"
-        ;;
-    2)    
-        log "Deploying Dev and Stage Environments..." "info"
-        env_names="dev stg"
-        ;;
-    3) 
-        log "Full Deploy: Dev, Stage and Prod Environments..." "info"
-        env_names="dev stg prod"
-        ;;
-    *)
-        log "Invalid choice. Exiting..." "error"
-        exit
-        ;;
-    esac
-
-    # Loop through the environments and deploy
-    for env_name in $env_names; do
-        echo "Currently deploying to the environment: $env_name"
-        export PROJECT=$project
-        export DEPLOYMENT_ID=$DEPLOYMENT_ID
-        export ENV_NAME=$env_name
-        export AZURE_LOCATION=$AZURE_LOCATION
-        export AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID
-        export AZURESQL_SERVER_PASSWORD=$AZURESQL_SERVER_PASSWORD
-        bash -c "./scripts/deploy_infrastructure.sh" || {
-            log "Deployment failed for $env_name" "error"
-            exit 1
-        }
-         export ENV_DEPLOY=$ENV_DEPLOY
-
-    done
-
 }
