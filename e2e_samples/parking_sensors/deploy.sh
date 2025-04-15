@@ -22,6 +22,7 @@ set -o nounset
 
 . ./scripts/verify_prerequisites.sh
 . ./scripts/init_environment.sh
+. ./scripts/build_dependencies.sh
 
 # CONSTANT - this is prefixes to all resources of the Parking Sensor sample
 project=mdwdops 
@@ -39,13 +40,7 @@ if [ -z "$ENV_DEPLOY" ]; then
     log "Option Selected: $ENV_DEPLOY" "info"
 fi
 
-# Build the WHL package
-log "Building the WHL package..."
-cd ./src/ddo_transform
-# Ensure the dist folder exists
-mkdir -p dist
-python setup.py bdist_wheel --universal
-cd ../..
+build_dependencies
 
 # Call the deploy function
 deploy_infrastructure_environment "$ENV_DEPLOY" "$project"
@@ -75,8 +70,7 @@ DEV_DATAFACTORY_NAME=$DEV_DATAFACTORY_NAME \
 
 ####
 
-# Delete the WHL dist folder and WHL file locally
-rm -rf ./src/ddo_transform/dist
+remove_dependencies
 
 log "DEPLOYMENT SUCCESSFUL
 Details of the deployment can be found in local .env.* files.\n\n" "success"
