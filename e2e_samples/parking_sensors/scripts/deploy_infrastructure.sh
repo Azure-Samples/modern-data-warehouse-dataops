@@ -26,7 +26,6 @@ create_resource_group() {
     else
         log "Creating resource group: $resource_group_name" "info"
         az group create --name "$resource_group_name" --location "$AZURE_LOCATION" --tags Environment="$ENV_NAME" --output none
-        deploy_success "create_resource_group"
     fi
 }
 
@@ -72,7 +71,7 @@ check_keyvault_name() {
 }
 
 validate_and_deploy_arm_template() {
-    local arm_deployed=$(az deployment group list --resource-group "$resource_group_name")
+    local arm_deployed=$(az deployment group list --resource-group "$resource_group_name" --output tsv)
     if [[ -z $arm_deployed ]]; then
         log "No ARM template deployed. Proceeding with validation." "info"
     else
@@ -111,8 +110,6 @@ deploy_arm_template() {
     if [[ -z $arm_output ]]; then
         log "ARM deployment failed." "danger"
         exit 1
-    else
-        deploy_success ${current_deploy_stage}
     fi
 }
 

@@ -58,44 +58,6 @@ log() {
     fi
 }
 
-deployed_stages_contains() {
-    local value=$1  # Takes the first argument as the value to search for
-        
-    for item in "${deployed_stages[@]}"; do  # Loops through each item in deployed_stages
-        if [[ "$item" == "$value" ]]; then  # Compares the item with the search value
-            return 0  # Returns success (true) if found
-        fi
-    done
-    return 1  # Returns failure (false) if not found
-}
-
-deploy_success() {
-    # write a value to a deploystate.env file
-    # Usage: deploy_success "last_deploy"
-    # Example: deploy_success "build_dependencies"
-    local value=$1
-    local file_name="deploystate.env"
-    local file_path="./$file_name"
-    
-    # Create file if it doesn't exist
-    if [[ ! -f "${file_path}" ]]; then
-        touch "${file_path}"
-        # Initialize empty array in the file
-        echo "deployed_stages=()" > "${file_path}"
-    fi
-    
-    # Source the file to get the current array
-    . "${file_path}"
-    
-    # Add new value to the array - fixing the syntax
-    deployed_stages+=("$value")
-    
-    # Write updated array back to the file
-    echo "deployed_stages=(${deployed_stages[*]})" > "${file_path}"
-    
-    log "Successfully recorded: $value" "success"
-}
-
 # Function to give time for the portal to process the cleanup
 wait_for_process() {
     local seconds=${1:-15}

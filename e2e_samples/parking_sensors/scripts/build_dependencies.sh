@@ -37,7 +37,6 @@ build_dependencies() {
     # Build the dependencies
     build_ddotransform_wheel
     build_data_webapp_zip
-    deploy_success "build_dependencies"
 }
 
 remove_dependencies() {
