@@ -23,6 +23,7 @@ RUN az config set extension.dynamic_install_allow_preview=true
 RUN az extension add --name application-insights
 RUN az extension add --name azure-devops
 RUN az extension add --name ad
+RUN az extension add --name datafactory
 RUN az bicep upgrade
 
 # Install jq & makepasswd for some frequently used utility
