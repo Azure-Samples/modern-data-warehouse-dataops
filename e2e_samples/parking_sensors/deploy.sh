@@ -23,6 +23,7 @@ set -o nounset
 . ./scripts/verify_prerequisites.sh
 . ./scripts/init_environment.sh
 . ./scripts/build_dependencies.sh
+. ./scripts/deploy_infrastructure.sh
 . ./scripts/deploy_azdo_service_connections_github.sh
 . ./scripts/deploy_azdo_pipelines.sh
 
