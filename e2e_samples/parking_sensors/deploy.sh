@@ -24,6 +24,7 @@ set -o nounset
 . ./scripts/init_environment.sh
 . ./scripts/build_dependencies.sh
 . ./scripts/deploy_infrastructure.sh
+. ./scripts/configure_unity_catalog.sh
 . ./scripts/deploy_azdo_service_connections_github.sh
 . ./scripts/deploy_azdo_pipelines.sh
 
@@ -41,8 +42,8 @@ fi
 
 build_dependencies
 
-# Call the deploy function
 deploy_infrastructure_environment "$ENV_DEPLOY" "$PROJECT"
+configure_unity_catalog
 
 # # Create AzDo Github Service Connection -- required only once for the entire deployment
 setup_github_service_connection

@@ -30,7 +30,6 @@ create_resource_group() {
 }
 
 check_keyvault_name() {
-    kv_name="$PROJECT-kv-$ENV_NAME-$DEPLOYMENT_ID"
     # By default, set all KeyVault permission to deployer
     # Retrieve KeyVault User Id
     kv_owner_object_id=$(az ad signed-in-user show --output json | jq -r '.id')
@@ -320,36 +319,6 @@ configure_databricks_workspace() {
     log "databricks_folder_name_transform: ${databricks_folder_name_transform}" "info"
 }
 
-configure_unity_catalog() {
-    log "Configuring Databricks Unity Catalog" "info"
-
-    ################################################
-    # Configure Unity Catalog
-    cat_stg_account_name="${PROJECT}catalog${ENV_NAME}${DEPLOYMENT_ID}"
-    data_stg_account_name="${PROJECT}st${ENV_NAME}${DEPLOYMENT_ID}"
-    resource_group_name="${PROJECT}-${DEPLOYMENT_ID}-${ENV_NAME}-rg"
-    mng_resource_group_name="${PROJECT}-${DEPLOYMENT_ID}-dbw-${ENV_NAME}-rg"
-    stg_credential_name="${PROJECT}-${DEPLOYMENT_ID}-stg-credential-${ENV_NAME}"
-    catalog_ext_location_name="${PROJECT}-catalog-${DEPLOYMENT_ID}-ext-location-${ENV_NAME}"
-    data_ext_location_name="${PROJECT}-data-${DEPLOYMENT_ID}-ext-location-${ENV_NAME}"
-    catalog_name="${PROJECT}-${DEPLOYMENT_ID}-catalog-${ENV_NAME}"
-
-    SUBSCRIPTION_ID=${AZURE_SUBSCRIPTION_ID} \
-    DATABRICKS_KV_TOKEN=${databricks_token} \
-    DATABRICKS_HOST=${databricks_host} \
-    ENVIRONMENT_NAME=${ENV_NAME} \
-    AZURE_LOCATION=${AZURE_LOCATION} \
-    CATALOG_STG_ACCOUNT_NAME=${cat_stg_account_name} \
-    DATA_STG_ACCOUNT_NAME=${data_stg_account_name} \
-    RESOURCE_GROUP_NAME=${resource_group_name} \
-    MNG_RESOURCE_GROUP_NAME=${mng_resource_group_name} \
-    STG_CREDENTIAL_NAME=${stg_credential_name} \
-    CATALOG_EXT_LOCATION_NAME=${catalog_ext_location_name} \
-    DATA_EXT_LOCATION_NAME=${data_ext_location_name} \
-    CATALOG_NAME=${catalog_name} \
-        bash -c "./scripts/configure_unity_catalog.sh"
-}
-
 configure_databricks_cluster() {
     log "Configuring Databricks Cluster" "info"
 
@@ -542,35 +511,17 @@ deploy_infrastructure_environment() {
     ## 2) Dev and Stage
     ## 3)  Dev, Stage and Prod
     ##Default  is option 3.
-    ENV_DEPLOY=${1:-3}
-    case ${ENV_DEPLOY} in
-    1)
-        log "Deploying Dev Environment only..." "info"
-        env_names="dev"
-        ;;
-    2)    
-        log "Deploying Dev and Stage Environments..." "info"
-        env_names="dev stg"
-        ;;
-    3) 
-        log "Full Deploy: Dev, Stage and Prod Environments..." "info"
-        env_names="dev stg prod"
-        ;;
-    *)
-        log "Invalid choice. Exiting..." "error"
-        exit
-        ;;
-    esac
-
+    env_deploy=${1:-3}
+    get_env_names "${env_deploy}"
     # Loop through the environments and deploy
     for env_name in ${env_names}; do
-        echo "Currently deploying to the environment: ${env_name}"
-        export ENV_NAME=${env_name}
+        echo "Currently deploying infrastructure to the environment: ${env_name}"
+        set_deployment_environment "${env_name}"
         deploy_infrastructure || {
             log "Deployment failed for ${env_name}" "error"
             exit 1
         }
-        export ENV_DEPLOY=${ENV_DEPLOY}
+        export ENV_DEPLOY=${env_deploy}
     done
 }
 
@@ -581,7 +532,7 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     . ./scripts/common.sh
     . ./scripts/init_environment.sh
     log "Deploying Infrastructure..." "info"
-    deploy_infrastructure_environment 1 "${PROJECT}"
+    deploy_infrastructure_environment 1
 
     popd > /dev/null
 else

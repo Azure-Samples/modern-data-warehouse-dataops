@@ -3,6 +3,47 @@
 # Source enviroment variables
 . .devcontainer/.env
 
+get_env_names() {
+    env_deploy=$1
+
+    case ${env_deploy} in
+    1)
+        log "Deploying Dev Environment only..." "info"
+        env_names="dev"
+        ;;
+    2)    
+        log "Deploying Dev and Stage Environments..." "info"
+        env_names="dev stg"
+        ;;
+    3) 
+        log "Full Deploy: Dev, Stage and Prod Environments..." "info"
+        env_names="dev stg prod"
+        ;;
+    *)
+        log "Invalid choice. Exiting..." "error"
+        exit
+        ;;
+    esac
+    echo "$env_names" > /dev/null
+}
+
+set_deployment_environment () {
+    env_name=$1
+    if [ -z "${env_name}" ]; then
+        log "Environment name is not set. Exiting." "error"
+        exit 1
+    fi
+    kv_name="$PROJECT-kv-${env_name}-$DEPLOYMENT_ID"
+    cat_stg_account_name="${PROJECT}catalog${env_name}${DEPLOYMENT_ID}"
+    data_stg_account_name="${PROJECT}st${env_name}${DEPLOYMENT_ID}"
+    resource_group_name="${PROJECT}-${DEPLOYMENT_ID}-${env_name}-rg"
+    mng_resource_group_name="${PROJECT}-${DEPLOYMENT_ID}-dbw-${env_name}-rg"
+    stg_credential_name="${PROJECT}-${DEPLOYMENT_ID}-stg-credential-${env_name}"
+    catalog_ext_location_name="${PROJECT}-catalog-${DEPLOYMENT_ID}-ext-location-${env_name}"
+    data_ext_location_name="${PROJECT}-data-${DEPLOYMENT_ID}-ext-location-${env_name}"
+    catalog_name="${PROJECT}-${DEPLOYMENT_ID}-catalog-${env_name}"
+}
+
 # Helper functions
 random_str() {
     local length=$1

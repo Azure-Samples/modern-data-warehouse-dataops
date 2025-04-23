@@ -35,41 +35,32 @@ set -o nounset
 # DATA_EXT_LOCATION_NAME
 # CATALOG_NAME
 
-. ./scripts/common.sh
+get_databricks_host () {
+  resource_group_name=$1
+  databricks_workspace_info=$(az databricks workspace list \
+        --resource-group "${resource_group_name}" \
+        --query "[?contains(name, '${PROJECT}')].{name:name, workspaceUrl:workspaceUrl, id:id}" \
+        --output json)
+  echo https://$(echo "${databricks_workspace_info}" | jq -r '.[0].workspaceUrl')
+}
 
-# Create the databrickscfg file
-cat <<EOL > ~/.databrickscfg
-[DEFAULT]
-host=$DATABRICKS_HOST
-token=$DATABRICKS_KV_TOKEN
-EOL
-
-cat ~/.databrickscfg
-
-log "Creating and configuring Unity Catalog for $ENVIRONMENT_NAME."
-
-catalog_name=$CATALOG_NAME
-
-###################################################################################################
-# Functions.
-###################################################################################################
 create_db_external_location(){
     declare json_ext_location=$1
     declare external_location_name=$2
 
     # Check if the external location already exists
-    log "External Location Name: $external_location_name" "Info"
+    log "External Location Name: $external_location_name" "info"
 
     if [ -n "$external_location_name" ]; then
       if [ -z "$(databricks external-locations list | grep -w $external_location_name)" ]; then
-          log "External location '$external_location_name' does not exist. Creating it now..." "Info"
+          log "External location '$external_location_name' does not exist. Creating it now..." "info"
           databricks external-locations create --json @$json_ext_location
           log "External location '$external_location_name' created successfully."
       else
-          log "External location '$external_location_name' already exists. Skipping creation." "Info"
+          log "External location '$external_location_name' already exists. Skipping creation." "info"
       fi
     else
-      log "External location name is empty. Skipping creation." "Info"
+      log "External location name is empty. Skipping creation." "info"
     fi
 }
 
@@ -77,169 +68,207 @@ create_db_catalog(){
     declare json_uc=$1
     declare catalog_name=$2
 
-    log "Catalog Name: $catalog_name" "Info"
+    log "Catalog Name: $catalog_name" "info"
     # Check if the catalog already exists
     if [ -n "$catalog_name" ]; then
       if [ -z "$(databricks catalogs list | grep -w "$catalog_name")" ]; then
-          log "Catalog '$catalog_name' does not exist. Creating it now..." "Info"
+          log "Catalog '$catalog_name' does not exist. Creating it now..." "info"
           databricks catalogs create --json @$json_uc
           log "Catalog '$catalog_name' created successfully."
       else
-          log "Catalog '$catalog_name' already exists. Skipping creation." "Info"
+          log "Catalog '$catalog_name' already exists. Skipping creation." "info"
       fi
     else
-      log "Catalog name is empty. Skipping creation." "Info"
+      log "Catalog name is empty. Skipping creation." "info"
     fi
 }
 
 assign_rbac_role_to_msi(){
-    declare role=$1
-    declare scope=$2
-    declare managed_identity_principal_id=$3
-    declare stg_account_name=$4
+    declare role=${1}
+    declare scope=${2}
+    declare managed_identity_principal_id=${3}
+    declare stg_account_name=${4}
 
     # Assign the role to the managed identity
-    az role assignment create --assignee "$managed_identity_principal_id" --role "$role" --scope "$scope"
-    log "Role '$role' assigned to managed identity '$managed_identity_name' for storage account '$stg_account_name'." "Info"
-    sleep 60
+    az role assignment create --assignee "${managed_identity_principal_id}" --role "${role}" --scope "${scope}" --output none
+    log "Role '${role}' assigned to managed identity '${managed_identity_name}' for storage account '${stg_account_name}'." "info"
 }
 
-###################################################################################################
-# 1. Create a storage account with HNS enabled to serve as the physical storage for the catalog.
-###################################################################################################
-# Check if the catalog storage account already exists
-existing_account=$(az storage account check-name --name $CATALOG_STG_ACCOUNT_NAME --query "nameAvailable" --output tsv)
+create_catalog_storage_account() {
+  # Check if the catalog storage account already exists
+  name_available=$(az storage account check-name --name ${cat_stg_account_name} --query "nameAvailable" --output tsv)
+  
+  if [ "${name_available}" == "true" ]; then
+    log "Storage account '${cat_stg_account_name}' does not exist. Creating it now..."
+    az storage account create \
+      --name ${cat_stg_account_name} \
+      --resource-group ${resource_group_name} \
+      --location ${AZURE_LOCATION} \
+      --sku Standard_LRS \
+      --kind StorageV2 \
+      --hns true
+    log "Storage account '${cat_stg_account_name}' created successfully with hierarchical namespace enabled." "info"
+  else
+    log "Storage account '${cat_stg_account_name}' already exists. Skipping creation." "info"
+  fi
+}
 
-if [ "$existing_account" == "true" ]; then
-  log "Storage account '$CATALOG_STG_ACCOUNT_NAME' does not exist. Creating it now..."
-  az storage account create \
-    --name $CATALOG_STG_ACCOUNT_NAME \
-    --resource-group $RESOURCE_GROUP_NAME \
-    --location $AZURE_LOCATION \
-    --sku Standard_LRS \
-    --kind StorageV2 \
-    --hns true
-  log "Storage account '$CATALOG_STG_ACCOUNT_NAME' created successfully with hierarchical namespace enabled." "Info"
-else
-  log "Storage account '$CATALOG_STG_ACCOUNT_NAME' already exists. Skipping creation." "Info"
-fi
+create_catalog_storage_container() {
+  # Check if the container already exists
+  container_exists=$(az storage container exists --name ${env_name} --account-name ${cat_stg_account_name} --auth-mode login --query "exists" --output tsv)
 
-###################################################################################################
-# 2. Create an ENV container for the environment catalog: dev/stg or prod.
-###################################################################################################
-# Check if the container already exists
-container_name=$ENVIRONMENT_NAME
-existing_container=$(az storage container exists --name $container_name --account-name $CATALOG_STG_ACCOUNT_NAME --auth-mode login --query "exists" --output tsv)
+  if [ "${container_exists}" == "false" ]; then
+    log "Container '${env_name}' does not exist. Creating it now..." "info"
+    az storage container create \
+      --name ${env_name} \
+      --account-name ${cat_stg_account_name} \
+      --auth-mode login \
+      --output none
+    log "Container '${env_name}' created successfully in storage account '${cat_stg_account_name}'." "info"
+  else
+    log "Container '${env_name}' already exists. Skipping creation." "info"
+  fi
+}
 
-if [ "$existing_container" == "false" ]; then
-  log "Container '$container_name' does not exist. Creating it now..." "Info"
-  az storage container create \
-    --name $container_name \
-    --account-name $CATALOG_STG_ACCOUNT_NAME \
-    --auth-mode login
-  log "Container '$container_name' created successfully in storage account '$CATALOG_STG_ACCOUNT_NAME'." "Info"
-else
-  log "Container '$container_name' already exists. Skipping creation." "Info"
-fi
-
-###################################################################################################
-# 3. Create a storage credential with DB Access Connector
-###################################################################################################
-json_storage_credential="./databricks/config/storage.credential.json"
-# Create the JSON file
-cat <<EOF > $json_storage_credential
+create_storage_credential() {
+  json_storage_credential="./databricks/config/storage.credential.json"
+  # Create the JSON file
+  cat <<EOF > ${json_storage_credential}
 {
-  "name": "$STG_CREDENTIAL_NAME",
+  "name": "${stg_credential_name}",
   "azure_managed_identity": {
-    "access_connector_id": "/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/$MNG_RESOURCE_GROUP_NAME/providers/Microsoft.Databricks/accessConnectors/unity-catalog-access-connector"
+    "access_connector_id": "/subscriptions/${AZURE_SUBSCRIPTION_ID}/resourceGroups/${mng_resource_group_name}/providers/Microsoft.Databricks/accessConnectors/unity-catalog-access-connector"
   }
 }
 EOF
 
-# Check if the storage credential already exists
-echo "Credential Name: $STG_CREDENTIAL_NAME"
-if [ -n "$STG_CREDENTIAL_NAME" ]; then
-  if [ -z "$(databricks storage-credentials list | grep -w $STG_CREDENTIAL_NAME)" ]; then
-    log "Storage credential '$STG_CREDENTIAL_NAME' does not exist. Creating it now..."
-    databricks storage-credentials create --json @$json_storage_credential
-    log "Storage credential '$STG_CREDENTIAL_NAME' created successfully." "Info"
+  # Check if the storage credential already exists
+  if [ -n "${stg_credential_name}" ]; then
+    if [ -z "$(databricks storage-credentials list | grep -w ${stg_credential_name})" ]; then
+      log "Storage credential '${stg_credential_name}' does not exist. Creating it now..."
+      databricks storage-credentials create --json @$json_storage_credential
+      log "Storage credential '${stg_credential_name}' created successfully." "info"
+    else
+      log "Storage credential '${stg_credential_name}' already exists. Skipping creation." "info"
+    fi
   else
-    log "Storage credential '$STG_CREDENTIAL_NAME' already exists. Skipping creation." "Info"
+    log "Storage credential name is empty. Skipping creation." "info"
   fi
+}
+
+rbac_role_assignment_for_msi() {
+  # RBAC role assignment to the MSI for the storage account that holds the catalog
+  scope="/subscriptions/${AZURE_SUBSCRIPTION_ID}/resourceGroups/${resource_group_name}/providers/Microsoft.Storage/storageAccounts/${cat_stg_account_name}"
+  access_connector_resource_id="/subscriptions/${AZURE_SUBSCRIPTION_ID}/resourceGroups/${mng_resource_group_name}/providers/Microsoft.Databricks/accessConnectors/unity-catalog-access-connector"
+
+  # Get the name of the MSI using the resource ID
+  managed_identity_name=$(az resource show --ids ${access_connector_resource_id} --query 'name' --output tsv)
+  log "Managed Identity Name: ${managed_identity_name}" "info"
+  # Get the managed identity principal ID
+  managed_identity_principal_id=$(az resource show --ids ${access_connector_resource_id} --query 'identity.principalId' --output tsv)   
+  log "Managed Identity Principal ID: ${managed_identity_principal_id}" "info"
+  # Assign the role to the managed identity
+  role="Storage Blob Data Contributor"
+  assign_rbac_role_to_msi "${role}" "${scope}" "${managed_identity_principal_id}" "${cat_stg_account_name}"
+
+  # Assign the role to the managed identity
+  scope="/subscriptions/${AZURE_SUBSCRIPTION_ID}/resourceGroups/${resource_group_name}/providers/Microsoft.Storage/storageAccounts/${data_stg_account_name}"
+  # Assign the role to the managed identity
+  role="Storage Blob Data Contributor"
+  assign_rbac_role_to_msi "${role}" "${scope}" "${managed_identity_principal_id}" "${data_stg_account_name}" "info"	
+
+  # Wait for the RBAC role assignment to propagate
+  sleep 60
+}
+
+create_external_locations() {
+  # Create the external location for the catalog
+  cat_json_ext_location="./databricks/config/catalog.external.location.json"
+  # Create the JSON file
+  cat <<EOF > ${cat_json_ext_location}
+{
+  "name": "${catalog_ext_location_name}",
+  "url": "abfss://${env_name}@${cat_stg_account_name}.dfs.core.windows.net",
+  "credential_name": "${stg_credential_name}"
+}
+EOF
+  
+  create_db_external_location ${cat_json_ext_location} ${catalog_ext_location_name}
+
+  data_json_ext_location="./databricks/config/data.external.location.json"
+  # Create the JSON file
+  cat <<EOF > ${data_json_ext_location}
+{
+  "name": "${data_ext_location_name}",
+  "url": "abfss://datalake@${data_stg_account_name}.dfs.core.windows.net",
+  "credential_name": "${stg_credential_name}"
+}
+EOF
+
+  create_db_external_location $data_json_ext_location ${data_ext_location_name}
+}
+
+create_environment_catalog() {
+  comment="Catalog for ${env_name} environment."
+
+  json_uc="./databricks/config/uc.json"
+  # Create the JSON file
+  cat <<EOF > ${json_uc}
+{
+  "name": "${env_name}",
+  "comment": "${comment}",
+  "storage_root": "abfss://${env_name}@$cat_stg_account_name.dfs.core.windows.net"
+}
+EOF
+
+  create_db_catalog $json_uc $env_name
+}
+
+configure_unity_catalog() {
+  env_deploy=${1:-3}
+
+  get_env_names "${env_deploy}"
+  # Loop through the environments and deploy
+  for env_name in ${env_names}; do
+    set_deployment_environment "${env_name}"
+  
+    # Create the databrickscfg file
+    databricks_host=$(get_databricks_host ${resource_group_name})
+    if [ -z "$databricks_host" ]; then
+      log "Databricks host is empty. Exiting." "Error"
+      exit 1
+    fi
+    #get databricks token from key vault
+    databricks_kv_token=$(az keyvault secret show --name databricksToken --vault-name $kv_name --query value -o tsv)
+    if [ -z "${databricks_kv_token}" ]; then
+      log "Databricks token is empty. Exiting." "Error"
+      exit 1
+    fi
+    cat <<EOL > ~/.databrickscfg
+[DEFAULT]
+host=${databricks_host}
+token=${databricks_kv_token}
+EOL
+
+    log "Creating and configuring Unity Catalog for ${env_name}." "info"
+    create_catalog_storage_account
+    create_catalog_storage_container ${env_name}
+    create_storage_credential
+    rbac_role_assignment_for_msi
+    create_external_locations
+    create_environment_catalog
+    log "Unity Catalog configured successfully." "info"
+  done
+}
+
+
+# if this is run from the scripts directory, get to root folder and run the build_dependencies function
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    pushd .. > /dev/null
+    . ./scripts/common.sh
+    . ./scripts/init_environment.sh
+    configure_unity_catalog 1
+    popd > /dev/null
 else
-  log "Storage credential name is empty. Skipping creation." "Info"
+    . ./scripts/common.sh
 fi
-
-###################################################################################################
-# 4. RBAC role assignment to the MSI for the storage account created in Step 1.
-###################################################################################################
-scope="/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP_NAME/providers/Microsoft.Storage/storageAccounts/$CATALOG_STG_ACCOUNT_NAME"
-access_connector_resource_id="/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$MNG_RESOURCE_GROUP_NAME/providers/Microsoft.Databricks/accessConnectors/unity-catalog-access-connector"
-
-# Get the name of the MSI using the resource ID
-managed_identity_name=$(az resource show --ids $access_connector_resource_id --query 'name' --output tsv)
-log "Managed Identity Name: $managed_identity_name" "Info"
-# Get the managed identity principal ID
-managed_identity_principal_id=$(az resource show --ids $access_connector_resource_id --query 'identity.principalId' --output tsv)   
-log "Managed Identity Principal ID: $managed_identity_principal_id" "Info"
-# Assign the role to the managed identity
-role="Storage Blob Data Contributor"
-assign_rbac_role_to_msi "$role" "$scope" "$managed_identity_principal_id" "$CATALOG_STG_ACCOUNT_NAME" "Info"
-
-###################################################################################################
-# 5. RBAC role assignment to the MSI for the storage account that holds the data.
-###################################################################################################
-# Assign the role to the managed identity
-scope="/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP_NAME/providers/Microsoft.Storage/storageAccounts/$DATA_STG_ACCOUNT_NAME"
-# Assign the role to the managed identity
-role="Storage Blob Data Contributor"
-assign_rbac_role_to_msi "$role" "$scope" "$managed_identity_principal_id" "$DATA_STG_ACCOUNT_NAME" "Info"	
-
-
-###################################################################################################
-# 6. Create the external location with the previously created storage credential - for the catalog
-###################################################################################################
-# Create the external location for the catalog
-cat_json_ext_location="./databricks/config/catalog.external.location.json"
-# Create the JSON file
-cat <<EOF > $cat_json_ext_location
-{
-  "name": "$CATALOG_EXT_LOCATION_NAME",
-  "url": "abfss://$container_name@$CATALOG_STG_ACCOUNT_NAME.dfs.core.windows.net",
-  "credential_name": "$STG_CREDENTIAL_NAME"
-}
-EOF
-
-create_db_external_location $cat_json_ext_location $CATALOG_EXT_LOCATION_NAME
-
-###################################################################################################
-# 7. Create the external location with the previously created storage credential - for the data
-###################################################################################################
-# Create the external location for the data
-data_json_ext_location="./databricks/config/data.external.location.json"
-# Create the JSON file
-cat <<EOF > $data_json_ext_location
-{
-  "name": "$DATA_EXT_LOCATION_NAME",
-  "url": "abfss://datalake@$DATA_STG_ACCOUNT_NAME.dfs.core.windows.net",
-  "credential_name": "$STG_CREDENTIAL_NAME"
-}
-EOF
-
-create_db_external_location $data_json_ext_location $DATA_EXT_LOCATION_NAME
-###################################################################################################
-# 8. Create the <DEV/STG/PROD> catalog with the previously created external location.
-###################################################################################################
-comment="Catalog for $catalog_name environment."
-
-json_uc="./databricks/config/uc.json"
-# Create the JSON file
-cat <<EOF > $json_uc
-{
-  "name": "$catalog_name",
-  "comment": "$comment",
-  "storage_root": "abfss://$container_name@$CATALOG_STG_ACCOUNT_NAME.dfs.core.windows.net"
-}
-EOF
-
-create_db_catalog $json_uc $catalog_name
