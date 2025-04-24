@@ -34,6 +34,7 @@ set_deployment_environment () {
         exit 1
     fi
     appName="${PROJECT}-api-${env_name}-${DEPLOYMENT_ID}"
+    api_base_url="https://$appName.azurewebsites.net"
     cat_stg_account_name="${PROJECT}catalog${env_name}${DEPLOYMENT_ID}"
     catalog_ext_location_name="${PROJECT}-catalog-${DEPLOYMENT_ID}-ext-location-${env_name}"
     catalog_name="${PROJECT}-${DEPLOYMENT_ID}-catalog-${env_name}"
@@ -46,6 +47,8 @@ set_deployment_environment () {
     sp_adf_name="${PROJECT}-adf-${env_name}-${DEPLOYMENT_ID}-sp"
     sp_stor_name="${PROJECT}-stor-${env_name}-${DEPLOYMENT_ID}-sp"
     stg_credential_name="${PROJECT}-${DEPLOYMENT_ID}-stg-credential-${env_name}"
+    vargroup_name="${PROJECT}-release-$env_name"
+    vargroup_secrets_name="${PROJECT}-secrets-$env_name"
 }
 
 # Helper functions
@@ -108,6 +111,18 @@ wait_for_process() {
     local seconds=${1:-15}
     log "Giving the portal $seconds seconds to process the information..." "info"
     sleep "$seconds"
+}
+
+get_keyvault_value() {
+    # This function retrieves a secret from the Azure Key Vault
+    local secret_name=$1
+    local kv_name=$2
+    local secret_value=$(az keyvault secret show --name "${secret_name}" --vault-name "${kv_name}" --query value -o tsv)
+    if [ -z "${secret_value}" ]; then
+        log "Secret ${secret_name} not found in Key Vault ${kv_name}. Exiting." "error"
+        exit 1
+    fi
+    echo "${secret_value}"
 }
 
 delete_azdo_service_connection_principal(){
