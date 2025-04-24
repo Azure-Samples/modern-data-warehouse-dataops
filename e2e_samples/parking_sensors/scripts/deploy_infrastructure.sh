@@ -13,6 +13,7 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
+. ./scripts/deploy_azdo_variables.sh
 
 create_resource_group() {
     # Create resource group
@@ -128,7 +129,7 @@ store_keyvault_values_for_deployment() {
 }
 
 deploy_rest_api() {
-    API_BASE_URL="https://$appName.azurewebsites.net"
+    
     # check that zip was deployed to app service
     local zip_file_succeeded=$(az webapp log deployment list --name "${appName}" --resource-group "${resource_group_name}" --query "[].provisioningState" --output tsv)
     if [[ $zip_file_succeeded = "Succeeded" ]]; then
@@ -368,8 +369,8 @@ configure_datafactory() {
     jq --arg notebook_base_param_stg_account_name "${azure_storage_account}" '.properties.activities[0].typeProperties.baseParameters.stgaccountname.value = $notebook_base_param_stg_account_name' $adfPlDir/P_Ingest_ParkingData.json > "$tmpfile" && mv "$tmpfile" $adfPlDir/P_Ingest_ParkingData.json
     jq --arg notebook_base_param_catalog_name "$catalog_name" '.properties.activities[4].typeProperties.baseParameters.catalogname.value = $notebook_base_param_catalog_name' $adfPlDir/P_Ingest_ParkingData.json > "$tmpfile" && mv "$tmpfile" $adfPlDir/P_Ingest_ParkingData.json
     jq --arg notebook_base_param_stg_account_name "${azure_storage_account}" '.properties.activities[4].typeProperties.baseParameters.stgaccountname.value = $notebook_base_param_stg_account_name' $adfPlDir/P_Ingest_ParkingData.json > "$tmpfile" && mv "$tmpfile" $adfPlDir/P_Ingest_ParkingData.json
-    jq --arg new_url "$API_BASE_URL" '.properties.typeProperties.url = $new_url' "$adfLsDir/Ls_Http_DataSimulator.json" > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_Http_DataSimulator.json
-    jq --arg new_url "$API_BASE_URL" '.properties.typeProperties.url = $new_url' $adfLsDir/Ls_Rest_ParkSensors_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_Rest_ParkSensors_01.json
+    jq --arg new_url "${api_base_url}" '.properties.typeProperties.url = $new_url' "$adfLsDir/Ls_Http_DataSimulator.json" > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_Http_DataSimulator.json
+    jq --arg new_url "${api_base_url}" '.properties.typeProperties.url = $new_url' $adfLsDir/Ls_Rest_ParkSensors_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_Rest_ParkSensors_01.json
 
     datafactory_info=$(az datafactory list \
         --resource-group "${resource_group_name}" \
@@ -377,24 +378,25 @@ configure_datafactory() {
         --output json)
 
     # Extract Data Factory name and ID
-    datafactory_name=$(echo "$datafactory_info" | jq -r '.[0].name')
-    datafactory_id=$(echo "$datafactory_info" | jq -r '.[0].id')
-    az keyvault secret set --vault-name "$kv_name" --name "adfName" --value "$datafactory_name" --output none
+    datafactory_name=$(echo "${datafactory_info}" | jq -r '.[0].name')
+    datafactory_id=$(echo "${datafactory_info}" | jq -r '.[0].id')
+    az keyvault secret set --vault-name "${kv_name}" --name "adfName" --value "${datafactory_name}" --output none
+    az keyvault secret set --vault-name "${kv_name}" --name "adfId" --value "${datafactory_id}" --output none
 
-    log "Modified sample files saved to directory: $adfTempDir"
+    log "Modified sample files saved to directory: ${adfTempDir}" "info"
     # Deploy ADF artifacts
-    AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID \
-    RESOURCE_GROUP_NAME=$resource_group_name \
-    DATAFACTORY_NAME=$datafactory_name \
-    ADF_DIR=$adfTempDir \
+    AZURE_SUBSCRIPTION_ID=${AZURE_SUBSCRIPTION_ID} \
+    RESOURCE_GROUP_NAME=${resource_group_name} \
+    DATAFACTORY_NAME=${datafactory_name} \
+    ADF_DIR=${adfTempDir} \
         bash -c "./scripts/deploy_adf_artifacts.sh"
 
     # ADF SP for integration tests
-    log "Create Service Principal (SP) for Data Factory"
+    log "Create Service Principal (SP) for Data Factory" "info"
     sp_adf_out=$(az ad sp create-for-rbac \
         --role "Data Factory contributor" \
-        --scopes "/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$resource_group_name/providers/Microsoft.DataFactory/factories/$datafactory_name" \
-        --name "$sp_adf_name" \
+        --scopes "/subscriptions/${AZURE_SUBSCRIPTION_ID}/resourceGroups/${resource_group_name}/providers/Microsoft.DataFactory/factories/${datafactory_name}" \
+        --name "${sp_adf_name}" \
         --output json)
     
     sp_adf_id=$(echo "$sp_adf_out" | jq -r '.appId')
@@ -424,31 +426,7 @@ configure_azdo_service_connections_and_variables() {
     AZDO_ORGANIZATION_URL=${AZDO_ORGANIZATION_URL} \
         bash -c "./scripts/deploy_azdo_service_connections_azure.sh"
 
-    # AzDO Variable Groups
-    PROJECT=${PROJECT} \
-    ENV_NAME=${env_name} \
-    AZURE_SUBSCRIPTION_ID=${AZURE_SUBSCRIPTION_ID} \
-    RESOURCE_GROUP_NAME=${resource_group_name} \
-    AZURE_LOCATION=${AZURE_LOCATION} \
-    KV_URL=${kv_dns_name} \
-    KV_NAME=${kv_name} \
-    DATABRICKS_TOKEN=${databricks_token} \
-    DATABRICKS_HOST=${databricks_host} \
-    DATABRICKS_WORKSPACE_RESOURCE_ID=${databricks_workspace_resource_id} \
-    DATABRICKS_CLUSTER_ID=${databricksClusterId} \
-    SQL_SERVER_NAME=${sql_server_name} \
-    SQL_SERVER_USERNAME=${sql_server_username} \
-    SQL_SERVER_PASSWORD=${AZURESQL_SERVER_PASSWORD} \
-    SQL_DW_DATABASE_NAME=${sql_dw_database_name} \
-    AZURE_STORAGE_KEY=${azure_storage_key} \
-    AZURE_STORAGE_ACCOUNT=${azure_storage_account} \
-    DATAFACTORY_ID=${datafactory_id} \
-    DATAFACTORY_NAME=${datafactory_name} \
-    SP_ADF_ID=${sp_adf_id} \
-    SP_ADF_PASS=${sp_adf_pass} \
-    SP_ADF_TENANT=${sp_adf_tenant} \
-    API_BASE_URL=${API_BASE_URL} \
-        bash -c "./scripts/deploy_azdo_variables.sh"
+    deploy_azdo_variables
 }
 
 write_deployment_environment_variables() {
