@@ -33,15 +33,19 @@ set_deployment_environment () {
         log "Environment name is not set. Exiting." "error"
         exit 1
     fi
-    kv_name="$PROJECT-kv-${env_name}-$DEPLOYMENT_ID"
+    appName="${PROJECT}-api-${env_name}-${DEPLOYMENT_ID}"
     cat_stg_account_name="${PROJECT}catalog${env_name}${DEPLOYMENT_ID}"
-    data_stg_account_name="${PROJECT}st${env_name}${DEPLOYMENT_ID}"
-    resource_group_name="${PROJECT}-${DEPLOYMENT_ID}-${env_name}-rg"
-    mng_resource_group_name="${PROJECT}-${DEPLOYMENT_ID}-dbw-${env_name}-rg"
-    stg_credential_name="${PROJECT}-${DEPLOYMENT_ID}-stg-credential-${env_name}"
     catalog_ext_location_name="${PROJECT}-catalog-${DEPLOYMENT_ID}-ext-location-${env_name}"
-    data_ext_location_name="${PROJECT}-data-${DEPLOYMENT_ID}-ext-location-${env_name}"
     catalog_name="${PROJECT}-${DEPLOYMENT_ID}-catalog-${env_name}"
+    data_ext_location_name="${PROJECT}-data-${DEPLOYMENT_ID}-ext-location-${env_name}"
+    data_stg_account_name="${PROJECT}st${env_name}${DEPLOYMENT_ID}"
+    databricks_workspace_name="${PROJECT}-dbw-${env_name}-${DEPLOYMENT_ID}"
+    kv_name="${PROJECT}-kv-${env_name}-$DEPLOYMENT_ID"
+    mng_resource_group_name="${PROJECT}-${DEPLOYMENT_ID}-dbw-${env_name}-rg"
+    resource_group_name="${PROJECT}-${DEPLOYMENT_ID}-${env_name}-rg"
+    sp_adf_name="${PROJECT}-adf-${env_name}-${DEPLOYMENT_ID}-sp"
+    sp_stor_name="${PROJECT}-stor-${env_name}-${DEPLOYMENT_ID}-sp"
+    stg_credential_name="${PROJECT}-${DEPLOYMENT_ID}-stg-credential-${env_name}"
 }
 
 # Helper functions

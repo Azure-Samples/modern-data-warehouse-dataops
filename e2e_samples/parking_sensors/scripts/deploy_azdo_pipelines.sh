@@ -23,7 +23,7 @@ set -o nounset
 
 verify_environment() {
     # azure-pipelines-cd-release.yml pipeline require DEV_DATAFACTORY_NAME set, retrieve this value from .env.dev file
-    declare DEV_"$(grep -e '^DATAFACTORY_NAME' .env.dev | tail -1 | xargs)"
+    export DEV_"$(grep -e '^DATAFACTORY_NAME' .env.dev | tail -1 | xargs)"
 
     # Check if required environment variables are set
     if [[ -z "${PROJECT:-}" || -z "${GITHUB_REPO_URL:-}" || -z "${AZDO_PIPELINES_BRANCH_NAME:-}" || -z "${DEV_DATAFACTORY_NAME:-}" ]]; then

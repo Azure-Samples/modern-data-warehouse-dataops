@@ -215,50 +215,42 @@ create_environment_catalog() {
   # Create the JSON file
   cat <<EOF > ${json_uc}
 {
-  "name": "${env_name}",
+  "name": "${catalog_name}",
   "comment": "${comment}",
   "storage_root": "abfss://${env_name}@$cat_stg_account_name.dfs.core.windows.net"
 }
 EOF
 
-  create_db_catalog $json_uc $env_name
+  create_db_catalog ${json_uc} ${catalog_name}
 }
 
 configure_unity_catalog() {
-  env_deploy=${1:-3}
-
-  get_env_names "${env_deploy}"
-  # Loop through the environments and deploy
-  for env_name in ${env_names}; do
-    set_deployment_environment "${env_name}"
-  
-    # Create the databrickscfg file
-    databricks_host=$(get_databricks_host ${resource_group_name})
-    if [ -z "$databricks_host" ]; then
-      log "Databricks host is empty. Exiting." "Error"
-      exit 1
-    fi
-    #get databricks token from key vault
-    databricks_kv_token=$(az keyvault secret show --name databricksToken --vault-name $kv_name --query value -o tsv)
-    if [ -z "${databricks_kv_token}" ]; then
-      log "Databricks token is empty. Exiting." "Error"
-      exit 1
-    fi
-    cat <<EOL > ~/.databrickscfg
+  # Create the databrickscfg file
+  databricks_host=$(get_databricks_host ${resource_group_name})
+  if [ -z "$databricks_host" ]; then
+    log "Databricks host is empty. Exiting." "Error"
+    exit 1
+  fi
+  #get databricks token from key vault
+  databricks_kv_token=$(az keyvault secret show --name databricksToken --vault-name $kv_name --query value -o tsv)
+  if [ -z "${databricks_kv_token}" ]; then
+    log "Databricks token is empty. Exiting." "Error"
+    exit 1
+  fi
+  cat <<EOL > ~/.databrickscfg
 [DEFAULT]
 host=${databricks_host}
 token=${databricks_kv_token}
 EOL
 
-    log "Creating and configuring Unity Catalog for ${env_name}." "info"
-    create_catalog_storage_account
-    create_catalog_storage_container ${env_name}
-    create_storage_credential
-    rbac_role_assignment_for_msi
-    create_external_locations
-    create_environment_catalog
-    log "Unity Catalog configured successfully." "info"
-  done
+  log "Creating and configuring Unity Catalog for ${env_name}." "info"
+  create_catalog_storage_account
+  create_catalog_storage_container ${env_name}
+  create_storage_credential
+  rbac_role_assignment_for_msi
+  create_external_locations
+  create_environment_catalog
+  log "Unity Catalog configured successfully." "info"
 }
 
 
@@ -267,7 +259,9 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     pushd .. > /dev/null
     . ./scripts/common.sh
     . ./scripts/init_environment.sh
-    configure_unity_catalog 1
+    set_deployment_environment "dev"
+    log "Configure Unity Catalog" "info"
+    configure_unity_catalog
     popd > /dev/null
 else
     . ./scripts/common.sh

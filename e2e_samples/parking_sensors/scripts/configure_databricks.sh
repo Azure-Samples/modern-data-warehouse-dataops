@@ -40,6 +40,8 @@ set -o nounset
 
 . ./scripts/common.sh
 
+set_deployment_environment "$ENVIRONMENT_NAME"
+
 databricks_cluster_exists () {
     declare cluster_name="$1"
     declare cluster=$(databricks clusters list | tr -s " " | cut -d" " -f2 | grep ^${cluster_name}$)
@@ -49,9 +51,6 @@ databricks_cluster_exists () {
         return 1; # cluster does not exists
     fi
 }
-
-data_stg_account_name="${PROJECT}st${ENVIRONMENT_NAME}${DEPLOYMENT_ID}"
-resource_group_name="${PROJECT}-${DEPLOYMENT_ID}-${ENVIRONMENT_NAME}-rg"
 
 log "Configuring Databricks workspace."
 
@@ -121,7 +120,6 @@ fi
 rm vm_names.txt
 
 # Create initial cluster, if not yet exists
-catalog_name="${PROJECT}-${DEPLOYMENT_ID}-catalog-${ENVIRONMENT_NAME}"
 cluster_config="./databricks/config/cluster.config.json"
 cat <<EOF > $cluster_config
 

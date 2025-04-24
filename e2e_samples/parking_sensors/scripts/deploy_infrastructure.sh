@@ -17,7 +17,7 @@ set -o nounset
 create_resource_group() {
     # Create resource group
     # check if resource group already exists
-    resource_group_name="$PROJECT-$DEPLOYMENT_ID-$ENV_NAME-rg"
+    set_deployment_environment "$env_name"
     resource_group_exists=$(az group exists --name "$resource_group_name")
     
     if [[ $resource_group_exists == true ]]; then
@@ -25,7 +25,7 @@ create_resource_group() {
         return
     else
         log "Creating resource group: $resource_group_name" "info"
-        az group create --name "$resource_group_name" --location "$AZURE_LOCATION" --tags Environment="$ENV_NAME" --output none
+        az group create --name "$resource_group_name" --location "$AZURE_LOCATION" --tags Environment="$env_name" --output none
     fi
 }
 
@@ -83,7 +83,7 @@ validate_and_deploy_arm_template() {
     az deployment group validate \
         --resource-group "$resource_group_name" \
         --template-file "./infrastructure/main.bicep" \
-        --parameters @"./infrastructure/main.parameters.${ENV_NAME}.json" \
+        --parameters @"./infrastructure/main.parameters.${env_name}.json" \
         --parameters project="${PROJECT}" keyvault_owner_object_id="${kv_owner_object_id}" deployment_id="${DEPLOYMENT_ID}" \
         --parameters sql_server_password="${AZURESQL_SERVER_PASSWORD}" entra_admin_login="${kv_owner_name}" \
         --parameters keyvault_name="${kv_name}" enable_keyvault_soft_delete="${ENABLE_KEYVAULT_SOFT_DELETE}" \
@@ -99,7 +99,7 @@ deploy_arm_template() {
     arm_output=$(az deployment group create \
         --resource-group "$resource_group_name" \
         --template-file "./infrastructure/main.bicep" \
-        --parameters @"./infrastructure/main.parameters.${ENV_NAME}.json" \
+        --parameters @"./infrastructure/main.parameters.${env_name}.json" \
         --parameters project="${PROJECT}" keyvault_owner_object_id="${kv_owner_object_id}" deployment_id="${DEPLOYMENT_ID}" \
         --parameters sql_server_password="${AZURESQL_SERVER_PASSWORD}" entra_admin_login="${kv_owner_name}" \
         --parameters keyvault_name="${kv_name}" enable_keyvault_soft_delete="${ENABLE_KEYVAULT_SOFT_DELETE}" \
@@ -128,7 +128,6 @@ store_keyvault_values_for_deployment() {
 }
 
 deploy_rest_api() {
-    appName="${PROJECT}-api-${ENV_NAME}-${DEPLOYMENT_ID}"
     API_BASE_URL="https://$appName.azurewebsites.net"
     # check that zip was deployed to app service
     local zip_file_succeeded=$(az webapp log deployment list --name "${appName}" --resource-group "${resource_group_name}" --query "[].provisioningState" --output tsv)
@@ -151,7 +150,7 @@ configure_storage_account() {
     # Retrive account and key
     azure_storage_account=$(az storage account list \
         --resource-group "${resource_group_name}" \
-        --query "[?contains(name, '${PROJECT}st${ENV_NAME}')].name" \
+        --query "[?contains(name, '${PROJECT}st${env_name}')].name" \
         --output tsv)
 
     azure_storage_key=$(az storage account keys list \
@@ -252,14 +251,13 @@ configure_databricks_workspace() {
     log "Creating Service Principal (SP) for access to ADLS Gen2 used in Databricks mounting" "info"
     azure_storage_account=$(az storage account list \
         --resource-group "${resource_group_name}" \
-        --query "[?contains(name, '${PROJECT}st${ENV_NAME}')].name" \
+        --query "[?contains(name, '${PROJECT}st${env_name}')].name" \
         --output tsv)
     stor_id=$(az storage account show \
         --name "${azure_storage_account}" \
         --resource-group "${resource_group_name}" \
         --output json |
         jq -r '.id')
-    sp_stor_name="${PROJECT}-stor-${ENV_NAME}-${DEPLOYMENT_ID}-sp"
     sp_stor_out=$(az ad sp create-for-rbac \
         --role "Storage Blob Data Contributor" \
         --scopes "${stor_id}" \
@@ -288,7 +286,6 @@ configure_databricks_workspace() {
     databricks_workspace_resource_id=$(echo "${databricks_workspace_info}" | jq -r '.[0].id')
     databricks_aad_token=$(az account get-access-token --resource 2ff814a6-3304-4ab8-85cb-cd0e6f879c1d --query accessToken --output tsv) # Databricks app global id
     
-    databricks_workspace_name="${PROJECT}-dbw-${ENV_NAME}-${DEPLOYMENT_ID}"
     databricks_complete_url="${databricks_host}/aad/auth?has=&Workspace=/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$resource_group_name/providers/Microsoft.Databricks/workspaces/$databricks_workspace_name&WorkspaceResourceGroupUri=/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$$resource_group_name&l=en"
 
     # # Display the URL
@@ -308,8 +305,8 @@ configure_databricks_workspace() {
     az keyvault secret set --vault-name "${kv_name}" --name "databricksWorkspaceResourceId" --value "${databricks_workspace_resource_id}" --output none
 
     # Setup the release folder
-    if [ "$ENV_NAME" == "dev" ]; then
-        databricks_release_folder="/releases/${ENV_NAME}"
+    if [ "$env_name" == "dev" ]; then
+        databricks_release_folder="/releases/${env_name}"
     else  
         databricks_release_folder="/releases/setup_release"
     fi
@@ -332,7 +329,7 @@ configure_databricks_cluster() {
     AZURE_SUBSCRIPTION_ID=${AZURE_SUBSCRIPTION_ID} \
     RESOURCE_GROUP_NAME=${resource_group_name} \
     STORAGE_ACCOUNT_NAME=${azure_storage_account} \
-    ENVIRONMENT_NAME=${ENV_NAME} \
+    ENVIRONMENT_NAME=${env_name} \
     PROJECT=${PROJECT} \
     DEPLOYMENT_ID=${DEPLOYMENT_ID} \
     DATABRICKS_TOKEN=${databricks_aad_token} \
@@ -361,7 +358,6 @@ configure_datafactory() {
     tmpfile=.tmpfile
     adfLsDir=$adfTempDir/linkedService
     adfPlDir=$adfTempDir/pipeline
-    catalog_name="${PROJECT}-${DEPLOYMENT_ID}-catalog-${ENV_NAME}"
     jq --arg kvurl "$kv_dns_name" '.properties.typeProperties.baseUrl = $kvurl' $adfLsDir/Ls_KeyVault_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_KeyVault_01.json
     jq --arg databricksWorkspaceUrl "$databricks_host" '.properties.typeProperties.domain = $databricksWorkspaceUrl' $adfLsDir/Ls_AzureDatabricks_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AzureDatabricks_01.json
     jq --arg databricksExistingClusterId "$databricksClusterId" '.properties.typeProperties.existingClusterId = $databricksExistingClusterId' $adfLsDir/Ls_AzureDatabricks_01.json > "$tmpfile" && mv "$tmpfile" $adfLsDir/Ls_AzureDatabricks_01.json
@@ -395,7 +391,6 @@ configure_datafactory() {
 
     # ADF SP for integration tests
     log "Create Service Principal (SP) for Data Factory"
-    sp_adf_name="${PROJECT}-adf-${ENV_NAME}-${DEPLOYMENT_ID}-sp"
     sp_adf_out=$(az ad sp create-for-rbac \
         --role "Data Factory contributor" \
         --scopes "/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$resource_group_name/providers/Microsoft.DataFactory/factories/$datafactory_name" \
@@ -421,7 +416,7 @@ configure_azdo_service_connections_and_variables() {
 
     # AzDO Azure Service Connections
     PROJECT=${PROJECT} \
-    ENV_NAME=${ENV_NAME} \
+    ENV_NAME=${env_name} \
     RESOURCE_GROUP_NAME=${resource_group_name} \
     DEPLOYMENT_ID=${DEPLOYMENT_ID} \
     TENANT_ID=${TENANT_ID} \
@@ -431,7 +426,7 @@ configure_azdo_service_connections_and_variables() {
 
     # AzDO Variable Groups
     PROJECT=${PROJECT} \
-    ENV_NAME=${ENV_NAME} \
+    ENV_NAME=${env_name} \
     AZURE_SUBSCRIPTION_ID=${AZURE_SUBSCRIPTION_ID} \
     RESOURCE_GROUP_NAME=${resource_group_name} \
     AZURE_LOCATION=${AZURE_LOCATION} \
@@ -459,7 +454,7 @@ configure_azdo_service_connections_and_variables() {
 write_deployment_environment_variables() {
     log "Writing deployment environment variables" "info"
 
-    env_file=".env.${ENV_NAME}"
+    env_file=".env.${env_name}"
     log "Appending configuration to .env file." "info"
     cat << EOF >> "${env_file}"
 
@@ -483,7 +478,7 @@ APPINSIGHTS_KEY=${appinsights_key}
 KV_URL=${kv_dns_name}
 
 EOF
-    log "Completed deploying Azure resources ${resource_group_name} ($ENV_NAME)" "success"
+    log "Completed deploying Azure resources ${resource_group_name} ($env_name)" "success"
 }
 
 deploy_infrastructure() {
@@ -521,7 +516,6 @@ deploy_infrastructure_environment() {
             log "Deployment failed for ${env_name}" "error"
             exit 1
         }
-        export ENV_DEPLOY=${env_deploy}
     done
 }
 
