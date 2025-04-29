@@ -24,7 +24,6 @@ get_env_names() {
         exit
         ;;
     esac
-    echo "$env_names" > /dev/null
 }
 
 set_deployment_environment () {
@@ -49,6 +48,11 @@ set_deployment_environment () {
     stg_credential_name="${PROJECT}-${DEPLOYMENT_ID}-stg-credential-${env_name}"
     vargroup_name="${PROJECT}-release-$env_name"
     vargroup_secrets_name="${PROJECT}-secrets-$env_name"
+    if [ "$env_name" == "dev" ]; then
+        databricks_release_folder="/releases/${env_name}"
+    else  
+        databricks_release_folder="/releases/setup_release"
+    fi
 }
 
 # Helper functions
