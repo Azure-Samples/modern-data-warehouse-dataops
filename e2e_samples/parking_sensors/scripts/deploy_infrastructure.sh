@@ -14,6 +14,7 @@ set -o pipefail
 set -o nounset
 
 . ./scripts/deploy_azdo_variables.sh
+. ./scripts/configure_databricks.sh
 
 create_resource_group() {
     # Create resource group
@@ -124,8 +125,8 @@ store_keyvault_values_for_deployment() {
     kv_dns_name=https://${kv_name}.vault.azure.net/
 
     # Store in KeyVault
-    az keyvault secret set --vault-name "$kv_name" --name "kvUrl" --value "$kv_dns_name" --output none
-    az keyvault secret set --vault-name "$kv_name" --name "subscriptionId" --value "$AZURE_SUBSCRIPTION_ID" --output none
+    az keyvault secret set --vault-name "${kv_name}" --name "kvUrl" --value "${kv_dns_name}" --output none
+    az keyvault secret set --vault-name "${kv_name}" --name "subscriptionId" --value "${AZURE_SUBSCRIPTION_ID}" --output none
 }
 
 deploy_rest_api() {
@@ -170,10 +171,10 @@ configure_storage_account() {
     log "Configuring Storage Account" "info"
     # Add file system storage account
     storage_file_system=datalake
-    log "Creating ADLS Gen2 File system: ${storage_file_system}"
+    log "Creating ADLS Gen2 File system: ${storage_file_system}" "info"
     az storage container create --name "${storage_file_system}" --account-name "${azure_storage_account}" --account-key "${azure_storage_key}" --output none
 
-    log "Creating folders within the file system."
+    log "Creating folders within the file system." "info"
     # Create folders for databricks libs
     az storage fs directory create -n '/sys/databricks/libs' -f "${storage_file_system}" --account-name "${azure_storage_account}" --account-key "${azure_storage_key}" --output none
     # Create folders for SQL external tables
@@ -182,11 +183,11 @@ configure_storage_account() {
     az storage fs directory create -n '/data/dw/dim_parking_bay' -f "${storage_file_system}" --account-name "${azure_storage_account}" --account-key "${azure_storage_key}" --output none
     az storage fs directory create -n '/data/dw/dim_location' -f "${storage_file_system}" --account-name "${azure_storage_account}" --account-key "${azure_storage_key}" --output none
 
-    log "Uploading seed data to data/seed"
+    log "Uploading seed data to data/seed" "info"
     az storage blob upload --container-name "${storage_file_system}" --account-name "${azure_storage_account}" --account-key "${azure_storage_key}" \
-        --file data/seed/dim_date.csv --name "data/seed/dim_date/dim_date.csv" --overwrite --output none
+        --file data/seed/dim_date.csv --name "data/seed/dim_date/dim_date.csv" --overwrite --output none > /dev/null
     az storage blob upload --container-name "${storage_file_system}" --account-name "${azure_storage_account}" --account-key "${azure_storage_key}" \
-        --file data/seed/dim_time.csv --name "data/seed/dim_time/dim_time.csv" --overwrite --output none
+        --file data/seed/dim_time.csv --name "data/seed/dim_time/dim_time.csv" --overwrite --output none > /dev/null
 
     # Set Keyvault secrets
     az keyvault secret set --vault-name "$kv_name" --name "datalakeAccountName" --value "${azure_storage_account}" --output none
@@ -306,43 +307,10 @@ configure_databricks_workspace() {
     az keyvault secret set --vault-name "${kv_name}" --name "databricksWorkspaceResourceId" --value "${databricks_workspace_resource_id}" --output none
 
     # Setup the release folder
-    if [ "$env_name" == "dev" ]; then
-        databricks_release_folder="/releases/${env_name}"
-    else  
-        databricks_release_folder="/releases/setup_release"
-    fi
     databricks_folder_name_standardize="${databricks_release_folder}/notebooks/02_standardize"
     log "databricks_folder_name_standardize: ${databricks_folder_name_standardize}" "info"
     databricks_folder_name_transform="${databricks_release_folder}/notebooks/03_transform"
     log "databricks_folder_name_transform: ${databricks_folder_name_transform}" "info"
-}
-
-configure_databricks_cluster() {
-    log "Configuring Databricks Cluster" "info"
-
-    keyvault_resource_id=$(az keyvault show \
-        --name "${kv_name}" \
-        --query "id" \
-        --output tsv)
-
-    # Configure databricks (KeyVault-backed Secret scope, mount to storage via SP, databricks tables, cluster)
-    # NOTE: must use Microsoft Entra access token, not PAT token
-    AZURE_SUBSCRIPTION_ID=${AZURE_SUBSCRIPTION_ID} \
-    RESOURCE_GROUP_NAME=${resource_group_name} \
-    STORAGE_ACCOUNT_NAME=${azure_storage_account} \
-    ENVIRONMENT_NAME=${env_name} \
-    PROJECT=${PROJECT} \
-    DEPLOYMENT_ID=${DEPLOYMENT_ID} \
-    DATABRICKS_TOKEN=${databricks_aad_token} \
-    DATABRICKS_KV_TOKEN=${databricks_token} \
-    DATABRICKS_HOST=${databricks_host} \
-    KEYVAULT_DNS_NAME=${kv_dns_name} \
-    KEYVAULT_NAME=${kv_name} \
-    USER_NAME=${kv_owner_name} \
-    AZURE_LOCATION=${AZURE_LOCATION} \
-    DATABRICKS_RELEASE_FOLDER=${databricks_release_folder} \
-    KEYVAULT_RESOURCE_ID=${keyvault_resource_id} \
-        bash -c "./scripts/configure_databricks.sh"
 }
 
 configure_datafactory() {
@@ -351,7 +319,7 @@ configure_datafactory() {
     # Get Databricks ClusterID from KeyVault
     databricksClusterId=$(az keyvault secret show --name "databricksClusterId" --vault-name "$kv_name" --query "value" --output tsv)
 
-    log "Updating Data Factory LinkedService to point to newly deployed resources (KeyVault and DataLake)."
+    log "Updating Data Factory LinkedService to point to newly deployed resources (KeyVault and DataLake)." "info"
     # Create a copy of the ADF dir into a .tmp/ folder.
     adfTempDir=.tmp/adf
     mkdir -p $adfTempDir && cp -a adf/ .tmp/
@@ -472,7 +440,7 @@ deploy_infrastructure() {
     configure_app_insights
     configure_databricks_workspace
     configure_unity_catalog
-    configure_databricks_cluster
+    configure_databricks
     configure_datafactory
     configure_azdo_service_connections_and_variables
     write_deployment_environment_variables
@@ -500,7 +468,6 @@ deploy_infrastructure_environment() {
 # if this is run from the scripts directory, get to root folder and run the build_dependencies function
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     pushd .. > /dev/null
-
     . ./scripts/common.sh
     . ./scripts/init_environment.sh
     log "Deploying Infrastructure..." "info"
