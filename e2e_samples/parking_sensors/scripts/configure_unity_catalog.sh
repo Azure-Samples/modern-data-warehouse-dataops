@@ -4,14 +4,6 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-get_databricks_host () {
-  databricks_workspace_info=$(az databricks workspace list \
-        --resource-group "${resource_group_name}" \
-        --query "[?contains(name, '${PROJECT}')].{name:name, workspaceUrl:workspaceUrl, id:id}" \
-        --output json)
-  echo https://$(echo "${databricks_workspace_info}" | jq -r '.[0].workspaceUrl')
-}
-
 create_db_external_location(){
     declare json_ext_location=$1
     declare external_location_name=$2
@@ -22,8 +14,12 @@ create_db_external_location(){
     if [ -n "$external_location_name" ]; then
       if [ -z "$(databricks external-locations list | grep -w $external_location_name)" ]; then
           log "External location '$external_location_name' does not exist. Creating it now..." "info"
-          databricks external-locations create --json @$json_ext_location
-          log "External location '$external_location_name' created successfully."
+          if databricks external-locations create --json @$json_ext_location > /dev/null; then
+            log "External location '$external_location_name' created successfully." "info"
+          else
+            log "Failed to create external location '$external_location_name'." "error"
+            exit 1
+          fi
       else
           log "External location '$external_location_name' already exists. Skipping creation." "info"
       fi
@@ -41,8 +37,12 @@ create_db_catalog(){
     if [ -n "$catalog_name" ]; then
       if [ -z "$(databricks catalogs list | grep -w "$catalog_name")" ]; then
           log "Catalog '$catalog_name' does not exist. Creating it now..." "info"
-          databricks catalogs create --json @$json_uc
-          log "Catalog '$catalog_name' created successfully."
+          if databricks catalogs create --json @$json_uc > /dev/null; then
+            log "Catalog '$catalog_name' created successfully." "info"
+          else
+            log "Failed to create catalog '$catalog_name'." "error"
+            exit 1
+          fi
       else
           log "Catalog '$catalog_name' already exists. Skipping creation." "info"
       fi
@@ -67,14 +67,14 @@ create_catalog_storage_account() {
   name_available=$(az storage account check-name --name ${cat_stg_account_name} --query "nameAvailable" --output tsv)
   
   if [ "${name_available}" == "true" ]; then
-    log "Storage account '${cat_stg_account_name}' does not exist. Creating it now..."
+    log "Storage account '${cat_stg_account_name}' does not exist. Creating it now..." "info"
     az storage account create \
       --name ${cat_stg_account_name} \
       --resource-group ${resource_group_name} \
       --location ${AZURE_LOCATION} \
       --sku Standard_LRS \
       --kind StorageV2 \
-      --hns true
+      --hns true > /dev/null 
     log "Storage account '${cat_stg_account_name}' created successfully with hierarchical namespace enabled." "info"
   else
     log "Storage account '${cat_stg_account_name}' already exists. Skipping creation." "info"
@@ -113,9 +113,13 @@ EOF
   # Check if the storage credential already exists
   if [ -n "${stg_credential_name}" ]; then
     if [ -z "$(databricks storage-credentials list | grep -w ${stg_credential_name})" ]; then
-      log "Storage credential '${stg_credential_name}' does not exist. Creating it now..."
-      databricks storage-credentials create --json @$json_storage_credential
-      log "Storage credential '${stg_credential_name}' created successfully." "info"
+      log "Storage credential '${stg_credential_name}' does not exist. Creating it now..." "info"
+      if databricks storage-credentials create --json @$json_storage_credential > /dev/null; then
+        log "Storage credential '${stg_credential_name}' created successfully." "success"
+      else
+        log "Failed to create storage credential '${stg_credential_name}'." "error"
+        exit 1
+      fi      
     else
       log "Storage credential '${stg_credential_name}' already exists. Skipping creation." "info"
     fi
@@ -194,23 +198,7 @@ EOF
 
 configure_unity_catalog() {
   # Create the databrickscfg file
-  databricks_host=$(get_databricks_host)
-  if [ -z "$databricks_host" ]; then
-    log "Databricks host is empty. Exiting." "Error"
-    exit 1
-  fi
-  #get databricks token from key vault
-  databricks_kv_token=$(az keyvault secret show --name databricksToken --vault-name $kv_name --query value -o tsv)
-  if [ -z "${databricks_kv_token}" ]; then
-    log "Databricks token is empty. Exiting." "Error"
-    exit 1
-  fi
-  cat <<EOL > ~/.databrickscfg
-[DEFAULT]
-host=${databricks_host}
-token=${databricks_kv_token}
-EOL
-
+  create_databrickscfg_file
   log "Creating and configuring Unity Catalog for ${env_name}." "info"
   create_catalog_storage_account
   create_catalog_storage_container ${env_name}
@@ -227,10 +215,12 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     pushd .. > /dev/null
     . ./scripts/common.sh
     . ./scripts/init_environment.sh
+    . ./scripts/databricks_common.sh
     set_deployment_environment "dev"
     log "Configure Unity Catalog" "info"
     configure_unity_catalog
     popd > /dev/null
 else
     . ./scripts/common.sh
+    . ./scripts/databricks_common.sh
 fi

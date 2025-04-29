@@ -27,9 +27,9 @@ delete_uc(){
     kv_name="$PROJECT-kv-$ENV_NAME-$DEPLOYMENT_ID"
     if az keyvault show --name "$kv_name" &>/dev/null; then
         databricksHost=$(az keyvault secret show --name "databricksDomain" --vault-name "$kv_name" --query "value" --output tsv)
-        log "Databricks Host: $databricksHost"
+        log "Databricks Host: $databricksHost" "info"
         databricksToken=$(az keyvault secret show --name "databricksToken" --vault-name "$kv_name" --query "value" --output tsv)
-        log "Databricks Token: $databricksToken"
+        log "Databricks Token: $databricksToken" "info"
         cat <<EOL > ~/.databrickscfg
 [DEFAULT]
 host=$databricksHost
