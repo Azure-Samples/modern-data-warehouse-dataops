@@ -51,11 +51,9 @@ delete_azdo_pipeline_if_exists() {
     pipeline_output=$(az pipelines list --query "[?name=='$full_pipeline_name']" --output json)
     pipeline_id=$(echo "$pipeline_output" | jq -r '.[0].id')
     
-    if [[ -z "$pipeline_id" || "$pipeline_id" == "null" ]]; then
-        log "No Deployment pipeline with name $full_pipeline_name found."
-    else
+    if [[ -n "$pipeline_id" && "$pipeline_id" != "null" ]]; then
         az pipelines delete --id "$pipeline_id" --yes 1>/dev/null
-        log "Deleted existing pipeline: $full_pipeline_name (Pipeline ID: $pipeline_id)"
+        log "Deleted existing pipeline: $full_pipeline_name (Pipeline ID: $pipeline_id)" "info"
     fi
 }
 
@@ -66,9 +64,9 @@ create_azdo_pipeline ()
     full_pipeline_name=$PROJECT-$pipeline_name
 
     delete_azdo_pipeline_if_exists "$full_pipeline_name"
-    log "Creating deployment pipeline: $full_pipeline_name"
+    log "Creating deployment pipeline: $full_pipeline_name" "info"
 
-    pipeline_id=$(az pipelines create \
+    az pipelines create \
         --name "$full_pipeline_name" \
         --description "$pipeline_description" \
         --repository "$GITHUB_REPO_URL" \
@@ -76,8 +74,7 @@ create_azdo_pipeline ()
         --yaml-path "/e2e_samples/parking_sensors/devops/azure-pipelines-$pipeline_name.yml" \
         --service-connection "$github_sc_id" \
         --skip-first-run true \
-        --output json | jq -r '.id')
-    echo "$pipeline_id"
+        --output json > /dev/null
 }
 
 build_pipelines() {
@@ -90,7 +87,7 @@ build_pipelines() {
 release_pipelines() {
     # Release Pipelines - only if it has at least 2 environments
     if [ "$ENV_DEPLOY" -eq 2 ] || [ "$ENV_DEPLOY" -eq 3 ]; then
-        log " Release Pipeline are been created - option selected: $ENV_DEPLOY"
+        log "Release Pipeline are being created - option selected: $ENV_DEPLOY" "info"
         cd_release_pipeline_id=$(create_azdo_pipeline "cd-release" "This pipeline releases across environments")
         az pipelines variable create \
             --name devAdfName \

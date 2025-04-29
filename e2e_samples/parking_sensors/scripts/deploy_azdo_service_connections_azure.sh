@@ -50,7 +50,7 @@ if [ -n "$sc_id" ]; then
         log "Failed to delete service connection: $sc_id" "danger"
         exit 1
     fi
-    log "Successfully deleted service connection: $sc_id"
+    log "Successfully deleted service connection: $sc_id", "success"
 fi
 
 #Project ID
@@ -92,7 +92,7 @@ cat <<EOF > ./devops.json
 }
 EOF
 
-log "Create a new service connection"
+log "Create a new service connection" "info"
 
 # Create the service connection using the Azure DevOps CLI
 response=$(az devops service-endpoint create --service-endpoint-configuration ./devops.json --org "$AZDO_ORGANIZATION_URL" -p "$AZDO_PROJECT")
@@ -101,11 +101,11 @@ response=$(az devops service-endpoint create --service-endpoint-configuration ./
 # Else display error message
 sc_id=$(echo "$response" | jq -r '.id')
 if [ -n "$sc_id" ]; then    
-    log "Created Connection: $sc_id"
+    log "Created Connection: $sc_id" "success"
     # Wait until operationStatus.state is Ready or Failed, keep checking
     response=$(az devops service-endpoint show --id "$sc_id" --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" --query "operationStatus.state" --output tsv)
     until [[ "$response" == "Ready" || "$response" == "Failed"  ]]; do
-        log "Service Connection creation state is $response. Waiting for it to be Ready..."
+        log "Service Connection creation state is $response. Waiting for it to be Ready..." "info"
         sleep 5
         response=$(az devops service-endpoint show --id "$sc_id" --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" --query "operationStatus.state" --output tsv)
     done
@@ -125,7 +125,5 @@ az devops service-endpoint update --id "$sc_id" --enable-for-all "true" --projec
 # Remove the JSON config file if exists
 if [ -f ./devops.json ]; then
     rm ./devops.json
-    log "Removed the JSON config file: ./devops.json"
-else
-    log "JSON config file does not exist: ./devops.json"
+    log "Removed the JSON config file: ./devops.json" "info"
 fi

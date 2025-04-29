@@ -46,7 +46,7 @@ setup_github_service_connection() {
         az devops service-endpoint delete --id "$sc_id" -y  --output none
     fi
 
-    log "Creating Github service connection: $github_sc_name in Azure DevOps"
+    log "Creating Github service connection: $github_sc_name in Azure DevOps" "info"
     github_sc_id=$(az devops service-endpoint github create \
         --name "$github_sc_name" \
         --github-url "$GITHUB_REPO_URL" \

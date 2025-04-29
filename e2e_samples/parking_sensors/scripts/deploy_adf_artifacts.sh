@@ -24,25 +24,25 @@ set -o nounset
 
 create_adf_linked_service () {
     declare name=$1
-    log "Creating ADF LinkedService: $name"
+    log "Creating ADF LinkedService: $name" "info"
     adfLsUrl="${adfFactoryBaseUrl}/linkedservices/${name}?api-version=${apiVersion}"
     az rest --method put --uri "$adfLsUrl" --body @"${ADF_DIR}"/linkedService/"${name}".json --output none
 }
 create_adf_dataset () {
     declare name=$1
-    log "Creating ADF Dataset: $name"
+    log "Creating ADF Dataset: $name" "info"
     adfDsUrl="${adfFactoryBaseUrl}/datasets/${name}?api-version=${apiVersion}"
     az rest --method put --uri "$adfDsUrl" --body @"${ADF_DIR}"/dataset/"${name}".json --output none
 }
 create_adf_pipeline () {
     declare name=$1
-    log "Creating ADF Pipeline: $name"
+    log "Creating ADF Pipeline: $name" "info"
     adfPUrl="${adfFactoryBaseUrl}/pipelines/${name}?api-version=${apiVersion}"
     az rest --method put --uri "$adfPUrl" --body @"${ADF_DIR}"/pipeline/"${name}".json --output none
 }
 create_adf_trigger () {
     declare name=$1
-    log "Creating ADF Trigger: $name"
+    log "Creating ADF Trigger: $name" "info"
     adfTUrl="${adfFactoryBaseUrl}/triggers/${name}?api-version=${apiVersion}"
     az rest --method put --uri "$adfTUrl" --body @"${ADF_DIR}"/trigger/"${name}".json --output none
 }
@@ -52,7 +52,7 @@ apiVersion="2018-06-01"
 baseUrl="https://management.azure.com/subscriptions/${AZURE_SUBSCRIPTION_ID}"
 adfFactoryBaseUrl="$baseUrl/resourceGroups/${RESOURCE_GROUP_NAME}/providers/Microsoft.DataFactory/factories/${DATAFACTORY_NAME}"
 
-log "Deploying Data Factory artifacts."
+log "Deploying Data Factory artifacts." "info"
 
 # Deploy all Linked Services
 create_adf_linked_service "Ls_KeyVault_01"
@@ -69,4 +69,4 @@ create_adf_pipeline "P_Ingest_ParkingData"
 # Deploy triggers
 create_adf_trigger "T_Sched"
 
-log "Completed deploying Data Factory artifacts."
+log "Completed deploying Data Factory artifacts." "success"
