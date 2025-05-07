@@ -73,6 +73,7 @@ The [DevOps Pipelines README](./devops/README.md) provides a comprehensive expla
 
 - Powershell version 7+
 - Local IDE with `git` command installed.
+- A `bash` shell
 - A DevOps source control system, like Azure DevOps or GitLab.
 - A Fabric tenant with at least one capacity running.
   - If you don't have a Fabric tenant you can create a [Fabric trial](https://learn.microsoft.com/fabric/get-started/fabric-trial) and use a trial capacity instead.
@@ -96,38 +97,62 @@ The below picture illustrates these followed by a description of each of the num
 
 ![Fabric CI/CD Architecture](../images/architecture_and_workflow.png)
 
-**Step 0. Prepare for local development**:
+**Step 0. Update environment variables and prepare for local development**:
 
+- Verify that all the prerequisite software is installed and available in your system’s PATH.
+- Create a copy of the [`.envtemplate`](../config/.envtemplate) file and rename it to `.env`
+   ```bash
+   cp ./config/.envtemplate ./config/.env
+   ```
+- Edit the newly created `.env` file, filling the required parameters (`TENANT_ID`, `ITEMS_FOLDER` and `FABRIC_CAPACITY_ID`)
+- Load environment variables
+   ```bash
+   source config/.env
+   ```
+- Login to Azure CLI with your user or SPN/MI, use one of the below approaches:
+   ```bash
+   # User Login
+   az login --use-device-code -t $TENANT_ID
+   ```
+   or
+   ```bash
+   # SPN Login
+   az login --service-principal -u $APP_CLIENT_ID -p $APP_CLIENT_SECRET --tenant $TENANT_ID --allow-no-subscription
+   ```
+   or
+   ```bash
+   # MI Login
+   az login --identity
+   ```
+- Refresh the Fabric token:
+   ```bash
+   ./src/refresh_api_token.sh
+   ```
 - In a `bash` shell run the following command. Replace `feat/feat_1` with your feature branch name and `dev` with your main development branch name. This commands creates a new feature branch locally from `dev` (or the specified branch). It then instructs git to disregard local modifications to any new or existing `item-config.json` file. The purpose of this is to prevent the `objectId`s in the `dev` branch from being replaced by the `objectId`s from the developer workspace during a commit. For more information see the [Source Control Mechanisms for Fabric Items](#source-control-mechanism-for-fabric-items) section.
 
-
-    ```sh
-    .\new_branch.sh feat/feat_1 dev
+    ```bash
+    ./new_branch.sh feat/feat_1 dev
     ```
 
 > Note: this approach will also work if no Fabric assets are present on your branch, but you will still need a folder for storing Fabric items definitions later.
 
+
 **Step 1. Create/Update Fabric workspace and create Fabric items from local branch**:
-
-- Update the `params.psd1` file as needed. If you need to generate a new token refer to the [Generating a Fabric Bearer Token](#generating-a-fabric-bearer-token) section. Load the values of the parameters file as follows:
-
-    ```pwsh
-    $config = Import-PowerShellDataFile .\src\params.psd1
-    ```
 
 - Run the [`update_from_git_to_ws.ps1`](./src/update_from_git_to_ws.ps1) script from the local repository folder. This step will create a new workspace and mirror what is on the repo to the workspace.
     > **CAUTION: Workspace items that are not in the local branch will be deleted from Fabric workspace.**
 
   - When running this for the first time on a new branch, utilize the `-resetConfig` setting it to `$true`. This ignores any existing `item-config.json` files and creates corresponding new objects in the workspace. This step is crucial as it prevents the script from failing due to a search for `objectId`s that are coming from the `dev` branch/workspace, which would not exist in the new Fabric workspace.
 
-    ```pwsh
-    .\src\update_from_git_to_ws.ps1 -baseUrl $config.baseUrl -fabricToken $config.fabricToken -workspaceName $config.workspaceName -capacityId $config.capacityId -folder $config.folder -resetConfig $true
+    ```bash
+    pwsh
+    ./src/update_from_git_to_ws.ps1 -workspaceName "<your-workspace-name>" -resetConfig $true
     ```
 
   - All other times you can omit the flag `-resetConfig` (it will default to `$false`).
 
     ```pwsh
-    .\src\update_from_git_to_ws.ps1 -baseUrl $config.baseUrl -fabricToken $config.fabricToken -workspaceName $config.workspaceName -capacityId $config.capacityId -folder $config.folder
+    ./src/update_from_git_to_ws.ps1 -workspaceName "<your-workspace-name>" 
     ```
 
 **Step 2. Develop in the Fabric workspace**:
@@ -140,12 +165,13 @@ The below picture illustrates these followed by a description of each of the num
     > **CAUTION: local branch items that are not in the workspace will be deleted from local branch.**
 
     ```pwsh
-    .\<local-file-path>\update_from_ws_to_git.ps1 -baseUrl $config.baseUrl -fabricToken $config.fabricToken -workspaceName $config.workspaceName -capacityId $config.capacityId -folder $config.folder
+    ./<local-file-path>/update_from_ws_to_git.ps1 -workspaceName "<your-workspace-name>" 
     ```
 
 **Step 4. Repeat until done**:
 
 - Iterate between step 1 to step 3 as needed.
+- If your token has expired, use the `refresh_api_token.sh` script to store a new token in the environment file.
 
 **Step 5. Push changes and create a PR**:
 
