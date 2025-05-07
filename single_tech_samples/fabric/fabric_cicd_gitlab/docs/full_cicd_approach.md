@@ -195,7 +195,7 @@ The below picture illustrates these followed by a description of each of the num
 ## Common errors
 
 - `Error reponse: Response status code does not indicate success: 400 (Bad Request)`
-  - Likely one of the Fabric items you are trying to update has a defintion containing errors. We advise maintaining identifiers such as workspaceIds and LakehouseIds as **parameters** for Notebooks and Data Pipelines. Failure to do this may result in the script being unable to push your item definitions if they reference item ids that have been removed.
+  - Likely one of the Fabric items you are trying to update has a definition containing errors. We advise maintaining identifiers such as workspaceIds and LakehouseIds as **parameters** for Notebooks and Data Pipelines. Failure to do this may result in the script being unable to push your item definitions if they reference item ids that have been removed.
 - `Error reponse: Response status code does not indicate success: 401 (Unauthorized)`
   - Likely your user token has expired. Update it and source your params file and then try again.
   - If using Azure DevOps: if you are getting this error when running devops pipelines after refreshing the token variable, make sure you have toggled the secret variable type.
