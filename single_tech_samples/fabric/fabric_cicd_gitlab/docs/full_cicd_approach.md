@@ -165,7 +165,7 @@ The below picture illustrates these followed by a description of each of the num
     > **CAUTION: local branch items that are not in the workspace will be deleted from local branch.**
 
     ```pwsh
-    ./<local-file-path>/update_from_ws_to_git.ps1 -workspaceName "<your-workspace-name>" 
+    ../src/update_from_ws_to_git.ps1 -workspaceName "<your-workspace-name>" 
     ```
 
 **Step 4. Repeat until done**:
