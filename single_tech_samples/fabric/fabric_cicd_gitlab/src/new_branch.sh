@@ -6,4 +6,4 @@ git update-index --assume-unchanged .gitignore
 echo  >> .gitignore
 echo "item-config.json" >> .gitignore
 git update-index --assume-unchanged $(git ls-files "**/item-config.json")
-git update-index --assume-unchanged ./src/params.psd1
+git update-index --assume-unchanged ./config/.env

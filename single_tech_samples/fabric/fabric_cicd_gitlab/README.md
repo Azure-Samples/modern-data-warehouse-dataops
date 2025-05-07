@@ -52,7 +52,7 @@ Service Principal and Managed Identity Authentication is currently supported by 
     > copy(PowerBIAccessToken)
     ```
 
-    This will copy the token to your clipboard. You can then paste its value in the `params.psd1` file.
+    This will copy the token to your clipboard. You can then paste its value in the `.env` file.
 
 ## Roadmap
 
