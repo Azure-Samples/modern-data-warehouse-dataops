@@ -23,7 +23,7 @@ If you are interested in this approach, follow the [instructions for the simplif
 ### Comprehensive Approach
 The comprehensive approach is suited for scenarios where each developer is working on different workspaces, and it is acceptable to have a one-to-one mapping between feature branches and Fabric workspaces.
 
-If you are interested in this approach, follow the [instruction for the comprehensive approach](./docs/full_cicd_approach.md).
+If you are interested in this approach, follow the [instructions for the comprehensive approach](./docs/full_cicd_approach.md).
 
 ## Known limitations
 
