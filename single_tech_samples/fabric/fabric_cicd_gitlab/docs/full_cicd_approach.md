@@ -20,7 +20,7 @@ This approach assumes that the developer will operate by following the recommend
 
 This sample maintains a record of changes to Fabric items in source control to prevent the need for constant deletion and recreation of modified items. It does this by tracking the *Object Id*s (the GUIDs of the items in the Fabric workspace, as per the Fabric REST APIs) in an `item-config.json` configuration file.
 
-All Fabric items come with a minimal definition (at the time of writing comprising of Name, Type and Description). Such minimal defintion is stored in the `item-metadata.json` file.
+All Fabric items come with a minimal definition (at the time of writing comprising of Name, Type and Description). Such minimal definition is stored in the `item-metadata.json` file.
 
 Certain types of items in Fabric can have an [item definition](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/item-definition-overview). You can get this definition by using the [`getDefinition`](https://learn.microsoft.com/rest/api/fabric/core/items/get-item-definition) API. The result of this API call is saved in a file called `item-definition.json`.
 
@@ -194,15 +194,15 @@ The below picture illustrates these followed by a description of each of the num
 
 ## Common errors
 
-- `Error reponse: Response status code does not indicate success: 400 (Bad Request)`
+- `Error response: Response status code does not indicate success: 400 (Bad Request)`
   - Likely one of the Fabric items you are trying to update has a defintion containing errors. We advise maintaining identifiers such as workspaceIds and LakehouseIds as **parameters** for Notebooks and Data Pipelines. Failure to do this may result in the script being unable to push your item definitions if they reference item ids that have been removed.
-- `Error reponse: Response status code does not indicate success: 401 (Unauthorized)`
+- `Error response: Response status code does not indicate success: 401 (Unauthorized)`
   - Likely your user token has expired. Update it and source your params file and then try again.
   - If using Azure DevOps: if you are getting this error when running devops pipelines after refreshing the token variable, make sure you have toggled the secret variable type.
-- `Error reponse: Response status code does not indicate success: 403 (Forbidden)`
+- `Error response: Response status code does not indicate success: 403 (Forbidden)`
   - Likely one of the Fabric items you are trying to update has a MIP label that prevents you from updating its definition.
 
-- `Error reponse: Response status code does not indicate success: 404 (Not Found)`
+- `Error response: Response status code does not indicate success: 404 (Not Found)`
   - Likely the capacity you specified cannot be used. Make sure that your Fabric capacity is available and running, it might have been paused, in this case you can resume it and re-run the script.
-- `Error reponse: A parameter cannot be found that matches parameter name 'ResponseHeadersVariable'`
+- `Error response: A parameter cannot be found that matches parameter name 'ResponseHeadersVariable'`
   - Likely you need to update your Powershell version to 7+.
