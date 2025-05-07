@@ -60,7 +60,7 @@ This sample uses PowerShell scripts to automate the CI/CD process. Below, you’
 |--------|-------------|
 |[.env](../config/.envtemplate)|Environment variables file - used to store the parameter values required by the scripts. Update the values as needed.|
 |[update_from_git_to_ws.ps1](../src/update_from_git_to_ws.ps1)|Script to create a Fabric workspace (if non existing) and sync assets from source control (local git branch) to the workspace.|
-|[update_from_ws_to_git.ps1](../src/update_from_ws_to_git.ps1)|Script to update the local repository from the item defintions in the Fabric workspace.|
+|[update_from_ws_to_git.ps1](../src/update_from_ws_to_git.ps1)|Script to update the local repository from the item definitions in the Fabric workspace.|
 
 > Note: to avoid committing secrets to your remote branch, make sure to ignore changes to the local version of your `.env` file.
 
