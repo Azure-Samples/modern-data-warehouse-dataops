@@ -1,10 +1,6 @@
 param
 (
-    # [parameter(Mandatory = $false)] [String] $baseUrl,
-    # [parameter(Mandatory = $false)] [String] $fabricToken,
     [parameter(Mandatory = $true)] [String] $workspaceName,      # The name of the workspace,
-    # [parameter(Mandatory = $false)] [String] $capacityId,         # The capacity id of the workspace,
-    # [parameter(Mandatory = $false)] [String] $folder,             # The folder where the workspace items are located on the branch, should be: Join-Path $(Build.SourcesDirectory) $(directory_name)
     [parameter(Mandatory = $false)] [bool] $resetConfig=$false   # Used when the developer wants to reset the config files in the workspace (typically when a new feature branch is created)
 )
 ## FROM GIT TO WORKSPACE

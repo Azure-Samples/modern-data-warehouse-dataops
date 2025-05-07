@@ -1,10 +1,6 @@
 param
 (
-    #[parameter(Mandatory = $true)] [String] $baseUrl,
-    #[parameter(Mandatory = $true)] [String] $fabricToken,
     [parameter(Mandatory = $true)] [String] $workspaceName      # The name of the workspace,
-    #[parameter(Mandatory = $false)] [String] $capacityId,         # The capacity id of the workspace,
-    #[parameter(Mandatory = $true)] [String] $folder              # The folder where the workspace items are located on the branch, should be: Join-Path $(Build.SourcesDirectory) $(directory_name)
 )
 ## FROM WORKSPACE TO GIT
 # Used when the developers have finished working on their workspace and want to sync back to their branch.
