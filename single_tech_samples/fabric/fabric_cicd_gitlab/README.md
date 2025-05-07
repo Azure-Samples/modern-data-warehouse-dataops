@@ -6,7 +6,7 @@ The code in this sample showcases ways to mimic the Microsoft Fabric [Git Integr
 This sample is recommended if:
 
 - Your organization adopts multi-tenancy in their CI/CD processes where different environments (such as Development, Staging, and Production) are on different Microsoft Entra IDs.
-- Your organization's preferred git provider is not yet supported by Microsoft Fabric (e.g. GitLab, Bitbucket). For more details, review the list of [supported Git providers](https://learn.microsoft.com/fabric/cicd/git-integration/intro-to-git-integration?tabs=azure-devops).
+- Your organization's preferred git provider is not yet supported by Microsoft Fabric (e.g. GitLab, Bitbucket). For more details, review the official and up-to-date list of [supported Git providers in Microsoft Fabric](https://learn.microsoft.com/fabric/cicd/git-integration/intro-to-git-integration?tabs=azure-devops).
 
 If none of the scenarios above match your current situation, consider using the [Fabric CI/CD sample for Azure DevOps](../fabric_ci_cd/README.md).
 
