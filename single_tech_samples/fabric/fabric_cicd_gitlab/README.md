@@ -18,7 +18,7 @@ This sample showcases two approaches:
 ### Simplified Approach
 The simplified approach is suited for scenarios where multiple developers might be working on the same Fabric workspace and need to selectively download and store their work in source control, one Fabric item at a time.
 
-If you are interested in this approach, follow the [instruction for the simplified approach](./docs/simplified_approach.md).
+If you are interested in this approach, follow the [instructions for the simplified approach](./docs/simplified_approach.md).
 
 ### Comprehensive Approach
 The comprehensive approach is suited for scenarios where each developer is working on different workspaces, and it is acceptable to have a one-to-one mapping between feature branches and Fabric workspaces.
