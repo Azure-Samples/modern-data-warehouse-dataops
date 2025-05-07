@@ -102,3 +102,5 @@ The simplified approach has only been tested with items of type: DataPipeline, L
 When a Lakehouse or Environment item is synced only a `.platform` file is produced. This deviates from the current Git integration behavior:
 - for Lakehouse items, Fabric git integration generates also a `shortcuts.metadata.json` file, containing the list of shortcuts that point to other Lakehouse items (either in the same or other workspaces of the same tenant).
 - for Environment items, Fabric git integration generates also a `Settings` folder that contains the Spark pool `yml` settings definition file.
+
+These omissions are an intentional simplification in this approach to streamline the process and focus on core functionality. Users requiring full parity with Fabric Git integration behavior may need to extend the scripts accordingly.
