@@ -14,7 +14,7 @@ build_ddotransform_wheel() {
     else
         mkdir -p dist
         make dist > /dev/null 2>&1
-        log "WHL package build completed", "success"
+        log "WHL package build completed" "success"
     fi
     
     popd > /dev/null
@@ -52,6 +52,10 @@ remove_dependencies() {
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     pushd .. > /dev/null
     . ./scripts/common.sh
+    log "Verifying prerequisites..." "info"
+    command -v make >/dev/null 2>&1 || { echo >&2 "I require make but it's not installed. See https://www.gnu.org/software/make/. Aborting."; exit 1; }
+    command -v zip >/dev/null 2>&1 || { echo >&2 "I require zip but it's not installed. See https://www.info-zip.org/. Aborting."; exit 1; }
+    
     log "Building dependencies..." "info"
     build_dependencies
     popd > /dev/null
