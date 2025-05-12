@@ -1,8 +1,6 @@
 #!/bin/bash
 
 . ./scripts/common.sh
-# Source enviroment variables
-source .devcontainer/.env
 
 #Check variables are set for login.
 if [ -z "${TENANT_ID:-}" ]
@@ -25,9 +23,14 @@ then
     log "To run this script the AZDO_PROJECT is required. Ensure your .devcontainer/.env file contains the required variables." "error"
     exit 1
 fi
-if [ -z "$GITHUB_REPO" ]
+if [ -z "$GITHUB_REPO_URL" ]
 then 
-    log "Please specify a github repo using the GITHUB_REPO environment variable in this form '<my_github_handle>/<repo>'. (ei. 'devlace/mdw-dataops-import')" "danger"
+    log "Please specify a github repo using the GITHUB_REPO_URL environment variable in this form 'https://github.com/<my_github_handle>/<repo>'. (ei. 'https://github.com/devlace/mdw-dataops-import')" "danger"
+    exit 1
+fi
+if [ -z "$PROJECT" ]
+then 
+    log "Please specify a project name prefix" "danger"
     exit 1
 fi
 if [ -z "$GITHUB_PAT_TOKEN" ]
@@ -98,7 +101,7 @@ fi
 #Prompt login.
 #if more than one subcription, choose the one that will be used to deploy the resources.
 az config set core.login_experience_v2=off
-az login --tenant $TENANT_ID
+az login --tenant $TENANT_ID --output none
 az config set core.login_experience_v2=on
 az account set --subscription $AZURE_SUBSCRIPTION_ID --output none
 

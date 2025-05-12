@@ -1,5 +1,60 @@
 #!/bin/bash
 
+# Source enviroment variables
+. .devcontainer/.env
+
+get_env_names() {
+    env_deploy=$1
+
+    case ${env_deploy} in
+    1)
+        log "Deploying Dev Environment only..." "info"
+        env_names="dev"
+        ;;
+    2)    
+        log "Deploying Dev and Stage Environments..." "info"
+        env_names="dev stg"
+        ;;
+    3) 
+        log "Full Deploy: Dev, Stage and Prod Environments..." "info"
+        env_names="dev stg prod"
+        ;;
+    *)
+        log "Invalid choice. Exiting..." "error"
+        exit
+        ;;
+    esac
+}
+
+set_deployment_environment () {
+    env_name=$1
+    if [ -z "${env_name}" ]; then
+        log "Environment name is not set. Exiting." "error"
+        exit 1
+    fi
+    appName="${PROJECT}-api-${env_name}-${DEPLOYMENT_ID}"
+    api_base_url="https://$appName.azurewebsites.net"
+    cat_stg_account_name="${PROJECT}catalog${env_name}${DEPLOYMENT_ID}"
+    catalog_ext_location_name="${PROJECT}-catalog-${DEPLOYMENT_ID}-ext-location-${env_name}"
+    catalog_name="${PROJECT}-${DEPLOYMENT_ID}-catalog-${env_name}"
+    data_ext_location_name="${PROJECT}-data-${DEPLOYMENT_ID}-ext-location-${env_name}"
+    data_stg_account_name="${PROJECT}st${env_name}${DEPLOYMENT_ID}"
+    databricks_workspace_name="${PROJECT}-dbw-${env_name}-${DEPLOYMENT_ID}"
+    kv_name="${PROJECT}-kv-${env_name}-$DEPLOYMENT_ID"
+    mng_resource_group_name="${PROJECT}-${DEPLOYMENT_ID}-dbw-${env_name}-rg"
+    resource_group_name="${PROJECT}-${DEPLOYMENT_ID}-${env_name}-rg"
+    sp_adf_name="${PROJECT}-adf-${env_name}-${DEPLOYMENT_ID}-sp"
+    sp_stor_name="${PROJECT}-stor-${env_name}-${DEPLOYMENT_ID}-sp"
+    stg_credential_name="${PROJECT}-${DEPLOYMENT_ID}-stg-credential-${env_name}"
+    vargroup_name="${PROJECT}-release-$env_name"
+    vargroup_secrets_name="${PROJECT}-secrets-$env_name"
+    if [ "$env_name" == "dev" ]; then
+        databricks_release_folder="/releases/${env_name}"
+    else  
+        databricks_release_folder="/releases/setup_release"
+    fi
+}
+
 # Helper functions
 random_str() {
     local length=$1
@@ -10,6 +65,9 @@ random_str() {
 print_style () {
     case "$2" in
         "info")
+            COLOR="96m"
+            ;;
+        "debug")
             COLOR="96m"
             ;;
         "success")
@@ -59,6 +117,18 @@ wait_for_process() {
     sleep "$seconds"
 }
 
+get_keyvault_value() {
+    # This function retrieves a secret from the Azure Key Vault
+    local secret_name=$1
+    local kv_name=$2
+    local secret_value=$(az keyvault secret show --name "${secret_name}" --vault-name "${kv_name}" --query value -o tsv)
+    if [ -z "${secret_value}" ]; then
+        log "Secret ${secret_name} not found in Key Vault ${kv_name}. Exiting." "error"
+        exit 1
+    fi
+    echo "${secret_value}"
+}
+
 delete_azdo_service_connection_principal(){
     # This function deletes the Service Principal associated with the provided AzDO Service Connection
     local sc_id=$1
@@ -71,50 +141,4 @@ delete_azdo_service_connection_principal(){
     az ad app delete --id "$spnAppObjId" &&
         log "Deleted Service Principal: $spnAppObjId" "info" || 
         log "Failed to delete Service Principal: $spnAppObjId" "info"
-}
-
-deploy_infrastructure_environment() {
-  ##function to allow user deploy enviromnents
-    ## 1) Only Dev
-    ## 2) Dev and Stage
-    ## 3)  Dev, Stage and Prod
-  ##Default  is option 3.
-  ENV_DEPLOY=${1:-3}
-  project=${2:-mdwdops}
-    case $ENV_DEPLOY in
-    1)
-        log "Deploying Dev Environment only..." "info"
-        env_names="dev"
-        ;;
-    2)    
-        log "Deploying Dev and Stage Environments..." "info"
-        env_names="dev stg"
-        ;;
-    3) 
-        log "Full Deploy: Dev, Stage and Prod Environments..." "info"
-        env_names="dev stg prod"
-        ;;
-    *)
-        log "Invalid choice. Exiting..." "error"
-        exit
-        ;;
-    esac
-
-    # Loop through the environments and deploy
-    for env_name in $env_names; do
-        echo "Currently deploying to the environment: $env_name"
-        export PROJECT=$project
-        export DEPLOYMENT_ID=$DEPLOYMENT_ID
-        export ENV_NAME=$env_name
-        export AZURE_LOCATION=$AZURE_LOCATION
-        export AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID
-        export AZURESQL_SERVER_PASSWORD=$AZURESQL_SERVER_PASSWORD
-        bash -c "./scripts/deploy_infrastructure.sh" || {
-            log "Deployment failed for $env_name" "error"
-            exit 1
-        }
-         export ENV_DEPLOY=$ENV_DEPLOY
-
-    done
-
 }

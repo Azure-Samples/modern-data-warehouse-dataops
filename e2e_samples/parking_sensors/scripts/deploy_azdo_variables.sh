@@ -14,117 +14,116 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-###################
-# REQUIRED ENV VARIABLES:
-#
-# PROJECT
-# ENV_NAME
-# AZURE_SUBSCRIPTION_ID
-# AZURE_LOCATION
-# RESOURCE_GROUP_NAME
-# KV_URL
-# API_BASE_URL
-# KV_NAME
-# DATABRICKS_HOST
-# DATABRICKS_TOKEN
-# DATABRICKS_WORKSPACE_RESOURCE_ID
-# DATABRICKS_CLUSTER_ID
-# SQL_SERVER_NAME
-# SQL_SERVER_USERNAME
-# SQL_SERVER_PASSWORD
-# SQL_DW_DATABASE_NAME
-# AZURE_STORAGE_ACCOUNT
-# AZURE_STORAGE_KEY
-# DATAFACTORY_ID
-# DATAFACTORY_NAME
-# SP_ADF_ID
-# SP_ADF_PASS
-# SP_ADF_TENANT
+deploy_azdo_variables() {
+    log "Deploying Azure DevOps Variables" "info"
+    databricks_host=$(get_keyvault_value "databricksDomain" "${kv_name}")
+    databricks_kv_token=$(get_keyvault_value "databricksToken" "${kv_name}")
+    databricks_workspace_resource_id=$(get_keyvault_value "databricksWorkspaceResourceId" "${kv_name}")
+    kv_url=$(get_keyvault_value "kvUrl" "${kv_name}")
+    databricksClusterId=$(get_keyvault_value "databricksClusterId" "${kv_name}")
+    sql_server_name=$(get_keyvault_value "sqlsrvrName" "${kv_name}")
+    sql_server_username=$(get_keyvault_value "sqlsrvUsername" "${kv_name}")
+    sql_server_password=$(get_keyvault_value "sqlsrvrPassword" "${kv_name}")
+    sql_dw_database_name=$(get_keyvault_value "sqlDwDatabaseName" "${kv_name}")
+    azure_storage_account=$(get_keyvault_value "datalakeAccountName" "${kv_name}")
+    azure_storage_key=$(get_keyvault_value "datalakeKey" "${kv_name}")
+    datafactory_id=$(get_keyvault_value "adfId" "${kv_name}")
+    datafactory_name=$(get_keyvault_value "adfName" "${kv_name}")
+    sp_adf_id=$(get_keyvault_value "spAdfId" "${kv_name}")
+    sp_adf_pass=$(get_keyvault_value "spAdfPass" "${kv_name}")
+    sp_adf_tenant=$(get_keyvault_value "spAdfTenantId" "${kv_name}")
 
-. ./scripts/common.sh
+    # Const
+    if [ "${env_name}" == "dev" ]
+    then 
+        # In DEV, we fix the path to "dev" folder  to simplify as this is manual publish DEV ADF.
+        databricksLibPath='/releases/dev/libs'
+        databricksNotebookPath='/releases/dev/notebooks'
+    else
+        databricksLibPath='/releases/$(Build.BuildId)/libs'
+        databricksNotebookPath='/releases/$(Build.BuildId)/notebooks'
+    fi
 
-# Const
-if [ "$ENV_NAME" == "dev" ]
-then 
-    # In DEV, we fix the path to "dev" folder  to simplify as this is manual publish DEV ADF.
-    databricksLibPath='/releases/dev/libs'
-    databricksNotebookPath='/releases/dev/notebooks'
+    # Create vargroup
+    if vargroup_id=$(az pipelines variable-group list --output json | jq -r -e --arg vg_name "$vargroup_name" '.[] | select(.name==$vg_name) | .id'); then
+        log "Variable group: $vargroup_name already exists. Deleting..." "info"
+        az pipelines variable-group delete --id "$vargroup_id" -y > /dev/null
+    fi
+    log "Creating variable group: $vargroup_name" "info"
+    az pipelines variable-group create \
+        --name "$vargroup_name" \
+        --authorize "true" \
+        --variables \
+            azureLocation="$AZURE_LOCATION" \
+            rgName="${resource_group_name}" \
+            adfName="${datafactory_name}" \
+            databricksLibPath="$databricksLibPath" \
+            databricksNotebookPath="$databricksNotebookPath" \
+            databricksClusterId="$databricksClusterId" \
+            apiBaseUrl="${api_base_url}" \
+        --output none
+
+    # Create vargroup - for secrets
+    if vargroup_secrets_id=$(az pipelines variable-group list --output json | jq -r -e --arg vg_name "$vargroup_secrets_name" '.[] | select(.name==$vg_name) | .id'); then
+        log "Variable group: $vargroup_secrets_name already exists. Deleting..." "info"
+        az pipelines variable-group delete --id "${vargroup_secrets_id}" -y > /dev/null
+    fi
+    log "Creating variable group: $vargroup_secrets_name" "info"
+    vargroup_secrets_id=$(az pipelines variable-group create \
+        --name "$vargroup_secrets_name" \
+        --authorize "true" \
+        --output tsv \
+        --variables foo="bar" \
+        --query "id")  # Needs at least one secret
+
+    az pipelines variable-group variable create --group-id "${vargroup_secrets_id}" \
+        --secret "true" --name "subscriptionId" --value "${AZURE_SUBSCRIPTION_ID}"  --output none
+    az pipelines variable-group variable create --group-id "${vargroup_secrets_id}" \
+        --secret "true" --name "kvUrl" --value "${kv_url}"  --output none
+    # sql server
+    az pipelines variable-group variable create --group-id "${vargroup_secrets_id}" \
+        --secret "true" --name "sqlsrvrName" --value "${sql_server_name}"  --output none
+    az pipelines variable-group variable create --group-id "${vargroup_secrets_id}" \
+        --secret "true" --name "sqlsrvrUsername" --value "${sql_server_username}"  --output none
+    az pipelines variable-group variable create --group-id "${vargroup_secrets_id}" \
+        --secret "true" --name "sqlsrvrPassword" --value "${sql_server_password}"  --output none
+    az pipelines variable-group variable create --group-id "${vargroup_secrets_id}" \
+        --secret "true" --name "sqlDwDatabaseName" --value "${sql_dw_database_name}"  --output none
+    # Databricks
+    az pipelines variable-group variable create --group-id "${vargroup_secrets_id}" \
+        --secret "true" --name "databricksDomain" --value "${databricks_host}"  --output none
+    az pipelines variable-group variable create --group-id "${vargroup_secrets_id}" \
+        --secret "true" --name "databricksToken" --value "${databricks_kv_token}"  --output none
+    az pipelines variable-group variable create --group-id "${vargroup_secrets_id}" \
+        --secret "true" --name "databricksWorkspaceResourceId" \
+        --value "${databricks_workspace_resource_id}"  --output none
+    # Datalake
+    az pipelines variable-group variable create --group-id "${vargroup_secrets_id}" \
+        --secret "true" --name "datalakeAccountName" --value "${azure_storage_account}"  --output none
+    az pipelines variable-group variable create --group-id "${vargroup_secrets_id}" \
+        --secret "true" --name "datalakeKey" --value "${azure_storage_key}"  --output none
+    # Adf
+    az pipelines variable-group variable create --group-id "${vargroup_secrets_id}" \
+        --secret "true" --name "spAdfId" --value "${sp_adf_id}"  --output none
+    az pipelines variable-group variable create --group-id "${vargroup_secrets_id}" \
+        --secret "true" --name "spAdfPass" --value "${sp_adf_pass}"  --output none
+    az pipelines variable-group variable create --group-id "${vargroup_secrets_id}" \
+        --secret "true" --name "spAdfTenantId" --value "${sp_adf_tenant}"  --output none
+    az pipelines variable-group variable create --group-id "${vargroup_secrets_id}" \
+        --secret "true" --name "adfResourceId" --value "${datafactory_id}"  --output none
+        
+    # Delete dummy vars
+    az pipelines variable-group variable delete --group-id "${vargroup_secrets_id}" --name "foo" -y > /dev/null
+}
+
+# if this is run from the scripts directory, get to root folder and run the build_dependencies function
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    pushd .. > /dev/null
+    . ./scripts/common.sh
+    . ./scripts/init_environment.sh
+    set_deployment_environment "dev"
+    deploy_azdo_variables
+    popd > /dev/null
 else
-    databricksLibPath='/releases/$(Build.BuildId)/libs'
-    databricksNotebookPath='/releases/$(Build.BuildId)/notebooks'
+    . ./scripts/common.sh
 fi
-
-databricksClusterId=$(az keyvault secret show --name "databricksClusterId" --vault-name "$KV_NAME" --query "value" --output tsv)
-
-# Create vargroup
-vargroup_name="${PROJECT}-release-$ENV_NAME"
-if vargroup_id=$(az pipelines variable-group list --output json | jq -r -e --arg vg_name "$vargroup_name" '.[] | select(.name==$vg_name) | .id'); then
-    log "Variable group: $vargroup_name already exists. Deleting..." "info"
-    az pipelines variable-group delete --id "$vargroup_id" -y  --output none
-fi
-log "Creating variable group: $vargroup_name" "info"
-az pipelines variable-group create \
-    --name "$vargroup_name" \
-    --authorize "true" \
-    --variables \
-        azureLocation="$AZURE_LOCATION" \
-        rgName="$RESOURCE_GROUP_NAME" \
-        adfName="$DATAFACTORY_NAME" \
-        databricksLibPath="$databricksLibPath" \
-        databricksNotebookPath="$databricksNotebookPath" \
-        databricksClusterId="$databricksClusterId" \
-        apiBaseUrl="$API_BASE_URL" \
-    --output none
-
-# Create vargroup - for secrets
-vargroup_secrets_name="${PROJECT}-secrets-$ENV_NAME"
-if vargroup_secrets_id=$(az pipelines variable-group list --output json | jq -r -e --arg vg_name "$vargroup_secrets_name" '.[] | select(.name==$vg_name) | .id'); then
-    log "Variable group: $vargroup_secrets_name already exists. Deleting..." "info"
-    az pipelines variable-group delete --id "$vargroup_secrets_id" -y --output none
-fi
-log "Creating variable group: $vargroup_secrets_name" "info"
-vargroup_secrets_id=$(az pipelines variable-group create \
-    --name "$vargroup_secrets_name" \
-    --authorize "true" \
-    --output tsv \
-    --variables foo="bar" \
-    --query "id")  # Needs at least one secret
-
-az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "subscriptionId" --value "$AZURE_SUBSCRIPTION_ID"  --output none
-az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "kvUrl" --value "$KV_URL"  --output none
-# sql server
-az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "sqlsrvrName" --value "$SQL_SERVER_NAME"  --output none
-az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "sqlsrvrUsername" --value "$SQL_SERVER_USERNAME"  --output none
-az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "sqlsrvrPassword" --value "$SQL_SERVER_PASSWORD"  --output none
-az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "sqlDwDatabaseName" --value "$SQL_DW_DATABASE_NAME"  --output none
-# Databricks
-az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "databricksDomain" --value "$DATABRICKS_HOST"  --output none
-az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "databricksToken" --value "$DATABRICKS_TOKEN"  --output none
-az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "databricksWorkspaceResourceId" \
-    --value "$DATABRICKS_WORKSPACE_RESOURCE_ID"  --output none
-# Datalake
-az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "datalakeAccountName" --value "$AZURE_STORAGE_ACCOUNT"  --output none
-az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "datalakeKey" --value "$AZURE_STORAGE_KEY"  --output none
-# Adf
-az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "spAdfId" --value "$SP_ADF_ID"  --output none
-az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "spAdfPass" --value "$SP_ADF_PASS"  --output none
-az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "spAdfTenantId" --value "$SP_ADF_TENANT"  --output none
-az pipelines variable-group variable create --group-id "$vargroup_secrets_id" \
-    --secret "true" --name "adfResourceId" --value "$DATAFACTORY_ID"  --output none
-    
-# Delete dummy vars
-az pipelines variable-group variable delete --group-id "$vargroup_secrets_id" --name "foo" -y  --output none
