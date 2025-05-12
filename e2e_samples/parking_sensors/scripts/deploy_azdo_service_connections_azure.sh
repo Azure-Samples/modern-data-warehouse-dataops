@@ -58,7 +58,7 @@ delete_existing_service_connection() {
             log "Failed to delete service connection: $sc_id" "danger"
             exit 1
         fi
-        log "Successfully deleted service connection: $sc_id", "success"
+        log "Successfully deleted service connection: $sc_id" "success"
     fi
 }
 
