@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# Globals and constants
-export TIMESTAMP=$(date +%s)
-export RED='\033[0;31m'
-export ORANGE='\033[0;33m'
-export NC='\033[0m'
-
 # Helper functions
 random_str() {
     local length=$1
@@ -20,6 +14,9 @@ print_style () {
             ;;
         "success")
             COLOR="92m"
+            ;;
+        "error")
+            COLOR="91m"
             ;;
         "warning")
             COLOR="93m"
@@ -55,98 +52,25 @@ log() {
     fi
 }
 
-delete_azdo_pipeline_if_exists() {
-    declare full_pipeline_name=$1
-    
-    ## when returning a pipeline that does exist, delete.
-    
-    pipeline_output=$(az pipelines list --query "[?name=='$full_pipeline_name']" --output json)
-    pipeline_id=$(echo "$pipeline_output" | jq -r '.[0].id')
-    
-    if [[ -z "$pipeline_id" || "$pipeline_id" == "null" ]]; then
-        log "No Deployment pipeline with name $full_pipeline_name found."
-    else
-        az pipelines delete --id "$pipeline_id" --yes 1>/dev/null
-        log "Deleted existing pipeline: $full_pipeline_name (Pipeline ID: $pipeline_id)"
-    fi
-}
-
-create_azdo_pipeline ()
-{
-    declare pipeline_name=$1
-    declare pipeline_description=$2
-    full_pipeline_name=$PROJECT-$pipeline_name
-
-    delete_azdo_pipeline_if_exists "$full_pipeline_name"
-    log "Creating deployment pipeline: $full_pipeline_name"
-
-    pipeline_id=$(az pipelines create \
-        --name "$full_pipeline_name" \
-        --description "$pipeline_description" \
-        --repository "$GITHUB_REPO_URL" \
-        --branch "$AZDO_PIPELINES_BRANCH_NAME" \
-        --yaml-path "/e2e_samples/parking_sensors/devops/azure-pipelines-$pipeline_name.yml" \
-        --service-connection "$github_sc_id" \
-        --skip-first-run true \
-        --output json | jq -r '.id')
-    echo "$pipeline_id"
-}
-
-databricks_cluster_exists () {
-    declare cluster_name="$1"
-    declare cluster=$(databricks clusters list | tr -s " " | cut -d" " -f2 | grep ^${cluster_name}$)
-    if [[ -n $cluster ]]; then
-        return 0; # cluster exists
-    else
-        return 1; # cluster does not exists
-    fi
-}
-
-
-create_adf_linked_service () {
-    declare name=$1
-    log "Creating ADF LinkedService: $name"
-    adfLsUrl="${adfFactoryBaseUrl}/linkedservices/${name}?api-version=${apiVersion}"
-    az rest --method put --uri "$adfLsUrl" --body @"${ADF_DIR}"/linkedService/"${name}".json -o none
-}
-create_adf_dataset () {
-    declare name=$1
-    log "Creating ADF Dataset: $name"
-    adfDsUrl="${adfFactoryBaseUrl}/datasets/${name}?api-version=${apiVersion}"
-    az rest --method put --uri "$adfDsUrl" --body @"${ADF_DIR}"/dataset/"${name}".json -o none
-}
-create_adf_pipeline () {
-    declare name=$1
-    log "Creating ADF Pipeline: $name"
-    adfPUrl="${adfFactoryBaseUrl}/pipelines/${name}?api-version=${apiVersion}"
-    az rest --method put --uri "$adfPUrl" --body @"${ADF_DIR}"/pipeline/"${name}".json -o none
-}
-create_adf_trigger () {
-    declare name=$1
-    log "Creating ADF Trigger: $name"
-    adfTUrl="${adfFactoryBaseUrl}/triggers/${name}?api-version=${apiVersion}"
-    az rest --method put --uri "$adfTUrl" --body @"${ADF_DIR}"/trigger/"${name}".json -o none
-}
-
 # Function to give time for the portal to process the cleanup
 wait_for_process() {
     local seconds=${1:-15}
-    log "Giving the portal $seconds seconds to process the information..."
+    log "Giving the portal $seconds seconds to process the information..." "info"
     sleep "$seconds"
 }
 
 delete_azdo_service_connection_principal(){
     # This function deletes the Service Principal associated with the provided AzDO Service Connection
     local sc_id=$1
-    local spnAppObjId=$(az devops service-endpoint show --id "$sc_id" --org "$AZDO_ORGANIZATION_URL" -p "$AZDO_PROJECT" --query "data.appObjectId" -o tsv)
+    local spnAppObjId=$(az devops service-endpoint show --id "$sc_id" --org "$AZDO_ORGANIZATION_URL" -p "$AZDO_PROJECT" --query "data.appObjectId" --output tsv)
     if [ -z "$spnAppObjId" ]; then
-        log "Service Principal Object ID not found for Service Connection ID: $sc_id. Skipping Service Principal cleanup."
+        log "Service Principal Object ID not found for Service Connection ID: $sc_id. Skipping Service Principal cleanup." "info"
         return
     fi
-    log "Attempting to delete Service Principal."
+    log "Attempting to delete Service Principal." "info"
     az ad app delete --id "$spnAppObjId" &&
-    log "Deleted Service Principal: $spnAppObjId" || 
-    log "Failed to delete Service Principal: $spnAppObjId"
+        log "Deleted Service Principal: $spnAppObjId" "info" || 
+        log "Failed to delete Service Principal: $spnAppObjId" "info"
 }
 
 deploy_infrastructure_environment() {
@@ -159,19 +83,19 @@ deploy_infrastructure_environment() {
   project=${2:-mdwdops}
     case $ENV_DEPLOY in
     1)
-        log "Deploying Dev Environment only..."
+        log "Deploying Dev Environment only..." "info"
         env_names="dev"
         ;;
     2)    
-        log "Deploying Dev and Stage Environments..."    
+        log "Deploying Dev and Stage Environments..." "info"
         env_names="dev stg"
         ;;
     3) 
-        log "Full Deploy: Dev, Stage and Prod Environments..."
+        log "Full Deploy: Dev, Stage and Prod Environments..." "info"
         env_names="dev stg prod"
         ;;
     *)
-        log "Invalid choice. Exiting..." "warning"
+        log "Invalid choice. Exiting..." "error"
         exit
         ;;
     esac
@@ -186,7 +110,7 @@ deploy_infrastructure_environment() {
         export AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID
         export AZURESQL_SERVER_PASSWORD=$AZURESQL_SERVER_PASSWORD
         bash -c "./scripts/deploy_infrastructure.sh" || {
-            echo "Deployment failed for $env_name"
+            log "Deployment failed for $env_name" "error"
             exit 1
         }
          export ENV_DEPLOY=$ENV_DEPLOY

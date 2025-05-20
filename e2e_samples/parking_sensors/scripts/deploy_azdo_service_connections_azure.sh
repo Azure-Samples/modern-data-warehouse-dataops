@@ -38,7 +38,7 @@ az_sub_name=$(echo "$az_sub" | jq -r '.name')
 
 
 # Check if the service connection already exists and delete it if found
-sc_id=$(az devops service-endpoint list --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" --query "[?name=='$az_service_connection_name'].id" -o tsv)
+sc_id=$(az devops service-endpoint list --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" --query "[?name=='$az_service_connection_name'].id" --output tsv)
 if [ -n "$sc_id" ]; then
     log "Service connection: $az_service_connection_name already exists. Deleting service connection id $sc_id ..." "info"
     # Delete AzDO service connection SPN if exists
@@ -54,7 +54,7 @@ if [ -n "$sc_id" ]; then
 fi
 
 #Project ID
-project_id=$(az devops project show --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" --query id -o tsv)
+project_id=$(az devops project show --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" --query id --output tsv)
 # JSON config file
 cat <<EOF > ./devops.json
 {
@@ -103,11 +103,11 @@ sc_id=$(echo "$response" | jq -r '.id')
 if [ -n "$sc_id" ]; then    
     log "Created Connection: $sc_id"
     # Wait until operationStatus.state is Ready or Failed, keep checking
-    response=$(az devops service-endpoint show --id "$sc_id" --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" --query "operationStatus.state" -o tsv)
+    response=$(az devops service-endpoint show --id "$sc_id" --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" --query "operationStatus.state" --output tsv)
     until [[ "$response" == "Ready" || "$response" == "Failed"  ]]; do
         log "Service Connection creation state is $response. Waiting for it to be Ready..."
         sleep 5
-        response=$(az devops service-endpoint show --id "$sc_id" --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" --query "operationStatus.state" -o tsv)
+        response=$(az devops service-endpoint show --id "$sc_id" --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" --query "operationStatus.state" --output tsv)
     done
     if [[ "$response" == "Ready" ]]; then
         log "Service connection created successfully" "success"
@@ -120,7 +120,7 @@ else
     exit 1
 fi
 
-az devops service-endpoint update --id "$sc_id" --enable-for-all "true" --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" -o none
+az devops service-endpoint update --id "$sc_id" --enable-for-all "true" --project "$AZDO_PROJECT" --organization "$AZDO_ORGANIZATION_URL" --output none
 
 # Remove the JSON config file if exists
 if [ -f ./devops.json ]; then

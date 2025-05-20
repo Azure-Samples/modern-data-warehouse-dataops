@@ -20,9 +20,8 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-. ./scripts/init_environment.sh
 . ./scripts/verify_prerequisites.sh
-
+. ./scripts/init_environment.sh
 
 # CONSTANT - this is prefixes to all resources of the Parking Sensor sample
 project=mdwdops 
@@ -40,9 +39,16 @@ if [ -z "$ENV_DEPLOY" ]; then
     log "Option Selected: $ENV_DEPLOY" "info"
 fi
 
+# Build the WHL package
+log "Building the WHL package..."
+cd ./src/ddo_transform
+# Ensure the dist folder exists
+mkdir -p dist
+python setup.py bdist_wheel --universal
+cd ../..
+
 # Call the deploy function
 deploy_infrastructure_environment "$ENV_DEPLOY" "$project"
-
 
 ###################
 # Deploy AzDevOps Pipelines
@@ -60,14 +66,6 @@ sed -i "s+devlace/mdw-dataops-clone+$GITHUB_REPO+" devops/azure-pipelines-cd-rel
 # azure-pipelines-cd-release.yml pipeline require DEV_DATAFACTORY_NAME set, retrieve this value from .env.dev file
 declare DEV_"$(grep -e '^DATAFACTORY_NAME' .env.dev | tail -1 | xargs)"
 
-# Build the WHL package
-log "Building the WHL package..."
-cd ./src/ddo_transform
-# Ensure the dist folder exists
-mkdir -p dist
-python setup.py bdist_wheel --universal
-cd ../..
-
 # Deploy all pipelines
 PROJECT=$project \
 GITHUB_REPO_URL=$github_repo_url \
@@ -76,6 +74,9 @@ DEV_DATAFACTORY_NAME=$DEV_DATAFACTORY_NAME \
     bash -c "./scripts/deploy_azdo_pipelines.sh"
 
 ####
+
+# Delete the WHL dist folder and WHL file locally
+rm -rf ./src/ddo_transform/dist
 
 log "DEPLOYMENT SUCCESSFUL
 Details of the deployment can be found in local .env.* files.\n\n" "success"

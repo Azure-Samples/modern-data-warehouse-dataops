@@ -40,6 +40,15 @@ set -o nounset
 
 . ./scripts/common.sh
 
+databricks_cluster_exists () {
+    declare cluster_name="$1"
+    declare cluster=$(databricks clusters list | tr -s " " | cut -d" " -f2 | grep ^${cluster_name}$)
+    if [[ -n $cluster ]]; then
+        return 0; # cluster exists
+    else
+        return 1; # cluster does not exists
+    fi
+}
 
 data_stg_account_name="${PROJECT}st${ENVIRONMENT_NAME}${DEPLOYMENT_ID}"
 resource_group_name="${PROJECT}-${DEPLOYMENT_ID}-${ENVIRONMENT_NAME}-rg"
@@ -154,8 +163,7 @@ else
     log "Cluster ID: $cluster_id" "info"
 fi
 
-az keyvault secret set --vault-name "$KEYVAULT_NAME" --name "databricksClusterId" --value "$cluster_id" -o none
-
+az keyvault secret set --vault-name "$KEYVAULT_NAME" --name "databricksClusterId" --value "$cluster_id" --output none
 
 # Find the generated .whl file dynamically
 WHL_FILE=$(find ./src/ddo_transform/dist/ -name "*.whl" | head -n 1)
@@ -174,9 +182,6 @@ log "Uploading $WHL_FILENAME to Databricks libraries folder ($libs_path)..."
 databricks workspace mkdirs "$libs_path"
 databricks workspace import --language PYTHON --format AUTO --overwrite --file "$WHL_FILE" "/Workspace/$libs_path/$WHL_FILENAME"
 log "Successfully uploaded $WHL_FILENAME to Databricks libraries folder ($libs_path)..." "success"
-
-# Delete the dist folder and WHL file locally
-rm -rf ./src/ddo_transform/dist
 
 # Create JSON file for library installation
 json_file="./databricks/config/libs.config.json"
