@@ -23,6 +23,44 @@ set -o nounset
 
 . ./scripts/common.sh
 
+delete_azdo_pipeline_if_exists() {
+    declare full_pipeline_name=$1
+    
+    ## when returning a pipeline that does exist, delete.
+    
+    pipeline_output=$(az pipelines list --query "[?name=='$full_pipeline_name']" --output json)
+    pipeline_id=$(echo "$pipeline_output" | jq -r '.[0].id')
+    
+    if [[ -z "$pipeline_id" || "$pipeline_id" == "null" ]]; then
+        log "No Deployment pipeline with name $full_pipeline_name found."
+    else
+        az pipelines delete --id "$pipeline_id" --yes 1>/dev/null
+        log "Deleted existing pipeline: $full_pipeline_name (Pipeline ID: $pipeline_id)"
+    fi
+}
+
+create_azdo_pipeline ()
+{
+    declare pipeline_name=$1
+    declare pipeline_description=$2
+    full_pipeline_name=$PROJECT-$pipeline_name
+
+    delete_azdo_pipeline_if_exists "$full_pipeline_name"
+    log "Creating deployment pipeline: $full_pipeline_name"
+
+    pipeline_id=$(az pipelines create \
+        --name "$full_pipeline_name" \
+        --description "$pipeline_description" \
+        --repository "$GITHUB_REPO_URL" \
+        --branch "$AZDO_PIPELINES_BRANCH_NAME" \
+        --yaml-path "/e2e_samples/parking_sensors/devops/azure-pipelines-$pipeline_name.yml" \
+        --service-connection "$github_sc_id" \
+        --skip-first-run true \
+        --output json | jq -r '.id')
+    echo "$pipeline_id"
+}
+
+
 # Retrieve Github Service Connection Id
 github_sc_name="${PROJECT}-github"
 github_sc_id=$(az devops service-endpoint list --output json |
@@ -51,5 +89,5 @@ if [ "$ENV_DEPLOY" -eq 2 ] || [ "$ENV_DEPLOY" -eq 3 ]; then
         --name devAdfName \
         --pipeline-id "$cd_release_pipeline_id" \
         --value "$DEV_DATAFACTORY_NAME" \
-        -o none
+        --output none
 fi

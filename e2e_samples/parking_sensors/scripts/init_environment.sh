@@ -4,53 +4,39 @@
 # Source enviroment variables
 source .devcontainer/.env
 
-#Prompt login.
-#if more than one subcription, choose the one that will be used to deploy the resources.
-
 #Check variables are set for login.
-
-if [ -z "${TENANT_ID:-}" ] || [ -z "${AZURE_SUBSCRIPTION_ID:-}" ] || [ -z "${AZDO_ORGANIZATION_URL:-}" ] || [ -z "${AZDO_PROJECT:-}" ]; then 
-    log "To run this script the following environment variables are required." "danger"
-    log "Check if your .env file contains values for variables: \nTENANT_ID, AZURE_SUBSCRIPTION_ID, AZDO_ORGANIZATION_URL, AZDO_PROJECT" "danger"
+if [ -z "${TENANT_ID:-}" ]
+then
+    log "To run this script the TENANT_ID is required. Ensure your .devcontainer/.env file contains the required variables." "error"
     exit 1
 fi
-
-# Check if already logged in, it will logout first
-
-if az account show > /dev/null 2>&1; then
-    log "Already logged in. Logging out and logging in again."
-    az logout
+if [ -z "${AZURE_SUBSCRIPTION_ID:-}" ]
+then
+    log "To run this script the AZURE_SUBSCRIPTION_ID is required. Ensure your .devcontainer/.env file contains the required variables." "error"
+    exit 1
 fi
-
-az config set core.login_experience_v2=off
-az login --tenant $TENANT_ID
-az config set core.login_experience_v2=on
-az account set -s $AZURE_SUBSCRIPTION_ID  -o none
-
-az devops configure --defaults organization=$AZDO_ORGANIZATION_URL project=$AZDO_PROJECT  -o none
-# check required variables are specified.
-
+if [ -z "${AZDO_ORGANIZATION_URL:-}" ]
+then
+    log "To run this script the AZDO_ORGANIZATION_URL is required. Ensure your .devcontainer/.env file contains the required variables." "error"
+    exit 1
+fi
+if [ -z "${AZDO_PROJECT:-}" ]
+then
+    log "To run this script the AZDO_PROJECT is required. Ensure your .devcontainer/.env file contains the required variables." "error"
+    exit 1
+fi
 if [ -z "$GITHUB_REPO" ]
 then 
     log "Please specify a github repo using the GITHUB_REPO environment variable in this form '<my_github_handle>/<repo>'. (ei. 'devlace/mdw-dataops-import')" "danger"
     exit 1
 fi
-
 if [ -z "$GITHUB_PAT_TOKEN" ]
 then 
     log "Please specify a github PAT token using the GITHUB_PAT_TOKEN environment variable." "danger"
     exit 1
 fi
 
-if [ -z "$AZURE_SUBSCRIPTION_ID" ]
-then
-    log "Please specify an Azure Subscription ID using the [AZURE_SUBSCRIPTION_ID] environment variable." "danger"
-    exit 1
-fi
-
-
 # initialise optional variables.
-
 DEPLOYMENT_ID=${DEPLOYMENT_ID:-}
 if [ -z "$DEPLOYMENT_ID" ]
 then 
@@ -96,7 +82,24 @@ then
 fi
 
 ENV_DEPLOY=${ENV_DEPLOY:-}
-if [ -z "$ENV_DEPLOY" ]; then
+if [ -z "$ENV_DEPLOY" ]
+then
     export ENV_DEPLOY
     log "No Deployment option was specified in the configuration" "info"
 fi
+
+# Check if already logged in, it will logout first
+if az account show > /dev/null 2>&1
+then
+    log "Already logged in. Logging out and logging in again." "info"
+    az logout
+fi
+
+#Prompt login.
+#if more than one subcription, choose the one that will be used to deploy the resources.
+az config set core.login_experience_v2=off
+az login --tenant $TENANT_ID
+az config set core.login_experience_v2=on
+az account set --subscription $AZURE_SUBSCRIPTION_ID --output none
+
+az devops configure --defaults organization=$AZDO_ORGANIZATION_URL project=$AZDO_PROJECT --output none
