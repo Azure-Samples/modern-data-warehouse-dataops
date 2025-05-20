@@ -13,8 +13,8 @@ load_dotenv()
 
 # Environment variables
 account_name = os.environ.get("ONELAKE_ACCOUNT_NAME")
-workspace_id = os.environ.get("FABRIC_WORKSPACE_ID")
-lakehouse_id = os.environ.get("FABRIC_LAKEHOUSE_ID")
+workspace_id = os.environ.get("WORKSPACE_ID")
+lakehouse_id = os.environ.get("LAKEHOUSE_ID")
 
 # Azure Repo Details
 organization_name = os.environ.get("GIT_ORGANIZATION_NAME")
@@ -35,11 +35,21 @@ def get_file_system_client(token_credential: DefaultAzureCredential) -> FileSyst
     service_client = DataLakeServiceClient(account_url, credential=token_credential)
     return service_client.get_file_system_client(workspace_id)
 
+def get_azure_repo_connection(auth_method: str) -> Connection:
+    """Establish a connection to Azure DevOps."""
+    if auth_method == "oauth":
+        oauth_token = os.environ.get("SYSTEM_ACCESSTOKEN")
+        if not oauth_token:
+            print("[E] OAuth token is missing. Ensure the pipeline has 'Allow scripts to access the OAuth token' enabled.")
+            exit(1)  # Exit script if OAuth token is missing
+        credentials = BasicAuthentication("", oauth_token)
+        print("[I] Using OAuth token for authentication")
+    else:
+        credentials = BasicAuthentication("", personal_access_token)
+        print("[I] Using Personal Access Token for authentication")
 
-def get_azure_repo_connection() -> Connection:
-    """Establish a connection to Azure DevOps using personal access token."""
     organization_url = f"https://dev.azure.com/{organization_name}"
-    return Connection(base_url=organization_url, creds=BasicAuthentication("", personal_access_token))
+    return Connection(base_url=organization_url, creds=credentials)
 
 
 def read_file_from_repo(connection: Connection, project_name: str, branch_name: str, src_file_name: str) -> Generator:
@@ -86,19 +96,19 @@ def read_from_fabric_lakehouse(file_system_client: FileSystemClient, target_file
     print(downloaded_bytes)
 
 
-def main(source_file_path: str, target_file_path: str, upload_from: str) -> None:
+def main(source_file_path: str, target_file_path: str, upload_from: str, auth_method: str) -> None:
     """Main function to handle the workflow."""
     print(f"[I] Fabric workspace id: {workspace_id}")
     print(f"[I] Fabric lakehouse id: {lakehouse_id}")
     print(f"[I] Source file path: {source_file_path}")
     print(f"[I] Target file path: {target_file_path}")
     print(f"[I] Upload from: {upload_from}")
+    print(f"[I] Authentication method: {auth_method}")
 
     # Initialize credentials and connections
-    if upload_from == "git":
-        azure_repo_connection = get_azure_repo_connection()
-    else:
-        azure_repo_connection = None
+    azure_repo_connection = (
+        get_azure_repo_connection(auth_method) if upload_from == "git" else None
+    )
     token_credential = get_authentication_token()
     file_system_client = get_file_system_client(token_credential)
 
@@ -111,11 +121,9 @@ def main(source_file_path: str, target_file_path: str, upload_from: str) -> None
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Script to upload local file or file from Azure Repo to Fabric lakehouse."
+        description="Script to upload a local file or a file from Azure Repo to Fabric lakehouse."
     )
-    parser.add_argument(
-        "source_file_path", type=str, help="The source file path of the local file or in the Azure Repo."
-    )
+    parser.add_argument("source_file_path", type=str, help="The source file path of the local file or in the Azure Repo.")
     parser.add_argument("target_file_path", type=str, help="The target file path in the Fabric lakehouse.")
     parser.add_argument(
         "--upload_from",
@@ -124,6 +132,13 @@ if __name__ == "__main__":
         choices=["local", "git"],
         help="Specify the source of the file to upload: 'local' or 'git'. Default is 'local'.",
     )
+    parser.add_argument(
+        "--auth_method",
+        type=str,
+        default="pat",
+        choices=["pat", "oauth"],
+        help="Specify the authentication method: 'pat' (default) or 'oauth'.",
+    )
 
     args = parser.parse_args()
-    main(args.source_file_path, args.target_file_path, args.upload_from)
+    main(args.source_file_path, args.target_file_path, args.upload_from, args.auth_method)
