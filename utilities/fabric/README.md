@@ -23,11 +23,11 @@ Here is a sample usage of the script:
   AZURE_CLIENT_SECRET="<Azure SP client secret>"
   # Microsoft Fabric workspace and lakehouse details
   ONELAKE_ACCOUNT_NAME="onelake"
-  FABRIC_WORKSPACE_ID="<Microsoft Fabric workspace id>"
-  FABRIC_LAKEHOUSE_ID="<Microsoft Fabric lakehouse id>"
+  WORKSPACE_ID="<Microsoft Fabric workspace id>"
+  LAKEHOUSE_ID="<Microsoft Fabric lakehouse id>"
   # Azure DevOps details and personal access token (PAT)
   GIT_ORGANIZATION_NAME="<Azure DevOps organization name>"
-  GIT_PERSONAL_ACCESS_TOKEN="<Azure DevOps PAT>"
+  GIT_PERSONAL_ACCESS_TOKEN="<Azure DevOps PAT>" # provided you are not using oauth 
   GIT_PROJECT_NAME="<Azure DevOps project name>"
   GIT_REPO_NAME="<Azure DevOps repository name>"
   GIT_BRANCH_NAME="<Azure DevOps branch name>"
@@ -47,7 +47,7 @@ Here is a sample usage of the script:
 
   # View the help
   $ python3 upload-file-to-lakehouse.py -h
-    usage: upload-file-to-lakehouse.py [-h] [--upload_from {local,git}] source_file_path target_file_path
+    usage: upload-file-to-lakehouse.py [-h] [--upload_from {local,git}] [--auth_method {pat,oauth} source_file_path target_file_path
 
     Script to upload local file or file from Azure Repo to Fabric lakehouse.
 
@@ -59,6 +59,9 @@ Here is a sample usage of the script:
       -h, --help            show this help message and exit
       --upload_from {local,git}
                             Specify the source of the file to upload: 'local' or 'git'. Default is 'local'.
+      --auth_method {pat,oauth}
+                        Specify the authentication method: 'pat' (default) or
+                        'oauth'.
 
   # Run the script to upload a file from the local file system to the lakehouse
   $ python3 upload-file-to-lakehouse.py --upload_from local requirements.txt config/requirements.txt
@@ -68,6 +71,7 @@ Here is a sample usage of the script:
     [I] Source file path: ./requirements.txt
     [I] Target file path: config/requirements.txt
     [I] Upload from: local
+    [I] Authentication method: pat
     [I] Uploading local './requirements.txt' to './requirements.txt'
     [I] Reading the file just uploaded from 4fd95a9f-160c-488c-8341-887974929c36/Files/config/requirements.txt
     b'azure-core==1.32.0\nazure-devops==7.1.0b4\nazure-identity==1.19.0\nazure-storage-blob==12.23.1\nazure-storage-file-datalake==12.17.0\npython-dotenv==1.0.  1\nrequests==2.32.3'
