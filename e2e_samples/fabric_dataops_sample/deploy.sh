@@ -4,6 +4,9 @@ set -o pipefail
 set -o nounset
 # set -o xtrace # For debugging
 
+# Set partner ID for telemetry tracking
+export AZURE_HTTP_USER_AGENT="acce1e78-XXXX-XXXX-XXXX-XXXXXXXXXXXXX"  # Replace with unique GUID for fabric_dataops_sample
+
 source ./.env
 
 . ./scripts/verify_prerequisites.sh "./.env"

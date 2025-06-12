@@ -47,6 +47,19 @@
     "variables": {},
     "resources": [
         {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-06-01",
+            "name": "pid-acce1e78-XXXX-XXXX-XXXX-XXXXXXXXXXXXX",
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "resources": []
+                }
+            }
+        },
+        {
             "type": "Microsoft.Sql/servers",
             "kind": "v12.0",
             "name": "[parameters('azuresql_srvr_name')]",

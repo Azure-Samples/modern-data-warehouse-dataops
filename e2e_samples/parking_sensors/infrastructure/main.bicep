@@ -12,6 +12,19 @@ param enable_keyvault_soft_delete bool = true
 param enable_keyvault_purge_protection bool = true
 param entra_admin_login string
 
+// Partner attribution for telemetry tracking
+resource attribution 'Microsoft.Resources/deployments@2020-06-01' = {
+  name: 'pid-acce1e78-XXXX-XXXX-XXXX-XXXXXXXXXXXXX'  // Replace with unique GUID for parking_sensors sample
+  properties: {
+    mode: 'Incremental'
+    template: {
+      '$schema': 'https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#'
+      contentVersion: '1.0.0.0'
+      resources: []
+    }
+  }
+}
+
 module appservice './modules/appservice.bicep' = {
   name: 'appservices_deploy_${deployment_id}'
   params: {

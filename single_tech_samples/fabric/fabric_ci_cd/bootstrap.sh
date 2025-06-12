@@ -1,6 +1,9 @@
 #!/bin/bash
 source .env
 
+# Set partner ID for telemetry tracking
+export AZURE_HTTP_USER_AGENT="acce1e78-XXXX-XXXX-XXXX-XXXXXXXXXXXXX"  # Replace with unique GUID for fabric_ci_cd sample
+
 az account set --subscription "$AZURE_SUBSCRIPTION_ID"
 az devops configure --defaults organization="https://dev.azure.com/$ORGANIZATION_NAME" project="$PROJECT_NAME"
 
