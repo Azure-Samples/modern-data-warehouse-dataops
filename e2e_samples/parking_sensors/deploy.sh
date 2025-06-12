@@ -84,4 +84,4 @@ rm -rf ./src/ddo_transform/dist
 log "DEPLOYMENT SUCCESSFUL
 Details of the deployment can be found in local .env.* files.\n\n" "success"
 
-log "See README > Setup and Deployment for more details and next steps."
+log "See README > Setup and Deployment for more details and next steps." 
