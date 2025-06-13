@@ -338,7 +338,7 @@ Set up the environment variables as specified, fork the GitHub repository, and l
      - After a successful deployment, you will find `.env.{environment_name}` files containing essential configuration information per environment. See [here](#deployed-resources) for list of deployed resources.
      - Note that if you are using **Dev Container**, you would run the same script but inside the Dev Container terminal.
 
-2. **Setup ADF git integration in DEV Data Factory**
+1. **Setup ADF git integration in DEV Data Factory**
 
    > **IMPORTANT NOTE**: Only the **DEV** Data Factory should be setup with Git integration. Do **not** setup git integration in the STG and PROD Data Factories.
 
@@ -357,7 +357,7 @@ Set up the environment variables as specified, fork the GitHub repository, and l
 
    > **Ensure you Import Existing Data Factory resources to repository**. The deployment script deployed ADF objects with Linked Service configurations in line with the newly deployed environments. Importing existing ADF resources definitions to the repository overrides any default Linked Services values so they are correctly in sync with your DEV environment.
 
-4. **Trigger an initial Release**
+1. **Trigger an initial Release**
    - Before triggering a initial release, make sure that "Disable implied YAML CI trigger" setting on your AzDo Organization or Project is set to **on**. This setting will allow to trigger the ci run following the trigger section defined on the yml file and avoid unintended runs for any changes pushed on the repository.
    - In the **DEV** Data Factory portal, navigate to Pipelines and open the "P_Ingest_MelbParkingData" pipeline.
    - In the top left corner, open the git drop down and create a Dev branch by clicking in "New Branch".
@@ -377,7 +377,7 @@ Set up the environment variables as specified, fork the GitHub repository, and l
       - To monitor the run, go to "Monitor > Pipeline runs".
       ![Data Factory Run](docs/images/ADFRun.png "Data Factory Run]")
 
-4. **Optional. Visualize data in PowerBI**
+1. **Optional. Visualize data in PowerBI**
     > This requires [PowerBI Desktop App](https://powerbi.microsoft.com/en-us/desktop/) installed.
     - Open the provided PowerBi pbix (PowerBI_ParkingSensors.pbix) under `reports` folder.
     - Under Queries, select "Transform Data" > "Data source settings".
