@@ -13,8 +13,6 @@ In this sample, we will deploy resources from the sandbox environment to the dev
 
 ![Asset Bundle Deployment Pipeline](./images/databricks-asset-bundle-deploymeny-pipeline.png)
 
-[visio drawing](https://microsoft.sharepoint.com/:u:/t/ExternalEcolabKitchenOS/EWM3kB69NGBBiy2s563pjJ0BeKWy1qgtgEznRvvufiseFg?e=s0Qohq)
-
 ### Folder Structure
 
 The working directory: `./single_tech_samples/databricks/databricks_terraform` is comprised of the following components:
