@@ -4,6 +4,11 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
+# make sure that relative paths are resolved correctly
+if [[ -f "init_environment.sh" ]]; then
+    pushd .. > /dev/null
+fi
+
 . ./scripts/init_environment.sh
 . ./scripts/verify_prerequisites.sh
 
@@ -22,9 +27,9 @@ delete_uc(){
     kv_name="$PROJECT-kv-$ENV_NAME-$DEPLOYMENT_ID"
     if az keyvault show --name "$kv_name" &>/dev/null; then
         databricksHost=$(az keyvault secret show --name "databricksDomain" --vault-name "$kv_name" --query "value" --output tsv)
-        log "Databricks Host: $databricksHost"
+        log "Databricks Host: $databricksHost" "info"
         databricksToken=$(az keyvault secret show --name "databricksToken" --vault-name "$kv_name" --query "value" --output tsv)
-        log "Databricks Token: $databricksToken"
+        log "Databricks Token: $databricksToken" "info"
         cat <<EOL > ~/.databrickscfg
 [DEFAULT]
 host=$databricksHost
@@ -272,3 +277,8 @@ case "$response" in
         exit
         ;;
 esac
+
+if [[ -f "init_environment.sh" ]]; then
+    popd > /dev/null
+fi
+log "Clean up completed." "success"
