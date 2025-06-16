@@ -7,8 +7,11 @@ TENANT_ID=
 # Azure subscription id to use to deploy resources. Default: default azure subscription.
 AZURE_SUBSCRIPTION_ID=
 
-# Name of your imported github repo in this form `<my_github_handle>/<repo>`. (ei. "devlace/mdw-dataops-import")
-GITHUB_REPO=
+# Azure resource prefix. This prefixes all resources of the Parking Sensor sample. Default: mdwdops
+PROJECT="mdwdops"
+
+# Name of your imported github repo in this form `https://github.com/<my_github_handle>/<repo>`. (ei. "https://github.com/devlace/mdw-dataops-import")
+GITHUB_REPO_URL="https://github.com/..."
 
 # a Github PAT token. Generate them [here](https://github.com/settings/tokens). This requires "repo" scope.
 GITHUB_PAT_TOKEN=
