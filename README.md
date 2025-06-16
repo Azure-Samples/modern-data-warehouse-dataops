@@ -27,8 +27,6 @@ The samples are either focused on a single microsoft service ([Single-Technology
 - Testing
 - Observability / Monitoring
 
-In addition to the samples, this repository also contains [Utilities](#utilities). These are simple scripts or code snippets that can be used as-is or as a starting point for more complex automation tasks.
-
 ## Single-Technology Samples
 
 | Technology | Samples |
@@ -36,7 +34,6 @@ In addition to the samples, this repository also contains [Utilities](#utilities
 | [Microsoft Fabric](./single_tech_samples/fabric/README.md) | ▪️ [CI/CD for Microsoft Fabric](./single_tech_samples/fabric/fabric_ci_cd/README.md)<br> ▪️ [Feature engineering on Microsoft Fabric](./single_tech_samples/fabric/feature_engineering_on_fabric/README.md) |
 | [Azure SQL database](./single_tech_samples/azuresql/README.md) | ▪️ [CI/CD for Azure SQL database](./single_tech_samples/azuresql/azuresql_ci_cd/README.md) |
 | [Azure Data Factory](./single_tech_samples/datafactory/README.md) | ▪️ [CI/CD for ADF with Auto publish](./single_tech_samples/datafactory/adf_cicd_auto_publish/README.md)<br> ▪️ [Data pre-processing using Azure Batch](./single_tech_samples/datafactory/adf_data_pre_processing_with_azure_batch/README.md) |
-| [Azure Stream Analytics](./single_tech_samples/streamanalytics/README.md) | ▪️ [CI/CD for Azure Stream Analytics](./single_tech_samples/streamanalytics/streamanalytics_ci_cd/README.md) |
 
 ## End-to-End Samples
 
@@ -51,12 +48,6 @@ This [sample](e2e_samples/parking_sensors/) demonstrates batch, end-to-end data 
 - This [sample](./e2e_samples/fabric_dataops_sample/) would demonstrate end-to-end batch data processing utilizing Microsoft Fabric built according to the [medallion architecture](https://learn.microsoft.com/azure/databricks/lakehouse/medallion), along with a corresponding CI/CD process, observability and automated testing.
 
   In the current version, the sample is showcasing the deployment of Azure and Fabric resources together using Terraform. The deployment uses a service principal or managed identity for authentication where supported and falls back to Entra user authentication where it is not.
-
-## Utilities
-
-| Technology | Utility Description |
-| ---------- | ------------------- |
-| Microsoft Fabric | ▪️ [Script to upload file in GIT repo to Fabric lakehouse](./utilities/fabric/README.md#python-script-to-upload-file-in-git-repo-to-fabric-lakehouse)|
 
 ## Contributing
 
