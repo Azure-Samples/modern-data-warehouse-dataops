@@ -1,8 +1,6 @@
 exclude: |
   (?x) (
-  archive/|
-  single_tech_samples/|
-  e2e_samples/parking_sensors/
+  archive/
   )
 
 repos:
