@@ -104,7 +104,7 @@ As described above, the sample uses Microsoft Fabric as the data analytics platf
   This service principal is required to access and interact with the Azure ML managed feature store and with Microsoft Purview from Fabric notebooks. Create the service principal in Microsoft Entra ID by [registering an application](https://learn.microsoft.com/purview/create-service-principal-azure#app-registration) and [adding a secret to the client credentials](https://learn.microsoft.com/purview/create-service-principal-azure#adding-a-secret-to-the-client-credentials). Note down the client id, client secret, and tenant id.
 
 - Grant access on Azure ML managed feature store and Purview to the service principal
-  
+
   To grant managed feature store access to this service principal, go to the feature store in Azure Portal, and assign `AzureML Data Scientist` role to this SP.
 
   ![roles](./images/featurestore_1.png)
@@ -292,7 +292,7 @@ The configuration of this 'ForEach' activity follows a series of steps as below.
   Run this pipeline with the single 'Data Landing' activity. If everything is properly configured, you should be able to see the downloaded data in the lakehouse as shown below.
 
   ![data_pipeline_09](./images/data_pipeline/data_pipeline_09.png)
-  
+
   ![data_pipeline_10](./images/data_pipeline/data_pipeline_10.png)
 
 ### Notebook activities
@@ -344,7 +344,7 @@ Here are the steps involved in configuring these notebook activities.
   Data Transformation  -> data_transformation
   Feature Registration -> feature_set_registration
   ```
-  
+
   ![data_pipeline_15](./images/data_pipeline/data_pipeline_15.png)
 
 ## Execute and verify
@@ -475,7 +475,7 @@ It encompasses several key steps:
 Before executing this notebook, ensure you [retrieve the connection string](https://learn.microsoft.com/en-us/azure/azure-monitor/app/sdk-connection-string?tabs=dotnet5#find-your-connection-string) for your Azure Monitor Application Insights resource and assign it to variable `AZURE_MONITOR_SECRET` in the last cell of the [data_validation](./src/notebooks/data_validation.ipynb) notebook.
 
 ```python
-# Report Data Quality Metrics to Azure Monitor using python Azure Monitor open-census exporter 
+# Report Data Quality Metrics to Azure Monitor using python Azure Monitor open-census exporter
 import logging
 import time
 from opencensus.ext.azure.log_exporter import AzureLogHandler
