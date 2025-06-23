@@ -2,6 +2,8 @@ exclude: |
   (?x) (
   archive/|
   single_tech_samples/|
+  azuredatafactory/adf_cicd_auto_publish/|
+  azuredatafactory/adf_data_pre_processing_with_azure_batch/|
   databricks/parking_sensors/|
   fabric/fabric_ci_cd/|
   fabric/fabric_cicd_gitlab/|
