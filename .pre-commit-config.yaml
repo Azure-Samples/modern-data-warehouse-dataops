@@ -2,7 +2,7 @@ exclude: |
   (?x) (
   archive/|
   single_tech_samples/|
-  e2e_samples/parking_sensors/|
+  databricks/parking_sensors/|
   fabric/fabric_ci_cd/|
   fabric/fabric_cicd_gitlab/|
   fabric/feature_engineering_on_fabric/|
