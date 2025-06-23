@@ -87,4 +87,4 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["e2e_samples", "archive", "single_tech_samples"]
+packages = ["archive", "azuredatafactory", "azuresqldb", "databricks", "fabric"]
