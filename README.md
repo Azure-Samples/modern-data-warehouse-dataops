@@ -45,7 +45,7 @@ This [sample](databricks/parking_sensors/) demonstrates batch, end-to-end data p
 
 ### DataOps for Medallion with Microsoft Fabric
 
-- This [sample](./fabric/fabric_dataops_sample/) would demonstrate end-to-end batch data processing utilizing Microsoft Fabric built according to the [medallion architecture](https://learn.microsoft.com/azure/databricks/lakehouse/medallion), along with a corresponding CI/CD process, observability and automated testing.
+- This [sample](./fabric/fabric_dataops_sample/) would demonstrate end-to-end batch data processing utilizing Microsoft Fabric built according to the [medallion architecture](https://learn.microsoft.com/fabric/onelake/onelake-medallion-lakehouse-architecture), along with a corresponding CI/CD process, observability and automated testing.
 
   In the current version, the sample is showcasing the deployment of Azure and Fabric resources together using Terraform. The deployment uses a service principal or managed identity for authentication where supported and falls back to Entra user authentication where it is not.
 
