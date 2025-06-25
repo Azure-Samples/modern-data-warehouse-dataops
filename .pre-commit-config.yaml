@@ -1,7 +1,7 @@
 exclude: |
   (?x) (
   archive/|
-  single_tech_samples/|
+  azuresqldb/azuresql_cd_cd/|
   azuredatafactory/adf_cicd_auto_publish/|
   azuredatafactory/adf_data_pre_processing_with_azure_batch/|
   databricks/parking_sensors/|
