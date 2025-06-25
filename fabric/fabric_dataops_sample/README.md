@@ -464,6 +464,6 @@ Note that the script does not remove Azure repo branches or their contents. You 
 
 ## References
 
-- [Single-tech Sample - Fabric DataOps](./../fabric/fabric_ci_cd/README.md)
-- [Single-tech Sample - Multi-git Fabric DataOps(./../fabric/fabric_cicd_gitlab/README.md)
+- [Single-tech Sample - Fabric DataOps](./../../fabric/fabric_ci_cd/README.md)
+- [Single-tech Sample - Multi-git Fabric DataOps](./../../fabric/fabric_cicd_gitlab/README.md)
 - [E2E Sample - MDW Parking Sensors](./../../databricks/parking_sensors/README.md)
