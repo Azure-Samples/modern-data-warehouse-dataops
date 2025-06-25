@@ -31,7 +31,7 @@ The samples are either focused on a single microsoft service ([Single-Technology
 
 | Technology | Samples |
 | ---------- | ------- |
-| [Microsoft Fabric](./fabric/README.md) | ▪️ [CI/CD for Microsoft Fabric](./fabric/fabric_ci_cd/README.md)<br>▪️ [Gitlab CI/CD for Microsoft Fabric](./fabric/fabric_cicd_gitlab/README.md)▪️ [Feature engineering on Microsoft Fabric](./fabric/feature_engineering_on_fabric/README.md) |
+| [Microsoft Fabric](./fabric/README.md) | ▪️ [CI/CD for Microsoft Fabric](./fabric/fabric_ci_cd/README.md)<br>▪️ [Gitlab CI/CD for Microsoft Fabric](./fabric/fabric_cicd_gitlab/README.md)<br>▪️ [Feature engineering on Microsoft Fabric](./fabric/feature_engineering_on_fabric/README.md) |
 | [Azure SQL database](./azuresqldb/README.md) | ▪️ [CI/CD for Azure SQL database](./azuresqldb/azuresql_ci_cd/README.md) |
 | [Azure Data Factory](./azuredatafactory/README.md) | ▪️ [CI/CD for ADF with Auto publish](./azuredatafactory/adf_cicd_auto_publish/README.md)<br> ▪️ [Data pre-processing using Azure Batch](./azuredatafactory/adf_data_pre_processing_with_azure_batch/README.md) |
 
