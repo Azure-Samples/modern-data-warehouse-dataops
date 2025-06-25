@@ -23,10 +23,10 @@ variables:
       - group: mdws-adf-stage
 
   - name: adf_code_path
-    value: "$(Build.SourcesDirectory)/single_tech_samples/datafactory/adf"
+    value: "$(Build.SourcesDirectory)/azuredatafactory/adf"
     
   - name: adf_package_file_path
-    value: "$(Build.SourcesDirectory)/single_tech_samples/datafactory/build/"
+    value: "$(Build.SourcesDirectory)/azuredatafactory/build/"
 
 
 # Installs Node and the npm packages saved in your package.json files in the .pipelines folder

@@ -71,7 +71,7 @@ Here are the steps to use the bootstrap script:
 1. Change the directory to the sample folder:
 
     ```bash
-    cd ./modern-data-warehouse-dataops/single_tech_samples/fabric/fabric_ci_cd
+    cd ./modern-data-warehouse-dataops/fabric/fabric_ci_cd
     ```
 
 1. Rename the [.envtemplate](./.envtemplate) file to `.env` and fill in the necessary environment variables. Here is the detailed explanation of the environment variables:

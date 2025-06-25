@@ -7,7 +7,7 @@ Azure resources required for this sample can be deployed by setting up your pre-
 1. Go to the directory containing all the terraform scripts to setup a new environment.
 
     ```shell
-    cd ./single_tech_samples/datafactory/sample3_data_pre_processing_with_azure_batch/deploy/terraform 
+    cd ./azuredatafactory/adf_data_pre_processing_with_azure_batch/deploy/terraform 
     ```
 
 2. Login to your Azure account.
@@ -84,7 +84,7 @@ Please follow the below steps to clean up your environment :
 1. Go to the terraform directory
 
     ```shell
-    cd ./single_tech_samples/datafactory/sample3_data_pre_processing_with_azure_batch/deploy/terraform 
+    cd ./azuredatafactory/adf_data_pre_processing_with_azure_batch/deploy/terraform 
     ```
 
 2. Run the following command to clean up your environment and destroy all the resources

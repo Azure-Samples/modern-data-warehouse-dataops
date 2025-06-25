@@ -7,7 +7,7 @@ This is a sample image which is build from ros:noetic base image. It extracts th
 1. Go to the folder `src/sample-processor`
 
     ```shell
-    cd ./single_tech_samples/datafactory/sample3_data_pre_processing_with_azure_batch/src/sample-processor
+    cd ./azuredatafactory/adf_data_pre_processing_with_azure_batch/src/sample-processor
     ```
 
 2. Login to your Azure Account

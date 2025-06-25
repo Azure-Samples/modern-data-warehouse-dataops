@@ -7,7 +7,7 @@ az config set extension.dynamic_install_allow_preview=true
 pip install --upgrade pip
 
 # Install requirements depending if devcontainer was openned at root or in parking_sensor folder.
-pip install -r /workspace/e2e_samples/parking_sensors/src/ddo_transform/requirements_dev.txt
+pip install -r /workspace/databricks/parking_sensors/src/ddo_transform/requirements_dev.txt
 
 # Install the Databricks CLI
 # This script was reused from the Databricks CLI installation script located here

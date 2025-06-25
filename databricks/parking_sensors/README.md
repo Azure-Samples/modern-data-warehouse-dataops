@@ -324,7 +324,7 @@ Set up the environment variables as specified, fork the GitHub repository, and l
       - Ensure that you have completed the configuration for the variables described in the previous section, titled **Configuration: Variables and Login**.
 
 1. **Deploy Azure resources**
-   - `cd` into the `e2e_samples/parking_sensors` folder of the repo.
+   - `cd` into the `databricks/parking_sensors` folder of the repo.
    - Run `./deploy.sh`.
      - The login process for deployment is interactive. When you run the script **deploy.sh**, a browser window will be open, prompting you to log in to Azure. If there is an open session from a previous deployment, it may log you out and request you to log in again- .
      - During deployment, you will be presented with three options if the optional environment variable #ENV_DEPLOY for deployment is not set. Answer the prompt by typing 1,2 or 3 from the keyboard according to the options shown. Keep in mind that deployments are standalone and cannot be performed incrementally:
@@ -350,7 +350,7 @@ Set up the environment variables as specified, fork the GitHub repository, and l
       - Github Account: **your_Github_account**
       - Git repository (select *Use repository link*, if forked): **forked Github repository url**
       - Collaboration branch: **main**
-      - Root folder: **/e2e_samples/parking_sensors/adf**
+      - Root folder: **/databricks/parking_sensors/adf**
       - Import existing resources to repository: **Selected**
       - Import resource into this branch: **main**
    - When prompted to select a working branch, check **Use existing** and select **main**

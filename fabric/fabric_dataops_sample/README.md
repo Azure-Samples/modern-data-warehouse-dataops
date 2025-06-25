@@ -224,7 +224,7 @@ The document also includes a list of frequently asked questions (FAQs) that prov
 - Change the directory to the sample folder:
 
   ```bash
-  cd ./modern-data-warehouse-dataops/e2e_samples/fabric_dataops_sample
+  cd ./modern-data-warehouse-dataops/fabric/fabric_dataops_sample
   ```
 
 - Rename the [.envtemplate](./.envtemplate) file to `.env` and fill in the required environment variables. Here is a list of all the variables:
@@ -265,7 +265,7 @@ The document also includes a list of frequently asked questions (FAQs) that prov
 
     ![Service Principal Object ID](./images/application-enterprise-object-id.png)
 
-- [Optional] If you want to use the dev container, open the repository in VSCode. Make sure that docker is running and the remote development extension is installed (check the [pre-requisites](#if-using-dev-container-recommended) for details). Open the Command Palette (`Ctrl+Shift+P` on Windows, `Cmd+Shift+P` on Mac) and search for `Dev Containers: Open Folder in Container...`. Select `e2e_samples/fabric_dataops_sample` folder and confirm. This will build the dev container and open a new VSCode window inside the container. Here is a screenshot of how it looks:
+- [Optional] If you want to use the dev container, open the repository in VSCode. Make sure that docker is running and the remote development extension is installed (check the [pre-requisites](#if-using-dev-container-recommended) for details). Open the Command Palette (`Ctrl+Shift+P` on Windows, `Cmd+Shift+P` on Mac) and search for `Dev Containers: Open Folder in Container...`. Select `fabric/fabric_dataops_sample` folder and confirm. This will build the dev container and open a new VSCode window inside the container. Here is a screenshot of how it looks:
 
   ![Dev Container](./images/dev-container.png)
 
@@ -464,6 +464,6 @@ Note that the script does not remove Azure repo branches or their contents. You 
 
 ## References
 
-- [Single-tech Sample - Fabric DataOps](./../../single_tech_samples/fabric/fabric_ci_cd/README.md)
-- [Single-tech Sample - Multi-git Fabric DataOps](./../../single_tech_samples/fabric/fabric_cicd_gitlab/README.md)
-- [E2E Sample - MDW Parking Sensors](./../parking_sensors/README.md)
+- [Single-tech Sample - Fabric DataOps](./../fabric/fabric_ci_cd/README.md)
+- [Single-tech Sample - Multi-git Fabric DataOps(./../fabric/fabric_cicd_gitlab/README.md)
+- [E2E Sample - MDW Parking Sensors](./../../databricks/parking_sensors/README.md)

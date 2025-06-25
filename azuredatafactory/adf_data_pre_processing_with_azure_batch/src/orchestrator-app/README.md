@@ -17,7 +17,7 @@ Note: In this sample we have a azure data lake storage account(ADLS) which has a
 
 ## Steps to package and upload this sample application to Azure Batch
 
-1. `cd modern-data-warehouse-dataops/single_tech_samples/datafactory/sample3_data_pre_processing_with_azure_batch/src/orchestrator-app`
+1. `cd modern-data-warehouse-dataops/azuredatafactory/adf_data_pre_processing_with_azure_batch/src/orchestrator-app`
 
 2. Create a `.env` file in the `orchestrator-app/app` folder with the name of your keyvault and azure container registry.
 
@@ -80,7 +80,7 @@ Note: In this sample we have a azure data lake storage account(ADLS) which has a
 1. Open orchestrator-app in visual studio code
 
     ```shell
-    code modern-data-warehouse-dataops/single_tech_samples/datafactory/sample3_data_pre_processing_with_azure_batch/src/orchestrator-app
+    code modern-data-warehouse-dataops/azuredatafactory/adf_data_pre_processing_with_azure_batch/src/orchestrator-app
     ```
 
     Note:- This is provided with dev container setup, VS code will prompt for `Re-Open in Container`

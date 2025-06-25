@@ -2,7 +2,7 @@
     "name": "MDE - Fabric DataOps Sample",
     "dockerComposeFile": "./docker-compose.yaml",
     "service": "fabric_dataops_sample_dc",
-    "workspaceFolder": "/workspace/e2e_samples/fabric_dataops_sample",
+    "workspaceFolder": "/workspace/fabric/fabric_dataops_sample",
     "customizations": {
         "vscode": {
             "settings": {

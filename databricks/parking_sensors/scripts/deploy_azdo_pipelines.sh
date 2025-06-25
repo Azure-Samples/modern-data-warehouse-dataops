@@ -71,7 +71,7 @@ create_azdo_pipeline ()
         --description "$pipeline_description" \
         --repository "$GITHUB_REPO_URL" \
         --branch "$AZDO_PIPELINES_BRANCH_NAME" \
-        --yaml-path "/e2e_samples/parking_sensors/devops/azure-pipelines-$pipeline_name.yml" \
+        --yaml-path "/databricks/parking_sensors/devops/azure-pipelines-$pipeline_name.yml" \
         --service-connection "$github_sc_id" \
         --skip-first-run true \
         --output json > /dev/null

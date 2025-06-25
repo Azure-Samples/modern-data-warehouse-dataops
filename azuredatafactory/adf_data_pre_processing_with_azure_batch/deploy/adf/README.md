@@ -1,6 +1,6 @@
 # Deploy sample ADF pipeline and required linked services
 
-1. `cd modern-data-warehouse-dataops/single_tech_samples/datafactory/sample3_data_pre_processing_with_azure_batch/deploy/adf`
+1. `cd modern-data-warehouse-dataops/azuredatafactory/adf_data_pre_processing_with_azure_batch/deploy/adf`
 
 2. Login to your Azure account.
 

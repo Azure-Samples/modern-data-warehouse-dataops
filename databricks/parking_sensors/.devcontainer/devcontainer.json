@@ -1,7 +1,7 @@
 {
 	"name": "Parking Sensors",
 	"dockerComposeFile": "docker-compose.yml",
-	"workspaceFolder": "/workspace/e2e_samples/parking_sensors",
+	"workspaceFolder": "/workspace/databricks/parking_sensors",
 	"service": "parking_sensor_dc",
 	"customizations": {
 		"vscode": {
