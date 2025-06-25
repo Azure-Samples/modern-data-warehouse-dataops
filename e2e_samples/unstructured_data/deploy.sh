@@ -325,6 +325,7 @@ stor_id=$(az storage account show \
     --output json |
     jq -r '.id')
 sp_stor_name="${PROJECT}-stor-${ENV_NAME}-${DEPLOYMENT_ID}-sp"
+<<<<<<< kraken/yomi/UIInfra
 sp_stor_out=$(az ad sp create-for-rbac \
     --role "Storage Blob Data Contributor" \
     --scopes "$stor_id" \
@@ -340,6 +341,8 @@ az keyvault secret set --vault-name "$kv_name" --name "spStorName" --value "$sp_
 az keyvault secret set --vault-name "$kv_name" --name "spStorId" --value "$sp_stor_id" -o none
 az keyvault secret set --vault-name "$kv_name" --name "spStorPass" --value="$sp_stor_pass" -o none ##=handles hyphen passwords
 az keyvault secret set --vault-name "$kv_name" --name "spStorTenantId" --value "$sp_stor_tenant" -o none
+=======
+>>>>>>> kraken/unstructured-data-processing
 
 log "Generate Databricks token"
 databricks_host=https://$(echo "$arm_output" | jq -r '.properties.outputs.databricks_output.value.properties.workspaceUrl')
@@ -369,13 +372,24 @@ az keyvault secret set --vault-name "$kv_name" --name "databricksWorkspaceResour
 # Configure databricks (KeyVault-backed Secret scope, mount to storage via SP, databricks tables, cluster)
 # NOTE: must use Microsoft Entra access token, not PAT token
 DATABRICKS_TOKEN=$databricks_aad_token \
+<<<<<<< kraken/yomi/UIInfra
     DATABRICKS_HOST=$databricks_host \
     KEYVAULT_DNS_NAME=$kv_dns_name \
     USER_NAME=$kv_owner_name \
     AZURE_LOCATION=$AZURE_LOCATION \
     KEYVAULT_RESOURCE_ID=$(echo "$arm_output" | jq -r '.properties.outputs.keyvault_resource_id.value') \
     STORAGE_CONN_STRING=$(echo "$arm_output" | jq -r '.properties.outputs.storage_conn_string.value') \
+=======
+DATABRICKS_HOST=$databricks_host \
+KEYVAULT_DNS_NAME=$kv_dns_name \
+USER_NAME=$kv_owner_name \
+AZURE_LOCATION=$AZURE_LOCATION \
+KEYVAULT_RESOURCE_ID=$(echo "$arm_output" | jq -r '.properties.outputs.keyvault_resource_id.value') \
+STORAGE_CONN_STRING=$(echo "$arm_output" | jq -r '.properties.outputs.storage_conn_string.value') \
+SQL_CONN_STRING="placeholder" \
+>>>>>>> kraken/unstructured-data-processing
     bash -c "./infrastructure/configure_databricks.sh"
+# TODO: generate and add the full sql connection string later
 
 ####################
 # AZDO Azure Service Connection and Variables Groups

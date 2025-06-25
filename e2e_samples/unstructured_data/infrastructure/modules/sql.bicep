@@ -34,6 +34,10 @@ resource sql_server 'Microsoft.Sql/servers@2024-05-01-preview' = {
     Environment: env
   }
   properties: {
+    administratorLogin: 'sql_admin'
+    administratorLoginPassword: 'wODbZ$8qOj$O!6' // TODO: Generate this randomly later
+    minimalTlsVersion: '1.2'
+    version: '12.0'
     administrators: {
       administratorType: 'ActiveDirectory'
       azureADOnlyAuthentication: true
