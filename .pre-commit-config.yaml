@@ -1,8 +1,13 @@
 exclude: |
   (?x) (
   archive/|
-  single_tech_samples/|
-  e2e_samples/parking_sensors/
+  azuresqldb/azuresql_cd_cd/|
+  azuredatafactory/adf_cicd_auto_publish/|
+  azuredatafactory/adf_data_pre_processing_with_azure_batch/|
+  databricks/parking_sensors/|
+  fabric/fabric_ci_cd/|
+  fabric/fabric_cicd_gitlab/|
+  fabric/feature_engineering_on_fabric/|
   )
 
 repos:

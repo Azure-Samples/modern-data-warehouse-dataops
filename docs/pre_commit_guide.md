@@ -3,7 +3,7 @@
 
 This guide explains how to set up and use the pre-commit hooks configured in this repository. These hooks help ensure code quality and consistency by automatically checking and formatting code before it is committed.
 
-**Note:** These checks are currently enabled only for [e2e_samples/fabric_dataops_sample](../e2e_samples/fabric_dataops_sample/).
+**Note:** These checks are currently enabled only for [fabric/fabric_dataops_sample](../fabric/fabric_dataops_sample/).
 
 ## Table of Contents <!-- omit in toc -->
 
@@ -33,7 +33,7 @@ If you are using dev container setup, all these are pre-configured/pre-installed
 
 ### Contributors using local setup
 
-- Clone the repository and navigate to the sample folder (e.g., `e2e_samples\fabric_dataops_sample`):
+- Clone the repository and navigate to the sample folder (e.g., `fabric\fabric_dataops_sample`):
 
    ```bash
    git clone https://github.com/Azure-Samples/modern-data-warehouse-dataops.git
@@ -57,7 +57,7 @@ If you are using dev container setup, all these are pre-configured/pre-installed
     pre-commit install
     ```
 
-- Apart from these, there are few tools you need to install on your local machine (e.g., terraform, tfLint, trivy). Please refer to the tool documentation to get installation instructions depending on your Operating System. Sample Ubuntu instructions can be found inside [dev container's docker file](../e2e_samples/fabric_dataops_sample/.devcontainer/Dockerfile)
+- Apart from these, there are few tools you need to install on your local machine (e.g., terraform, tfLint, trivy). Please refer to the tool documentation to get installation instructions depending on your Operating System. Sample Ubuntu instructions can be found inside [dev container's docker file](../fabric/fabric_dataops_sample/.devcontainer/Dockerfile)
 
 These steps will set up the hooks to run automatically before every commit.
 
