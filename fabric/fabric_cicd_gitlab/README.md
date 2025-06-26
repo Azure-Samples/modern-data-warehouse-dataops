@@ -125,15 +125,15 @@ This sample uses PowerShell scripts to automate the CI/CD process. Below, you’
 
 | Script/File | Description |
 |--------|-------------|
-|[.env](../config/.envtemplate)|Environment variables file - used to store the parameter values required by the scripts. Update the values as needed.|
-|[update_from_git_to_ws.ps1](../src/update_from_git_to_ws.ps1)|Script to create a Fabric workspace (if non existing) and sync assets from source control (local git branch) to the workspace.|
-|[update_from_ws_to_git.ps1](../src/update_from_ws_to_git.ps1)|Script to update the local repository from the item definitions in the Fabric workspace.|
+|[.env](./config/.envtemplate)|Environment variables file - used to store the parameter values required by the scripts. Update the values as needed.|
+|[update_from_git_to_ws.ps1](./src/update_from_git_to_ws.ps1)|Script to create a Fabric workspace (if non existing) and sync assets from source control (local git branch) to the workspace.|
+|[update_from_ws_to_git.ps1](./src/update_from_ws_to_git.ps1)|Script to update the local repository from the item definitions in the Fabric workspace.|
 
 > Note: to avoid committing secrets to your remote branch, make sure to ignore changes to the local version of your `.env` file.
 
 ### Understanding The DevOps Pipelines
 
-The [DevOps Pipelines README](../devops/README.md) provides a comprehensive explanation of the functionality of the DevOps Pipelines showcased in this example.
+The [DevOps Pipelines README](./devops/README.md) provides a comprehensive explanation of the functionality of the DevOps Pipelines showcased in this example.
 
 ## Set-up Instructions
 
@@ -157,18 +157,18 @@ To use this sample it is advisable that you:
 
 ### Deployment Steps
 
-Create Build (CI) and Release (CD) pipelines from the YML definitions provided in this sample. To do so, refer to the information in the [DevOps pipeline readme](../devops/README.md).
+Create Build (CI) and Release (CD) pipelines from the YML definitions provided in this sample. To do so, refer to the information in the [DevOps pipeline readme](./devops/README.md).
 
 ### Recommended Workflow
 
 The below picture illustrates these followed by a description of each of the numbered step:
 
-![Fabric CI/CD Architecture](../images/architecture_and_workflow.png)
+![Fabric CI/CD Architecture](./images/architecture_and_workflow.png)
 
 **Step 0. Update environment variables and prepare for local development**:
 
 - Verify that all the prerequisite software is installed and available in your system’s PATH.
-- Create a copy of the [`.envtemplate`](../config/.envtemplate) file and rename it to `.env`
+- Create a copy of the [`.envtemplate`](./config/.envtemplate) file and rename it to `.env`
 
    ```bash
    cp ./config/.envtemplate ./config/.env
@@ -218,7 +218,7 @@ The below picture illustrates these followed by a description of each of the num
 
 **Step 1. Create/Update Fabric workspace and create Fabric items from local branch**:
 
-- Run the [`update_from_git_to_ws.ps1`](../src/update_from_git_to_ws.ps1) script from the local repository folder. This step will create a new workspace and mirror what is on the repo to the workspace.
+- Run the [`update_from_git_to_ws.ps1`](./src/update_from_git_to_ws.ps1) script from the local repository folder. This step will create a new workspace and mirror what is on the repo to the workspace.
     > **CAUTION: Workspace items that are not in the local branch will be deleted from Fabric workspace.**
 
   - When running this for the first time on a new branch, utilize the `-resetConfig` setting it to `$true`. This ignores any existing `item-config.json` files and creates corresponding new objects in the workspace. This step is crucial as it prevents the script from failing due to a search for `objectId`s that are coming from the `dev` branch/workspace, which would not exist in the new Fabric workspace.
@@ -240,11 +240,11 @@ The below picture illustrates these followed by a description of each of the num
 
 **Step 3. Sync the local branch with Fabric workspace**:
 
-- Once you are ready to commit your changes to your branch, run the [`update_from_ws_to_git.ps1`](../src/update_from_ws_to_git.ps1). The script will update your local branch mirroring what is in your Fabric workspace. This creates/updates folders in the `$config.folder` on your local branch. For more information on folder structure see the [Source control mechanism for Fabric items](#source-control-mechanism-for-fabric-items) section.
+- Once you are ready to commit your changes to your branch, run the [`update_from_ws_to_git.ps1`](./src/update_from_ws_to_git.ps1). The script will update your local branch mirroring what is in your Fabric workspace. This creates/updates folders in the `$config.folder` on your local branch. For more information on folder structure see the [Source control mechanism for Fabric items](#source-control-mechanism-for-fabric-items) section.
     > **CAUTION: local branch items that are not in the workspace will be deleted from local branch.**
 
     ```pwsh
-    ../src/update_from_ws_to_git.ps1 -workspaceName "<your-workspace-name>" 
+    ./src/update_from_ws_to_git.ps1 -workspaceName "<your-workspace-name>" 
     ```
 
 **Step 4. Repeat until done**:
@@ -264,12 +264,12 @@ The below picture illustrates these followed by a description of each of the num
 
 - When the PR is approved, devops Build and Release pipelines are triggered:
 
-    1. the Build pipeline checks that no `item-config.json` files are being pushed to `dev`. For more information on usage of DevOps Pipelines in this sample, review the [DevOps Pipelines README](../devops/README.md).
+    1. the Build pipeline checks that no `item-config.json` files are being pushed to `dev`. For more information on usage of DevOps Pipelines in this sample, review the [DevOps Pipelines README](./devops/README.md).
     2. the release pipeline will mirror what is on `dev` to the development workspace by running `update_from_git_to_ws.ps1`.
 
 **Step 7 and 8. Use Release pipeline to deploy to all environments/stages**:
 
-- The release pipeline for STG and PRD can be identical or a variation to the release pipeline for DEV. For more information on usage of DevOps Pipelines in this sample, review the [DevOps Pipelines README](../devops/README.md).
+- The release pipeline for STG and PRD can be identical or a variation to the release pipeline for DEV. For more information on usage of DevOps Pipelines in this sample, review the [DevOps Pipelines README](./devops/README.md).
 
 ## Common errors
 
