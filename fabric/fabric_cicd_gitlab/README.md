@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Fabric CI/CD Sample for Multi-Tenancy or Generic Git
 
 ## Introduction
@@ -64,8 +63,8 @@ Service Principal and Managed Identity Authentication is currently supported by 
 ## Roadmap
 
 - Triggering hydration of Lakehouse (via Data Pipelines and Notebook).
-=======
-# Comprehensive CI/CD Approach
+
+## Comprehensive CI/CD Approach
 
 ## How Does It Work?
 
@@ -286,4 +285,3 @@ The below picture illustrates these followed by a description of each of the num
   - Likely the capacity you specified cannot be used. Make sure that your Fabric capacity is available and running, it might have been paused, in this case you can resume it and re-run the script.
 - `Error response: A parameter cannot be found that matches parameter name 'ResponseHeadersVariable'`
   - Likely you need to update your Powershell version to 7+.
->>>>>>> main
