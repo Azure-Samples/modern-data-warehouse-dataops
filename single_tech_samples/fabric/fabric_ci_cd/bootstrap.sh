@@ -33,7 +33,7 @@ pipeline_admin_upns=("${PIPELINE_ADMIN_UPNS[@]}")
 
 # Flags to control the flow of the script (toggle as per the project requirements)
 # TBD: Validate all the possible combinations of the flags. Also validate if the corresponding environment variables are set.
-deploy_azure_resources="true"
+deploy_azure_resources="false"
 create_workspaces="true"
 setup_deployment_pipeline="true"
 create_default_lakehouse="true"
