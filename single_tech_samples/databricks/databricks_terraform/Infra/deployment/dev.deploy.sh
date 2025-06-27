@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Set partner ID for telemetry tracking
-export AZURE_HTTP_USER_AGENT="acce1e78-XXXX-XXXX-XXXX-XXXXXXXXXXXXX"  # Replace with unique GUID for databricks_terraform sample
-
 # Load environment variables from .env file
 if [[ -f .env ]]; then
     echo "Loading environment variables from .env file"

@@ -25,9 +25,6 @@ set -o errexit
 set -o pipefail
 # set -o xtrace # For debugging
 
-# Set partner ID for telemetry tracking
-export AZURE_HTTP_USER_AGENT="acce1e78-XXXX-XXXX-XXXX-XXXXXXXXXXXXX"  # Replace with unique GUID for azuresql_ci_cd sample
-
 # REQUIRED VARIABLES:
 # GITHUB_REPO_URL - Github URL
 # GITHUB_PAT_TOKEN - Github PAT Token

@@ -20,9 +20,6 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-# Set partner ID for telemetry tracking
-export AZURE_HTTP_USER_AGENT="acce1e78-XXXX-XXXX-XXXX-XXXXXXXXXXXXX"  # Replace with unique GUID for parking_sensors sample
-
 . ./scripts/verify_prerequisites.sh
 . ./scripts/init_environment.sh
 

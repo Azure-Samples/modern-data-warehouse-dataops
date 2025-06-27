@@ -15,7 +15,4 @@ provider "azurerm" {
       purge_soft_delete_on_destroy    = true
     }
   }
-  
-  # Partner ID for telemetry tracking
-  partner_id = "acce1e78-XXXX-XXXX-XXXX-XXXXXXXXXXXXX"  # Replace with unique GUID for adf_data_pre_processing_with_azure_batch sample
 }

@@ -22,9 +22,6 @@ provider "azurerm" {
   storage_use_azuread             = true
   resource_provider_registrations = "none"
 
-  # Partner ID for telemetry tracking
-  partner_id = "acce1e78-XXXX-XXXX-XXXX-XXXXXXXXXXXXX"  # Replace with unique GUID for fabric_dataops_sample
-
   features {
     key_vault {
       purge_soft_delete_on_destroy = false

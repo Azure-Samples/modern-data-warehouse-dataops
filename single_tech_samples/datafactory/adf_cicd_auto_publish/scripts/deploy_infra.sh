@@ -25,9 +25,6 @@
 # - Correct Azure subscription is selected
 #######################################################
 
-# Set partner ID for telemetry tracking
-export AZURE_PARTNER_CUSTOMER_ID="acce1e78-XXXX-XXXX-XXXX-XXXXXXXXXXXXX"  # Replace with unique GUID for adf_cicd_auto_publish sample
-
 set -o errexit
 set -o pipefail
 set -o nounset

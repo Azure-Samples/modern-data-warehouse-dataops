@@ -12,9 +12,6 @@ terraform {
 provider "azurerm" {
   subscription_id = var.subscription_id
   features {}
-  
-  # Partner ID for telemetry tracking
-  partner_id = "acce1e78-XXXX-XXXX-XXXX-XXXXXXXXXXXXX"  # Replace with unique GUID for databricks_terraform sample
 }
 
 provider "databricks" {
