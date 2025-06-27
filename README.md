@@ -74,9 +74,8 @@ privacy statement is located at https://go.microsoft.com/fwlink/?LinkID=824704. 
 about data collection and use in the help documentation and our privacy statement. Your use of the
 software operates as your consent to these practices.
 
-The `partner_id` configuration in .tf files, `AZURE_HTTP_USER_AGENT` in .sh files, and `attribution` 
+The `partner_id` provider property in .tf files, `AZURE_HTTP_USER_AGENT` declaration in .sh files, and `attribution` 
 resources in .bicep files enable anonymous telemetry that helps us justify ongoing investment in 
-maintaining and improving this repository. Keeping this enabled supports the project and future 
+maintaining and improving this repository. Keeping these values enabled supports the project and future 
 feature development. To opt out of this telemetry, simply remove `partner_id`, `AZURE_HTTP_USER_AGENT`, 
-or `attribution` resources. When enabled, the specified IDs are appended to requests made by the configured 
-tools.
+or `attribution` code blocks. When enabled, the specified IDs are appended to requests sent by the associated code.

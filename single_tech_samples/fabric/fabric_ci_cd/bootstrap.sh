@@ -1,8 +1,8 @@
 #!/bin/bash
 source .env
 
-# Set partner ID for telemetry tracking
-export AZURE_HTTP_USER_AGENT="acce1e78-XXXX-XXXX-XXXX-XXXXXXXXXXXXX"  # Replace with unique GUID for fabric_ci_cd sample
+# Set partner ID for telemetry. For usage details, see https://github.com/microsoft/modern-data-warehouse-dataops/blob/main/README.md#data-collection
+export AZURE_HTTP_USER_AGENT="acce1e78-fc34-eddc-0120-b3e2262beff3"
 
 az account set --subscription "$AZURE_SUBSCRIPTION_ID"
 az devops configure --defaults organization="https://dev.azure.com/$ORGANIZATION_NAME" project="$PROJECT_NAME"
@@ -33,7 +33,7 @@ pipeline_admin_upns=("${PIPELINE_ADMIN_UPNS[@]}")
 
 # Flags to control the flow of the script (toggle as per the project requirements)
 # TBD: Validate all the possible combinations of the flags. Also validate if the corresponding environment variables are set.
-deploy_azure_resources="false"
+deploy_azure_resources="true"
 create_workspaces="true"
 setup_deployment_pipeline="true"
 create_default_lakehouse="true"

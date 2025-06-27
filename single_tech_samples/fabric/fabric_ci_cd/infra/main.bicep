@@ -3,9 +3,9 @@ param capacityName string
 param adminEmail string
 param sku string = 'F2'
 
-// Partner attribution for telemetry tracking
+/* Partner attribution resource for telemetry. For usage details, see https://github.com/microsoft/modern-data-warehouse-dataops/blob/main/README.md#data-collection */
 resource attribution 'Microsoft.Resources/deployments@2020-06-01' = {
-  name: 'pid-acce1e78-XXXX-XXXX-XXXX-XXXXXXXXXXXXX'  // Replace with unique GUID for fabric_ci_cd sample
+  name: 'pid-acce1e78-fc34-eddc-0120-b3e2262beff3'
   properties: {
     mode: 'Incremental'
     template: {
