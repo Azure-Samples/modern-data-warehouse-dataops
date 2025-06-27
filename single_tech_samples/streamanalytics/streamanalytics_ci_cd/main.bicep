@@ -3,6 +3,7 @@ param env string
 param location string = resourceGroup().location
 param query string
 
+
 module iothubs './iothubs.bicep' = {
   name: 'iothubs'
   params: {
