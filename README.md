@@ -52,3 +52,21 @@ This [sample](databricks/parking_sensors/) demonstrates batch, end-to-end data p
 ## Contributing
 
 This project welcomes contributions and suggestions. Please see our [Contributing guide](/CONTRIBUTING.md).
+
+## Data Collection
+
+The software may collect information about you and your use of the software and send it to
+Microsoft. Microsoft may use this information to provide services and improve our products
+and services. You may turn off the telemetry as described below. There are also some features
+in the software that may enable you and Microsoft to collect data from users of your applications.
+If you use these features, you must comply with applicable law, including providing appropriate
+notices to users of your applications together with a copy of Microsoft’s privacy statement. Our
+privacy statement is located [here](https://go.microsoft.com/fwlink/?LinkID=824704). You can learn more
+about data collection and use in the help documentation and our privacy statement. Your use of the
+software operates as your consent to these practices.
+
+The `partner_id` provider property in .tf files, `AZURE_HTTP_USER_AGENT` declaration in .sh files, and `attribution` 
+resources in .bicep files enable anonymous telemetry that helps us justify ongoing investment in 
+maintaining and improving this repository. Keeping these values enabled supports the project and future 
+feature development. To opt out of this telemetry, simply remove `partner_id`, `AZURE_HTTP_USER_AGENT`, 
+or `attribution` code blocks. When enabled, the specified IDs are appended to requests sent by the associated code.

@@ -1,6 +1,9 @@
 #!/bin/bash
 source .env
 
+# Set partner ID for telemetry. For usage details, see https://github.com/microsoft/modern-data-warehouse-dataops/blob/main/README.md#data-collection
+export AZURE_HTTP_USER_AGENT="acce1e78-fc34-eddc-0120-b3e2262beff3"
+
 az account set --subscription "$AZURE_SUBSCRIPTION_ID"
 az devops configure --defaults organization="https://dev.azure.com/$ORGANIZATION_NAME" project="$PROJECT_NAME"
 
