@@ -1,7 +1,11 @@
 param
 (
+    [parameter(Mandatory = $false)] [String] $baseUrl,           # Optional, the fabric api base url
+    [parameter(Mandatory = $false)] [String] $fabricToken,       # Optional, the fabric api token
     [parameter(Mandatory = $true)] [String] $workspaceName,      # The name of the workspace,
-    [parameter(Mandatory = $false)] [bool] $resetConfig=$false   # Used when the developer wants to reset the config files in the workspace (typically when a new feature branch is created)
+    [parameter(Mandatory = $false)] [String] $capacityId,        # Optional, the capacity id of the workspace,
+    [parameter(Mandatory = $false)] [String] $folder,            # Optional, the folder where the workspace items are located on the branch, should be: Join-Path $(Build.SourcesDirectory) $(directory_name)
+    [parameter(Mandatory = $false)] [bool] $resetConfig=$false   # Optional, used when the developer wants to reset the config files in the workspace (typically when a new feature branch is created)
 )
 ## FROM GIT TO WORKSPACE
 # Used when the developer creates a new branch from the development/main branch
@@ -306,11 +310,19 @@ function loadEnvironmentVariables() {
 }
 
 try {
-    loadEnvironmentVariables
-    $baseUrl=$env:FABRIC_API_BASEURL
-    $fabricToken=$env:FABRIC_USER_TOKEN
-    $capacityId=$env:FABRIC_CAPACITY_ID
-    $folder=$env:ITEMS_FOLDER
+    # if the following parameters are not set, the script will load env variables from the .env file
+    # else it will use the provided parameters
+    if (!$fabricToken -or !$baseUrl -or !$capacityId -or !$folder) {
+        Write-Host "Parameters fabricToken, baseUrl, capacityId or folder are not set, loading from .env file."
+        loadEnvironmentVariables
+        $baseUrl=$env:FABRIC_API_BASEURL
+        $fabricToken=$env:FABRIC_USER_TOKEN
+        $capacityId=$env:FABRIC_CAPACITY_ID
+        $folder=$env:ITEMS_FOLDER
+    }
+    else {
+        Write-Host "Required parameters are set, using them directly."
+    }
 
     # TODO: consider removing the logicalId from the file as it's not used today.
     Write-Host "this task is running Powershell version " $PSVersionTable.PSVersion
