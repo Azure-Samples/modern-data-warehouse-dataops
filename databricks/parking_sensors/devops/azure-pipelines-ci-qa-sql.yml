@@ -7,10 +7,10 @@ pr:
     - releases/*
   paths:
     include:
-    - e2e_samples/parking_sensors/sql/ddo_azuresqldw_dw/*
+    - databricks/parking_sensors/sql/ddo_azuresqldw_dw/*
 
 variables:
-  sqlDwPath: 'e2e_samples/parking_sensors/sql/ddo_azuresqldw_dw'
+  sqlDwPath: 'databricks/parking_sensors/sql/ddo_azuresqldw_dw'
   sqlDwSolutionName: 'ddo_azuresqldw_dw'
   sqlDwSolution: '$(sqlDwPath)/$(sqlDwSolutionName).sln'
   buildPlatform: 'Any CPU'
