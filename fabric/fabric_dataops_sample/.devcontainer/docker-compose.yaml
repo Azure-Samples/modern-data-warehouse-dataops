@@ -2,7 +2,7 @@ services:
   fabric_dataops_sample_dc:
     build:
       context: ../../../
-      dockerfile: e2e_samples/fabric_dataops_sample/.devcontainer/Dockerfile
+      dockerfile: fabric/fabric_dataops_sample/.devcontainer/Dockerfile
     volumes:
       - ../../..:/workspace
     command: sleep infinity
