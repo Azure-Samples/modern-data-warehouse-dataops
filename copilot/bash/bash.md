@@ -112,15 +112,15 @@ You WILL reference and assign environment variables with proper defaults and val
 ```bash
 # Variable assignment with validation and defaults
 DEPLOYMENT_ID=${DEPLOYMENT_ID:-}
-if [ -z "$DEPLOYMENT_ID" ]; then 
+if [ -z "${DEPLOYMENT_ID}" ]; then 
     export DEPLOYMENT_ID="$(random_str 5)"
-    log "No deployment id [DEPLOYMENT_ID] specified, defaulting to $DEPLOYMENT_ID" "info"
+    log "No deployment id [DEPLOYMENT_ID] specified, defaulting to ${DEPLOYMENT_ID}" "info"
 fi
 
 AZURE_LOCATION=${AZURE_LOCATION:-}
-if [ -z "$AZURE_LOCATION" ]; then    
+if [ -z "${AZURE_LOCATION}" ]; then    
     export AZURE_LOCATION="westus"
-    log "No resource group location [AZURE_LOCATION] specified, defaulting to $AZURE_LOCATION" "info"
+    log "No resource group location [AZURE_LOCATION] specified, defaulting to ${AZURE_LOCATION}" "info"
 fi
 ```
 
@@ -195,7 +195,7 @@ You WILL implement consistent logging functions with color support and levels:
 ```bash
 # Color-coded logging function with levels
 print_style() {
-    case "$2" in
+    case "${2}" in
         "info")
             COLOR="96m"
             ;;
@@ -222,22 +222,22 @@ print_style() {
             ;;
     esac
 
-    STARTCOLOR="\e[$COLOR"
+    STARTCOLOR="\e[${COLOR}"
     ENDCOLOR="\e[0m"
-    printf "$STARTCOLOR%b$ENDCOLOR" "$1"
+    printf "${STARTCOLOR}%b${ENDCOLOR}" "${1}"
 }
 
 log() {
     # This function takes a string as an argument and prints it to the console to stderr
     # Usage: log "message" "style"
     # Example: log "Hello, World!" "info"
-    local message=$1
+    local message=${1}
     local style=${2:-}
 
-    if [[ -z "$style" ]]; then
-        echo -e "$(print_style "$message" "default")" >&2
+    if [[ -z "${style}" ]]; then
+        echo -e "$(print_style "${message}" "default")" >&2
     else
-        echo -e "$(print_style "$message" "$style")" >&2
+        echo -e "$(print_style "${message}" "${style}")" >&2
     fi
 }
 ```
@@ -259,7 +259,7 @@ You WILL implement graceful exits for specific conditions with clear messaging:
 
 ```bash
 # Graceful exit with case handling
-case ${env_deploy} in
+case "${env_deploy}" in
 1)
     log "Deploying Dev Environment only..." "info"
     env_names="dev"
@@ -285,13 +285,13 @@ You WILL check for existing resources before creation:
 
 ```bash
 # Resource existence validation
-resource_group_exists=$(az group exists --name "$resource_group_name")
-if [[ $resource_group_exists == true ]]; then
-    log "Resource group $resource_group_name already exists. Skipping creation." "info"
+resource_group_exists=$(az group exists --name "${resource_group_name}")
+if [[ ${resource_group_exists} == true ]]; then
+    log "Resource group ${resource_group_name} already exists. Skipping creation." "info"
     return
 else
-    log "Creating resource group: $resource_group_name" "info"
-    az group create --name "$resource_group_name" --location "$AZURE_LOCATION" --tags Environment="$env_name" --output none
+    log "Creating resource group: ${resource_group_name}" "info"
+    az group create --name "${resource_group_name}" --location "${AZURE_LOCATION}" --tags Environment="${env_name}" --output none
 fi
 ```
 
@@ -302,7 +302,7 @@ You MUST implement consistent logging with color support and different log level
 ```bash
 # Helper function for colored output
 print_style() {
-    case "$2" in
+    case "${2}" in
         "info")
             COLOR="96m"
             ;;
@@ -323,28 +323,28 @@ print_style() {
             ;;
     esac
 
-    STARTCOLOR="\e[$COLOR"
+    STARTCOLOR="\e[${COLOR}"
     ENDCOLOR="\e[0m"
-    printf "$STARTCOLOR%b$ENDCOLOR" "$1"
+    printf "${STARTCOLOR}%b${ENDCOLOR}" "${1}"
 }
 
 # Main logging function
 log() {
-    local message=$1
+    local message=${1}
     local style=${2:-}
 
-    if [[ -z "$style" ]]; then
-        echo -e "$(print_style "$message" "default")" >&2
+    if [[ -z "${style}" ]]; then
+        echo -e "$(print_style "${message}" "default")" >&2
     else
-        echo -e "$(print_style "$message" "$style")" >&2
+        echo -e "$(print_style "${message}" "${style}")" >&2
     fi
 }
 
 # Utility logging functions
 wait_for_process() {
     local seconds=${1:-15}
-    log "Giving the portal $seconds seconds to process the information..." "info"
-    sleep "$seconds"
+    log "Giving the portal ${seconds} seconds to process the information..." "info"
+    sleep "${seconds}"
 }
 ```
 
@@ -352,9 +352,9 @@ You MAY implement user interaction for deployment options:
 
 ```bash
 # User interaction with clear options
-if [ -z "$ENV_DEPLOY" ]; then
-    read -r -p "Do you wish to deploy:"$'\n'"  1) Dev Environment Only?"$'\n'"  2) Dev and Stage Environments?"$'\n'"  3) Dev, Stage and Prod (Or Press Enter)?"$'\n'"   Choose 1, 2 or 3: " ENV_DEPLOY
-    log "Option Selected: $ENV_DEPLOY" "info"
+if [ -z "${ENV_DEPLOY}" ]; then
+    read --readline --prompt "Do you wish to deploy:"$'\n'"  1) Dev Environment Only?"$'\n'"  2) Dev and Stage Environments?"$'\n'"  3) Dev, Stage and Prod (Or Press Enter)?"$'\n'"   Choose 1, 2 or 3: " ENV_DEPLOY
+    log "Option Selected: ${ENV_DEPLOY}" "info"
 fi
 ```
 
@@ -374,7 +374,7 @@ For commands with multiple fixed arguments, use `\` line continuation for readab
 ```bash
 # Line continuation for long commands with fixed arguments
 az deployment group validate \
-    --resource-group "$resource_group_name" \
+    --resource-group "${resource_group_name}" \
     --template-file "./infrastructure/main.bicep" \
     --parameters @"./infrastructure/main.parameters.${env_name}.json" \
     --parameters project="${PROJECT}" keyvault_owner_object_id="${kv_owner_object_id}" \
@@ -387,10 +387,10 @@ You WILL use jq for JSON data processing and validation:
 
 ```bash
 # JSON processing with jq
-kv_list=$(az keyvault list-deleted --output json --query "[?contains(name,'$kv_name')]")
-if [[ $(echo "$kv_list" | jq -r '.[0]') != null ]]; then
-    kv_purge_protection_enabled=$(echo "$kv_list" | jq -r '.[0].properties.purgeProtectionEnabled')
-    kv_purge_scheduled_date=$(echo "$kv_list" | jq -r '.[0].properties.scheduledPurgeDate')
+kv_list=$(az keyvault list-deleted --output json --query "[?contains(name,'${kv_name}')]")
+if [[ $(echo "${kv_list}" | jq --raw-output '.[0]') != null ]]; then
+    kv_purge_protection_enabled=$(echo "${kv_list}" | jq --raw-output '.[0].properties.purgeProtectionEnabled')
+    kv_purge_scheduled_date=$(echo "${kv_list}" | jq --raw-output '.[0].properties.scheduledPurgeDate')
 fi
 
 # Get available VM sizes and process with jq
@@ -414,8 +414,8 @@ if az account show > /dev/null 2>&1; then
 fi
 
 # Login and set subscription
-az login --tenant "$TENANT_ID"
-az account set --subscription "$AZURE_SUBSCRIPTION_ID"
+az login --tenant "${TENANT_ID}"
+az account set --subscription "${AZURE_SUBSCRIPTION_ID}"
 ```
 
 ### Output Handling Rules
@@ -436,9 +436,9 @@ You WILL design functions with single responsibilities and define them early in 
 # Function definitions
 get_keyvault_value() {
     # This function retrieves a secret from the Azure Key Vault
-    local secret_name=$1
-    local kv_name=$2
-    local secret_value=$(az keyvault secret show --name "${secret_name}" --vault-name "${kv_name}" --query value -o tsv)
+    local secret_name=${1}
+    local kv_name=${2}
+    local secret_value=$(az keyvault secret show --name "${secret_name}" --vault-name "${kv_name}" --query value --output tsv)
     if [ -z "${secret_value}" ]; then
         log "Secret ${secret_name} not found in Key Vault ${kv_name}. Exiting." "error"
         exit 1
@@ -447,15 +447,15 @@ get_keyvault_value() {
 }
 
 random_str() {
-    local length=$1
-    cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $length | head -n 1 | tr '[:upper:]' '[:lower:]'
+    local length=${1}
+    cat /dev/urandom | tr --delete-chars 'a-zA-Z0-9' | fold --width="${length}" | head --lines=1 | tr '[:upper:]' '[:lower:]'
     return 0
 }
 
 databricks_cluster_exists() {
-    declare cluster_name="$1"
-    declare cluster=$(databricks clusters list | tr -s " " | cut -d" " -f2 | grep ^${cluster_name}$)
-    if [[ -n $cluster ]]; then
+    declare cluster_name="${1}"
+    declare cluster=$(databricks clusters list | tr --squeeze-repeats " " | cut --delimiter=" " --fields=2 | grep "^${cluster_name}$")
+    if [[ -n ${cluster} ]]; then
         return 0; # cluster exists
     else
         return 1; # cluster does not exist
@@ -469,7 +469,7 @@ You WILL implement environment-specific configuration functions:
 
 ```bash
 set_deployment_environment() {
-    env_name=$1
+    env_name=${1}
     if [ -z "${env_name}" ]; then
         log "Environment name is not set. Exiting." "error"
         exit 1
@@ -477,7 +477,7 @@ set_deployment_environment() {
     # Set all environment-specific variables
     resource_group_name="${PROJECT}-${DEPLOYMENT_ID}-${env_name}-rg"
     databricks_workspace_name="${PROJECT}-dbw-${env_name}-${DEPLOYMENT_ID}"
-    kv_name="${PROJECT}-kv-${env_name}-$DEPLOYMENT_ID"
+    kv_name="${PROJECT}-kv-${env_name}-${DEPLOYMENT_ID}"
 }
 ```
 
@@ -489,12 +489,12 @@ You WILL properly quote variables to prevent word splitting and command injectio
 
 ```bash
 # Variable quoting and safety
-if [[ "$ENVIRONMENT" == "prod" ]]; then
+if [[ "${ENVIRONMENT}" == "prod" ]]; then
     # Logic here
 fi
 
 # Safe file operations
-secret_value=$(az keyvault secret show --name "${secret_name}" --vault-name "${kv_name}" --query value -o tsv)
+secret_value=$(az keyvault secret show --name "${secret_name}" --vault-name "${kv_name}" --query value --output tsv)
 ```
 
 ### Authentication Methods
@@ -503,8 +503,8 @@ You WILL provide authentication with proper tenant and subscription handling:
 
 ```bash
 # Azure authentication with tenant specification
-az login --tenant "$TENANT_ID"
-az account set --subscription "$AZURE_SUBSCRIPTION_ID"
+az login --tenant "${TENANT_ID}"
+az account set --subscription "${AZURE_SUBSCRIPTION_ID}"
 
 # Token-based authentication for specific services
 databricks_aad_token=$(az account get-access-token --resource 2ff814a6-3304-4ab8-85cb-cd0e6f879c1d --query accessToken --output tsv)
@@ -518,9 +518,9 @@ You WILL handle secrets securely with proper validation:
 ```bash
 # Secure secret handling with validation and key vault integration
 get_keyvault_value() {
-    local secret_name=$1
-    local kv_name=$2
-    local secret_value=$(az keyvault secret show --name "${secret_name}" --vault-name "${kv_name}" --query value -o tsv)
+    local secret_name=${1}
+    local kv_name=${2}
+    local secret_value=$(az keyvault secret show --name "${secret_name}" --vault-name "${kv_name}" --query value --output tsv)
     if [ -z "${secret_value}" ]; then
         log "Secret ${secret_name} not found in Key Vault ${kv_name}. Exiting." "error"
         exit 1
@@ -530,7 +530,7 @@ get_keyvault_value() {
 
 # Password generation with complexity requirements
 AZURESQL_SERVER_PASSWORD=${AZURESQL_SERVER_PASSWORD:-}
-if [ -z "$AZURESQL_SERVER_PASSWORD" ]; then 
+if [ -z "${AZURESQL_SERVER_PASSWORD}" ]; then 
     export AZURESQL_SERVER_PASSWORD="P@_Sens0r$(makepasswd --chars 16)"
 fi
 ```
@@ -541,16 +541,16 @@ You WILL implement proper resource cleanup functions:
 
 ```bash
 delete_azdo_service_connection_principal() {
-    local sc_id=$1
-    local spnAppObjId=$(az devops.service-endpoint show --id "$sc_id" --org "$AZDO_ORGANIZATION_URL" -p "$AZDO_PROJECT" --query "data.appObjectId" --output tsv)
-    if [ -z "$spnAppObjId" ]; then
-        log "Service Principal Object ID not found for Service Connection ID: $sc_id. Skipping Service Principal cleanup." "info"
+    local sc_id=${1}
+    local spnAppObjId=$(az devops.service-endpoint show --id "${sc_id}" --org "${AZDO_ORGANIZATION_URL}" --project "${AZDO_PROJECT}" --query "data.appObjectId" --output tsv)
+    if [ -z "${spnAppObjId}" ]; then
+        log "Service Principal Object ID not found for Service Connection ID: ${sc_id}. Skipping Service Principal cleanup." "info"
         return
     fi
     log "Attempting to delete Service Principal." "info"
-    az ad app delete --id "$spnAppObjId" &&
-        log "Deleted Service Principal: $spnAppObjId" "info" || 
-        log "Failed to delete Service Principal: $spnAppObjId" "info"
+    az ad app delete --id "${spnAppObjId}" &&
+        log "Deleted Service Principal: ${spnAppObjId}" "info" || 
+        log "Failed to delete Service Principal: ${spnAppObjId}" "info"
 }
 ```
 
@@ -563,7 +563,7 @@ You WILL use consistent indentation and proper line continuation:
 ```bash
 # Line continuation for readability with proper indentation
 az deployment group validate \
-    --resource-group "$resource_group_name" \
+    --resource-group "${resource_group_name}" \
     --template-file "./infrastructure/main.bicep" \
     --parameters @"./infrastructure/main.parameters.${env_name}.json" \
     --parameters project="${PROJECT}" keyvault_owner_object_id="${kv_owner_object_id}" \
@@ -576,12 +576,12 @@ You WILL use appropriate comparison patterns:
 
 ```bash
 # Basic string comparisons
-if [[ $resource_group_exists == true ]]; then
+if [[ ${resource_group_exists} == true ]]; then
     log "Resource group already exists." "info"
 fi
 
 # Case-sensitive comparisons for exact matches
-if [ "$env_name" == "dev" ]; then
+if [ "${env_name}" == "dev" ]; then
     databricks_release_folder="/releases/${env_name}"
 else  
     databricks_release_folder="/releases/setup_release"
@@ -595,10 +595,10 @@ You WILL provide clear, descriptive comments for complex sections:
 ```bash
 # By default, set all KeyVault permissions to deployer
 # Retrieve KeyVault User Id
-kv_owner_object_id=$(az ad signed-in-user show --output json | jq -r '.id')
+kv_owner_object_id=$(az ad signed-in-user show --output json | jq --raw-output '.id')
 
 # Check if purge protection is enabled and scheduled date is in the future
-if [[ $kv_purge_protection_enabled == true && $kv_purge_scheduled_date > $(date -u +"%Y-%m-%dT%H:%M:%SZ") ]]; then
+if [[ "${kv_purge_protection_enabled}" == true && "${kv_purge_scheduled_date}" > $(date -u +"%Y-%m-%dT%H:%M:%SZ") ]]; then
     log "Existing Soft-Deleted KeyVault has Purge Protection enabled. Exiting..." "danger"
     exit 1
 fi
@@ -610,7 +610,7 @@ You WILL use proper quoting for multi-line user prompts:
 
 ```bash
 # Multi-line user prompt with proper escaping
-read -r -p "Do you wish to deploy:"$'\n'"  1) Dev Environment Only?"$'\n'"  2) Dev and Stage Environments?"$'\n'"  3) Dev, Stage and Prod (Or Press Enter)?"$'\n'"   Choose 1, 2 or 3: " ENV_DEPLOY
+read --readline --prompt "Do you wish to deploy:"$'\n'"  1) Dev Environment Only?"$'\n'"  2) Dev and Stage Environments?"$'\n'"  3) Dev, Stage and Prod (Or Press Enter)?"$'\n'"   Choose 1, 2 or 3: " ENV_DEPLOY
 ```
 
 ## Usage and Help Functions
@@ -622,7 +622,7 @@ For scripts that do implement usage functions, you SHOULD extract examples from 
 ```bash
 usage() {
   echo "usage: ${0##*./}"
-  grep -x -B99 -m 1 "^###" "$0" |
+  grep -x -B99 -m 1 "^###" "${0}" |
     sed -E -e '/^[^#]+=/ {s/^([^ ])/  \1/ ; s/#/ / ; s/=[^ ]*$// ;}' |
     sed -E -e ':x' -e '/^[^#]+=/ {s/^(  [^ ]+)[^ ] /\1  / ;}' -e 'tx' |
     sed -e 's/^## //' -e '/^#/d' -e '/^$/d'
@@ -642,13 +642,13 @@ You WILL handle file operations with appropriate error checking and path safety:
 # Configuration file creation with proper error handling
 create_databrickscfg_file() {
     databricks_host=$(get_databricks_host)
-    if [ -z "$databricks_host" ]; then
+    if [ -z "${databricks_host}" ]; then
         log "Databricks host is empty. Exiting." "Error"
         exit 1
     fi
     
     # Get token from key vault with validation
-    databricks_kv_token=$(az keyvault secret show --name databricksToken --vault-name $kv_name --query value -o tsv)
+    databricks_kv_token=$(az keyvault secret show --name databricksToken --vault-name "${kv_name}" --query value --output tsv)
     if [ -z "${databricks_kv_token}" ]; then
         log "Databricks token is empty. Exiting." "Error"
         exit 1
@@ -657,8 +657,8 @@ create_databrickscfg_file() {
     # Create configuration file
     cat <<EOL > ~/.databrickscfg
 [DEFAULT]
-host=${databricks_host}
-token=${databricks_kv_token}
+host="${databricks_host}"
+token="${databricks_kv_token}"
 EOL
 }
 
@@ -677,9 +677,9 @@ You WILL ensure safe system configuration changes only when necessary for the ap
 # User confirmation for destructive operations
 read -p "Deleted KeyVault with the same name exists but can be purged. Do you want to purge the existing KeyVault?"$'\n'"Answering YES will mean you WILL NOT BE ABLE TO RECOVER the old KeyVault and its contents. Answer [y/N]: " response
 
-case "$response" in
+case "${response}" in
     [yY][eE][sS]|[yY])
-    az keyvault purge --name "$kv_name" --no-wait
+    az keyvault purge --name "${kv_name}" --no-wait
     ;;
     *)
     log "You selected not to purge the existing KeyVault. Please change deployment id. Exiting..." "danger"
@@ -694,8 +694,8 @@ You WILL implement wait mechanisms for asynchronous operations:
 # Function to give time for the portal to process operations
 wait_for_process() {
     local seconds=${1:-15}
-    log "Giving the portal $seconds seconds to process the information..." "info"
-    sleep "$seconds"
+    log "Giving the portal ${seconds} seconds to process the information..." "info"
+    sleep "${seconds}"
 }
 ```
 
@@ -716,7 +716,48 @@ wait_for_process() {
 - [This cheat sheet](https://bertvv.github.io/cheat-sheets/Bash.html) has great bash best practices
 - Where possible, use the above cheat sheet to make decisions on styling
 
-TODO:
+### Flag Usage Conventions
 
-- parameter ${} should be consistent
-- leverage a common.sh with log and other common functions throughout the sample, if it doesn't exist, create it.
+You WILL prefer full flag names over short flags for better readability and self-documentation:
+
+```bash
+# Preferred: Full flag names for clarity
+az keyvault secret show --name "${secret_name}" --vault-name "${kv_name}" --query value --output tsv
+jq --raw-output '.id'
+cut --delimiter=" " --fields=2
+tr --delete-chars 'a-zA-Z0-9'
+fold --width="${length}"
+head --lines=1
+read --readline --prompt "Enter value: "
+
+# Less preferred: Short flags (harder to understand)
+az keyvault secret show --name "${secret_name}" --vault-name "${kv_name}" --query value -o tsv
+jq -r '.id'
+cut -d" " -f2
+tr -dc 'a-zA-Z0-9'
+fold -w "${length}"
+head -n 1
+read -r -p "Enter value: "
+```
+
+You MAY use commonly understood short flags for simple, one-line operations where the meaning is universally clear:
+
+```bash
+# Acceptable short flags for universally understood operations
+rm -f temp_file.txt
+ls -la
+grep -r "pattern" .
+find . -name "*.log"
+chmod +x script.sh
+mkdir -p /path/to/directory
+
+# Complex operations should still use full flags
+find . -name "*.log" --exec rm --force {} \;
+```
+
+**Guidelines for flag usage:**
+
+- **Use full flags** for multi-argument commands, complex operations, and when flags modify behavior significantly
+- **Use short flags** only for single-character flags that are universally recognized (`-f`, `-r`, `-x`, `-p`)
+- **Always use full flags** in Azure CLI commands, jq operations, and data processing pipelines
+- **Prioritize readability** - if there's any doubt about clarity, use the full flag name
