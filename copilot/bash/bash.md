@@ -8,6 +8,45 @@ You WILL ALWAYS prioritize script safety, security, and maintainability.
 You WILL NEVER compromise on error handling or input validation.
 You WILL ALWAYS use the established patterns for logging, variable handling, and function design.
 
+## MANDATORY: Common Functions Library - FIRST PRIORITY
+
+**BEFORE writing ANY bash script, you MUST complete this checklist:**
+
+- [ ] **FIRST** - Check if `scripts/common.sh` exists in the project
+- [ ] **IF NOT** - Create `common.sh` using the standard template below
+- [ ] **ALWAYS** - Consolidate duplicate functions into `common.sh`
+- [ ] **ALWAYS** - Source `common.sh` at the beginning of other scripts using: `. ./scripts/common.sh`
+
+**This is NOT optional - it is a hard requirement for every bash scripting task.**
+
+### Trigger Conditions - When to Check for common.sh
+
+You MUST check for and create common.sh when:
+- User asks to "create scripts", "write bash scripts", or "automate" processes
+- You see multiple bash scripts in a project
+- You identify duplicate functions (especially logging functions) across scripts
+- You encounter any bash script that doesn't source common.sh
+- You see inconsistent error handling or logging patterns
+
+### Red Flags - What Requires Immediate common.sh Creation
+
+You MUST create common.sh when you see:
+- Multiple scripts with duplicate `log()` or `print_style()` functions
+- Scripts without proper error handling patterns
+- Color-coded output implemented differently across scripts
+- Missing standardized validation functions
+- Any bash script that doesn't source common functions
+
+### Self-Check Questions - Ask Yourself Before Any Script Work
+
+Before creating any bash script, ask yourself:
+- "Does this project have a common.sh file?"
+- "Are there duplicate functions I should consolidate?"
+- "Does my script source common functions?"
+- "Am I following the established logging patterns?"
+
+**If any answer is "no", STOP and fix it first.**
+
 ## Script Structure and Organization
 
 ### Shebang and Initial Setup
@@ -731,194 +770,28 @@ project-root/
 
 ### Common Functions Library
 
+**REFER TO THE MANDATORY TEMPLATE AT THE TOP OF THIS DOCUMENT**
+
 You WILL ALWAYS identify whether a sample project has a `common.sh` file and whether it contains the required common functions:
 
-- If the sample project uses bash and doesn't have a `common.sh` file, you'll first create one following the standard template
+- If the sample project uses bash and doesn't have a `common.sh` file, you'll first create one following the standard template **shown at the top of this document**
 - If the sample project has a `common.sh` file, you'll verify it conforms to the established patterns
 - You WILL ALWAYS consolidate duplicate functions across scripts into `common.sh`
 - You WILL ALWAYS source `common.sh` at the beginning of other scripts using: `. ./scripts/common.sh`
 
 ### Required Common Functions
 
-Your `common.sh` file MUST include these essential functions:
+Your `common.sh` file MUST include these essential functions (all included in the template above):
 
-1. **Utility Functions**: `random_str()`, `wait_for_process()`
+1. **Utility Functions**: `random_str()`, `wait_for_process()`, `command_exists()`
 2. **Logging Functions**: `print_style()`, `log()`
-3. **Validation Functions**: `command_exists()`, `validate_required_vars()`
+3. **Validation Functions**: `validate_required_vars()`, `validate_commands()`
 4. **Azure Functions**: `get_keyvault_value()`, `check_azure_login()`
+5. **Resource Functions**: `resource_group_exists()`, `wait_for_deployment()`
 
 ### Standard `common.sh` Template
 
-```bash
-#!/bin/bash
-
-# Access granted under MIT Open Source License: https://en.wikipedia.org/wiki/MIT_License
-
-# Strict error handling
-set -o errexit
-set -o pipefail
-set -o nounset
-
-#######################################################
-# Common utility functions for bash scripts
-# This file should be sourced by other scripts using:
-# . ./scripts/common.sh
-#######################################################
-
-# Utility Functions
-random_str() {
-    local length="${1}"
-    cat /dev/urandom | tr --delete-chars 'a-zA-Z0-9' | fold --width="${length}" | head --lines=1 | tr '[:upper:]' '[:lower:]'
-    return 0
-}
-
-wait_for_process() {
-    local seconds="${1:-15}"
-    log "Giving the portal ${seconds} seconds to process the information..." "info"
-    sleep "${seconds}"
-}
-
-command_exists() {
-    local command_name="${1}"
-    command -v "${command_name}" >/dev/null 2>&1
-}
-
-# Logging Functions
-print_style() {
-    local message="${1}"
-    local style="${2}"
-    local color=""
-    
-    case "${style}" in
-        "info")
-            color="96m"
-            ;;
-        "debug")
-            color="96m"
-            ;;
-        "success")
-            color="92m"
-            ;;
-        "error")
-            color="91m"
-            ;;
-        "warning")
-            color="93m"
-            ;;
-        "danger")
-            color="91m"
-            ;;
-        "action")
-            color="32m"
-            ;;
-        *)
-            color="0m"
-            ;;
-    esac
-
-    local startcolor="\e[${color}"
-    local endcolor="\e[0m"
-    printf "${startcolor}%b${endcolor}" "${message}"
-}
-
-log() {
-    # This function takes a string as an argument and prints it to the console to stderr
-    # if a second argument is provided, it will be used as the style of the message
-    # Usage: log "message" "style"
-    # Example: log "Hello, World!" "info"
-    local message="${1}"
-    local style="${2:-}"
-
-    if [[ -z "${style}" ]]; then
-        echo -e "$(print_style "${message}" "default")" >&2
-    else
-        echo -e "$(print_style "${message}" "${style}")" >&2
-    fi
-}
-
-# Validation Functions
-validate_required_vars() {
-    local vars=("$@")
-    local missing_vars=()
-    
-    for var in "${vars[@]}"; do
-        if [[ -z "${!var:-}" ]]; then
-            missing_vars+=("${var}")
-        fi
-    done
-    
-    if [[ ${#missing_vars[@]} -gt 0 ]]; then
-        log "Missing required environment variables: ${missing_vars[*]}" "error"
-        log "Please ensure your .env file contains all required variables." "error"
-        exit 1
-    fi
-}
-
-validate_commands() {
-    local commands=("$@")
-    local missing_commands=()
-    
-    for cmd in "${commands[@]}"; do
-        if ! command_exists "${cmd}"; then
-            missing_commands+=("${cmd}")
-        fi
-    done
-    
-    if [[ ${#missing_commands[@]} -gt 0 ]]; then
-        log "Missing required commands: ${missing_commands[*]}" "error"
-        log "Please install the required tools before proceeding." "error"
-        exit 1
-    fi
-}
-
-# Azure Functions
-check_azure_login() {
-    if ! az account show >/dev/null 2>&1; then
-        log "Not logged in to Azure. Please run 'az login' first." "error"
-        exit 1
-    fi
-}
-
-get_keyvault_value() {
-    local secret_name="${1}"
-    local kv_name="${2}"
-    
-    if [[ -z "${secret_name}" || -z "${kv_name}" ]]; then
-        log "get_keyvault_value requires secret name and key vault name" "error"
-        exit 1
-    fi
-    
-    local secret_value
-    secret_value=$(az keyvault secret show --name "${secret_name}" --vault-name "${kv_name}" --query value --output tsv)
-    
-    if [[ -z "${secret_value}" ]]; then
-        log "Secret ${secret_name} not found in Key Vault ${kv_name}" "error"
-        exit 1
-    fi
-    
-    echo "${secret_value}"
-}
-
-# Resource Management Functions
-resource_group_exists() {
-    local rg_name="${1}"
-    az group exists --name "${rg_name}" --output tsv
-}
-
-wait_for_deployment() {
-    local deployment_name="${1}"
-    local resource_group="${2}"
-    local timeout="${3:-1800}"  # 30 minutes default
-    
-    log "Waiting for deployment ${deployment_name} to complete..." "info"
-    
-    az deployment group wait \
-        --name "${deployment_name}" \
-        --resource-group "${resource_group}" \
-        --timeout "${timeout}" \
-        --output none
-}
-```
+> **IMPORTANT**: The authoritative template is at the top of this document under "MANDATORY: Common Functions Library". This section is kept for reference only.
 
 ### Script Sourcing Pattern
 
