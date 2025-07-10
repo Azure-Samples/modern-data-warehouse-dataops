@@ -711,12 +711,257 @@ wait_for_process() {
 - You SHOULD implement wait mechanisms for asynchronous cloud operations
 - You MAY provide debug modes and verbose output options for troubleshooting when scripts are complex
 
-## External Style References
+## Code Organization
 
-- [This cheat sheet](https://bertvv.github.io/cheat-sheets/Bash.html) has great bash best practices
-- Where possible, use the above cheat sheet to make decisions on styling
+### Project Structure Requirements
 
-### Flag Usage Conventions
+You WILL ALWAYS organize bash scripts in a consistent directory structure:
+
+```text
+project-root/
+├── scripts/
+│   ├── common.sh           # Shared functions and utilities
+│   ├── deploy.sh           # Main deployment script
+│   ├── cleanup.sh          # Resource cleanup script
+│   ├── verify_prerequisites.sh  # Prerequisite validation
+│   └── init_environment.sh      # Environment initialization
+├── infrastructure/         # Infrastructure as Code files
+└── README.md              # Project documentation
+```
+
+### Common Functions Library
+
+You WILL ALWAYS identify whether a sample project has a `common.sh` file and whether it contains the required common functions:
+
+- If the sample project uses bash and doesn't have a `common.sh` file, you'll first create one following the standard template
+- If the sample project has a `common.sh` file, you'll verify it conforms to the established patterns
+- You WILL ALWAYS consolidate duplicate functions across scripts into `common.sh`
+- You WILL ALWAYS source `common.sh` at the beginning of other scripts using: `. ./scripts/common.sh`
+
+### Required Common Functions
+
+Your `common.sh` file MUST include these essential functions:
+
+1. **Utility Functions**: `random_str()`, `wait_for_process()`
+2. **Logging Functions**: `print_style()`, `log()`
+3. **Validation Functions**: `command_exists()`, `validate_required_vars()`
+4. **Azure Functions**: `get_keyvault_value()`, `check_azure_login()`
+
+### Standard `common.sh` Template
+
+```bash
+#!/bin/bash
+
+# Access granted under MIT Open Source License: https://en.wikipedia.org/wiki/MIT_License
+
+# Strict error handling
+set -o errexit
+set -o pipefail
+set -o nounset
+
+#######################################################
+# Common utility functions for bash scripts
+# This file should be sourced by other scripts using:
+# . ./scripts/common.sh
+#######################################################
+
+# Utility Functions
+random_str() {
+    local length="${1}"
+    cat /dev/urandom | tr --delete-chars 'a-zA-Z0-9' | fold --width="${length}" | head --lines=1 | tr '[:upper:]' '[:lower:]'
+    return 0
+}
+
+wait_for_process() {
+    local seconds="${1:-15}"
+    log "Giving the portal ${seconds} seconds to process the information..." "info"
+    sleep "${seconds}"
+}
+
+command_exists() {
+    local command_name="${1}"
+    command -v "${command_name}" >/dev/null 2>&1
+}
+
+# Logging Functions
+print_style() {
+    local message="${1}"
+    local style="${2}"
+    local color=""
+    
+    case "${style}" in
+        "info")
+            color="96m"
+            ;;
+        "debug")
+            color="96m"
+            ;;
+        "success")
+            color="92m"
+            ;;
+        "error")
+            color="91m"
+            ;;
+        "warning")
+            color="93m"
+            ;;
+        "danger")
+            color="91m"
+            ;;
+        "action")
+            color="32m"
+            ;;
+        *)
+            color="0m"
+            ;;
+    esac
+
+    local startcolor="\e[${color}"
+    local endcolor="\e[0m"
+    printf "${startcolor}%b${endcolor}" "${message}"
+}
+
+log() {
+    # This function takes a string as an argument and prints it to the console to stderr
+    # if a second argument is provided, it will be used as the style of the message
+    # Usage: log "message" "style"
+    # Example: log "Hello, World!" "info"
+    local message="${1}"
+    local style="${2:-}"
+
+    if [[ -z "${style}" ]]; then
+        echo -e "$(print_style "${message}" "default")" >&2
+    else
+        echo -e "$(print_style "${message}" "${style}")" >&2
+    fi
+}
+
+# Validation Functions
+validate_required_vars() {
+    local vars=("$@")
+    local missing_vars=()
+    
+    for var in "${vars[@]}"; do
+        if [[ -z "${!var:-}" ]]; then
+            missing_vars+=("${var}")
+        fi
+    done
+    
+    if [[ ${#missing_vars[@]} -gt 0 ]]; then
+        log "Missing required environment variables: ${missing_vars[*]}" "error"
+        log "Please ensure your .env file contains all required variables." "error"
+        exit 1
+    fi
+}
+
+validate_commands() {
+    local commands=("$@")
+    local missing_commands=()
+    
+    for cmd in "${commands[@]}"; do
+        if ! command_exists "${cmd}"; then
+            missing_commands+=("${cmd}")
+        fi
+    done
+    
+    if [[ ${#missing_commands[@]} -gt 0 ]]; then
+        log "Missing required commands: ${missing_commands[*]}" "error"
+        log "Please install the required tools before proceeding." "error"
+        exit 1
+    fi
+}
+
+# Azure Functions
+check_azure_login() {
+    if ! az account show >/dev/null 2>&1; then
+        log "Not logged in to Azure. Please run 'az login' first." "error"
+        exit 1
+    fi
+}
+
+get_keyvault_value() {
+    local secret_name="${1}"
+    local kv_name="${2}"
+    
+    if [[ -z "${secret_name}" || -z "${kv_name}" ]]; then
+        log "get_keyvault_value requires secret name and key vault name" "error"
+        exit 1
+    fi
+    
+    local secret_value
+    secret_value=$(az keyvault secret show --name "${secret_name}" --vault-name "${kv_name}" --query value --output tsv)
+    
+    if [[ -z "${secret_value}" ]]; then
+        log "Secret ${secret_name} not found in Key Vault ${kv_name}" "error"
+        exit 1
+    fi
+    
+    echo "${secret_value}"
+}
+
+# Resource Management Functions
+resource_group_exists() {
+    local rg_name="${1}"
+    az group exists --name "${rg_name}" --output tsv
+}
+
+wait_for_deployment() {
+    local deployment_name="${1}"
+    local resource_group="${2}"
+    local timeout="${3:-1800}"  # 30 minutes default
+    
+    log "Waiting for deployment ${deployment_name} to complete..." "info"
+    
+    az deployment group wait \
+        --name "${deployment_name}" \
+        --resource-group "${resource_group}" \
+        --timeout "${timeout}" \
+        --output none
+}
+```
+
+### Script Sourcing Pattern
+
+You WILL ALWAYS source common functions at the beginning of scripts in this order:
+
+```bash
+#!/bin/bash
+
+# Source common functions (order matters)
+. ./scripts/common.sh
+
+# Source environment-specific configurations
+if [[ -f ./.env ]]; then
+    . ./.env
+fi
+
+# Source additional helper scripts
+. ./scripts/verify_prerequisites.sh
+. ./scripts/init_environment.sh
+```
+
+### Function Naming Conventions
+
+You WILL follow these naming conventions for consistency:
+
+- **Utility functions**: `snake_case` (e.g., `random_str`, `wait_for_process`)
+- **Check functions**: `verb_noun` pattern (e.g., `check_azure_login`, `validate_required_vars`)
+- **Get functions**: `get_noun` pattern (e.g., `get_keyvault_value`, `get_deployment_status`)
+- **Resource functions**: `resource_action` pattern (e.g., `resource_group_exists`, `deployment_wait`)
+
+### Code Deduplication Strategy
+
+You WILL identify and consolidate these common patterns:
+
+1. **Authentication checks** → `check_azure_login()`
+2. **Command validation** → `validate_commands()`
+3. **Environment validation** → `validate_required_vars()`
+4. **Resource existence checks** → `resource_group_exists()`, `keyvault_exists()`
+5. **Deployment waiting** → `wait_for_deployment()`
+6. **Secret retrieval** → `get_keyvault_value()`
+7. **Random string generation** → `random_str()`
+
+## Flag Usage Conventions
 
 You WILL prefer full flag names over short flags for better readability and self-documentation:
 
@@ -761,3 +1006,8 @@ find . -name "*.log" --exec rm --force {} \;
 - **Use short flags** only for single-character flags that are universally recognized (`-f`, `-r`, `-x`, `-p`)
 - **Always use full flags** in Azure CLI commands, jq operations, and data processing pipelines
 - **Prioritize readability** - if there's any doubt about clarity, use the full flag name
+
+## External Style References
+
+- [This cheat sheet](https://bertvv.github.io/cheat-sheets/Bash.html) has great bash best practices
+- Where possible, use the above cheat sheet to make decisions on styling
