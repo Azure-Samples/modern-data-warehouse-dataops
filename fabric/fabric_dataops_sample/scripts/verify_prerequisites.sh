@@ -3,118 +3,174 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-echo "[Info] ############ STARTING PRE REQUISITE CHECK ############"
-ENV_FILE=${1:-"../.env"}
+# Source common functions
+. ./scripts/common.sh
 
-# Function to check if Python 3 is installed and meets the version requirement
+log "############ STARTING PRE REQUISITE CHECK ############" "info"
+
+ENV_FILE="${1:-../.env}"
+
+#######################################################
+# Check if Python 3 is installed and meets version requirements
+# Arguments:
+#   None
+# Outputs:
+#   Status messages about Python version
+# Returns:
+#   Exits with 1 if Python requirements are not met
+#######################################################
 check_python_version() {
-  if ! command -v python3 &>/dev/null; then
-    echo "[Error] Python is not installed or not available in PATH."
-    exit 1
-  fi
+    if ! command_exists python3; then
+        log "Python is not installed or not available in PATH." "error"
+        exit 1
+    fi
 
-  PYTHON_INTERPRETER=$(which python3)
-  echo "[Info] Using Python interpreter: $PYTHON_INTERPRETER"
+    local python_interpreter=$(which python3)
+    log "Using Python interpreter: ${python_interpreter}" "info"
 
-  PYTHON_VERSION=$(python3 --version 2>&1)
-  echo "[Info] $PYTHON_VERSION found."
+    local python_version=$(python3 --version 2>&1)
+    log "${python_version} found." "info"
 
-  PYTHON_VERSION_MAJOR=$(python3 -c "import sys; print(sys.version_info.major)")
-  PYTHON_VERSION_MINOR=$(python3 -c "import sys; print(sys.version_info.minor)")
+    local python_version_major=$(python3 -c "import sys; print(sys.version_info.major)")
+    local python_version_minor=$(python3 -c "import sys; print(sys.version_info.minor)")
 
-  if [[ "$PYTHON_VERSION_MAJOR" -lt 3 || ("$PYTHON_VERSION_MAJOR" -eq 3 && "$PYTHON_VERSION_MINOR" -lt 9) ]]; then
-    echo "[Error] Python version ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR} found. Python 3.9 or higher is required."
-    exit 1
-  fi
-  echo "[Info] Python version ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR} is installed and meets the requirement (>= 3.9)."
+    if [[ "${python_version_major}" -lt 3 || ("${python_version_major}" -eq 3 && "${python_version_minor}" -lt 9) ]]; then
+        log "Python version ${python_version_major}.${python_version_minor} found. Python 3.9 or higher is required." "error"
+        exit 1
+    fi
+    
+    log "Python version ${python_version_major}.${python_version_minor} is installed and meets the requirement (>= 3.9)." "success"
 }
 
-# Function to check if required Python libraries are installed
+#######################################################
+# Check if required Python libraries are installed
+# Arguments:
+#   None
+# Outputs:
+#   Status messages about library availability
+# Returns:
+#   Exits with 1 if required libraries are missing
+#######################################################
 check_python_libraries() {
-  local libraries=("requests")
-  for library in "${libraries[@]}"; do
-    if ! python3 -m pip show "$library" &>/dev/null; then
-      echo "[Error] '$library' library is not installed."
-      exit 1
-    fi
-    echo "[Info] '$library' library is installed."
-  done
-}
-
-# Function to check if Terraform is installed and meets version requirements
-check_terraform() {
-  if ! command -v terraform &>/dev/null; then
-    echo "[Error] Terraform is not installed or not available in PATH."
-    exit 1
-  fi
-
-  TERRAFORM_VERSION=$(terraform version | awk '{if ($1 == "Terraform") print $2}')
-
-  if [[ $? -ne 0 || -z "$TERRAFORM_VERSION" ]]; then
-    echo "[Error] Failed to retrieve Terraform version."
-    exit 1
-  fi
-
-  echo "[Info] Terraform version $TERRAFORM_VERSION is installed."
-}
-
-# Function to check if Azure CLI is installed and meets version requirements
-check_azure_cli() {
-  if ! command -v az &>/dev/null; then
-    echo "[Error] Azure CLI is not installed or not available in PATH."
-    exit 1
-  fi
-  AZURE_CLI_VERSION=$(az --version | head -n1 | awk '{if ($1 == "azure-cli") print $2}')
-  echo "[Info] Azure CLI version $AZURE_CLI_VERSION is installed."
-}
-
-# Function to check if jq (command-line JSON processor) is installed
-check_jq() {
-  if ! command -v jq &>/dev/null; then
-    echo "[Error] 'jq' is not installed or not available in PATH. You can install 'jq' using: sudo apt-get install jq (for Ubuntu)."
-    exit 1
-  fi
-  echo "[Info] 'jq' is installed."
-}
-
-# Function to check if required environment variables are set and non-empty
-check_env_vars() {
-  if [[ ! -f "$ENV_FILE" ]]; then
-    echo "[Error] .env file not found at $ENV_FILE"
-    exit 1
-  fi
-
-  COMPULSORY_VARS=("TENANT_ID" "SUBSCRIPTION_ID" "BASE_NAME" "FABRIC_WORKSPACE_ADMIN_SG_NAME" "FABRIC_CAPACITY_ADMINS")
-  local missing_compulsory_vars=()
-
-  for var in "${COMPULSORY_VARS[@]}"; do
-    if [ -z "${!var-}" ]; then
-      missing_compulsory_vars+=("$var")
-    fi
-  done
-
-  if [ ${#missing_compulsory_vars[@]} -gt 0 ]; then
-    echo "[Error] The following compulsory environment variables are missing or empty:"
-    for var in "${missing_compulsory_vars[@]}"; do
-      echo "  - $var"
+    local libraries=("requests")
+    
+    for library in "${libraries[@]}"; do
+        if ! python3 -m pip show "${library}" &>/dev/null; then
+            log "'${library}' library is not installed." "error"
+            exit 1
+        fi
+        log "'${library}' library is installed." "success"
     done
-    echo "Please set the above variables or source the .env file."
-    exit 1
-  fi
+}
 
-  # Ensure 'ENVIRONMENT_NAMES' and 'RESOURCE_GROUP_NAMES' arrays have the same length
-  if [ ${#ENVIRONMENT_NAMES[@]} -ne ${#RESOURCE_GROUP_NAMES[@]} ]; then
-    echo "[Error] ENVIRONMENT_NAMES and RESOURCE_GROUP_NAMES arrays must have the same length."
-    exit 1
-  fi
+#######################################################
+# Check if Terraform is installed and meets version requirements
+# Arguments:
+#   None
+# Outputs:
+#   Status messages about Terraform version
+# Returns:
+#   Exits with 1 if Terraform is not available
+#######################################################
+check_terraform() {
+    if ! command_exists terraform; then
+        log "Terraform is not installed or not available in PATH." "error"
+        exit 1
+    fi
 
-  # Ensure 'ENVIRONMENT_NAMES' and 'GIT_BRANCH_NAMES' arrays have the same length
-  if [ ${#ENVIRONMENT_NAMES[@]} -ne ${#GIT_BRANCH_NAMES[@]} ]; then
-    echo "[Error] ENVIRONMENT_NAMES and GIT_BRANCH_NAMES arrays must have the same length."
-    exit 1
-  fi
+    local terraform_version=$(terraform version | awk '{if ($1 == "Terraform") print $2}')
 
-  echo "[Info] All compulsory environment variables are set and non-empty."
+    if [[ $? -ne 0 || -z "${terraform_version}" ]]; then
+        log "Failed to retrieve Terraform version." "error"
+        exit 1
+    fi
+
+    log "Terraform version ${terraform_version} is installed." "success"
+}
+
+#######################################################
+# Check if Azure CLI is installed and meets version requirements
+# Arguments:
+#   None
+# Outputs:
+#   Status messages about Azure CLI version
+# Returns:
+#   Exits with 1 if Azure CLI is not available
+#######################################################
+check_azure_cli() {
+    if ! command_exists az; then
+        log "Azure CLI is not installed or not available in PATH." "error"
+        exit 1
+    fi
+    
+    local azure_cli_version=$(az --version | head --lines=1 | awk '{if ($1 == "azure-cli") print $2}')
+    log "Azure CLI version ${azure_cli_version} is installed." "success"
+}
+
+#######################################################
+# Check if jq (command-line JSON processor) is installed
+# Arguments:
+#   None
+# Outputs:
+#   Status messages about jq availability
+# Returns:
+#   Exits with 1 if jq is not available
+#######################################################
+check_jq() {
+    if ! command_exists jq; then
+        log "'jq' is not installed or not available in PATH. You can install 'jq' using: sudo apt-get install jq (for Ubuntu)." "error"
+        exit 1
+    fi
+    
+    log "'jq' is installed." "success"
+}
+
+#######################################################
+# Check if required environment variables are set and non-empty
+# Arguments:
+#   None
+# Outputs:
+#   Status messages about environment variables
+# Returns:
+#   Exits with 1 if required variables are missing
+#######################################################
+check_env_vars() {
+    if [[ ! -f "${ENV_FILE}" ]]; then
+        log ".env file not found at ${ENV_FILE}" "error"
+        exit 1
+    fi
+
+    local compulsory_vars=("TENANT_ID" "SUBSCRIPTION_ID" "BASE_NAME" "FABRIC_WORKSPACE_ADMIN_SG_NAME" "FABRIC_CAPACITY_ADMINS")
+    local missing_compulsory_vars=()
+
+    for var in "${compulsory_vars[@]}"; do
+        if [[ -z "${!var-}" ]]; then
+            missing_compulsory_vars+=("${var}")
+        fi
+    done
+
+    if [[ ${#missing_compulsory_vars[@]} -gt 0 ]]; then
+        log "The following compulsory environment variables are missing or empty:" "error"
+        for var in "${missing_compulsory_vars[@]}"; do
+            log "  - ${var}" "error"
+        done
+        log "Please set the above variables or source the .env file." "error"
+        exit 1
+    fi
+
+    # Ensure 'ENVIRONMENT_NAMES' and 'RESOURCE_GROUP_NAMES' arrays have the same length
+    if [[ ${#ENVIRONMENT_NAMES[@]} -ne ${#RESOURCE_GROUP_NAMES[@]} ]]; then
+        log "ENVIRONMENT_NAMES and RESOURCE_GROUP_NAMES arrays must have the same length." "error"
+        exit 1
+    fi
+
+    # Ensure 'ENVIRONMENT_NAMES' and 'GIT_BRANCH_NAMES' arrays have the same length
+    if [[ ${#ENVIRONMENT_NAMES[@]} -ne ${#GIT_BRANCH_NAMES[@]} ]]; then
+        log "ENVIRONMENT_NAMES and GIT_BRANCH_NAMES arrays must have the same length." "error"
+        exit 1
+    fi
+
+    log "All compulsory environment variables are set and non-empty." "success"
 }
 
 # Main flow
@@ -125,4 +181,4 @@ check_azure_cli
 check_jq
 check_env_vars
 
-echo "[Info] ############ PRE REQUISITE CHECK FINISHED ############"
+log "############ PRE REQUISITE CHECK FINISHED ############" "success"

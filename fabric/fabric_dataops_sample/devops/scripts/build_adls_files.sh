@@ -1,49 +1,85 @@
 #!/bin/bash
 set -o errexit
+set -o pipefail
+set -o nounset
 
+# Source common functions (adjust path as needed)
+. ../../scripts/common.sh
+
+# Validate required commands
+validate_commands "curl" "jq" "sed"
+
+# Configuration file paths
 config_template_file="config/application.cfg.template"
 config_file="config/application.cfg"
 
-function get_workspace_id() {
-    access_token=$1
-    workspace_name=$2
+#######################################################
+# Get workspace ID for a given workspace name
+# Arguments:
+#   $1: access_token - Fabric access token
+#   $2: workspace_name - Name of the workspace
+# Outputs:
+#   Sets FABRIC_WORKSPACE_ID environment variable
+#   Prints workspace ID
+# Returns:
+#   0 if workspace found, 1 if not found
+#######################################################
+get_workspace_id() {
+    local access_token=${1}
+    local workspace_name=${2}
 
-    echo "Get workspace ID for $workspace_name/$access_token"
+    log "Get workspace ID for ${workspace_name}" "info"
 
-    url="https://api.fabric.microsoft.com/v1/workspaces"
-    response=$(curl -s -H "Authorization: Bearer $access_token" $url)
+    local url="https://api.fabric.microsoft.com/v1/workspaces"
+    local response=$(curl --silent --header "Authorization: Bearer ${access_token}" "${url}")
 
-    echo "[Info] Workspaces: $response"
+    log "Workspaces: ${response}" "debug"
 
-    workspace_id=$(echo $response | jq -r --arg workspace_name "$workspace_name" '.value[] | select(.displayName == $workspace_name) | .id')
+    local workspace_id=$(echo "${response}" | jq --raw-output \
+        --arg workspace_name "${workspace_name}" \
+        '.value[] | select(.displayName == $workspace_name) | .id')
 
-    if [[ -z "$workspace_id" ]]; then
-        echo "[Info] Workspace $workspace_name not found." >&2
+    if [[ -z "${workspace_id}" || "${workspace_id}" == "null" ]]; then
+        log "Workspace ${workspace_name} not found." "error"
         return 1
     fi
 
-    export FABRIC_WORKSPACE_ID=$workspace_id
-    echo "Workspace ID: $workspace_id"
+    export FABRIC_WORKSPACE_ID="${workspace_id}"
+    log "Workspace ID: ${workspace_id}" "success"
     return 0
 }
 
-function get_lakehouse_id() {
-    access_token=$1
-    workspace_id=$2
-    lakehouse_name=$3
+#######################################################
+# Get lakehouse ID for a given lakehouse name in a workspace
+# Arguments:
+#   $1: access_token - Fabric access token
+#   $2: workspace_id - ID of the workspace
+#   $3: lakehouse_name - Name of the lakehouse
+# Outputs:
+#   Sets FABRIC_LAKEHOUSE_ID environment variable
+#   Prints lakehouse ID
+# Returns:
+#   0 if lakehouse found, 1 if not found
+#######################################################
+get_lakehouse_id() {
+    local access_token=${1}
+    local workspace_id=${2}
+    local lakehouse_name=${3}
 
-    url="https://api.fabric.microsoft.com/v1/workspaces/$workspace_id/items"
-    response=$(curl -s -H "Authorization: Bearer $access_token" $url)
+    local url="https://api.fabric.microsoft.com/v1/workspaces/${workspace_id}/items"
+    local response=$(curl --silent --header "Authorization: Bearer ${access_token}" "${url}")
 
-    lakehouse_id=$(echo $response | jq -r --arg lakehouse_name "$lakehouse_name" '.value[] | select(.displayName == $lakehouse_name and .type == "Lakehouse") | .id')
+    local lakehouse_id=$(echo "${response}" | jq --raw-output \
+        --arg lakehouse_name "${lakehouse_name}" \
+        '.value[] | select(.displayName == $lakehouse_name and .type == "Lakehouse") | .id')
 
-    if [[ -z "$lakehouse_id" ]]; then
-        echo "[Info] Lakehouse $lakehouse_name not found." >&2
+    if [[ -z "${lakehouse_id}" || "${lakehouse_id}" == "null" ]]; then
+        log "Lakehouse ${lakehouse_name} not found." "error"
         return 1
     fi
 
-    export FABRIC_LAKEHOUSE_ID=$lakehouse_id
-    echo "Lakehouse ID: $lakehouse_id"
+    export FABRIC_LAKEHOUSE_ID="${lakehouse_id}"
+    log "Lakehouse ID: ${lakehouse_id}" "success"
     return 0
 }
 
