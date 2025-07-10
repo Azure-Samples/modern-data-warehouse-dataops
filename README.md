@@ -28,7 +28,7 @@ The samples are either focused on a single microsoft service ([Single-Technology
 - Observability / Monitoring
 
 ## AI-Assisted DataOps Development
-In addition to single-technology and end-to-end samples, this repository includes resources for integrating AI-assisted DevOps practices into your own projects. The [.github](./.github/README.md) folder contains validated GitHub Copilot-ready prompts and guidance for developing data-centric assets with strong engineering fundamentals.
+In addition to single-technology and end-to-end samples, this repository includes resources for integrating AI-assisted DevOps practices into your own projects. The [.github](./.github/copilot-readme.md) folder contains validated GitHub Copilot-ready prompts and guidance for developing data-centric assets with strong engineering fundamentals.
 
 ## Single-Technology Samples
 
