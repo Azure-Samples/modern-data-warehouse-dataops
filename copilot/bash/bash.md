@@ -715,3 +715,8 @@ wait_for_process() {
 
 - [This cheat sheet](https://bertvv.github.io/cheat-sheets/Bash.html) has great bash best practices
 - Where possible, use the above cheat sheet to make decisions on styling
+
+TODO:
+
+- parameter ${} should be consistent
+- leverage a common.sh with log and other common functions throughout the sample, if it doesn't exist, create it.
