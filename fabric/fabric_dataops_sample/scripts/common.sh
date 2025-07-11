@@ -245,18 +245,6 @@ get_security_group_id() {
 }
 
 #######################################################
-# Check if a file exists and is readable
-# Arguments:
-#   $1: file_path - Path to the file
-# Returns:
-#   0 if file exists and is readable, 1 otherwise
-#######################################################
-file_exists() {
-    local file_path=${1}
-    [[ -f "${file_path}" && -r "${file_path}" ]]
-}
-
-#######################################################
 # Replace text in file (cross-platform)
 # Arguments:
 #   $1: search_text - Text to search for

@@ -10,13 +10,7 @@ set -o nounset
 # Source environment variables
 source ./.env
 
-# Validate that verify_prerequisites.sh exists before sourcing it
-if file_exists "./scripts/verify_prerequisites.sh"; then
-    . ./scripts/verify_prerequisites.sh "./.env"
-else
-    log "Prerequisites verification script not found" "error"
-    exit 1
-fi
+. ./scripts/verify_prerequisites.sh "./.env"
 
 # Log all outputs and errors to a log file
 log_file="deploy_${BASE_NAME}_$(date +"%Y%m%d_%H%M%S").log"
