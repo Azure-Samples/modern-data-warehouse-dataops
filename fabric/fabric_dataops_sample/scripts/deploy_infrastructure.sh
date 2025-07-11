@@ -1,5 +1,7 @@
 #!/bin/bash
 set -o errexit
+set -o pipefail
+set -o nounset
 
 #######################################################
 # Deploys all necessary azure and Fabric resources
@@ -9,26 +11,44 @@ set -o errexit
 # - Correct Azure subscription is selected
 #######################################################
 
+# Source common functions
+. ./scripts/common.sh
+
+# Validate required environment variables
+validate_required_vars \
+    "ENVIRONMENT_NAME" \
+    "TENANT_ID" \
+    "SUBSCRIPTION_ID" \
+    "RESOURCE_GROUP_NAME" \
+    "BASE_NAME" \
+    "APP_CLIENT_ID" \
+    "APP_CLIENT_SECRET" \
+    "GIT_ORGANIZATION_NAME" \
+    "GIT_PROJECT_NAME" \
+    "GIT_REPOSITORY_NAME" \
+    "GIT_BRANCH_NAME" \
+    "FABRIC_WORKSPACE_ADMIN_SG_NAME"
+
 ## Environment variables
-environment_name="$ENVIRONMENT_NAME"
-tenant_id="$TENANT_ID"
-subscription_id="$SUBSCRIPTION_ID"
-resource_group_name="$RESOURCE_GROUP_NAME"
-base_name="$BASE_NAME"
+environment_name="${ENVIRONMENT_NAME}"
+tenant_id="${TENANT_ID}"
+subscription_id="${SUBSCRIPTION_ID}"
+resource_group_name="${RESOURCE_GROUP_NAME}"
+base_name="${BASE_NAME}"
 ## Service Principal details
-client_id="$APP_CLIENT_ID"
-client_secret="$APP_CLIENT_SECRET"
+client_id="${APP_CLIENT_ID}"
+client_secret="${APP_CLIENT_SECRET}"
 # GIT integration details
-git_organization_name="$GIT_ORGANIZATION_NAME"
-git_project_name="$GIT_PROJECT_NAME"
-git_repository_name="$GIT_REPOSITORY_NAME"
-git_branch_name="$GIT_BRANCH_NAME"
+git_organization_name="${GIT_ORGANIZATION_NAME}"
+git_project_name="${GIT_PROJECT_NAME}"
+git_repository_name="${GIT_REPOSITORY_NAME}"
+git_branch_name="${GIT_BRANCH_NAME}"
 # Workspace admin variables
-fabric_workspace_admin_sg_name="$FABRIC_WORKSPACE_ADMIN_SG_NAME"
+fabric_workspace_admin_sg_name="${FABRIC_WORKSPACE_ADMIN_SG_NAME}"
 # Fabric Capacity variables
-existing_fabric_capacity_name="$EXISTING_FABRIC_CAPACITY_NAME"
-fabric_capacity_admins="$FABRIC_CAPACITY_ADMINS"
-deploy_fabric_items="$DEPLOY_FABRIC_ITEMS"
+existing_fabric_capacity_name="${EXISTING_FABRIC_CAPACITY_NAME}"
+fabric_capacity_admins="${FABRIC_CAPACITY_ADMINS}"
+deploy_fabric_items="${DEPLOY_FABRIC_ITEMS}"
 
 ## KeyVault secret variables
 appinsights_connection_string_name="appinsights-connection-string"
