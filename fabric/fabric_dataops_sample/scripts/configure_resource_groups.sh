@@ -19,9 +19,6 @@ fi
 location=${1}
 security_group_name=${2}
 
-# Validate required commands
-validate_commands "az" "jq"
-
 # Ensure the arrays have the same length
 if [[ ${#ENVIRONMENT_NAMES[@]} -ne ${#RESOURCE_GROUP_NAMES[@]} ]]; then
     log "'ENVIRONMENT_NAMES' and 'RESOURCE_GROUP_NAMES' arrays must have the same length." "error"

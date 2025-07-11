@@ -6,9 +6,6 @@ set -o nounset
 # Source common functions (adjust path as needed)
 . ../../scripts/common.sh
 
-# Validate required commands
-validate_commands "curl" "jq" "sed"
-
 # Configuration file paths
 config_template_file="config/application.cfg.template"
 config_file="config/application.cfg"

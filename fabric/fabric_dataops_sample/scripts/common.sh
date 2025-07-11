@@ -90,44 +90,6 @@ random_str() {
 }
 
 #######################################################
-# Check if a command exists
-# Arguments:
-#   $1: command_name - Name of the command to check
-# Returns:
-#   0 if command exists, 1 otherwise
-#######################################################
-command_exists() {
-    command -v "${1}" >/dev/null 2>&1
-}
-
-#######################################################
-# Validate that required commands are available
-# Arguments:
-#   $@: List of required commands
-# Outputs:
-#   Error messages for missing commands
-# Returns:
-#   Exits with 1 if any command is missing
-#######################################################
-validate_commands() {
-    local missing_commands=()
-    
-    for cmd in "$@"; do
-        if ! command_exists "${cmd}"; then
-            missing_commands+=("${cmd}")
-        fi
-    done
-    
-    if [[ ${#missing_commands[@]} -gt 0 ]]; then
-        log "The following required commands are missing:" "error"
-        for cmd in "${missing_commands[@]}"; do
-            log "  - ${cmd}" "error"
-        done
-        exit 1
-    fi
-}
-
-#######################################################
 # Validate that required environment variables are set
 # Arguments:
 #   $@: List of required environment variables

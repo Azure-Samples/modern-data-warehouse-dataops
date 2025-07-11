@@ -29,9 +29,6 @@ validate_required_vars \
     "GIT_BRANCH_NAME" \
     "FABRIC_WORKSPACE_ADMIN_SG_NAME"
 
-# Validate required commands
-validate_commands "az" "terraform" "jq" "curl"
-
 ## Environment variables
 environment_name="${ENVIRONMENT_NAME}"
 tenant_id="${TENANT_ID}"

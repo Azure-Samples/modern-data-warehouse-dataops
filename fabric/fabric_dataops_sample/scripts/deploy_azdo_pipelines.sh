@@ -27,9 +27,6 @@ validate_required_vars \
     "AZDO_POLICIES_BRANCH_NAME" \
     "BASE_NAME"
 
-# Validate required commands
-validate_commands "az" "jq"
-
 # AzDo Pipeline name variables
 azdo_pipeline_ci_qa="pl-${BASE_NAME}-ci-qa"
 azdo_pipeline_ci_qa_cleanup="pl-${BASE_NAME}-ci-qa-cleanup"
