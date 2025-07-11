@@ -783,11 +783,10 @@ You WILL ALWAYS identify whether a sample project has a `common.sh` file and whe
 
 Your `common.sh` file MUST include these essential functions (all included in the template above):
 
-1. **Utility Functions**: `random_str()`, `wait_for_process()`, `command_exists()`
+1. **Utility Functions**: `random_str()`, `wait_for_process()`
 2. **Logging Functions**: `print_style()`, `log()`
-3. **Validation Functions**: `validate_required_vars()`, `validate_commands()`
-4. **Azure Functions**: `get_keyvault_value()`, `check_azure_login()`
-5. **Resource Functions**: `resource_group_exists()`, `wait_for_deployment()`
+3. **Azure Functions**: `get_keyvault_value()`, `check_azure_login()`
+4. **Resource Functions**: `resource_group_exists()`, `wait_for_deployment()`
 
 ### Standard `common.sh` Template
 
@@ -827,12 +826,11 @@ You WILL follow these naming conventions for consistency:
 You WILL identify and consolidate these common patterns:
 
 1. **Authentication checks** → `check_azure_login()`
-2. **Command validation** → `validate_commands()`
-3. **Environment validation** → `validate_required_vars()`
-4. **Resource existence checks** → `resource_group_exists()`, `keyvault_exists()`
-5. **Deployment waiting** → `wait_for_deployment()`
-6. **Secret retrieval** → `get_keyvault_value()`
-7. **Random string generation** → `random_str()`
+2. **Environment validation** → `validate_required_vars()`
+3. **Resource existence checks** → `resource_group_exists()`, `keyvault_exists()`
+4. **Deployment waiting** → `wait_for_deployment()`
+5. **Secret retrieval** → `get_keyvault_value()`
+6. **Random string generation** → `random_str()`
 
 ## Flag Usage Conventions
 
