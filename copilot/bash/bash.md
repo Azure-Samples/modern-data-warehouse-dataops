@@ -227,60 +227,6 @@ set -o pipefail
 set -o nounset
 ```
 
-### Error Functions
-
-You WILL implement consistent logging functions with color support and levels:
-
-```bash
-# Color-coded logging function with levels
-print_style() {
-    case "${2}" in
-        "info")
-            COLOR="96m"
-            ;;
-        "debug")
-            COLOR="96m"
-            ;;
-        "success")
-            COLOR="92m"
-            ;;
-        "error")
-            COLOR="91m"
-            ;;
-        "warning")
-            COLOR="93m"
-            ;;
-        "danger")
-            COLOR="91m"
-            ;;
-        "action")
-            COLOR="32m"
-            ;;
-        *)
-            COLOR="0m"
-            ;;
-    esac
-
-    STARTCOLOR="\e[${COLOR}"
-    ENDCOLOR="\e[0m"
-    printf "${STARTCOLOR}%b${ENDCOLOR}" "${1}"
-}
-
-log() {
-    # This function takes a string as an argument and prints it to the console to stderr
-    # Usage: log "message" "style"
-    # Example: log "Hello, World!" "info"
-    local message=${1}
-    local style=${2:-}
-
-    if [[ -z "${style}" ]]; then
-        echo -e "$(print_style "${message}" "default")" >&2
-    else
-        echo -e "$(print_style "${message}" "${style}")" >&2
-    fi
-}
-```
-
 ### Command Validation
 
 You WILL validate command availability with appropriate error messages:
