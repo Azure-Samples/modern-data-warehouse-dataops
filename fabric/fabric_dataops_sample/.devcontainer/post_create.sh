@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
-export PATH=$PATH:~/.local/bin
+set -o errexit
+set -o pipefail
+set -o nounset
+
+export PATH="${PATH}:${HOME}/.local/bin"
 
 # zshrc configuration
-echo 'export PATH=$PATH:~/.local/bin' >>~/.zshrc
-echo "PROMPT='%F{green}%n@%F{blue}%m:%F{yellow}%~%F{reset}%# '" >>~/.zshrc
+echo 'export PATH=$PATH:~/.local/bin' >> ~/.zshrc
+echo "PROMPT='%F{green}%n@%F{blue}%m:%F{yellow}%~%F{reset}%# '" >> ~/.zshrc
 chmod +x ~/.zshrc
 source ~/.zshrc
 
@@ -20,4 +24,4 @@ git config --global --add safe.directory /workspace
 pre-commit install
 
 # Find and remove all directories named "*.egg-info"
-find . -type d -name "*.egg-info" -exec rm -rf {} +
+find . -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
