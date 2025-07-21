@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# Set partner ID for telemetry. For usage details, see https://github.com/microsoft/modern-data-warehouse-dataops/blob/main/README.md#data-collection
+export AZURE_HTTP_USER_AGENT="acce1e78-fb84-2ec8-240c-c457cfba34ad"
+
 set -o errexit
 set -o pipefail
 set -o nounset

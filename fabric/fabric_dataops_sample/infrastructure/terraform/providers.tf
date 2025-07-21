@@ -13,6 +13,8 @@ provider "fabric" {
 }
 
 provider "azurerm" {
+  # Set partner ID for telemetry. For usage details, see https://github.com/microsoft/modern-data-warehouse-dataops/blob/main/README.md#data-collection
+  partner_id                      = "acce1e78-fb84-2ec8-240c-c457cfba34ad"
   tenant_id                       = var.tenant_id
   subscription_id                 = var.subscription_id
   client_id                       = var.use_msi || var.use_cli ? null : var.client_id
