@@ -25,6 +25,9 @@
 # - Correct Azure subscription is selected
 #######################################################
 
+# Set partner ID for telemetry. For usage details, see https://github.com/microsoft/modern-data-warehouse-dataops/blob/main/README.md#data-collection
+export AZURE_HTTP_USER_AGENT="acce1e78-7e8a-0a7e-9676-89d4b312fefe"
+
 set -o errexit
 set -o pipefail
 set -o nounset

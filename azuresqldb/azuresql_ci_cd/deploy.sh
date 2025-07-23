@@ -21,6 +21,9 @@
 # See README for prerequisites.
 #######################################################
 
+# Set partner ID for telemetry. For usage details, see https://github.com/microsoft/modern-data-warehouse-dataops/blob/main/README.md#data-collection
+export AZURE_HTTP_USER_AGENT="acce1e78-3980-6307-2645-ee3f72fb4092"
+
 set -o errexit
 set -o pipefail
 # set -o xtrace # For debugging
