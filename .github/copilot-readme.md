@@ -26,6 +26,12 @@ Development workflow instructions and guidelines for AI-assisted engineering pra
 
 Navigate to the [prompts directory](prompts/) and copy the appropriate prompt template for your task.
 
+Examples:
+```prompt
+/generate-iac for Microsoft Fabric
+/implement-medallion-pipelines for experimentation with NY Taxi data in Fabric
+```
+
 ### Following Instructions
 
 The [instructions directory](instructions/) provides step-by-step guidance for AI-assisted development workflows.
