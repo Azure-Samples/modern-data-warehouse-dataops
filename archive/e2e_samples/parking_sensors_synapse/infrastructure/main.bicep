@@ -1,3 +1,16 @@
+/* Partner attribution resource for telemetry. For usage details, see https://github.com/microsoft/modern-data-warehouse-dataops/blob/main/README.md#data-collection */
+resource attribution 'Microsoft.Resources/deployments@2020-06-01' = {
+  name: 'pid-acce1e78-f4d8-403c-a3f8-7a0ac57cc49c'
+  properties: {
+    mode: 'Incremental'
+    template: {
+      '$schema': 'https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#'
+      contentVersion: '1.0.0.0'
+      resources: []
+    }
+  }
+}
+
 param project string = 'mdwdo'
 param env string = 'dev'
 param location string = resourceGroup().location

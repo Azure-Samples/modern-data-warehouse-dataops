@@ -1,0 +1,18 @@
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directories:
+      - "/fabric/*"
+      - "/databricks/*"
+      - "/azuredatafactory/*"
+      - "/azuresqldb/*"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "npm"
+    directories:
+      - "/fabric/*"
+      - "/databricks/*"
+      - "/azuredatafactory/*"
+      - "/azuresqldb/*"
+    schedule:
+      interval: "weekly"

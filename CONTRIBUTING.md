@@ -36,41 +36,32 @@ The DataOps repo is a collection of end-to-end samples, smaller single-technolog
 
 1. Review existing samples to ensure you are not duplicating work. Additionally, check [Github issues](https://github.com/Azure-Samples/modern-data-warehouse-dataops/issues) for any similar work in progress (i.e., issues with associated PRs).
 
-2. Once you've confirmed this, you need to decide whether you are creating either an end-to-end sample or a single-technology sample:
+2. Decide which [key concepts](https://docs.microsoft.com/en-us/azure/architecture/framework/) are you showcasing in your sample. See [Microsoft Azure Well-Architected Framework](https://docs.microsoft.com/en-us/azure/architecture/framework/) for additional information. If you've decided to build a single-technology sample, decide which technology will be showcasing the key concepts.
 
-    - [End-to-end samples](/e2e_samples/) - Reference-architecture style DataOps samples typically utilizing a number of Microsoft services and technologies.
-       - **Purpose**: Showcase a number of DataOps key concepts in a concrete, end-to-end data sample.
+3. Determine the appropriate location for your sample within the [repository structure](#repo-structure). Select a short, descriptive name for the sample, avoiding lengthy or complex names, as it will be used throughout the repo (e.g., folder names, script paths, documentation links, and labels).
 
-    - [Single-technology samples](/single_tech_samples/) - Smaller, modular samples focusing on a single Azure service showcasing one or two key DataOps concepts.
-       - **Purpose**: Allows developers and data engineers to easily choose and reuse individual samples based on their requirements, without the complexity of an end-to-end sample. The small and modular design also allows for showcasing different implementations for the same concept.
-
-    - [Utilities](/utilities/) - Reusable, standalone scripts that help with a specific operational task.
-       - **Purpose**: Easily find helpful scripts used in common tasks to manage a data engineering system.
-
-3. Decide which [key concepts](https://docs.microsoft.com/en-us/azure/architecture/framework/) are you showcasing in your sample. See [Microsoft Azure Well-Architected Framework](https://docs.microsoft.com/en-us/azure/architecture/framework/) for additional information. If you've decided to build a single-technology sample, decide which technology will be showcasing the key concepts.
-
-4. Determine the appropriate location for your sample within the [repository structure](#repo-structure). Select a short, descriptive name for the sample, avoiding lengthy or complex names, as it will be used throughout the repo (e.g., folder names, script paths, documentation links, and labels).
-
-5. Create a github issue using the [new sample setup](./.github/ISSUE_TEMPLATE/new-sample-setup.md) template and fill in the information required. This template includes a detailed checklist to guide you through the sample development process.
+4. Create a github issue using the [new sample setup](./.github/ISSUE_TEMPLATE/new-sample-setup.md) template and fill in the information required. This template includes a detailed checklist to guide you through the sample development process.
 
 ### Repo Structure
 
 ```text
-/e2e_samples
-  /<name-of-e2e-sample-1>
-/single_tech_samples
-  /azuresql
-  /cosmosdb
-  /fabric
-  /databricks
-    /<name-of-singletech-sample-1>
-    /<name-of-singletech-sample-2>
+/azuresqldb
+  /<name-of-sample-1>
+  /<name-of-sample-2>
+  /<name-of-sample-n>
+/azuredatafactory
+  /<name-of-sample-1>
+  /<name-of-sample-2>
+  /<name-of-sample-n>
+/fabric
+  /<name-of-sample-1>
+  /<name-of-sample-2>
+  /<name-of-sample-n>
+/databricks
+  /<name-of-sample-1>
+  /<name-of-sample-2>
+  /<name-of-sample-n>
   ...
-/utilities
-  /fabric
-    /<name-of-utility-1>
-    /<name-of-utility-2>
-  /databricks
 ```
 
 ### Getting Started
@@ -98,7 +89,7 @@ Ensure you have a `deploy.sh` or `deploy.ps1` in the root of the sample as the e
 
 1. Look through Github issues if there are any similar work in progress (i.e., issues with PRs associated to them) to avoid duplicate efforts.
 
-2. Create a Github issue detailing your work using the [Feature](.github/ISSUE_TEMPLATE/feature.md) issue template. Tag the issue using the relevant label (i.e., 'single-tech: databricks', 'e2e: fabric'). See [Labels](#labels) below.
+2. Create a Github issue detailing your work using the [Feature](.github/ISSUE_TEMPLATE/feature.md) issue template. Tag the issue using the relevant label (i.e., `tech: <technology>`). See [Labels](#labels) below.
 
 3. Develop your changes. If you are not a member of the [Azure-Samples](https://github.com/Azure-Samples) organization (Microsoft employees only), you will need to fork the repository. Otherwise, familiarize yourself with the [branching structure](#branching-structure). Every sample should include developer setup information, and most should provide a Devcontainer.
 
@@ -108,7 +99,7 @@ Ensure you have a `deploy.sh` or `deploy.ps1` in the root of the sample as the e
 
 Ensure you are applying the appropriate labels to issues.
 
-Minimum **required** labels is either `e2e: <sample_name>` or `single-tech: <technology>`. **It is important that the correct label is applied to ensure the issue is routed to the appropriate team backlog.**
+Minimum **required** labels is either `tech: <technology>`. **It is important that the correct label is applied to ensure the issue is routed to the appropriate team backlog.**
 
 It is also encouraged (not required) to label work related to key concepts. i.e., `key-concept: load testing`.
 
