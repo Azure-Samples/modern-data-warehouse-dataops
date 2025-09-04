@@ -233,10 +233,8 @@ module "azure_devops_variable_group_w_keyvault" {
   depends_on = [module.key_vault_secret_001]
 }
 
-# Below modules currently do not support service principal/managed identity execution context.
-# Therefore they are enabled only when using user context (var_use_cli==true).
 module "fabric_data_pipeline" {
-  enable                        = var.use_cli && var.deploy_fabric_items
+  enable                        = var.deploy_fabric_items
   source                        = "./modules/fabric/data_pipeline"
   data_pipeline_name            = local.fabric_main_pipeline_name
   data_pipeline_definition_path = local.main_pipeline_definition_path
@@ -252,6 +250,8 @@ module "fabric_data_pipeline" {
   }
 }
 
+# Below module currently does not support service principal/managed identity execution context.
+# Therefore it is enabled only when using user context (var_use_cli==true).
 module "fabric_workspace_git_integration" {
   enable                  = var.use_cli
   source                  = "./modules/fabric/git_integration"

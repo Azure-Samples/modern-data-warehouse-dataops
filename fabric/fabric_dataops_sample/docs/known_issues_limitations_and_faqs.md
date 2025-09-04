@@ -115,12 +115,11 @@ Otherwise, these update can be applied as part of the post-processing step menti
 
 ### Fabric REST APIs limitations
 
-The support for managed identities and service principals is not available in few of the Fabric REST APIs. The most notable APIs (in context of this sample) that do not support managed identities are:
+The support for managed identities and service principals is not available in few of the Fabric REST APIs. The most notable API (in context of this sample) that does not support managed identities is:
 
 - [Git APIs](https://learn.microsoft.com/rest/api/fabric/core/git)
-- [Data pipelines](https://learn.microsoft.com/en-us/rest/api/fabric/datapipeline/items)
 
-To handle this limitation, the sample requires executing the deployment script twice - once with the managed identity or service principal and once with the user's credentials. The Git integration and data pipeline are created using the user's credentials.
+To handle this limitation, the sample requires executing the deployment script twice - once with the managed identity or service principal and once with the user's credentials. The Git integration is performed using user's credentials.
 
 ### Fabric Environment does not recognize change in custom libraries with same file name
 
