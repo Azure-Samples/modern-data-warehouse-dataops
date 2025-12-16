@@ -8,6 +8,8 @@ updates:
       - "/azuresqldb/*"
     schedule:
       interval: "weekly"
+    exclude-paths:
+      - "archive/**"
   - package-ecosystem: "npm"
     directories:
       - "/fabric/*"
@@ -16,3 +18,5 @@ updates:
       - "/azuresqldb/*"
     schedule:
       interval: "weekly"
+    exclude-paths:
+      - "archive/**"
