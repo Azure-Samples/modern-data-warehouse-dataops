@@ -9,7 +9,7 @@ updates:
     schedule:
       interval: "weekly"
     exclude-paths:
-      - "/archive/**"
+      - "archive/**"
   - package-ecosystem: "npm"
     directories:
       - "/fabric/*"
@@ -19,4 +19,4 @@ updates:
     schedule:
       interval: "weekly"
     exclude-paths:
-      - "/archive/**"
+      - "archive/**"
