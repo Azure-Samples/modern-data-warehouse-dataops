@@ -18,7 +18,7 @@ setup(
     #this approach automatically finds out all directories (packages) - those must contain a file named __init__.py (can be empty)
     packages=find_packages(), #include/exclude arguments take * as wildcard, . for any sub-package names
     install_requires=[
-        'azure-core==1.26.2',
+        'azure-core==1.38.0',
         'azure-storage-blob==12.14.1',
         'azure-storage-file-datalake==12.9.1',
         'certifi==2024.7.4',
