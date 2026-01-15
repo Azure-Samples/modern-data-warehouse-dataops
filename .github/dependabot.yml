@@ -1,22 +1,37 @@
 version: 2
 updates:
+  # Pip dependencies
   - package-ecosystem: "pip"
-    directories:
-      - "/fabric/*"
-      - "/databricks/*"
-      - "/azuredatafactory/*"
-      - "/azuresqldb/*"
+    directory: "/fabric"
     schedule:
       interval: "weekly"
-    exclude-paths:
-      - "archive/**"
+  - package-ecosystem: "pip"
+    directory: "/databricks"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pip"
+    directory: "/azuredatafactory"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pip"
+    directory: "/azuresqldb"
+    schedule:
+      interval: "weekly"
+
+  # NPM dependencies
   - package-ecosystem: "npm"
-    directories:
-      - "/fabric/*"
-      - "/databricks/*"
-      - "/azuredatafactory/*"
-      - "/azuresqldb/*"
+    directory: "/fabric"
     schedule:
       interval: "weekly"
-    exclude-paths:
-      - "archive/**"
+  - package-ecosystem: "npm"
+    directory: "/databricks"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "npm"
+    directory: "/azuredatafactory"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "npm"
+    directory: "/azuresqldb"
+    schedule:
+      interval: "weekly"
