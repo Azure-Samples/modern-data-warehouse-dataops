@@ -1,0 +1,10 @@
+# Environment variables of this sample
+
+# Variables Required by simplified and comprehensive approach
+TENANT_ID="<tenant-id>" # Your Entra Tenant ID, used to authenticate and grab a user token
+FABRIC_API_BASEURL="https://api.fabric.microsoft.com/v1" # the base URL of the Fabric APIs
+FABRIC_USER_TOKEN="<fabric-token>" # the Fabric user token used to authenticate against the Fabric APIs
+
+# Variables required only for the comprehensive approach
+ITEMS_FOLDER=fabric # the folder name (existing) where Fabric item files will be stored
+FABRIC_CAPACITY_ID="<fabric-capacity-id>" # the capacity id (existing) of the capacity where the Fabric item will be created. Can be retrieved from Fabric Admin portal.

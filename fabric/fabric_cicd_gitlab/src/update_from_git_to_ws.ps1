@@ -1,11 +1,11 @@
 param
 (
-    [parameter(Mandatory = $true)] [String] $baseUrl,
-    [parameter(Mandatory = $true)] [String] $fabricToken,
+    [parameter(Mandatory = $false)] [String] $baseUrl,           # Optional, the fabric api base url
+    [parameter(Mandatory = $false)] [String] $fabricToken,       # Optional, the fabric api token
     [parameter(Mandatory = $true)] [String] $workspaceName,      # The name of the workspace,
-    [parameter(Mandatory = $true)] [String] $capacityId,         # The capacity id of the workspace,
-    [parameter(Mandatory = $true)] [String] $folder,             # The folder where the workspace items are located on the branch, should be: Join-Path $(Build.SourcesDirectory) $(directory_name)
-    [parameter(Mandatory = $false)] [bool] $resetConfig=$false   # Used when the developer wants to reset the config files in the workspace (typically when a new feature branch is created)
+    [parameter(Mandatory = $false)] [String] $capacityId,        # Optional, the capacity id of the workspace,
+    [parameter(Mandatory = $false)] [String] $folder,            # Optional, the folder where the workspace items are located on the branch, should be: Join-Path $(Build.SourcesDirectory) $(directory_name)
+    [parameter(Mandatory = $false)] [bool] $resetConfig=$false   # Optional, used when the developer wants to reset the config files in the workspace (typically when a new feature branch is created)
 )
 ## FROM GIT TO WORKSPACE
 # Used when the developer creates a new branch from the development/main branch
@@ -64,9 +64,19 @@ function getorCreateWorkspaceId($requestHeader, $contentType, $baseUrl, $workspa
     }
 }
 
+function getWorkspaceItems($requestHeader, $contentType, $baseUrl, $workspaceId){
+    $params = @{
+        Uri = "$($baseUrl)/workspaces/$($workspaceId)/items"
+        Method = "GET"
+        Headers = $requestHeader
+        ContentType = $contentType
+    }
+    return (Invoke-RestMethod @params).value
+}
 function createWorkspaceItem($baseUrl, $workspaceId, $requestHeader, $contentType, $itemMetadata, $itemDefinition){
     if ($itemDefinition)
     {
+        Write-Host "Creating item $($itemMetadata.displayName) with definition." -ForegroundColor Yellow
         # if the item has a definition create the item with definition
         $body = @{
             displayName = $itemMetadata.displayName
@@ -76,6 +86,7 @@ function createWorkspaceItem($baseUrl, $workspaceId, $requestHeader, $contentTyp
         }
     }
     else { #item does not have definition, only create the item with metadata
+        Write-Host "Creating item $($itemMetadata.displayName) without definition." -ForegroundColor Yellow
         $body = @{
             displayName = $itemMetadata.displayName
             description = $itemMetadata.description
@@ -163,7 +174,7 @@ function createOrUpdateWorkspaceItem($requestHeader, $contentType, $baseUrl, $wo
     if ([System.IO.File]::Exists($definitionFilePath)){
         $itemDefinition = Get-Content -Path $definitionFilePath -Raw | ConvertFrom-Json
         Write-Host "Found item definition for $($itemMetadata.displayName)" -ForegroundColor Green
-        $contentFiles = Get-ChildItem -Path $folder | Where-Object {$_.Name -notlike $itemMetadataFileName -and $_.Name -notlike $itemDefinitionFileName -and $_.Name -notlike $itemConfigFileName}
+        $contentFiles = Get-ChildItem -Path $folder -Force | Where-Object {$_.Name -notlike $itemMetadataFileName -and $_.Name -notlike $itemDefinitionFileName -and $_.Name -notlike $itemConfigFileName}
         #$contentFiles = Get-ChildItem -Path $folder | Where-Object {$_.Name -like "*content*"}
         if ($contentFiles -and $contentFiles.Count -ge 1){ # if there is at least a content file then update the definition payload
             Write-Host "Found $($contentFiles.Count) content file(s) for $($itemMetadata.displayName)" -ForegroundColor Green
@@ -201,11 +212,11 @@ function createOrUpdateWorkspaceItem($requestHeader, $contentType, $baseUrl, $wo
     if (!$itemConfig.objectId) {
         # 3. if an objectId is not present and only a logicalId is present then
         # Create a new object and save the objectId in the config file
-        Write-Host "Item $folder does not have an associated objectId, creating new Fabric item of type $($itemMetadata.type) with name $($itemMetadata.displayName)." -ForegroundColor Yellow
+        Write-Host "Item $($itemMetadata.displayName) does not have an associated objectId, creating new Fabric item of type $($itemMetadata.type) with name $($itemMetadata.displayName)." -ForegroundColor Yellow
 
         $item = createWorkspaceItem $baseUrl $workspaceId $requestHeader $contentType $itemMetadata $itemDefinition
         
-        Write-Host "item is $($item.displayName) with id $($item.id)"
+        Write-Host "Created item $($item.displayName) with id $($item.id)"
         # update the config file with the returned objectId
         $itemConfig | add-member -Name "objectId" -value $item.id -MemberType NoteProperty -Force
         Write-Host "itemConfig objectId is $($itemConfig.objectId)"
@@ -286,7 +297,33 @@ function longRunningOperationPolling($uri, $retryAfter){
     }
 }
 
+function loadEnvironmentVariables() {
+    Write-Host "Loading environment file..."
+    get-content config/.env | ForEach-Object {
+        if ($_ -match '^#' -or [string]::IsNullOrWhiteSpace($_)) { return } # skip comments and empty lines
+        $name, $value = $_.split('=')
+        $value = $value.split('#')[0].trim() # to support commented env files
+        $value = $value -replace '^"|"$' # remove leading and trailing double quotes
+        set-content env:\$name $value
+    }
+    Write-Host "Finished loading environment file. \nFabric REST API endpoint is $env:FABRIC_API_BASEURL"    
+}
+
 try {
+    # if the following parameters are not set, the script will load env variables from the .env file
+    # else it will use the provided parameters
+    if (!$fabricToken -or !$baseUrl -or !$capacityId -or !$folder) {
+        Write-Host "Parameters fabricToken, baseUrl, capacityId or folder are not set, loading from .env file."
+        loadEnvironmentVariables
+        $baseUrl=$env:FABRIC_API_BASEURL
+        $fabricToken=$env:FABRIC_USER_TOKEN
+        $capacityId=$env:FABRIC_CAPACITY_ID
+        $folder=$env:ITEMS_FOLDER
+    }
+    else {
+        Write-Host "Required parameters are set, using them directly."
+    }
+
     # TODO: consider removing the logicalId from the file as it's not used today.
     Write-Host "this task is running Powershell version " $PSVersionTable.PSVersion
     Write-Host "the folder we are working on is $folder"
@@ -307,13 +344,7 @@ try {
 
     # 2. For every Fabric item on the branch, check if they exist in the workspace
     # first get a list of all items in the workspace
-    $params = @{
-        Uri = "$($baseUrl)/workspaces/$($workspaceId)/items"
-        Method = "GET"
-        Headers = $requestHeader
-        ContentType = $contentType
-    }
-    $workspaceItems = (Invoke-RestMethod @params).value
+    $workspaceItems = getWorkspaceItems $requestHeader $contentType $baseUrl $workspaceId
     $repoItems = @() # keep track of found object ids (either from creation or config files) and remove all other object ids from the workspace
     # if they exist update them else create new ones
     $dir = Get-ChildItem -Path $folder -Recurse -Directory

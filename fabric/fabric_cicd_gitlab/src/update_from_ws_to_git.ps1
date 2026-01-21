@@ -1,10 +1,6 @@
 param
 (
-    [parameter(Mandatory = $true)] [String] $baseUrl,
-    [parameter(Mandatory = $true)] [String] $fabricToken,
-    [parameter(Mandatory = $true)] [String] $workspaceName,      # The name of the workspace,
-    [parameter(Mandatory = $false)] [String] $capacityId,         # The capacity id of the workspace,
-    [parameter(Mandatory = $true)] [String] $folder              # The folder where the workspace items are located on the branch, should be: Join-Path $(Build.SourcesDirectory) $(directory_name)
+    [parameter(Mandatory = $true)] [String] $workspaceName      # The name of the workspace,
 )
 ## FROM WORKSPACE TO GIT
 # Used when the developers have finished working on their workspace and want to sync back to their branch.
@@ -219,7 +215,24 @@ function longRunningOperationPolling($uri, $retryAfter){
 
 
 
+function loadEnvironmentVariables() {
+    Write-Host "Loading environment file..."
+    get-content config/.env | ForEach-Object {
+        if ($_ -match '^#' -or [string]::IsNullOrWhiteSpace($_)) { return } # skip comments and empty lines
+        $name, $value = $_.split('=')
+        $value = $value.split('#')[0].trim() # to support commented env files
+        $value = $value -replace '^"|"$' # remove leading and trailing double quotes
+        set-content env:\$name $value
+    }
+    Write-Host "Finished loading environment file. \nFabric REST API endpoint is $env:FABRIC_API_BASEURL"    
+}
+
 try {
+    loadEnvironmentVariables
+    $baseUrl=$env:FABRIC_API_BASEURL
+    $fabricToken=$env:FABRIC_USER_TOKEN
+    $folder=$env:ITEMS_FOLDER
+
     Write-Host "this task is running Powershell version " $PSVersionTable.PSVersion
     Write-Host "the folder we are working on is $folder"
     Write-Host "Updating workspace items for workspace $workspaceName"
