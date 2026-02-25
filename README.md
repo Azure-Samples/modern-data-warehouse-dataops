@@ -16,6 +16,8 @@ products:
 description: "Code samples showcasing how to apply DevOps concepts to common data engineering patterns and architectures leveraging different Microsoft data platform technologies."
 --- 
 
+***This repository is no longer maintained. For latest Microsoft Fabric CI/CD guidance, please see [Microsoft official documentation](https://learn.microsoft.com/en-us/fabric/cicd/cicd-overview).***
+
 # DataOps
 
 This repository contains numerous code samples and artifacts on how to apply DevOps principles to common data engineering patterns and architectures utilizing Microsoft data platform technologies.
