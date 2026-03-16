@@ -24,7 +24,7 @@ setup(
         'certifi==2024.7.4',
         'cffi==1.15.1',
         'charset-normalizer==3.0.1',
-        'cryptography==44.0.1',
+        'cryptography==46.0.5',
         'idna==3.7',
         'isodate==0.6.1',
         'msrest==0.7.1',
